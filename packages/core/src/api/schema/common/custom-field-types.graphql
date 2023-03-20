@@ -127,6 +127,18 @@ type TextCustomFieldConfig implements CustomField {
     ui: JSON
 }
 
+type LocaleTextCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
+    nullable: Boolean
+    ui: JSON
+}
+
 type LocalizedString {
     languageCode: LanguageCode!
     value: String!
@@ -141,3 +153,4 @@ union CustomFieldConfig =
     | DateTimeCustomFieldConfig
     | RelationCustomFieldConfig
     | TextCustomFieldConfig
+    | LocaleTextCustomFieldConfig

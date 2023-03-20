@@ -1,7 +1,8 @@
-import { DefaultJobQueuePlugin, DefaultLogger, LogLevel, mergeConfig, UuidIdStrategy } from '@vendure/core';
+import { DefaultJobQueuePlugin, mergeConfig, UuidIdStrategy } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -14,16 +15,9 @@ import { awaitRunningJobs } from '../../core/e2e/utils/await-running-jobs';
 import { ElasticsearchPlugin } from '../src/plugin';
 
 import { GetCollectionListQuery } from './graphql/generated-e2e-elasticsearch-plugin-types';
-// tslint:disable-next-line:no-var-requires
-const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
-/**
- * The Elasticsearch tests sometimes take a long time in CI due to limited resources.
- * We increase the timeout to 30 seconds to prevent failure due to timeouts.
- */
-if (process.env.CI) {
-    jest.setTimeout(10 * 3000);
-}
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
 // https://github.com/vendure-ecommerce/vendure/issues/494
 describe('Elasticsearch plugin with UuidIdStrategy', () => {

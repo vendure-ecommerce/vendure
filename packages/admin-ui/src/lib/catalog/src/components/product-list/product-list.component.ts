@@ -82,7 +82,7 @@ export class ProductListComponent
             (...args: any[]) =>
                 this.dataService.product.searchProducts(this.searchTerm, ...args).refetchOnChannelChange(),
             data => data.search,
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (skip, take) => ({
                 input: {
                     skip,

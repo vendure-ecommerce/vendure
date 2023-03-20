@@ -273,7 +273,7 @@
     "remember-me": "记住我",
     "remove": "删除",
     "remove-item-from-list": "从列表中移除",
-    "results-count": "{count, plural, 0{无} other {{count}个过滤结果}}",
+    "results-count": "{count, plural, =0{无} other {{count}个过滤结果}}",
     "sample-formatting": "",
     "select": "选择...",
     "select-display-language": "选择显示语言",

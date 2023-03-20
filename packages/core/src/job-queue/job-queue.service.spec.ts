@@ -1,10 +1,11 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { assertFound, Injector } from '../common';
 import { ConfigService } from '../config/config.service';
@@ -19,7 +20,7 @@ import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
 
 const queuePollInterval = 10;
-const backoffStrategySpy = jest.fn();
+const backoffStrategySpy = vi.fn();
 const testJobQueueStrategy = new TestingJobQueueStrategy({
     concurrency: 1,
     pollInterval: queuePollInterval,
@@ -464,10 +465,10 @@ class MockConfigService implements OnApplicationBootstrap, OnModuleDestroy {
 
     async onApplicationBootstrap() {
         const injector = new Injector(this.moduleRef);
-        await this.jobQueueOptions.jobQueueStrategy.init(injector);
+        this.jobQueueOptions.jobQueueStrategy.init(injector);
     }
 
     async onModuleDestroy() {
-        await this.jobQueueOptions.jobQueueStrategy.destroy();
+        this.jobQueueOptions.jobQueueStrategy.destroy();
     }
 }

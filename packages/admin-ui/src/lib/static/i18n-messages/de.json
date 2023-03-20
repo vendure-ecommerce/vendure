@@ -4,8 +4,8 @@
   },
   "asset": {
     "add-asset": "Asset hinzufügen",
-    "add-asset-with-count": "{count, plural, 0 {Assets} one {1 Asset} other {{count} Assets}} hinzufügen",
-    "assets-selected-count": "{count, plural, 0 {Kein Asset} one {1 Asset} other {{count} Assets}} ausgewählt",
+    "add-asset-with-count": "{count, plural, =0 {Assets} one {1 Asset} other {{count} Assets}} hinzufügen",
+    "assets-selected-count": "{count, plural, =0 {Kein Asset} one {1 Asset} other {{count} Assets}} ausgewählt",
     "dimensions": "Abmessungen",
     "focal-point": "Fokuspunkt",
     "notify-create-assets-success": "{count, plural, one {Neues Asset} other {{count} neue Assets}} erstellt",

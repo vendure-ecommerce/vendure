@@ -1,8 +1,10 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DefaultLogger, mergeConfig, orderPercentageDiscount } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -72,7 +74,6 @@ describe('Draft Orders resolver', () => {
             Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
             input: {
-                name: 'Free Order',
                 enabled: true,
                 conditions: [],
                 couponCode: freeOrderCouponCode,
@@ -82,6 +83,7 @@ describe('Draft Orders resolver', () => {
                         arguments: [{ name: 'discount', value: '100' }],
                     },
                 ],
+                translations: [{ languageCode: LanguageCode.en, name: 'Free Order' }],
             },
         });
     }, TEST_SETUP_TIMEOUT_MS);

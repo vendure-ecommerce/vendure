@@ -80,7 +80,8 @@ export class StripeService {
      */
     private async getStripeCustomerId(ctx: RequestContext, activeOrder: Order): Promise<string | undefined> {
         // Load relation with customer not available in the response from activeOrderService.getOrderFromContext()
-        const order = await this.connection.getRepository(Order).findOne(activeOrder.id, {
+        const order = await this.connection.getRepository(Order).findOne({
+            where: { id: activeOrder.id },
             relations: ['customer'],
         });
 

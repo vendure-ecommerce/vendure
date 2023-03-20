@@ -4,7 +4,7 @@
   },
   "asset": {
     "add-asset": "Adicionar imagens",
-    "add-asset-with-count": "Adiciona {count, plural, 0 {assets} one {1 asset} other {{count} assets}}",
+    "add-asset-with-count": "Adiciona {count, plural, =0 {assets} one {1 asset} other {{count} assets}}",
     "assets-selected-count": "{ count } imagens selecionadas",
     "dimensions": "Dimensões",
     "focal-point": "Ponto central",

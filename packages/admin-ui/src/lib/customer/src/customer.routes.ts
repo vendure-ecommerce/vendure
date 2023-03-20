@@ -16,7 +16,6 @@ export const customerRoutes: Route[] = [
     {
         path: 'customers',
         component: CustomerListComponent,
-        pathMatch: '',
         data: {
             breadcrumb: _('breadcrumb.customers'),
         },

@@ -3,6 +3,7 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     ActiveOrderService,
     Ctx,
+    Customer,
     ID,
     InternalServerError,
     Logger,
@@ -33,13 +34,13 @@ export class BraintreeResolver {
     ) {
         if (orderId) {
             Logger.warn(
-                `The orderId argument to the generateBraintreeClientToken mutation has been deprecated and may be omitted.`,
+                'The orderId argument to the generateBraintreeClientToken mutation has been deprecated and may be omitted.',
             );
         }
         const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
         if (!sessionOrder) {
             throw new InternalServerError(
-                `Cannot generate Braintree clientToken as there is no active Order.`,
+                'Cannot generate Braintree clientToken as there is no active Order.',
             );
         }
         const order = await this.orderService.findOne(ctx, sessionOrder.id);
@@ -48,13 +49,33 @@ export class BraintreeResolver {
             const args = await this.getPaymentMethodArgs(ctx);
             const gateway = getGateway(args, this.options);
             try {
-                const result = await gateway.clientToken.generate({
+                let result = await gateway.clientToken.generate({
                     customerId: includeCustomerId === false ? undefined : customerId,
                 });
-                return result.clientToken;
+                if (result.success === true) {
+                    return result.clientToken;
+                } else {
+                    if (result.message === 'Customer specified by customer_id does not exist') {
+                        // For some reason the custom_id is invalid. This could occur e.g. if the ID was created on the Sandbox endpoint and now
+                        // we switched to Production. In this case, we will remove it and allow a new one
+                        // to be generated when the payment is created.
+                        if (this.options.storeCustomersInBraintree) {
+                            order.customer.customFields.braintreeCustomerId = undefined;
+                            await this.connection.getRepository(ctx, Customer).save(order.customer);
+                        }
+                        result = await gateway.clientToken.generate({ customerId: undefined });
+                        if (result.success === true) {
+                            return result.clientToken;
+                        }
+                    }
+                    Logger.error(`Could not generate Braintree clientToken: ${result.message}`, loggerCtx);
+                    throw new InternalServerError(
+                        `Could not generate Braintree clientToken: ${result.message}`,
+                    );
+                }
             } catch (e: any) {
                 Logger.error(
-                    `Could not generate Braintree clientToken. Check the configured credentials.`,
+                    'Could not generate Braintree clientToken. Check the configured credentials.',
                     loggerCtx,
                 );
                 throw e;

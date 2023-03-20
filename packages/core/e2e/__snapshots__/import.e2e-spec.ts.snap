@@ -1,35 +1,35 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Import resolver imports products 1`] = `
-Object {
-  "assets": Array [
-    Object {
+exports[`Import resolver > imports products 1`] = `
+{
+  "assets": [
+    {
       "id": "T_1",
       "name": "pps1.jpg",
       "preview": "test-url/test-assets/pps1__preview.jpg",
       "source": "test-url/test-assets/pps1.jpg",
     },
-    Object {
+    {
       "id": "T_2",
       "name": "pps2.jpg",
       "preview": "test-url/test-assets/pps2__preview.jpg",
       "source": "test-url/test-assets/pps2.jpg",
     },
   ],
-  "customFields": Object {
-    "keywords": Array [
+  "customFields": {
+    "keywords": [
       "paper",
       "stretching",
       "watercolor",
     ],
     "localName": "localPPS",
-    "owner": Object {
+    "owner": {
       "id": "T_1",
     },
     "pageType": "default",
   },
   "description": "A great device for stretching paper.",
-  "featuredAsset": Object {
+  "featuredAsset": {
     "id": "T_1",
     "name": "pps1.jpg",
     "preview": "test-url/test-assets/pps1__preview.jpg",
@@ -37,18 +37,18 @@ Object {
   },
   "id": "T_1",
   "name": "Perfect Paper Stretcher",
-  "optionGroups": Array [
-    Object {
+  "optionGroups": [
+    {
       "code": "perfect-paper-stretcher-size",
       "id": "T_1",
       "name": "size",
     },
   ],
   "slug": "perfect-paper-stretcher",
-  "variants": Array [
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+  "variants": [
+    {
+      "assets": [],
+      "customFields": {
         "valid": null,
         "weight": 100,
       },
@@ -57,19 +57,19 @@ Object {
       "name": "Perfect Paper Stretcher Half Imperial",
       "price": 4530,
       "sku": "PPS12",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "valid": null,
         "weight": 100,
       },
@@ -78,19 +78,19 @@ Object {
       "name": "Perfect Paper Stretcher Quarter Imperial",
       "price": 3250,
       "sku": "PPS14",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "valid": null,
         "weight": 100,
       },
@@ -99,9 +99,9 @@ Object {
       "name": "Perfect Paper Stretcher Full Imperial",
       "price": 5950,
       "sku": "PPSF",
-      "stockMovements": Object {
-        "items": Array [
-          Object {
+      "stockMovements": {
+        "items": [
+          {
             "id": "T_1",
             "quantity": -10,
             "type": "ADJUSTMENT",
@@ -109,7 +109,7 @@ Object {
         ],
       },
       "stockOnHand": -10,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
@@ -119,13 +119,13 @@ Object {
 }
 `;
 
-exports[`Import resolver imports products 2`] = `
-Object {
-  "assets": Array [],
-  "customFields": Object {
-    "keywords": Array [],
+exports[`Import resolver > imports products 2`] = `
+{
+  "assets": [],
+  "customFields": {
+    "keywords": [],
     "localName": "localMabef",
-    "owner": Object {
+    "owner": {
       "id": "T_1",
     },
     "pageType": "expanded",
@@ -134,12 +134,12 @@ Object {
   "featuredAsset": null,
   "id": "T_2",
   "name": "Mabef M/02 Studio Easel",
-  "optionGroups": Array [],
+  "optionGroups": [],
   "slug": "mabef-m02-studio-easel",
-  "variants": Array [
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+  "variants": [
+    {
+      "assets": [],
+      "customFields": {
         "valid": null,
         "weight": 300,
       },
@@ -148,9 +148,9 @@ Object {
       "name": "Mabef M/02 Studio Easel",
       "price": 91070,
       "sku": "M02",
-      "stockMovements": Object {
-        "items": Array [
-          Object {
+      "stockMovements": {
+        "items": [
+          {
             "id": "T_2",
             "quantity": 100,
             "type": "ADJUSTMENT",
@@ -158,7 +158,7 @@ Object {
         ],
       },
       "stockOnHand": 100,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
@@ -168,13 +168,13 @@ Object {
 }
 `;
 
-exports[`Import resolver imports products 3`] = `
-Object {
-  "assets": Array [],
-  "customFields": Object {
-    "keywords": Array [],
+exports[`Import resolver > imports products 3`] = `
+{
+  "assets": [],
+  "customFields": {
+    "keywords": [],
     "localName": "localGiotto",
-    "owner": Object {
+    "owner": {
       "id": "T_1",
     },
     "pageType": "default",
@@ -183,29 +183,29 @@ Object {
   "featuredAsset": null,
   "id": "T_3",
   "name": "Giotto Mega Pencils",
-  "optionGroups": Array [
-    Object {
+  "optionGroups": [
+    {
       "code": "giotto-mega-pencils-box-size",
       "id": "T_2",
       "name": "box size",
     },
   ],
   "slug": "giotto-mega-pencils",
-  "variants": Array [
-    Object {
-      "assets": Array [
-        Object {
+  "variants": [
+    {
+      "assets": [
+        {
           "id": "T_3",
           "name": "box-of-8.jpg",
           "preview": "test-url/test-assets/box-of-8__preview.jpg",
           "source": "test-url/test-assets/box-of-8.jpg",
         },
       ],
-      "customFields": Object {
+      "customFields": {
         "valid": null,
         "weight": 200,
       },
-      "featuredAsset": Object {
+      "featuredAsset": {
         "id": "T_3",
         "name": "box-of-8.jpg",
         "preview": "test-url/test-assets/box-of-8__preview.jpg",
@@ -215,30 +215,30 @@ Object {
       "name": "Giotto Mega Pencils Box of 8",
       "price": 416,
       "sku": "225400",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [
-        Object {
+    {
+      "assets": [
+        {
           "id": "T_4",
           "name": "box-of-12.jpg",
           "preview": "test-url/test-assets/box-of-12__preview.jpg",
           "source": "test-url/test-assets/box-of-12.jpg",
         },
       ],
-      "customFields": Object {
+      "customFields": {
         "valid": null,
         "weight": 200,
       },
-      "featuredAsset": Object {
+      "featuredAsset": {
         "id": "T_4",
         "name": "box-of-12.jpg",
         "preview": "test-url/test-assets/box-of-12__preview.jpg",
@@ -248,11 +248,11 @@ Object {
       "name": "Giotto Mega Pencils Box of 12",
       "price": 624,
       "sku": "225600",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
@@ -262,16 +262,16 @@ Object {
 }
 `;
 
-exports[`Import resolver imports products 4`] = `
-Object {
-  "assets": Array [],
-  "customFields": Object {
-    "keywords": Array [
+exports[`Import resolver > imports products 4`] = `
+{
+  "assets": [],
+  "customFields": {
+    "keywords": [
       "apron",
       "clothing",
     ],
     "localName": "localSmock",
-    "owner": Object {
+    "owner": {
       "id": "T_1",
     },
     "pageType": "default",
@@ -280,23 +280,23 @@ Object {
   "featuredAsset": null,
   "id": "T_4",
   "name": "Artists Smock",
-  "optionGroups": Array [
-    Object {
+  "optionGroups": [
+    {
       "code": "artists-smock-size",
       "id": "T_3",
       "name": "size",
     },
-    Object {
+    {
       "code": "artists-smock-colour",
       "id": "T_4",
       "name": "colour",
     },
   ],
   "slug": "artists-smock",
-  "variants": Array [
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+  "variants": [
+    {
+      "assets": [],
+      "customFields": {
         "valid": true,
         "weight": 500,
       },
@@ -305,19 +305,19 @@ Object {
       "name": "Artists Smock small beige",
       "price": 1199,
       "sku": "10112",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_2",
         "name": "Reduced Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "valid": false,
         "weight": 500,
       },
@@ -326,19 +326,19 @@ Object {
       "name": "Artists Smock large beige",
       "price": 1199,
       "sku": "10113",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_2",
         "name": "Reduced Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "valid": null,
         "weight": 500,
       },
@@ -347,19 +347,19 @@ Object {
       "name": "Artists Smock small navy",
       "price": 1199,
       "sku": "10114",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_2",
         "name": "Reduced Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "valid": true,
         "weight": 500,
       },
@@ -368,19 +368,19 @@ Object {
       "name": "Artists Smock large navy",
       "price": 1199,
       "sku": "10115",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_2",
         "name": "Reduced Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "valid": false,
         "weight": null,
       },
@@ -389,11 +389,11 @@ Object {
       "name": "Artists Smock large navy",
       "price": 1199,
       "sku": "10115",
-      "stockMovements": Object {
-        "items": Array [],
+      "stockMovements": {
+        "items": [],
       },
       "stockOnHand": 0,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_2",
         "name": "Reduced Tax",
       },
@@ -403,11 +403,11 @@ Object {
 }
 `;
 
-exports[`Import resolver imports products with multiple languages 1`] = `
-Object {
-  "assets": Array [],
-  "customFields": Object {
-    "keywords": Array [
+exports[`Import resolver > imports products with multiple languages 1`] = `
+{
+  "assets": [],
+  "customFields": {
+    "keywords": [
       "paper, stretch",
     ],
     "localName": "纸张拉伸器",
@@ -418,18 +418,18 @@ Object {
   "featuredAsset": null,
   "id": "T_5",
   "name": "奇妙的纸张拉伸器",
-  "optionGroups": Array [
-    Object {
+  "optionGroups": [
+    {
       "code": "fantastic-paper-stretcher-size",
       "id": "T_5",
       "name": "size",
     },
   ],
   "slug": "奇妙的纸张拉伸器",
-  "variants": Array [
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+  "variants": [
+    {
+      "assets": [],
+      "customFields": {
         "weight": 243,
       },
       "featuredAsset": null,
@@ -437,9 +437,9 @@ Object {
       "name": "奇妙的纸张拉伸器 半英制",
       "price": 4530,
       "sku": "PPS12",
-      "stockMovements": Object {
-        "items": Array [
-          Object {
+      "stockMovements": {
+        "items": [
+          {
             "id": "T_3",
             "quantity": 10,
             "type": "ADJUSTMENT",
@@ -447,15 +447,15 @@ Object {
         ],
       },
       "stockOnHand": 10,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "weight": 344,
       },
       "featuredAsset": null,
@@ -463,9 +463,9 @@ Object {
       "name": "奇妙的纸张拉伸器 四分之一英制",
       "price": 3250,
       "sku": "PPS14",
-      "stockMovements": Object {
-        "items": Array [
-          Object {
+      "stockMovements": {
+        "items": [
+          {
             "id": "T_4",
             "quantity": 10,
             "type": "ADJUSTMENT",
@@ -473,15 +473,15 @@ Object {
         ],
       },
       "stockOnHand": 10,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },
       "trackInventory": "FALSE",
     },
-    Object {
-      "assets": Array [],
-      "customFields": Object {
+    {
+      "assets": [],
+      "customFields": {
         "weight": 656,
       },
       "featuredAsset": null,
@@ -489,9 +489,9 @@ Object {
       "name": "奇妙的纸张拉伸器 全英制",
       "price": 5950,
       "sku": "PPSF",
-      "stockMovements": Object {
-        "items": Array [
-          Object {
+      "stockMovements": {
+        "items": [
+          {
             "id": "T_5",
             "quantity": 10,
             "type": "ADJUSTMENT",
@@ -499,7 +499,7 @@ Object {
         ],
       },
       "stockOnHand": 10,
-      "taxCategory": Object {
+      "taxCategory": {
         "id": "T_1",
         "name": "Standard Tax",
       },

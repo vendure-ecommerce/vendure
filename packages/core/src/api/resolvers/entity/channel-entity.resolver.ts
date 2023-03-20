@@ -16,4 +16,9 @@ export class ChannelEntityResolver {
             ? channel.seller ?? (await this.sellerService.findOne(ctx, channel.sellerId))
             : undefined;
     }
+
+    @ResolveField()
+    currencyCode(@Ctx() ctx: RequestContext, @Parent() channel: Channel): string {
+        return channel.defaultCurrencyCode;
+    }
 }

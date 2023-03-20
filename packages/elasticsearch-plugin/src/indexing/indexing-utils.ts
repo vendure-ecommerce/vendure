@@ -11,7 +11,7 @@ export async function createIndices(
     indexSettings: object,
     indexMappingProperties: object,
     mapAlias = true,
-    aliasPostfix = ``,
+    aliasPostfix = '',
 ) {
     const textWithKeyword = {
         type: 'text',

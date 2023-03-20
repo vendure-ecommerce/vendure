@@ -1,3 +1,5 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+
 import { mergeTransitionDefinitions } from './merge-transition-definitions';
 import { Transitions } from './types';
 

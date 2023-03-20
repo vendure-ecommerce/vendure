@@ -37,7 +37,7 @@ export class ActiveOrderService {
     async getOrderFromContext(ctx: RequestContext, createIfNotExists: true): Promise<Order>;
     async getOrderFromContext(ctx: RequestContext, createIfNotExists = false): Promise<Order | undefined> {
         if (!ctx.session) {
-            throw new InternalServerError(`error.no-active-session`);
+            throw new InternalServerError('error.no-active-session');
         }
         let order = ctx.session.activeOrderId
             ? await this.connection

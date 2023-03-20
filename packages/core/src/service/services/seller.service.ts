@@ -38,7 +38,10 @@ export class SellerService {
     }
 
     findOne(ctx: RequestContext, sellerId: ID): Promise<Seller | undefined> {
-        return this.connection.getRepository(ctx, Seller).findOne(sellerId);
+        return this.connection
+            .getRepository(ctx, Seller)
+            .findOne({ where: { id: sellerId } })
+            .then(result => result ?? undefined);
     }
 
     create(ctx: RequestContext, input: CreateSellerInput) {

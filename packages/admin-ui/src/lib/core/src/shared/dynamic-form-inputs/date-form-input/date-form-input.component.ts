@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
@@ -20,7 +20,7 @@ import { FormInputComponent } from '../../../common/component-registry-types';
 export class DateFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'date-form-input';
     @Input() readonly: boolean;
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     config: DefaultFormComponentConfig<'date-form-input'>;
     get min() {
         return this.config.ui?.min || this.config.min;

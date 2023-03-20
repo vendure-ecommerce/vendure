@@ -22,7 +22,7 @@ import { CreateQueueOptions, JobConfig, JobData } from './types';
  *
  * @docsCategory JobQueue
  */
-export class JobQueue<Data extends JobData<Data> = {}> {
+export class JobQueue<Data extends JobData<Data> = object> {
     private running = false;
 
     get name(): string {

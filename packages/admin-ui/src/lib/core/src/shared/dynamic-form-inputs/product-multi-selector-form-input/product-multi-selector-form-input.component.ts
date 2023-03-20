@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
@@ -15,7 +15,7 @@ import { ProductMultiSelectorDialogComponent } from '../../components/product-mu
 })
 export class ProductMultiSelectorFormInputComponent implements OnInit, FormInputComponent {
     @Input() config: DefaultFormComponentConfig<'product-multi-form-input'>;
-    @Input() formControl: FormControl;
+    @Input() formControl: UntypedFormControl;
     @Input() readonly: boolean;
     mode: 'product' | 'variant' = 'product';
     readonly isListInput = true;

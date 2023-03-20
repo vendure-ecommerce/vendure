@@ -1,7 +1,7 @@
 import fs from 'fs';
 import klawSync from 'klaw-sync';
 import { basename } from 'path';
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * Generates the Hugo front matter with the title of the document

@@ -52,7 +52,7 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
     async createRefund(ctx, input, amount, order, payment, args): Promise<CreateRefundResult> {
         const result = await stripeService.createRefund(payment.transactionId, amount);
 
-        if (result instanceof StripeError) {
+        if (result instanceof Stripe.StripeError) {
             return {
                 state: 'Failed' as const,
                 transactionId: payment.transactionId,

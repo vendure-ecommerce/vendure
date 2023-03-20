@@ -1,4 +1,5 @@
 import { QueryRunner } from 'typeorm';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EventBus } from './event-bus';
 import { VendureEvent } from './vendure-event';
@@ -24,7 +25,7 @@ describe('EventBus', () => {
 
     describe('ofType()', () => {
         it('single handler is called once', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event = new TestEvent('foo');
             eventBus.ofType(TestEvent).subscribe(handler);
 
@@ -36,7 +37,7 @@ describe('EventBus', () => {
         });
 
         it('single handler is called on multiple events', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event1 = new TestEvent('foo');
             const event2 = new TestEvent('bar');
             const event3 = new TestEvent('baz');
@@ -54,9 +55,9 @@ describe('EventBus', () => {
         });
 
         it('multiple handlers are called', async () => {
-            const handler1 = jest.fn();
-            const handler2 = jest.fn();
-            const handler3 = jest.fn();
+            const handler1 = vi.fn();
+            const handler2 = vi.fn();
+            const handler3 = vi.fn();
             const event = new TestEvent('foo');
             eventBus.ofType(TestEvent).subscribe(handler1);
             eventBus.ofType(TestEvent).subscribe(handler2);
@@ -71,7 +72,7 @@ describe('EventBus', () => {
         });
 
         it('handler is not called for other events', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event = new OtherTestEvent('foo');
             eventBus.ofType(TestEvent).subscribe(handler);
 
@@ -82,7 +83,7 @@ describe('EventBus', () => {
         });
 
         it('ofType() returns a subscription', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event = new TestEvent('foo');
             const subscription = eventBus.ofType(TestEvent).subscribe(handler);
 
@@ -101,8 +102,8 @@ describe('EventBus', () => {
         });
 
         it('unsubscribe() only unsubscribes own handler', async () => {
-            const handler1 = jest.fn();
-            const handler2 = jest.fn();
+            const handler1 = vi.fn();
+            const handler2 = vi.fn();
             const event = new TestEvent('foo');
             const subscription1 = eventBus.ofType(TestEvent).subscribe(handler1);
             const subscription2 = eventBus.ofType(TestEvent).subscribe(handler2);
@@ -126,7 +127,7 @@ describe('EventBus', () => {
 
     describe('filter()', () => {
         it('single handler is called once', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event = new TestEvent('foo');
             eventBus.filter(vendureEvent => vendureEvent instanceof TestEvent).subscribe(handler);
 
@@ -138,7 +139,7 @@ describe('EventBus', () => {
         });
 
         it('single handler is called on multiple events', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event1 = new TestEvent('foo');
             const event2 = new TestEvent('bar');
             const event3 = new TestEvent('baz');
@@ -156,9 +157,9 @@ describe('EventBus', () => {
         });
 
         it('multiple handlers are called', async () => {
-            const handler1 = jest.fn();
-            const handler2 = jest.fn();
-            const handler3 = jest.fn();
+            const handler1 = vi.fn();
+            const handler2 = vi.fn();
+            const handler3 = vi.fn();
             const event = new TestEvent('foo');
             eventBus.filter(vendureEvent => vendureEvent instanceof TestEvent).subscribe(handler1);
             eventBus.filter(vendureEvent => vendureEvent instanceof TestEvent).subscribe(handler2);
@@ -173,7 +174,7 @@ describe('EventBus', () => {
         });
 
         it('handler is not called for other events', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event = new OtherTestEvent('foo');
             eventBus.filter(vendureEvent => vendureEvent instanceof TestEvent).subscribe(handler);
 
@@ -184,7 +185,7 @@ describe('EventBus', () => {
         });
 
         it('handler is called for instance of child classes', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event = new ChildTestEvent('bar', 'foo');
             eventBus.filter(vendureEvent => vendureEvent instanceof TestEvent).subscribe(handler);
 
@@ -195,7 +196,7 @@ describe('EventBus', () => {
         });
 
         it('filter() returns a subscription', async () => {
-            const handler = jest.fn();
+            const handler = vi.fn();
             const event = new TestEvent('foo');
             const subscription = eventBus
                 .filter(vendureEvent => vendureEvent instanceof TestEvent)
@@ -216,8 +217,8 @@ describe('EventBus', () => {
         });
 
         it('unsubscribe() only unsubscribes own handler', async () => {
-            const handler1 = jest.fn();
-            const handler2 = jest.fn();
+            const handler1 = vi.fn();
+            const handler2 = vi.fn();
             const event = new TestEvent('foo');
             const subscription1 = eventBus
                 .filter(vendureEvent => vendureEvent instanceof TestEvent)

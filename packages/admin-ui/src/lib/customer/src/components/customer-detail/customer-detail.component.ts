@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    UntypedFormArray,
+    UntypedFormBuilder,
+    UntypedFormControl,
+    UntypedFormGroup,
+    Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -15,11 +21,11 @@ import {
     GetAvailableCountriesQuery,
     GetCustomerHistoryQuery,
     GetCustomerQuery,
-    TimelineHistoryEntry,
     ModalService,
     NotificationService,
     ServerConfigService,
     SortOrder,
+    TimelineHistoryEntry,
     UpdateCustomerAddressMutation,
     UpdateCustomerInput,
     UpdateCustomerMutation,
@@ -52,7 +58,7 @@ export class CustomerDetailComponent
     extends BaseDetailComponent<CustomerWithOrders>
     implements OnInit, OnDestroy
 {
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     customFields: CustomFieldConfig[];
     addressCustomFields: CustomFieldConfig[];
     availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
@@ -73,7 +79,7 @@ export class CustomerDetailComponent
         router: Router,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         protected dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
@@ -94,7 +100,7 @@ export class CustomerDetailComponent
                     this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
                 ),
             }),
-            addresses: new FormArray([]),
+            addresses: new UntypedFormArray([]),
         });
     }
 
@@ -110,15 +116,15 @@ export class CustomerDetailComponent
         this.ordersCount$ = this.entity$.pipe(map(customer => customer.orders.totalItems));
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
-            switchMap(() => {
-                return this.dataService.customer
+            switchMap(() =>
+                this.dataService.customer
                     .getCustomerHistory(this.id, {
                         sort: {
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream(data => data.customer?.history.items);
-            }),
+                    .mapStream(data => data.customer?.history.items),
+            ),
         );
     }
 
@@ -127,9 +133,9 @@ export class CustomerDetailComponent
         this.orderListUpdates$.complete();
     }
 
-    getAddressFormControls(): FormControl[] {
-        const formArray = this.detailForm.get(['addresses']) as FormArray;
-        return formArray.controls as FormControl[];
+    getAddressFormControls(): UntypedFormControl[] {
+        const formArray = this.detailForm.get(['addresses']) as UntypedFormArray;
+        return formArray.controls as UntypedFormControl[];
     }
 
     setDefaultBillingAddressId(id: string) {
@@ -151,7 +157,7 @@ export class CustomerDetailComponent
     }
 
     addAddress() {
-        const addressFormArray = this.detailForm.get('addresses') as FormArray;
+        const addressFormArray = this.detailForm.get('addresses') as UntypedFormArray;
         const newAddress = this.formBuilder.group({
             fullName: '',
             company: '',
@@ -168,7 +174,7 @@ export class CustomerDetailComponent
         if (this.addressCustomFields.length) {
             const customFieldsGroup = this.formBuilder.group({});
             for (const fieldDef of this.addressCustomFields) {
-                customFieldsGroup.addControl(fieldDef.name, new FormControl(''));
+                customFieldsGroup.addControl(fieldDef.name, new UntypedFormControl(''));
             }
             newAddress.addControl('customFields', customFieldsGroup);
         }
@@ -259,7 +265,7 @@ export class CustomerDetailComponent
                                 .pipe(map(res => res.updateCustomer)),
                         );
                     }
-                    const addressFormArray = this.detailForm.get('addresses') as FormArray;
+                    const addressFormArray = this.detailForm.get('addresses') as UntypedFormArray;
                     if ((addressFormArray && addressFormArray.dirty) || this.addressDefaultsUpdated) {
                         for (const addressControl of addressFormArray.controls) {
                             if (addressControl.dirty || this.addressDefaultsUpdated) {
@@ -461,7 +467,7 @@ export class CustomerDetailComponent
         }
 
         if (entity.addresses) {
-            const addressesArray = new FormArray([]);
+            const addressesArray = new UntypedFormArray([]);
             for (const address of entity.addresses) {
                 const { customFields, ...rest } = address as any;
                 const addressGroup = this.formBuilder.group({
@@ -481,7 +487,7 @@ export class CustomerDetailComponent
                     for (const fieldDef of this.addressCustomFields) {
                         const key = fieldDef.name;
                         const value = (address as any).customFields?.[key];
-                        const control = new FormControl(value);
+                        const control = new UntypedFormControl(value);
                         customFieldsGroup.addControl(key, control);
                     }
                     addressGroup.addControl('customFields', customFieldsGroup);

@@ -27,15 +27,15 @@ export type JobUpdate<T extends JobData<T>> = Pick<
 /**
  * @description
  * Job update options, that you can specify by calling {@link SubscribableJob.updates updates()} method.
- * 
+ *
  * @docsCategory JobQueue
  * @docsPage types
  */
-export type JobUpdateOptions = { 
+export type JobUpdateOptions = {
     /**
      * Polling interval. Defaults to 200ms
      */
-    pollInterval?: number; 
+    pollInterval?: number;
     /**
      * Polling timeout in milliseconds. Defaults to 1 hour
      */
@@ -43,7 +43,7 @@ export type JobUpdateOptions = {
     /**
      * Observable sequence will end with an error if true. Default to false
      */
-    errorOnFail?: boolean; 
+    errorOnFail?: boolean;
 };
 
 /**
@@ -85,19 +85,21 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
                 `The configured JobQueueStrategy (${strategy.constructor.name}) is not inspectable, so Job updates cannot be subscribed to`,
             );
         } else {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return interval(pollInterval).pipe(
                 tap(i => {
                     if (timeoutMs < i * pollInterval) {
                         throw new Error(
-                            `Job ${this.id} SubscribableJob update polling timed out after ${timeoutMs}ms. The job may still be running.`,
+                            `Job ${
+                                this.id ?? ''
+                            } SubscribableJob update polling timed out after ${timeoutMs}ms. The job may still be running.`,
                         );
                     }
                 }),
                 switchMap(() => {
                     const id = this.id;
                     if (!id) {
-                        throw new Error(`Cannot subscribe to update: Job does not have an ID`);
+                        throw new Error('Cannot subscribe to update: Job does not have an ID');
                     }
                     return strategy.findOne(id);
                 }),

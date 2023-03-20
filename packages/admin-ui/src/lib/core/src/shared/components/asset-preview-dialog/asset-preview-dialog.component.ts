@@ -26,7 +26,7 @@ export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
                 if (this.hasTags(asset)) {
                     return of(asset);
                 } else {
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     return this.dataService.product.getAsset(asset.id).mapSingle(data => data.asset!);
                 }
             }),

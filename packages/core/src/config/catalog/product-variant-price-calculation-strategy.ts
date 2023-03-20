@@ -17,7 +17,7 @@ export interface ProductVariantPriceCalculationStrategy extends InjectableStrate
 
 /**
  * @description
- * The arguments passed the the `calculate` method of the configured {@link ProductVariantPriceCalculationStrategy}.
+ * The arguments passed the `calculate` method of the configured {@link ProductVariantPriceCalculationStrategy}.
  *
  * @docsCategory configuration
  * @docsPage ProductVariantPriceCalculationStrategy

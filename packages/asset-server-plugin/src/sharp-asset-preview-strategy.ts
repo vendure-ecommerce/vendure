@@ -147,9 +147,9 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
                 }
             } catch (err: any) {
                 Logger.error(
-                    `An error occurred when generating preview for image with mimeType ${mimeType}: ${
-                        err.message ?? err.toString()
-                    }`,
+                    `An error occurred when generating preview for image with mimeType ${mimeType}: ${JSON.stringify(
+                        err.message,
+                    )}`,
                     loggerCtx,
                 );
                 return this.generateBinaryFilePreview(mimeType);

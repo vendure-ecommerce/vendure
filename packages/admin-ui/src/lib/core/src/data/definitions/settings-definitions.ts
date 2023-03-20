@@ -469,6 +469,12 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
         code
         description
         enabled
+        translations {
+            id
+            languageCode
+            name
+            description
+        }
         checker {
             ...ConfigurableOperation
         }
@@ -624,6 +630,12 @@ export const TEXT_CUSTOM_FIELD_FRAGMENT = gql`
     }
     ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
+export const LOCALE_TEXT_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment LocaleTextCustomField on LocaleTextCustomFieldConfig {
+        ...CustomFieldConfig
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
 export const BOOLEAN_CUSTOM_FIELD_FRAGMENT = gql`
     fragment BooleanCustomField on BooleanCustomFieldConfig {
         ...CustomFieldConfig
@@ -677,6 +689,9 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
         ... on TextCustomFieldConfig {
             ...TextCustomField
         }
+        ... on LocaleTextCustomFieldConfig {
+            ...LocaleTextCustomField
+        }
         ... on BooleanCustomFieldConfig {
             ...BooleanCustomField
         }
@@ -701,6 +716,7 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     ${FLOAT_CUSTOM_FIELD_FRAGMENT}
     ${DATE_TIME_CUSTOM_FIELD_FRAGMENT}
     ${RELATION_CUSTOM_FIELD_FRAGMENT}
+    ${LOCALE_TEXT_CUSTOM_FIELD_FRAGMENT}
 `;
 
 export const GET_SERVER_CONFIG = gql`

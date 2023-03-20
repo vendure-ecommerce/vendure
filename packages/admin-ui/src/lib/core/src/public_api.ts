@@ -243,3 +243,8 @@ export * from './shared/pipes/time-ago.pipe';
 export * from './shared/providers/routing/can-deactivate-detail-guard';
 export * from './shared/shared.module';
 export * from './validators/unicode-pattern.validator';
+export { BreadcrumbDefinition } from './providers/breadcrumb/breadcrumb.service';
+export { BreadcrumbFunction } from './providers/breadcrumb/breadcrumb.service';
+export { BreadcrumbValue } from './providers/breadcrumb/breadcrumb.service';
+export { BreadcrumbLabelLinkPair } from './providers/breadcrumb/breadcrumb.service';
+export { BreadcrumbString } from './providers/breadcrumb/breadcrumb.service';

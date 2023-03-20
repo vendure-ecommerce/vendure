@@ -62,7 +62,7 @@ export function translateEntity<T extends Translatable & VendureEntity>(
     }
 
     if (!translation) {
-        throw new InternalServerError(`error.entity-has-no-translation-in-language`, {
+        throw new InternalServerError('error.entity-has-no-translation-in-language', {
             entityName: translatable.constructor.name,
             languageCode: Array.isArray(languageCode) ? languageCode.join() : languageCode,
         });

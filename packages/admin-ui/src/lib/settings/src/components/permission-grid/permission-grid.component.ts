@@ -67,13 +67,11 @@ export class PermissionGridComponent implements OnInit {
                 description: d.description,
                 permissions: [d],
             })),
-            ...Array.from(crudGroups.entries()).map(([label, defs]) => {
-                return {
+            ...Array.from(crudGroups.entries()).map(([label, defs]) => ({
                     label,
                     description: this.extractCrudDescription(defs[0]),
                     permissions: defs,
-                };
-            }),
+                })),
         ];
     }
 

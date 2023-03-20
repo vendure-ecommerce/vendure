@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { INestApplication } from '@nestjs/common';
 import program from 'commander';
 import fs from 'fs-extra';
@@ -6,10 +7,11 @@ import path from 'path';
 
 import { logColored } from './cli-utils';
 import { importProductsFromCsv, populateCollections, populateInitialData } from './populate';
-// tslint:disable-next-line:no-var-requires
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require('../../package.json').version;
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 logColored(`
                       _
                      | |
@@ -19,7 +21,7 @@ logColored(`
    \\_/ \\___|_| |_|\\__,_|\\__,_|_|  \\___|
                                        `);
 
-program.version(`Vendure CLI v${version}`, '-v --version').name('vendure');
+program.version(`Vendure CLI v${version as string}`, '-v --version').name('vendure');
 
 program
     .command('import-products <csvFile>')
@@ -88,7 +90,7 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
     }
 
     if (!configFile) {
-        console.error(`Could not find a config file`);
+        console.error('Could not find a config file');
         console.error(`Checked "${tsConfigFile}", "${jsConfigFile}"`);
         process.exit(1);
         return;
@@ -98,7 +100,7 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
         // we expect ts-node to be available
         const tsNode = require('ts-node');
         if (!tsNode) {
-            console.error(`For "populate" to work with TypeScript projects, you must have ts-node installed`);
+            console.error('For "populate" to work with TypeScript projects, you must have ts-node installed');
             process.exit(1);
             return;
         }
@@ -122,7 +124,7 @@ async function getApplicationRef(): Promise<INestApplication | undefined> {
 
     // Force the sync mode on, so that all the tables are created
     // on this initial run.
-    (config.dbConnectionOptions as any).synchronize = true;
+    config.dbConnectionOptions.synchronize = true;
 
     const { bootstrap } = require('@vendure/core');
     console.log('Bootstrapping Vendure server...');

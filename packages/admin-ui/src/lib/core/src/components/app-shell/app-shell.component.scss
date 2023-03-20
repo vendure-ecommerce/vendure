@@ -1,31 +1,115 @@
-@import "variables";
+@import 'variables';
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.left-nav {
+    background-color: var(--color-left-nav-bg);
+    color: var(--color-left-nav-text);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
+    z-index: 1;
+}
+
+.top-bar {
+    height: 48px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--color-top-bar-bg);
+    border-bottom: 1px solid var(--color-component-border-200);
+}
+
+.main-nav-container {
+    overflow: auto;
+    flex: 1;
+    /* ===== Scrollbar CSS ===== */
+    /* Firefox */
+    scrollbar-width: auto;
+    scrollbar-color: var(--color-primary-700) #052731;
+
+    /* Chrome, Edge, and Safari */
+    &::-webkit-scrollbar {
+        width: 16px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: #052731;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--color-primary-700);
+        border-radius: var(--border-radius);
+        &:hover {
+            background-color: #0f5070;
+        }
+    }
+}
+
+.surface {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: var(--color-component-bg-100);
+}
+
+.content-container {
+    overflow: auto;
+}
 
 .branding {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-width: 0;
 }
+
 .logo {
     width: 40px;
 }
+
 .wordmark {
     font-weight: bold;
     margin-left: 12px;
     font-size: 24px;
     color: var(--color-primary-500);
-}
-vdr-breadcrumb {
-    @media screen and (min-width: $breakpoint-small){
-        margin-left: $clr-sidenav-width;
+    @media screen and (max-width: $breakpoint-medium) {
+        display: none;
     }
 }
+vdr-breadcrumb {
+    width: 100%;
+    max-width: var(--layout-content-max-width);
+    background-color: var(--color-component-bg-100);
+    padding: var(--space-unit) 0;
+    z-index: 5;
+    margin: 0 auto;
+    position: sticky;
+    top: 0;
+}
+
 .header-actions {
     align-items: center;
 }
+
 .content-area {
     position: relative;
+    max-width: var(--layout-content-max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-unit);
 }
 
 ::ng-deep {
     .header {
-        background-image: linear-gradient(to right, var(--color-header-gradient-from), var(--color-header-gradient-to));
+        background-image: linear-gradient(
+            to right,
+            var(--color-header-gradient-from),
+            var(--color-header-gradient-to)
+        );
     }
 }

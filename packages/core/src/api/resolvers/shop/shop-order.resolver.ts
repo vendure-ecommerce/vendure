@@ -258,7 +258,7 @@ export class ShopOrderResolver {
     async nextOrderStates(
         @Ctx() ctx: RequestContext,
         @Args() args: ActiveOrderArgs,
-    ): Promise<ReadonlyArray<string>> {
+    ): Promise<readonly string[]> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.activeOrderService.getActiveOrder(
                 ctx,
@@ -429,19 +429,17 @@ export class ShopOrderResolver {
         @Args() args: MutationSetCustomerForOrderArgs & ActiveOrderArgs,
     ): Promise<ErrorResultUnion<SetCustomerForOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
-            if (ctx.activeUserId) {
-                return new AlreadyLoggedInError();
-            }
             const sessionOrder = await this.activeOrderService.getActiveOrder(
                 ctx,
                 args[ACTIVE_ORDER_INPUT_FIELD_NAME],
             );
             if (sessionOrder) {
-                const customer = await this.customerService.createOrUpdate(ctx, args.input, true);
-                if (isGraphQlErrorResult(customer)) {
-                    return customer;
+                const { guestCheckoutStrategy } = this.configService.orderOptions;
+                const result = await guestCheckoutStrategy.setCustomerForOrder(ctx, sessionOrder, args.input);
+                if (isGraphQlErrorResult(result)) {
+                    return result;
                 }
-                return this.orderService.addCustomerToOrder(ctx, sessionOrder.id, customer);
+                return this.orderService.addCustomerToOrder(ctx, sessionOrder.id, result);
             }
         }
         return new NoActiveOrderError();

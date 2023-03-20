@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, isDevMode, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Input, isDevMode, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { UIExtensionLocationId } from '../../../common/component-registry-types';
@@ -14,6 +14,9 @@ export class UiExtensionPointComponent implements OnInit {
     @Input() locationId: UIExtensionLocationId;
     @Input() topPx: number;
     @Input() leftPx: number;
+    @HostBinding('style.display')
+    @Input()
+    display: 'block' | 'inline-block' = 'inline-block';
     @Input() api: 'actionBar' | 'navMenu' | 'detailComponent';
     display$: Observable<boolean>;
     readonly isDevMode = isDevMode();

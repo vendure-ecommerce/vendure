@@ -79,7 +79,7 @@ export class AdminElasticSearchResolver implements Pick<SearchResolver, 'search'
     @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async runPendingSearchIndexUpdates(...args: any[]): Promise<any> {
         // Intentionally not awaiting this method call
-        this.searchJobBufferService.runPendingSearchUpdates();
+        void this.searchJobBufferService.runPendingSearchUpdates();
         return { success: true };
     }
 }

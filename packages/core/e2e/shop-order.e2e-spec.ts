@@ -1,18 +1,20 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
 import {
     Asset,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
+    manualFulfillmentHandler,
     mergeConfig,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
-import { manualFulfillmentHandler } from '../src/index';
 
 import {
     testErrorPaymentMethod,
@@ -106,7 +108,6 @@ describe('Shop orders', () => {
         | CodegenShop.UpdatedOrderFragment
         | CodegenShop.TestOrderFragmentFragment
         | CodegenShop.TestOrderWithPaymentsFragment
-        | CodegenShop.CanceledOrderFragment
         | CodegenShop.ActiveOrderCustomerFragment;
     const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
@@ -190,12 +191,12 @@ describe('Shop orders', () => {
             });
 
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(1);
-            expect(addItemToOrder!.lines[0].quantity).toBe(1);
-            expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_1');
-            expect(addItemToOrder!.lines[0].id).toBe('T_1');
-            firstOrderLineId = addItemToOrder!.lines[0].id;
-            orderCode = addItemToOrder!.code;
+            expect(addItemToOrder.lines.length).toBe(1);
+            expect(addItemToOrder.lines[0].quantity).toBe(1);
+            expect(addItemToOrder.lines[0].productVariant.id).toBe('T_1');
+            expect(addItemToOrder.lines[0].id).toBe('T_1');
+            firstOrderLineId = addItemToOrder.lines[0].id;
+            orderCode = addItemToOrder.code;
         });
 
         it(
@@ -209,7 +210,7 @@ describe('Shop orders', () => {
                         productVariantId: 'T_999',
                         quantity: 1,
                     }),
-                `No ProductVariant with the id '999' could be found`,
+                "No ProductVariant with the id '999' could be found",
             ),
         );
 
@@ -223,7 +224,7 @@ describe('Shop orders', () => {
             });
 
             orderResultGuard.assertErrorResult(addItemToOrder);
-            expect(addItemToOrder.message).toEqual(`The quantity for an OrderItem cannot be negative`);
+            expect(addItemToOrder.message).toEqual('The quantity for an OrderItem cannot be negative');
             expect(addItemToOrder.errorCode).toEqual(ErrorCode.NEGATIVE_QUANTITY_ERROR);
         });
 
@@ -236,8 +237,8 @@ describe('Shop orders', () => {
                 quantity: 2,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(1);
-            expect(addItemToOrder!.lines[0].quantity).toBe(3);
+            expect(addItemToOrder.lines.length).toBe(1);
+            expect(addItemToOrder.lines[0].quantity).toBe(3);
         });
 
         describe('OrderLine customFields', () => {
@@ -289,8 +290,8 @@ describe('Shop orders', () => {
                     },
                 );
                 orderResultGuard.assertSuccess(add1);
-                expect(add1!.lines.length).toBe(2);
-                expect(add1!.lines[1].quantity).toBe(1);
+                expect(add1.lines.length).toBe(2);
+                expect(add1.lines[1].quantity).toBe(1);
 
                 const { addItemToOrder: add2 } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
@@ -303,14 +304,14 @@ describe('Shop orders', () => {
                     },
                 );
                 orderResultGuard.assertSuccess(add2);
-                expect(add2!.lines.length).toBe(2);
-                expect(add2!.lines[1].quantity).toBe(2);
+                expect(add2.lines.length).toBe(2);
+                expect(add2.lines[1].quantity).toBe(2);
 
                 await shopClient.query<
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: add2!.lines[1].id,
+                    orderLineId: add2.lines[1].id,
                 });
             });
 
@@ -326,8 +327,8 @@ describe('Shop orders', () => {
                     },
                 );
                 orderResultGuard.assertSuccess(add1);
-                expect(add1!.lines.length).toBe(2);
-                expect(add1!.lines[1].quantity).toBe(1);
+                expect(add1.lines.length).toBe(2);
+                expect(add1.lines[1].quantity).toBe(1);
 
                 const { addItemToOrder: add2 } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
@@ -340,21 +341,21 @@ describe('Shop orders', () => {
                     },
                 );
                 orderResultGuard.assertSuccess(add2);
-                expect(add2!.lines.length).toBe(3);
-                expect(add2!.lines[1].quantity).toBe(1);
-                expect(add2!.lines[2].quantity).toBe(1);
+                expect(add2.lines.length).toBe(3);
+                expect(add2.lines[1].quantity).toBe(1);
+                expect(add2.lines[2].quantity).toBe(1);
 
                 await shopClient.query<
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: add2!.lines[1].id,
+                    orderLineId: add2.lines[1].id,
                 });
                 await shopClient.query<
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: add2!.lines[2].id,
+                    orderLineId: add2.lines[2].id,
                 });
             });
 
@@ -368,8 +369,8 @@ describe('Shop orders', () => {
                     },
                 );
                 orderResultGuard.assertSuccess(add1);
-                expect(add1!.lines.length).toBe(2);
-                expect(add1!.lines[1].quantity).toBe(1);
+                expect(add1.lines.length).toBe(2);
+                expect(add1.lines[1].quantity).toBe(1);
 
                 const { adjustOrderLine } = await shopClient.query(ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS, {
                     orderLineId: add1.lines[1].id,
@@ -399,9 +400,9 @@ describe('Shop orders', () => {
                     },
                 );
                 orderResultGuard.assertSuccess(add2);
-                expect(add2!.lines.length).toBe(3);
-                expect(add2!.lines[1].quantity).toBe(1);
-                expect(add2!.lines[2].quantity).toBe(1);
+                expect(add2.lines.length).toBe(3);
+                expect(add2.lines[1].quantity).toBe(1);
+                expect(add2.lines[2].quantity).toBe(1);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
                 expect(activeOrder.lines.find((l: any) => l.id === updatedNotesLineId)?.customFields).toEqual(
@@ -417,13 +418,13 @@ describe('Shop orders', () => {
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: add2!.lines[1].id,
+                    orderLineId: add2.lines[1].id,
                 });
                 const { removeOrderLine } = await shopClient.query<
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: add2!.lines[2].id,
+                    orderLineId: add2.lines[2].id,
                 });
                 orderResultGuard.assertSuccess(removeOrderLine);
                 expect(removeOrderLine.lines.length).toBe(1);
@@ -442,8 +443,8 @@ describe('Shop orders', () => {
                 );
 
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.lines.length).toBe(2);
-                expect(addItemToOrder!.lines[1].quantity).toBe(1);
+                expect(addItemToOrder.lines.length).toBe(2);
+                expect(addItemToOrder.lines[1].quantity).toBe(1);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
 
@@ -463,8 +464,8 @@ describe('Shop orders', () => {
                 );
 
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.lines.length).toBe(2);
-                expect(addItemToOrder!.lines[1].quantity).toBe(2);
+                expect(addItemToOrder.lines.length).toBe(2);
+                expect(addItemToOrder.lines[1].quantity).toBe(2);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
 
@@ -484,8 +485,8 @@ describe('Shop orders', () => {
                 );
 
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.lines.length).toBe(3);
-                expect(addItemToOrder!.lines[2].quantity).toBe(1);
+                expect(addItemToOrder.lines.length).toBe(3);
+                expect(addItemToOrder.lines[2].quantity).toBe(1);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
 
@@ -508,13 +509,13 @@ describe('Shop orders', () => {
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: activeOrder!.lines[2].id,
+                    orderLineId: activeOrder.lines[2].id,
                 });
                 const { removeOrderLine } = await shopClient.query<
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: activeOrder!.lines[1].id,
+                    orderLineId: activeOrder.lines[1].id,
                 });
                 orderResultGuard.assertSuccess(removeOrderLine);
                 expect(removeOrderLine.lines.length).toBe(1);
@@ -533,8 +534,8 @@ describe('Shop orders', () => {
                 );
 
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.lines.length).toBe(2);
-                expect(addItemToOrder!.lines[1].quantity).toBe(1);
+                expect(addItemToOrder.lines.length).toBe(2);
+                expect(addItemToOrder.lines[1].quantity).toBe(1);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
                 expect(activeOrder.lines[1].customFields.lineImages.length).toBe(2);
@@ -555,8 +556,8 @@ describe('Shop orders', () => {
                 );
 
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.lines.length).toBe(2);
-                expect(addItemToOrder!.lines[1].quantity).toBe(2);
+                expect(addItemToOrder.lines.length).toBe(2);
+                expect(addItemToOrder.lines[1].quantity).toBe(2);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
 
@@ -578,8 +579,8 @@ describe('Shop orders', () => {
                 );
 
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.lines.length).toBe(3);
-                expect(addItemToOrder!.lines[2].quantity).toBe(1);
+                expect(addItemToOrder.lines.length).toBe(3);
+                expect(addItemToOrder.lines[2].quantity).toBe(1);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
 
@@ -589,13 +590,13 @@ describe('Shop orders', () => {
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: activeOrder!.lines[2].id,
+                    orderLineId: activeOrder.lines[2].id,
                 });
                 const { removeOrderLine } = await shopClient.query<
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
-                    orderLineId: activeOrder!.lines[1].id,
+                    orderLineId: activeOrder.lines[1].id,
                 });
                 orderResultGuard.assertSuccess(removeOrderLine);
                 expect(removeOrderLine.lines.length).toBe(1);
@@ -627,8 +628,8 @@ describe('Shop orders', () => {
                 quantity: 50,
             });
             orderResultGuard.assertSuccess(adjustOrderLine);
-            expect(adjustOrderLine!.lines.length).toBe(1);
-            expect(adjustOrderLine!.lines[0].quantity).toBe(50);
+            expect(adjustOrderLine.lines.length).toBe(1);
+            expect(adjustOrderLine.lines[0].quantity).toBe(50);
         });
 
         it('adjustOrderLine with quantity 0 removes the line', async () => {
@@ -640,19 +641,19 @@ describe('Shop orders', () => {
                 quantity: 3,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(2);
-            expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(addItemToOrder.lines.length).toBe(2);
+            expect(addItemToOrder.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { adjustOrderLine } = await shopClient.query<
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: addItemToOrder?.lines[1].id!,
+                orderLineId: addItemToOrder?.lines[1].id,
                 quantity: 0,
             });
             orderResultGuard.assertSuccess(adjustOrderLine);
-            expect(adjustOrderLine!.lines.length).toBe(1);
-            expect(adjustOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
+            expect(adjustOrderLine.lines.length).toBe(1);
+            expect(adjustOrderLine.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
         });
 
         it('adjustOrderLine with quantity > stockOnHand only allows user to have stock on hand', async () => {
@@ -668,13 +669,13 @@ describe('Shop orders', () => {
             expect(addItemToOrder.errorCode).toBe('INSUFFICIENT_STOCK_ERROR');
 
             // But it should still add the item to the order
-            expect(addItemToOrder!.order.lines[1].quantity).toBe(100);
+            expect(addItemToOrder.order.lines[1].quantity).toBe(100);
 
             const { adjustOrderLine } = await shopClient.query<
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: addItemToOrder!.order.lines[1].id,
+                orderLineId: addItemToOrder.order.lines[1].id,
                 quantity: 101,
             });
             orderResultGuard.assertErrorResult(adjustOrderLine);
@@ -690,12 +691,12 @@ describe('Shop orders', () => {
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: addItemToOrder!.order.lines[1].id,
+                orderLineId: addItemToOrder.order.lines[1].id,
                 quantity: 0,
             });
             orderResultGuard.assertSuccess(adjustLine2);
-            expect(adjustLine2!.lines.length).toBe(1);
-            expect(adjustLine2!.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
+            expect(adjustLine2.lines.length).toBe(1);
+            expect(adjustLine2.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
         });
 
         it('adjustOrderLine errors when going beyond orderItemsLimit', async () => {
@@ -737,7 +738,7 @@ describe('Shop orders', () => {
                         orderLineId: 'T_999',
                         quantity: 5,
                     }),
-                `This order does not contain an OrderLine with the id 999`,
+                'This order does not contain an OrderLine with the id 999',
             ),
         );
 
@@ -750,8 +751,8 @@ describe('Shop orders', () => {
                 quantity: 3,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(2);
-            expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(addItemToOrder.lines.length).toBe(2);
+            expect(addItemToOrder.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { removeOrderLine } = await shopClient.query<
                 CodegenShop.RemoveItemFromOrderMutation,
@@ -760,8 +761,8 @@ describe('Shop orders', () => {
                 orderLineId: firstOrderLineId,
             });
             orderResultGuard.assertSuccess(removeOrderLine);
-            expect(removeOrderLine!.lines.length).toBe(1);
-            expect(removeOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(removeOrderLine.lines.length).toBe(1);
+            expect(removeOrderLine.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it(
@@ -774,7 +775,7 @@ describe('Shop orders', () => {
                     >(REMOVE_ITEM_FROM_ORDER, {
                         orderLineId: 'T_999',
                     }),
-                `This order does not contain an OrderLine with the id 999`,
+                'This order does not contain an OrderLine with the id 999',
             ),
         );
 
@@ -792,7 +793,7 @@ describe('Shop orders', () => {
             orderResultGuard.assertErrorResult(transitionOrderToState);
 
             expect(transitionOrderToState!.message).toBe(
-                `Cannot transition Order from "AddingItems" to "Completed"`,
+                'Cannot transition Order from "AddingItems" to "Completed"',
             );
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
         });
@@ -805,7 +806,7 @@ describe('Shop orders', () => {
             orderResultGuard.assertErrorResult(transitionOrderToState);
 
             expect(transitionOrderToState!.transitionError).toBe(
-                `Cannot transition Order to the "ArrangingPayment" state without Customer details`,
+                'Cannot transition Order to the "ArrangingPayment" state without Customer details',
             );
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
         });
@@ -825,8 +826,8 @@ describe('Shop orders', () => {
             });
             orderResultGuard.assertErrorResult(setCustomerForOrder);
 
-            expect(setCustomerForOrder!.message).toBe('The email address is not available.');
-            expect(setCustomerForOrder!.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+            expect(setCustomerForOrder.message).toBe('The email address is not available.');
+            expect(setCustomerForOrder.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
         });
 
         it('setCustomerForOrder creates a new Customer and associates it with the Order', async () => {
@@ -842,7 +843,7 @@ describe('Shop orders', () => {
             });
             orderResultGuard.assertSuccess(setCustomerForOrder);
 
-            const customer = setCustomerForOrder!.customer!;
+            const customer = setCustomerForOrder.customer!;
             expect(customer.firstName).toBe('Test');
             expect(customer.lastName).toBe('Person');
             expect(customer.emailAddress).toBe('test@test.com');
@@ -862,7 +863,7 @@ describe('Shop orders', () => {
             });
             orderResultGuard.assertSuccess(setCustomerForOrder);
 
-            const customer = setCustomerForOrder!.customer!;
+            const customer = setCustomerForOrder.customer!;
             expect(customer.firstName).toBe('Changed');
             expect(customer.lastName).toBe('Person');
             expect(customer.emailAddress).toBe('test@test.com');
@@ -888,7 +889,7 @@ describe('Shop orders', () => {
                 input: address,
             });
 
-            expect(setOrderShippingAddress!.shippingAddress).toEqual({
+            expect(setOrderShippingAddress.shippingAddress).toEqual({
                 fullName: 'name',
                 company: 'company',
                 streetLine1: '12 Shipping Street',
@@ -920,7 +921,7 @@ describe('Shop orders', () => {
                 input: address,
             });
 
-            expect(setOrderBillingAddress!.billingAddress).toEqual({
+            expect(setOrderBillingAddress.billingAddress).toEqual({
                 fullName: 'name',
                 company: 'company',
                 streetLine1: '22 Billing Avenue',
@@ -951,7 +952,7 @@ describe('Shop orders', () => {
             orderResultGuard.assertErrorResult(transitionOrderToState);
 
             expect(transitionOrderToState!.transitionError).toBe(
-                `Cannot transition Order to the "ArrangingPayment" state without a ShippingMethod`,
+                'Cannot transition Order to the "ArrangingPayment" state without a ShippingMethod',
             );
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
         });
@@ -993,10 +994,10 @@ describe('Shop orders', () => {
             });
             orderResultGuard.assertSuccess(addPaymentToOrder);
 
-            const payment = addPaymentToOrder!.payments![0];
-            expect(addPaymentToOrder!.state).toBe('PaymentSettled');
-            expect(addPaymentToOrder!.active).toBe(false);
-            expect(addPaymentToOrder!.payments!.length).toBe(1);
+            const payment = addPaymentToOrder.payments![0];
+            expect(addPaymentToOrder.state).toBe('PaymentSettled');
+            expect(addPaymentToOrder.active).toBe(false);
+            expect(addPaymentToOrder.payments!.length).toBe(1);
             expect(payment.method).toBe(testSuccessfulPaymentMethod.code);
             expect(payment.state).toBe('Settled');
         });
@@ -1015,14 +1016,14 @@ describe('Shop orders', () => {
                 id: createdCustomerId,
             });
 
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const shippingAddress = result.customer!.addresses!.find(a => a.defaultShippingAddress)!;
             expect(shippingAddress.streetLine1).toBe('12 Shipping Street');
             expect(shippingAddress.postalCode).toBe('123456');
             expect(shippingAddress.defaultBillingAddress).toBe(false);
             expect(shippingAddress.defaultShippingAddress).toBe(true);
 
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const billingAddress = result.customer!.addresses!.find(a => a.defaultBillingAddress)!;
             expect(billingAddress.streetLine1).toBe('22 Billing Avenue');
             expect(billingAddress.postalCode).toBe('123456');
@@ -1067,11 +1068,11 @@ describe('Shop orders', () => {
                 quantity: 1,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(1);
-            expect(addItemToOrder!.lines[0].quantity).toBe(1);
-            expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_1');
+            expect(addItemToOrder.lines.length).toBe(1);
+            expect(addItemToOrder.lines[0].quantity).toBe(1);
+            expect(addItemToOrder.lines[0].productVariant.id).toBe('T_1');
             activeOrder = addItemToOrder!;
-            firstOrderLineId = addItemToOrder!.lines[0].id;
+            firstOrderLineId = addItemToOrder.lines[0].id;
         });
 
         it('activeOrder returns order after item has been added', async () => {
@@ -1097,8 +1098,8 @@ describe('Shop orders', () => {
                 quantity: 2,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(1);
-            expect(addItemToOrder!.lines[0].quantity).toBe(3);
+            expect(addItemToOrder.lines.length).toBe(1);
+            expect(addItemToOrder.lines[0].quantity).toBe(3);
         });
 
         it('adjustOrderLine adjusts the quantity', async () => {
@@ -1110,8 +1111,8 @@ describe('Shop orders', () => {
                 quantity: 50,
             });
             orderResultGuard.assertSuccess(adjustOrderLine);
-            expect(adjustOrderLine!.lines.length).toBe(1);
-            expect(adjustOrderLine!.lines[0].quantity).toBe(50);
+            expect(adjustOrderLine.lines.length).toBe(1);
+            expect(adjustOrderLine.lines[0].quantity).toBe(50);
         });
 
         it('removeItemFromOrder removes the correct item', async () => {
@@ -1123,8 +1124,8 @@ describe('Shop orders', () => {
                 quantity: 3,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(2);
-            expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(addItemToOrder.lines.length).toBe(2);
+            expect(addItemToOrder.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { removeOrderLine } = await shopClient.query<
                 CodegenShop.RemoveItemFromOrderMutation,
@@ -1133,8 +1134,8 @@ describe('Shop orders', () => {
                 orderLineId: firstOrderLineId,
             });
             orderResultGuard.assertSuccess(removeOrderLine);
-            expect(removeOrderLine!.lines.length).toBe(1);
-            expect(removeOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
+            expect(removeOrderLine.lines.length).toBe(1);
+            expect(removeOrderLine.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it('nextOrderStates returns next valid states', async () => {
@@ -1166,10 +1167,10 @@ describe('Shop orders', () => {
             });
             orderResultGuard.assertErrorResult(setCustomerForOrder);
 
-            expect(setCustomerForOrder!.message).toBe(
+            expect(setCustomerForOrder.message).toBe(
                 'Cannot set a Customer for the Order when already logged in',
             );
-            expect(setCustomerForOrder!.errorCode).toBe(ErrorCode.ALREADY_LOGGED_IN_ERROR);
+            expect(setCustomerForOrder.errorCode).toBe(ErrorCode.ALREADY_LOGGED_IN_ERROR);
         });
 
         describe('shipping', () => {
@@ -1189,7 +1190,7 @@ describe('Shop orders', () => {
                     >(SET_SHIPPING_ADDRESS, {
                         input: address,
                     });
-                }, `The countryCode "INVALID" was not recognized`),
+                }, 'The countryCode "INVALID" was not recognized'),
             );
 
             it('setOrderShippingAddress sets shipping address', async () => {
@@ -1211,7 +1212,7 @@ describe('Shop orders', () => {
                     input: address,
                 });
 
-                expect(setOrderShippingAddress!.shippingAddress).toEqual({
+                expect(setOrderShippingAddress.shippingAddress).toEqual({
                     fullName: 'name',
                     company: 'company',
                     streetLine1: '12 the street',
@@ -1271,8 +1272,8 @@ describe('Shop orders', () => {
                 const order = activeOrderResult.activeOrder!;
 
                 expect(order.shipping).toBe(shippingMethods[1].price);
-                expect(order.shippingLines[0].shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(order.shippingLines[0].shippingMethod!.description).toBe(
+                expect(order.shippingLines[0].shippingMethod.id).toBe(shippingMethods[1].id);
+                expect(order.shippingLines[0].shippingMethod.description).toBe(
                     shippingMethods[1].description,
                 );
             });
@@ -1290,9 +1291,9 @@ describe('Shop orders', () => {
                     quantity: 10,
                 });
                 orderResultGuard.assertSuccess(adjustOrderLine);
-                expect(adjustOrderLine!.shipping).toBe(shippingMethods[1].price);
-                expect(adjustOrderLine!.shippingLines[0].shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(adjustOrderLine!.shippingLines[0].shippingMethod!.description).toBe(
+                expect(adjustOrderLine.shipping).toBe(shippingMethods[1].price);
+                expect(adjustOrderLine.shippingLines[0].shippingMethod.id).toBe(shippingMethods[1].id);
+                expect(adjustOrderLine.shippingLines[0].shippingMethod.description).toBe(
                     shippingMethods[1].description,
                 );
             });
@@ -1311,10 +1312,10 @@ describe('Shop orders', () => {
                 });
 
                 orderResultGuard.assertErrorResult(addPaymentToOrder);
-                expect(addPaymentToOrder!.message).toBe(
-                    `A Payment may only be added when Order is in "ArrangingPayment" state`,
+                expect(addPaymentToOrder.message).toBe(
+                    'A Payment may only be added when Order is in "ArrangingPayment" state',
                 );
-                expect(addPaymentToOrder!.errorCode).toBe(ErrorCode.ORDER_PAYMENT_STATE_ERROR);
+                expect(addPaymentToOrder.errorCode).toBe(ErrorCode.ORDER_PAYMENT_STATE_ERROR);
             });
 
             it('transitions to the ArrangingPayment state', async () => {
@@ -1341,7 +1342,7 @@ describe('Shop orders', () => {
 
                 orderResultGuard.assertErrorResult(addItemToOrder);
                 expect(addItemToOrder.message).toBe(
-                    `Order contents may only be modified when in the "AddingItems" state`,
+                    'Order contents may only be modified when in the "AddingItems" state',
                 );
                 expect(addItemToOrder.errorCode).toBe(ErrorCode.ORDER_MODIFICATION_ERROR);
             });
@@ -1356,7 +1357,7 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertErrorResult(adjustOrderLine);
                 expect(adjustOrderLine.message).toBe(
-                    `Order contents may only be modified when in the "AddingItems" state`,
+                    'Order contents may only be modified when in the "AddingItems" state',
                 );
                 expect(adjustOrderLine.errorCode).toBe(ErrorCode.ORDER_MODIFICATION_ERROR);
             });
@@ -1370,7 +1371,7 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertErrorResult(removeOrderLine);
                 expect(removeOrderLine.message).toBe(
-                    `Order contents may only be modified when in the "AddingItems" state`,
+                    'Order contents may only be modified when in the "AddingItems" state',
                 );
                 expect(removeOrderLine.errorCode).toBe(ErrorCode.ORDER_MODIFICATION_ERROR);
             });
@@ -1380,7 +1381,7 @@ describe('Shop orders', () => {
                     await shopClient.query<CodegenShop.RemoveAllOrderLinesMutation>(REMOVE_ALL_ORDER_LINES);
                 orderResultGuard.assertErrorResult(removeAllOrderLines);
                 expect(removeAllOrderLines.message).toBe(
-                    `Order contents may only be modified when in the "AddingItems" state`,
+                    'Order contents may only be modified when in the "AddingItems" state',
                 );
                 expect(removeAllOrderLines.errorCode).toBe(ErrorCode.ORDER_MODIFICATION_ERROR);
             });
@@ -1398,7 +1399,7 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertErrorResult(setOrderShippingMethod);
                 expect(setOrderShippingMethod.message).toBe(
-                    `Order contents may only be modified when in the "AddingItems" state`,
+                    'Order contents may only be modified when in the "AddingItems" state',
                 );
                 expect(setOrderShippingMethod.errorCode).toBe(ErrorCode.ORDER_MODIFICATION_ERROR);
             });
@@ -1417,8 +1418,8 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertErrorResult(addPaymentToOrder);
 
-                expect(addPaymentToOrder!.message).toBe('The payment was declined');
-                expect(addPaymentToOrder!.errorCode).toBe(ErrorCode.PAYMENT_DECLINED_ERROR);
+                expect(addPaymentToOrder.message).toBe('The payment was declined');
+                expect(addPaymentToOrder.errorCode).toBe(ErrorCode.PAYMENT_DECLINED_ERROR);
                 expect((addPaymentToOrder as any).paymentErrorMessage).toBe('Insufficient funds');
 
                 const { activeOrder: order } =
@@ -1450,8 +1451,8 @@ describe('Shop orders', () => {
                 });
 
                 orderResultGuard.assertErrorResult(addPaymentToOrder);
-                expect(addPaymentToOrder!.message).toBe('The payment failed');
-                expect(addPaymentToOrder!.errorCode).toBe(ErrorCode.PAYMENT_FAILED_ERROR);
+                expect(addPaymentToOrder.message).toBe('The payment failed');
+                expect(addPaymentToOrder.errorCode).toBe(ErrorCode.PAYMENT_FAILED_ERROR);
                 expect((addPaymentToOrder as any).paymentErrorMessage).toBe('Something went horribly wrong');
 
                 const result = await shopClient.query<CodegenShop.GetActiveOrderPaymentsQuery>(
@@ -1478,10 +1479,10 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertSuccess(addPaymentToOrder);
 
-                const payment = addPaymentToOrder!.payments!.find(p => p.transactionId === '12345')!;
-                expect(addPaymentToOrder!.state).toBe('PaymentSettled');
-                expect(addPaymentToOrder!.active).toBe(false);
-                expect(addPaymentToOrder!.payments!.length).toBe(3);
+                const payment = addPaymentToOrder.payments!.find(p => p.transactionId === '12345')!;
+                expect(addPaymentToOrder.state).toBe('PaymentSettled');
+                expect(addPaymentToOrder.active).toBe(false);
+                expect(addPaymentToOrder.payments!.length).toBe(3);
                 expect(payment.method).toBe(testSuccessfulPaymentMethod.code);
                 expect(payment.state).toBe('Settled');
                 expect(payment.transactionId).toBe('12345');
@@ -1525,7 +1526,7 @@ describe('Shop orders', () => {
                 });
 
                 it(
-                    `throws error for another user's Order`,
+                    "throws error for another user's Order",
                     assertThrowsWithMessage(async () => {
                         authenticatedUserEmailAddress = customers[1].emailAddress;
                         await shopClient.asUserWithCredentials(authenticatedUserEmailAddress, password);
@@ -1535,7 +1536,7 @@ describe('Shop orders', () => {
                         >(GET_ORDER_BY_CODE, {
                             code: activeOrder.code,
                         });
-                    }, `You are not currently authorized to perform this action`),
+                    }, 'You are not currently authorized to perform this action'),
                 );
             });
 
@@ -1544,7 +1545,7 @@ describe('Shop orders', () => {
                 beforeAll(() => {
                     // mock Date.now: add 3 hours
                     const nowIn3H = Date.now() + 3 * 3600 * 1000;
-                    dateNowMock = jest.spyOn(global.Date, 'now').mockImplementation(() => nowIn3H);
+                    dateNowMock = vi.spyOn(global.Date, 'now').mockImplementation(() => nowIn3H);
                 });
 
                 it('still works when authenticated as owner', async () => {
@@ -1570,7 +1571,7 @@ describe('Shop orders', () => {
                         >(GET_ORDER_BY_CODE, {
                             code: activeOrder.code,
                         });
-                    }, `You are not currently authorized to perform this action`),
+                    }, 'You are not currently authorized to perform this action'),
                 );
 
                 afterAll(() => {
@@ -1599,8 +1600,8 @@ describe('Shop orders', () => {
                 quantity: 1,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(1);
-            expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_1');
+            expect(addItemToOrder.lines.length).toBe(1);
+            expect(addItemToOrder.lines[0].productVariant.id).toBe('T_1');
 
             await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
                 ATTEMPT_LOGIN,
@@ -1625,8 +1626,8 @@ describe('Shop orders', () => {
                 quantity: 1,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
-            expect(addItemToOrder!.lines.length).toBe(1);
-            expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_2');
+            expect(addItemToOrder.lines.length).toBe(1);
+            expect(addItemToOrder.lines[0].productVariant.id).toBe('T_2');
 
             await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
                 ATTEMPT_LOGIN,
@@ -1770,8 +1771,8 @@ describe('Shop orders', () => {
             });
             orderResultGuard.assertErrorResult(setCustomerForOrder);
 
-            expect(setCustomerForOrder!.message).toBe('The email address is not available.');
-            expect(setCustomerForOrder!.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+            expect(setCustomerForOrder.message).toBe('The email address is not available.');
+            expect(setCustomerForOrder.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
 
             const { customer } = await adminClient.query<
                 Codegen.GetCustomerQuery,
@@ -1936,7 +1937,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, `No ProductVariant with the id '34' could be found`),
+            }, "No ProductVariant with the id '34' could be found"),
         );
 
         it(
@@ -1970,7 +1971,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, `No ProductVariant with the id '34' could be found`),
+            }, "No ProductVariant with the id '34' could be found"),
         );
         it(
             'addItemToOrder errors when product is deleted',
@@ -1989,7 +1990,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, `No ProductVariant with the id '34' could be found`),
+            }, "No ProductVariant with the id '34' could be found"),
         );
         it(
             'addItemToOrder errors when product variant is deleted',
@@ -2008,7 +2009,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, `No ProductVariant with the id '34' could be found`),
+            }, "No ProductVariant with the id '34' could be found"),
         );
 
         let orderWithDeletedProductVariantId: string;
@@ -2044,7 +2045,7 @@ describe('Shop orders', () => {
             orderResultGuard.assertErrorResult(transitionOrderToState);
 
             expect(transitionOrderToState!.transitionError).toBe(
-                `Cannot transition to "ArrangingPayment" because the Order contains ProductVariants which are no longer available`,
+                'Cannot transition to "ArrangingPayment" because the Order contains ProductVariants which are no longer available',
             );
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
         });
@@ -2198,9 +2199,9 @@ describe('Shop orders', () => {
                 CreateShippingMethod.Variables
             >(CREATE_SHIPPING_METHOD, {
                 input: {
-                    code: `min-price-shipping`,
+                    code: 'min-price-shipping',
                     translations: [
-                        { languageCode: LanguageCode.en, name: `min price shipping`, description: '' },
+                        { languageCode: LanguageCode.en, name: 'min price shipping', description: '' },
                     ],
                     fulfillmentHandler: manualFulfillmentHandler.code,
                     checker: {

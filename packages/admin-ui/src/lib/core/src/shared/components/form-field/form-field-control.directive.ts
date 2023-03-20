@@ -3,7 +3,7 @@ import { NgControl } from '@angular/forms';
 
 type InputElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
-// tslint:disable:directive-selector
+/* eslint-disable @angular-eslint/directive-selector */
 @Directive({ selector: 'input, textarea, select' })
 export class FormFieldControlDirective {
     constructor(

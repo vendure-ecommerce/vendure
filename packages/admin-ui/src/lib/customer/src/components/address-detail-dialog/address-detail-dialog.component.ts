@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { CustomFieldConfig, Dialog, GetAvailableCountriesQuery } from '@vendure/admin-ui/core';
 
 @Component({
@@ -8,11 +8,11 @@ import { CustomFieldConfig, Dialog, GetAvailableCountriesQuery } from '@vendure/
     styleUrls: ['./address-detail-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressDetailDialogComponent implements Dialog<FormGroup>, OnInit {
-    addressForm: FormGroup;
+export class AddressDetailDialogComponent implements Dialog<UntypedFormGroup>, OnInit {
+    addressForm: UntypedFormGroup;
     customFields: CustomFieldConfig;
     availableCountries: GetAvailableCountriesQuery['countries']['items'] = [];
-    resolveWith: (result?: FormGroup) => void;
+    resolveWith: (result?: UntypedFormGroup) => void;
 
     constructor(private changeDetector: ChangeDetectorRef) {}
 

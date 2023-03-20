@@ -1,5 +1,5 @@
 import { OrderStatus } from '@mollie/api-client';
-import { ChannelService, mergeConfig, OrderService, RequestContext } from '@vendure/core';
+import { ChannelService, LanguageCode, mergeConfig, OrderService, RequestContext } from '@vendure/core';
 import {
     SettlePaymentMutation,
     SettlePaymentMutationVariables,
@@ -14,6 +14,7 @@ import {
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -190,8 +191,6 @@ describe('Mollie payments', () => {
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,
-                name: 'Mollie payment test',
-                description: 'This is a Mollie test payment method',
                 enabled: true,
                 handler: {
                     code: molliePaymentHandler.code,
@@ -201,6 +200,13 @@ describe('Mollie payments', () => {
                         { name: 'autoCapture', value: 'false' },
                     ],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Mollie payment test',
+                        description: 'This is a Mollie test payment method',
+                    },
+                ],
             },
         });
         expect(createPaymentMethod.code).toBe(mockData.methodCode);
@@ -302,7 +308,7 @@ describe('Mollie payments', () => {
                 code: order.code,
             },
         );
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         order = orderByCode!;
         expect(order.state).toBe('PaymentSettled');
     });
@@ -332,7 +338,7 @@ describe('Mollie payments', () => {
                 return true;
             })
             .reply(200, { status: 'failed', resource: 'payment' });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const refund = await refundOne(adminClient, order.lines[0].id, order.payments![0].id);
         expect(refund.state).toBe('Failed');
     });
@@ -345,7 +351,7 @@ describe('Mollie payments', () => {
                 return true;
             })
             .reply(200, { status: 'pending', resource: 'payment' });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const refund = await refundOne(adminClient, order.lines[0].id, order.payments![0].id);
         expect(mollieRequest?.amount.value).toBe('119.99');
         expect(refund.total).toBe(11999);
@@ -400,7 +406,7 @@ describe('Mollie payments', () => {
                 code: order.code,
             },
         );
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         order = orderByCode!;
         expect(order.state).toBe('PaymentAuthorized');
     });
@@ -426,7 +432,7 @@ describe('Mollie payments', () => {
             SettlePaymentMutation,
             SettlePaymentMutationVariables
         >(SETTLE_PAYMENT, {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             id: order.payments![0].id,
         });
         const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
@@ -435,7 +441,7 @@ describe('Mollie payments', () => {
                 code: order.code,
             },
         );
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         order = orderByCode!;
         expect(createShipmentBody).toBeDefined();
         expect(order.state).toBe('PaymentSettled');

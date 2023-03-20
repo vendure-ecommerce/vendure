@@ -1,4 +1,5 @@
 import { printSchema } from 'graphql';
+import { describe, expect, it } from 'vitest';
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 

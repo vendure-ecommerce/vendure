@@ -27,7 +27,7 @@ type OrderModification implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    priceChange: Int!
+    priceChange: Money!
     note: String!
     lines: [OrderModificationLine!]!
     surcharges: [Surcharge!]

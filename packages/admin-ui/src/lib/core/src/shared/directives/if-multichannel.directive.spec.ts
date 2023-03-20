@@ -1,4 +1,4 @@
-/* tslint:disable:component-class-suffix */
+/* eslint-disable @angular-eslint/component-class-suffix */
 import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
@@ -21,7 +21,7 @@ describe('vdrIfMultichannel directive', () => {
         });
 
         it('is multichannel', () => {
-            ((fixture.componentInstance.dataService as unknown) as MockDataService).setChannels([1, 2]);
+            (fixture.componentInstance.dataService as unknown as MockDataService).setChannels([1, 2]);
             fixture.detectChanges();
 
             const thenEl = fixture.nativeElement.querySelector('.then');
@@ -29,7 +29,7 @@ describe('vdrIfMultichannel directive', () => {
         });
 
         it('not multichannel', () => {
-            ((fixture.componentInstance.dataService as unknown) as MockDataService).setChannels([1]);
+            (fixture.componentInstance.dataService as unknown as MockDataService).setChannels([1]);
             fixture.detectChanges();
 
             const thenEl = fixture.nativeElement.querySelector('.then');
@@ -49,7 +49,7 @@ describe('vdrIfMultichannel directive', () => {
         });
 
         it('is multichannel', () => {
-            ((fixture.componentInstance.dataService as unknown) as MockDataService).setChannels([1, 2]);
+            (fixture.componentInstance.dataService as unknown as MockDataService).setChannels([1, 2]);
             fixture.detectChanges();
 
             const thenEl = fixture.nativeElement.querySelector('.then');
@@ -59,7 +59,7 @@ describe('vdrIfMultichannel directive', () => {
         });
 
         it('not multichannel', () => {
-            ((fixture.componentInstance.dataService as unknown) as MockDataService).setChannels([1]);
+            (fixture.componentInstance.dataService as unknown as MockDataService).setChannels([1]);
             fixture.detectChanges();
 
             const thenEl = fixture.nativeElement.querySelector('.then');
@@ -101,19 +101,17 @@ class MockDataService {
         this.channels$.next(channels);
     }
     client = {
-        userStatus: () => {
-            return {
-                mapStream: (mapFn: any) =>
-                    this.channels$.pipe(
-                        map(channels =>
-                            mapFn({
-                                userStatus: {
-                                    channels,
-                                },
-                            }),
-                        ),
+        userStatus: () => ({
+            mapStream: (mapFn: any) =>
+                this.channels$.pipe(
+                    map(channels =>
+                        mapFn({
+                            userStatus: {
+                                channels,
+                            },
+                        }),
                     ),
-            };
-        },
+                ),
+        }),
     };
 }

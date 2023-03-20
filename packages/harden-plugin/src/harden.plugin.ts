@@ -88,7 +88,8 @@ import { HardenPluginOptions } from './types';
  * - The requirements of your storefront and other clients using the Shop API
  * - The resources available to your server
  *
- * You should aim to set the maximum as low as possible while still being able to service all the requests required. This will take some manual tuning.
+ * You should aim to set the maximum as low as possible while still being able to service all the requests required.
+ * This will take some manual tuning.
  * While tuning the max, you can turn on the `logComplexityScore` to get a detailed breakdown of the complexity of each query, as well as how
  * that total score is derived from its child fields:
  *
@@ -147,7 +148,7 @@ import { HardenPluginOptions } from './types';
     ],
     configuration: config => {
         if (HardenPlugin.options.hideFieldSuggestions !== false) {
-            Logger.verbose(`Configuring HideValidationErrorsPlugin`, loggerCtx);
+            Logger.verbose('Configuring HideValidationErrorsPlugin', loggerCtx);
             config.apiOptions.apolloServerPlugins.push(new HideValidationErrorsPlugin());
         }
         config.apiOptions.apolloServerPlugins.push(new QueryComplexityPlugin(HardenPlugin.options));

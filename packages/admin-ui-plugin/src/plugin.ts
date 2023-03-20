@@ -163,13 +163,13 @@ export class AdminUiPlugin implements NestModule {
                 )
                 .forRoutes('sockjs-node');
 
-            Logger.info(`Compiling Admin UI app in development mode`, loggerCtx);
+            Logger.info('Compiling Admin UI app in development mode', loggerCtx);
             app.compile().then(
                 () => {
-                    Logger.info(`Admin UI compiling and watching for changes...`, loggerCtx);
+                    Logger.info('Admin UI compiling and watching for changes...', loggerCtx);
                 },
                 (err: any) => {
-                    Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
+                    Logger.error(`Failed to compile: ${JSON.stringify(err)}`, loggerCtx, err.stack);
                 },
             );
             await overwriteConfig();
@@ -178,15 +178,15 @@ export class AdminUiPlugin implements NestModule {
             consumer.apply(await this.createStaticServer(app)).forRoutes(route);
 
             if (app && typeof app.compile === 'function') {
-                Logger.info(`Compiling Admin UI app in production mode...`, loggerCtx);
+                Logger.info('Compiling Admin UI app in production mode...', loggerCtx);
                 app.compile()
                     .then(overwriteConfig)
                     .then(
                         () => {
-                            Logger.info(`Admin UI successfully compiled`, loggerCtx);
+                            Logger.info('Admin UI successfully compiled', loggerCtx);
                         },
                         (err: any) => {
-                            Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
+                            Logger.error(`Failed to compile: ${JSON.stringify(err)}`, loggerCtx, err.stack);
                         },
                     );
             } else {
@@ -265,9 +265,11 @@ export class AdminUiPlugin implements NestModule {
         try {
             await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
         } catch (e: any) {
-            throw new Error('[AdminUiPlugin] Could not write vendure-ui-config.json file:\n' + e.message);
+            throw new Error(
+                '[AdminUiPlugin] Could not write vendure-ui-config.json file:\n' + JSON.stringify(e.message),
+            );
         }
-        Logger.verbose(`Applied configuration to vendure-ui-config.json file`, loggerCtx);
+        Logger.verbose('Applied configuration to vendure-ui-config.json file', loggerCtx);
     }
 
     /**
@@ -289,7 +291,7 @@ export class AdminUiPlugin implements NestModule {
             );
             await fs.writeFile(indexHtmlPath, withCustomBaseHref);
         } catch (e: any) {
-            throw new Error('[AdminUiPlugin] Could not write index.html file:\n' + e.message);
+            throw new Error('[AdminUiPlugin] Could not write index.html file:\n' + JSON.stringify(e.message));
         }
         Logger.verbose(`Applied baseHref "/${baseHref}/" to index.html file`, loggerCtx);
     }

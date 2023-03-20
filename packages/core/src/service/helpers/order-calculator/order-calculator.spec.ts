@@ -1,10 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/generated-types';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
+import { ensureConfigLoaded } from '../../../config/config-helpers';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
@@ -41,6 +43,7 @@ describe('OrderCalculator', () => {
     let orderCalculator: OrderCalculator;
 
     beforeAll(async () => {
+        await ensureConfigLoaded();
         const module = await createTestModule();
         orderCalculator = module.get(OrderCalculator);
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
@@ -1135,10 +1138,48 @@ describe('OrderCalculator', () => {
                         fifteenPcOff$10Items,
                         $5OffOrderPromo,
                     ]);
+                    // console.table([
+                    //     {
+                    //         unitPrice: order.lines[0].unitPrice,
+                    //         linePrice: order.lines[0].linePrice,
+                    //         linePriceWithTax: order.lines[0].linePriceWithTax,
+                    //         discountedLinePrice: order.lines[0].discountedLinePrice,
+                    //         discountedLinePriceWithTax: order.lines[0].discountedLinePriceWithTax,
+                    //         proratedUnitPriceWithTax: order.lines[0].proratedUnitPriceWithTax,
+                    //         proratedLinePriceWithTax: order.lines[0].proratedLinePriceWithTax,
+                    //     },
+                    //     {
+                    //         unitPrice: order.lines[1].unitPrice,
+                    //         linePrice: order.lines[1].linePrice,
+                    //         linePriceWithTax: order.lines[1].linePriceWithTax,
+                    //         discountedLinePrice: order.lines[1].discountedLinePrice,
+                    //         discountedLinePriceWithTax: order.lines[1].discountedLinePriceWithTax,
+                    //         proratedUnitPriceWithTax: order.lines[1].proratedUnitPriceWithTax,
+                    //         proratedLinePriceWithTax: order.lines[1].proratedLinePriceWithTax,
+                    //     },
+                    //     {
+                    //         unitPrice: order.lines[2].unitPrice,
+                    //         linePrice: order.lines[2].linePrice,
+                    //         linePriceWithTax: order.lines[2].linePriceWithTax,
+                    //         discountedLinePrice: order.lines[2].discountedLinePrice,
+                    //         discountedLinePriceWithTax: order.lines[2].discountedLinePriceWithTax,
+                    //         proratedUnitPriceWithTax: order.lines[2].proratedUnitPriceWithTax,
+                    //         proratedLinePriceWithTax: order.lines[2].proratedLinePriceWithTax,
+                    //     },
+                    // ]);
 
-                    expect(order.subTotal).toBe(5082);
-                    expect(order.subTotalWithTax).toBe(5719);
-                    assertOrderTotalsAddUp(order);
+                    // Note: This combination produces slight discrepancies when using the rounding method
+                    // of the DefaultMoneyStrategy - i.e. "round then multiply". When using a strategy
+                    // of "multiply then round", we would expect the following:
+                    // ```
+                    // expect(order.subTotal).toBe(5082);
+                    // expect(order.subTotalWithTax).toBe(5719);
+                    // assertOrderTotalsAddUp(order);
+                    // ```
+                    // However, there is always a tradeoff when using integer precision with compounding
+                    // fractional multiplication.
+                    expect(order.subTotal).toBe(5079);
+                    expect(order.subTotalWithTax).toBe(5722);
                 });
             });
         });

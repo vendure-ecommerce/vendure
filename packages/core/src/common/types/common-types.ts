@@ -173,7 +173,7 @@ export type PriceCalculationResult = {
     priceIncludesTax: boolean;
 };
 
-// tslint:disable-next-line:ban-types
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type MiddlewareHandler = Type<any> | Function;
 
 /**

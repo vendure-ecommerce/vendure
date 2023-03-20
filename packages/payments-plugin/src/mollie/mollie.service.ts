@@ -116,7 +116,7 @@ export class MollieService {
             toMollieAddress(order.shippingAddress, order.customer);
         if (!billingAddress) {
             return new InvalidInputError(
-                `Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.`,
+                'Order doesn\'t have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.',
             );
         }
         const orderInput: CreateParameters = {
@@ -135,7 +135,7 @@ export class MollieService {
         Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`);
         const url = mollieOrder.getCheckoutUrl();
         if (!url) {
-            throw Error(`Unable to getCheckoutUrl() from Mollie order`);
+            throw Error('Unable to getCheckoutUrl() from Mollie order');
         }
         return {
             url,
@@ -225,7 +225,8 @@ export class MollieService {
             );
             if (transitionToStateResult instanceof OrderStateTransitionError) {
                 throw Error(
-                    `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
+                    `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} ` +
+                        `to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
                 );
             }
         }

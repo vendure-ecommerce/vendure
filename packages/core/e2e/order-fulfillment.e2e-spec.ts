@@ -9,6 +9,8 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -31,7 +33,7 @@ import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order
 
 const badTrackingCode = 'bad-code';
 const transitionErrorMessage = 'Some error message';
-const transitionSpy = jest.fn();
+const transitionSpy = vi.fn();
 const testFulfillmentHandler = new FulfillmentHandler({
     code: 'test-fulfillment-handler',
     description: [{ languageCode: LanguageCode.en, value: 'Test fulfillment handler' }],

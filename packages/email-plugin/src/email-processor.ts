@@ -44,7 +44,7 @@ export class EmailProcessor {
         } else {
             if (!this.options.transport) {
                 throw new InternalServerError(
-                    `When devMode is not set to true, the 'transport' property must be set.`,
+                    'When devMode is not set to true, the \'transport\' property must be set.',
                 );
             }
             this.transport = this.options.transport;
@@ -60,12 +60,7 @@ export class EmailProcessor {
     async process(data: IntermediateEmailDetails) {
         try {
             const bodySource = await this.templateLoader.loadTemplate(data.type, data.templateFile);
-            const generated = await this.generator.generate(
-                data.from,
-                data.subject,
-                bodySource,
-                data.templateVars,
-            );
+            const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
             const emailDetails: EmailDetails = {
                 ...generated,
                 recipient: data.recipient,

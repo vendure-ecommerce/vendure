@@ -1,4 +1,4 @@
-<div [class.highlight]="isDevMode && (display$ | async)" class="wrapper">
+<div [class.highlight]="isDevMode && (display$ | async)" class="wrapper" [style.display]="display">
     <vdr-dropdown *ngIf="isDevMode && (display$ | async)">
         <button class="btn btn-icon btn-link extension-point-info-trigger"
                 [style.top.px]="topPx ?? 0"

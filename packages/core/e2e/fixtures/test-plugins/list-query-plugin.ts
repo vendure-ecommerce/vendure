@@ -156,7 +156,7 @@ export class ListQueryResolver {
             .then(([items, totalItems]) => {
                 for (const item of items) {
                     if (item.prices && item.prices.length) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
@@ -175,7 +175,7 @@ export class ListQueryResolver {
             .then(items => {
                 for (const item of items) {
                     if (item.prices && item.prices.length) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
@@ -370,7 +370,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
             for (const testEntity of testEntities) {
                 const customer = customers[i % customers.length];
                 try {
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     const order = await this.orderService.create(ctx, customer.user!.id);
                     testEntity.orderRelation = order;
                     await this.connection.getRepository(TestEntity).save(testEntity);

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -21,7 +21,7 @@ import { switchMap, tap, withLatestFrom } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings> implements OnInit {
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     customFields: CustomFieldConfig[];
     languageCodes = Object.values(LanguageCode);
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateGlobalSettings];
@@ -32,7 +32,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);

@@ -45,6 +45,7 @@ export class AssetsComponent {
     @HostBinding('class.compact')
     @Input()
     compact = false;
+    // eslint-disable-next-line @angular-eslint/no-output-native
     @Output() change = new EventEmitter<AssetChange>();
 
     public assets: Asset[] = [];

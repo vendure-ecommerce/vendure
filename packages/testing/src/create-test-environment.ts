@@ -60,8 +60,10 @@ export interface TestEnvironment {
 export function createTestEnvironment(config: Required<VendureConfig>): TestEnvironment {
     const server = new TestServer(config);
     const { port, adminApiPath, shopApiPath } = config.apiOptions;
-    const adminClient = new SimpleGraphQLClient(config, `http://localhost:${port}/${adminApiPath}`);
-    const shopClient = new SimpleGraphQLClient(config, `http://localhost:${port}/${shopApiPath}`);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const adminClient = new SimpleGraphQLClient(config, `http://localhost:${port}/${adminApiPath!}`);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const shopClient = new SimpleGraphQLClient(config, `http://localhost:${port}/${shopApiPath!}`);
     return {
         server,
         adminClient,

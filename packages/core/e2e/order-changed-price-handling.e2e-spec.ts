@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     ChangedPriceHandlingStrategy,
     mergeConfig,
@@ -8,6 +8,8 @@ import {
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -18,7 +20,7 @@ import { UPDATE_PRODUCT_VARIANTS } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, ADJUST_ITEM_QUANTITY, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 
 class TestChangedPriceStrategy implements ChangedPriceHandlingStrategy {
-    static spy = jest.fn();
+    static spy = vi.fn();
     static useLatestPrice = true;
 
     handlePriceChange(

@@ -75,9 +75,13 @@ export class TaxRateService {
         taxRateId: ID,
         relations?: RelationPaths<TaxRate>,
     ): Promise<TaxRate | undefined> {
-        return this.connection.getRepository(ctx, TaxRate).findOne(taxRateId, {
-            relations: relations ?? ['category', 'zone', 'customerGroup'],
-        });
+        return this.connection
+            .getRepository(ctx, TaxRate)
+            .findOne({
+                where: { id: taxRateId },
+                relations: relations ?? ['category', 'zone', 'customerGroup'],
+            })
+            .then(result => result ?? undefined);
     }
 
     async create(ctx: RequestContext, input: CreateTaxRateInput): Promise<TaxRate> {

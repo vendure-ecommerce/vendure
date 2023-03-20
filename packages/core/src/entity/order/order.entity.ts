@@ -21,6 +21,7 @@ import { CustomOrderFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
 import { Fulfillment } from '../fulfillment/fulfillment.entity';
+import { Money } from '../money.decorator';
 import { OrderLine } from '../order-line/order-line.entity';
 import { OrderModification } from '../order-modification/order-modification.entity';
 import { Payment } from '../payment/payment.entity';
@@ -155,14 +156,14 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * To get a total of all OrderLines which does not account for prorated discounts, use the
      * sum of {@link OrderLine}'s `discountedLinePrice` values.
      */
-    @Column()
+    @Money()
     subTotal: number;
 
     /**
      * @description
      * Same as subTotal, but inclusive of tax.
      */
-    @Column()
+    @Money()
     subTotalWithTax: number;
 
     /**
@@ -176,10 +177,10 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * @description
      * The total of all the `shippingLines`.
      */
-    @Column({ default: 0 })
+    @Money({ default: 0 })
     shipping: number;
 
-    @Column({ default: 0 })
+    @Money({ default: 0 })
     shippingWithTax: number;
 
     @Calculated({ relations: ['lines', 'shippingLines'] })
@@ -331,7 +332,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         if (this.lines == null) {
             const errorMessage = [
                 `The property "${propertyName}" on the Order entity requires the Order.lines relation to be joined.`,
-                `This can be done with the EntityHydratorService: \`await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })\``,
+                "This can be done with the EntityHydratorService: `await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })`",
             ];
 
             throw new InternalServerError(errorMessage.join('\n'));

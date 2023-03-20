@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -29,7 +29,7 @@ export class TaxCategoryDetailComponent
     implements OnInit, OnDestroy
 {
     taxCategory$: Observable<TaxCategoryFragment>;
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateTaxCategory];
 
@@ -42,7 +42,7 @@ export class TaxCategoryDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);

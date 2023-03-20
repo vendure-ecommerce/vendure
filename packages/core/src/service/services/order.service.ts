@@ -38,7 +38,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { In } from 'typeorm';
+import { In, IsNull } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -47,8 +47,6 @@ import { RequestContextCacheService } from '../../cache/request-context-cache.se
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
-    AlreadyRefundedError,
-    CancelActiveOrderError,
     CancelPaymentError,
     EmptyOrderLineSelectionError,
     FulfillmentStateTransitionError,
@@ -58,7 +56,6 @@ import {
     MultipleOrderError,
     NothingToRefundError,
     PaymentOrderMismatchError,
-    QuantityTooGreatError,
     RefundOrderStateError,
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
@@ -74,27 +71,24 @@ import {
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
-import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { removeCustomFieldsWithEagerRelations } from '../../connection/remove-custom-fields-with-eager-relations';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
-import { RefundLine } from '../../entity/order-line-reference/refund-line.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
-import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { Session } from '../../entity/session/session.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
-import { Allocation } from '../../entity/stock-movement/allocation.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -118,11 +112,7 @@ import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-st
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
-import {
-    getOrdersFromLines,
-    orderLinesAreAllCancelled,
-    totalCoveredByPayments,
-} from '../helpers/utils/order-utils';
+import { getOrdersFromLines, totalCoveredByPayments } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
@@ -223,7 +213,7 @@ export class OrderService {
         relations?: RelationPaths<Order>,
     ): Promise<Order | undefined> {
         const qb = this.connection.getRepository(ctx, Order).createQueryBuilder('order');
-        let effectiveRelations = relations ?? [
+        const effectiveRelations = relations ?? [
             'channels',
             'customer',
             'customer.user',
@@ -244,18 +234,18 @@ export class OrderService {
         ) {
             effectiveRelations.push('lines.productVariant.taxCategory');
         }
-        effectiveRelations = removeCustomFieldsWithEagerRelations(qb, effectiveRelations);
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: effectiveRelations,
-        });
-        qb.leftJoin('order.channels', 'channel')
+        qb.setFindOptions({ relations: effectiveRelations })
+            .leftJoin('order.channels', 'channel')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
         if (effectiveRelations.includes('lines')) {
-            qb.addOrderBy('order__lines.createdAt', 'ASC').addOrderBy('order__lines.productVariantId', 'ASC');
+            qb.addOrderBy(`order__order_lines.${qb.escape('createdAt')}`, 'ASC').addOrderBy(
+                `order__order_lines.${qb.escape('productVariantId')}`,
+                'ASC',
+            );
         }
 
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         const order = await qb.getOne();
@@ -353,7 +343,7 @@ export class OrderService {
     getOrderModifications(ctx: RequestContext, orderId: ID): Promise<OrderModification[]> {
         return this.connection.getRepository(ctx, OrderModification).find({
             where: {
-                order: orderId,
+                order: { id: orderId },
             },
             relations: ['lines', 'payment', 'refund', 'surcharges'],
         });
@@ -385,7 +375,8 @@ export class OrderService {
             ? undefined
             : this.connection
                   .getRepository(ctx, Order)
-                  .findOne(order.aggregateOrderId, { relations: ['channels', 'lines'] });
+                  .findOne({ where: { id: order.aggregateOrderId }, relations: ['channels', 'lines'] })
+                  .then(result => result ?? undefined);
     }
 
     getOrderChannels(ctx: RequestContext, order: Order): Promise<Channel[]> {
@@ -474,7 +465,7 @@ export class OrderService {
             billingAddress: {},
             subTotal: 0,
             subTotalWithTax: 0,
-            currencyCode: ctx.channel.currencyCode,
+            currencyCode: ctx.currencyCode,
         });
     }
 
@@ -522,7 +513,7 @@ export class OrderService {
             relations: ['product'],
             where: {
                 enabled: true,
-                deletedAt: null,
+                deletedAt: IsNull(),
             },
         });
         if (variant.product.enabled === false) {
@@ -767,14 +758,14 @@ export class OrderService {
             channelId: ctx.channelId,
             relations: ['promotions'],
         });
-        return order.promotions || [];
+        return order.promotions.map(p => this.translator.translate(p, ctx)) || [];
     }
 
     /**
      * @description
      * Returns the next possible states that the Order may transition to.
      */
-    getNextOrderStates(order: Order): ReadonlyArray<OrderState> {
+    getNextOrderStates(order: Order): readonly OrderState[] {
         return this.orderStateMachine.getNextStates(order);
     }
 
@@ -791,7 +782,8 @@ export class OrderService {
             .createQueryBuilder('order')
             .update(Order)
             .set({ shippingAddress })
-            .where('id = :id', { id: order.id });
+            .where('id = :id', { id: order.id })
+            .execute();
         order.shippingAddress = shippingAddress;
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
@@ -813,7 +805,8 @@ export class OrderService {
             .createQueryBuilder('order')
             .update(Order)
             .set({ billingAddress })
-            .where('id = :id', { id: order.id });
+            .where('id = :id', { id: order.id })
+            .execute();
         order.billingAddress = billingAddress;
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
@@ -913,7 +906,8 @@ export class OrderService {
             .getRepository(ctx, OrderLine)
             .createQueryBuilder('line')
             .update({ shippingLine: undefined })
-            .whereInIds(order.lines.map(l => l.id));
+            .whereInIds(order.lines.map(l => l.id))
+            .execute();
         const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
         for (const shippingLine of order.shippingLines) {
             const orderLinesForShippingLine =
@@ -1259,13 +1253,15 @@ export class OrderService {
         ctx: RequestContext,
         input: FulfillOrderInput,
     ): Promise<InsufficientStockOnHandError | undefined> {
-        const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
-            input.lines.map(l => l.orderLineId),
-            { relations: ['productVariant'] },
-        );
+        const lines = await this.connection.getRepository(ctx, OrderLine).find({
+            where: {
+                id: In(input.lines.map(l => l.orderLineId)),
+            },
+            relations: ['productVariant'],
+        });
 
         for (const line of lines) {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const lineInput = input.lines.find(l => idsAreEqual(l.orderLineId, line.id))!;
 
             const fulfillableStockLevel = await this.productVariantService.getFulfillableStockLevel(
@@ -1426,8 +1422,8 @@ export class OrderService {
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         // Check that any applied couponCodes are still valid now that
         // we know the Customer.
+        let updatedOrder = order;
         if (order.couponCodes) {
-            let codesRemoved = false;
             for (const couponCode of order.couponCodes.slice()) {
                 const validationResult = await this.promotionService.validateCouponCode(
                     ctx,
@@ -1435,15 +1431,11 @@ export class OrderService {
                     customer.id,
                 );
                 if (isGraphQlErrorResult(validationResult)) {
-                    order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
-                    codesRemoved = true;
+                    updatedOrder = await this.removeCouponCode(ctx, orderId, couponCode);
                 }
             }
-            if (codesRemoved) {
-                return this.applyPriceAdjustments(ctx, order);
-            }
         }
-        return order;
+        return updatedOrder;
     }
 
     /**
@@ -1502,7 +1494,7 @@ export class OrderService {
                 ? orderOrId
                 : await this.connection
                       .getRepository(ctx, Order)
-                      .findOneOrFail(orderOrId, { relations: ['lines', 'shippingLines'] });
+                      .findOneOrFail({ where: { id: orderOrId }, relations: ['lines', 'shippingLines'] });
         // If there is a Session referencing the Order to be deleted, we must first remove that
         // reference in order to avoid a foreign key error. See https://github.com/vendure-ecommerce/vendure/issues/1454
         const sessions = await this.connection
@@ -1539,7 +1531,7 @@ export class OrderService {
             // so we do not want to merge at all. See https://github.com/vendure-ecommerce/vendure/issues/263
             return existingOrder;
         }
-        const mergeResult = await this.orderMerger.merge(ctx, guestOrder, existingOrder);
+        const mergeResult = this.orderMerger.merge(ctx, guestOrder, existingOrder);
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
@@ -1603,7 +1595,7 @@ export class OrderService {
     private getOrderLineOrThrow(order: Order, orderLineId: ID): OrderLine {
         const orderLine = order.lines.find(line => idsAreEqual(line.id, orderLineId));
         if (!orderLine) {
-            throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
+            throw new UserInputError('error.order-does-not-contain-line-with-id', { id: orderLineId });
         }
         return orderLine;
     }

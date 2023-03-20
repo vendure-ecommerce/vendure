@@ -86,6 +86,8 @@ export function createApollo(
     };
 }
 
+// List of all EU countries
+
 /**
  * The DataModule is responsible for all API calls *and* serves as the source of truth for global app
  * state via the apollo-link-state package.

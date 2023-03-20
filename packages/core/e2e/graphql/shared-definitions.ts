@@ -137,6 +137,7 @@ export const GET_CUSTOMER_LIST = gql`
                 phoneNumber
                 user {
                     id
+                    identifier
                     verified
                 }
             }

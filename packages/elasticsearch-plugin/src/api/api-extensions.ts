@@ -66,20 +66,20 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
     const scriptVariantFields = Object.entries(options.searchConfig?.scriptFields || {}).filter(
         ([, scriptField]) => scriptField.context !== 'product',
     );
-    let sdl = ``;
+    let sdl = '';
 
     if (scriptProductFields.length || scriptVariantFields.length) {
         if (scriptProductFields.length) {
             sdl += `
             type CustomProductScriptFields {
-                ${scriptProductFields.map(([name, def]) => `${name}: ${def.graphQlType}`)}
+                ${scriptProductFields.map(([name, def]) => `${name}: ${def.graphQlType}`).join('\n')}
             }
             `;
         }
         if (scriptVariantFields.length) {
             sdl += `
             type CustomProductVariantScriptFields {
-                ${scriptVariantFields.map(([name, def]) => `${name}: ${def.graphQlType}`)}
+                ${scriptVariantFields.map(([name, def]) => `${name}: ${def.graphQlType}`).join('\n')}
             }
             `;
         }
@@ -110,14 +110,14 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
         if (productMappings.length) {
             sdl += `
             type CustomProductMappings {
-                ${productMappings.map(([name, def]) => `${name}: ${def.graphQlType}`)}
+                ${productMappings.map(([name, def]) => `${name}: ${def.graphQlType}`).join('\n')}
             }
             `;
         }
         if (variantMappings.length) {
             sdl += `
             type CustomProductVariantMappings {
-                ${variantMappings.map(([name, def]) => `${name}: ${def.graphQlType}`)}
+                ${variantMappings.map(([name, def]) => `${name}: ${def.graphQlType}`).join('\n')}
             }
             `;
         }

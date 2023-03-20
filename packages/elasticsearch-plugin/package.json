@@ -10,9 +10,10 @@
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "rimraf lib && tsc -p ./tsconfig.build.json",
-    "lint": "tslint --fix --project ./",
-    "test": "jest --config ./jest.config.js",
-    "e2e": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --package=elasticsearch-plugin"
+    "lint": "eslint --fix .",
+    "test": "vitest --run",
+    "e2e": "cross-env PACKAGE=elasticsearch-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
+    "e2e:watch": "cross-env PACKAGE=elasticsearch-plugin vitest --config ../../e2e-common/vitest.config.ts"
   },
   "homepage": "https://www.vendure.io/",
   "funding": "https://github.com/sponsors/michaelbromley",
@@ -20,7 +21,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^7.9.1",
+    "@elastic/elasticsearch": "~7.9.1",
     "deepmerge": "^4.2.2",
     "fast-deep-equal": "^3.1.3"
   },
@@ -28,6 +29,6 @@
     "@vendure/common": "^2.0.0-next.28",
     "@vendure/core": "^2.0.0-next.28",
     "rimraf": "^3.0.2",
-    "typescript": "4.5.5"
+    "typescript": "4.9.5"
   }
 }

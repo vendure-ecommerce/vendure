@@ -63,7 +63,7 @@ export class ShopProductsResolver {
         } else if (args.slug) {
             result = await this.productService.findOneBySlug(ctx, args.slug, relations);
         } else {
-            throw new UserInputError(`error.product-id-or-slug-must-be-provided`);
+            throw new UserInputError('error.product-id-or-slug-must-be-provided');
         }
         if (!result) {
             return;
@@ -109,12 +109,12 @@ export class ShopProductsResolver {
         if (args.id) {
             collection = await this.collectionService.findOne(ctx, args.id, relations);
             if (args.slug && collection && collection.slug !== args.slug) {
-                throw new UserInputError(`error.collection-id-slug-mismatch`);
+                throw new UserInputError('error.collection-id-slug-mismatch');
             }
         } else if (args.slug) {
             collection = await this.collectionService.findOneBySlug(ctx, args.slug, relations);
         } else {
-            throw new UserInputError(`error.collection-id-or-slug-must-be-provided`);
+            throw new UserInputError('error.collection-id-or-slug-must-be-provided');
         }
         if (collection && collection.isPrivate) {
             return;
@@ -124,7 +124,7 @@ export class ShopProductsResolver {
 
     @Query()
     async search(...args: any): Promise<Omit<SearchResponse, 'facetValues'>> {
-        throw new InternalServerError(`error.no-search-plugin-configured`);
+        throw new InternalServerError('error.no-search-plugin-configured');
     }
 
     @Query()

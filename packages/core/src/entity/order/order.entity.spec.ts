@@ -1,12 +1,18 @@
 import { AdjustmentType } from '@vendure/common/lib/generated-types';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { beforeAll, describe, expect, it } from 'vitest';
 
+import { ensureConfigLoaded } from '../../config/config-helpers';
 import { createOrder, createRequestContext, taxCategoryStandard } from '../../testing/order-test-utils';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 
 import { Order } from './order.entity';
 
 describe('Order entity methods', () => {
+    beforeAll(async () => {
+        await ensureConfigLoaded();
+    });
+
     describe('taxSummary', () => {
         it('single rate across items', () => {
             const ctx = createRequestContext({ pricesIncludeTax: false });

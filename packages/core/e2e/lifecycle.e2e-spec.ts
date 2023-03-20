@@ -8,14 +8,16 @@ import {
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-const strategyInitSpy = jest.fn();
-const strategyDestroySpy = jest.fn();
-const codInitSpy = jest.fn();
-const codDestroySpy = jest.fn();
+const strategyInitSpy = vi.fn();
+const strategyDestroySpy = vi.fn();
+const codInitSpy = vi.fn();
+const codDestroySpy = vi.fn();
 
 class TestIdStrategy extends AutoIncrementIdStrategy {
     async init(injector: Injector) {

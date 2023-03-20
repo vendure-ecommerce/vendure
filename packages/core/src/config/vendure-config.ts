@@ -3,7 +3,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
 import { ValidationContext } from 'graphql';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
@@ -18,10 +18,12 @@ import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
+import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { EntityIdStrategy } from './entity/entity-id-strategy';
+import { MoneyStrategy } from './entity/money-strategy';
 import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
@@ -29,6 +31,7 @@ import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { ActiveOrderStrategy } from './order/active-order-strategy';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
+import { GuestCheckoutStrategy } from './order/guest-checkout-strategy';
 import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
@@ -581,6 +584,14 @@ export interface OrderOptions {
      * @default DefaultOrderSellerStrategy
      */
     orderSellerStrategy?: OrderSellerStrategy;
+    /**
+     * @description
+     * Defines how we deal with guest checkouts.
+     *
+     * @since 2.0.0
+     * @default DefaultGuestCheckoutStrategy
+     */
+    guestCheckoutStrategy?: GuestCheckoutStrategy;
 }
 
 /**
@@ -646,6 +657,15 @@ export interface CatalogOptions {
      * @default defaultCollectionFilters
      */
     collectionFilters?: Array<CollectionFilter<any>>;
+    /**
+     * @description
+     * Defines the strategy used to select the price of a ProductVariant, based on factors
+     * such as the active Channel and active CurrencyCode.
+     *
+     * @since 2.0.0
+     * @default DefaultProductVariantPriceSelectionStrategy
+     */
+    productVariantPriceSelectionStrategy?: ProductVariantPriceSelectionStrategy;
     /**
      * @description
      * Defines the strategy used for calculating the price of ProductVariants based
@@ -925,6 +945,14 @@ export interface EntityOptions {
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
      * @description
+     * Defines the strategy used to store and round monetary values.
+     *
+     * @since 2.0.0
+     * @default DefaultMoneyStrategy
+     */
+    moneyStrategy?: MoneyStrategy;
+    /**
+     * @description
      * Channels get cached in-memory as they are accessed very frequently. This
      * setting determines how long the cache lives (in ms) until it is considered stale and
      * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
@@ -1030,7 +1058,7 @@ export interface VendureConfig {
      * See the [TypeORM documentation](https://typeorm.io/#/connection-options) for a
      * full description of all available options.
      */
-    dbConnectionOptions: ConnectionOptions;
+    dbConnectionOptions: DataSourceOptions;
     /**
      * @description
      * The token for the default channel. If not specified, a token

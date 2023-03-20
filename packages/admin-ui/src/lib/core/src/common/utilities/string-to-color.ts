@@ -28,8 +28,6 @@ export function stringToColor(input: string): string {
         '#7A7574',
         '#767676',
     ];
-    const value = input.split('').reduce((prev, curr, index) => {
-        return prev + Math.round(curr.charCodeAt(0) * Math.log(index + 2));
-    }, 0);
+    const value = input.split('').reduce((prev, curr, index) => prev + Math.round(curr.charCodeAt(0) * Math.log(index + 2)), 0);
     return safeColors[value % safeColors.length];
 }

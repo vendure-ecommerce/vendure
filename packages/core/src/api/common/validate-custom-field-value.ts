@@ -59,6 +59,7 @@ function validateSingleValue(config: CustomFieldConfig, value: any) {
         case 'boolean':
         case 'relation':
         case 'text':
+        case 'localeText':
             break;
         default:
             assertNever(config);

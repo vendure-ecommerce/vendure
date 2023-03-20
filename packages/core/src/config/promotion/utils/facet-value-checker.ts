@@ -31,7 +31,6 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
  *   init(injector) {
  *     facetValueChecker = new FacetValueChecker(injector.get(TransactionalConnection));
  *   },
- *   // tslint:disable-next-line:no-shadowed-variable
  *   async check(ctx, order, args) {
  *     let matches = 0;
  *     for (const line of order.lines) {
@@ -61,9 +60,11 @@ export class FacetValueChecker {
         if (!variant) {
             variant = await this.connection
                 .getRepository(ctx, ProductVariant)
-                .findOne(orderLine.productVariant.id, {
+                .findOne({
+                    where: { id: orderLine.productVariant.id },
                     relations: ['product', 'product.facetValues', 'facetValues'],
-                });
+                })
+                .then(result => result ?? undefined);
             if (!variant) {
                 return false;
             }

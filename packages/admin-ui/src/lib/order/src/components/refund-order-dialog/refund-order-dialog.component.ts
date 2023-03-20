@@ -84,16 +84,14 @@ export class RefundOrderDialogComponent
     }
 
     ngOnInit() {
-        this.lineQuantities = this.order.lines.reduce((result, line) => {
-            return {
+        this.lineQuantities = this.order.lines.reduce((result, line) => ({
                 ...result,
                 [line.id]: {
                     quantity: 0,
                     refund: false,
                     cancel: false,
                 },
-            };
-        }, {});
+            }), {});
         this.settledPayments = (this.order.payments || []).filter(p => p.state === 'Settled');
         if (this.settledPayments.length) {
             this.selectedPayment = this.settledPayments[0];
@@ -108,16 +106,12 @@ export class RefundOrderDialogComponent
     }
 
     isRefunding(): boolean {
-        const result = Object.values(this.lineQuantities).reduce((isRefunding, line) => {
-            return isRefunding || (0 < line.quantity && line.refund);
-        }, false);
+        const result = Object.values(this.lineQuantities).reduce((isRefunding, line) => isRefunding || (0 < line.quantity && line.refund), false);
         return result;
     }
 
     isCancelling(): boolean {
-        const result = Object.values(this.lineQuantities).reduce((isCancelling, line) => {
-            return isCancelling || (0 < line.quantity && line.cancel);
-        }, false);
+        const result = Object.values(this.lineQuantities).reduce((isCancelling, line) => isCancelling || (0 < line.quantity && line.cancel), false);
         return result;
     }
 

@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
@@ -14,7 +14,8 @@ import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
+
 import { MultivendorPlugin } from './test-plugins/multivendor-plugin/multivendor.plugin';
 
 /**
@@ -68,8 +69,8 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
-        // BullMQJobQueuePlugin.init({}),
-        DefaultJobQueuePlugin.init({}),
+        BullMQJobQueuePlugin.init({}),
+        // DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -95,7 +96,7 @@ export const devConfig: VendureConfig = {
     ],
 };
 
-function getDbConfig(): ConnectionOptions {
+function getDbConfig(): DataSourceOptions {
     const dbType = process.env.DB || 'mysql';
     switch (dbType) {
         case 'postgres':

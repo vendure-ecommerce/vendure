@@ -47,9 +47,11 @@ export const defaultPaymentProcess: PaymentProcess<PaymentState> = {
     async init(injector) {
         // Lazily import these services to avoid a circular dependency error
         // due to this being used as part of the DefaultConfig
-        const ConfigService = await import('../config.service').then(m => m.ConfigService);
-        const HistoryService = await import('../../service/index').then(m => m.HistoryService);
-        const OrderService = await import('../../service/services/order.service').then(m => m.OrderService);
+        const ConfigService = await import('../config.service.js').then(m => m.ConfigService);
+        const HistoryService = await import('../../service/index.js').then(m => m.HistoryService);
+        const OrderService = await import('../../service/services/order.service.js').then(
+            m => m.OrderService,
+        );
         configService = injector.get(ConfigService);
         historyService = injector.get(HistoryService);
         orderService = injector.get(OrderService);

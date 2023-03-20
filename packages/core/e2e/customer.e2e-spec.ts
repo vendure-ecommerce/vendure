@@ -12,6 +12,8 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, Mock } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -44,8 +46,8 @@ import {
 import { ADD_ITEM_TO_ORDER, SET_CUSTOMER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
-let sendEmailFn: jest.Mock;
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+let sendEmailFn: Mock;
 
 /**
  * This mock plugin simulates an EmailPlugin which would send emails
@@ -191,7 +193,7 @@ describe('Customer resolver', () => {
                             },
                         },
                     ),
-                `The countryCode "INVALID" was not recognized`,
+                'The countryCode "INVALID" was not recognized',
             ),
         );
 
@@ -443,7 +445,7 @@ describe('Customer resolver', () => {
             input => !!input.lines,
         );
 
-        it(`lists that user\'s orders`, async () => {
+        it("lists that user's orders", async () => {
             // log in as first customer
             await shopClient.asUserWithCredentials(firstCustomer.emailAddress, 'test');
             // add an item to the order to create an order
@@ -462,13 +464,13 @@ describe('Customer resolver', () => {
             >(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
 
             expect(customer!.orders.totalItems).toBe(1);
-            expect(customer!.orders.items[0].id).toBe(addItemToOrder!.id);
+            expect(customer!.orders.items[0].id).toBe(addItemToOrder.id);
         });
     });
 
     describe('creation', () => {
         it('triggers verification event if no password supplied', async () => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
             const { createCustomer } = await adminClient.query<
                 Codegen.CreateCustomerMutation,
                 Codegen.CreateCustomerMutationVariables
@@ -488,7 +490,7 @@ describe('Customer resolver', () => {
         });
 
         it('creates a verified Customer', async () => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
             const { createCustomer } = await adminClient.query<
                 Codegen.CreateCustomerMutation,
                 Codegen.CreateCustomerMutationVariables
@@ -609,7 +611,7 @@ describe('Customer resolver', () => {
                             firstName: 'updated',
                         },
                     }),
-                `No Customer with the id '3' could be found`,
+                "No Customer with the id '3' could be found",
             ),
         );
 
@@ -627,7 +629,7 @@ describe('Customer resolver', () => {
                             },
                         },
                     ),
-                `No Customer with the id '3' could be found`,
+                "No Customer with the id '3' could be found",
             ),
         );
 
@@ -723,7 +725,7 @@ describe('Customer resolver', () => {
                 },
             ]);
 
-            noteId = customer?.history.items[0].id!;
+            noteId = customer!.history.items[0].id!;
         });
 
         it('update note', async () => {
@@ -747,7 +749,7 @@ describe('Customer resolver', () => {
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
             >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
-            const historyCount = before?.history.totalItems!;
+            const historyCount = before!.history.totalItems;
 
             const { deleteCustomerNote } = await adminClient.query<
                 Codegen.DeleteCustomerNoteMutation,

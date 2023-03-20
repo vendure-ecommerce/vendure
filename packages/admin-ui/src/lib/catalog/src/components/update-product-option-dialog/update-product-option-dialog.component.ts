@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import {
     CustomFieldConfig,
     LanguageCode,
@@ -28,7 +28,7 @@ export class UpdateProductOptionDialogComponent
     code: string;
     customFields: CustomFieldConfig[];
     codeInputTouched = false;
-    customFieldsForm: FormGroup;
+    customFieldsForm: UntypedFormGroup;
 
     ngOnInit(): void {
         const currentTranslation = this.productOption.translations.find(
@@ -36,7 +36,7 @@ export class UpdateProductOptionDialogComponent
         );
         this.name = currentTranslation?.name ?? '';
         this.code = this.productOption.code;
-        this.customFieldsForm = new FormGroup({});
+        this.customFieldsForm = new UntypedFormGroup({});
         if (this.customFields) {
             const cfCurrentTranslation =
                 (currentTranslation && (currentTranslation as any).customFields) || {};
@@ -47,7 +47,7 @@ export class UpdateProductOptionDialogComponent
                     fieldDef.type === 'localeString'
                         ? cfCurrentTranslation[key]
                         : (this.productOption as any).customFields[key];
-                this.customFieldsForm.addControl(fieldDef.name, new FormControl(value));
+                this.customFieldsForm.addControl(fieldDef.name, new UntypedFormControl(value));
             }
         }
     }

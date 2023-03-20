@@ -2,8 +2,8 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { RequestContext } from '../../common/request-context';

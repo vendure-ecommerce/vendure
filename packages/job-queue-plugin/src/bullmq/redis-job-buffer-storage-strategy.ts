@@ -66,26 +66,27 @@ export class RedisJobBufferStorageStrategy implements JobBufferStorageStrategy {
             const jobConfig: JobConfig<any> = JSON.parse(jobConfigString);
             return new Job(jobConfig);
         } catch (e: any) {
-            Logger.error(`Could not parse buffered job:\n${e.message}`, loggerCtx, e.stack);
+            Logger.error(`Could not parse buffered job:\n${JSON.stringify(e.message)}`, loggerCtx, e.stack);
             throw e;
         }
     }
 
     private async getAllBufferIds(): Promise<string[]> {
-        if (this.redis instanceof Redis) {
-            const stream = this.redis.scanStream({
-                match: `${BUFFER_LIST_PREFIX}:*`,
-            });
-            const keys = await new Promise<string[]>((resolve, reject) => {
-                const allKeys: string[] = [];
-                stream.on('data', _keys => allKeys.push(..._keys));
-                stream.on('end', () => resolve(allKeys));
-                stream.on('error', err => reject(err));
-            });
+        const stream =
+            this.redis instanceof Redis
+                ? this.redis.scanStream({
+                      match: `${BUFFER_LIST_PREFIX}:*`,
+                  })
+                : this.redis.nodes()[0].scanStream({
+                      match: `${BUFFER_LIST_PREFIX}:*`,
+                  });
+        const keys = await new Promise<string[]>((resolve, reject) => {
+            const allKeys: string[] = [];
+            stream.on('data', _keys => allKeys.push(..._keys));
+            stream.on('end', () => resolve(allKeys));
+            stream.on('error', err => reject(err));
+        });
 
-            return keys.map(key => key.replace(`${BUFFER_LIST_PREFIX}:`, ''));
-        }
-
-        return []
+        return keys.map(key => key.replace(`${BUFFER_LIST_PREFIX}:`, ''));
     }
 }

@@ -18,14 +18,17 @@ import { DefaultPasswordValidationStrategy } from './auth/default-password-valid
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
+import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-product-variant-price-selection-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
 import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
-import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
+import { DefaultMoneyStrategy } from './entity/default-money-strategy';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
 import { DefaultActiveOrderStrategy } from './order/default-active-order-strategy';
 import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
+import { DefaultGuestCheckoutStrategy } from './order/default-guest-checkout-strategy';
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
 import { defaultOrderProcess } from './order/default-order-process';
@@ -102,6 +105,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
+        productVariantPriceSelectionStrategy: new DefaultProductVariantPriceSelectionStrategy(),
         productVariantPriceCalculationStrategy: new DefaultProductVariantPriceCalculationStrategy(),
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
         stockLocationStrategy: new DefaultStockLocationStrategy(),
@@ -119,6 +123,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         type: 'mysql',
     },
     entityOptions: {
+        moneyStrategy: new DefaultMoneyStrategy(),
         channelCacheTtl: 30000,
         zoneCacheTtl: 30000,
         taxRateCacheTtl: 30000,
@@ -150,6 +155,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
         activeOrderStrategy: new DefaultActiveOrderStrategy(),
         orderSellerStrategy: new DefaultOrderSellerStrategy(),
+        guestCheckoutStrategy: new DefaultGuestCheckoutStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],

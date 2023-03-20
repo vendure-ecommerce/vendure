@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import chalk from 'chalk';
 import program from 'commander';
 import detectPort from 'detect-port';
@@ -23,7 +23,7 @@ import {
 } from './helpers';
 import { CliLogLevel } from './types';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 checkNodeVersion(REQUIRED_NODE_VERSION);
 
@@ -44,7 +44,7 @@ program
     })
     .option(
         '--log-level <logLevel>',
-        `Log level, either 'silent', 'info', or 'verbose'`,
+        'Log level, either \'silent\', \'info\', or \'verbose\'',
         /^(silent|info|verbose)$/i,
         'silent',
     )
@@ -53,7 +53,7 @@ program
     .parse(process.argv);
 
 const options = program.opts();
-createApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
+void createApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
 
 async function createApp(
     name: string | undefined,
@@ -69,9 +69,9 @@ async function createApp(
         process.exit(1);
     }
 
-    console.log(chalk.cyan(`Welcome to @vendure/create v${packageJson.version}!`));
+    console.log(chalk.cyan(`Welcome to @vendure/create v${packageJson.version as string}!`));
     console.log();
-    console.log(`Let's configure a new Vendure project. First a few questions:`);
+    console.log('Let\'s configure a new Vendure project. First a few questions:');
     console.log();
 
     const root = path.resolve(name);
@@ -81,7 +81,7 @@ async function createApp(
     if (scaffoldExists) {
         console.log(
             chalk.green(
-                `It appears that a new Vendure project scaffold already exists. Re-using the existing files...`,
+                'It appears that a new Vendure project scaffold already exists. Re-using the existing files...',
             ),
         );
         console.log();
@@ -149,7 +149,7 @@ async function createApp(
                         );
                         const { dependencies, devDependencies } = getDependencies(
                             dbType,
-                            isCi ? `@${packageJson.version}` : '',
+                            isCi ? `@${packageJson.version as string}` : '',
                         );
 
                         subscriber.next(`Installing ${dependencies.join(', ')}`);
@@ -196,7 +196,7 @@ async function createApp(
                                 fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')),
                             )
                             .then(() => {
-                                subscriber.next(`Created files`);
+                                subscriber.next('Created files');
                                 return fs.copyFile(
                                     assetPath('tsconfig.template.json'),
                                     path.join(root, 'tsconfig.json'),
@@ -204,11 +204,11 @@ async function createApp(
                             })
                             .then(() => createDirectoryStructure(root))
                             .then(() => {
-                                subscriber.next(`Created directory structure`);
+                                subscriber.next('Created directory structure');
                                 return copyEmailTemplates(root);
                             })
                             .then(() => {
-                                subscriber.next(`Copied email templates`);
+                                subscriber.next('Copied email templates');
                                 subscriber.complete();
                             })
                             .catch(err => subscriber.error(err));
@@ -222,6 +222,7 @@ async function createApp(
         task: async ctx => {
             try {
                 // register ts-node so that the config file can be loaded
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 require(path.join(root, 'node_modules/ts-node')).register();
                 const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
                 const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
@@ -299,7 +300,7 @@ async function createApp(
     console.log();
     console.log(chalk.green(`Success! Created a new Vendure server at ${root}`));
     console.log();
-    console.log(`We suggest that you start by typing:`);
+    console.log('We suggest that you start by typing:');
     console.log();
     console.log(chalk.green(`    cd ${name}`));
     console.log(chalk.green(`    ${startCommand}`));
@@ -347,6 +348,6 @@ async function copyEmailTemplates(root: string) {
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {
-        console.error(chalk.red(`Failed to copy email templates.`));
+        console.error(chalk.red('Failed to copy email templates.'));
     }
 }

@@ -1,4 +1,4 @@
-// tslint:disable
+/* eslint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -11,11 +11,9 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: any;
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
-    /** The `Upload` scalar type represents a file upload. */
+    Money: number;
     Upload: any;
 };
 
@@ -77,7 +75,7 @@ export type AdjustDraftOrderLineInput = {
 
 export type Adjustment = {
     adjustmentSource: Scalars['String'];
-    amount: Scalars['Int'];
+    amount: Scalars['Money'];
     data?: Maybe<Scalars['JSON']>;
     description: Scalars['String'];
     type: AdjustmentType;
@@ -729,10 +727,9 @@ export type CreatePaymentMethodInput = {
     checker?: InputMaybe<ConfigurableOperationInput>;
     code: Scalars['String'];
     customFields?: InputMaybe<Scalars['JSON']>;
-    description?: InputMaybe<Scalars['String']>;
     enabled: Scalars['Boolean'];
     handler: ConfigurableOperationInput;
-    name: Scalars['String'];
+    translations: Array<PaymentMethodTranslationInput>;
 };
 
 export type CreateProductInput = {
@@ -765,7 +762,7 @@ export type CreateProductVariantInput = {
     featuredAssetId?: InputMaybe<Scalars['ID']>;
     optionIds?: InputMaybe<Array<Scalars['ID']>>;
     outOfStockThreshold?: InputMaybe<Scalars['Int']>;
-    price?: InputMaybe<Scalars['Int']>;
+    price?: InputMaybe<Scalars['Money']>;
     productId: Scalars['ID'];
     sku: Scalars['String'];
     stockLevels?: InputMaybe<Array<StockLevelInput>>;
@@ -789,9 +786,9 @@ export type CreatePromotionInput = {
     customFields?: InputMaybe<Scalars['JSON']>;
     enabled: Scalars['Boolean'];
     endsAt?: InputMaybe<Scalars['DateTime']>;
-    name: Scalars['String'];
     perCustomerUsageLimit?: InputMaybe<Scalars['Int']>;
     startsAt?: InputMaybe<Scalars['DateTime']>;
+    translations: Array<PromotionTranslationInput>;
 };
 
 export type CreatePromotionResult = MissingConditionsError | Promotion;
@@ -1203,6 +1200,7 @@ export type CustomFieldConfig =
     | FloatCustomFieldConfig
     | IntCustomFieldConfig
     | LocaleStringCustomFieldConfig
+    | LocaleTextCustomFieldConfig
     | RelationCustomFieldConfig
     | StringCustomFieldConfig
     | TextCustomFieldConfig;
@@ -1417,8 +1415,8 @@ export enum DeletionResult {
 
 export type Discount = {
     adjustmentSource: Scalars['String'];
-    amount: Scalars['Int'];
-    amountWithTax: Scalars['Int'];
+    amount: Scalars['Money'];
+    amountWithTax: Scalars['Money'];
     description: Scalars['String'];
     type: AdjustmentType;
 };
@@ -1448,6 +1446,7 @@ export enum ErrorCode {
     EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
     FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
     FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+    GUEST_CHECKOUT_ERROR = 'GUEST_CHECKOUT_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
     INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
@@ -1707,6 +1706,13 @@ export type GlobalSettings = {
     serverConfig: ServerConfig;
     trackInventory: Scalars['Boolean'];
     updatedAt: Scalars['DateTime'];
+};
+
+/** Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it. */
+export type GuestCheckoutError = ErrorResult & {
+    errorCode: ErrorCode;
+    errorDetail: Scalars['String'];
+    message: Scalars['String'];
 };
 
 export type HistoryEntry = Node & {
@@ -2286,6 +2292,18 @@ export type LocaleStringCustomFieldConfig = CustomField & {
     name: Scalars['String'];
     nullable?: Maybe<Scalars['Boolean']>;
     pattern?: Maybe<Scalars['String']>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    type: Scalars['String'];
+    ui?: Maybe<Scalars['JSON']>;
+};
+
+export type LocaleTextCustomFieldConfig = CustomField & {
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean'];
+    name: Scalars['String'];
+    nullable?: Maybe<Scalars['Boolean']>;
     readonly?: Maybe<Scalars['Boolean']>;
     type: Scalars['String'];
     ui?: Maybe<Scalars['JSON']>;
@@ -3291,10 +3309,10 @@ export type Order = Node & {
     /** Promotions applied to the order. Only gets populated after the payment process has completed. */
     promotions: Array<Promotion>;
     sellerOrders?: Maybe<Array<Order>>;
-    shipping: Scalars['Int'];
+    shipping: Scalars['Money'];
     shippingAddress?: Maybe<OrderAddress>;
     shippingLines: Array<ShippingLine>;
-    shippingWithTax: Scalars['Int'];
+    shippingWithTax: Scalars['Money'];
     state: Scalars['String'];
     /**
      * The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
@@ -3302,9 +3320,9 @@ export type Order = Node & {
      * To get a total of all OrderLines which does not account for prorated discounts, use the
      * sum of `OrderLine.discountedLinePrice` values.
      */
-    subTotal: Scalars['Int'];
+    subTotal: Scalars['Money'];
     /** Same as subTotal, but inclusive of tax */
-    subTotalWithTax: Scalars['Int'];
+    subTotalWithTax: Scalars['Money'];
     /**
      * Surcharges are arbitrary modifications to the Order total which are neither
      * ProductVariants nor discounts resulting from applied Promotions. For example,
@@ -3315,10 +3333,10 @@ export type Order = Node & {
     /** A summary of the taxes being applied to this Order */
     taxSummary: Array<OrderTaxSummary>;
     /** Equal to subTotal plus shipping */
-    total: Scalars['Int'];
+    total: Scalars['Money'];
     totalQuantity: Scalars['Int'];
     /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
-    totalWithTax: Scalars['Int'];
+    totalWithTax: Scalars['Money'];
     type: OrderType;
     updatedAt: Scalars['DateTime'];
 };
@@ -3375,9 +3393,9 @@ export type OrderItem = Node & {
      * correct price to display to customers to avoid confusion
      * about the internal handling of distributed Order-level discounts.
      */
-    discountedUnitPrice: Scalars['Int'];
+    discountedUnitPrice: Scalars['Money'];
     /** The price of a single unit including discounts and tax */
-    discountedUnitPriceWithTax: Scalars['Int'];
+    discountedUnitPriceWithTax: Scalars['Money'];
     fulfillment?: Maybe<Fulfillment>;
     id: Scalars['ID'];
     /**
@@ -3385,17 +3403,17 @@ export type OrderItem = Node & {
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
-    proratedUnitPrice: Scalars['Int'];
+    proratedUnitPrice: Scalars['Money'];
     /** The proratedUnitPrice including tax */
-    proratedUnitPriceWithTax: Scalars['Int'];
+    proratedUnitPriceWithTax: Scalars['Money'];
     refundId?: Maybe<Scalars['ID']>;
     taxLines: Array<TaxLine>;
     taxRate: Scalars['Float'];
     /** The price of a single unit, excluding tax and discounts */
-    unitPrice: Scalars['Int'];
+    unitPrice: Scalars['Money'];
     /** The price of a single unit, including tax but excluding discounts */
-    unitPriceWithTax: Scalars['Int'];
-    unitTax: Scalars['Int'];
+    unitPriceWithTax: Scalars['Money'];
+    unitTax: Scalars['Money'];
     updatedAt: Scalars['DateTime'];
 };
 
@@ -3410,9 +3428,9 @@ export type OrderLine = Node & {
     createdAt: Scalars['DateTime'];
     customFields?: Maybe<Scalars['JSON']>;
     /** The price of the line including discounts, excluding tax */
-    discountedLinePrice: Scalars['Int'];
+    discountedLinePrice: Scalars['Money'];
     /** The price of the line including discounts and tax */
-    discountedLinePriceWithTax: Scalars['Int'];
+    discountedLinePriceWithTax: Scalars['Money'];
     /**
      * The price of a single unit including discounts, excluding tax.
      *
@@ -3421,19 +3439,19 @@ export type OrderLine = Node & {
      * correct price to display to customers to avoid confusion
      * about the internal handling of distributed Order-level discounts.
      */
-    discountedUnitPrice: Scalars['Int'];
+    discountedUnitPrice: Scalars['Money'];
     /** The price of a single unit including discounts and tax */
-    discountedUnitPriceWithTax: Scalars['Int'];
+    discountedUnitPriceWithTax: Scalars['Money'];
     discounts: Array<Discount>;
     featuredAsset?: Maybe<Asset>;
     fulfillmentLines?: Maybe<Array<FulfillmentLine>>;
     id: Scalars['ID'];
     /** The total price of the line excluding tax and discounts. */
-    linePrice: Scalars['Int'];
+    linePrice: Scalars['Money'];
     /** The total price of the line including tax but excluding discounts. */
-    linePriceWithTax: Scalars['Int'];
+    linePriceWithTax: Scalars['Money'];
     /** The total tax on this line */
-    lineTax: Scalars['Int'];
+    lineTax: Scalars['Money'];
     order: Order;
     /** The quantity at the time the Order was placed */
     orderPlacedQuantity: Scalars['Int'];
@@ -3443,28 +3461,28 @@ export type OrderLine = Node & {
      * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
      * and refund calculations.
      */
-    proratedLinePrice: Scalars['Int'];
+    proratedLinePrice: Scalars['Money'];
     /** The proratedLinePrice including tax */
-    proratedLinePriceWithTax: Scalars['Int'];
+    proratedLinePriceWithTax: Scalars['Money'];
     /**
      * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
-    proratedUnitPrice: Scalars['Int'];
+    proratedUnitPrice: Scalars['Money'];
     /** The proratedUnitPrice including tax */
-    proratedUnitPriceWithTax: Scalars['Int'];
+    proratedUnitPriceWithTax: Scalars['Money'];
     quantity: Scalars['Int'];
     taxLines: Array<TaxLine>;
     taxRate: Scalars['Float'];
     /** The price of a single unit, excluding tax and discounts */
-    unitPrice: Scalars['Int'];
+    unitPrice: Scalars['Money'];
     /** Non-zero if the unitPrice has changed since it was initially added to Order */
-    unitPriceChangeSinceAdded: Scalars['Int'];
+    unitPriceChangeSinceAdded: Scalars['Money'];
     /** The price of a single unit, including tax but excluding discounts */
-    unitPriceWithTax: Scalars['Int'];
+    unitPriceWithTax: Scalars['Money'];
     /** Non-zero if the unitPriceWithTax has changed since it was initially added to Order */
-    unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
+    unitPriceWithTaxChangeSinceAdded: Scalars['Money'];
     updatedAt: Scalars['DateTime'];
 };
 
@@ -3498,7 +3516,7 @@ export type OrderModification = Node & {
     lines: Array<OrderModificationLine>;
     note: Scalars['String'];
     payment?: Maybe<Payment>;
-    priceChange: Scalars['Int'];
+    priceChange: Scalars['Money'];
     refund?: Maybe<Refund>;
     surcharges?: Maybe<Array<Surcharge>>;
     updatedAt: Scalars['DateTime'];
@@ -3565,11 +3583,11 @@ export type OrderTaxSummary = {
     /** A description of this tax */
     description: Scalars['String'];
     /** The total net price or OrderItems to which this taxRate applies */
-    taxBase: Scalars['Int'];
+    taxBase: Scalars['Money'];
     /** The taxRate as a percentage */
     taxRate: Scalars['Float'];
     /** The total tax being applied to the Order at this taxRate */
-    taxTotal: Scalars['Int'];
+    taxTotal: Scalars['Money'];
 };
 
 export enum OrderType {
@@ -3584,7 +3602,7 @@ export type PaginatedList = {
 };
 
 export type Payment = Node & {
-    amount: Scalars['Int'];
+    amount: Scalars['Money'];
     createdAt: Scalars['DateTime'];
     errorMessage?: Maybe<Scalars['String']>;
     id: Scalars['ID'];
@@ -3607,6 +3625,7 @@ export type PaymentMethod = Node & {
     handler: ConfigurableOperation;
     id: Scalars['ID'];
     name: Scalars['String'];
+    translations: Array<PaymentMethodTranslation>;
     updatedAt: Scalars['DateTime'];
 };
 
@@ -3664,6 +3683,23 @@ export type PaymentMethodSortParameter = {
     id?: InputMaybe<SortOrder>;
     name?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PaymentMethodTranslation = {
+    createdAt: Scalars['DateTime'];
+    description: Scalars['String'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
+};
+
+export type PaymentMethodTranslationInput = {
+    customFields?: InputMaybe<Scalars['JSON']>;
+    description?: InputMaybe<Scalars['String']>;
+    id?: InputMaybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: InputMaybe<Scalars['String']>;
 };
 
 /** Returned if an attempting to refund a Payment against OrderLines from a different Order */
@@ -3908,8 +3944,8 @@ export type PreviewCollectionVariantsInput = {
 
 /** The price range where the result has more than one price */
 export type PriceRange = {
-    max: Scalars['Int'];
-    min: Scalars['Int'];
+    max: Scalars['Money'];
+    min: Scalars['Money'];
 };
 
 export type Product = Node & {
@@ -4072,8 +4108,8 @@ export type ProductVariant = Node & {
     name: Scalars['String'];
     options: Array<ProductOption>;
     outOfStockThreshold: Scalars['Int'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
+    price: Scalars['Money'];
+    priceWithTax: Scalars['Money'];
     product: Product;
     productId: Scalars['ID'];
     sku: Scalars['String'];
@@ -4170,18 +4206,21 @@ export type Promotion = Node & {
     couponCode?: Maybe<Scalars['String']>;
     createdAt: Scalars['DateTime'];
     customFields?: Maybe<Scalars['JSON']>;
+    description: Scalars['String'];
     enabled: Scalars['Boolean'];
     endsAt?: Maybe<Scalars['DateTime']>;
     id: Scalars['ID'];
     name: Scalars['String'];
     perCustomerUsageLimit?: Maybe<Scalars['Int']>;
     startsAt?: Maybe<Scalars['DateTime']>;
+    translations: Array<PromotionTranslation>;
     updatedAt: Scalars['DateTime'];
 };
 
 export type PromotionFilterParameter = {
     couponCode?: InputMaybe<StringOperators>;
     createdAt?: InputMaybe<DateOperators>;
+    description?: InputMaybe<StringOperators>;
     enabled?: InputMaybe<BooleanOperators>;
     endsAt?: InputMaybe<DateOperators>;
     id?: InputMaybe<IdOperators>;
@@ -4212,12 +4251,30 @@ export type PromotionListOptions = {
 export type PromotionSortParameter = {
     couponCode?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
+    description?: InputMaybe<SortOrder>;
     endsAt?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
     name?: InputMaybe<SortOrder>;
     perCustomerUsageLimit?: InputMaybe<SortOrder>;
     startsAt?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PromotionTranslation = {
+    createdAt: Scalars['DateTime'];
+    description: Scalars['String'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
+};
+
+export type PromotionTranslationInput = {
+    customFields?: InputMaybe<Scalars['JSON']>;
+    description?: InputMaybe<Scalars['String']>;
+    id?: InputMaybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: InputMaybe<Scalars['String']>;
 };
 
 /** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
@@ -4515,18 +4572,18 @@ export type QueryZoneArgs = {
 };
 
 export type Refund = Node & {
-    adjustment: Scalars['Int'];
+    adjustment: Scalars['Money'];
     createdAt: Scalars['DateTime'];
     id: Scalars['ID'];
-    items: Scalars['Int'];
+    items: Scalars['Money'];
     lines: Array<RefundLine>;
     metadata?: Maybe<Scalars['JSON']>;
     method?: Maybe<Scalars['String']>;
     paymentId: Scalars['ID'];
     reason?: Maybe<Scalars['String']>;
-    shipping: Scalars['Int'];
+    shipping: Scalars['Money'];
     state: Scalars['String'];
-    total: Scalars['Int'];
+    total: Scalars['Money'];
     transactionId?: Maybe<Scalars['String']>;
     updatedAt: Scalars['DateTime'];
 };
@@ -4540,11 +4597,11 @@ export type RefundLine = {
 };
 
 export type RefundOrderInput = {
-    adjustment: Scalars['Int'];
+    adjustment: Scalars['Money'];
     lines: Array<OrderLineInput>;
     paymentId: Scalars['ID'];
     reason?: InputMaybe<Scalars['String']>;
-    shipping: Scalars['Int'];
+    shipping: Scalars['Money'];
 };
 
 export type RefundOrderResult =
@@ -4710,7 +4767,9 @@ export type SearchInput = {
     collectionId?: InputMaybe<Scalars['ID']>;
     collectionSlug?: InputMaybe<Scalars['String']>;
     facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueOperator?: InputMaybe<LogicalOperator>;
     groupByProduct?: InputMaybe<Scalars['Boolean']>;
     skip?: InputMaybe<Scalars['Int']>;
@@ -4844,12 +4903,12 @@ export type SettleRefundInput = {
 export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingLine = {
-    discountedPrice: Scalars['Int'];
-    discountedPriceWithTax: Scalars['Int'];
+    discountedPrice: Scalars['Money'];
+    discountedPriceWithTax: Scalars['Money'];
     discounts: Array<Discount>;
     id: Scalars['ID'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
+    price: Scalars['Money'];
+    priceWithTax: Scalars['Money'];
     shippingMethod: ShippingMethod;
 };
 
@@ -4905,8 +4964,8 @@ export type ShippingMethodQuote = {
     /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
     metadata?: Maybe<Scalars['JSON']>;
     name: Scalars['String'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
+    price: Scalars['Money'];
+    priceWithTax: Scalars['Money'];
 };
 
 export type ShippingMethodSortParameter = {
@@ -4938,7 +4997,7 @@ export type ShippingMethodTranslationInput = {
 
 /** The price value where the result has a single price */
 export type SinglePrice = {
-    value: Scalars['Int'];
+    value: Scalars['Money'];
 };
 
 export enum SortOrder {
@@ -5091,8 +5150,8 @@ export type Surcharge = Node & {
     createdAt: Scalars['DateTime'];
     description: Scalars['String'];
     id: Scalars['ID'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
+    price: Scalars['Money'];
+    priceWithTax: Scalars['Money'];
     sku?: Maybe<Scalars['String']>;
     taxLines: Array<TaxLine>;
     taxRate: Scalars['Float'];
@@ -5101,7 +5160,7 @@ export type Surcharge = Node & {
 
 export type SurchargeInput = {
     description: Scalars['String'];
-    price: Scalars['Int'];
+    price: Scalars['Money'];
     priceIncludesTax: Scalars['Boolean'];
     sku?: InputMaybe<Scalars['String']>;
     taxDescription?: InputMaybe<Scalars['String']>;
@@ -5228,8 +5287,8 @@ export type TestShippingMethodOrderLineInput = {
 
 export type TestShippingMethodQuote = {
     metadata?: Maybe<Scalars['JSON']>;
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
+    price: Scalars['Money'];
+    priceWithTax: Scalars['Money'];
 };
 
 export type TestShippingMethodResult = {
@@ -5422,11 +5481,10 @@ export type UpdatePaymentMethodInput = {
     checker?: InputMaybe<ConfigurableOperationInput>;
     code?: InputMaybe<Scalars['String']>;
     customFields?: InputMaybe<Scalars['JSON']>;
-    description?: InputMaybe<Scalars['String']>;
     enabled?: InputMaybe<Scalars['Boolean']>;
     handler?: InputMaybe<ConfigurableOperationInput>;
     id: Scalars['ID'];
-    name?: InputMaybe<Scalars['String']>;
+    translations?: InputMaybe<Array<PaymentMethodTranslationInput>>;
 };
 
 export type UpdateProductInput = {
@@ -5461,7 +5519,7 @@ export type UpdateProductVariantInput = {
     featuredAssetId?: InputMaybe<Scalars['ID']>;
     id: Scalars['ID'];
     outOfStockThreshold?: InputMaybe<Scalars['Int']>;
-    price?: InputMaybe<Scalars['Int']>;
+    price?: InputMaybe<Scalars['Money']>;
     sku?: InputMaybe<Scalars['String']>;
     stockLevels?: InputMaybe<Array<StockLevelInput>>;
     stockOnHand?: InputMaybe<Scalars['Int']>;
@@ -5479,9 +5537,9 @@ export type UpdatePromotionInput = {
     enabled?: InputMaybe<Scalars['Boolean']>;
     endsAt?: InputMaybe<Scalars['DateTime']>;
     id: Scalars['ID'];
-    name?: InputMaybe<Scalars['String']>;
     perCustomerUsageLimit?: InputMaybe<Scalars['Int']>;
     startsAt?: InputMaybe<Scalars['DateTime']>;
+    translations?: InputMaybe<Array<PromotionTranslationInput>>;
 };
 
 export type UpdatePromotionResult = MissingConditionsError | Promotion;

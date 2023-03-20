@@ -145,7 +145,7 @@ export function graphQlMutation<T, V extends { [key: string]: any }>(
  * @docsPage UiDevkitClient
  */
 export function notify(options: NotificationMessage['data']): void {
-    sendMessage('notification', options).toPromise();
+    void sendMessage('notification', options).toPromise();
 }
 
 function sendMessage<T extends ExtensionMessage>(type: T['type'], data: T['data']): Observable<any> {

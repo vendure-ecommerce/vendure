@@ -8,6 +8,7 @@ import {
 } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -24,7 +25,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Promotion resolver', () => {
     const promoCondition = generateTestCondition('promo_condition');
@@ -73,11 +74,17 @@ describe('Promotion resolver', () => {
             Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
             input: {
-                name: 'test promotion',
                 enabled: true,
                 couponCode: 'TEST123',
                 startsAt: new Date('2019-10-30T00:00:00.000Z'),
                 endsAt: new Date('2019-12-01T00:00:00.000Z'),
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test promotion',
+                        description: 'a test promotion',
+                    },
+                ],
                 conditions: [
                     {
                         code: promoCondition.code,
@@ -109,8 +116,13 @@ describe('Promotion resolver', () => {
             Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
             input: {
-                name: 'bad promotion',
                 enabled: true,
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'bad promotion',
+                    },
+                ],
                 conditions: [],
                 actions: [
                     {
@@ -358,7 +370,7 @@ describe('Promotion resolver', () => {
                             enabled: false,
                         },
                     }),
-                `No Promotion with the id '1' could be found`,
+                "No Promotion with the id '1' could be found",
             ),
         );
     });

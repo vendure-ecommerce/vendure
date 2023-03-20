@@ -67,7 +67,7 @@ export class OrderEditsPreviewDialogComponent implements OnInit, Dialog<OrderEdi
         } else if (this.priceDifference < 0) {
             this.resolveWith({
                 result: OrderEditResultType.Refund,
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 refundPaymentId: this.selectedPayment!.id,
                 refundNote: this.refundNote,
             });

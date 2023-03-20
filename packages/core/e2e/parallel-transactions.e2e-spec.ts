@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -73,7 +74,7 @@ describe('Parallel transactions', () => {
             },
         });
 
-        const sizes = Array.from({ length: CONCURRENCY_LIMIT }).map(i => `size-${i}`);
+        const sizes = Array.from({ length: CONCURRENCY_LIMIT }).map(i => `size-${i as string}`);
 
         const { createProductOptionGroup } = await adminClient.query<
             Codegen.CreateProductOptionGroupMutation,

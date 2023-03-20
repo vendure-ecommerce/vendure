@@ -11,8 +11,9 @@
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
         "build": "rimraf package && tsc -p ./tsconfig.build.json",
-        "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=payments-plugin",
-        "lint": "tslint --fix --project ./",
+        "e2e": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
+        "e2e:watch": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.ts",
+        "lint": "eslint --fix .",
         "ci": "yarn build",
         "dev-server:mollie": "yarn build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts"
     },
@@ -36,6 +37,6 @@
         "nock": "^13.1.4",
         "rimraf": "^3.0.2",
         "stripe": "^8.197.0",
-        "typescript": "4.5.5"
+        "typescript": "4.9.5"
     }
 }

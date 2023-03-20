@@ -389,7 +389,7 @@ export class SettingsDataService {
             Codegen.CreatePaymentMethodMutation,
             Codegen.CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
-            input,
+            input: pick(input, ['code', 'checker', 'handler', 'enabled', 'translations', 'customFields']),
         });
     }
 
@@ -398,7 +398,15 @@ export class SettingsDataService {
             Codegen.UpdatePaymentMethodMutation,
             Codegen.UpdatePaymentMethodMutationVariables
         >(UPDATE_PAYMENT_METHOD, {
-            input,
+            input: pick(input, [
+                'id',
+                'code',
+                'checker',
+                'handler',
+                'enabled',
+                'translations',
+                'customFields',
+            ]),
         });
     }
 

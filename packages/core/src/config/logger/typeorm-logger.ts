@@ -56,8 +56,8 @@ export class TypeOrmLogger implements TypeOrmLoggerInterface {
 
     logQuerySlow(time: number, query: string, parameters?: any[], queryRunner?: QueryRunner): any {
         const sql = this.formatQueryWithParams(query, parameters);
-        Logger.warn(`Query is slow: ` + sql);
-        Logger.warn(`Execution time: ` + time);
+        Logger.warn('Query is slow: ' + sql);
+        Logger.warn('Execution time: ' + time.toString());
     }
 
     logSchemaBuild(message: string, queryRunner?: QueryRunner): any {
@@ -75,7 +75,10 @@ export class TypeOrmLogger implements TypeOrmLoggerInterface {
     }
 
     private formatQueryWithParams(query: string, parameters?: any[]) {
-        return query + (parameters?.length ? ' -- PARAMETERS: ' + this.stringifyParams(parameters) : '');
+        return (
+            query +
+            (parameters?.length ? ' -- PARAMETERS: ' + this.stringifyParams(parameters).toString() : '')
+        );
     }
 
     /**

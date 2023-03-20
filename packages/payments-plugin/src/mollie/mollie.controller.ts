@@ -15,7 +15,7 @@ export class MollieController {
         @Body() body: any,
     ): Promise<void> {
         if (!body.id) {
-            return Logger.warn(` Ignoring incoming webhook, because it has no body.id.`, loggerCtx);
+            return Logger.warn(' Ignoring incoming webhook, because it has no body.id.', loggerCtx);
         }
         try {
             await this.mollieService.handleMollieStatusUpdate({
@@ -24,7 +24,11 @@ export class MollieController {
                 orderId: body.id,
             });
         } catch (error: any) {
-            Logger.error(`Failed to process incoming webhook: ${error?.message}`, loggerCtx, error);
+            Logger.error(
+                `Failed to process incoming webhook: ${JSON.stringify(error?.message)}`,
+                loggerCtx,
+                error.stack,
+            );
             throw error;
         }
     }

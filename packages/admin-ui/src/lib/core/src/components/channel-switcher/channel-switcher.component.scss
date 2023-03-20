@@ -1,15 +1,43 @@
+@import 'variables';
 
 :host {
-    display: flex;
+    display: block;
     align-items: center;
-    margin: 0 0.5rem;
     height: 2.5rem;
 }
 
 .active-channel {
-    color: var(--color-grey-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--font-size-xs);
+    color: var(--color-left-nav-text);
+    background-color: var(--color-primary-700);
+    border: 1px solid var(--color-left-nav-bg);
+    cursor: pointer;
+    width: 100%;
+    border-radius: var(--border-radius);
+    padding: var(--space-unit);
+
+    &:hover {
+        background-color: var(--color-primary-700);
+        color: var(--color-left-nav-text-hover);
+    }
 
     clr-icon {
-        color: white;
+        color: var(--color-left-nav-text);
+    }
+    @media screen and (max-width: $breakpoint-medium) {
+        justify-content: center;
+    }
+}
+
+.channel-label {
+    margin: 0 3px;
+    overflow: hidden;
+    max-width: 100px;
+    text-overflow: ellipsis;
+    @media screen and (max-width: $breakpoint-medium) {
+        display: none;
     }
 }

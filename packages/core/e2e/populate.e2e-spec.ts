@@ -3,6 +3,7 @@ import { DefaultLogger, User } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -176,7 +177,7 @@ describe('populate() function', () => {
 
         it('populates products', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(channel2.token);
+            adminClient.setChannelToken(channel2.token);
             const { products } = await adminClient.query<GetProductListQuery>(GET_PRODUCT_LIST);
             expect(products.totalItems).toBe(1);
             expect(products.items.map(i => i.name).sort()).toEqual(['Model Hand']);
@@ -193,7 +194,7 @@ describe('populate() function', () => {
         });
 
         it('product also assigned to default channel', async () => {
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { products } = await adminClient.query<GetProductListQuery>(GET_PRODUCT_LIST);
             expect(products.items.map(i => i.name).includes('Model Hand')).toBe(true);
         });
@@ -230,7 +231,7 @@ describe('populate() function', () => {
 
         it('populates variants & options', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { products } = await adminClient.query<GetProductListQuery, GetProductListQueryVariables>(
                 GET_PRODUCT_LIST,
                 {

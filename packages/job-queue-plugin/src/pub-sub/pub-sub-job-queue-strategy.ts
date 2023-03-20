@@ -39,7 +39,7 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
         this.topics.clear();
     }
 
-    async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
+    async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
         if (!this.hasInitialized) {
             throw new Error('Cannot add job before init');
         }
@@ -57,7 +57,7 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
         });
     }
 
-    async start<Data extends JobData<Data> = {}>(
+    async start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ) {
@@ -96,7 +96,7 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
         subscription.on('message', listener);
     }
 
-    async stop<Data extends JobData<Data> = {}>(
+    async stop<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ) {

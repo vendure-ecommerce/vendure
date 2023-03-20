@@ -64,7 +64,7 @@ export function getIdColumnsFor(entityType: Type<any>): IdColumnConfig[] {
 export function getPrimaryGeneratedIdColumn(): { entity: any; name: string } {
     if (!primaryGeneratedColumn) {
         throw new Error(
-            `primaryGeneratedColumn is undefined. The base VendureEntity must have the @PrimaryGeneratedId() decorator set on its id property.`,
+            'primaryGeneratedColumn is undefined. The base VendureEntity must have the @PrimaryGeneratedId() decorator set on its id property.',
         );
     }
     return primaryGeneratedColumn;

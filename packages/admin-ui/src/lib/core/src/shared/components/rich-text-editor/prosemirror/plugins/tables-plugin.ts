@@ -26,82 +26,77 @@ import { renderClarityIcon } from '../menu/menu-common';
 
 export const tableContextMenuPlugin = (contextMenuService: ContextMenuService) =>
     new Plugin({
-        view: () => {
-            return {
-                update: view => {
-                    if (!view.hasFocus()) {
-                        return;
+        view: () => ({
+            update: view => {
+                if (!view.hasFocus()) {
+                    return;
+                }
+                const { doc, selection } = view.state;
+                let tableNode: Node | undefined;
+                let tableNodePos = 0;
+                doc.nodesBetween(selection.from, selection.to, (n, pos, parent) => {
+                    if (n.type.name === 'table') {
+                        tableNode = n;
+                        tableNodePos = pos;
+                        return false;
                     }
-                    const { doc, selection } = view.state;
-                    let tableNode: Node | undefined;
-                    let tableNodePos = 0;
-                    doc.nodesBetween(selection.from, selection.to, (n, pos, parent) => {
-                        if (n.type.name === 'table') {
-                            tableNode = n;
-                            tableNodePos = pos;
-                            return false;
-                        }
-                    });
-                    if (tableNode) {
-                        const node = view.nodeDOM(tableNodePos);
-                        if (node instanceof Element) {
-                            function createMenuItem(
-                                label: string,
-                                commandFn: (
-                                    state: EditorState,
-                                    dispatch?: (tr: Transaction) => void,
-                                ) => boolean,
-                                iconClass?: string,
-                            ): ContextMenuItem {
-                                const enabled = commandFn(view.state);
-                                return {
-                                    label,
-                                    enabled,
-                                    iconClass,
-                                    onClick: () => {
-                                        contextMenuService.clearContextMenu();
-                                        view.focus();
-                                        commandFn(view.state, view.dispatch);
-                                    },
-                                };
-                            }
-                            const separator: ContextMenuItem = {
-                                label: '',
-                                separator: true,
-                                enabled: true,
+                });
+                if (tableNode) {
+                    const node = view.nodeDOM(tableNodePos);
+                    if (node instanceof Element) {
+                        function createMenuItem(
+                            label: string,
+                            commandFn: (state: EditorState, dispatch?: (tr: Transaction) => void) => boolean,
+                            iconClass?: string,
+                        ): ContextMenuItem {
+                            const enabled = commandFn(view.state);
+                            return {
+                                label,
+                                enabled,
+                                iconClass,
                                 onClick: () => {
-                                    /**/
+                                    contextMenuService.clearContextMenu();
+                                    view.focus();
+                                    commandFn(view.state, view.dispatch);
                                 },
                             };
-                            contextMenuService.setContextMenu({
-                                ref: selection,
-                                title: 'Table',
-                                iconShape: 'table',
-                                element: node,
-                                coords: view.coordsAtPos(tableNodePos),
-                                items: [
-                                    createMenuItem('Insert column before', addColumnBefore, 'add-column'),
-                                    createMenuItem('Insert column after', addColumnAfter, 'add-column'),
-                                    createMenuItem('Insert row before', addRowBefore, 'add-row'),
-                                    createMenuItem('Insert row after', addRowAfter, 'add-row'),
-                                    createMenuItem('Merge cells', mergeCells),
-                                    createMenuItem('Split cell', splitCell),
-                                    separator,
-                                    createMenuItem('Toggle header column', toggleHeaderColumn),
-                                    createMenuItem('Toggle header row', toggleHeaderRow),
-                                    separator,
-                                    createMenuItem('Delete column', deleteColumn),
-                                    createMenuItem('Delete row', deleteRow),
-                                    createMenuItem('Delete table', deleteTable),
-                                ],
-                            });
                         }
-                    } else {
-                        contextMenuService.clearContextMenu();
+                        const separator: ContextMenuItem = {
+                            label: '',
+                            separator: true,
+                            enabled: true,
+                            onClick: () => {
+                                /**/
+                            },
+                        };
+                        contextMenuService.setContextMenu({
+                            ref: selection,
+                            title: 'Table',
+                            iconShape: 'table',
+                            element: node,
+                            coords: view.coordsAtPos(tableNodePos),
+                            items: [
+                                createMenuItem('Insert column before', addColumnBefore, 'add-column'),
+                                createMenuItem('Insert column after', addColumnAfter, 'add-column'),
+                                createMenuItem('Insert row before', addRowBefore, 'add-row'),
+                                createMenuItem('Insert row after', addRowAfter, 'add-row'),
+                                createMenuItem('Merge cells', mergeCells),
+                                createMenuItem('Split cell', splitCell),
+                                separator,
+                                createMenuItem('Toggle header column', toggleHeaderColumn),
+                                createMenuItem('Toggle header row', toggleHeaderRow),
+                                separator,
+                                createMenuItem('Delete column', deleteColumn),
+                                createMenuItem('Delete row', deleteRow),
+                                createMenuItem('Delete table', deleteTable),
+                            ],
+                        });
                     }
-                },
-            };
-        },
+                } else {
+                    contextMenuService.clearContextMenu();
+                }
+            },
+        }),
     });
 
 export function getTableNodes() {

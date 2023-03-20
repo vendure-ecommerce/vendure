@@ -153,7 +153,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
             ctx,
             // We know that there is a user, since the Customer
             // was found with the .getCustomerByUserId() method.
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             customer.user!,
             NATIVE_AUTH_STRATEGY_NAME,
         );

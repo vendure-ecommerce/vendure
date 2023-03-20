@@ -18,13 +18,13 @@ export interface JobQueueStrategy extends InjectableStrategy {
      * @description
      * Add a new job to the queue.
      */
-    add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>>;
+    add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>>;
 
     /**
      * @description
      * Start the job queue
      */
-    start<Data extends JobData<Data> = {}>(
+    start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void>;
@@ -33,7 +33,7 @@ export interface JobQueueStrategy extends InjectableStrategy {
      * @description
      * Stops a queue from running. Its not guaranteed to stop immediately.
      */
-    stop<Data extends JobData<Data> = {}>(
+    stop<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void>;

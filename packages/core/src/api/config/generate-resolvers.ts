@@ -1,8 +1,7 @@
 import { IFieldResolver, IResolvers } from '@graphql-tools/utils';
 import { StockMovementType } from '@vendure/common/lib/generated-types';
-import { GraphQLSchema } from 'graphql';
-import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
-import { GraphQLUpload } from 'graphql-upload';
+import { GraphQLFloat, GraphQLSchema } from 'graphql';
+import { GraphQLDateTime, GraphQLJSON, GraphQLSafeInt } from 'graphql-scalars';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import {
@@ -18,12 +17,14 @@ import { CustomFieldRelationResolverService } from '../common/custom-field-relat
 import { ApiType } from '../common/get-api-type';
 import { RequestContext } from '../common/request-context';
 
+import { GraphQLMoney } from './money-scalar';
+
 /**
  * @description
  * Generates additional resolvers required for things like resolution of union types,
  * custom scalars and "relation"-type custom fields.
  */
-export function generateResolvers(
+export async function generateResolvers(
     configService: ConfigService,
     customFieldRelationResolverService: CustomFieldRelationResolverService,
     apiType: ApiType,
@@ -65,6 +66,8 @@ export function generateResolvers(
                     return 'LocaleStringCustomFieldConfig';
                 case 'text':
                     return 'TextCustomFieldConfig';
+                case 'localeText':
+                    return 'LocaleTextCustomFieldConfig';
                 case 'int':
                     return 'IntCustomFieldConfig';
                 case 'float':
@@ -79,12 +82,16 @@ export function generateResolvers(
         },
     };
 
+    // @ts-ignore
+    const { default: GraphQLUpload } = await import('graphql-upload/GraphQLUpload.mjs');
+
     const commonResolvers = {
         JSON: GraphQLJSON,
         DateTime: GraphQLDateTime,
+        Money: GraphQLMoney,
         Node: dummyResolveType,
         PaginatedList: dummyResolveType,
-        Upload: (GraphQLUpload as any) || dummyResolveType,
+        Upload: GraphQLUpload || dummyResolveType,
         SearchResultPrice: {
             __resolveType(value: any) {
                 return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';

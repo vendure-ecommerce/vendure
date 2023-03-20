@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -7,15 +7,21 @@ import {
     configurableDefinitionToInstance,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
+    CreateFacetInput,
     CreatePaymentMethodInput,
+    createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
+    FacetWithValuesFragment,
+    findTranslation,
     getConfigArgValue,
+    LanguageCode,
     NotificationService,
     PaymentMethodFragment,
     Permission,
     ServerConfigService,
     toConfigurableOperationInput,
+    UpdateFacetInput,
     UpdatePaymentMethodInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
@@ -32,7 +38,7 @@ export class PaymentMethodDetailComponent
     extends BaseDetailComponent<PaymentMethodFragment>
     implements OnInit, OnDestroy
 {
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     customFields: CustomFieldConfig[];
     checkers: ConfigurableOperationDefinition[] = [];
     handlers: ConfigurableOperationDefinition[] = [];
@@ -48,7 +54,7 @@ export class PaymentMethodDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
@@ -98,7 +104,7 @@ export class PaymentMethodDetailComponent
     }
 
     configArgsIsPopulated(): boolean {
-        const configArgsGroup = this.detailForm.get('configArgs') as FormGroup | undefined;
+        const configArgsGroup = this.detailForm.get('configArgs') as UntypedFormGroup | undefined;
         if (!configArgsGroup) {
             return false;
         }
@@ -145,22 +151,17 @@ export class PaymentMethodDetailComponent
         if (!selectedHandler) {
             return;
         }
-        this.entity$
+        combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
-                mergeMap(({ id }) => {
-                    const formValue = this.detailForm.value;
-                    const input: CreatePaymentMethodInput = {
-                        name: formValue.name,
-                        code: formValue.code,
-                        description: formValue.description,
-                        enabled: formValue.enabled,
-                        checker: selectedChecker
-                            ? toConfigurableOperationInput(selectedChecker, formValue.checker)
-                            : null,
-                        handler: toConfigurableOperationInput(selectedHandler, formValue.handler),
-                        customFields: formValue.customFields,
-                    };
+                mergeMap(([paymentMethod, languageCode]) => {
+                    const input = this.getUpdatedPaymentMethod(
+                        paymentMethod,
+                        this.detailForm,
+                        languageCode,
+                        selectedHandler,
+                        selectedChecker,
+                    ) as CreatePaymentMethodInput;
                     return this.dataService.settings.createPaymentMethod(input);
                 }),
             )
@@ -187,23 +188,17 @@ export class PaymentMethodDetailComponent
         if (!selectedHandler) {
             return;
         }
-        this.entity$
+        combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
-                mergeMap(({ id }) => {
-                    const formValue = this.detailForm.value;
-                    const input: UpdatePaymentMethodInput = {
-                        id,
-                        name: formValue.name,
-                        code: formValue.code,
-                        description: formValue.description,
-                        enabled: formValue.enabled,
-                        checker: selectedChecker
-                            ? toConfigurableOperationInput(selectedChecker, formValue.checker)
-                            : null,
-                        handler: toConfigurableOperationInput(selectedHandler, formValue.handler),
-                        customFields: formValue.customFields,
-                    };
+                mergeMap(([paymentMethod, languageCode]) => {
+                    const input = this.getUpdatedPaymentMethod(
+                        paymentMethod,
+                        this.detailForm,
+                        languageCode,
+                        selectedHandler,
+                        selectedChecker,
+                    ) as UpdatePaymentMethodInput;
                     return this.dataService.settings.updatePaymentMethod(input);
                 }),
             )
@@ -223,11 +218,43 @@ export class PaymentMethodDetailComponent
             );
     }
 
-    protected setFormValues(paymentMethod: PaymentMethodFragment): void {
+    /**
+     * Given a PaymentMethod and the value of the detailForm, this method creates an updated copy of it which
+     * can then be persisted to the API.
+     */
+    private getUpdatedPaymentMethod(
+        paymentMethod: PaymentMethodFragment,
+        formGroup: UntypedFormGroup,
+        languageCode: LanguageCode,
+        selectedHandler: ConfigurableOperation,
+        selectedChecker?: ConfigurableOperation | null,
+    ): UpdatePaymentMethodInput | CreatePaymentMethodInput {
+        const input = createUpdatedTranslatable({
+            translatable: paymentMethod,
+            updatedFields: formGroup.value,
+            customFieldConfig: this.customFields,
+            languageCode,
+            defaultTranslation: {
+                languageCode,
+                name: paymentMethod.name || '',
+                description: paymentMethod.description || '',
+            },
+        });
+        return {
+            ...input,
+            checker: selectedChecker
+                ? toConfigurableOperationInput(selectedChecker, formGroup.value.checker)
+                : null,
+            handler: toConfigurableOperationInput(selectedHandler, formGroup.value.handler),
+        };
+    }
+
+    protected setFormValues(paymentMethod: PaymentMethodFragment, languageCode: LanguageCode): void {
+        const currentTranslation = findTranslation(paymentMethod, languageCode);
         this.detailForm.patchValue({
-            name: paymentMethod.name,
+            name: currentTranslation?.name,
             code: paymentMethod.code,
-            description: paymentMethod.description,
+            description: currentTranslation?.description,
             enabled: paymentMethod.enabled,
             checker: paymentMethod.checker || {},
             handler: paymentMethod.handler || {},

@@ -33,12 +33,10 @@ export function configurableDefinitionToInstance(
 ): ConfigurableOperation {
     return {
         ...def,
-        args: def.args.map(arg => {
-            return {
+        args: def.args.map(arg => ({
                 ...arg,
                 value: getDefaultConfigArgValue(arg),
-            };
-        }),
+            })),
     } as ConfigurableOperation;
 }
 

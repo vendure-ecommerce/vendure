@@ -1,3 +1,5 @@
+import { pick } from '@vendure/common/lib/pick';
+
 import * as Codegen from '../../common/generated-types';
 import {
     CREATE_PROMOTION,
@@ -44,7 +46,17 @@ export class PromotionDataService {
             Codegen.CreatePromotionMutation,
             Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
-            input,
+            input: pick(input, [
+                'conditions',
+                'actions',
+                'couponCode',
+                'startsAt',
+                'endsAt',
+                'perCustomerUsageLimit',
+                'enabled',
+                'translations',
+                'customFields',
+            ]),
         });
     }
 
@@ -53,7 +65,18 @@ export class PromotionDataService {
             Codegen.UpdatePromotionMutation,
             Codegen.UpdatePromotionMutationVariables
         >(UPDATE_PROMOTION, {
-            input,
+            input: pick(input, [
+                'id',
+                'conditions',
+                'actions',
+                'couponCode',
+                'startsAt',
+                'endsAt',
+                'perCustomerUsageLimit',
+                'enabled',
+                'translations',
+                'customFields',
+            ]),
         });
     }
 

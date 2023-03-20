@@ -1,4 +1,5 @@
 import { Payment, PaymentMethodHandler, TransactionalConnection } from '@vendure/core';
+import { vi } from 'vitest';
 
 import { LanguageCode } from '../graphql/generated-e2e-admin-types';
 
@@ -19,8 +20,8 @@ export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
     }),
 });
 
-export const onTransitionSpy = jest.fn();
-export const onCancelPaymentSpy = jest.fn();
+export const onTransitionSpy = vi.fn();
+export const onCancelPaymentSpy = vi.fn();
 /**
  * A two-stage (authorize, capture) payment method, with no createRefund method.
  */
@@ -132,7 +133,7 @@ export const singleStageRefundFailingPaymentMethod = new PaymentMethodHandler({
     createRefund: async (ctx, input, amount, order, payment, args) => {
         const paymentWithRefunds = await connection
             .getRepository(ctx, Payment)
-            .findOne(payment.id, { relations: ['refunds'] });
+            .findOne({ where: { id: payment.id }, relations: ['refunds'] });
         const isFirstRefundAttempt = paymentWithRefunds?.refunds.length === 0;
         const metadata = isFirstRefundAttempt ? { errorMessage: 'Service temporarily unavailable' } : {};
         return {

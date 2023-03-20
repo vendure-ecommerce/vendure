@@ -4,6 +4,7 @@ import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/c
 import { assertFound, idsAreEqual } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { TranslatorService } from '../../../service/index';
 import { HistoryService } from '../../../service/services/history.service';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
@@ -18,6 +19,7 @@ export class OrderEntityResolver {
         private orderService: OrderService,
         private shippingMethodService: ShippingMethodService,
         private historyService: HistoryService,
+        private translator: TranslatorService,
     ) {}
 
     @ResolveField()
@@ -70,8 +72,14 @@ export class OrderEntityResolver {
 
     @ResolveField()
     async promotions(@Ctx() ctx: RequestContext, @Parent() order: Order) {
-        if (order.promotions) {
-            return order.promotions;
+        // If the order has been hydrated with the promotions, then we can just return those
+        // as long as they have the translations joined.
+        if (
+            order.promotions &&
+            (order.promotions.length === 0 ||
+                (order.promotions.length > 0 && order.promotions[0].translations))
+        ) {
+            return order.promotions.map(p => this.translator.translate(p, ctx));
         }
         return this.orderService.getOrderPromotions(ctx, order.id);
     }

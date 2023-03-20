@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
@@ -12,11 +12,12 @@ import {
     RequestContext,
     VendureEvent,
 } from '@vendure/core';
+import { ensureConfigLoaded } from '@vendure/core/dist/config/config-helpers';
 import { TestingLogger } from '@vendure/testing';
 import { createReadStream, readFileSync } from 'fs';
-import { readFile } from 'fs-extra';
 import path from 'path';
 import { Readable } from 'stream';
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailSender } from './email-sender';
@@ -27,16 +28,17 @@ import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;
-    let onSend: jest.Mock;
+    let onSend: Mock;
     let module: TestingModule;
 
-    const testingLogger = new TestingLogger((...args) => jest.fn(...args));
+    const testingLogger = new TestingLogger((...args) => vi.fn(...args));
 
     async function initPluginWithHandlers(
         handlers: Array<EmailEventHandler<string, any>>,
         options?: Partial<EmailPluginOptions>,
     ) {
-        onSend = jest.fn();
+        await ensureConfigLoaded();
+        onSend = vi.fn();
         module = await Test.createTestingModule({
             imports: [
                 TypeOrmModule.forRoot({
@@ -272,7 +274,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello {{ testVar }}')
-                .setTemplateVars((event, globals) => ({ testVar: globals.globalVar + ' quux' }));
+                .setTemplateVars((event, globals) => ({ testVar: (globals.globalVar as string) + ' quux' }));
 
             await initPluginWithHandlers([handler], {
                 globalTemplateVars: { globalVar: 'baz' },
@@ -653,7 +655,7 @@ describe('EmailPlugin', () => {
             await pause();
 
             expect(testingLogger.warnSpy.mock.calls[0][0]).toContain(
-                `Email has a large 'content' attachment (64k). Consider using the 'path' instead for improved performance.`,
+                'Email has a large \'content\' attachment (64k). Consider using the \'path\' instead for improved performance.',
             );
         });
     });
@@ -707,7 +709,7 @@ describe('EmailPlugin', () => {
             eventBus.publish(new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order));
             await pause();
 
-            expect(onSend.mock.calls[0][0].subject).toBe(`Order confirmation for #${order.code}`);
+            expect(onSend.mock.calls[0][0].subject).toBe(`Order confirmation for #${order.code as string}`);
         });
     });
 
@@ -729,7 +731,7 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
-            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain(`ENOENT: no such file or directory`);
+            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain('ENOENT: no such file or directory');
         });
 
         it('Logs a Handlebars error if the template is invalid', async () => {
@@ -749,7 +751,7 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
-            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain(`Parse error on line 3:`);
+            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain('Parse error on line 3:');
         });
 
         it('Logs an error if the loadData method throws', async () => {
@@ -772,7 +774,7 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
-            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain(`something went horribly wrong!`);
+            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain('something went horribly wrong!');
         });
     });
 
@@ -790,7 +792,7 @@ describe('EmailPlugin', () => {
                 .setTemplateVars(event => ({ subjectVar: 'foo' }));
 
             const fakeSender = new FakeCustomSender();
-            const send = jest.fn();
+            const send = vi.fn();
             fakeSender.send = send;
 
             await initPluginWithHandlers([handler], {

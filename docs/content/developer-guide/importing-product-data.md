@@ -174,7 +174,7 @@ export const initialData: InitialData = {
 * `defaultZone`: Sets the default shipping & tax zone for the default Channel. The zone must correspond to a value of `zone` set in the `countries` array. 
 * `taxRates`: For each item, a new [TaxCategory]({{< relref "tax-category" >}}) is created, and then a [TaxRate]({{< relref "tax-rate" >}}) is created for each unique zone defined in the `countries` array. 
 * `shippingMethods`: Allows simple flat-rate [ShippingMethods]({{< relref "shipping-method" >}}) to be defined.
-* `collections`: Allows Collections to be created. Currently, only collections based on facet values can be created (`code: 'facet-value-filter'`). The `assetPaths` and `facetValueNames` value must correspond to a values specified in the products csv file. The name should match the value specified in the product csv file (or can be a normalized - lower-case & hyphenated - version thereof). If there are FacetValues in multiple Facets with the same name, the facet may be specified with a colon delimiter, e.g. `brand:apple`, `flavour: apple`.
+* `collections`: Allows Collections to be created. Currently, only collections based on facet values can be created (`code: 'facet-value-filter'`). The `assetPaths` and `facetValueNames` values must correspond to a value specified in the products csv file. The name should match the value specified in the product csv file (or can be a normalized - lower-case & hyphenated - version thereof). If there are FacetValues in multiple Facets with the same name, the facet may be specified with a colon delimiter, e.g. `brand:apple`, `flavour: apple`.
 
 ## Populating The Server
 
@@ -218,6 +218,8 @@ populate(
   },
 );
 ```
+**Attention:** When removing the `DefaultJobQueuePlugin` from the plugins list as in the code snippet above, one should manually rebuild the search index in order for the newly added products to appear.
+In the Admin UI this can be done by navigating to the Products page and clicking the gear icon next to the search input.
 
 ### Custom populate scripts
 

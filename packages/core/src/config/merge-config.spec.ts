@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { mergeConfig } from './merge-config';
 
 describe('mergeConfig()', () => {

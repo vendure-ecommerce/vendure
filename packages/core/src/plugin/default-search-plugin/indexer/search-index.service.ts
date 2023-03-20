@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
 import { RequestContext } from '../../../api/common/request-context';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { Asset } from '../../../entity/asset/asset.entity';
-import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Job } from '../../../job-queue/job';
 import { JobQueue } from '../../../job-queue/job-queue';
 import { JobQueueService } from '../../../job-queue/job-queue.service';
@@ -31,7 +31,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
                 const data = job.data;
                 switch (data.type) {
                     case 'reindex':
-                        Logger.verbose(`sending ReindexMessage`);
+                        Logger.verbose('sending ReindexMessage');
                         return this.jobWithProgress(job, this.indexerController.reindex(data));
                     case 'update-product':
                         return this.indexerController.updateProduct(data);
@@ -68,37 +68,45 @@ export class SearchIndexService implements OnApplicationBootstrap {
     }
 
     updateProduct(ctx: RequestContext, product: Product) {
-        this.updateIndexQueue.add({ type: 'update-product', ctx: ctx.serialize(), productId: product.id });
+        return this.updateIndexQueue.add({
+            type: 'update-product',
+            ctx: ctx.serialize(),
+            productId: product.id,
+        });
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
     }
 
     deleteProduct(ctx: RequestContext, product: Product) {
-        this.updateIndexQueue.add({ type: 'delete-product', ctx: ctx.serialize(), productId: product.id });
+        return this.updateIndexQueue.add({
+            type: 'delete-product',
+            ctx: ctx.serialize(),
+            productId: product.id,
+        });
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
     }
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
+        return this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
     }
 
     updateAsset(ctx: RequestContext, asset: Asset) {
-        this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
     }
 
     deleteAsset(ctx: RequestContext, asset: Asset) {
-        this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        this.updateIndexQueue.add({
+        return this.updateIndexQueue.add({
             type: 'assign-product-to-channel',
             ctx: ctx.serialize(),
             productId,
@@ -107,7 +115,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
     }
 
     removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        this.updateIndexQueue.add({
+        return this.updateIndexQueue.add({
             type: 'remove-product-from-channel',
             ctx: ctx.serialize(),
             productId,
@@ -116,7 +124,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
     }
 
     assignVariantToChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
-        this.updateIndexQueue.add({
+        return this.updateIndexQueue.add({
             type: 'assign-variant-to-channel',
             ctx: ctx.serialize(),
             productVariantId,
@@ -125,7 +133,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
     }
 
     removeVariantFromChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
-        this.updateIndexQueue.add({
+        return this.updateIndexQueue.add({
             type: 'remove-variant-from-channel',
             ctx: ctx.serialize(),
             productVariantId,

@@ -20,6 +20,7 @@ import {
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -569,9 +570,9 @@ describe('Custom field relations', () => {
             });
         });
 
-        describe('Fulfillment entity', () => {
-            // Currently no GraphQL API to set customFields on fulfillments
-        });
+        // describe('Fulfillment entity', () => {
+        //     // Currently no GraphQL API to set customFields on fulfillments
+        // });
 
         describe('GlobalSettings entity', () => {
             it('admin updateGlobalSettings', async () => {
@@ -973,9 +974,9 @@ describe('Custom field relations', () => {
             });
         });
 
-        describe('User entity', () => {
-            // Currently no GraphQL API to set User custom fields
-        });
+        // describe('User entity', () => {
+        //     // Currently no GraphQL API to set User custom fields
+        // });
 
         describe('ShippingMethod entity', () => {
             let shippingMethodId: string;
@@ -1058,14 +1059,14 @@ describe('Custom field relations', () => {
                     mutation {
                         createPaymentMethod(
                             input: {
-                                name: "test"
                                 code: "test"
                                 enabled: true
                                 handler: {
                                     code: "${testSuccessfulPaymentMethod.code}"
                                     arguments: []
                                 }
-                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] },
+                                translations: [{ languageCode: en, name: "test" }]
                             }
                         ) {
                             id
@@ -1084,7 +1085,7 @@ describe('Custom field relations', () => {
                         updatePaymentMethod(
                             input: {
                                 id: "${paymentMethodId}"
-                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] },
                             }
                         ) {
                             id

@@ -11,17 +11,17 @@ import { unique } from '@vendure/common/lib/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Channel } from '../../../entity/channel/channel.entity';
-import { ProductOptionGroupTranslation } from '../../../entity/product-option-group/product-option-group-translation.entity';
-import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductAsset } from '../../../entity/product/product-asset.entity';
+import { ProductTranslation } from '../../../entity/product/product-translation.entity';
+import { Product } from '../../../entity/product/product.entity';
 import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
+import { ProductOptionGroupTranslation } from '../../../entity/product-option-group/product-option-group-translation.entity';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariantAsset } from '../../../entity/product-variant/product-variant-asset.entity';
 import { ProductVariantPrice } from '../../../entity/product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { ProductAsset } from '../../../entity/product/product-asset.entity';
-import { ProductTranslation } from '../../../entity/product/product-translation.entity';
-import { Product } from '../../../entity/product/product.entity';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
 import { RequestContextService, StockMovementService } from '../../../service/index';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -182,18 +182,17 @@ export class FastImporterService {
                 .getRepository(this.importCtx, ProductVariantAsset)
                 .save(variantAssets, { reload: false });
         }
-        if (input.stockOnHand != null && input.stockOnHand !== 0) {
-            await this.stockMovementService.adjustProductVariantStock(
-                this.importCtx,
-                createdVariant.id,
-                input.stockOnHand,
-            );
-        }
+        await this.stockMovementService.adjustProductVariantStock(
+            this.importCtx,
+            createdVariant.id,
+            input.stockOnHand ?? 0,
+        );
         const assignedChannelIds = unique([this.defaultChannel, this.importCtx.channel], 'id').map(c => c.id);
         for (const channelId of assignedChannelIds) {
             const variantPrice = new ProductVariantPrice({
                 price: input.price,
                 channelId,
+                currencyCode: this.defaultChannel.defaultCurrencyCode,
             });
             variantPrice.variant = createdVariant;
             await this.connection
@@ -207,7 +206,7 @@ export class FastImporterService {
     private ensureInitialized() {
         if (!this.defaultChannel || !this.importCtx) {
             throw new Error(
-                `The FastImporterService must be initialized with a call to 'initialize()' before importing data`,
+                "The FastImporterService must be initialized with a call to 'initialize()' before importing data",
             );
         }
     }

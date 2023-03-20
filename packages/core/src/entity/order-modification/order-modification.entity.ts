@@ -4,8 +4,9 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne } fro
 
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
-import { OrderModificationLine } from '../order-line-reference/order-modification-line.entity';
+import { Money } from '../money.decorator';
 import { Order } from '../order/order.entity';
+import { OrderModificationLine } from '../order-line-reference/order-modification-line.entity';
 import { Payment } from '../payment/payment.entity';
 import { Refund } from '../refund/refund.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
@@ -36,7 +37,7 @@ export class OrderModification extends VendureEntity {
     @OneToMany(type => Surcharge, surcharge => surcharge.orderModification)
     surcharges: Surcharge[];
 
-    @Column()
+    @Money()
     priceChange: number;
 
     @OneToOne(type => Payment)

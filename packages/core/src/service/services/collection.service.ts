@@ -17,6 +17,7 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -93,6 +94,7 @@ export class CollectionService implements OnModuleInit {
 
         merge(productEvents$, variantEvents$)
             .pipe(debounceTime(50))
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             .subscribe(async event => {
                 const collections = await this.connection.rawConnection
                     .getRepository(Collection)
@@ -131,9 +133,10 @@ export class CollectionService implements OnModuleInit {
                                 job.data.applyToChangedVariantsOnly,
                             );
                         } catch (e: any) {
-                            const translatedCollection = await this.translator.translate(collection, ctx);
+                            const translatedCollection = this.translator.translate(collection, ctx);
                             Logger.error(
-                                `An error occurred when processing the filters for the collection "${translatedCollection.name}" (id: ${collection.id})`,
+                                'An error occurred when processing the filters for ' +
+                                    `the collection "${translatedCollection.name}" (id: ${collection.id})`,
                             );
                             Logger.error(e.message);
                             continue;
@@ -237,10 +240,6 @@ export class CollectionService implements OnModuleInit {
     }
 
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
-        const parentIdSelect =
-            this.connection.rawConnection.options.type === 'postgres'
-                ? '"child"."parentId"'
-                : 'child.parentId';
         const parent = await this.connection
             .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
@@ -249,14 +248,14 @@ export class CollectionService implements OnModuleInit {
                 qb =>
                     `collection.id = ${qb
                         .subQuery()
-                        .select(parentIdSelect)
+                        .select(`${qb.escape('child')}.${qb.escape('parentId')}`)
                         .from(Collection, 'child')
                         .where('child.id = :id', { id: collectionId })
                         .getQuery()}`,
             )
             .getOne();
 
-        return parent && this.translator.translate(parent, ctx);
+        return (parent && this.translator.translate(parent, ctx)) ?? undefined;
     }
 
     /**
@@ -374,7 +373,7 @@ export class CollectionService implements OnModuleInit {
 
         return this.connection
             .getRepository(ctx, Collection)
-            .findByIds(ancestors.map(c => c.id))
+            .find({ where: { id: In(ancestors.map(c => c.id)) } })
             .then(categories => {
                 const resultCategories: Array<Collection | Translated<Collection>> = [];
                 ancestors.forEach(a => {
@@ -407,7 +406,7 @@ export class CollectionService implements OnModuleInit {
         let qb = this.listQueryBuilder.build(ProductVariant, options, {
             relations: relations ?? ['taxCategory'],
             channelId: ctx.channelId,
-            where: { deletedAt: null },
+            where: { deletedAt: IsNull() },
             ctx,
             entityAlias: 'productVariant',
         });
@@ -534,7 +533,7 @@ export class CollectionService implements OnModuleInit {
             idsAreEqual(input.parentId, target.id) ||
             descendants.some(cat => idsAreEqual(input.parentId, cat.id))
         ) {
-            throw new IllegalOperationError(`error.cannot-move-collection-into-self`);
+            throw new IllegalOperationError('error.cannot-move-collection-into-self');
         }
 
         let siblings = await this.connection
@@ -710,7 +709,8 @@ export class CollectionService implements OnModuleInit {
             .select('MAX(collection.position)', 'index')
             .where('parent.id = :id', { id: parentId })
             .getRawOne();
-        return (result.index || 0) + 1;
+        const index = result.index;
+        return (typeof index === 'number' ? index : 0) + 1;
     }
 
     private async getParentCollection(
@@ -724,7 +724,8 @@ export class CollectionService implements OnModuleInit {
                 .leftJoin('collection.channels', 'channel')
                 .where('collection.id = :id', { id: parentId })
                 .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
-                .getOne();
+                .getOne()
+                .then(result => result ?? undefined);
         } else {
             return this.getRootCollection(ctx);
         }
@@ -793,7 +794,7 @@ export class CollectionService implements OnModuleInit {
         }
         const collectionsToAssign = await this.connection
             .getRepository(ctx, Collection)
-            .findByIds(input.collectionIds);
+            .find({ where: { id: In(input.collectionIds) } });
 
         await Promise.all(
             collectionsToAssign.map(collection =>
@@ -838,7 +839,7 @@ export class CollectionService implements OnModuleInit {
         }
         const collectionsToRemove = await this.connection
             .getRepository(ctx, Collection)
-            .findByIds(input.collectionIds);
+            .find({ where: { id: In(input.collectionIds) } });
 
         await Promise.all(
             collectionsToRemove.map(async collection => {

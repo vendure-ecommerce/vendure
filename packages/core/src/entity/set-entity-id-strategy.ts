@@ -1,7 +1,7 @@
 import { Type } from '@vendure/common/lib/shared-types';
 import { Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
-import { EntityIdStrategy } from '../config/entity-id-strategy/entity-id-strategy';
+import { EntityIdStrategy } from '../config/entity/entity-id-strategy';
 
 import { getIdColumnsFor, getPrimaryGeneratedIdColumn } from './entity-id.decorator';
 
@@ -26,5 +26,5 @@ function setEntityIdColumnTypes(entityIdStrategy: EntityIdStrategy<any>, entitie
 
 function setBaseEntityIdType(entityIdStrategy: EntityIdStrategy<any>) {
     const { entity, name } = getPrimaryGeneratedIdColumn();
-    PrimaryGeneratedColumn(entityIdStrategy.primaryKeyType as any)(entity, name);
+    PrimaryGeneratedColumn(entityIdStrategy.primaryKeyType)(entity, name);
 }

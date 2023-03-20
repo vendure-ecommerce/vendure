@@ -63,8 +63,8 @@ export class CountryService {
     ): Promise<Translated<Country> | undefined> {
         return this.connection
             .getRepository(ctx, Country)
-            .findOne(countryId, { relations })
-            .then(country => country && this.translator.translate(country, ctx));
+            .findOne({ where: { id: countryId }, relations })
+            .then(country => (country && this.translator.translate(country, ctx)) ?? undefined);
     }
 
     /**

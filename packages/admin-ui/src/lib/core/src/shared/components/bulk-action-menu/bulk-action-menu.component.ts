@@ -48,8 +48,8 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     ngOnInit(): void {
         const actionsForLocation = this.bulkActionRegistryService.getBulkActionsForLocation(this.locationId);
         this.actions$ = this.selectionManager.selectionChanges$.pipe(
-            switchMap(selection => {
-                return Promise.all(
+            switchMap(selection =>
+                Promise.all(
                     actionsForLocation.map(async action => {
                         let display = true;
                         let translationVars = {};
@@ -69,8 +69,8 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
                         }
                         return { ...action, display, translationVars };
                     }),
-                );
-            }),
+                ),
+            ),
         );
         this.subscription = this.dataService.client
             .userStatus()

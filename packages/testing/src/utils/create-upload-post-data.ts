@@ -32,7 +32,7 @@ export function createUploadPostData<P extends string[] | string, V>(
         d => d.kind === Kind.OPERATION_DEFINITION,
     ) as OperationDefinitionNode;
 
-    const filePathsArray = (Array.isArray(filePaths) ? filePaths : [filePaths]) as string[];
+    const filePathsArray: string[] = Array.isArray(filePaths) ? filePaths : [filePaths];
     const variables = mapVariables(filePaths);
     const postData: UploadPostData = {
         operations: {
@@ -40,12 +40,9 @@ export function createUploadPostData<P extends string[] | string, V>(
             variables,
             query: print(mutation),
         },
-        map: filePathsArray.reduce(
-            (output, filePath, i) => {
-                return { ...output, [i.toString()]: objectPath(variables, i).join('.') };
-            },
-            {} as { [index: number]: string },
-        ),
+        map: filePathsArray.reduce((output, filePath, i) => {
+            return { ...output, [i.toString()]: objectPath(variables, i).join('.') };
+        }, {} as Record<number, string>),
         filePaths: filePathsArray.map((filePath, i) => ({
             name: i.toString(),
             file: filePath,

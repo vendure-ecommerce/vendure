@@ -5,6 +5,7 @@ import { PaymentMetadata } from '../../common/types/common-types';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
+import { Money } from '../money.decorator';
 import { RefundLine } from '../order-line-reference/refund-line.entity';
 import { Payment } from '../payment/payment.entity';
 
@@ -14,13 +15,13 @@ export class Refund extends VendureEntity {
         super(input);
     }
 
-    @Column() items: number;
+    @Money() items: number;
 
-    @Column() shipping: number;
+    @Money() shipping: number;
 
-    @Column() adjustment: number;
+    @Money() adjustment: number;
 
-    @Column() total: number;
+    @Money() total: number;
 
     @Column() method: string;
 

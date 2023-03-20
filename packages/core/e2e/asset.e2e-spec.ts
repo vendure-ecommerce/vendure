@@ -1,10 +1,11 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import fs from 'fs-extra';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -255,7 +256,7 @@ describe('Asset resolver', () => {
 
             expect(createAssets.length).toBe(1);
             expect(createAssets[0]).toEqual({
-                message: `The MIME type 'text/plain' is not permitted.`,
+                message: 'The MIME type \'text/plain\' is not permitted.',
                 mimeType: 'text/plain',
                 fileName: 'dummy.txt',
             });
@@ -535,7 +536,7 @@ describe('Asset resolver', () => {
             });
 
             expect(deleteAsset.result).toBe(DeletionResult.NOT_DELETED);
-            expect(deleteAsset.message).toContain(`The selected Asset is featured by 1 Product`);
+            expect(deleteAsset.message).toContain('The selected Asset is featured by 1 Product');
 
             const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
                 GET_ASSET,

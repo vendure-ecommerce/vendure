@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -42,7 +42,7 @@ export class AdminDetailComponent
     permissionDefinitions: PermissionDefinition[];
     allRoles$: Observable<RoleFragment[]>;
     selectedRoles: RoleFragment[] = [];
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     selectedRolePermissions: { [channelId: string]: PermissionsByChannel } = {} as any;
     selectedChannelId: string | null = null;
 
@@ -56,7 +56,7 @@ export class AdminDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
@@ -228,18 +228,18 @@ export class AdminDetailComponent
 
             this.selectedRolePermissions = {} as any;
             for (const channelId of Array.from(channelIdPermissionsMap.keys())) {
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const permissionSet = channelIdPermissionsMap.get(channelId)!;
                 const permissionsHash: { [K in Permission]: boolean } = {} as any;
                 for (const def of this.serverConfigService.getPermissionDefinitions()) {
                     permissionsHash[def.name] = permissionSet.has(def.name as Permission);
                 }
                 this.selectedRolePermissions[channelId] = {
-                    // tslint:disable:no-non-null-assertion
+                    /* eslint-disable @typescript-eslint/no-non-null-assertion */
                     channelId,
                     channelCode: channelIdCodeMap.get(channelId)!,
                     permissions: permissionsHash,
-                    // tslint:enable:no-non-null-assertion
+                    /* eslint-enable @typescript-eslint/no-non-null-assertion */
                 };
             }
         }

@@ -2,9 +2,7 @@
 
 :host {
     display: block;
-    @media screen and (min-width: $breakpoint-small) {
-        padding: 0 1rem;
-    }
+    padding: 0;
 }
 .breadcrumbs {
     list-style-type: none;
@@ -12,11 +10,12 @@
     overflow-x: auto;
     max-width: 100vw;
     padding: 0 3px;
+    margin: 0 var(--space-unit);
+    font-size: var(--font-size-sm);
     @media screen and (min-width: $breakpoint-small) {
         padding: 0;
     }
     li {
-        font-size: 16px;
         display: inline-block;
         margin-right: 10px;
         white-space: nowrap;

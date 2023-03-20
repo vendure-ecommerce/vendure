@@ -130,9 +130,9 @@ export class Job<T extends JobData<T> = any> {
             this._startedAt = new Date();
             this._attempts++;
             Logger.debug(
-                `Job ${this.id} [${this.queueName}] starting (attempt ${this._attempts} of ${
-                    this.retries + 1
-                })`,
+                `Job ${this.id?.toString() ?? 'null'} [${this.queueName}] starting (attempt ${
+                    this._attempts
+                } of ${this.retries + 1})`,
             );
         }
     }
@@ -156,7 +156,7 @@ export class Job<T extends JobData<T> = any> {
         this._progress = 100;
         this._state = JobState.COMPLETED;
         this._settledAt = new Date();
-        Logger.debug(`Job ${this.id} [${this.queueName}] completed`);
+        Logger.debug(`Job ${this.id?.toString() ?? 'null'} [${this.queueName}] completed`);
     }
 
     /**
@@ -169,14 +169,16 @@ export class Job<T extends JobData<T> = any> {
         if (this.retries >= this._attempts) {
             this._state = JobState.RETRYING;
             Logger.warn(
-                `Job ${this.id} [${this.queueName}] failed (attempt ${this._attempts} of ${
-                    this.retries + 1
-                })`,
+                `Job ${this.id?.toString() ?? 'null'} [${this.queueName}] failed (attempt ${
+                    this._attempts
+                } of ${this.retries + 1})`,
             );
         } else {
             if (this._state !== JobState.CANCELLED) {
                 this._state = JobState.FAILED;
-                Logger.warn(`Job ${this.id} [${this.queueName}] failed and will not retry.`);
+                Logger.warn(
+                    `Job ${this.id?.toString() ?? 'null'} [${this.queueName}] failed and will not retry.`,
+                );
             }
             this._settledAt = new Date();
         }
@@ -196,7 +198,9 @@ export class Job<T extends JobData<T> = any> {
         if (this._state === JobState.RUNNING) {
             this._state = JobState.PENDING;
             this._attempts = 0;
-            Logger.debug(`Job ${this.id} [${this.queueName}] deferred back to PENDING state`);
+            Logger.debug(
+                `Job ${this.id?.toString() ?? 'null'} [${this.queueName}] deferred back to PENDING state`,
+            );
         }
     }
 

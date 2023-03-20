@@ -1,7 +1,7 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import fs from 'fs';
 import path from 'path';
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const find = require('find');
 
 /**

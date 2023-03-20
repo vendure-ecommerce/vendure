@@ -13,10 +13,10 @@ import {
 import {
     AbstractControl,
     ControlValueAccessor,
-    FormControl,
-    FormGroup,
     NG_VALIDATORS,
     NG_VALUE_ACCESSOR,
+    UntypedFormControl,
+    UntypedFormGroup,
     ValidationErrors,
     Validator,
     Validators,
@@ -68,7 +68,7 @@ export class ConfigurableInputComponent
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;
     onTouch: () => void;
-    form = new FormGroup({});
+    form = new UntypedFormGroup({});
     positionChange$: Observable<number>;
     private positionChangeSubject = new BehaviorSubject<number>(0);
     private subscription: Subscription;
@@ -137,7 +137,7 @@ export class ConfigurableInputComponent
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
-        this.form = new FormGroup({});
+        this.form = new UntypedFormGroup({});
         (this.form as any).__id = Math.random().toString(36).substr(10);
 
         if (this.operation.args) {
@@ -147,7 +147,7 @@ export class ConfigurableInputComponent
                     value = getDefaultConfigArgValue(arg);
                 }
                 const validators = arg.list ? undefined : arg.required ? Validators.required : undefined;
-                this.form.addControl(arg.name, new FormControl(value, validators));
+                this.form.addControl(arg.name, new UntypedFormControl(value, validators));
             }
         }
 

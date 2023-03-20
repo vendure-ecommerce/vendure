@@ -80,6 +80,8 @@ export const UPDATED_ORDER_FRAGMENT = gql`
             productVariant {
                 id
             }
+            linePrice
+            linePriceWithTax
             discounts {
                 adjustmentSource
                 amount
@@ -427,6 +429,9 @@ export const SET_CUSTOMER = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on GuestCheckoutError {
+                errorDetail
             }
         }
     }
