@@ -26,7 +26,7 @@ export interface MolliePluginOptions {
 /**
  * @description
  * Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
- * This plugin uses the Payments API from Mollie, not the Orders API.
+ * This plugin uses the Order API from Mollie, not the Payments API.
  *
  * ## Requirements
  *
