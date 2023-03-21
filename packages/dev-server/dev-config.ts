@@ -13,6 +13,7 @@ import {
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
+import 'dotenv/config';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
@@ -101,11 +102,12 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: true,
                 type: 'postgres',
-                host: '127.0.0.1',
-                port: 5432,
-                username: 'admin',
-                password: 'secret',
-                database: 'vendure-dev',
+                host: process.env.DB_HOST,
+                port: Number(process.env.DB_PORT),
+                username: process.env.DB_USERNAME,
+                password: process.env.DB_PASSWORD,
+                database: process.env.DB_NAME,
+                schema: process.env.DB_SCHEMA,
             };
         case 'sqlite':
             console.log('Using sqlite connection');
