@@ -1247,6 +1247,28 @@ describe('ListQueryBuilder', () => {
             ]);
         });
     });
+
+    describe('relations in customFields', () => {
+        it('should resolve relations in customFields successfully', async () => {
+            const { testEntities } = await shopClient.query(GET_LIST_WITH_CUSTOM_FIELD_RELATION, {
+                options: {
+                    filter: {
+                        label: { eq: 'A' },
+                    },
+                },
+            });
+
+            expect(testEntities.items).toEqual([
+                {
+                    id: 'T_1',
+                    label: 'A',
+                    customFields: {
+                        relation: [{ id: 'T_1', data: 'A' }],
+                    },
+                },
+            ]);
+        });
+    });
 });
 
 const GET_LIST = gql`
@@ -1309,6 +1331,23 @@ const GET_ARRAY_LIST = gql`
             name
             date
             price
+        }
+    }
+`;
+
+const GET_LIST_WITH_CUSTOM_FIELD_RELATION = gql`
+    query GetTestWithCustomFieldRelation($options: TestEntityListOptions) {
+        testEntities(options: $options) {
+            items {
+                id
+                label
+                customFields {
+                    relation {
+                        id
+                        data
+                    }
+                }
+            }
         }
     }
 `;

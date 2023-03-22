@@ -5,6 +5,7 @@ import {
     CreateProductOptionInput,
     CreateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
@@ -70,6 +71,11 @@ export class FastImporterService {
 
     async createProduct(input: CreateProductInput): Promise<ID> {
         this.ensureInitialized();
+        // https://github.com/vendure-ecommerce/vendure/issues/2053
+        // normalizes slug without validation for faster performance
+        input.translations.map(translation => {
+            translation.slug = normalizeString(translation.slug as string, '-');
+        });
         const product = await this.translatableSaver.create({
             ctx: this.importCtx,
             input,

@@ -25,7 +25,7 @@ Learn how to run your store in our [Administrator Guide]({{< relref "user-guide"
 
 Vendure is a headless e-commerce framework.
 
-* *Headless* is a term which means that it does not concern itself with rendering the HTML pages of a website. Rather, it exposes a GraphQL API which which can be *queried* for data ("Give me a list of available products") or issued with *mutation* instructions ("Add product '123' to the current order") by a *client application*. Thus the client is responsible for how the e-commerce "storefront" looks and how it works. Vendure is responsible for the rest.
+* *Headless* is a term that means it does not concern itself with rendering the HTML pages of a website. Rather, it exposes a GraphQL API which can be *queried* for data ("Give me a list of available products") or issued with *mutation* instructions ("Add product '123' to the current order") by a *client application*. Thus the client is responsible for how the e-commerce "storefront" looks and how it works. Vendure is responsible for the rest.
 * Vendure is a *framework* in that it supplies core e-commerce functionality, but is open to further extension by the developer.
 
 ## Who should use Vendure?

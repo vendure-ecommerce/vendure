@@ -1,5 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
-import { SimpleGraphQLClient } from '@vendure/testing';
+import { ChannelService, OrderService, PaymentService, RequestContext } from '@vendure/core';
+import { SimpleGraphQLClient, TestServer } from '@vendure/testing';
 import gql from 'graphql-tag';
 
 import { REFUND_ORDER } from './graphql/admin-queries';
@@ -45,23 +46,46 @@ export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient)
     return (transitionOrderToState as TestOrderFragmentFragment)!.id;
 }
 
-export async function refundOne(
+export async function refundOrderLine(
     adminClient: SimpleGraphQLClient,
     orderLineId: string,
+    quantity: number,
     paymentId: string,
+    adjustment: number,
 ): Promise<RefundFragment> {
     const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(
         REFUND_ORDER,
         {
             input: {
-                lines: [{ orderLineId, quantity: 1 }],
+                lines: [{ orderLineId, quantity }],
                 shipping: 0,
-                adjustment: 0,
+                adjustment,
                 paymentId,
             },
         },
     );
     return refundOrder as RefundFragment;
+}
+/**
+ * Add a partial payment to an order. This happens, for example, when using Gift cards
+ */
+export async function addManualPayment(server: TestServer, orderId: ID, amount: number): Promise<void> {
+    const ctx = new RequestContext({
+        apiType: 'admin',
+        isAuthorized: true,
+        authorizedAsOwnerOnly: false,
+        channel: await server.app.get(ChannelService).getDefaultChannel(),
+    });
+    const order = await server.app.get(OrderService).findOne(ctx, orderId);
+    // tslint:disable-next-line:no-non-null-assertion
+    await server.app.get(PaymentService).createManualPayment(ctx, order!, amount, {
+        method: 'Gift card',
+        // tslint:disable-next-line:no-non-null-assertion
+        orderId: order!.id,
+        metadata: {
+            bogus: 'test',
+        },
+    });
 }
 
 export const CREATE_MOLLIE_PAYMENT_INTENT = gql`

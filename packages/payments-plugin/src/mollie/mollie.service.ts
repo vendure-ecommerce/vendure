@@ -17,8 +17,11 @@ import {
     OrderStateTransitionError,
     PaymentMethod,
     PaymentMethodService,
+    ProductVariant,
+    ProductVariantService,
     RequestContext,
 } from '@vendure/core';
+import { totalCoveredByPayments } from '@vendure/core/dist/service/helpers/utils/order-utils';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import {
@@ -58,6 +61,7 @@ export class MollieService {
         private orderService: OrderService,
         private channelService: ChannelService,
         private entityHydrator: EntityHydrator,
+        private variantService: ProductVariantService,
     ) {}
 
     /**
@@ -80,9 +84,9 @@ export class MollieService {
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
-        await this.entityHydrator.hydrate(ctx, order, {
-            relations: ['customer', 'surcharges', 'lines.productVariant', 'shippingLines.shippingMethod'],
-        });
+        await this.entityHydrator.hydrate(ctx, order,
+            { relations: ['customer', 'surcharges', 'lines.productVariant', 'shippingLines.shippingMethod', 'payments'] }
+        );
         if (!order.lines?.length) {
             return new PaymentIntentError('Cannot create payment intent for empty order');
         }
@@ -94,6 +98,12 @@ export class MollieService {
         }
         if (!paymentMethod) {
             return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
+        }
+        const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
+        if (variantsWithInsufficientSaleableStock.length) {
+            return new PaymentIntentError(
+                `The following variants are out of stock: ${variantsWithInsufficientSaleableStock.map(v => v.name).join(', ')}`
+            );
         }
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
         let redirectUrl = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
@@ -119,14 +129,16 @@ export class MollieService {
                 'Order doesn\'t have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.',
             );
         }
+        const alreadyPaid = totalCoveredByPayments(order);
+        const amountToPay = order.totalWithTax - alreadyPaid;
         const orderInput: CreateParameters = {
             orderNumber: order.code,
-            amount: toAmount(order.totalWithTax, order.currencyCode),
+            amount: toAmount(amountToPay, order.currencyCode),
             redirectUrl: `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
             locale: getLocale(billingAddress.country, ctx.languageCode),
-            lines: toMollieOrderLines(order),
+            lines: toMollieOrderLines(order, alreadyPaid),
         };
         if (molliePaymentMethodCode) {
             orderInput.method = molliePaymentMethodCode as MollieClientMethod;
@@ -286,10 +298,21 @@ export class MollieService {
         }));
     }
 
-    private async getPaymentMethod(
-        ctx: RequestContext,
-        paymentMethodCode: string,
-    ): Promise<PaymentMethod | undefined> {
+    async getVariantsWithInsufficientStock(ctx: RequestContext, order: Order): Promise<ProductVariant[]> {
+        const variantsWithInsufficientSaleableStock: ProductVariant[] = [];
+        for (const line of order.lines) {
+            const availableStock = await this.variantService.getSaleableStockLevel(
+                ctx,
+                line.productVariant,
+            );
+            if (line.quantity > availableStock) {
+                variantsWithInsufficientSaleableStock.push(line.productVariant);
+            }
+        }
+        return variantsWithInsufficientSaleableStock;
+    }
+
+    private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
         const paymentMethods = await this.paymentMethodService.findAll(ctx);
         return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
     }
