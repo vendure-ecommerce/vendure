@@ -18,7 +18,6 @@ import {
     TRANSITION_TO_STATE,
 } from './graphql/shop-queries';
 
-
 export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void> {
     await shopClient.query(SET_SHIPPING_ADDRESS, {
         input: {
@@ -52,6 +51,7 @@ export async function refundOrderLine(
     orderLineId: string,
     quantity: number,
     paymentId: string,
+    adjustment: number,
 ): Promise<RefundFragment> {
     const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(
         REFUND_ORDER,
@@ -59,7 +59,7 @@ export async function refundOrderLine(
             input: {
                 lines: [{ orderLineId, quantity }],
                 shipping: 0,
-                adjustment: 0,
+                adjustment,
                 paymentId,
             },
         },
@@ -83,8 +83,8 @@ export async function addManualPayment(server: TestServer, orderId: ID, amount: 
         // tslint:disable-next-line:no-non-null-assertion
         orderId: order!.id,
         metadata: {
-            bogus: 'test'
-        }
+            bogus: 'test',
+        },
     });
 }
 
@@ -99,7 +99,8 @@ export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
                 message
             }
         }
-    }`;
+    }
+`;
 
 export const GET_MOLLIE_PAYMENT_METHODS = gql`
     query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
@@ -121,4 +122,5 @@ export const GET_MOLLIE_PAYMENT_METHODS = gql`
                 svg
             }
         }
-    }`;
+    }
+`;
