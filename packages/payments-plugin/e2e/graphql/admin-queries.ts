@@ -83,6 +83,8 @@ export const GET_ORDER_PAYMENTS = gql`
     query order($id: ID!) {
         order(id: $id) {
             id
+            state
+            totalWithTax
             payments {
                 id
                 transactionId

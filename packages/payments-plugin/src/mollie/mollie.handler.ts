@@ -62,7 +62,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         }
         Logger.info(`Payment for order ${order.code} created with state '${metadata.status}'`, loggerCtx);
         return {
-            amount,
+            amount: metadata.amount,
             state: metadata.status,
             transactionId: metadata.orderId, // The plugin now only supports 1 payment per order, so a mollie order equals a payment
             metadata, // Store all given metadata on a payment
