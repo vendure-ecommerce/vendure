@@ -27,6 +27,17 @@
         "braintree": "3.x",
         "stripe": "8.x"
     },
+    "peerDependenciesMeta": {
+        "@mollie/api-client": {
+            "optional": true
+        },
+        "braintree": {
+            "optional": true
+        },
+        "stripe": {
+            "optional": true
+        }
+    },
     "devDependencies": {
         "@mollie/api-client": "^3.6.0",
         "@types/braintree": "^2.22.15",
