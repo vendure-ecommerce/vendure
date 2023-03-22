@@ -1,5 +1,5 @@
 import { OrderStatus } from '@mollie/api-client';
-import { ChannelService, mergeConfig, OrderService, RequestContext } from '@vendure/core';
+import { ChannelService, DefaultLogger, LogLevel, mergeConfig, OrderService, RequestContext } from '@vendure/core';
 import {
     SettlePaymentMutation,
     SettlePaymentMutationVariables
@@ -104,7 +104,7 @@ describe('Mollie payments', () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
             // Uncomment next line to debug e2e
-            // logger: new DefaultLogger({level: LogLevel.Verbose})
+            logger: new DefaultLogger({level: LogLevel.Verbose})
         });
         const env = createTestEnvironment(devConfig);
         serverPort = devConfig.apiOptions.port;
@@ -229,7 +229,7 @@ describe('Mollie payments', () => {
     it('Should get payment url without Mollie method', async () => {
         let mollieRequest: any | undefined;
         nock('https://api.mollie.com/')
-            .post(/.*/, body => {
+            .post('/v2/orders', body => {
                 mollieRequest = body;
                 return true;
             })
@@ -296,7 +296,7 @@ describe('Mollie payments', () => {
 
     it('Should immediately settle payment for standard payment methods', async () => {
         nock('https://api.mollie.com/')
-            .get(/.*/)
+            .get('/v2/orders/ord_mockId')
             .reply(200, {
                 ...mockData.mollieOrderResponse,
                 orderNumber: order.code,
@@ -329,15 +329,11 @@ describe('Mollie payments', () => {
     });
 
     it('Should fail to refund', async () => {
-        let mollieRequest;
         nock('https://api.mollie.com/')
             .get('/v2/orders/ord_mockId?embed=payments')
             .reply(200, mockData.mollieOrderResponse);
         nock('https://api.mollie.com/')
-            .post(/.*/, body => {
-                mollieRequest = body;
-                return true;
-            })
+            .post('/v2/payments/tr_mockPayment/refunds')
             .reply(200, { status: 'failed', resource: 'payment' });
         const refund = await refundOrderLine(adminClient, order.lines[0].id, 1, order!.payments[1].id);
         expect(refund.state).toBe('Failed');
@@ -349,7 +345,7 @@ describe('Mollie payments', () => {
             .get('/v2/orders/ord_mockId?embed=payments')
             .reply(200, mockData.mollieOrderResponse);
         nock('https://api.mollie.com/')
-            .post(/.*/, body => {
+            .post('/v2/payments/tr_mockPayment/refunds', body => {
                 mollieRequest = body;
                 return true;
             })
@@ -362,7 +358,7 @@ describe('Mollie payments', () => {
 
     it('Should get available paymentMethods', async () => {
         nock('https://api.mollie.com/')
-            .get(/.*/)
+            .get('/v2/methods')
             .reply(200, mockData.molliePaymentMethodsResponse);
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         const { molliePaymentMethods } = await shopClient.query(GET_MOLLIE_PAYMENT_METHODS, {
