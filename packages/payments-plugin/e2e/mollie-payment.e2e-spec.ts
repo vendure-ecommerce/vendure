@@ -124,6 +124,7 @@ describe('Mollie payments', () => {
     const SURCHARGE_AMOUNT = -20000;
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
+            logger: new DefaultLogger({ level: LogLevel.Debug }),
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
         });
         const env = createTestEnvironment(devConfig);
@@ -347,6 +348,7 @@ describe('Mollie payments', () => {
                 .get('/v2/orders/ord_mockId')
                 .reply(200, {
                     ...mockData.mollieOrderResponse,
+                    // Add a payment of 20.00
                     amount: { value: '20.00', currency: 'EUR' },
                     orderNumber: order.code,
                     status: OrderStatus.paid,
@@ -366,7 +368,8 @@ describe('Mollie payments', () => {
                 .get('/v2/orders/ord_mockId')
                 .reply(200, {
                     ...mockData.mollieOrderResponse,
-                    amount: { value: '1179.00', currency: 'EUR' }, // 1199.90 minus the previously paid 20.00
+                    // Add a payment of 1089.90
+                    amount: { value: '1089.90', currency: 'EUR' }, // 1109.90 minus the previously paid 20.00
                     orderNumber: order.code,
                     status: OrderStatus.paid,
                 });
@@ -431,11 +434,11 @@ describe('Mollie payments', () => {
                 adminClient,
                 order.lines[0].id,
                 10,
-                order.payments[1].id,
+                order.payments[2].id,
                 SURCHARGE_AMOUNT,
             );
-            expect(mollieRequest?.amount.value).toBe('909.90'); // Only refund mollie amount, not the gift card
-            expect(refund.total).toBe(90990);
+            expect(mollieRequest?.amount.value).toBe('999.90'); // Only refund mollie amount, not the gift card
+            expect(refund.total).toBe(99990);
             expect(refund.state).toBe('Settled');
         });
 

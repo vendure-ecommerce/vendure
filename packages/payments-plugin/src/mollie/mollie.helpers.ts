@@ -83,7 +83,7 @@ export function toAmount(value: number, orderCurrency: string): Amount {
  * Return to number of cents
  */
 export function amountToCents(amount: Amount): number {
-    return Number(amount.value) * 100;
+    return Math.round(Number(amount.value) * 100); // Round because floating point errors after Number() conversion
 }
 
 /**
