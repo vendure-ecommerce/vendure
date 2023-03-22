@@ -27,13 +27,6 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'API Key' }],
         },
-        redirectUrl: {
-            type: 'string',
-            label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
-            description: [
-                { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
-            ],
-        },
         autoCapture: {
             type: 'boolean',
             label: [{ languageCode: LanguageCode.en, value: 'Auto capture payments' }],

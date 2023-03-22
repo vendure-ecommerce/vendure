@@ -1572,6 +1572,7 @@ export type MolliePaymentIntentError = ErrorResult & {
 };
 
 export type MolliePaymentIntentInput = {
+  redirectUrl: Scalars['String'];
   paymentMethodCode: Scalars['String'];
   molliePaymentMethodCode?: Maybe<Scalars['String']>;
 };

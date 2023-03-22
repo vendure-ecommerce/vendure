@@ -52,17 +52,18 @@ export interface MolliePluginOptions {
  *     ]
  *     ```
  * 2. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
- * 3. Set the Redirect URL. This is the url that is used to redirect the end-user, e.g. `https://storefront/order`
- * 4. Set your Mollie apiKey in the `API Key` field.
+ * 3. Set your Mollie apiKey in the `API Key` field.
  *
  * ## Storefront usage
  *
  * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
- * PaymentMethod was given the code "mollie-payment-method".
+ * PaymentMethod was given the code "mollie-payment-method". The `redirectUrl``is the url that is used to redirect the end-user
+ * back to your storefront after completing the payment. The order code is appened to the `redirectUrl`.
  *
  * ```GraphQL
  * mutation CreateMolliePaymentIntent {
  *   createMolliePaymentIntent(input: {
+ *     redirectUrl: "https://storefront/order"
  *     paymentMethodCode: "mollie-payment-method"
  *     molliePaymentMethodCode: "ideal"
  *   }) {

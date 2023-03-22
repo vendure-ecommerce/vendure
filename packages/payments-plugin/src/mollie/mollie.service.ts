@@ -73,7 +73,7 @@ export class MollieService {
      */
     async createPaymentIntent(
         ctx: RequestContext,
-        { paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput,
+        { redirectUrl, paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
         const allowedMethods = Object.values(MollieClientMethod) as string[];
         if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
@@ -108,10 +108,12 @@ export class MollieService {
             );
         }
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
-        let redirectUrl = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
-        if (!apiKey || !redirectUrl) {
-            Logger.warn(`CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`, loggerCtx);
-            return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`);
+        if (!apiKey) {
+            Logger.warn(
+                `CreatePaymentIntent failed, because no apiKey is configured for ${paymentMethod.code}`,
+                loggerCtx,
+            );
+            return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey configured`);
         }
         const mollieClient = createMollieClient({ apiKey });
         redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
@@ -120,7 +122,7 @@ export class MollieService {
             : this.options.vendureHost; // remove appending slash
         const billingAddress = toMollieAddress(order.billingAddress, order.customer) || toMollieAddress(order.shippingAddress, order.customer);
         if (!billingAddress) {
-            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.`);
+            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, postcalCode, streetline1 and country are needed to create a payment intent.`);
         }
         const alreadyPaid = totalCoveredByPayments(order);
         const amountToPay = order.totalWithTax - alreadyPaid;
