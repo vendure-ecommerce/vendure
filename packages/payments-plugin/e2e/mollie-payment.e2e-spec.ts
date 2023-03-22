@@ -258,7 +258,7 @@ describe('Mollie payments', () => {
 
     it('Should get payment url with Mollie method', async () => {
         nock('https://api.mollie.com/')
-            .post(/.*/)
+            .post('/v2/orders')
             .reply(200, mockData.mollieOrderResponse);
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         await setShipping(shopClient);
@@ -274,7 +274,7 @@ describe('Mollie payments', () => {
     it('Should get payment url with deducted amount if a payment is already made', async () => {
         let mollieRequest: any | undefined;
         nock('https://api.mollie.com/')
-            .post(/.*/, body => {
+            .post('/v2/orders', body => {
                 mollieRequest = body;
                 return true;
             })
@@ -386,7 +386,7 @@ describe('Mollie payments', () => {
 
     it('Should authorize payment for pay-later payment methods', async () => {
         nock('https://api.mollie.com/')
-            .get(/.*/)
+            .get('/v2/orders/ord_mockId')
             .reply(200, {
                 ...mockData.mollieOrderResponse,
                 orderNumber: order.code,
@@ -411,7 +411,7 @@ describe('Mollie payments', () => {
     it('Should settle payment via settlePayment mutation', async () => {
         // Mock the getOrder Mollie call
         nock('https://api.mollie.com/')
-            .get(/.*/)
+            .get('/v2/orders/ord_mockId')
             .reply(200, {
                 ...mockData.mollieOrderResponse,
                 orderNumber: order.code,
