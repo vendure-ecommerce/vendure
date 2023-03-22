@@ -1,17 +1,30 @@
 import { OrderStatus } from '@mollie/api-client';
-import { ChannelService, mergeConfig, OrderService, RequestContext } from '@vendure/core';
+import {
+    ChannelService,
+    DefaultLogger,
+    LogLevel,
+    mergeConfig,
+    OrderService,
+    RequestContext,
+} from '@vendure/core';
 import {
     SettlePaymentMutation,
     SettlePaymentMutationVariables,
 } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { SETTLE_PAYMENT } from '@vendure/core/e2e/graphql/shared-definitions';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient, TestServer } from '@vendure/testing';
+import {
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    SimpleGraphQLClient,
+    TestServer,
+} from '@vendure/testing';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { UPDATE_PRODUCT_VARIANTS } from '../../core/e2e/graphql/shared-definitions';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
@@ -19,7 +32,13 @@ import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST, GET_ORDER_PAYMENTS } from './
 import { CreatePaymentMethod, GetCustomerList, GetCustomerListQuery } from './graphql/generated-admin-types';
 import { AddItemToOrder, GetOrderByCode, TestOrderFragmentFragment } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER, GET_ORDER_BY_CODE } from './graphql/shop-queries';
-import { CREATE_MOLLIE_PAYMENT_INTENT, GET_MOLLIE_PAYMENT_METHODS, refundOne, setShipping } from './payment-helpers';
+import {
+    addManualPayment,
+    CREATE_MOLLIE_PAYMENT_INTENT,
+    GET_MOLLIE_PAYMENT_METHODS,
+    refundOrderLine,
+    setShipping,
+} from './payment-helpers';
 
 describe('Mollie payments', () => {
     const mockData = {
@@ -36,11 +55,13 @@ describe('Mollie payments', () => {
             },
             lines: [],
             _embedded: {
-                payments: [{
-                    id: 'tr_mockPayment',
-                    status: 'paid',
-                    resource: 'payment',
-                }],
+                payments: [
+                    {
+                        id: 'tr_mockPayment',
+                        status: 'paid',
+                        resource: 'payment',
+                    },
+                ],
             },
             resource: 'order',
             mode: 'test',
@@ -78,7 +99,8 @@ describe('Mollie payments', () => {
                                 type: 'application/hal+json',
                             },
                         },
-                    }],
+                    },
+                ],
             },
             _links: {
                 self: {
@@ -99,11 +121,10 @@ describe('Mollie payments', () => {
     let customers: GetCustomerListQuery['customers']['items'];
     let order: TestOrderFragmentFragment;
     let serverPort: number;
+    const SURCHARGE_AMOUNT = -20000;
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
-            // Uncomment next line to debug e2e
-            // logger: new DefaultLogger({level: LogLevel.Verbose})
         });
         const env = createTestEnvironment(devConfig);
         serverPort = devConfig.apiOptions.port;
@@ -137,10 +158,13 @@ describe('Mollie payments', () => {
 
     it('Should prepare an order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: 'T_5',
-            quantity: 10,
-        });
+        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
+            ADD_ITEM_TO_ORDER,
+            {
+                productVariantId: 'T_5',
+                quantity: 10,
+            },
+        );
         order = addItemToOrder as TestOrderFragmentFragment;
         // Add surcharge
         const ctx = new RequestContext({
@@ -151,14 +175,16 @@ describe('Mollie payments', () => {
         });
         await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
             description: 'Negative test surcharge',
-            listPrice: -20000,
+            listPrice: SURCHARGE_AMOUNT,
         });
         expect(order.code).toBeDefined();
     });
 
     it('Should add a Mollie paymentMethod', async () => {
-        const { createPaymentMethod } = await adminClient.query<CreatePaymentMethod.Mutation,
-            CreatePaymentMethod.Variables>(CREATE_PAYMENT_METHOD, {
+        const { createPaymentMethod } = await adminClient.query<
+            CreatePaymentMethod.Mutation,
+            CreatePaymentMethod.Variables
+        >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,
                 name: 'Mollie payment test',
@@ -199,22 +225,48 @@ describe('Mollie payments', () => {
         expect(result.errorCode).toBe('INELIGIBLE_PAYMENT_METHOD_ERROR');
     });
 
+    it('Should fail to get payment url when items are out of stock', async () => {
+        let { updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
+            input: {
+                id: 'T_5',
+                trackInventory: 'TRUE',
+                outOfStockThreshold: 0,
+                stockOnHand: 1,
+            },
+        });
+        expect(updateProductVariants[0].stockOnHand).toBe(1);
+        const { createMolliePaymentIntent: result } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            input: {
+                paymentMethodCode: mockData.methodCode,
+            },
+        });
+        expect(result.message).toContain('The following variants are out of stock');
+        // Set stock back to not tracking
+        ({ updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
+            input: {
+                id: 'T_5',
+                trackInventory: 'FALSE',
+            },
+        }));
+        expect(updateProductVariants[0].trackInventory).toBe('FALSE');
+    });
+
     it('Should get payment url without Mollie method', async () => {
-        let mollieRequest;
+        let mollieRequest: any | undefined;
         nock('https://api.mollie.com/')
-            .post(/.*/, body => {
+            .post('/v2/orders', body => {
                 mollieRequest = body;
                 return true;
             })
             .reply(200, mockData.mollieOrderResponse);
-        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        await setShipping(shopClient);
         const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
             input: {
                 paymentMethodCode: mockData.methodCode,
             },
         });
-        expect(createMolliePaymentIntent).toEqual({ url: 'https://www.mollie.com/payscreen/select-method/mock-payment' });
+        expect(createMolliePaymentIntent).toEqual({
+            url: 'https://www.mollie.com/payscreen/select-method/mock-payment',
+        });
         expect(mollieRequest?.orderNumber).toEqual(order.code);
         expect(mollieRequest?.redirectUrl).toEqual(`${mockData.redirectUrl}/${order.code}`);
         expect(mollieRequest?.webhookUrl).toEqual(
@@ -232,13 +284,7 @@ describe('Mollie payments', () => {
     });
 
     it('Should get payment url with Mollie method', async () => {
-        let mollieRequest;
-        nock('https://api.mollie.com/')
-            .post(/.*/, body => {
-                mollieRequest = body;
-                return true;
-            })
-            .reply(200, mockData.mollieOrderResponse);
+        nock('https://api.mollie.com/').post('/v2/orders').reply(200, mockData.mollieOrderResponse);
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         await setShipping(shopClient);
         const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
@@ -247,12 +293,37 @@ describe('Mollie payments', () => {
                 molliePaymentMethodCode: 'ideal',
             },
         });
-        expect(createMolliePaymentIntent).toEqual({ url: 'https://www.mollie.com/payscreen/select-method/mock-payment' });
+        expect(createMolliePaymentIntent).toEqual({
+            url: 'https://www.mollie.com/payscreen/select-method/mock-payment',
+        });
+    });
+
+    it('Should get payment url with deducted amount if a payment is already made', async () => {
+        let mollieRequest: any | undefined;
+        nock('https://api.mollie.com/')
+            .post('/v2/orders', body => {
+                mollieRequest = body;
+                return true;
+            })
+            .reply(200, mockData.mollieOrderResponse);
+        await addManualPayment(server, 1, 10000);
+        await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            input: {
+                paymentMethodCode: mockData.methodCode,
+            },
+        });
+        expect(mollieRequest.amount?.value).toBe('909.90'); // minus 100,00 from manual payment
+        let totalLineAmount = 0;
+        for (const line of mollieRequest?.lines) {
+            totalLineAmount += Number(line.totalAmount.value);
+        }
+        // Sum of lines should equal order total
+        expect(mollieRequest.amount.value).toEqual(totalLineAmount.toFixed(2));
     });
 
     it('Should immediately settle payment for standard payment methods', async () => {
         nock('https://api.mollie.com/')
-            .get(/.*/)
+            .get('/v2/orders/ord_mockId')
             .reply(200, {
                 ...mockData.mollieOrderResponse,
                 orderNumber: order.code,
@@ -275,7 +346,10 @@ describe('Mollie payments', () => {
     });
 
     it('Should have Mollie metadata on payment', async () => {
-        const { order: { payments: [{ metadata }] } } = await adminClient.query(GET_ORDER_PAYMENTS, { id: order.id });
+        const {
+            order: { payments },
+        } = await adminClient.query(GET_ORDER_PAYMENTS, { id: order.id });
+        const metadata = payments[1].metadata;
         expect(metadata.mode).toBe(mockData.mollieOrderResponse.mode);
         expect(metadata.method).toBe(mockData.mollieOrderResponse.method);
         expect(metadata.profileId).toBe(mockData.mollieOrderResponse.profileId);
@@ -284,39 +358,48 @@ describe('Mollie payments', () => {
     });
 
     it('Should fail to refund', async () => {
-        let mollieRequest;
         nock('https://api.mollie.com/')
             .get('/v2/orders/ord_mockId?embed=payments')
-            .twice()
             .reply(200, mockData.mollieOrderResponse);
         nock('https://api.mollie.com/')
-            .post(/.*/, body => {
-                mollieRequest = body;
-                return true;
-            })
+            .post('/v2/payments/tr_mockPayment/refunds')
             .reply(200, { status: 'failed', resource: 'payment' });
-        const refund = await refundOne(adminClient, order.lines[0].id, order.payments[0].id);
+        const refund = await refundOrderLine(
+            adminClient,
+            order.lines[0].id,
+            1,
+            // tslint:disable-next-line:no-non-null-assertion
+            order!.payments[1].id,
+            SURCHARGE_AMOUNT,
+        );
         expect(refund.state).toBe('Failed');
     });
 
-    it('Should successfully refund', async () => {
+    it('Should successfully refund the Mollie payment', async () => {
         let mollieRequest;
         nock('https://api.mollie.com/')
-            .post(/.*/, body => {
+            .get('/v2/orders/ord_mockId?embed=payments')
+            .reply(200, mockData.mollieOrderResponse);
+        nock('https://api.mollie.com/')
+            .post('/v2/payments/tr_mockPayment/refunds', body => {
                 mollieRequest = body;
                 return true;
             })
             .reply(200, { status: 'pending', resource: 'payment' });
-        const refund = await refundOne(adminClient, order.lines[0].id, order.payments[0].id);
-        expect(mollieRequest?.amount.value).toBe('119.99');
-        expect(refund.total).toBe(11999);
+        const refund = await refundOrderLine(
+            adminClient,
+            order.lines[0].id,
+            10,
+            order.payments[1].id,
+            SURCHARGE_AMOUNT,
+        );
+        expect(mollieRequest?.amount.value).toBe('909.90'); // Only refund mollie amount, not the gift card
+        expect(refund.total).toBe(90990);
         expect(refund.state).toBe('Settled');
     });
 
     it('Should get available paymentMethods', async () => {
-        nock('https://api.mollie.com/')
-            .get(/.*/)
-            .reply(200, mockData.molliePaymentMethodsResponse);
+        nock('https://api.mollie.com/').get('/v2/methods').reply(200, mockData.molliePaymentMethodsResponse);
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         const { molliePaymentMethods } = await shopClient.query(GET_MOLLIE_PAYMENT_METHODS, {
             input: {
@@ -332,10 +415,13 @@ describe('Mollie payments', () => {
 
     it('Should prepare a new order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: 'T_1',
-            quantity: 2,
-        });
+        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
+            ADD_ITEM_TO_ORDER,
+            {
+                productVariantId: 'T_1',
+                quantity: 2,
+            },
+        );
         order = addItemToOrder as TestOrderFragmentFragment;
         await setShipping(shopClient);
         expect(order.code).toBeDefined();
@@ -343,7 +429,7 @@ describe('Mollie payments', () => {
 
     it('Should authorize payment for pay-later payment methods', async () => {
         nock('https://api.mollie.com/')
-            .get(/.*/)
+            .get('/v2/orders/ord_mockId')
             .reply(200, {
                 ...mockData.mollieOrderResponse,
                 orderNumber: order.code,
@@ -368,7 +454,7 @@ describe('Mollie payments', () => {
     it('Should settle payment via settlePayment mutation', async () => {
         // Mock the getOrder Mollie call
         nock('https://api.mollie.com/')
-            .get(/.*/)
+            .get('/v2/orders/ord_mockId')
             .reply(200, {
                 ...mockData.mollieOrderResponse,
                 orderNumber: order.code,
@@ -382,13 +468,13 @@ describe('Mollie payments', () => {
                 return true;
             })
             .reply(200, { resource: 'shipment', lines: [] });
-        const { settlePayment } = await adminClient.query<SettlePaymentMutation, SettlePaymentMutationVariables>(
-            SETTLE_PAYMENT,
-            {
-                // tslint:disable-next-line:no-non-null-assertion
-                id: order.payments![0].id,
-            },
-        );
+        const { settlePayment } = await adminClient.query<
+            SettlePaymentMutation,
+            SettlePaymentMutationVariables
+        >(SETTLE_PAYMENT, {
+            // tslint:disable-next-line:no-non-null-assertion
+            id: order.payments![0].id,
+        });
         const { orderByCode } = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
             GET_ORDER_BY_CODE,
             {
@@ -400,6 +486,4 @@ describe('Mollie payments', () => {
         expect(createShipmentBody).toBeDefined();
         expect(order.state).toBe('PaymentSettled');
     });
-
-
 });

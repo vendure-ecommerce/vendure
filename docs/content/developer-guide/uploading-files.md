@@ -9,7 +9,7 @@ Vendure handles file uploads with the [GraphQL multipart request specification](
 
 ## Upload clients
 
-Here is a [list of client implementations](https://github.com/jaydenseric/graphql-multipart-request-spec#client) which will allow you to upload files using the spec. If you are using Apollo Client, then you should install the [apollo-upload-client](https://github.com/jaydenseric/apollo-upload-client) npm package.
+Here is a [list of client implementations](https://github.com/jaydenseric/graphql-multipart-request-spec#client) that will allow you to upload files using the spec. If you are using Apollo Client, then you should install the [apollo-upload-client](https://github.com/jaydenseric/apollo-upload-client) npm package.
 
 For testing, it is even possible to use a [plain curl request](https://github.com/jaydenseric/graphql-multipart-request-spec#single-file).
 
@@ -85,7 +85,7 @@ In a later step, we will refactor this config to encapsulate it in a plugin.
 
 ### Schema definition
 
-Next we will define the schema for the mutation:
+Next, we will define the schema for the mutation:
 
 ```TypeScript
 // api-extensions.ts

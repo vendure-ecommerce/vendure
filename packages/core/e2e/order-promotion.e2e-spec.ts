@@ -1538,6 +1538,35 @@ describe('Promotions applied to Orders', () => {
                 expect(activeOrder!.couponCodes).toEqual([]);
                 expect(activeOrder!.totalWithTax).toBe(6000);
             });
+
+            it('does not remove valid couponCode when setting guest customer', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode!.totalWithTax).toBe(0);
+                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
+                    SET_CUSTOMER,
+                    {
+                        input: {
+                            emailAddress: 'new-guest@test.com',
+                            firstName: 'New Guest',
+                            lastName: 'Customer',
+                        },
+                    },
+                );
+
+                const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                expect(activeOrder!.couponCodes).toEqual([TEST_COUPON_CODE]);
+                expect(applyCouponCode!.totalWithTax).toBe(0);
+            });
         });
 
         describe('signed-in customer', () => {

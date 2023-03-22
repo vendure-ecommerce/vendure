@@ -5,6 +5,7 @@ import {
     CreateProductOptionInput,
     CreateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
@@ -71,6 +72,11 @@ export class FastImporterService {
 
     async createProduct(input: CreateProductInput): Promise<ID> {
         this.ensureInitialized();
+        // https://github.com/vendure-ecommerce/vendure/issues/2053
+        // normalizes slug without validation for faster performance
+        input.translations.map(translation => {
+            translation.slug = normalizeString(translation.slug as string, '-');
+        });
         const product = await this.translatableSaver.create({
             ctx: this.importCtx,
             input,
@@ -95,7 +101,9 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(this.importCtx, ProductAsset).save(productAssets, { reload: false });
+            await this.connection
+                .getRepository(this.importCtx, ProductAsset)
+                .save(productAssets, { reload: false });
         }
         return product.id;
     }
@@ -177,7 +185,9 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(this.importCtx, ProductVariantAsset).save(variantAssets, { reload: false });
+            await this.connection
+                .getRepository(this.importCtx, ProductVariantAsset)
+                .save(variantAssets, { reload: false });
         }
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
@@ -194,7 +204,9 @@ export class FastImporterService {
                 channelId,
             });
             variantPrice.variant = createdVariant;
-            await this.connection.getRepository(this.importCtx, ProductVariantPrice).save(variantPrice, { reload: false });
+            await this.connection
+                .getRepository(this.importCtx, ProductVariantPrice)
+                .save(variantPrice, { reload: false });
         }
 
         return createdVariant.id;
