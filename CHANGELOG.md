@@ -1,3 +1,17 @@
+## <small>1.9.4 (2023-03-22)</small>
+
+
+#### Fixes
+
+* **admin-ui** Re-fetch asset list on channel change ([e909725](https://github.com/vendure-ecommerce/vendure/commit/e909725))
+* **core** Correctly validate couponCode when adding guest customer ([a0458e2](https://github.com/vendure-ecommerce/vendure/commit/a0458e2))
+* **core** Do not double-refund payments when refund total not covered ([64372da](https://github.com/vendure-ecommerce/vendure/commit/64372da))
+* **core** Filter out deleted options groups (#2047) ([d93203c](https://github.com/vendure-ecommerce/vendure/commit/d93203c)), closes [#2047](https://github.com/vendure-ecommerce/vendure/issues/2047)
+* **core** Merge relations in customFields correctly (#2062) ([aeb06e3](https://github.com/vendure-ecommerce/vendure/commit/aeb06e3)), closes [#2062](https://github.com/vendure-ecommerce/vendure/issues/2062)
+* **core** Slugify product created with fast importer service (#2091) ([8e9f4d6](https://github.com/vendure-ecommerce/vendure/commit/8e9f4d6)), closes [#2091](https://github.com/vendure-ecommerce/vendure/issues/2091)
+* **payments-plugin** Handle multiple payments & verify stock for Mollie ([1aad00e](https://github.com/vendure-ecommerce/vendure/commit/1aad00e)), closes [#2026](https://github.com/vendure-ecommerce/vendure/issues/2026) [#2030](https://github.com/vendure-ecommerce/vendure/issues/2030)
+* **testing** Updated sql.js dependency (#2055) ([34ab54b](https://github.com/vendure-ecommerce/vendure/commit/34ab54b)), closes [#2055](https://github.com/vendure-ecommerce/vendure/issues/2055)
+
 ## <small>1.9.3 (2023-02-15)</small>
 
 
