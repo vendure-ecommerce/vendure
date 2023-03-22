@@ -25,7 +25,8 @@ import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operator
 })
 export class AssetListComponent
     extends BaseListComponent<GetAssetList.Query, GetAssetList.Items, GetAssetList.Variables>
-    implements OnInit {
+    implements OnInit
+{
     searchTerm$ = new BehaviorSubject<string | undefined>(undefined);
     filterByTags$ = new BehaviorSubject<TagFragment[] | undefined>(undefined);
     uploading = false;
@@ -41,7 +42,7 @@ export class AssetListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.product.getAssetList(...args),
+            (...args: any[]) => this.dataService.product.getAssetList(...args).refetchOnChannelChange(),
             data => data.assets,
             (skip, take) => {
                 const searchTerm = this.searchTerm$.value;
