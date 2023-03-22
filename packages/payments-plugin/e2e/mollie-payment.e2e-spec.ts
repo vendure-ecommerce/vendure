@@ -124,7 +124,6 @@ describe('Mollie payments', () => {
     const SURCHARGE_AMOUNT = -20000;
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
-            logger: new DefaultLogger({ level: LogLevel.Debug }),
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
         });
         const env = createTestEnvironment(devConfig);
