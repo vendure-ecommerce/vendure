@@ -287,8 +287,7 @@ export class PaymentService {
             const paymentToRefund =
                 (refundedPaymentIds.length === 0 &&
                     refundablePayments.find(p => idsAreEqual(p.id, selectedPayment.id))) ||
-                refundablePayments.find(p => !refundedPaymentIds.includes(p.id)) ||
-                refundablePayments[0];
+                refundablePayments.find(p => !refundedPaymentIds.includes(p.id));
             if (!paymentToRefund) {
                 throw new InternalServerError(`Could not find a Payment to refund`);
             }
