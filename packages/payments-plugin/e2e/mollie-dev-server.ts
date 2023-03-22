@@ -103,8 +103,10 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     await setShipping(shopClient);
     // Add pre payment to order
     const order = await server.app.get(OrderService).findOne(ctx, 1);
+    // tslint:disable-next-line:no-non-null-assertion
     await server.app.get(PaymentService).createManualPayment(ctx, order!, 10000 ,{
         method: 'Manual',
+        // tslint:disable-next-line:no-non-null-assertion
         orderId: order!.id,
         metadata: {
             bogus: 'test'

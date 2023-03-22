@@ -12,10 +12,10 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { UPDATE_PRODUCT_VARIANTS } from '../../core/e2e/graphql/shared-definitions';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
-import { UPDATE_PRODUCT_VARIANTS } from '../../core/e2e/graphql/shared-definitions';
 import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST, GET_ORDER_PAYMENTS } from './graphql/admin-queries';
 import { CreatePaymentMethod, GetCustomerList, GetCustomerListQuery } from './graphql/generated-admin-types';
 import { AddItemToOrder, GetOrderByCode, TestOrderFragmentFragment } from './graphql/generated-shop-types';
@@ -203,8 +203,8 @@ describe('Mollie payments', () => {
     it('Should fail to get payment url when items are out of stock', async () => {
         let { updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
             input: {
-                id: "T_5",
-                trackInventory: "TRUE",
+                id: 'T_5',
+                trackInventory: 'TRUE',
                 outOfStockThreshold: 0,
                 stockOnHand: 1,
             }
@@ -219,11 +219,11 @@ describe('Mollie payments', () => {
         // Set stock back to not tracking
         ({ updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
             input: {
-                id: "T_5",
-                trackInventory: "FALSE",
+                id: 'T_5',
+                trackInventory: 'FALSE',
             }
         }));
-        expect(updateProductVariants[0].trackInventory).toBe("FALSE");
+        expect(updateProductVariants[0].trackInventory).toBe('FALSE');
     });
 
     it('Should get payment url without Mollie method', async () => {
@@ -335,6 +335,7 @@ describe('Mollie payments', () => {
         nock('https://api.mollie.com/')
             .post('/v2/payments/tr_mockPayment/refunds')
             .reply(200, { status: 'failed', resource: 'payment' });
+        // tslint:disable-next-line:no-non-null-assertion
         const refund = await refundOrderLine(adminClient, order.lines[0].id, 1, order!.payments[1].id);
         expect(refund.state).toBe('Failed');
     });

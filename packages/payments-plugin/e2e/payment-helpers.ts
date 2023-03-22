@@ -77,8 +77,10 @@ export async function addManualPayment(server: TestServer, orderId: ID, amount: 
         channel: await server.app.get(ChannelService).getDefaultChannel(),
     });
     const order = await server.app.get(OrderService).findOne(ctx, orderId);
+    // tslint:disable-next-line:no-non-null-assertion
     await server.app.get(PaymentService).createManualPayment(ctx, order!, amount, {
         method: 'Gift card',
+        // tslint:disable-next-line:no-non-null-assertion
         orderId: order!.id,
         metadata: {
             bogus: 'test'
