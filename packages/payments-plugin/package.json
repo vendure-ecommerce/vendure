@@ -26,6 +26,9 @@
         "braintree": "3.x",
         "stripe": "8.x"
     },
+    "dependencies": {
+        "currency.js":"2.0.4"
+    },
     "devDependencies": {
         "@mollie/api-client": "^3.6.0",
         "@types/braintree": "^2.22.15",

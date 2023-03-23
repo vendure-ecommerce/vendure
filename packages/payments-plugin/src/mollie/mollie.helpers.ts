@@ -2,6 +2,7 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orde
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { OrderAddress as MollieOrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import { Customer, Order } from '@vendure/core';
+import currency from 'currency.js';
 
 import { OrderAddress } from './graphql/generated-shop-types';
 
@@ -83,7 +84,7 @@ export function toAmount(value: number, orderCurrency: string): Amount {
  * Return to number of cents
  */
 export function amountToCents(amount: Amount): number {
-    return Math.round(Number(amount.value) * 100); // Round because floating point errors after Number() conversion
+    return currency(amount.value).intValue;
 }
 
 /**
