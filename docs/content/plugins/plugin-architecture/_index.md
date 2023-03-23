@@ -8,7 +8,7 @@ showtoc: true
 
 {{< figure src="plugin_architecture.png" >}}
 
-A plugin in Vendure is a specialized Nestjs Module which is decorated with the [`VendurePlugin` class decorator]({{< relref "vendure-plugin" >}}). This diagram illustrates how a plugin can integrate with and extend Vendure.
+A plugin in Vendure is a specialized Nestjs Module that is decorated with the [`VendurePlugin` class decorator]({{< relref "vendure-plugin" >}}). This diagram illustrates how a plugin can integrate with and extend Vendure.
  
 1. A Plugin may define logic to be run by the [Vendure Worker]({{< relref "/docs/developer-guide/vendure-worker" >}}). This is suitable for long-running or resource-intensive tasks.
 2. A Plugin can modify any aspect of server configuration via the [`configuration` metadata property]({{< relref "vendure-plugin-metadata" >}}#configuration).

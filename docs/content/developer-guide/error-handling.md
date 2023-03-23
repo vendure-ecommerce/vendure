@@ -10,7 +10,7 @@ Errors in Vendure can be divided into two categories:
 * Unexpected errors
 * Expected errors
 
-These two types have different meanings and are handled differently to one another.
+These two types have different meanings and are handled differently from one another.
 
 ## Unexpected Errors
 
@@ -81,7 +81,7 @@ type OrderStateTransitionError implements ErrorResult {
 }
 ```
 
-Operations which may return ErrorResults use a GraphQL `union` as their return type:
+Operations that may return ErrorResults use a GraphQL `union` as their return type:
 
 ```GraphQL
 type Mutation {

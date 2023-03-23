@@ -31,7 +31,7 @@ So if the customer adds 2 *Widgets* to the Order, there will be **one OrderLine*
 
 The [GraphQL Shop API Guide]({{< relref "/docs/storefront/shop-api-guide" >}}#order-flow) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
 
-In this section we'll cover some examples of how these operations would look in your storefront.
+In this section, we'll cover some examples of how these operations would look in your storefront.
 
 ### Manipulating the Order
 
@@ -117,7 +117,7 @@ query ActiveOrder {
 
 ### Checking out
 
-During the checkout process, we'll need to make sure a Customer is assigned to the Order. If the Customer is already signed-in, then this can be skipped since Vendure will have already assigned them. If not, then you'd execute:
+During the checkout process, we'll need to make sure a Customer is assigned to the Order. If the Customer is already signed in, then this can be skipped since Vendure will have already assigned them. If not, then you'd execute:
 
 ```GraphQL
 mutation SetCustomerForOrder($input: CreateCustomerInput!){
@@ -230,4 +230,4 @@ query OrderByCode($code: String!) {
 
 In the above examples, the active Order is always associated with the current session and is therefore implicit - which is why there is no need to pass an ID to each of the above operations.
 
-Sometimes you _do_ want to be able to explicitly specify the Order you wish to operate on. In this case you need to define a custom [ActiveOrderStrategy]({{< relref "active-order-strategy" >}}).
+Sometimes you _do_ want to be able to explicitly specify the Order you wish to operate on. In this case, you need to define a custom [ActiveOrderStrategy]({{< relref "active-order-strategy" >}}).

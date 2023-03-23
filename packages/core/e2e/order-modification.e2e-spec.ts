@@ -1991,6 +1991,28 @@ describe('Order modification', () => {
             const variant2 = await getVariant('T_3');
             expect(variant2.stockOnHand).toBe(100);
             expect(variant2.stockAllocated).toBe(1);
+
+            const result = await adminTransitionOrderToState(orderId5, 'ArrangingAdditionalPayment');
+            orderGuard.assertSuccess(result);
+            expect(result!.state).toBe('ArrangingAdditionalPayment');
+            const { addManualPaymentToOrder } = await adminClient.query<
+                Codegen.AddManualPaymentMutation,
+                Codegen.AddManualPaymentMutationVariables
+            >(ADD_MANUAL_PAYMENT, {
+                input: {
+                    orderId: orderId5,
+                    method: 'test',
+                    transactionId: 'manual-extra-payment',
+                    metadata: {
+                        foo: 'bar',
+                    },
+                },
+            });
+            orderGuard.assertSuccess(addManualPaymentToOrder);
+            const result2 = await adminTransitionOrderToState(orderId5, 'PaymentSettled');
+            orderGuard.assertSuccess(result2);
+            const result3 = await adminTransitionOrderToState(orderId5, 'Modifying');
+            orderGuard.assertSuccess(result3);
         });
 
         it('updates stock when removing item before fulfillment', async () => {

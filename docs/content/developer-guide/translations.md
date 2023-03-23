@@ -6,7 +6,7 @@ showtoc: true
 # Translation
 
 Using [`addTranslation`]({{< relref "i18n-service" >}}#addtranslation) inside the `onApplicationBootstrap` ([Nestjs lifecycle hooks](https://docs.nestjs.com/fundamentals/lifecycle-events)) of a Plugin is the easiest way to add new translations.
-While vendure is only using `error`, `errorResult` and `message` resource keys you are free to use your own.
+While Vendure is only using `error`, `errorResult` and `message` resource keys you are free to use your own.
 
 ## Translatable Error
 This example shows how to create a custom translatable error
@@ -59,7 +59,7 @@ To receive an error in a specific language you need to use the `languageCode` qu
 
 ## Use translations
 
-Vendures uses the internationalization-framework [i18next](https://www.i18next.com/).
+Vendure uses the internationalization-framework [i18next](https://www.i18next.com/).
 
 Therefore you are free to use the i18next translate function to [access keys](https://www.i18next.com/translation-function/essentials#accessing-keys) \
 `i18next.t('error.any-message');`

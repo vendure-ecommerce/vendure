@@ -10,7 +10,7 @@ import { In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
-import { idsAreEqual } from '../../common/index';
+import { idsAreEqual, normalizeEmailAddress } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -127,6 +127,7 @@ export class AdministratorService {
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
         await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
         const administrator = new Administrator(input);
+        administrator.emailAddress = normalizeEmailAddress(input.emailAddress);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
         let createdAdministrator = await this.connection
             .getRepository(ctx, Administrator)

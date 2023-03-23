@@ -8,7 +8,7 @@ Most e-commerce applications need to correctly handle taxes such as sales tax or
 
 * **Tax categories** Each ProductVariant is assigned to a specific TaxCategory. In some tax systems, the tax rate differs depending on the type of good. For example, VAT in the UK has 3 rates, "standard" (most goods), "reduced" (e.g. child car seats) and "zero" (e.g. books).
 * **Tax rates** This is the tax rate applied to a specific tax category for a specific [Zone]({{< relref "zone" >}}). E.g., the tax rate for "standard" goods in the UK Zone is 20%.
-* **Channel tax settings** Each Channel can specify whether the prices of produce variants are inclusive of tax or not, and also specify the default Zone to use for tax calculations.
+* **Channel tax settings** Each Channel can specify whether the prices of product variants are inclusive of tax or not, and also specify the default Zone to use for tax calculations.
 * **TaxZoneStrategy** Determines the active tax Zone used when calculating what TaxRate to apply. By default, it uses the default tax Zone from the Channel settings.
 * **TaxLineCalculationStrategy** This determines the taxes applied when adding an item to an Order. If you want to integrate a 3rd-party tax API or other async lookup, this is where it would be done.
 
@@ -35,7 +35,7 @@ query {
 }
 ```
 
-In your storefront you can therefore choose whether to display the prices with or without tax, according to the laws and conventions of the area in which your business operates.
+In your storefront, you can therefore choose whether to display the prices with or without tax, according to the laws and conventions of the area in which your business operates.
 
 ## Calculating taxes on OrderItems
 

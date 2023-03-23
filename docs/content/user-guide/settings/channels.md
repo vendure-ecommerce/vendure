@@ -6,7 +6,7 @@ title: "Channels"
 
 Channels allow you to split your store into multiple sub-stores, each of which can have its own selection of inventory, customers, orders, shipping methods etc.
 
-There various reasons why you might want to do this:
+There are various reasons why you might want to do this:
 
 * Creating distinct stores for different countries, each with country-specific pricing, shipping and payment rules.
 * Implementing a multi-tenant application where many merchants have their own store, each confined to its own channel.

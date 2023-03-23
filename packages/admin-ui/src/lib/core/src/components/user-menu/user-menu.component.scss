@@ -1,20 +1,62 @@
-@import "variables";
+@import 'variables';
 
 :host {
     display: flex;
     align-items: center;
-    margin: 0 0.5rem;
     height: 2.5rem;
-}
-
-.user-name {
-    color: var(--color-grey-200);
-    margin-right: 12px;
-    @media screen and (max-width: $breakpoint-small) {
-        display: none;
+    width: 100%;
+    @media screen and (max-width: $breakpoint-medium) {
+        margin: 0;
+    }
+    width: 100%;
+    padding: var(--space-unit);
+    padding-left: 0;
+    vdr-dropdown {
+        width: 100%;
     }
 }
 
-.trigger clr-icon {
-    color: white;
+.user-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: none;
+    border-radius: var(--border-radius);
+    text-transform: uppercase;
+    font-size: var(--font-size-xs);
+    width: 100%;
+    background-color: transparent;
+    color: var(--color-text-200);
+    cursor: pointer;
+    &:hover {
+        color: var(--color-text-300);
+    }
+}
+
+.user-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    background-color: var(--color-primary-600);
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+    @media screen and (max-width: $breakpoint-medium) {
+        margin-right: 0;
+    }
+
+    clr-icon {
+        color: var(--color-text-inverse);
+    }
+}
+
+.user-name {
+    margin-right: var(--space-unit);
+    overflow: hidden;
+    max-width: 100px;
+    text-overflow: ellipsis;
+    @media screen and (max-width: $breakpoint-medium) {
+        display: none;
+    }
 }

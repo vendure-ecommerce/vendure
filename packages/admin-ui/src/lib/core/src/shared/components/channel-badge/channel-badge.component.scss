@@ -1,12 +1,11 @@
+@import "variables";
 
 :host {
     display: inline-block;
-
-    button & {
-        margin-bottom: -1px;
-    }
 }
 
 clr-icon {
-    margin-right: 6px;
+    @media screen and (max-width: $breakpoint-medium) {
+        margin-right: 0;
+    }
 }

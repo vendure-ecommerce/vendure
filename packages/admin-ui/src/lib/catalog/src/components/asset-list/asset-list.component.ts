@@ -47,7 +47,7 @@ export class AssetListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.product.getAssetList(...args),
+            (...args: any[]) => this.dataService.product.getAssetList(...args).refetchOnChannelChange(),
             data => data.assets,
             (skip, take) => {
                 const searchTerm = this.searchTerm$.value;

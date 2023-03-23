@@ -115,10 +115,6 @@ export class OrderListComponent
                     this.route.snapshot.queryParamMap.get('filter') || 'open',
                 ),
         );
-        const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
-        if (lastFilters) {
-            this.setQueryParam(lastFilters, { replaceUrl: true });
-        }
         this.canCreateDraftOrder = !!this.serverConfigService
             .getOrderProcessStates()
             .find(state => state.name === 'Created')
@@ -130,6 +126,10 @@ export class OrderListComponent
 
     ngOnInit() {
         super.ngOnInit();
+        const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
+        if (lastFilters) {
+            this.setQueryParam(lastFilters, { replaceUrl: true });
+        }
         this.activePreset$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('filter') || 'open'),
             distinctUntilChanged(),

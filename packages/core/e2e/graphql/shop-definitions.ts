@@ -430,6 +430,9 @@ export const SET_CUSTOMER = gql`
                 errorCode
                 message
             }
+            ... on GuestCheckoutError {
+                errorDetail
+            }
         }
     }
     ${ACTIVE_ORDER_CUSTOMER}

@@ -1422,8 +1422,8 @@ export class OrderService {
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         // Check that any applied couponCodes are still valid now that
         // we know the Customer.
+        let updatedOrder = order;
         if (order.couponCodes) {
-            let codesRemoved = false;
             for (const couponCode of order.couponCodes.slice()) {
                 const validationResult = await this.promotionService.validateCouponCode(
                     ctx,
@@ -1431,15 +1431,11 @@ export class OrderService {
                     customer.id,
                 );
                 if (isGraphQlErrorResult(validationResult)) {
-                    order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
-                    codesRemoved = true;
+                    updatedOrder = await this.removeCouponCode(ctx, orderId, couponCode);
                 }
             }
-            if (codesRemoved) {
-                return this.applyPriceAdjustments(ctx, order);
-            }
         }
-        return order;
+        return updatedOrder;
     }
 
     /**

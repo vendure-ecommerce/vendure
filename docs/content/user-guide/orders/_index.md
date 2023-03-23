@@ -25,7 +25,7 @@ When a new Order arrives, you would:
 
 ## Refunds
 
-You can refund one or more items from an Order by clicking this menu item, which is available one the payments are settled:
+You can refund one or more items from an Order by clicking this menu item, which is available once the payments are settled:
 
 {{< figure src="./screen-refund-button.webp" >}}
 
