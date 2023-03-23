@@ -21,6 +21,14 @@ export interface MolliePluginOptions {
      * This is used by Mollie to send webhook events to the Vendure server
      */
     vendureHost: string;
+
+    /**
+     * @description
+     * For backwards compatibility, by default set to false.
+     * When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation 
+     * instead of being configured in the Payment Method.
+     */
+    useDynamicRedirectUrl?: boolean;
 }
 
 /**
@@ -144,6 +152,7 @@ export class MolliePlugin {
      * @description
      * Initialize the mollie payment plugin
      * @param vendureHost is needed to pass to mollie for callback
+     * @param useDynamicRedirectUrl to indicate if the redirectUrl can be passed via the `createPaymentIntent` mutation, versus being configured in the Payment Method.
      */
     static init(options: MolliePluginOptions): typeof MolliePlugin {
         this.options = options;

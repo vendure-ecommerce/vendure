@@ -35,6 +35,15 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 { languageCode: LanguageCode.en, value: 'This option only affects pay-later methods. Automatically capture payments immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.' },
             ],
         },
+        redirectUrl: {
+            type: 'string',
+            required: false,
+            defaultValue: '',
+            label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
+            description: [
+                { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
+            ],
+        }
     },
     init(injector) {
         mollieService = injector.get(MollieService);

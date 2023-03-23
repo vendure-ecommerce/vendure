@@ -29,7 +29,8 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
  * This should only be used to locally test the Mollie payment plugin
  */
 /* tslint:disable:no-floating-promises */
-(async () => {
+async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
+    console.log('Starting Mollie dev server with dynamic redirectUrl: ', useDynamicRedirectUrl);
     require('dotenv').config();
 
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
@@ -42,7 +43,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
                 route: 'admin',
                 port: 5001,
             }),
-            MolliePlugin.init({ vendureHost: tunnel.url }),
+            MolliePlugin.init({ vendureHost: tunnel.url, useDynamicRedirectUrl }),
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
         apiOptions: {
@@ -77,6 +78,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
                 handler: {
                     code: molliePaymentHandler.code,
                     arguments: [
+                        { name: 'redirectUrl', value: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=false` },
                         // tslint:disable-next-line:no-non-null-assertion
                         { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
                         { name: 'autoCapture', value: 'false' },
@@ -115,7 +117,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     });
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
-            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1`,
+            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
             paymentMethodCode: 'mollie',
 //            molliePaymentMethodCode: 'klarnapaylater'
         },
@@ -124,5 +126,9 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
         throw createMolliePaymentIntent;
     }
     Logger.info(`Mollie payment link: ${createMolliePaymentIntent.url}`, 'Mollie DevServer');
-})();
+};
 
+(async () => {
+    // Change the value of the parameter to true to test with the dynamic redirectUrl functionality
+    await runMollieDevServer(false);
+})()

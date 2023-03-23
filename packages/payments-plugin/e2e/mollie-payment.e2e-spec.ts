@@ -40,12 +40,13 @@ import {
     setShipping,
 } from './payment-helpers';
 
-describe('Mollie payments', () => {
+describe('Mollie payments (with useDynamicRedirectUrl set to false)', () => {
     const mockData = {
         host: 'https://my-vendure.io',
         redirectUrl: 'https://my-storefront/order',
         apiKey: 'myApiKey',
         methodCode: `mollie-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`,
+        methodCodeBroken: `mollie-payment-broken-${E2E_DEFAULT_CHANNEL_TOKEN}`,
         mollieOrderResponse: {
             id: 'ord_mockId',
             _links: {
@@ -485,5 +486,64 @@ describe('Mollie payments', () => {
         order = orderByCode!;
         expect(createShipmentBody).toBeDefined();
         expect(order.state).toBe('PaymentSettled');
+    });
+
+    it('Should add an unusable Mollie paymentMethod (missing redirectUrl)', async () => {
+        const { createPaymentMethod } = await adminClient.query<
+            CreatePaymentMethod.Mutation,
+            CreatePaymentMethod.Variables
+        >(CREATE_PAYMENT_METHOD, {
+            input: {
+                code: mockData.methodCodeBroken,
+                name: 'Mollie payment test',
+                description: 'This is a Mollie test payment method',
+                enabled: true,
+                handler: {
+                    code: molliePaymentHandler.code,
+                    arguments: [
+                        { name: 'apiKey', value: mockData.apiKey },
+                        { name: 'autoCapture', value: 'false' },
+                    ],
+                },
+            },
+        });
+        expect(createPaymentMethod.code).toBe(mockData.methodCodeBroken);
+    });
+
+    it('Should prepare an order', async () => {
+        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
+            ADD_ITEM_TO_ORDER,
+            {
+                productVariantId: 'T_5',
+                quantity: 10,
+            },
+        );
+        order = addItemToOrder as TestOrderFragmentFragment;
+        // Add surcharge
+        const ctx = new RequestContext({
+            apiType: 'admin',
+            isAuthorized: true,
+            authorizedAsOwnerOnly: false,
+            channel: await server.app.get(ChannelService).getDefaultChannel(),
+        });
+        await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
+            description: 'Negative test surcharge',
+            listPrice: SURCHARGE_AMOUNT,
+        });
+        expect(order.code).toBeDefined();
+    });
+
+    it('Should fail to get payment url with Mollie method without redirectUrl configured', async () => {
+        nock('https://api.mollie.com/').post('/v2/orders').reply(200, mockData.mollieOrderResponse);
+        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+        await setShipping(shopClient);
+        const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            input: {
+                paymentMethodCode: mockData.methodCodeBroken,
+                molliePaymentMethodCode: 'ideal',
+            },
+        });
+        expect(createMolliePaymentIntent.message).toContain('Cannot create payment intent without redirectUrl specified in paymentMethod');
     });
 });

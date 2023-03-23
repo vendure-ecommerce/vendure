@@ -73,8 +73,10 @@ export class MollieService {
      */
     async createPaymentIntent(
         ctx: RequestContext,
-        { redirectUrl, paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput,
+        input: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
+        const { paymentMethodCode, molliePaymentMethodCode } = input;
+        let redirectUrl: string;
         const allowedMethods = Object.values(MollieClientMethod) as string[];
         if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
             return new InvalidInputError(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
@@ -100,6 +102,19 @@ export class MollieService {
         }
         if (!paymentMethod) {
             return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
+        }
+        if (this.options.useDynamicRedirectUrl == true) {
+            if (!input.redirectUrl) {
+                return new InvalidInputError(`Cannot create payment intent without redirectUrlspecified`);
+            }
+            redirectUrl = input.redirectUrl;
+        } else {
+            let paymentMethodRedirectUrl =  paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
+            if (!paymentMethodRedirectUrl) {
+                return new PaymentIntentError(`Cannot create payment intent without redirectUrl specified in paymentMethod`);
+            }
+            redirectUrl = paymentMethodRedirectUrl;
+
         }
         const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
         if (variantsWithInsufficientSaleableStock.length) {
