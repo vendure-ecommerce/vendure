@@ -2265,18 +2265,18 @@ describe('Shop orders', () => {
             };
 
             await Promise.all([
-                shopClient.query<SetBillingAddress.Mutation, SetBillingAddress.Variables>(
-                    SET_BILLING_ADDRESS,
-                    {
-                        input: billingAddress,
-                    },
-                ),
-                shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                    SET_SHIPPING_ADDRESS,
-                    {
-                        input: shippingAddress,
-                    },
-                ),
+                shopClient.query<
+                    CodegenShop.SetBillingAddressMutation,
+                    CodegenShop.SetBillingAddressMutationVariables
+                >(SET_BILLING_ADDRESS, {
+                    input: billingAddress,
+                }),
+                shopClient.query<
+                    CodegenShop.SetShippingAddressMutation,
+                    CodegenShop.SetShippingAddressMutationVariables
+                >(SET_SHIPPING_ADDRESS, {
+                    input: shippingAddress,
+                }),
             ]);
 
             const { activeOrder } = await shopClient.query(gql`
