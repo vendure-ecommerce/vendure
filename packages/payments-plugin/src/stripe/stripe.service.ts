@@ -1,6 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { Ctx, Customer, Logger, Order, PaymentMethodService, RequestContext, TransactionalConnection, UserInputError } from '@vendure/core';
+import {
+    Ctx,
+    Customer,
+    Logger,
+    Order,
+    PaymentMethodService,
+    RequestContext,
+    TransactionalConnection,
+    UserInputError,
+} from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
@@ -11,13 +20,11 @@ import { StripePluginOptions } from './types';
 
 @Injectable()
 export class StripeService {
-
     constructor(
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
         @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
-    ) {
-    }
+    ) {}
 
     async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string> {
         let customerId: string | undefined;
@@ -56,8 +63,13 @@ export class StripeService {
         return client_secret ?? undefined;
     }
 
-    async constructEventFromPayload(ctx: RequestContext, order: Order, payload: Buffer, signature: string): Promise<Stripe.Event> {
-        const stripe = await this.getStripeClient(ctx, order)
+    async constructEventFromPayload(
+        ctx: RequestContext,
+        order: Order,
+        payload: Buffer,
+        signature: string,
+    ): Promise<Stripe.Event> {
+        const stripe = await this.getStripeClient(ctx, order);
         return stripe.webhooks.constructEvent(payload, signature, stripe.webhookSecret);
     }
 
@@ -69,15 +81,17 @@ export class StripeService {
             this.paymentMethodService.getEligiblePaymentMethods(ctx, order),
             this.paymentMethodService.findAll(ctx, {
                 filter: {
-                    enabled: { eq: true }
-                }
-            })
+                    enabled: { eq: true },
+                },
+            }),
         ]);
-        const stripePaymentMethod = paymentMethods.items.find((pm) => pm.handler.code === stripePaymentMethodHandler.code);
+        const stripePaymentMethod = paymentMethods.items.find(
+            pm => pm.handler.code === stripePaymentMethodHandler.code,
+        );
         if (!stripePaymentMethod) {
-            throw new UserInputError(`No enabled Stripe payment method found`);
+            throw new UserInputError('No enabled Stripe payment method found');
         }
-        const isEligible = eligiblePaymentMethods.some((pm) => pm.code === stripePaymentMethod.code);
+        const isEligible = eligiblePaymentMethods.some(pm => pm.code === stripePaymentMethod.code);
         if (!isEligible) {
             throw new UserInputError(`Stripe payment method is not eligible for order ${order.code}`);
         }
@@ -87,7 +101,7 @@ export class StripeService {
     }
 
     private findOrThrowArgValue(args: ConfigArg[], name: string): string {
-        const value = args.find((arg) => arg.name === name)?.value;
+        const value = args.find(arg => arg.name === name)?.value;
         if (!value) {
             throw Error(`No argument named '${name}' found!`);
         }
@@ -106,7 +120,7 @@ export class StripeService {
             this.connection.getRepository(ctx, Order).findOne({
                 where: { id: activeOrder.id },
                 relations: ['customer'],
-            })
+            }),
         ]);
 
         if (!order || !order.customer) {

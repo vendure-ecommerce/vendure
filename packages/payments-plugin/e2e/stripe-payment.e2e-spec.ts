@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { mergeConfig } from '@vendure/core';
-import { CreateProductMutation, CreateProductMutationVariables, CreateProductVariantsMutation, CreateProductVariantsMutationVariables } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
+import {
+    CreateProductMutation,
+    CreateProductMutationVariables,
+    CreateProductVariantsMutation,
+    CreateProductVariantsMutationVariables,
+} from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graphql/shared-definitions';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -74,20 +79,20 @@ describe('Stripe payments', () => {
         await server.destroy();
     });
 
-    it('Should start successfully', async () => {
+    it('Should start successfully', () => {
         expect(started).toEqual(true);
         expect(customers).toHaveLength(2);
     });
 
     it('Should prepare an order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        const { addItemToOrder } = await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
-            ADD_ITEM_TO_ORDER,
-            {
-                productVariantId: 'T_1',
-                quantity: 2,
-            },
-        );
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_1',
+            quantity: 2,
+        });
         order = addItemToOrder as TestOrderFragmentFragment;
         expect(order.code).toBeDefined();
     });
@@ -104,7 +109,7 @@ describe('Stripe payments', () => {
                         name: 'Stripe payment test',
                         description: 'This is a Stripe test payment method',
                         languageCode: LanguageCode.en,
-                    }
+                    },
                 ],
                 enabled: true,
                 handler: {
@@ -226,29 +231,29 @@ describe('Stripe payments', () => {
             });
             japanProductId = createProductVariants[0]!.id;
             // Create a payment method for the Japan channel
-            await adminClient.query<
-                CreatePaymentMethodMutation,
-                CreatePaymentMethodMutationVariables
-            >(CREATE_PAYMENT_METHOD, {
-                input: {
-                    code: `stripe-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`,
-                    translations: [
-                        {
-                            name: 'Stripe payment test',
-                            description: 'This is a Stripe test payment method',
-                            languageCode: LanguageCode.en,
-                        }
-                    ],
-                    enabled: true,
-                    handler: {
-                        code: stripePaymentMethodHandler.code,
-                        arguments: [
-                            { name: 'apiKey', value: 'test-api-key' },
-                            { name: 'webhookSecret', value: 'test-signing-secret' },
+            await adminClient.query<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>(
+                CREATE_PAYMENT_METHOD,
+                {
+                    input: {
+                        code: `stripe-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`,
+                        translations: [
+                            {
+                                name: 'Stripe payment test',
+                                description: 'This is a Stripe test payment method',
+                                languageCode: LanguageCode.en,
+                            },
                         ],
+                        enabled: true,
+                        handler: {
+                            code: stripePaymentMethodHandler.code,
+                            arguments: [
+                                { name: 'apiKey', value: 'test-api-key' },
+                                { name: 'webhookSecret', value: 'test-signing-secret' },
+                            ],
+                        },
                     },
                 },
-            });
+            );
         });
 
         it('prepares order', async () => {

@@ -17,8 +17,12 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { StripePlugin } from '../src/stripe';
 import { stripePaymentMethodHandler } from '../src/stripe/stripe.handler';
 
+/* eslint-disable */
 import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
-import { CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables } from './graphql/generated-admin-types';
+import {
+    CreatePaymentMethodMutation,
+    CreatePaymentMethodMutationVariables,
+} from './graphql/generated-admin-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
 import { CREATE_STRIPE_PAYMENT_INTENT, setShipping } from './payment-helpers';
@@ -41,7 +45,7 @@ export let clientSecret: string;
                 port: 5001,
             }),
             StripePlugin.init({}),
-            StripeCheckoutTestPlugin
+            StripeCheckoutTestPlugin,
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
     });
@@ -53,8 +57,9 @@ export let clientSecret: string;
     });
     // Create method
     await adminClient.asSuperAdmin();
-    await adminClient.query<CreatePaymentMethodMutation,
-        CreatePaymentMethodMutationVariables>(CREATE_PAYMENT_METHOD, {
+    await adminClient.query<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>(
+        CREATE_PAYMENT_METHOD,
+        {
             input: {
                 code: 'stripe-payment-method',
                 enabled: true,
@@ -63,7 +68,7 @@ export let clientSecret: string;
                         name: 'Stripe',
                         description: 'This is a Stripe test payment method',
                         languageCode: LanguageCode.en,
-                    }
+                    },
                 ],
                 handler: {
                     code: stripePaymentMethodHandler.code,
@@ -73,7 +78,8 @@ export let clientSecret: string;
                     ],
                 },
             },
-        });
+        },
+    );
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
     await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
@@ -84,7 +90,7 @@ export let clientSecret: string;
         apiType: 'admin',
         isAuthorized: true,
         authorizedAsOwnerOnly: false,
-        channel: await server.app.get(ChannelService).getDefaultChannel()
+        channel: await server.app.get(ChannelService).getDefaultChannel(),
     });
     await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
         description: 'Negative test surcharge',
@@ -93,8 +99,5 @@ export let clientSecret: string;
     await setShipping(shopClient);
     const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
     clientSecret = createStripePaymentIntent;
-    Logger.info(`http://localhost:3050/checkout`, 'Stripe DevServer');
+    Logger.info('http://localhost:3050/checkout', 'Stripe DevServer');
 })();
-
-
-

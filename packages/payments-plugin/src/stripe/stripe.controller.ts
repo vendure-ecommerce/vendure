@@ -72,7 +72,7 @@ export class StripeController {
             // Throws an error if the signature is invalid
             await this.stripeService.constructEventFromPayload(ctx, order, request.rawBody, signature);
         } catch (e: any) {
-            Logger.error(`${signatureErrorMessage} ${signature}: ${e.message}`, loggerCtx);
+            Logger.error(`${signatureErrorMessage} ${signature}: ${(e as Error)?.message}`, loggerCtx);
             response.status(HttpStatus.BAD_REQUEST).send(signatureErrorMessage);
             return;
         }

@@ -49,7 +49,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
         apiOptions: {
             adminApiPlayground: true,
             shopApiPlayground: true,
-        }
+        },
     });
     const { server, shopClient, adminClient } = createTestEnvironment(config as any);
     await server.init({
@@ -80,7 +80,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
                     arguments: [
                         {
                             name: 'redirectUrl',
-                            value: `${tunnel.url as string}/admin/orders?filter=open&page=1`,
+                            value: `${tunnel.url}/admin/orders?filter=open&page=1`,
                         },
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
@@ -109,14 +109,14 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     await setShipping(shopClient);
     // Add pre payment to order
     const order = await server.app.get(OrderService).findOne(ctx, 1);
-    // tslint:disable-next-line:no-non-null-assertion
-    await server.app.get(PaymentService).createManualPayment(ctx, order!, 10000 ,{
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await server.app.get(PaymentService).createManualPayment(ctx, order!, 10000, {
         method: 'Manual',
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         orderId: order!.id,
         metadata: {
-            bogus: 'test'
-        }
+            bogus: 'test',
+        },
     });
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {

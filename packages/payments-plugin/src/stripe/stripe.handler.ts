@@ -40,11 +40,10 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
             description: [
                 {
                     languageCode: LanguageCode.en,
-                    value:
-                        'Secret to validate incoming webhooks. Get this from your Stripe dashboard',
+                    value: 'Secret to validate incoming webhooks. Get this from your Stripe dashboard',
                 },
             ],
-            ui: { component: 'password-form-input' }
+            ui: { component: 'password-form-input' },
         },
     },
 
@@ -52,7 +51,7 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
         stripeService = injector.get(StripeService);
     },
 
-    async createPayment(ctx, order, amount, ___, metadata): Promise<CreatePaymentResult> {
+    createPayment(ctx, order, amount, ___, metadata): CreatePaymentResult {
         // Payment is already settled in Stripe by the time the webhook in stripe.controller.ts
         // adds the payment to the order
         if (ctx.apiType !== 'admin') {
