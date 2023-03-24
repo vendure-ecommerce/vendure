@@ -31,7 +31,7 @@ import {
     MolliePaymentIntentResult,
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
-import { getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
+import { amountToCents, getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
 
 interface OrderStatusInput {
@@ -245,6 +245,7 @@ export class MollieService {
         const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, order.id, {
             method: paymentMethodCode,
             metadata: {
+                amount: amountToCents(mollieOrder.amount),
                 status,
                 orderId: mollieOrder.id,
                 mode: mollieOrder.mode,
