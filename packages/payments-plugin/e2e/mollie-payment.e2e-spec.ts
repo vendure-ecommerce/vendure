@@ -157,16 +157,15 @@ describe('Mollie payments', () => {
     });
 
     describe('Payment intent creation', () => {
-
         it('Should prepare an order', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-                ADD_ITEM_TO_ORDER,
-                {
-                    productVariantId: 'T_5',
-                    quantity: 10,
-                },
-            );
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_5',
+                quantity: 10,
+            });
             order = addItemToOrder as TestOrderFragmentFragment;
             // Add surcharge
             const ctx = new RequestContext({
@@ -207,23 +206,29 @@ describe('Mollie payments', () => {
 
         it('Should fail to create payment intent without shippingmethod', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            const { createMolliePaymentIntent: result } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
-                input: {
-                    paymentMethodCode: mockData.methodCode,
+            const { createMolliePaymentIntent: result } = await shopClient.query(
+                CREATE_MOLLIE_PAYMENT_INTENT,
+                {
+                    input: {
+                        paymentMethodCode: mockData.methodCode,
+                    },
                 },
-            });
+            );
             expect(result.errorCode).toBe('ORDER_PAYMENT_STATE_ERROR');
         });
 
         it('Should fail to create payment intent with invalid Mollie method', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             await setShipping(shopClient);
-            const { createMolliePaymentIntent: result } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
-                input: {
-                    paymentMethodCode: mockData.methodCode,
-                    molliePaymentMethodCode: 'invalid',
+            const { createMolliePaymentIntent: result } = await shopClient.query(
+                CREATE_MOLLIE_PAYMENT_INTENT,
+                {
+                    input: {
+                        paymentMethodCode: mockData.methodCode,
+                        molliePaymentMethodCode: 'invalid',
+                    },
                 },
-            });
+            );
             expect(result.errorCode).toBe('INELIGIBLE_PAYMENT_METHOD_ERROR');
         });
 
@@ -237,11 +242,14 @@ describe('Mollie payments', () => {
                 },
             });
             expect(updateProductVariants[0].stockOnHand).toBe(1);
-            const { createMolliePaymentIntent: result } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
-                input: {
-                    paymentMethodCode: mockData.methodCode,
+            const { createMolliePaymentIntent: result } = await shopClient.query(
+                CREATE_MOLLIE_PAYMENT_INTENT,
+                {
+                    input: {
+                        paymentMethodCode: mockData.methodCode,
+                    },
                 },
-            });
+            );
             expect(result.message).toContain('The following variants are out of stock');
             // Set stock back to not tracking
             ({ updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
@@ -324,7 +332,9 @@ describe('Mollie payments', () => {
         });
 
         it('Should get available paymentMethods', async () => {
-            nock('https://api.mollie.com/').get('/v2/methods').reply(200, mockData.molliePaymentMethodsResponse);
+            nock('https://api.mollie.com/')
+                .get('/v2/methods')
+                .reply(200, mockData.molliePaymentMethodsResponse);
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { molliePaymentMethods } = await shopClient.query(GET_MOLLIE_PAYMENT_METHODS, {
                 input: {
@@ -337,11 +347,9 @@ describe('Mollie payments', () => {
             expect(method.maximumAmount).toBeDefined();
             expect(method.image).toBeDefined();
         });
-
     });
 
     describe('Handle standard payment methods', () => {
-
         it('Should transition to ArrangingPayment when partially paid', async () => {
             nock('https://api.mollie.com/')
                 .get('/v2/orders/ord_mockId')
@@ -433,27 +441,26 @@ describe('Mollie payments', () => {
                 adminClient,
                 order.lines[0].id,
                 10,
-                order.payments[2].id,
+                // tslint:disable-next-line:no-non-null-assertion
+                order.payments!.find(p => p.amount === 108990)!.id,
                 SURCHARGE_AMOUNT,
             );
             expect(mollieRequest?.amount.value).toBe('999.90'); // Only refund mollie amount, not the gift card
             expect(refund.total).toBe(99990);
             expect(refund.state).toBe('Settled');
         });
-
     });
 
     describe('Handle pay-later methods', () => {
-
         it('Should prepare a new order', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-                ADD_ITEM_TO_ORDER,
-                {
-                    productVariantId: 'T_1',
-                    quantity: 2,
-                },
-            );
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
             order = addItemToOrder as TestOrderFragmentFragment;
             await setShipping(shopClient);
             expect(order.code).toBeDefined();
@@ -519,7 +526,5 @@ describe('Mollie payments', () => {
             expect(createShipmentBody).toBeDefined();
             expect(order.state).toBe('PaymentSettled');
         });
-
     });
-
 });
