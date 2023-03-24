@@ -25,8 +25,12 @@ export interface MolliePluginOptions {
     /**
      * @description
      * For backwards compatibility, by default set to false.
+     * This option will be deprecated in a future version.
      * When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation 
      * instead of being configured in the Payment Method.
+     * 
+     * @default false
+     * @since 2.0.0
      */
     useDynamicRedirectUrl?: boolean;
 }
@@ -56,17 +60,29 @@ export interface MolliePluginOptions {
  *     // ...
  *
  *     plugins: [
- *       MolliePlugin.init({ vendureHost: 'https://yourhost.io/' }),
+ *       MolliePlugin.init({ vendureHost: 'https://yourhost.io/', useDynamicRedirectUrl: true }),
  *     ]
  *     ```
  * 2. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
  * 3. Set your Mollie apiKey in the `API Key` field.
  *
+ * ## Specifying the redirectUrl
+ * 
+ * Currently, there are two ways to specify the `redirectUrl` to which the customer is redirected after completing the payment:
+ * 1. Configure the `redirectUrl` in the PaymentMethod. 
+ * 2. Pass the `redirectUrl` as an argument to the `createPaymentIntent` mutation.
+ * 
+ * Which method is used depends on the value of the `useDynamicRedirectUrl` option while initializing the plugin.
+ * By default, this option is set to `false` for backwards compatibility. In a future version, this option will be deprecated.
+ * Upon deprecation, the `redirectUrl` will always be passed as an argument to the `createPaymentIntent` mutation.
+ * 
+ * TODO toevoegen van /code weggehaald..!
  * ## Storefront usage
  *
  * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
  * PaymentMethod was given the code "mollie-payment-method". The `redirectUrl``is the url that is used to redirect the end-user
- * back to your storefront after completing the payment. The order code is appened to the `redirectUrl`.
+ * back to your storefront after completing the payment. When using the first method specified in `Specifying the redirectUrl`,
+ * the order code is appened to the `redirectUrl`. For the second method, the order code is not appended to the specified `redirectUrl`.
  *
  * ```GraphQL
  * mutation CreateMolliePaymentIntent {
