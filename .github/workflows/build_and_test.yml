@@ -14,7 +14,7 @@ on:
       - minor
 env:
   CI: true
-  node: 14.x
+  node: 18.x
 jobs:
   build:
     name: build
