@@ -105,7 +105,7 @@ export class MollieService {
         }
         if (this.options.useDynamicRedirectUrl == true) {
             if (!input.redirectUrl) {
-                return new InvalidInputError(`Cannot create payment intent without redirectUrlspecified`);
+                return new InvalidInputError(`Cannot create payment intent without redirectUrl specified`);
             }
             redirectUrl = input.redirectUrl;
         } else {
@@ -131,7 +131,7 @@ export class MollieService {
             return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey configured`);
         }
         const mollieClient = createMollieClient({ apiKey });
-        redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
+        redirectUrl = redirectUrl.endsWith('/') && this.options.useDynamicRedirectUrl != true ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
@@ -144,7 +144,7 @@ export class MollieService {
         const orderInput: CreateParameters = {
             orderNumber: order.code,
             amount: toAmount(amountToPay, order.currencyCode),
-            redirectUrl: `${redirectUrl}/${order.code}`,
+            redirectUrl: this.options.useDynamicRedirectUrl == true ? redirectUrl :`${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
             locale: getLocale(billingAddress.country, ctx.languageCode),
