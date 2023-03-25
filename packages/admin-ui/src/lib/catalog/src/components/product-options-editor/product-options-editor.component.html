@@ -56,6 +56,15 @@
                             formControlName="code"
                         />
                     </vdr-form-field>
+                    <section formGroupName="customFields" *ngIf="optionGroupCustomFields.length">
+                        <label>{{ 'common.custom-fields' | translate }}</label>
+                        <vdr-tabbed-custom-fields
+                            entityName="ProductOptionGroup"
+                            [customFields]="optionGroupCustomFields"
+                            [customFieldsFormGroup]="optionGroup.get('customFields')"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        ></vdr-tabbed-custom-fields>
+                    </section>
                 </div>
                 <section class="card-block">
                     <table class="facet-values-list table mt2 mb4" formGroupName="options">
@@ -64,6 +73,9 @@
                                 <th></th>
                                 <th>{{ 'common.name' | translate }}</th>
                                 <th>{{ 'common.code' | translate }}</th>
+                                <ng-container *ngIf="optionCustomFields.length">
+                                    <th>{{ 'common.custom-fields' | translate }}</th>
+                                </ng-container>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,6 +95,15 @@
                                     />
                                 </td>
                                 <td class="align-middle"><input type="text" formControlName="code" /></td>
+                                <td class="" *ngIf="optionCustomFields.length">
+                                    <vdr-tabbed-custom-fields
+                                        entityName="ProductOption"
+                                        [customFields]="optionCustomFields"
+                                        [compact]="true"
+                                        [customFieldsFormGroup]="option.get('customFields')"
+                                        [readonly]="!(updatePermission | hasPermission)"
+                                    ></vdr-tabbed-custom-fields>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
