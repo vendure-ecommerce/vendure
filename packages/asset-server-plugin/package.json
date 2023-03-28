@@ -21,6 +21,8 @@
     "access": "public"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.300.0",
+    "@aws-sdk/lib-storage": "^3.300.0",
     "@types/express": "^4.17.8",
     "@types/fs-extra": "^9.0.8",
     "@types/node-fetch": "^2.5.8",
