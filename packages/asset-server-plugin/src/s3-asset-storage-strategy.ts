@@ -175,10 +175,10 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             );
         }
 
-        const config: S3ClientConfig = {
+        const config = {
             credentials: await this.getS3Credentials(),
             ...this.s3Config.nativeS3Configuration,
-        };
+        } satisfies S3ClientConfig
 
         this.s3 = new this.AWS.S3(config);
         await this.ensureBucket(this.s3Config.bucket);
