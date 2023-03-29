@@ -1,12 +1,16 @@
 import { CreateProductInput, ProductTranslationInput } from '@vendure/common/lib/generated-types';
+import { ensureConfigLoaded, FastImporterService, LanguageCode } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { initialData } from '../mock-data/data-sources/initial-data';
-import { FastImporterService, LanguageCode } from '../src';
 
-import { GetProductWithVariants } from './graphql/generated-e2e-admin-types';
+import {
+    GetProductWithVariantsQuery,
+    GetProductWithVariantsQueryVariables,
+} from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_WITH_VARIANTS } from './graphql/shared-definitions';
 
 describe('FastImporterService resolver', () => {
@@ -15,6 +19,7 @@ describe('FastImporterService resolver', () => {
     let fastImporterService: FastImporterService;
 
     beforeAll(async () => {
+        await ensureConfigLoaded();
         await server.init({
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
@@ -41,8 +46,8 @@ describe('FastImporterService resolver', () => {
         const productId = await fastImporterService.createProduct(createProductInput);
 
         const { product } = await adminClient.query<
-            GetProductWithVariants.Query,
-            GetProductWithVariants.Variables
+            GetProductWithVariantsQuery,
+            GetProductWithVariantsQueryVariables
         >(GET_PRODUCT_WITH_VARIANTS, {
             id: productId as string,
         });

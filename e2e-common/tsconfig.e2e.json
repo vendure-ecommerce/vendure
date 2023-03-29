@@ -3,6 +3,7 @@
   "compilerOptions": {
     "types": ["node"],
     "lib": ["es2015"],
+    "useDefineForClassFields": false,
     "skipLibCheck": true,
     "inlineSourceMap": false,
     "sourceMap": true,

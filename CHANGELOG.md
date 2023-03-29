@@ -1,3 +1,8 @@
+## <small>1.9.5 (2023-03-24)</small>
+
+#### Fixes 
+* **payments-plugin** Fix issue with handling of partial payments in Mollie. If you are using the MolliePlugin you should update as a priority. ([#2092](https://github.com/vendure-ecommerce/vendure/pull/2092))
+
 ## <small>1.9.4 (2023-03-22)</small>
 
 

@@ -20,6 +20,7 @@ export * from './catalog/stock-display-strategy';
 export * from './catalog/stock-location-strategy';
 export * from './config.module';
 export * from './config.service';
+export * from './config-helpers';
 export * from './custom-field/custom-field-types';
 export * from './default-config';
 export * from './entity/auto-increment-id-strategy';
