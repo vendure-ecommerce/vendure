@@ -74,9 +74,9 @@
     // Component-specific colors
     --color-top-bar-bg: white;
 
-    --color-left-nav-bg: var(--color-primary-800);
-    --color-left-nav-text: var(--color-primary-100);
-    --color-left-nav-text-hover: var(--color-primary-200);
+    --color-left-nav-bg: var(--color-component-bg-100);
+    --color-left-nav-text: var(--color-text);
+    --color-left-nav-text-hover: var(--color-primary-700);
 
     --color-icon-button: var(--color-grey-600);
     --color-form-input-bg: white;

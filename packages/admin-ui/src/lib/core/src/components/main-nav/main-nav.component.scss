@@ -34,7 +34,7 @@ nav.main-nav {
             color: var(--color-text-600);
         }
         &:hover {
-            color: var(--color-primary-200);
+            color: var(--color-left-nav-text-hover);
         }
 
         &.active {
@@ -65,8 +65,4 @@ nav.main-nav {
 .nav-group vdr-status-badge {
     left: 10px;
     top: 6px;
-}
-.nav-link vdr-status-badge {
-    left: 25px;
-    top: 3px;
 }
