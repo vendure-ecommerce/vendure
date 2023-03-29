@@ -5,6 +5,7 @@ import {
     Customer,
     Logger,
     Order,
+    Payment,
     PaymentMethodService,
     RequestContext,
     TransactionalConnection,
@@ -71,6 +72,19 @@ export class StripeService {
     ): Promise<Stripe.Event> {
         const stripe = await this.getStripeClient(ctx, order);
         return stripe.webhooks.constructEvent(payload, signature, stripe.webhookSecret);
+    }
+
+    async createRefund(
+        ctx: RequestContext,
+        order: Order,
+        payment: Payment,
+        amount: number,
+    ): Promise<Stripe.Response<Stripe.Refund>> {
+        const stripe = await this.getStripeClient(ctx, order);
+        return stripe.refunds.create({
+            payment_intent: payment.transactionId,
+            amount,
+        });
     }
 
     /**

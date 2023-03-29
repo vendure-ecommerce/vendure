@@ -74,12 +74,8 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
     async createRefund(ctx, input, amount, order, payment, args): Promise<CreateRefundResult> {
         // TODO: Consider passing the "reason" property once this feature request is addressed:
         // https://github.com/vendure-ecommerce/vendure/issues/893
-        const stripe = await stripeService.getStripeClient(ctx, order);
         try {
-            const refund = await stripe.refunds.create({
-                payment_intent: payment.transactionId,
-                amount,
-            });
+            const refund = await stripeService.createRefund(ctx, order, payment, amount);
             if (refund.status === 'succeeded') {
                 return {
                     state: 'Settled' as const,
