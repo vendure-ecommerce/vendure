@@ -25,7 +25,7 @@ export interface DefaultJobQueueOptions {
      * are active, the polling may cause undue load on the database, in which case this value
      * should be increased to e.g. 1000.
      *
-     * @description 200
+     * @default 200
      */
     pollInterval?: number | ((queueName: string) => number);
     /**
