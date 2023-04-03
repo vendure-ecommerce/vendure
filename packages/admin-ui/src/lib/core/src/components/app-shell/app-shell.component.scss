@@ -13,17 +13,24 @@
     flex-direction: column;
     height: 100%;
     border-right: 1px solid var(--color-component-border-200);
-    box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
+    //box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
     z-index: 1;
+    @media screen and (min-width: $breakpoint-medium) {
+        width: 260px;
+    }
 }
 
 .top-bar {
+    position: sticky;
+    top: 0;
     height: 48px;
     width: 100%;
     display: flex;
+    z-index: 20;
     justify-content: space-between;
-    background-color: var(--color-top-bar-bg);
-    border-bottom: 1px solid var(--color-component-border-200);
+    background-color: var(--color-left-nav-bg);
+    //background-color: var(--color-top-bar-bg);
+    //border-bottom: 1px solid var(--color-component-border-200);
 }
 
 .main-nav-container {
@@ -67,7 +74,6 @@
 .branding {
     display: flex;
     align-items: center;
-    justify-content: center;
     min-width: 0;
 }
 
@@ -118,9 +124,9 @@ vdr-breadcrumb {
 ::ng-deep {
     .header {
         background-image: linear-gradient(
-                to right,
-                var(--color-header-gradient-from),
-                var(--color-header-gradient-to)
+            to right,
+            var(--color-header-gradient-from),
+            var(--color-header-gradient-to)
         );
     }
 }

@@ -1,6 +1,6 @@
 <div class="app-container">
     <div class="left-nav">
-        <div class="branding py-2">
+        <div class="branding py-2 px-2">
             <a [routerLink]="['/']"
                 ><img src="assets/logo-75px.png" class="logo" /><span
                     class="wordmark md:hidden"
@@ -12,7 +12,7 @@
         <div class="mx-2">
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
         </div>
-        <div class="px-2 main-nav-container">
+        <div class="px-2 mt-4 main-nav-container">
             <vdr-main-nav></vdr-main-nav>
         </div>
         <div class="m-2">
@@ -24,7 +24,9 @@
     <div class="surface">
         <div class="content-container">
             <div class="top-bar">
-                <div></div>
+                <div>
+                    <vdr-breadcrumb></vdr-breadcrumb>
+                </div>
                 <div class="universal-search flex-spacer"></div>
                 <div>
                     <vdr-user-menu
@@ -36,7 +38,6 @@
                     ></vdr-user-menu>
                 </div>
             </div>
-            <vdr-breadcrumb></vdr-breadcrumb>
             <vdr-page-title [value]="(pageTitle$ | async) || '' | translate"></vdr-page-title>
             <div class="content-area"><router-outlet></router-outlet></div>
         </div>
