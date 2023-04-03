@@ -318,6 +318,8 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             if (this.presets && !!this.presets.find(p => p.name === preset)) {
                 imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}${imageFormat}`);
             }
+        } else if (imageFormat) {
+            imageParamHash = this.md5(`_transform_${imageFormat}`);
         }
 
         const decodedReqPath = decodeURIComponent(req.path);
