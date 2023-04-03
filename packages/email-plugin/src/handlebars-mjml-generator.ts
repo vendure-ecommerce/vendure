@@ -5,11 +5,12 @@ import mjml2html from 'mjml';
 import path from 'path';
 
 import { EmailGenerator } from './email-generator';
-// <<<<<<< HEAD
-import { EmailPluginDevModeOptions, EmailPluginOptions, InitializedEmailPluginOptions, Partial} from './types';
-// =======
-// import { EmailPluginDevModeOptions, EmailPluginOptions } from './types';
-// >>>>>>> vendure/major
+import {
+    EmailPluginDevModeOptions,
+    EmailPluginOptions,
+    InitializedEmailPluginOptions,
+    Partial,
+} from './types';
 
 /**
  * @description
@@ -20,8 +21,7 @@ import { EmailPluginDevModeOptions, EmailPluginOptions, InitializedEmailPluginOp
  * @docsPage EmailGenerator
  */
 export class HandlebarsMjmlGenerator implements EmailGenerator {
-
-    async onInit(options: InitializedEmailPluginOptions ) {
+    async onInit(options: InitializedEmailPluginOptions) {
         if (options.templateLoader.loadPartials) {
             const partials = await options.templateLoader.loadPartials();
             partials.forEach(({ name, content }) => Handlebars.registerPartial(name, content));

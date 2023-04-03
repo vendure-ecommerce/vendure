@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Ctx, Injector, InternalServerError, Logger, RequestContext } from '@vendure/core';
 import fs from 'fs-extra';
+
 import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
@@ -10,7 +11,14 @@ import { EmailSender } from './email-sender';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { NodemailerEmailSender } from './nodemailer-email-sender';
 import { FileBasedTemplateLoader } from './template-loader';
-import { EmailDetails, EmailPluginOptions, EmailTransportOptions, InitializedEmailPluginOptions, IntermediateEmailDetails, TemplateLoader } from './types';
+import {
+    EmailDetails,
+    EmailPluginOptions,
+    EmailTransportOptions,
+    InitializedEmailPluginOptions,
+    IntermediateEmailDetails,
+    TemplateLoader,
+} from './types';
 
 /**
  * This class combines the template loading, generation, and email sending - the actual "work" of
@@ -21,12 +29,17 @@ import { EmailDetails, EmailPluginOptions, EmailTransportOptions, InitializedEma
 export class EmailProcessor {
     protected emailSender: EmailSender;
     protected generator: EmailGenerator;
-    protected transport: EmailTransportOptions|((injector?: Injector, ctx?: RequestContext) => EmailTransportOptions | Promise<EmailTransportOptions>);
+    protected transport:
+        | EmailTransportOptions
+        | ((
+              injector?: Injector,
+              ctx?: RequestContext,
+          ) => EmailTransportOptions | Promise<EmailTransportOptions>);
 
     constructor(
         @Inject(EMAIL_PLUGIN_OPTIONS) protected options: InitializedEmailPluginOptions,
         private moduleRef: ModuleRef,
-    ) { }
+    ) {}
 
     async init() {
         this.emailSender = this.options.emailSender ? this.options.emailSender : new NodemailerEmailSender();
@@ -36,12 +49,6 @@ export class EmailProcessor {
         if (this.generator.onInit) {
             await this.generator.onInit.call(this.generator, this.options);
         }
-// <<<<<<< HEAD
-//         if (!isDevModeOptions(this.options) && !this.options.transport) {
-//             throw new InternalServerError(
-//                 `When devMode is not set to true, the 'transport' property must be set.`,
-//             );
-// =======
         if (isDevModeOptions(this.options)) {
             this.transport = {
                 type: 'file',
@@ -51,11 +58,10 @@ export class EmailProcessor {
         } else {
             if (!this.options.transport) {
                 throw new InternalServerError(
-                    'When devMode is not set to true, the \'transport\' property must be set.',
+                    "When devMode is not set to true, the 'transport' property must be set.",
                 );
             }
             this.transport = this.options.transport;
-// >>>>>>> vendure/major
         }
         const transport = await this.getTransportSettings();
         if (transport.type === 'file') {
@@ -68,26 +74,16 @@ export class EmailProcessor {
 
     async process(data: IntermediateEmailDetails) {
         try {
-// <<<<<<< HEAD
             const ctx = RequestContext.deserialize(data.ctx);
             const bodySource = await this.options.templateLoader.loadTemplate(
                 new Injector(this.moduleRef),
                 ctx,
                 {
                     templateName: data.templateFile,
-                    type: data.type
-                }
+                    type: data.type,
+                },
             );
-            const generated = await this.generator.generate(
-                data.from,
-                data.subject,
-                bodySource,
-                data.templateVars,
-            );
-// =======
-//             const bodySource = await this.templateLoader.loadTemplate(data.type, data.templateFile);
-//             const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
-// >>>>>>> vendure/major
+            const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
             const emailDetails: EmailDetails = {
                 ...generated,
                 recipient: data.recipient,
