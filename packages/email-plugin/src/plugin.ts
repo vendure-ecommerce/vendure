@@ -85,6 +85,26 @@ import {
  *   ],
  * };
  * ```
+ * ### Channel aware SMTP settings
+ * If you would like to have different SMTP settings per channel, then you can configure the `transport` field to fetch the values.
+ * ```
+ * EmailPlugin.init({
+ *  transport: async (ctx) => {
+ *      // Get your SMTP settings based on the requestContext
+ *      const settings = await myService.getSmtpSettings(ctx);
+ * 
+ *        return {
+ *          type: 'smtp',
+ *          host: settings.host,
+ *          port: settings.port,
+ *          auth: {
+ *          user: settings.user,
+ *            pass: settings.password,
+ *          }
+ *        }
+ *        ...
+ *  })
+ * ```
  *
  * ## Email templates
  *
@@ -96,6 +116,14 @@ import {
  * `node_modules/\@vendure/email-plugin/templates` to a location of your choice, and then point the `templatePath` config
  * property at that directory.
  *
+ * * ### Dynamic Email Templates
+ * Instead of passing a static value to `templatePath`, use `templateLoader` to define a template path.
+ * ```ts
+ *   EmailPlugin.init({
+ *    ...,
+ *    templateLoader: new FileBasedTemplateLoader(my/order-confirmation/template)
+ *   })
+ * ```
  * ## Customizing templates
  *
  * Emails are generated from templates which use [MJML](https://mjml.io/) syntax. MJML is an open-source HTML-like markup
