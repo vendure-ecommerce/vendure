@@ -44,7 +44,7 @@ program
     })
     .option(
         '--log-level <logLevel>',
-        'Log level, either \'silent\', \'info\', or \'verbose\'',
+        "Log level, either 'silent', 'info', or 'verbose'",
         /^(silent|info|verbose)$/i,
         'silent',
     )
@@ -71,7 +71,7 @@ async function createApp(
 
     console.log(chalk.cyan(`Welcome to @vendure/create v${packageJson.version as string}!`));
     console.log();
-    console.log('Let\'s configure a new Vendure project. First a few questions:');
+    console.log("Let's configure a new Vendure project. First a few questions:");
     console.log();
 
     const root = path.resolve(name);
@@ -149,7 +149,7 @@ async function createApp(
                         );
                         const { dependencies, devDependencies } = getDependencies(
                             dbType,
-                            isCi ? `@${packageJson.version as string}` : '',
+                            `@${packageJson.version as string}`,
                         );
 
                         subscriber.next(`Installing ${dependencies.join(', ')}`);
