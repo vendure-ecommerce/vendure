@@ -11,6 +11,7 @@ import {
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -20,9 +21,9 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { EventBus } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -88,7 +89,11 @@ export class FacetService {
             .findOneInChannel(ctx, Facet, facetId, ctx.channelId, {
                 relations: relations ?? ['values', 'values.facet', 'channels'],
             })
-            .then(facet => facet && this.translator.translate(facet, ctx, ['values', ['values', 'facet']]));
+            .then(
+                facet =>
+                    (facet && this.translator.translate(facet, ctx, ['values', ['values', 'facet']])) ??
+                    undefined,
+            );
     }
 
     /**
@@ -108,7 +113,7 @@ export class FacetService {
         const relations = ['values', 'values.facet'];
         const [repository, facetCode, languageCode] =
             ctxOrFacetCode instanceof RequestContext
-                ? // tslint:disable-next-line:no-non-null-assertion
+                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
                 : [
                       this.connection.rawConnection.getRepository(Facet),
@@ -124,7 +129,11 @@ export class FacetService {
                 },
                 relations,
             })
-            .then(facet => facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']]));
+            .then(
+                facet =>
+                    (facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']])) ??
+                    undefined,
+            );
     }
 
     /**
@@ -172,7 +181,9 @@ export class FacetService {
             entityType: Facet,
             translationType: FacetTranslation,
             beforeSave: async f => {
-                f.code = await this.ensureUniqueCode(ctx, f.code, f.id);
+                if (f.code) {
+                    f.code = await this.ensureUniqueCode(ctx, f.code, f.id);
+                }
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
@@ -268,7 +279,7 @@ export class FacetService {
         }
         const facetsToAssign = await this.connection
             .getRepository(ctx, Facet)
-            .findByIds(input.facetIds, { relations: ['values'] });
+            .find({ where: { id: In(input.facetIds) }, relations: ['values'] });
         const valuesToAssign = facetsToAssign.reduce(
             (values, facet) => [...values, ...facet.values],
             [] as FacetValue[],
@@ -315,7 +326,7 @@ export class FacetService {
         }
         const facetsToRemove = await this.connection
             .getRepository(ctx, Facet)
-            .findByIds(input.facetIds, { relations: ['values'] });
+            .find({ where: { id: In(input.facetIds) }, relations: ['values'] });
 
         const results: Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>> = [];
 

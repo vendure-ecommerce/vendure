@@ -79,7 +79,7 @@ export class DefaultStockLocationStrategy implements StockLocationStrategy {
     ) {
         const allocations = await this.connection.getRepository(ctx, Allocation).find({
             where: {
-                orderLine,
+                orderLine: { id: orderLine.id },
             },
         });
         let unallocated = quantity;
@@ -98,7 +98,7 @@ export class DefaultStockLocationStrategy implements StockLocationStrategy {
             unallocated -= qtyToAdd;
         }
         return [...quantityByLocationId.entries()].map(([locationId, qty]) => ({
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             location: stockLocations.find(l => idsAreEqual(l.id, locationId))!,
             quantity: qty,
         }));

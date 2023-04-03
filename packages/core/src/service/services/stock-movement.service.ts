@@ -6,6 +6,7 @@ import {
     StockMovementListOptions,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -15,8 +16,8 @@ import { ShippingCalculator } from '../../config/shipping-method/shipping-calcul
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { StockLevel, StockLocation } from '../../entity/index';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { Allocation } from '../../entity/stock-movement/allocation.entity';
@@ -208,7 +209,7 @@ export class StockMovementService {
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .findByIds(lines.map(line => line.orderLineId));
+            .find({ where: { id: In(lines.map(line => line.orderLineId)) } });
         for (const lineRow of lines) {
             const orderLine = orderLines.find(line => idsAreEqual(line.id, lineRow.orderLineId));
             if (!orderLine) {
@@ -266,12 +267,12 @@ export class StockMovementService {
         ctx: RequestContext,
         lineInputs: OrderLineInput[],
     ): Promise<Cancellation[]> {
-        const orderLines = await this.connection.getRepository(ctx, OrderLine).findByIds(
-            lineInputs.map(line => line.orderLineId),
-            {
-                relations: ['productVariant'],
+        const orderLines = await this.connection.getRepository(ctx, OrderLine).find({
+            where: {
+                id: In(lineInputs.map(l => l.orderLineId)),
             },
-        );
+            relations: ['productVariant'],
+        });
 
         const cancellations: Cancellation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
@@ -319,12 +320,10 @@ export class StockMovementService {
      */
     async createReleasesForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]): Promise<Release[]> {
         const releases: Release[] = [];
-        const orderLines = await this.connection.getRepository(ctx, OrderLine).findByIds(
-            lineInputs.map(line => line.orderLineId),
-            {
-                relations: ['productVariant'],
-            },
-        );
+        const orderLines = await this.connection.getRepository(ctx, OrderLine).find({
+            where: { id: In(lineInputs.map(l => l.orderLineId)) },
+            relations: ['productVariant'],
+        });
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const variantsMap = new Map<ID, ProductVariant>();
         for (const orderLine of orderLines) {

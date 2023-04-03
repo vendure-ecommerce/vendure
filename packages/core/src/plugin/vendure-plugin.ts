@@ -130,7 +130,7 @@ export type PluginConfigurationFn = (
  * @docsCategory plugin
  */
 export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecorator {
-    // tslint:disable-next-line:ban-types
+    // eslint-disable-next-line @typescript-eslint/ban-types
     return (target: Function) => {
         for (const metadataProperty of Object.values(PLUGIN_METADATA)) {
             const property = metadataProperty as keyof VendurePluginMetadata;

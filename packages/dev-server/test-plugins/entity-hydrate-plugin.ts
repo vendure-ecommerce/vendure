@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     Asset,
@@ -25,7 +25,8 @@ class TestResolver {
 
     @Query()
     async hydrateTest(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
-        const product = await this.connection.getRepository(ctx, Product).findOne(args.id, {
+        const product = await this.connection.getRepository(ctx, Product).findOne({
+            where: { id: args.id },
             relations: ['featuredAsset'],
         });
         await this.entityHydrator.hydrate(ctx, product!, {

@@ -223,7 +223,7 @@ export class ExternalAuthenticationService {
             .andWhere('authMethod.strategy = :strategy', { strategy })
             .andWhere('user.deletedAt IS NULL')
             .getOne();
-        return user;
+        return user || undefined;
     }
 
     private async findExistingCustomerUserByEmailAddress(ctx: RequestContext, emailAddress: string) {

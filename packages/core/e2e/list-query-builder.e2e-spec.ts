@@ -3,6 +3,7 @@ import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -1246,6 +1247,28 @@ describe('ListQueryBuilder', () => {
             ]);
         });
     });
+
+    describe('relations in customFields', () => {
+        it('should resolve relations in customFields successfully', async () => {
+            const { testEntities } = await shopClient.query(GET_LIST_WITH_CUSTOM_FIELD_RELATION, {
+                options: {
+                    filter: {
+                        label: { eq: 'A' },
+                    },
+                },
+            });
+
+            expect(testEntities.items).toEqual([
+                {
+                    id: 'T_1',
+                    label: 'A',
+                    customFields: {
+                        relation: [{ id: 'T_1', data: 'A' }],
+                    },
+                },
+            ]);
+        });
+    });
 });
 
 const GET_LIST = gql`
@@ -1308,6 +1331,23 @@ const GET_ARRAY_LIST = gql`
             name
             date
             price
+        }
+    }
+`;
+
+const GET_LIST_WITH_CUSTOM_FIELD_RELATION = gql`
+    query GetTestWithCustomFieldRelation($options: TestEntityListOptions) {
+        testEntities(options: $options) {
+            items {
+                id
+                label
+                customFields {
+                    relation {
+                        id
+                        data
+                    }
+                }
+            }
         }
     }
 `;

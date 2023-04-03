@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultOrderPlacedStrategy,
@@ -11,6 +11,7 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -479,7 +480,7 @@ describe('Stock control', () => {
         it('creates Cancellations & adjusts stock when cancelling a Fulfillment', async () => {
             async function getTrackedVariant() {
                 const result = await getProductWithStockMovement('T_2');
-                return result?.variants[1]!;
+                return result!.variants[1];
             }
 
             const trackedVariant1 = await getTrackedVariant();
@@ -581,7 +582,7 @@ describe('Stock control', () => {
                 Codegen.CancelOrderMutationVariables
             >(CANCEL_ORDER, {
                 input: {
-                    orderId: order!.id,
+                    orderId: order.id,
                     reason: 'Not needed',
                 },
             });
@@ -681,7 +682,7 @@ describe('Stock control', () => {
             orderGuard.assertErrorResult(addItemToOrder);
 
             expect(addItemToOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
-            expect(addItemToOrder.message).toBe(`No items were added to the order due to insufficient stock`);
+            expect(addItemToOrder.message).toBe('No items were added to the order due to insufficient stock');
             expect((addItemToOrder as any).quantityAvailable).toBe(0);
             expect((addItemToOrder as any).order.lines.length).toBe(0);
         });
@@ -700,7 +701,7 @@ describe('Stock control', () => {
 
             expect(addItemToOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
             expect(addItemToOrder.message).toBe(
-                `Only 3 items were added to the order due to insufficient stock`,
+                'Only 3 items were added to the order due to insufficient stock',
             );
             expect((addItemToOrder as any).quantityAvailable).toBe(3);
             // Still adds as many as available to the Order
@@ -753,7 +754,7 @@ describe('Stock control', () => {
 
             expect(addItemToOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
             expect(addItemToOrder.message).toBe(
-                `Only 1 item was added to the order due to insufficient stock`,
+                'Only 1 item was added to the order due to insufficient stock',
             );
             expect((addItemToOrder as any).quantityAvailable).toBe(1);
             // Still adds as many as available to the Order
@@ -860,7 +861,7 @@ describe('Stock control', () => {
 
             expect(addFulfillmentToOrder.errorCode).toBe(AdminErrorCode.INSUFFICIENT_STOCK_ON_HAND_ERROR);
             expect(addFulfillmentToOrder.message).toBe(
-                `Cannot create a Fulfillment as 'Laptop 15 inch 16GB' has insufficient stockOnHand (3)`,
+                "Cannot create a Fulfillment as 'Laptop 15 inch 16GB' has insufficient stockOnHand (3)",
             );
         });
 
@@ -1104,7 +1105,7 @@ describe('Stock control', () => {
 
                 expect(addItemToOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
                 expect(addItemToOrder.message).toBe(
-                    `No items were added to the order due to insufficient stock`,
+                    'No items were added to the order due to insufficient stock',
                 );
             });
 
@@ -1133,7 +1134,7 @@ describe('Stock control', () => {
 
                 expect(addItemToOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
                 expect(addItemToOrder.message).toBe(
-                    `No items were added to the order due to insufficient stock`,
+                    'No items were added to the order due to insufficient stock',
                 );
             });
 
@@ -1161,7 +1162,7 @@ describe('Stock control', () => {
                 orderGuard.assertErrorResult(add2);
 
                 expect(add2.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
-                expect(add2.message).toBe(`No items were added to the order due to insufficient stock`);
+                expect(add2.message).toBe('No items were added to the order due to insufficient stock');
                 expect((add2 as any).quantityAvailable).toBe(0);
                 // Still adds as many as available to the Order
                 expect((add2 as any).order.lines[0].productVariant.id).toBe(variant6Id);

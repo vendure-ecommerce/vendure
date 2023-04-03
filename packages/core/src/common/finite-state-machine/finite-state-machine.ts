@@ -82,7 +82,7 @@ export class FSM<T extends string, Data = any> {
     /**
      * Returns an array of state to which the machine may transition from the current state.
      */
-    getNextStates(): ReadonlyArray<T> {
+    getNextStates(): readonly T[] {
         return this.config.transitions[this._currentState]?.to ?? [];
     }
 

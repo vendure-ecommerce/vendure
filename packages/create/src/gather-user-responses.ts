@@ -6,7 +6,7 @@ import prompts, { PromptObject } from 'prompts';
 
 import { DbType, FileSources, UserResponses } from './types';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * Prompts the user to determine how the new Vendure app should be configured.
@@ -44,37 +44,37 @@ export async function gatherUserResponses(
         {
             type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
             name: 'dbHost',
-            message: `What's the database host address?`,
+            message: 'What\'s the database host address?',
             initial: 'localhost',
         },
         {
             type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
             name: 'dbPort',
-            message: `What port is the database listening on?`,
+            message: 'What port is the database listening on?',
             initial: (() => defaultDBPort(dbType)) as any,
         },
         {
             type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
             name: 'dbName',
-            message: `What's the name of the database?`,
+            message: 'What\'s the name of the database?',
             initial: 'vendure',
         },
         {
             type: (() => (dbType === 'postgres' ? 'text' : null)) as any,
             name: 'dbSchema',
-            message: `What's the schema name we should use?`,
+            message: 'What\'s the schema name we should use?',
             initial: 'public',
         },
         {
             type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
             name: 'dbUserName',
-            message: `What's the database user name?`,
+            message: 'What\'s the database user name?',
             initial: 'root',
         },
         {
             type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'password')) as any,
             name: 'dbPassword',
-            message: `What's the database password?`,
+            message: 'What\'s the database password?',
         },
         {
             type: 'text',
@@ -105,7 +105,7 @@ export async function gatherUserResponses(
         onSubmit,
         onCancel() {
             /* */
-            console.log(`Setup cancelled`);
+            console.log('Setup cancelled');
             process.exit(1);
         },
     });
@@ -156,7 +156,7 @@ async function generateSources(root: string, answers: any, useYarn: boolean): Pr
      * Instead, we disable escaping and use this custom helper to escape only the single quote character.
      */
     Handlebars.registerHelper('escapeSingle', (aString: unknown) => {
-        return typeof aString === 'string' ? aString.replace(/'/g, `\\'`) : aString;
+        return typeof aString === 'string' ? aString.replace(/'/g, '\\\'') : aString;
     });
 
     const templateContext = {

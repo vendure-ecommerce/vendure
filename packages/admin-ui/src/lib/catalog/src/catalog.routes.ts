@@ -123,8 +123,7 @@ export function productBreadcrumb(data: any, params: any) {
 
 export function productVariantEditorBreadcrumb(data: any, params: any) {
     return data.entity.pipe(
-        map((entity: any) => {
-            return [
+        map((entity: any) => [
                 {
                     label: _('breadcrumb.products'),
                     link: ['../', 'products'],
@@ -137,15 +136,13 @@ export function productVariantEditorBreadcrumb(data: any, params: any) {
                     label: _('breadcrumb.manage-variants'),
                     link: ['manage-variants'],
                 },
-            ];
-        }),
+            ]),
     );
 }
 
 export function productOptionsEditorBreadcrumb(data: any, params: any) {
     return data.entity.pipe(
-        map((entity: any) => {
-            return [
+        map((entity: any) => [
                 {
                     label: _('breadcrumb.products'),
                     link: ['../', 'products'],
@@ -158,8 +155,7 @@ export function productOptionsEditorBreadcrumb(data: any, params: any) {
                     label: _('breadcrumb.product-options'),
                     link: ['options'],
                 },
-            ];
-        }),
+            ]),
     );
 }
 

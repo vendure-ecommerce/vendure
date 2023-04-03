@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
@@ -46,7 +46,7 @@ export class ConnectionModule {
         };
     }
 
-    static getTypeOrmLogger(dbConnectionOptions: ConnectionOptions) {
+    static getTypeOrmLogger(dbConnectionOptions: DataSourceOptions) {
         if (!dbConnectionOptions.logger) {
             return new TypeOrmLogger(dbConnectionOptions.logging);
         } else {

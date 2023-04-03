@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { OnModuleInit } from '@nestjs/common';
 import { ErrorCode, RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
@@ -18,6 +18,8 @@ import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from 
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
+import { Mock, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -45,7 +47,7 @@ import {
     VERIFY_EMAIL,
 } from './graphql/shop-definitions';
 
-let sendEmailFn: jest.Mock;
+let sendEmailFn: Mock;
 
 /**
  * This mock plugin simulates an EmailPlugin which would send emails
@@ -91,7 +93,7 @@ class TestPasswordValidationStrategy implements PasswordValidationStrategy {
             return 'Password must be more than 8 characters';
         }
         if (password === '12345678') {
-            return `Don't use 12345678!`;
+            return "Don't use 12345678!";
         }
         return true;
     }
@@ -127,7 +129,7 @@ describe('Shop auth & accounts', () => {
         let newCustomerId: string;
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('does not return error result on email address conflict', async () => {
@@ -265,7 +267,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`Verification token not recognized`);
+            expect(verifyCustomerAccount.message).toBe('Verification token not recognized');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
         });
 
@@ -278,7 +280,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`A password must be provided.`);
+            expect(verifyCustomerAccount.message).toBe('A password must be provided.');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.MISSING_PASSWORD_ERROR);
         });
 
@@ -292,9 +294,9 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`Password is invalid`);
+            expect(verifyCustomerAccount.message).toBe('Password is invalid');
             expect((verifyCustomerAccount as PasswordValidationError).validationErrorMessage).toBe(
-                `Password must be more than 8 characters`,
+                'Password must be more than 8 characters',
             );
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.PASSWORD_VALIDATION_ERROR);
         });
@@ -345,7 +347,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`Verification token not recognized`);
+            expect(verifyCustomerAccount.message).toBe('Verification token not recognized');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
         });
 
@@ -402,9 +404,9 @@ describe('Shop auth & accounts', () => {
             });
             successErrorGuard.assertErrorResult(registerCustomerAccount);
             expect(registerCustomerAccount.errorCode).toBe(ErrorCode.PASSWORD_VALIDATION_ERROR);
-            expect(registerCustomerAccount.message).toBe(`Password is invalid`);
+            expect(registerCustomerAccount.message).toBe('Password is invalid');
             expect((registerCustomerAccount as PasswordValidationError).validationErrorMessage).toBe(
-                `Don't use 12345678!`,
+                "Don't use 12345678!",
             );
         });
 
@@ -465,7 +467,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`A password has already been set during registration`);
+            expect(verifyCustomerAccount.message).toBe('A password has already been set during registration');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.PASSWORD_ALREADY_SET_ERROR);
         });
 
@@ -500,7 +502,7 @@ describe('Shop auth & accounts', () => {
         });
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('requestPasswordReset silently fails with invalid identifier', async () => {
@@ -545,7 +547,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(resetPassword);
 
-            expect(resetPassword.message).toBe(`Password reset token not recognized`);
+            expect(resetPassword.message).toBe('Password reset token not recognized');
             expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_RESET_TOKEN_INVALID_ERROR);
         });
 
@@ -559,9 +561,9 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(resetPassword);
 
-            expect(resetPassword.message).toBe(`Password is invalid`);
+            expect(resetPassword.message).toBe('Password is invalid');
             expect((resetPassword as PasswordValidationError).validationErrorMessage).toBe(
-                `Password must be more than 8 characters`,
+                'Password must be more than 8 characters',
             );
             expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_VALIDATION_ERROR);
         });
@@ -616,7 +618,7 @@ describe('Shop auth & accounts', () => {
         let newCustomerId: string;
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('register a new account without password', async () => {
@@ -627,10 +629,10 @@ describe('Shop auth & accounts', () => {
                 phoneNumber: '123456',
                 emailAddress,
             };
-            const { registerCustomerAccount } = await shopClient.query<Codegen.RegisterMutation, Codegen.RegisterMutationVariables>(
-                REGISTER_ACCOUNT,
-                { input },
-            );
+            const { registerCustomerAccount } = await shopClient.query<
+                Codegen.RegisterMutation,
+                Codegen.RegisterMutationVariables
+            >(REGISTER_ACCOUNT, { input });
             successErrorGuard.assertSuccess(registerCustomerAccount);
             verificationToken = await verificationTokenPromise;
 
@@ -710,7 +712,7 @@ describe('Shop auth & accounts', () => {
         });
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('throws if not logged in', async () => {
@@ -874,7 +876,7 @@ describe('Shop auth & accounts', () => {
         } catch (e: any) {
             const errorCode = getErrorCode(e);
             if (!errorCode) {
-                fail(`Unexpected failure: ${e}`);
+                fail(`Unexpected failure: ${JSON.stringify(e)}`);
             } else {
                 fail(`Operation should be allowed, got status ${getErrorCode(e)}`);
             }
@@ -884,7 +886,7 @@ describe('Shop auth & accounts', () => {
     async function assertRequestForbidden<V>(operation: DocumentNode, variables: V) {
         try {
             const status = await shopClient.query(operation, variables);
-            fail(`Should have thrown`);
+            fail('Should have thrown');
         } catch (e: any) {
             expect(getErrorCode(e)).toBe('FORBIDDEN');
         }
@@ -912,7 +914,7 @@ describe('Shop auth & accounts', () => {
         const role = roleResult.createRole;
 
         const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
-        const password = `test`;
+        const password = 'test';
 
         const adminResult = await shopClient.query<
             Codegen.CreateAdministratorMutation,
@@ -962,7 +964,7 @@ describe('Expiring tokens', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
-        sendEmailFn = jest.fn();
+        sendEmailFn = vi.fn();
     });
 
     afterAll(async () => {
@@ -1002,7 +1004,7 @@ describe('Expiring tokens', () => {
         currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
         expect(verifyCustomerAccount.message).toBe(
-            `Verification token has expired. Use refreshCustomerVerification to send a new token.`,
+            'Verification token has expired. Use refreshCustomerVerification to send a new token.',
         );
         expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_EXPIRED_ERROR);
     });
@@ -1042,13 +1044,13 @@ describe('Expiring tokens', () => {
 
         currentUserErrorGuard.assertErrorResult(resetPassword);
 
-        expect(resetPassword.message).toBe(`Password reset token has expired`);
+        expect(resetPassword.message).toBe('Password reset token has expired');
         expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_RESET_TOKEN_EXPIRED_ERROR);
     });
 });
 
 describe('Registration without email verification', () => {
-    const { server, shopClient } = createTestEnvironment(
+    const { server, shopClient, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             plugins: [TestEmailPlugin as any],
             authOptions: {
@@ -1064,10 +1066,11 @@ describe('Registration without email verification', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
-        sendEmailFn = jest.fn();
+        sendEmailFn = vi.fn();
     });
 
     afterAll(async () => {
@@ -1125,6 +1128,81 @@ describe('Registration without email verification', () => {
         );
         expect(result.me.identifier).toBe(userEmailAddress);
     });
+
+    it('can login case insensitive', async () => {
+        await shopClient.asUserWithCredentials(userEmailAddress.toUpperCase(), 'test');
+
+        const result = await shopClient.query(
+            gql`
+                query GetMe {
+                    me {
+                        identifier
+                    }
+                }
+            `,
+        );
+        expect(result.me.identifier).toBe(userEmailAddress);
+    });
+
+    it('normalizes customer & user email addresses', async () => {
+        const input: RegisterCustomerInput = {
+            firstName: 'Bobbington',
+            lastName: 'Jarrolds',
+            emailAddress: 'BOBBINGTON.J@Test.com',
+            password: 'test',
+        };
+        const { registerCustomerAccount } = await shopClient.query<
+            CodegenShop.RegisterMutation,
+            CodegenShop.RegisterMutationVariables
+        >(REGISTER_ACCOUNT, {
+            input,
+        });
+        successErrorGuard.assertSuccess(registerCustomerAccount);
+
+        const { customers } = await adminClient.query<
+            Codegen.GetCustomerListQuery,
+            Codegen.GetCustomerListQueryVariables
+        >(GET_CUSTOMER_LIST, {
+            options: {
+                filter: {
+                    firstName: { eq: 'Bobbington' },
+                },
+            },
+        });
+
+        expect(customers.items[0].emailAddress).toBe('bobbington.j@test.com');
+        expect(customers.items[0].user?.identifier).toBe('bobbington.j@test.com');
+    });
+
+    it('registering with same email address with different casing does not create new user', async () => {
+        const input: RegisterCustomerInput = {
+            firstName: 'Glen',
+            lastName: 'Beardsley',
+            emailAddress: userEmailAddress.toUpperCase(),
+            password: 'test',
+        };
+        const { registerCustomerAccount } = await shopClient.query<
+            CodegenShop.RegisterMutation,
+            CodegenShop.RegisterMutationVariables
+        >(REGISTER_ACCOUNT, {
+            input,
+        });
+        successErrorGuard.assertSuccess(registerCustomerAccount);
+
+        const { customers } = await adminClient.query<
+            Codegen.GetCustomerListQuery,
+            Codegen.GetCustomerListQueryVariables
+        >(GET_CUSTOMER_LIST, {
+            options: {
+                filter: {
+                    firstName: { eq: 'Glen' },
+                },
+            },
+        });
+
+        expect(customers.items[0].emailAddress).toBe(userEmailAddress);
+        expect(customers.items[0].user?.identifier).toBe(userEmailAddress);
+    });
 });
 
 describe('Updating email address without email verification', () => {
@@ -1156,7 +1234,7 @@ describe('Updating email address without email verification', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
-        sendEmailFn = jest.fn();
+        sendEmailFn = vi.fn();
     });
 
     afterAll(async () => {

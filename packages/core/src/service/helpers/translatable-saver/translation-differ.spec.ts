@@ -1,9 +1,9 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { TranslationInput } from '../../../common/types/locale-types';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
-import { MockEntityManager } from '../../../testing/connection.mock';
 
 import { TranslationDiffer } from './translation-differ';
 
@@ -26,10 +26,10 @@ describe('TranslationUpdater', () => {
             }),
         ];
 
-        let entityManager: any;
+        let connection: any;
 
         beforeEach(() => {
-            entityManager = new MockEntityManager() as any;
+            connection = {};
         });
 
         it('correctly marks translations for update', async () => {
@@ -48,10 +48,7 @@ describe('TranslationUpdater', () => {
                 },
             ];
 
-            const diff = new TranslationDiffer(ProductTranslation as any, entityManager).diff(
-                existing,
-                updated,
-            );
+            const diff = new TranslationDiffer(ProductTranslation as any, connection).diff(existing, updated);
             expect(diff.toUpdate).toEqual(existing);
         });
 
@@ -70,10 +67,7 @@ describe('TranslationUpdater', () => {
                     description: '',
                 },
             ];
-            const diff = new TranslationDiffer(ProductTranslation as any, entityManager).diff(
-                existing,
-                updated,
-            );
+            const diff = new TranslationDiffer(ProductTranslation as any, connection).diff(existing, updated);
             expect(diff.toAdd).toEqual(updated);
         });
 
@@ -92,10 +86,7 @@ describe('TranslationUpdater', () => {
                     description: '',
                 },
             ];
-            const diff = new TranslationDiffer(ProductTranslation as any, entityManager).diff(
-                existing,
-                updated,
-            );
+            const diff = new TranslationDiffer(ProductTranslation as any, connection).diff(existing, updated);
             expect(diff.toUpdate).toEqual([existing[0]]);
             expect(diff.toAdd).toEqual([updated[1]]);
         });

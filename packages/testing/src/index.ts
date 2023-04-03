@@ -12,4 +12,3 @@ export * from './initializers/postgres-initializer';
 export * from './initializers/sqljs-initializer';
 export * from './testing-logger';
 export * from './types';
-export * from './utils/get-default-channel-token';

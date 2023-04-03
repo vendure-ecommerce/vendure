@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Collection resolver createCollection creates a root collection 1`] = `
-Object {
-  "assets": Array [
-    Object {
+exports[`Collection resolver > createCollection > creates a root collection 1`] = `
+{
+  "assets": [
+    {
       "fileSize": 1680,
       "id": "T_2",
       "mimeType": "image/jpeg",
@@ -12,7 +12,7 @@ Object {
       "source": "test-url/test-assets/alexandru-acea-686569-unsplash.jpg",
       "type": "IMAGE",
     },
-    Object {
+    {
       "fileSize": 1680,
       "id": "T_1",
       "mimeType": "image/jpeg",
@@ -22,9 +22,9 @@ Object {
       "type": "IMAGE",
     },
   ],
-  "children": Array [],
+  "children": [],
   "description": "",
-  "featuredAsset": Object {
+  "featuredAsset": {
     "fileSize": 1680,
     "id": "T_1",
     "mimeType": "image/jpeg",
@@ -33,14 +33,14 @@ Object {
     "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
     "type": "IMAGE",
   },
-  "filters": Array [
-    Object {
-      "args": Array [
-        Object {
+  "filters": [
+    {
+      "args": [
+        {
           "name": "facetValueIds",
           "value": "[\\"T_1\\"]",
         },
-        Object {
+        {
           "name": "containsAny",
           "value": "false",
         },
@@ -52,13 +52,13 @@ Object {
   "isPrivate": false,
   "languageCode": "en",
   "name": "Electronics",
-  "parent": Object {
+  "parent": {
     "id": "T_1",
     "name": "__root_collection__",
   },
   "slug": "electronics",
-  "translations": Array [
-    Object {
+  "translations": [
+    {
       "description": "",
       "id": "T_3",
       "languageCode": "en",
@@ -69,10 +69,10 @@ Object {
 }
 `;
 
-exports[`Collection resolver updateCollection updates with assets 1`] = `
-Object {
-  "assets": Array [
-    Object {
+exports[`Collection resolver > updateCollection > updates with assets 1`] = `
+{
+  "assets": [
+    {
       "fileSize": 1680,
       "id": "T_1",
       "mimeType": "image/jpeg",
@@ -81,7 +81,7 @@ Object {
       "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
       "type": "IMAGE",
     },
-    Object {
+    {
       "fileSize": 1680,
       "id": "T_3",
       "mimeType": "image/jpeg",
@@ -91,9 +91,9 @@ Object {
       "type": "IMAGE",
     },
   ],
-  "children": Array [],
+  "children": [],
   "description": "Apple stuff ",
-  "featuredAsset": Object {
+  "featuredAsset": {
     "fileSize": 1680,
     "id": "T_1",
     "mimeType": "image/jpeg",
@@ -102,14 +102,14 @@ Object {
     "source": "test-url/test-assets/derick-david-409858-unsplash.jpg",
     "type": "IMAGE",
   },
-  "filters": Array [
-    Object {
-      "args": Array [
-        Object {
+  "filters": [
+    {
+      "args": [
+        {
           "name": "facetValueIds",
           "value": "[\\"T_3\\"]",
         },
-        Object {
+        {
           "name": "containsAny",
           "value": "false",
         },
@@ -121,13 +121,13 @@ Object {
   "isPrivate": false,
   "languageCode": "en",
   "name": "Pear",
-  "parent": Object {
+  "parent": {
     "id": "T_4",
     "name": "Computers",
   },
   "slug": "apple-stuff",
-  "translations": Array [
-    Object {
+  "translations": [
+    {
       "description": "Apple stuff ",
       "id": "T_5",
       "languageCode": "en",

@@ -259,9 +259,6 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      */
     @Calculated()
     get discountedLinePriceWithTax(): number {
-        // return roundMoney(
-        //     this.linePriceWithTax + this.getLineAdjustmentsTotal(true, AdjustmentType.PROMOTION),
-        // );
         return roundMoney(this._discountedUnitPriceWithTax(), this.quantity);
     }
 

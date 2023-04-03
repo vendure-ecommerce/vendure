@@ -220,12 +220,12 @@ export class SqliteSearchStrategy implements SearchStrategy {
             );
         }
         if (collectionId) {
-            qb.andWhere(`(',' || si.collectionIds || ',') LIKE :collectionId`, {
+            qb.andWhere("(',' || si.collectionIds || ',') LIKE :collectionId", {
                 collectionId: `%,${collectionId},%`,
             });
         }
         if (collectionSlug) {
-            qb.andWhere(`(',' || si.collectionSlugs || ',') LIKE :collectionSlug`, {
+            qb.andWhere("(',' || si.collectionSlugs || ',') LIKE :collectionSlug", {
                 collectionSlug: `%,${collectionSlug},%`,
             });
         }

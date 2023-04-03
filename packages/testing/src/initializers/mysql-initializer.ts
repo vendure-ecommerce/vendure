@@ -1,5 +1,5 @@
 import path from 'path';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 import { promisify } from 'util';
 
@@ -27,6 +27,7 @@ export class MysqlInitializer implements TestDbInitializer<MysqlConnectionOption
     }
 
     async destroy() {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         await promisify(this.conn.end).bind(this.conn)();
     }
 
@@ -40,6 +41,7 @@ export class MysqlInitializer implements TestDbInitializer<MysqlConnectionOption
             user: connectionOptions.username,
             password: connectionOptions.password,
         });
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         const connect = promisify(conn.connect).bind(conn);
         await connect();
         return conn;

@@ -143,7 +143,7 @@ export function buildElasticBody(
             : undefined),
     };
     if (groupByProduct) {
-        body.collapse = { field: `productId` };
+        body.collapse = { field: 'productId' };
     }
     return body;
 }
@@ -166,13 +166,13 @@ function createScriptFields(
             for (const name of fields) {
                 const scriptField = scriptFields[name];
                 if (scriptField.context === 'product' && groupByProduct === true) {
-                    (result as any)[name] = scriptField.scriptFn(input);
+                    (result )[name] = scriptField.scriptFn(input);
                 }
                 if (scriptField.context === 'variant' && groupByProduct === false) {
-                    (result as any)[name] = scriptField.scriptFn(input);
+                    (result )[name] = scriptField.scriptFn(input);
                 }
                 if (scriptField.context === 'both' || scriptField.context === undefined) {
-                    (result as any)[name] = scriptField.scriptFn(input);
+                    (result )[name] = scriptField.scriptFn(input);
                 }
             }
             return result;

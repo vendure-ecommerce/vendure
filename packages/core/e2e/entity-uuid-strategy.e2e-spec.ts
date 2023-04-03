@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { UuidIdStrategy } from '@vendure/core';
 // This import is here to simulate the behaviour of
 // the package end-user importing symbols from the
@@ -9,6 +9,7 @@ import { UuidIdStrategy } from '@vendure/core';
 import '@vendure/core/dist/index';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';

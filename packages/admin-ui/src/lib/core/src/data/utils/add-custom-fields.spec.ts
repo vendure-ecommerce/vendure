@@ -4,7 +4,7 @@ import { CustomFields } from '../../common/generated-types';
 
 import { addCustomFields } from './add-custom-fields';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('addCustomFields()', () => {
     let documentNode: DocumentNode;
 

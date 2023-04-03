@@ -11,6 +11,7 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { FindOneOptions } from 'typeorm';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
@@ -143,9 +144,10 @@ export class ChannelService {
         entityId: ID,
         channelIds: ID[],
     ): Promise<T | undefined> {
-        const entity = await this.connection.getRepository(ctx, entityType).findOne(entityId, {
+        const entity = await this.connection.getRepository(ctx, entityType).findOne({
+            where: { id: entityId },
             relations: ['channels'],
-        });
+        } as FindOneOptions<T>);
         if (!entity) {
             return;
         }
@@ -165,7 +167,7 @@ export class ChannelService {
     async getChannelFromToken(ctx: RequestContext, token: string): Promise<Channel>;
     async getChannelFromToken(ctxOrToken: RequestContext | string, token?: string): Promise<Channel> {
         const [ctx, channelToken] =
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
 
         const allChannels = await this.allChannels.value(ctx);
@@ -190,7 +192,7 @@ export class ChannelService {
         const defaultChannel = allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
 
         if (!defaultChannel) {
-            throw new InternalServerError(`error.default-channel-not-found`);
+            throw new InternalServerError('error.default-channel-not-found');
         }
         return defaultChannel;
     }
@@ -215,7 +217,8 @@ export class ChannelService {
     findOne(ctx: RequestContext, id: ID): Promise<Channel | undefined> {
         return this.connection
             .getRepository(ctx, Channel)
-            .findOne(id, { relations: ['defaultShippingZone', 'defaultTaxZone'] });
+            .findOne({ where: { id }, relations: ['defaultShippingZone', 'defaultTaxZone'] })
+            .then(result => result ?? undefined);
     }
 
     async create(

@@ -6,6 +6,7 @@ import {
     Ctx,
     Customer,
     CustomerService,
+    HasCustomFields,
     ListQueryBuilder,
     LocaleString,
     Order,
@@ -21,12 +22,30 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, Relation } from 'typeorm';
 
 import { Calculated } from '../../../src/common/calculated-decorator';
 
 @Entity()
-export class TestEntity extends VendureEntity implements Translatable {
+export class CustomFieldRelationTestEntity extends VendureEntity {
+    constructor(input: Partial<CustomFieldRelationTestEntity>) {
+        super(input);
+    }
+
+    @Column()
+    data: string;
+
+    @ManyToOne(() => TestEntity)
+    parent: Relation<TestEntity>;
+}
+
+class TestEntityCustomFields {
+    @OneToMany(() => CustomFieldRelationTestEntity, child => child.parent)
+    relation: Relation<CustomFieldRelationTestEntity[]>;
+}
+
+@Entity()
+export class TestEntity extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input: Partial<TestEntity>) {
         super(input);
     }
@@ -106,6 +125,9 @@ export class TestEntity extends VendureEntity implements Translatable {
 
     @Column({ nullable: true })
     nullableDate: Date;
+
+    @Column(() => TestEntityCustomFields)
+    customFields: TestEntityCustomFields;
 }
 
 @Entity()
@@ -120,6 +142,8 @@ export class TestEntityTranslation extends VendureEntity implements Translation<
 
     @ManyToOne(type => TestEntity, base => base.translations)
     base: TestEntity;
+
+    customFields: {};
 }
 
 @Entity()
@@ -147,7 +171,7 @@ export class ListQueryResolver {
         return this.listQueryBuilder
             .build(TestEntity, args.options, {
                 ctx,
-                relations: ['orderRelation', 'orderRelation.customer'],
+                relations: ['orderRelation', 'orderRelation.customer', 'customFields.relation'],
                 customPropertyMap: {
                     customerLastName: 'orderRelation.customer.lastName',
                 },
@@ -156,7 +180,7 @@ export class ListQueryResolver {
             .then(([items, totalItems]) => {
                 for (const item of items) {
                     if (item.prices && item.prices.length) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
@@ -175,7 +199,7 @@ export class ListQueryResolver {
             .then(items => {
                 for (const item of items) {
                     if (item.prices && item.prices.length) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
@@ -191,6 +215,15 @@ const apiExtensions = gql`
         updatedAt: DateTime!
         languageCode: LanguageCode!
         name: String!
+    }
+
+    type CustomFieldRelationTestEntity implements Node {
+        id: ID!
+        data: String!
+    }
+
+    type TestEntityCustomFields {
+        relation: [CustomFieldRelationTestEntity!]!
     }
 
     type TestEntity implements Node {
@@ -213,6 +246,7 @@ const apiExtensions = gql`
         nullableNumber: Int
         nullableId: ID
         nullableDate: DateTime
+        customFields: TestEntityCustomFields!
     }
 
     type TestEntityList implements PaginatedList {
@@ -238,7 +272,7 @@ const apiExtensions = gql`
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    entities: [TestEntity, TestEntityPrice, TestEntityTranslation],
+    entities: [TestEntity, TestEntityPrice, TestEntityTranslation, CustomFieldRelationTestEntity],
     adminApiExtensions: {
         schema: apiExtensions,
         resolvers: [ListQueryResolver],
@@ -334,6 +368,12 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                 F: { [LanguageCode.de]: 'baum' },
             };
 
+            const nestedData: Record<string, Array<{ data: string }>> = {
+                A: [{ data: 'A' }],
+                B: [{ data: 'B' }],
+                C: [{ data: 'C' }],
+            };
+
             for (const testEntity of testEntities) {
                 await this.connection.getRepository(TestEntityPrice).save([
                     new TestEntityPrice({
@@ -360,6 +400,17 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                         );
                     }
                 }
+
+                if (nestedData[testEntity.label]) {
+                    for (const nestedContent of nestedData[testEntity.label]) {
+                        await this.connection.getRepository(CustomFieldRelationTestEntity).save(
+                            new CustomFieldRelationTestEntity({
+                                parent: testEntity,
+                                data: nestedContent.data,
+                            }),
+                        );
+                    }
+                }
             }
         } else {
             const testEntities = await this.connection.getRepository(TestEntity).find();
@@ -370,7 +421,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
             for (const testEntity of testEntities) {
                 const customer = customers[i % customers.length];
                 try {
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     const order = await this.orderService.create(ctx, customer.user!.id);
                     testEntity.orderRelation = order;
                     await this.connection.getRepository(TestEntity).save(testEntity);

@@ -4,8 +4,8 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../api/common/request-context';
 import { Channel } from '../entity/channel/channel.entity';
-import { OrderLine } from '../entity/order-line/order-line.entity';
 import { Order } from '../entity/order/order.entity';
+import { OrderLine } from '../entity/order-line/order-line.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
 import { TaxCategory } from '../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../entity/tax-rate/tax-rate.entity';

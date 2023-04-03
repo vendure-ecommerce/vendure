@@ -40,7 +40,7 @@ The actual queue part is defined by the configured [JobQueueStrategy]({{< relref
 
 If no strategy is defined, Vendure uses an [in-memory store]({{< relref "in-memory-job-queue-strategy" >}}) of the contents of each queue. While this has the advantage of requiring no external dependencies, it is not suitable for production because when the server is stopped, the entire queue will be lost and any pending jobs will never be processed. Moreover, it cannot be used when running the worker as a separate process.
 
-A better alternative is to use the [DefaultJobQueuePlugin]({{< relref "default-job-queue-plugin" >}}) (which will be used in a standard `@vendure/create` installation), which configures Vendure to use the [SqlJobQueueStrategy]({{< relref "sql-job-queue-strategy" >}}). This strategy uses the database as a queue, and means that event if the Vendure server stops, pending jobs will be persisted and upon re-start, they will be processed.
+A better alternative is to use the [DefaultJobQueuePlugin]({{< relref "default-job-queue-plugin" >}}) (which will be used in a standard `@vendure/create` installation), which configures Vendure to use the [SqlJobQueueStrategy]({{< relref "sql-job-queue-strategy" >}}). This strategy uses the database as a queue, and means that even if the Vendure server stops, pending jobs will be persisted and upon re-start, they will be processed.
 
 It is also possible to implement your own JobQueueStrategy to take advantage of other technologies. Examples include RabbitMQ, Google Cloud Pub Sub & Amazon SQS. It may make sense to implement a custom strategy based on one of these if the default database-based approach does not meet your performance requirements.
 

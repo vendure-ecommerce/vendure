@@ -10,12 +10,12 @@ When creating a plugin, you may wish to extend the Admin UI in order to expose a
 This is possible by defining [AdminUiExtensions]({{< ref "admin-ui-extension" >}}).
 
 {{< alert "primary" >}}
-For a complete working example of a Vendure plugin which extends the Admin UI, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
+For a complete working example of a Vendure plugin that extends the Admin UI, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
 {{< /alert >}}
 
 ## How It Works
 
-A UI extension is an [Angular module](https://angular.io/guide/ngmodules) which gets compiled into the Admin UI application bundle by the [`compileUiExtensions`]({{< relref "compile-ui-extensions" >}}) function exported by the `@vendure/ui-devkit` package. Internally, the ui-devkit package makes use of the Angular CLI to compile an optimized set of JavaScript bundles containing your extensions.
+A UI extension is an [Angular module](https://angular.io/guide/ngmodules) that gets compiled into the Admin UI application bundle by the [`compileUiExtensions`]({{< relref "compile-ui-extensions" >}}) function exported by the `@vendure/ui-devkit` package. Internally, the ui-devkit package makes use of the Angular CLI to compile an optimized set of JavaScript bundles containing your extensions.
 
 ## Use Your Favourite Framework
 
@@ -26,7 +26,7 @@ The Vendure Admin UI is built with Angular, and writing UI extensions in Angular
 
 ## Lazy vs Shared Modules
 
-Angular uses the concept of modules ([NgModules](https://angular.io/guide/ngmodules)) for organizing related code. These modules can be lazily-loaded, which means that the code is not loaded when the app starts, but only later once that code is required. This keeps the main bundle small and improves performance.
+Angular uses the concept of modules ([NgModules](https://angular.io/guide/ngmodules)) for organizing related code. These modules can be lazily loaded, which means that the code is not loaded when the app starts, but only later once that code is required. This keeps the main bundle small and improves performance.
 
 When creating your UI extensions, you can set your module to be either `lazy` or `shared`. Shared modules are loaded _eagerly_, i.e. their code is bundled up with the main app and loaded as soon as the app loads.
 

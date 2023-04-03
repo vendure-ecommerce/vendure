@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
@@ -13,8 +13,9 @@ import {
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
+import 'dotenv/config';
 import path from 'path';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { MultivendorPlugin } from './test-plugins/multivendor-plugin/multivendor.plugin';
 
@@ -69,8 +70,8 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
-        // BullMQJobQueuePlugin.init({}),
-        DefaultJobQueuePlugin.init({}),
+        BullMQJobQueuePlugin.init({}),
+        // DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -96,7 +97,7 @@ export const devConfig: VendureConfig = {
     ],
 };
 
-function getDbConfig(): ConnectionOptions {
+function getDbConfig(): DataSourceOptions {
     const dbType = process.env.DB || 'mysql';
     switch (dbType) {
         case 'postgres':
@@ -104,11 +105,12 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: true,
                 type: 'postgres',
-                host: '127.0.0.1',
-                port: 5432,
-                username: 'admin',
-                password: 'secret',
-                database: 'vendure-dev',
+                host: process.env.DB_HOST || 'localhost',
+                port: Number(process.env.DB_PORT) || 5432,
+                username: process.env.DB_USERNAME || 'postgres',
+                password: process.env.DB_PASSWORD || 'postgres',
+                database: process.env.DB_NAME || 'vendure',
+                schema: process.env.DB_SCHEMA || 'public',
             };
         case 'sqlite':
             console.log('Using sqlite connection');

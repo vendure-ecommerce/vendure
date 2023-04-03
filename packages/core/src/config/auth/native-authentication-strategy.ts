@@ -35,8 +35,8 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
     async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         // These are lazily-loaded to avoid a circular dependency
-        const { PasswordCipher } = await import('../../service/helpers/password-cipher/password-cipher');
-        const { UserService } = await import('../../service/services/user.service');
+        const { PasswordCipher } = await import('../../service/helpers/password-cipher/password-cipher.js');
+        const { UserService } = await import('../../service/services/user.service.js');
         this.passwordCipher = injector.get(PasswordCipher);
         this.userService = injector.get(UserService);
     }
@@ -66,7 +66,8 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
      * Verify the provided password against the one we have for the given user.
      */
     async verifyUserPassword(ctx: RequestContext, userId: ID, password: string): Promise<boolean> {
-        const user = await this.connection.getRepository(ctx, User).findOne(userId, {
+        const user = await this.connection.getRepository(ctx, User).findOne({
+            where: { id: userId },
             relations: ['authenticationMethods'],
         });
         if (!user) {
@@ -78,11 +79,10 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
         }
         const pw =
             (
-                await this.connection
-                    .getRepository(ctx, NativeAuthenticationMethod)
-                    .findOne(nativeAuthMethod.id, {
-                        select: ['passwordHash'],
-                    })
+                await this.connection.getRepository(ctx, NativeAuthenticationMethod).findOne({
+                    where: { id: nativeAuthMethod.id },
+                    select: ['passwordHash'],
+                })
             )?.passwordHash ?? '';
         const passwordMatches = await this.passwordCipher.check(password, pw);
         if (!passwordMatches) {

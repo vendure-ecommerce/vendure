@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
@@ -23,7 +23,7 @@ export class FacetValueFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'facet-value-form-input';
     readonly isListInput = true;
     readonly: boolean;
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     config: InputComponentConfig;
 
     valueTransformFn = (values: FacetValueFragment[]) => {

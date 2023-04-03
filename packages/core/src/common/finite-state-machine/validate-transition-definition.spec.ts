@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 
 import { Transitions } from './types';

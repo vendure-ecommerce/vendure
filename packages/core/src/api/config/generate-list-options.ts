@@ -21,7 +21,9 @@ import {
     isListType,
     isNonNullType,
     isObjectType,
-} from 'graphql';
+    // Importing this from graphql/index.js is a workaround for the dual-package
+    // hazard issue when testing this file in vitest. See https://github.com/vitejs/vite/issues/7879
+} from 'graphql/index.js';
 
 /**
  * Generates ListOptions inputs for queries which return PaginatedList types.
@@ -67,7 +69,8 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
                               filterOperator: {
                                   type: logicalOperatorEnum as GraphQLEnumType,
                                   description:
-                                      'Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.',
+                                      'Specifies whether multiple "filter" arguments should be combines ' +
+                                      'with a logical AND or OR operation. Defaults to AND.',
                               },
                           }
                         : {}),
@@ -222,7 +225,7 @@ function getCommonTypes(schema: GraphQLSchema) {
         !DateOperators ||
         !IDOperators
     ) {
-        throw new Error(`A common type was not defined`);
+        throw new Error('A common type was not defined');
     }
     return {
         SortOrder,

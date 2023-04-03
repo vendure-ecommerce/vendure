@@ -15,12 +15,11 @@ import Bull, {
     JobType,
     Processor,
     Queue,
-    QueueScheduler,
     Worker,
     WorkerOptions,
 } from 'bullmq';
 import { EventEmitter } from 'events';
-import Redis, { RedisOptions } from 'ioredis';
+import { Cluster, Redis, RedisOptions } from 'ioredis';
 
 import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { RedisHealthIndicator } from './redis-health-indicator';
@@ -37,11 +36,10 @@ const DEFAULT_CONCURRENCY = 3;
  * @docsCategory job-queue-plugin
  */
 export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
-    private redisConnection: Redis.Redis | Redis.Cluster;
+    private redisConnection: Redis | Cluster;
     private connectionOptions: ConnectionOptions;
     private queue: Queue;
     private worker: Worker;
-    private scheduler: QueueScheduler;
     private workerProcessor: Processor;
     private options: BullMQPluginOptions;
     private queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
@@ -63,21 +61,23 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                 : new Redis(this.connectionOptions);
 
         const redisHealthIndicator = injector.get(RedisHealthIndicator);
-        Logger.info(`Checking Redis connection...`, loggerCtx);
+        Logger.info('Checking Redis connection...', loggerCtx);
         const health = await redisHealthIndicator.isHealthy('redis');
         if (health.redis.status === 'down') {
             Logger.error('Could not connect to Redis', loggerCtx);
         } else {
-            Logger.info(`Connected to Redis ✔`, loggerCtx);
+            Logger.info('Connected to Redis ✔', loggerCtx);
         }
 
         this.queue = new Queue(QUEUE_NAME, {
             ...options.queueOptions,
             connection: this.redisConnection,
         })
-            .on('error', (e: any) => Logger.error(`BullMQ Queue error: ${e.message}`, loggerCtx, e.stack))
-            .on('resumed', () => Logger.verbose(`BullMQ Queue resumed`, loggerCtx))
-            .on('paused', () => Logger.verbose(`BullMQ Queue paused`, loggerCtx));
+            .on('error', (e: any) =>
+                Logger.error(`BullMQ Queue error: ${JSON.stringify(e.message)}`, loggerCtx, e.stack),
+            )
+            .on('resumed', () => Logger.verbose('BullMQ Queue resumed', loggerCtx))
+            .on('paused', () => Logger.verbose('BullMQ Queue paused', loggerCtx));
 
         if (await this.queue.isPaused()) {
             await this.queue.resume();
@@ -86,7 +86,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         this.workerProcessor = async bullJob => {
             const queueName = bullJob.name;
             Logger.debug(
-                `Job ${bullJob.id} [${queueName}] starting (attempt ${bullJob.attemptsMade + 1} of ${
+                `Job ${bullJob.id ?? ''} [${queueName}] starting (attempt ${bullJob.attemptsMade + 1} of ${
                     bullJob.opts.attempts ?? 1
                 })`,
             );
@@ -104,21 +104,13 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             }
             throw new InternalServerError(`No processor defined for the queue "${queueName}"`);
         };
-
-        this.scheduler = new QueueScheduler(QUEUE_NAME, {
-            ...options.schedulerOptions,
-            connection: this.redisConnection,
-        })
-            .on('error', (e: any) => Logger.error(`BullMQ Scheduler error: ${e.message}`, loggerCtx, e.stack))
-            .on('stalled', jobId => Logger.warn(`BullMQ Scheduler stalled on job ${jobId}`, loggerCtx))
-            .on('failed', jobId => Logger.warn(`BullMQ Scheduler failed on job ${jobId}`, loggerCtx));
     }
 
     async destroy() {
-        await Promise.all([this.queue.close(), this.worker?.close(), this.scheduler.close()]);
+        await Promise.all([this.queue.close(), this.worker?.close()]);
     }
 
-    async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
+    async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
         const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries;
         const backoff = this.options.setBackoff?.(job.queueName, job) ?? {
             delay: 1000,
@@ -137,13 +129,13 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             if (await bullJob.isActive()) {
                 // Not yet possible in BullMQ, see
                 // https://github.com/taskforcesh/bullmq/issues/632
-                throw new InternalServerError(`Cannot cancel a running job`);
+                throw new InternalServerError('Cannot cancel a running job');
             }
             try {
                 await bullJob.remove();
                 return this.createVendureJob(bullJob);
             } catch (e: any) {
-                const message = `Error when cancelling job: ${e.message}`;
+                const message = `Error when cancelling job: ${JSON.stringify(e.message)}`;
                 Logger.error(message, loggerCtx);
                 throw new InternalServerError(message);
             }
@@ -232,7 +224,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
     }
 
-    async start<Data extends JobData<Data> = {}>(
+    async start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void> {
@@ -247,21 +239,24 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                 .on('error', e => Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack))
                 .on('closing', e => Logger.verbose(`BullMQ Worker closing: ${e}`, loggerCtx))
                 .on('closed', () => Logger.verbose(`BullMQ Worker closed`))
-                .on('failed', (job: Bull.Job, failedReason) => {
+                .on('failed', (job: Bull.Job | undefined, error) => {
                     Logger.warn(
-                        `Job ${job.id} [${job.name}] failed (attempt ${job.attemptsMade} of ${
-                            job.opts.attempts ?? 1
+                        `Job ${job?.id} [${job?.name}] failed (attempt ${job?.attemptsMade} of ${
+                            job?.opts.attempts ?? 1
                         })`,
                     );
                 })
-                .on('completed', (job: Bull.Job, failedReason: string) => {
+                .on('stalled', (jobId: string) => {
+                    Logger.warn(`BullMQ Worker: job ${jobId} stalled`, loggerCtx);
+                })
+                .on('completed', (job: Bull.Job) => {
                     Logger.debug(`Job ${job.id} [${job.name}] completed`);
                 });
         }
     }
 
     private stopped = false;
-    async stop<Data extends JobData<Data> = {}>(
+    async stop<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void> {
@@ -269,7 +264,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             this.stopped = true;
             try {
                 await Promise.all([
-                    this.scheduler.disconnect(),
                     this.queue.disconnect(),
                     this.worker.disconnect(),
                 ]);

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ManualPaymentInput, RefundOrderInput } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -16,12 +17,12 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
+import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
 import { RefundLine } from '../../entity/order-line-reference/refund-line.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
-import { Order } from '../../entity/order/order.entity';
-import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { Payment } from '../../entity/payment/payment.entity';
+import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
@@ -86,7 +87,7 @@ export class PaymentService {
         return this.transitionStateAndSave(ctx, payment, fromState, state);
     }
 
-    getNextStates(payment: Payment): ReadonlyArray<PaymentState> {
+    getNextStates(payment: Payment): readonly PaymentState[] {
         return this.paymentStateMachine.getNextStates(payment);
     }
 
@@ -299,7 +300,7 @@ export class PaymentService {
         let refundOrderLinesTotal = 0;
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .findByIds(input.lines.map(l => l.orderLineId));
+            .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
         for (const line of input.lines) {
             const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
             if (orderLine && 0 < orderLine.quantity) {
@@ -318,10 +319,9 @@ export class PaymentService {
             const paymentToRefund =
                 (refundedPaymentIds.length === 0 &&
                     refundablePayments.find(p => idsAreEqual(p.id, selectedPayment.id))) ||
-                refundablePayments.find(p => !refundedPaymentIds.includes(p.id)) ||
-                refundablePayments[0];
+                refundablePayments.find(p => !refundedPaymentIds.includes(p.id));
             if (!paymentToRefund) {
-                throw new InternalServerError(`Could not find a Payment to refund`);
+                throw new InternalServerError('Could not find a Payment to refund');
             }
             const amountNotRefunded = paymentToRefund.amount - paymentRefundTotal(paymentToRefund);
             const total = Math.min(amountNotRefunded, refundOutstanding);
@@ -347,7 +347,8 @@ export class PaymentService {
                 handler = methodAndHandler.handler;
             } catch (e) {
                 Logger.warn(
-                    `Could not find a corresponding PaymentMethodHandler when creating a refund for the Payment with method "${paymentToRefund.method}"`,
+                    'Could not find a corresponding PaymentMethodHandler ' +
+                        `when creating a refund for the Payment with method "${paymentToRefund.method}"`,
                 );
             }
             const createRefundResult =
@@ -415,8 +416,8 @@ export class PaymentService {
             refundedPaymentIds.push(paymentToRefund.id);
             refundOutstanding = refundTotal - summate(refundsCreated, 'total');
         } while (0 < refundOutstanding);
-        // tslint:disable-next-line:no-non-null-assertion
-        return primaryRefund!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return primaryRefund;
     }
 
     private mergePaymentMetadata(m1: PaymentMetadata, m2?: PaymentMetadata): PaymentMetadata {

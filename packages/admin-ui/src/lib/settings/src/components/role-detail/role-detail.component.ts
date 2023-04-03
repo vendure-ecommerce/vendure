@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -27,7 +27,7 @@ import { mergeMap, take } from 'rxjs/operators';
 })
 export class RoleDetailComponent extends BaseDetailComponent<Role> implements OnInit, OnDestroy {
     role$: Observable<Role>;
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     permissionDefinitions: PermissionDefinition[];
     constructor(
         router: Router,
@@ -35,7 +35,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);

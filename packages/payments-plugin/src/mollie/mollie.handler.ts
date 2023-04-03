@@ -41,7 +41,10 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             description: [
                 {
                     languageCode: LanguageCode.en,
-                    value: 'This option only affects pay-later methods. Automatically capture payments immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.',
+                    value:
+                        'This option only affects pay-later methods. Automatically capture payments ' +
+                        'immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, ' +
+                        'and you need to manually settle payments to get paid.',
                 },
             ],
         },
@@ -52,7 +55,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
     createPayment: async (
         ctx,
         order,
-        amount,
+        _amount, // Don't use this amount, but the amount from the metadata
         args,
         metadata,
     ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
@@ -62,12 +65,14 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         }
         if (metadata.status !== 'Authorized' && metadata.status !== 'Settled') {
             throw Error(
-                `Cannot create payment for status ${metadata.status} for order ${order.code}. Only Authorized or Settled are allowed.`,
+                `Cannot create payment for status ${metadata.status as string} for order ${
+                    order.code
+                }. Only Authorized or Settled are allowed.`,
             );
         }
-        Logger.info(`Payment for order ${order.code} created with state '${metadata.status}'`, loggerCtx);
+        Logger.info(`Payment for order ${order.code} with amount ${metadata.amount} created with state '${metadata.status}'`, loggerCtx);
         return {
-            amount,
+            amount: metadata.amount,
             state: metadata.status,
             transactionId: metadata.orderId, // The plugin now only supports 1 payment per order, so a mollie order equals a payment
             metadata, // Store all given metadata on a payment

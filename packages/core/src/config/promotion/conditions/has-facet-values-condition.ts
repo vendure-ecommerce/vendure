@@ -18,7 +18,7 @@ export const hasFacetValues = new PromotionCondition({
     init(injector) {
         facetValueChecker = new FacetValueChecker(injector.get(TransactionalConnection));
     },
-    // tslint:disable-next-line:no-shadowed-variable
+    // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
     async check(ctx, order, args) {
         let matches = 0;
         for (const line of order.lines) {

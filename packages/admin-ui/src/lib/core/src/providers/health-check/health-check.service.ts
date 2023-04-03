@@ -47,9 +47,7 @@ export class HealthCheckService {
         this.status$ = result$.pipe(map(res => res.status));
         this.details$ = result$.pipe(
             map(res =>
-                Object.keys(res.details).map(key => {
-                    return { key, result: res.details[key] };
-                }),
+                Object.keys(res.details).map(key => ({ key, result: res.details[key] })),
             ),
         );
         this.lastCheck$ = result$.pipe(map(res => res.lastChecked));

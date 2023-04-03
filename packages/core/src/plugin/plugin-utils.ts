@@ -41,7 +41,7 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
         // TODO: how do we detect https?
         target: `http://${proxyHostname}:${options.port}`,
         pathRewrite: {
-            [`^${route}`]: `/` + (options.basePath || ''),
+            [`^${route}`]: '/' + (options.basePath || ''),
         },
         logProvider(provider) {
             return {

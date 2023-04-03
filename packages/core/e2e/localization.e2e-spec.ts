@@ -2,6 +2,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -10,7 +11,7 @@ import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_WITH_VARIANTS, UPDATE_PRODUCT } from './graphql/shared-definitions';
 
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('Localization', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
 

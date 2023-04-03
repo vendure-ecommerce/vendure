@@ -76,38 +76,38 @@ export class Populator {
         try {
             zoneMap = await this.populateCountries(ctx, data.countries);
         } catch (e: any) {
-            Logger.error(`Could not populate countries`);
+            Logger.error('Could not populate countries');
             Logger.error(e, 'populator', e.stack);
             throw e;
         }
         try {
             await this.populateTaxRates(ctx, data.taxRates, zoneMap);
         } catch (e: any) {
-            Logger.error(`Could not populate tax rates`);
+            Logger.error('Could not populate tax rates');
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populateShippingMethods(ctx, data.shippingMethods);
         } catch (e: any) {
-            Logger.error(`Could not populate shipping methods`);
+            Logger.error('Could not populate shipping methods');
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populatePaymentMethods(ctx, data.paymentMethods);
         } catch (e: any) {
-            Logger.error(`Could not populate payment methods`);
+            Logger.error('Could not populate payment methods');
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.setChannelDefaults(zoneMap, data, ctx.channel);
         } catch (e: any) {
-            Logger.error(`Could not set channel defaults`);
+            Logger.error('Could not set channel defaults');
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populateRoles(ctx, data.roles);
         } catch (e: any) {
-            Logger.error(`Could not populate roles`);
+            Logger.error('Could not populate roles');
             Logger.error(e, 'populator', e.stack);
         }
     }
@@ -195,7 +195,7 @@ export class Populator {
                     ],
                 };
             default:
-                throw new Error(`Filter with code "${filter.code}" is not recognized.`);
+                throw new Error(`Filter with code "${filter.code as string}" is not recognized.`);
         }
     }
 
@@ -207,7 +207,7 @@ export class Populator {
             },
         });
         const ctx = await this.requestContextService.create({
-            user: superAdminUser,
+            user: superAdminUser ?? undefined,
             apiType: 'admin',
             languageCode: data.defaultLanguage,
             channelOrToken: channel ?? (await this.channelService.getDefaultChannel()),

@@ -1,6 +1,6 @@
 import { RequestContext } from '../../api/common/request-context';
-import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { VendureEvent } from '../vendure-event';
 
 /**

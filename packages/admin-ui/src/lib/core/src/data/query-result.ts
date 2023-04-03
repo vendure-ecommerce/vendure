@@ -16,7 +16,7 @@ import { GET_USER_STATUS } from './definitions/client-definitions';
  * @docsCategory providers
  * @docsPage DataService
  */
-export class QueryResult<T, V = Record<string, any>> {
+export class QueryResult<T, V extends Record<string, any> = Record<string, any>> {
     constructor(private queryRef: QueryRef<T, V>, private apollo: Apollo) {
         this.valueChanges = queryRef.valueChanges;
     }

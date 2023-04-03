@@ -80,7 +80,7 @@ import { JobData } from '../types';
  * @docsCategory JobQueue
  * @since 1.3.0
  */
-export interface JobBuffer<Data extends JobData<Data> = {}> {
+export interface JobBuffer<Data extends JobData<Data> = object> {
     readonly id: string;
 
     /**

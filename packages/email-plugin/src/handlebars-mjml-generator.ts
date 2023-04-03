@@ -5,7 +5,11 @@ import mjml2html from 'mjml';
 import path from 'path';
 
 import { EmailGenerator } from './email-generator';
+// <<<<<<< HEAD
 import { EmailPluginDevModeOptions, EmailPluginOptions, InitializedEmailPluginOptions, Partial} from './types';
+// =======
+// import { EmailPluginDevModeOptions, EmailPluginOptions } from './types';
+// >>>>>>> vendure/major
 
 /**
  * @description

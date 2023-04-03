@@ -61,7 +61,7 @@ export type Join<T extends Array<string | any>, D extends string> = T extends []
     ? never
     : T extends [infer F]
     ? F
-    : // tslint:disable-next-line:no-shadowed-variable
+    : // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
     T extends [infer F, ...infer R]
     ? F extends string
         ? `${F}${D}${Join<Extract<R, string[]>, D>}`

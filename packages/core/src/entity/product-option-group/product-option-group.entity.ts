@@ -6,8 +6,8 @@ import { LocaleString, Translatable, Translation } from '../../common/types/loca
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomProductOptionGroupFields } from '../custom-entity-fields';
-import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
+import { ProductOption } from '../product-option/product-option.entity';
 
 import { ProductOptionGroupTranslation } from './product-option-group-translation.entity';
 

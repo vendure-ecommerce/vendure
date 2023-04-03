@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@vendure/admin-ui/core';
 
 @Component({
@@ -16,7 +16,7 @@ export class OrderTableComponent implements OnInit {
     @Output() remove = new EventEmitter<{ lineId: string }>();
     orderLineCustomFieldsVisible = false;
     customFieldsForLine: {
-        [lineId: string]: Array<{ config: CustomFieldConfig; formGroup: FormGroup; value: any }>;
+        [lineId: string]: Array<{ config: CustomFieldConfig; formGroup: UntypedFormGroup; value: any }>;
     } = {};
 
     get visibleOrderLineCustomFields(): CustomFieldConfig[] {
@@ -48,20 +48,18 @@ export class OrderTableComponent implements OnInit {
 
     private getLineCustomFields() {
         for (const line of this.order.lines) {
-            const formGroup = new FormGroup({});
+            const formGroup = new UntypedFormGroup({});
             const result = this.orderLineCustomFields
                 .map(config => {
                     const value = (line as any).customFields[config.name];
-                    formGroup.addControl(config.name, new FormControl(value));
+                    formGroup.addControl(config.name, new UntypedFormControl(value));
                     return {
                         config,
                         formGroup,
                         value,
                     };
                 })
-                .filter(field => {
-                    return this.orderLineCustomFieldsVisible ? true : field.value != null;
-                });
+                .filter(field => this.orderLineCustomFieldsVisible ? true : field.value != null);
             this.customFieldsForLine[line.id] = result;
         }
     }

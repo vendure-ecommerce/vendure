@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, Type } from '@vendure/common/lib/shared-types';
+import { FindOneOptions } from 'typeorm';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';
@@ -92,9 +94,9 @@ export class TranslatableSaver {
     async update<T extends Translatable & VendureEntity>(options: UpdateTranslatableOptions<T>): Promise<T> {
         const { ctx, entityType, translationType, input, beforeSave, typeOrmSubscriberData } = options;
         const existingTranslations = await this.connection.getRepository(ctx, translationType).find({
-            where: { base: input.id },
+            where: { base: { id: input.id } },
             relations: ['base'],
-        });
+        } as FindManyOptions<Translation<T>>);
 
         const differ = new TranslationDiffer(translationType, this.connection);
         const diff = differ.diff(existingTranslations, input.translations);

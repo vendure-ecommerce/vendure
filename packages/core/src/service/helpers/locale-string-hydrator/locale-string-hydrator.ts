@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { FindOneOptions } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -47,15 +48,17 @@ export class LocaleStringHydrator {
         const entityType = entity.constructor.name;
         if (!entity.translations?.length) {
             const cacheKey = `hydrate-${entityType}-${entity.id}`;
-            let dbCallPromise = this.requestCache.get<Promise<T | undefined>>(ctx, cacheKey);
+            let dbCallPromise = this.requestCache.get<Promise<T | null>>(ctx, cacheKey);
 
             if (!dbCallPromise) {
-                dbCallPromise = this.connection.getRepository<T>(ctx, entityType).findOne(entity.id);
+                dbCallPromise = this.connection
+                    .getRepository<T>(ctx, entityType)
+                    .findOne({ where: { id: entity.id } } as FindOneOptions<T>);
                 this.requestCache.set(ctx, cacheKey, dbCallPromise);
             }
 
             await dbCallPromise.then(withTranslations => {
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 entity.translations = withTranslations!.translations;
             });
         }

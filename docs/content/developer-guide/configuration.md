@@ -11,7 +11,7 @@ The `VendureConfig` object is organised into sections, grouping related settings
 
 ## Working with the VendureConfig object
 
-Since the VendureConfig is just a JavaScript object, it can be managed and manipulated according to your needs. For example:
+Since the `VendureConfig` is just a JavaScript object, it can be managed and manipulated according to your needs. For example:
 
 ### Using environment variables
 
@@ -79,7 +79,7 @@ export const config: VendureConfig = {
 
 ## Important Configuration Settings
 
-In this guide we will take a look at those configuration options needed for getting the server up-and-running.
+In this guide, we will take a look at those configuration options needed for getting the server up and running.
 
 {{< alert "primary" >}}
 A description of every available configuration option can be found in the [VendureConfig API documentation]({{< relref "vendure-config" >}}).

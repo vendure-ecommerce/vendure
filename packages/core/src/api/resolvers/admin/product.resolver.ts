@@ -28,8 +28,8 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { ErrorResultUnion } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
-import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
@@ -67,13 +67,13 @@ export class ProductResolver {
         if (args.id) {
             const product = await this.productService.findOne(ctx, args.id, relations);
             if (args.slug && product && product.slug !== args.slug) {
-                throw new UserInputError(`error.product-id-slug-mismatch`);
+                throw new UserInputError('error.product-id-slug-mismatch');
             }
             return product;
         } else if (args.slug) {
             return this.productService.findOneBySlug(ctx, args.slug, relations);
         } else {
-            throw new UserInputError(`error.product-id-or-slug-must-be-provided`);
+            throw new UserInputError('error.product-id-or-slug-must-be-provided');
         }
     }
 

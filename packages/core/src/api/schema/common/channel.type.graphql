@@ -7,7 +7,8 @@ type Channel implements Node {
     defaultTaxZone: Zone
     defaultShippingZone: Zone
     defaultLanguageCode: LanguageCode!
-    currencyCode: CurrencyCode!
+    currencyCode: CurrencyCode! @deprecated(reason: "Use defaultCurrencyCode instead")
+    defaultCurrencyCode: CurrencyCode!
     pricesIncludeTax: Boolean!
     seller: Seller
 }

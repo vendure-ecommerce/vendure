@@ -18,8 +18,8 @@ import {
 import { PromotionCondition, PromotionConditionState } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
 import { CustomPromotionFields } from '../custom-entity-fields';
-import { OrderLine } from '../order-line/order-line.entity';
 import { Order } from '../order/order.entity';
+import { OrderLine } from '../order-line/order-line.entity';
 import { PaymentMethodTranslation } from '../payment-method/payment-method-translation.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 

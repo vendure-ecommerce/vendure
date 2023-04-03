@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { pick } from '@vendure/common/lib/pick';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
@@ -44,9 +45,13 @@ export class CustomFieldRelationService {
                         // an explicitly `null` value means remove the relation
                         relations = null;
                     } else if (field.list && Array.isArray(idOrIds) && idOrIds.every(id => this.isId(id))) {
-                        relations = await this.connection.getRepository(ctx, field.entity).findByIds(idOrIds);
+                        relations = await this.connection
+                            .getRepository(ctx, field.entity)
+                            .findBy({ id: In(idOrIds) });
                     } else if (!field.list && this.isId(idOrIds)) {
-                        relations = await this.connection.getRepository(ctx, field.entity).findOne(idOrIds);
+                        relations = await this.connection
+                            .getRepository(ctx, field.entity)
+                            .findOne({ where: { id: idOrIds } });
                     }
                     if (relations !== undefined) {
                         entity.customFields = { ...entity.customFields, [field.name]: relations };
@@ -60,7 +65,7 @@ export class CustomFieldRelationService {
         return entity;
     }
 
-    private isRelationalType(input: CustomFieldConfig): input is RelationCustomFieldConfig {
+    private isRelationalType(this: void, input: CustomFieldConfig): input is RelationCustomFieldConfig {
         return input.type === 'relation';
     }
 

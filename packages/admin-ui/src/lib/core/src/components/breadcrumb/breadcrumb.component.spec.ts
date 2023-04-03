@@ -8,8 +8,9 @@ import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 
 import { MockTranslatePipe } from '../../../../../testing/translate.pipe.mock';
 import { DataService } from '../../data/providers/data.service';
+import { BreadcrumbLabelLinkPair } from '../../providers/breadcrumb/breadcrumb.service';
 
-import { BreadcrumbComponent, BreadcrumbLabelLinkPair } from './breadcrumb.component';
+import { BreadcrumbComponent } from './breadcrumb.component';
 
 describe('BeadcrumbsComponent', () => {
     let baseRouteConfig: Routes;
@@ -244,7 +245,7 @@ describe('BeadcrumbsComponent', () => {
         return fakeAsync(() => {
             const fixture = TestBed.createComponent(TestChildComponent);
             // Run in ngZone to prevent warning: https://github.com/angular/angular/issues/25837#issuecomment-445796236
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             fixture.ngZone!.run(() => {
                 router.navigate(route);
             });
@@ -437,8 +438,8 @@ function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] 
         .filter(notNullOrUndefined);
 }
 
-// tslint:disable component-selector
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-root-component',
     template: `
         <vdr-breadcrumb></vdr-breadcrumb>
@@ -448,6 +449,7 @@ function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] 
 class TestParentComponent {}
 
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-child-component',
     template: `
         <vdr-breadcrumb></vdr-breadcrumb>

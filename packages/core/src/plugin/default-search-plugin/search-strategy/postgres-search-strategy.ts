@@ -42,7 +42,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
             .select(['"si"."productId"', 'MAX("si"."productVariantId")'])
-            .addSelect(`string_agg("si"."facetValueIds",',')`, 'facetValues');
+            .addSelect('string_agg("si"."facetValueIds",\',\')', 'facetValues');
 
         this.applyTermAndFilters(ctx, facetValuesQb, input, true);
         if (!input.groupByProduct) {
@@ -64,7 +64,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
             .select(['"si"."productId"', 'MAX("si"."productVariantId")'])
-            .addSelect(`string_agg("si"."collectionIds",',')`, 'collections');
+            .addSelect('string_agg("si"."collectionIds",\',\')', 'collections');
 
         this.applyTermAndFilters(ctx, collectionsQb, input, true);
         if (!input.groupByProduct) {
@@ -237,10 +237,10 @@ export class PostgresSearchStrategy implements SearchStrategy {
             );
         }
         if (collectionId) {
-            qb.andWhere(`:collectionId = ANY (string_to_array(si.collectionIds, ','))`, { collectionId });
+            qb.andWhere(":collectionId = ANY (string_to_array(si.collectionIds, ','))", { collectionId });
         }
         if (collectionSlug) {
-            qb.andWhere(`:collectionSlug = ANY (string_to_array(si.collectionSlugs, ','))`, {
+            qb.andWhere(":collectionSlug = ANY (string_to_array(si.collectionSlugs, ','))", {
                 collectionSlug,
             });
         }

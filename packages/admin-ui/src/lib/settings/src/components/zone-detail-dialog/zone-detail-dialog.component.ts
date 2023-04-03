@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { CreateZoneInput, CustomFieldConfig, Dialog, ServerConfigService } from '@vendure/admin-ui/core';
 
 @Component({
@@ -13,9 +13,9 @@ export class ZoneDetailDialogComponent implements Dialog<CreateZoneInput>, OnIni
     resolveWith: (result?: CreateZoneInput) => void;
 
     customFields: CustomFieldConfig[];
-    form: FormGroup;
+    form: UntypedFormGroup;
 
-    constructor(private serverConfigService: ServerConfigService, private formBuilder: FormBuilder) {
+    constructor(private serverConfigService: ServerConfigService, private formBuilder: UntypedFormBuilder) {
         this.customFields = this.serverConfigService.getCustomFieldsFor('Zone');
     }
 
@@ -27,7 +27,7 @@ export class ZoneDetailDialogComponent implements Dialog<CreateZoneInput>, OnIni
             ),
         });
         if (this.customFields.length) {
-            const customFieldsGroup = this.form.get('customFields') as FormGroup;
+            const customFieldsGroup = this.form.get('customFields') as UntypedFormGroup;
 
             for (const fieldDef of this.customFields) {
                 const key = fieldDef.name;

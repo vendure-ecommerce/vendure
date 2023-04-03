@@ -57,6 +57,8 @@ export interface NavMenuSection {
     id: string;
     label: string;
     items: NavMenuItem[];
+    icon?: string;
+    displayMode?: 'regular' | 'settings';
     /**
      * @description
      * Control the display of this item based on the user permissions.

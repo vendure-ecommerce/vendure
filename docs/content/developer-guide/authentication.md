@@ -10,7 +10,7 @@ Authentication is the process of determining the identity of a user. Common ways
 By default, Vendure uses a username/email address and password to authenticate users, but also supports a wide range of authentication methods via configurable AuthenticationStrategies.
 
 {{< alert "primary" >}}
-See the [Managing Sessions guide]({{< relref "managing-sessions" >}}) for how to manage authenticated session in your storefront/client applications.
+See the [Managing Sessions guide]({{< relref "managing-sessions" >}}) for how to manage authenticated sessions in your storefront/client applications.
 {{< /alert >}}
 
 ## Adding support for external authentication
@@ -76,7 +76,7 @@ Google.
 To do this you'll need to install the `google-auth-library` npm package as described in the ["Authenticate with a backend server" guide](https://developers.google.com/identity/sign-in/web/backend-auth).
 
 ```TypeScript
-{
+import {
  AuthenticationStrategy,
   ExternalAuthenticationService,
   Injector,
@@ -161,7 +161,7 @@ This example demonstrates how to implement a Facebook login flow.
 
 ### Storefront setup
 
-In this example we are assuming the use of the [Facebook SDK for JavaScript](https://developers.facebook.com/docs/javascript/) in the storefront.
+In this example, we are assuming the use of the [Facebook SDK for JavaScript](https://developers.facebook.com/docs/javascript/) in the storefront.
 
 An implementation in React might look like this:
 
@@ -329,7 +329,7 @@ This example uses [Keycloak](https://www.keycloak.org/), a popular open-source i
 
 ### Configure a login page & Admin UI
 
-In this example we'll assume the login page is hosted at `http://intranet/login`. We'll also assume that a "login to Vendure" button has been added to that page and that the page is using the [Keycloak JavaScript adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter), which can be used to get the current user's authorization token:
+In this example, we'll assume the login page is hosted at `http://intranet/login`. We'll also assume that a "login to Vendure" button has been added to that page and that the page is using the [Keycloak JavaScript adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter), which can be used to get the current user's authorization token:
 
 ```JavaScript
 vendureLoginButton.addEventListener('click', () => {

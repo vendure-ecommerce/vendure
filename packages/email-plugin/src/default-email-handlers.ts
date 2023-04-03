@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     AccountRegistrationEvent,
     AssetStorageStrategy,
@@ -36,8 +36,8 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
         return { shippingLines };
     })
     .setRecipient(event => event.order.customer!.emailAddress)
-    .setFrom(`{{ fromAddress }}`)
-    .setSubject(`Order confirmation for #{{ order.code }}`)
+    .setFrom('{{ fromAddress }}')
+    .setSubject('Order confirmation for #{{ order.code }}')
     .setTemplateVars(event => ({ order: event.order, shippingLines: event.data.shippingLines }))
     .setMockEvent(mockOrderStateTransitionEvent);
 
@@ -51,8 +51,8 @@ export const emailVerificationHandler = new EmailEventListener('email-verificati
         return (nativeAuthMethod && !!nativeAuthMethod.identifier) || false;
     })
     .setRecipient(event => event.user.identifier)
-    .setFrom(`{{ fromAddress }}`)
-    .setSubject(`Please verify your email address`)
+    .setFrom('{{ fromAddress }}')
+    .setSubject('Please verify your email address')
     .setTemplateVars(event => ({
         verificationToken: event.user.getNativeAuthenticationMethod().verificationToken,
     }))
@@ -61,8 +61,8 @@ export const emailVerificationHandler = new EmailEventListener('email-verificati
 export const passwordResetHandler = new EmailEventListener('password-reset')
     .on(PasswordResetEvent)
     .setRecipient(event => event.user.identifier)
-    .setFrom(`{{ fromAddress }}`)
-    .setSubject(`Forgotten password reset`)
+    .setFrom('{{ fromAddress }}')
+    .setSubject('Forgotten password reset')
     .setTemplateVars(event => ({
         passwordResetToken: event.user.getNativeAuthenticationMethod().passwordResetToken,
     }))
@@ -71,8 +71,8 @@ export const passwordResetHandler = new EmailEventListener('password-reset')
 export const emailAddressChangeHandler = new EmailEventListener('email-address-change')
     .on(IdentifierChangeRequestEvent)
     .setRecipient(event => event.user.getNativeAuthenticationMethod().pendingIdentifier!)
-    .setFrom(`{{ fromAddress }}`)
-    .setSubject(`Please verify your change of email address`)
+    .setFrom('{{ fromAddress }}')
+    .setSubject('Please verify your change of email address')
     .setTemplateVars(event => ({
         identifierChangeToken: event.user.getNativeAuthenticationMethod().identifierChangeToken,
     }))

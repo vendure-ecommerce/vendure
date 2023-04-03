@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
@@ -23,7 +23,7 @@ import { map, startWith, switchMap, tap } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountryListComponent implements OnInit, OnDestroy {
-    searchTerm = new FormControl('');
+    searchTerm = new UntypedFormControl('');
     countriesWithZones$: Observable<
         Array<ItemOf<GetCountryListQuery, 'countries'> & { zones: GetZonesQuery['zones'] }>
     >;
@@ -62,12 +62,10 @@ export class CountryListComponent implements OnInit, OnDestroy {
         this.zones$ = this.dataService.settings.getZones().mapStream(data => data.zones);
 
         this.countriesWithZones$ = combineLatest(countries$, this.zones$).pipe(
-            map(([countries, zones]) => {
-                return countries.map(country => ({
+            map(([countries, zones]) => countries.map(country => ({
                     ...country,
                     zones: zones.filter(z => !!z.members.find(c => c.id === country.id)),
-                }));
-            }),
+                }))),
         );
 
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();

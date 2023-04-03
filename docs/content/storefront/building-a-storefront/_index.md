@@ -6,13 +6,13 @@ showtoc: true
 
 # Building a Storefront
 
-The storefront is the application which customers use to buy things from your store.
+The storefront is the application that customers use to buy things from your store.
 
 One of the benefits of Vendure's headless architecture is that you can build your storefront using any technology you like, and in the future you can update your storefront without requiring any changes to the Vendure server itself!
 
 ## Storefront starters
 
-To get you up-and-running with your storefront implementation, we offer a number of integrations with popular front-end frameworks such as Next.js, Vue Storefront, Remix & Angular. See all of our [storefront integrations]({{< relref "integration" >}}).
+To get you up and running with your storefront implementation, we offer a number of integrations with popular front-end frameworks such as Next.js, Vue Storefront, Remix & Angular. See all of our [storefront integrations]({{< relref "integration" >}}).
 
 ## Custom-building
 

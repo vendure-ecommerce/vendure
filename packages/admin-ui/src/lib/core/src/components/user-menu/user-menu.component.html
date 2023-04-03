@@ -1,8 +1,10 @@
 <vdr-dropdown>
-    <button class="btn btn-link trigger" vdrDropdownTrigger>
+    <button class="trigger user-menu-btn" vdrDropdownTrigger>
+        <div class="user-circle">
+        <clr-icon shape="user" size="16"></clr-icon>
+        </div>
         <span class="user-name">{{ userName }}</span>
-        <clr-icon shape="user" size="24"></clr-icon>
-        <clr-icon shape="caret down"></clr-icon>
+        <clr-icon class="md:hidden" shape="caret down"></clr-icon>
     </button>
     <vdr-dropdown-menu vdrPosition="bottom-right">
         <a [routerLink]="['/settings', 'profile']" vdrDropdownItem>

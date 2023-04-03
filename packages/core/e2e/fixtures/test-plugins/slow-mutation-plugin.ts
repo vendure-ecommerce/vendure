@@ -45,7 +45,7 @@ export class SlowMutationResolver {
     @Transaction()
     @Mutation()
     async attemptDeadlock(@Ctx() ctx: RequestContext) {
-        const product = await this.connection.getRepository(ctx, Product).findOneOrFail(1);
+        const product = await this.connection.getRepository(ctx, Product).findOneOrFail({ where: { id: 1 } });
         const asset = await this.connection.getRepository(ctx, Asset).save(
             new Asset({
                 name: 'test',

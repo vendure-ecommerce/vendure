@@ -1,4 +1,4 @@
-// tslint:disable
+/* eslint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -11,13 +11,9 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: any;
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
-    /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
-    Money: any;
-    /** The `Upload` scalar type represents a file upload. */
+    Money: number;
     Upload: any;
 };
 
@@ -1450,6 +1446,7 @@ export enum ErrorCode {
     EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
     FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
     FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+    GUEST_CHECKOUT_ERROR = 'GUEST_CHECKOUT_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
     INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
@@ -1709,6 +1706,13 @@ export type GlobalSettings = {
     serverConfig: ServerConfig;
     trackInventory: Scalars['Boolean'];
     updatedAt: Scalars['DateTime'];
+};
+
+/** Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it. */
+export type GuestCheckoutError = ErrorResult & {
+    errorCode: ErrorCode;
+    errorDetail: Scalars['String'];
+    message: Scalars['String'];
 };
 
 export type HistoryEntry = Node & {
@@ -4763,7 +4767,9 @@ export type SearchInput = {
     collectionId?: InputMaybe<Scalars['ID']>;
     collectionSlug?: InputMaybe<Scalars['String']>;
     facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueOperator?: InputMaybe<LogicalOperator>;
     groupByProduct?: InputMaybe<Scalars['Boolean']>;
     skip?: InputMaybe<Scalars['Int']>;
@@ -5830,7 +5836,7 @@ export type GetCollectionQuery = {
         description: string;
         isPrivate: boolean;
         languageCode?: LanguageCode | null;
-        productVariants: { items: Array<{ id: string; name: string; price: any }> };
+        productVariants: { items: Array<{ id: string; name: string; price: number }> };
         featuredAsset?: {
             id: string;
             name: string;
@@ -6337,8 +6343,8 @@ export type SearchGetPricesQueryVariables = Exact<{
 export type SearchGetPricesQuery = {
     search: {
         items: Array<{
-            price: { min: any; max: any } | { value: any };
-            priceWithTax: { min: any; max: any } | { value: any };
+            price: { min: number; max: number } | { value: number };
+            priceWithTax: { min: number; max: number } | { value: number };
         }>;
     };
 };
@@ -6353,22 +6359,22 @@ export type CreateDraftOrderMutation = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
         totalQuantity: number;
         currencyCode: CurrencyCode;
-        shipping: any;
-        shippingWithTax: any;
+        shipping: number;
+        shippingWithTax: number;
         customer?: { id: string; firstName: string; lastName: string } | null;
         lines: Array<{
             id: string;
-            unitPrice: any;
-            unitPriceWithTax: any;
+            unitPrice: number;
+            unitPriceWithTax: number;
             quantity: number;
             taxRate: number;
-            linePriceWithTax: any;
+            linePriceWithTax: number;
             featuredAsset?: { preview: string } | null;
             productVariant: { id: string; name: string; sku: string };
             taxLines: Array<{ description: string; taxRate: number }>;
@@ -6377,11 +6383,11 @@ export type CreateDraftOrderMutation = {
             id: string;
             description: string;
             sku?: string | null;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
         }>;
         shippingLines: Array<{
-            priceWithTax: any;
+            priceWithTax: number;
             shippingMethod: { id: string; code: string; name: string; description: string };
         }>;
         shippingAddress?: {
@@ -6398,12 +6404,12 @@ export type CreateDraftOrderMutation = {
         payments?: Array<{
             id: string;
             transactionId?: string | null;
-            amount: any;
+            amount: number;
             method: string;
             state: string;
             nextStates: Array<string>;
             metadata?: any | null;
-            refunds: Array<{ id: string; total: any; reason?: string | null }>;
+            refunds: Array<{ id: string; total: number; reason?: string | null }>;
         }> | null;
         fulfillments?: Array<{
             id: string;
@@ -6431,22 +6437,22 @@ export type AddItemToDraftOrderMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
-              shipping: any;
-              shippingWithTax: any;
+              shipping: number;
+              shippingWithTax: number;
               customer?: { id: string; firstName: string; lastName: string } | null;
               lines: Array<{
                   id: string;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   quantity: number;
                   taxRate: number;
-                  linePriceWithTax: any;
+                  linePriceWithTax: number;
                   featuredAsset?: { preview: string } | null;
                   productVariant: { id: string; name: string; sku: string };
                   taxLines: Array<{ description: string; taxRate: number }>;
@@ -6455,11 +6461,11 @@ export type AddItemToDraftOrderMutation = {
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
               }>;
               shippingLines: Array<{
-                  priceWithTax: any;
+                  priceWithTax: number;
                   shippingMethod: { id: string; code: string; name: string; description: string };
               }>;
               shippingAddress?: {
@@ -6476,12 +6482,12 @@ export type AddItemToDraftOrderMutation = {
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
-                  amount: any;
+                  amount: number;
                   method: string;
                   state: string;
                   nextStates: Array<string>;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; total: any; reason?: string | null }>;
+                  refunds: Array<{ id: string; total: number; reason?: string | null }>;
               }> | null;
               fulfillments?: Array<{
                   id: string;
@@ -6511,22 +6517,22 @@ export type AdjustDraftOrderLineMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
-              shipping: any;
-              shippingWithTax: any;
+              shipping: number;
+              shippingWithTax: number;
               customer?: { id: string; firstName: string; lastName: string } | null;
               lines: Array<{
                   id: string;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   quantity: number;
                   taxRate: number;
-                  linePriceWithTax: any;
+                  linePriceWithTax: number;
                   featuredAsset?: { preview: string } | null;
                   productVariant: { id: string; name: string; sku: string };
                   taxLines: Array<{ description: string; taxRate: number }>;
@@ -6535,11 +6541,11 @@ export type AdjustDraftOrderLineMutation = {
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
               }>;
               shippingLines: Array<{
-                  priceWithTax: any;
+                  priceWithTax: number;
                   shippingMethod: { id: string; code: string; name: string; description: string };
               }>;
               shippingAddress?: {
@@ -6556,12 +6562,12 @@ export type AdjustDraftOrderLineMutation = {
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
-                  amount: any;
+                  amount: number;
                   method: string;
                   state: string;
                   nextStates: Array<string>;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; total: any; reason?: string | null }>;
+                  refunds: Array<{ id: string; total: number; reason?: string | null }>;
               }> | null;
               fulfillments?: Array<{
                   id: string;
@@ -6589,22 +6595,22 @@ export type RemoveDraftOrderLineMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
-              shipping: any;
-              shippingWithTax: any;
+              shipping: number;
+              shippingWithTax: number;
               customer?: { id: string; firstName: string; lastName: string } | null;
               lines: Array<{
                   id: string;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   quantity: number;
                   taxRate: number;
-                  linePriceWithTax: any;
+                  linePriceWithTax: number;
                   featuredAsset?: { preview: string } | null;
                   productVariant: { id: string; name: string; sku: string };
                   taxLines: Array<{ description: string; taxRate: number }>;
@@ -6613,11 +6619,11 @@ export type RemoveDraftOrderLineMutation = {
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
               }>;
               shippingLines: Array<{
-                  priceWithTax: any;
+                  priceWithTax: number;
                   shippingMethod: { id: string; code: string; name: string; description: string };
               }>;
               shippingAddress?: {
@@ -6634,12 +6640,12 @@ export type RemoveDraftOrderLineMutation = {
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
-                  amount: any;
+                  amount: number;
                   method: string;
                   state: string;
                   nextStates: Array<string>;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; total: any; reason?: string | null }>;
+                  refunds: Array<{ id: string; total: number; reason?: string | null }>;
               }> | null;
               fulfillments?: Array<{
                   id: string;
@@ -6668,22 +6674,22 @@ export type SetCustomerForDraftOrderMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
-              shipping: any;
-              shippingWithTax: any;
+              shipping: number;
+              shippingWithTax: number;
               customer?: { id: string; firstName: string; lastName: string } | null;
               lines: Array<{
                   id: string;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   quantity: number;
                   taxRate: number;
-                  linePriceWithTax: any;
+                  linePriceWithTax: number;
                   featuredAsset?: { preview: string } | null;
                   productVariant: { id: string; name: string; sku: string };
                   taxLines: Array<{ description: string; taxRate: number }>;
@@ -6692,11 +6698,11 @@ export type SetCustomerForDraftOrderMutation = {
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
               }>;
               shippingLines: Array<{
-                  priceWithTax: any;
+                  priceWithTax: number;
                   shippingMethod: { id: string; code: string; name: string; description: string };
               }>;
               shippingAddress?: {
@@ -6713,12 +6719,12 @@ export type SetCustomerForDraftOrderMutation = {
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
-                  amount: any;
+                  amount: number;
                   method: string;
                   state: string;
                   nextStates: Array<string>;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; total: any; reason?: string | null }>;
+                  refunds: Array<{ id: string; total: number; reason?: string | null }>;
               }> | null;
               fulfillments?: Array<{
                   id: string;
@@ -6743,22 +6749,22 @@ export type SetDraftOrderShippingAddressMutation = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
         totalQuantity: number;
         currencyCode: CurrencyCode;
-        shipping: any;
-        shippingWithTax: any;
+        shipping: number;
+        shippingWithTax: number;
         customer?: { id: string; firstName: string; lastName: string } | null;
         lines: Array<{
             id: string;
-            unitPrice: any;
-            unitPriceWithTax: any;
+            unitPrice: number;
+            unitPriceWithTax: number;
             quantity: number;
             taxRate: number;
-            linePriceWithTax: any;
+            linePriceWithTax: number;
             featuredAsset?: { preview: string } | null;
             productVariant: { id: string; name: string; sku: string };
             taxLines: Array<{ description: string; taxRate: number }>;
@@ -6767,11 +6773,11 @@ export type SetDraftOrderShippingAddressMutation = {
             id: string;
             description: string;
             sku?: string | null;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
         }>;
         shippingLines: Array<{
-            priceWithTax: any;
+            priceWithTax: number;
             shippingMethod: { id: string; code: string; name: string; description: string };
         }>;
         shippingAddress?: {
@@ -6788,12 +6794,12 @@ export type SetDraftOrderShippingAddressMutation = {
         payments?: Array<{
             id: string;
             transactionId?: string | null;
-            amount: any;
+            amount: number;
             method: string;
             state: string;
             nextStates: Array<string>;
             metadata?: any | null;
-            refunds: Array<{ id: string; total: any; reason?: string | null }>;
+            refunds: Array<{ id: string; total: number; reason?: string | null }>;
         }> | null;
         fulfillments?: Array<{
             id: string;
@@ -6818,14 +6824,14 @@ export type SetDraftOrderBillingAddressMutation = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
         totalQuantity: number;
         currencyCode: CurrencyCode;
-        shipping: any;
-        shippingWithTax: any;
+        shipping: number;
+        shippingWithTax: number;
         billingAddress?: {
             fullName?: string | null;
             company?: string | null;
@@ -6840,11 +6846,11 @@ export type SetDraftOrderBillingAddressMutation = {
         customer?: { id: string; firstName: string; lastName: string } | null;
         lines: Array<{
             id: string;
-            unitPrice: any;
-            unitPriceWithTax: any;
+            unitPrice: number;
+            unitPriceWithTax: number;
             quantity: number;
             taxRate: number;
-            linePriceWithTax: any;
+            linePriceWithTax: number;
             featuredAsset?: { preview: string } | null;
             productVariant: { id: string; name: string; sku: string };
             taxLines: Array<{ description: string; taxRate: number }>;
@@ -6853,11 +6859,11 @@ export type SetDraftOrderBillingAddressMutation = {
             id: string;
             description: string;
             sku?: string | null;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
         }>;
         shippingLines: Array<{
-            priceWithTax: any;
+            priceWithTax: number;
             shippingMethod: { id: string; code: string; name: string; description: string };
         }>;
         shippingAddress?: {
@@ -6874,12 +6880,12 @@ export type SetDraftOrderBillingAddressMutation = {
         payments?: Array<{
             id: string;
             transactionId?: string | null;
-            amount: any;
+            amount: number;
             method: string;
             state: string;
             nextStates: Array<string>;
             metadata?: any | null;
-            refunds: Array<{ id: string; total: any; reason?: string | null }>;
+            refunds: Array<{ id: string; total: number; reason?: string | null }>;
         }> | null;
         fulfillments?: Array<{
             id: string;
@@ -6909,22 +6915,22 @@ export type ApplyCouponCodeToDraftOrderMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
-              shipping: any;
-              shippingWithTax: any;
+              shipping: number;
+              shippingWithTax: number;
               customer?: { id: string; firstName: string; lastName: string } | null;
               lines: Array<{
                   id: string;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   quantity: number;
                   taxRate: number;
-                  linePriceWithTax: any;
+                  linePriceWithTax: number;
                   featuredAsset?: { preview: string } | null;
                   productVariant: { id: string; name: string; sku: string };
                   taxLines: Array<{ description: string; taxRate: number }>;
@@ -6933,11 +6939,11 @@ export type ApplyCouponCodeToDraftOrderMutation = {
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
               }>;
               shippingLines: Array<{
-                  priceWithTax: any;
+                  priceWithTax: number;
                   shippingMethod: { id: string; code: string; name: string; description: string };
               }>;
               shippingAddress?: {
@@ -6954,12 +6960,12 @@ export type ApplyCouponCodeToDraftOrderMutation = {
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
-                  amount: any;
+                  amount: number;
                   method: string;
                   state: string;
                   nextStates: Array<string>;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; total: any; reason?: string | null }>;
+                  refunds: Array<{ id: string; total: number; reason?: string | null }>;
               }> | null;
               fulfillments?: Array<{
                   id: string;
@@ -6985,22 +6991,22 @@ export type RemoveCouponCodeFromDraftOrderMutation = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
         totalQuantity: number;
         currencyCode: CurrencyCode;
-        shipping: any;
-        shippingWithTax: any;
+        shipping: number;
+        shippingWithTax: number;
         customer?: { id: string; firstName: string; lastName: string } | null;
         lines: Array<{
             id: string;
-            unitPrice: any;
-            unitPriceWithTax: any;
+            unitPrice: number;
+            unitPriceWithTax: number;
             quantity: number;
             taxRate: number;
-            linePriceWithTax: any;
+            linePriceWithTax: number;
             featuredAsset?: { preview: string } | null;
             productVariant: { id: string; name: string; sku: string };
             taxLines: Array<{ description: string; taxRate: number }>;
@@ -7009,11 +7015,11 @@ export type RemoveCouponCodeFromDraftOrderMutation = {
             id: string;
             description: string;
             sku?: string | null;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
         }>;
         shippingLines: Array<{
-            priceWithTax: any;
+            priceWithTax: number;
             shippingMethod: { id: string; code: string; name: string; description: string };
         }>;
         shippingAddress?: {
@@ -7030,12 +7036,12 @@ export type RemoveCouponCodeFromDraftOrderMutation = {
         payments?: Array<{
             id: string;
             transactionId?: string | null;
-            amount: any;
+            amount: number;
             method: string;
             state: string;
             nextStates: Array<string>;
             metadata?: any | null;
-            refunds: Array<{ id: string; total: any; reason?: string | null }>;
+            refunds: Array<{ id: string; total: number; reason?: string | null }>;
         }> | null;
         fulfillments?: Array<{
             id: string;
@@ -7057,8 +7063,8 @@ export type DraftOrderEligibleShippingMethodsQuery = {
         name: string;
         code: string;
         description: string;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         metadata?: any | null;
     }>;
 };
@@ -7079,22 +7085,22 @@ export type SetDraftOrderShippingMethodMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
-              shipping: any;
-              shippingWithTax: any;
+              shipping: number;
+              shippingWithTax: number;
               customer?: { id: string; firstName: string; lastName: string } | null;
               lines: Array<{
                   id: string;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   quantity: number;
                   taxRate: number;
-                  linePriceWithTax: any;
+                  linePriceWithTax: number;
                   featuredAsset?: { preview: string } | null;
                   productVariant: { id: string; name: string; sku: string };
                   taxLines: Array<{ description: string; taxRate: number }>;
@@ -7103,11 +7109,11 @@ export type SetDraftOrderShippingMethodMutation = {
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
               }>;
               shippingLines: Array<{
-                  priceWithTax: any;
+                  priceWithTax: number;
                   shippingMethod: { id: string; code: string; name: string; description: string };
               }>;
               shippingAddress?: {
@@ -7124,12 +7130,12 @@ export type SetDraftOrderShippingMethodMutation = {
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
-                  amount: any;
+                  amount: number;
                   method: string;
                   state: string;
                   nextStates: Array<string>;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; total: any; reason?: string | null }>;
+                  refunds: Array<{ id: string; total: number; reason?: string | null }>;
               }> | null;
               fulfillments?: Array<{
                   id: string;
@@ -7384,8 +7390,8 @@ export type ProductVariantFragment = {
     languageCode: LanguageCode;
     name: string;
     currencyCode: CurrencyCode;
-    price: any;
-    priceWithTax: any;
+    price: number;
+    priceWithTax: number;
     stockOnHand: number;
     trackInventory: GlobalFlag;
     sku: string;
@@ -7450,8 +7456,8 @@ export type ProductWithVariantsFragment = {
         languageCode: LanguageCode;
         name: string;
         currencyCode: CurrencyCode;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         stockOnHand: number;
         trackInventory: GlobalFlag;
         sku: string;
@@ -7606,7 +7612,7 @@ export type CustomerFragment = {
 
 export type AdjustmentFragment = {
     adjustmentSource: string;
-    amount: any;
+    amount: number;
     description: string;
     type: AdjustmentType;
 };
@@ -7630,8 +7636,8 @@ export type OrderFragment = {
     code: string;
     active: boolean;
     state: string;
-    total: any;
-    totalWithTax: any;
+    total: number;
+    totalWithTax: number;
     totalQuantity: number;
     currencyCode: CurrencyCode;
     customer?: { id: string; firstName: string; lastName: string } | null;
@@ -7640,12 +7646,12 @@ export type OrderFragment = {
 export type PaymentFragment = {
     id: string;
     transactionId?: string | null;
-    amount: any;
+    amount: number;
     method: string;
     state: string;
     nextStates: Array<string>;
     metadata?: any | null;
-    refunds: Array<{ id: string; total: any; reason?: string | null }>;
+    refunds: Array<{ id: string; total: number; reason?: string | null }>;
 };
 
 export type OrderWithLinesFragment = {
@@ -7655,22 +7661,22 @@ export type OrderWithLinesFragment = {
     code: string;
     state: string;
     active: boolean;
-    subTotal: any;
-    subTotalWithTax: any;
-    total: any;
-    totalWithTax: any;
+    subTotal: number;
+    subTotalWithTax: number;
+    total: number;
+    totalWithTax: number;
     totalQuantity: number;
     currencyCode: CurrencyCode;
-    shipping: any;
-    shippingWithTax: any;
+    shipping: number;
+    shippingWithTax: number;
     customer?: { id: string; firstName: string; lastName: string } | null;
     lines: Array<{
         id: string;
-        unitPrice: any;
-        unitPriceWithTax: any;
+        unitPrice: number;
+        unitPriceWithTax: number;
         quantity: number;
         taxRate: number;
-        linePriceWithTax: any;
+        linePriceWithTax: number;
         featuredAsset?: { preview: string } | null;
         productVariant: { id: string; name: string; sku: string };
         taxLines: Array<{ description: string; taxRate: number }>;
@@ -7679,11 +7685,11 @@ export type OrderWithLinesFragment = {
         id: string;
         description: string;
         sku?: string | null;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
     }>;
     shippingLines: Array<{
-        priceWithTax: any;
+        priceWithTax: number;
         shippingMethod: { id: string; code: string; name: string; description: string };
     }>;
     shippingAddress?: {
@@ -7700,12 +7706,12 @@ export type OrderWithLinesFragment = {
     payments?: Array<{
         id: string;
         transactionId?: string | null;
-        amount: any;
+        amount: number;
         method: string;
         state: string;
         nextStates: Array<string>;
         metadata?: any | null;
-        refunds: Array<{ id: string; total: any; reason?: string | null }>;
+        refunds: Array<{ id: string; total: number; reason?: string | null }>;
     }> | null;
     fulfillments?: Array<{
         id: string;
@@ -7906,8 +7912,8 @@ export type UpdateProductMutation = {
             languageCode: LanguageCode;
             name: string;
             currencyCode: CurrencyCode;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
             stockOnHand: number;
             trackInventory: GlobalFlag;
             sku: string;
@@ -7986,8 +7992,8 @@ export type CreateProductMutation = {
             languageCode: LanguageCode;
             name: string;
             currencyCode: CurrencyCode;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
             stockOnHand: number;
             trackInventory: GlobalFlag;
             sku: string;
@@ -8067,8 +8073,8 @@ export type GetProductWithVariantsQuery = {
             languageCode: LanguageCode;
             name: string;
             currencyCode: CurrencyCode;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
             stockOnHand: number;
             trackInventory: GlobalFlag;
             sku: string;
@@ -8137,8 +8143,8 @@ export type CreateProductVariantsMutation = {
         languageCode: LanguageCode;
         name: string;
         currencyCode: CurrencyCode;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         stockOnHand: number;
         trackInventory: GlobalFlag;
         sku: string;
@@ -8182,8 +8188,8 @@ export type UpdateProductVariantsMutation = {
         languageCode: LanguageCode;
         name: string;
         currencyCode: CurrencyCode;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         stockOnHand: number;
         trackInventory: GlobalFlag;
         sku: string;
@@ -8290,7 +8296,7 @@ export type GetCustomerListQuery = {
             lastName: string;
             emailAddress: string;
             phoneNumber?: string | null;
-            user?: { id: string; verified: boolean } | null;
+            user?: { id: string; identifier: string; verified: boolean } | null;
         }>;
     };
 };
@@ -8433,7 +8439,7 @@ export type GetCustomerQuery = {
                 id: string;
                 code: string;
                 state: string;
-                total: any;
+                total: number;
                 currencyCode: CurrencyCode;
                 updatedAt: any;
             }>;
@@ -8686,8 +8692,8 @@ export type AssignProductsToChannelMutation = {
             languageCode: LanguageCode;
             name: string;
             currencyCode: CurrencyCode;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
             stockOnHand: number;
             trackInventory: GlobalFlag;
             sku: string;
@@ -8766,8 +8772,8 @@ export type RemoveProductsFromChannelMutation = {
             languageCode: LanguageCode;
             name: string;
             currencyCode: CurrencyCode;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
             stockOnHand: number;
             trackInventory: GlobalFlag;
             sku: string;
@@ -8819,8 +8825,8 @@ export type AssignProductVariantsToChannelMutation = {
         languageCode: LanguageCode;
         name: string;
         currencyCode: CurrencyCode;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         stockOnHand: number;
         trackInventory: GlobalFlag;
         sku: string;
@@ -8864,8 +8870,8 @@ export type RemoveProductVariantsFromChannelMutation = {
         languageCode: LanguageCode;
         name: string;
         currencyCode: CurrencyCode;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         stockOnHand: number;
         trackInventory: GlobalFlag;
         sku: string;
@@ -8971,22 +8977,22 @@ export type GetOrderQuery = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
         totalQuantity: number;
         currencyCode: CurrencyCode;
-        shipping: any;
-        shippingWithTax: any;
+        shipping: number;
+        shippingWithTax: number;
         customer?: { id: string; firstName: string; lastName: string } | null;
         lines: Array<{
             id: string;
-            unitPrice: any;
-            unitPriceWithTax: any;
+            unitPrice: number;
+            unitPriceWithTax: number;
             quantity: number;
             taxRate: number;
-            linePriceWithTax: any;
+            linePriceWithTax: number;
             featuredAsset?: { preview: string } | null;
             productVariant: { id: string; name: string; sku: string };
             taxLines: Array<{ description: string; taxRate: number }>;
@@ -8995,11 +9001,11 @@ export type GetOrderQuery = {
             id: string;
             description: string;
             sku?: string | null;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
         }>;
         shippingLines: Array<{
-            priceWithTax: any;
+            priceWithTax: number;
             shippingMethod: { id: string; code: string; name: string; description: string };
         }>;
         shippingAddress?: {
@@ -9016,12 +9022,12 @@ export type GetOrderQuery = {
         payments?: Array<{
             id: string;
             transactionId?: string | null;
-            amount: any;
+            amount: number;
             method: string;
             state: string;
             nextStates: Array<string>;
             metadata?: any | null;
-            refunds: Array<{ id: string; total: any; reason?: string | null }>;
+            refunds: Array<{ id: string; total: number; reason?: string | null }>;
         }> | null;
         fulfillments?: Array<{
             id: string;
@@ -9136,8 +9142,8 @@ export type GetOrderListQuery = {
             code: string;
             active: boolean;
             state: string;
-            total: any;
-            totalWithTax: any;
+            total: number;
+            totalWithTax: number;
             totalQuantity: number;
             currencyCode: CurrencyCode;
             customer?: { id: string; firstName: string; lastName: string } | null;
@@ -9341,8 +9347,8 @@ export type AdminTransitionMutation = {
               code: string;
               active: boolean;
               state: string;
-              total: any;
-              totalWithTax: any;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
               customer?: { id: string; firstName: string; lastName: string } | null;
@@ -9433,8 +9439,8 @@ export type GetProductsWithVariantPricesQuery = {
             slug: string;
             variants: Array<{
                 id: string;
-                price: any;
-                priceWithTax: any;
+                price: number;
+                priceWithTax: number;
                 sku: string;
                 facetValues: Array<{ id: string; code: string }>;
             }>;
@@ -9493,12 +9499,12 @@ export type SettlePaymentMutation = {
         | {
               id: string;
               transactionId?: string | null;
-              amount: any;
+              amount: number;
               method: string;
               state: string;
               nextStates: Array<string>;
               metadata?: any | null;
-              refunds: Array<{ id: string; total: any; reason?: string | null }>;
+              refunds: Array<{ id: string; total: number; reason?: string | null }>;
           }
         | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string; paymentErrorMessage: string };
@@ -9680,12 +9686,12 @@ export type TransitionPaymentToStateMutation = {
         | {
               id: string;
               transactionId?: string | null;
-              amount: any;
+              amount: number;
               method: string;
               state: string;
               nextStates: Array<string>;
               metadata?: any | null;
-              refunds: Array<{ id: string; total: any; reason?: string | null }>;
+              refunds: Array<{ id: string; total: number; reason?: string | null }>;
           }
         | { errorCode: ErrorCode; message: string; transitionError: string };
 };
@@ -9698,7 +9704,7 @@ export type GetProductVariantListQueryVariables = Exact<{
 export type GetProductVariantListQuery = {
     productVariants: {
         totalItems: number;
-        items: Array<{ id: string; name: string; sku: string; price: any; priceWithTax: any }>;
+        items: Array<{ id: string; name: string; sku: string; price: number; priceWithTax: number }>;
     };
 };
 
@@ -9764,54 +9770,59 @@ export type GetFulfillmentHandlersQuery = {
 export type OrderWithModificationsFragment = {
     id: string;
     state: string;
-    subTotal: any;
-    subTotalWithTax: any;
-    shipping: any;
-    shippingWithTax: any;
-    total: any;
-    totalWithTax: any;
+    subTotal: number;
+    subTotalWithTax: number;
+    shipping: number;
+    shippingWithTax: number;
+    total: number;
+    totalWithTax: number;
     lines: Array<{
         id: string;
         quantity: number;
         orderPlacedQuantity: number;
-        linePrice: any;
-        linePriceWithTax: any;
-        unitPriceWithTax: any;
-        discountedLinePriceWithTax: any;
-        proratedLinePriceWithTax: any;
-        proratedUnitPriceWithTax: any;
-        discounts: Array<{ description: string; amountWithTax: any }>;
+        linePrice: number;
+        linePriceWithTax: number;
+        unitPriceWithTax: number;
+        discountedLinePriceWithTax: number;
+        proratedLinePriceWithTax: number;
+        proratedUnitPriceWithTax: number;
+        discounts: Array<{ description: string; amountWithTax: number }>;
         productVariant: { id: string; name: string };
     }>;
     surcharges: Array<{
         id: string;
         description: string;
         sku?: string | null;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         taxRate: number;
     }>;
     payments?: Array<{
         id: string;
         transactionId?: string | null;
         state: string;
-        amount: any;
+        amount: number;
         method: string;
         metadata?: any | null;
-        refunds: Array<{ id: string; state: string; total: any; paymentId: string }>;
+        refunds: Array<{ id: string; state: string; total: number; paymentId: string }>;
     }> | null;
     modifications: Array<{
         id: string;
         note: string;
-        priceChange: any;
+        priceChange: number;
         isSettled: boolean;
         lines: Array<{ orderLineId: string; quantity: number }>;
         surcharges?: Array<{ id: string }> | null;
-        payment?: { id: string; state: string; amount: any; method: string } | null;
-        refund?: { id: string; state: string; total: any; paymentId: string } | null;
+        payment?: { id: string; state: string; amount: number; method: string } | null;
+        refund?: { id: string; state: string; total: number; paymentId: string } | null;
     }>;
     promotions: Array<{ id: string; name: string; couponCode?: string | null }>;
-    discounts: Array<{ description: string; adjustmentSource: string; amount: any; amountWithTax: any }>;
+    discounts: Array<{
+        description: string;
+        adjustmentSource: string;
+        amount: number;
+        amountWithTax: number;
+    }>;
     shippingAddress?: {
         streetLine1?: string | null;
         city?: string | null;
@@ -9838,54 +9849,59 @@ export type GetOrderWithModificationsQuery = {
     order?: {
         id: string;
         state: string;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         lines: Array<{
             id: string;
             quantity: number;
             orderPlacedQuantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPriceWithTax: any;
-            discountedLinePriceWithTax: any;
-            proratedLinePriceWithTax: any;
-            proratedUnitPriceWithTax: any;
-            discounts: Array<{ description: string; amountWithTax: any }>;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPriceWithTax: number;
+            discountedLinePriceWithTax: number;
+            proratedLinePriceWithTax: number;
+            proratedUnitPriceWithTax: number;
+            discounts: Array<{ description: string; amountWithTax: number }>;
             productVariant: { id: string; name: string };
         }>;
         surcharges: Array<{
             id: string;
             description: string;
             sku?: string | null;
-            price: any;
-            priceWithTax: any;
+            price: number;
+            priceWithTax: number;
             taxRate: number;
         }>;
         payments?: Array<{
             id: string;
             transactionId?: string | null;
             state: string;
-            amount: any;
+            amount: number;
             method: string;
             metadata?: any | null;
-            refunds: Array<{ id: string; state: string; total: any; paymentId: string }>;
+            refunds: Array<{ id: string; state: string; total: number; paymentId: string }>;
         }> | null;
         modifications: Array<{
             id: string;
             note: string;
-            priceChange: any;
+            priceChange: number;
             isSettled: boolean;
             lines: Array<{ orderLineId: string; quantity: number }>;
             surcharges?: Array<{ id: string }> | null;
-            payment?: { id: string; state: string; amount: any; method: string } | null;
-            refund?: { id: string; state: string; total: any; paymentId: string } | null;
+            payment?: { id: string; state: string; amount: number; method: string } | null;
+            refund?: { id: string; state: string; total: number; paymentId: string } | null;
         }>;
         promotions: Array<{ id: string; name: string; couponCode?: string | null }>;
-        discounts: Array<{ description: string; adjustmentSource: string; amount: any; amountWithTax: any }>;
+        discounts: Array<{
+            description: string;
+            adjustmentSource: string;
+            amount: number;
+            amountWithTax: number;
+        }>;
         shippingAddress?: {
             streetLine1?: string | null;
             city?: string | null;
@@ -9920,58 +9936,58 @@ export type ModifyOrderMutation = {
         | {
               id: string;
               state: string;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               lines: Array<{
                   id: string;
                   quantity: number;
                   orderPlacedQuantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPriceWithTax: any;
-                  discountedLinePriceWithTax: any;
-                  proratedLinePriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
-                  discounts: Array<{ description: string; amountWithTax: any }>;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPriceWithTax: number;
+                  discountedLinePriceWithTax: number;
+                  proratedLinePriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
+                  discounts: Array<{ description: string; amountWithTax: number }>;
                   productVariant: { id: string; name: string };
               }>;
               surcharges: Array<{
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
                   taxRate: number;
               }>;
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
                   state: string;
-                  amount: any;
+                  amount: number;
                   method: string;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; state: string; total: any; paymentId: string }>;
+                  refunds: Array<{ id: string; state: string; total: number; paymentId: string }>;
               }> | null;
               modifications: Array<{
                   id: string;
                   note: string;
-                  priceChange: any;
+                  priceChange: number;
                   isSettled: boolean;
                   lines: Array<{ orderLineId: string; quantity: number }>;
                   surcharges?: Array<{ id: string }> | null;
-                  payment?: { id: string; state: string; amount: any; method: string } | null;
-                  refund?: { id: string; state: string; total: any; paymentId: string } | null;
+                  payment?: { id: string; state: string; amount: number; method: string } | null;
+                  refund?: { id: string; state: string; total: number; paymentId: string } | null;
               }>;
               promotions: Array<{ id: string; name: string; couponCode?: string | null }>;
               discounts: Array<{
                   description: string;
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
               }>;
               shippingAddress?: {
                   streetLine1?: string | null;
@@ -10006,58 +10022,58 @@ export type AddManualPaymentMutation = {
         | {
               id: string;
               state: string;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               lines: Array<{
                   id: string;
                   quantity: number;
                   orderPlacedQuantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPriceWithTax: any;
-                  discountedLinePriceWithTax: any;
-                  proratedLinePriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
-                  discounts: Array<{ description: string; amountWithTax: any }>;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPriceWithTax: number;
+                  discountedLinePriceWithTax: number;
+                  proratedLinePriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
+                  discounts: Array<{ description: string; amountWithTax: number }>;
                   productVariant: { id: string; name: string };
               }>;
               surcharges: Array<{
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
                   taxRate: number;
               }>;
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
                   state: string;
-                  amount: any;
+                  amount: number;
                   method: string;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; state: string; total: any; paymentId: string }>;
+                  refunds: Array<{ id: string; state: string; total: number; paymentId: string }>;
               }> | null;
               modifications: Array<{
                   id: string;
                   note: string;
-                  priceChange: any;
+                  priceChange: number;
                   isSettled: boolean;
                   lines: Array<{ orderLineId: string; quantity: number }>;
                   surcharges?: Array<{ id: string }> | null;
-                  payment?: { id: string; state: string; amount: any; method: string } | null;
-                  refund?: { id: string; state: string; total: any; paymentId: string } | null;
+                  payment?: { id: string; state: string; amount: number; method: string } | null;
+                  refund?: { id: string; state: string; total: number; paymentId: string } | null;
               }>;
               promotions: Array<{ id: string; name: string; couponCode?: string | null }>;
               discounts: Array<{
                   description: string;
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
               }>;
               shippingAddress?: {
                   streetLine1?: string | null;
@@ -10105,7 +10121,7 @@ export type GetOrderWithLineCalculatedPropsQueryVariables = Exact<{
 }>;
 
 export type GetOrderWithLineCalculatedPropsQuery = {
-    order?: { id: string; lines: Array<{ id: string; linePriceWithTax: any; quantity: number }> } | null;
+    order?: { id: string; lines: Array<{ id: string; linePriceWithTax: number; quantity: number }> } | null;
 };
 
 export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
@@ -10147,10 +10163,10 @@ export type GetOrderFulfillmentItemsQuery = {
 export type RefundFragment = {
     id: string;
     state: string;
-    items: any;
+    items: number;
     transactionId?: string | null;
-    shipping: any;
-    total: any;
+    shipping: number;
+    total: number;
     metadata?: any | null;
 };
 
@@ -10169,10 +10185,10 @@ export type RefundOrderMutation = {
         | {
               id: string;
               state: string;
-              items: any;
+              items: number;
               transactionId?: string | null;
-              shipping: any;
-              total: any;
+              shipping: number;
+              total: number;
               metadata?: any | null;
           }
         | { errorCode: ErrorCode; message: string }
@@ -10188,10 +10204,10 @@ export type SettleRefundMutation = {
         | {
               id: string;
               state: string;
-              items: any;
+              items: number;
               transactionId?: string | null;
-              shipping: any;
-              total: any;
+              shipping: number;
+              total: number;
               metadata?: any | null;
           }
         | { errorCode: ErrorCode; message: string };
@@ -10228,7 +10244,7 @@ export type GetOrderWithPaymentsQuery = {
             id: string;
             errorMessage?: string | null;
             metadata?: any | null;
-            refunds: Array<{ id: string; total: any }>;
+            refunds: Array<{ id: string; total: number }>;
         }> | null;
     } | null;
 };
@@ -10276,12 +10292,12 @@ export type CancelPaymentMutation = {
         | {
               id: string;
               transactionId?: string | null;
-              amount: any;
+              amount: number;
               method: string;
               state: string;
               nextStates: Array<string>;
               metadata?: any | null;
-              refunds: Array<{ id: string; total: any; reason?: string | null }>;
+              refunds: Array<{ id: string; total: number; reason?: string | null }>;
           }
         | { errorCode: ErrorCode; message: string; transitionError: string };
 };
@@ -10398,22 +10414,22 @@ export type AddManualPayment2Mutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              total: number;
+              totalWithTax: number;
               totalQuantity: number;
               currencyCode: CurrencyCode;
-              shipping: any;
-              shippingWithTax: any;
+              shipping: number;
+              shippingWithTax: number;
               customer?: { id: string; firstName: string; lastName: string } | null;
               lines: Array<{
                   id: string;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   quantity: number;
                   taxRate: number;
-                  linePriceWithTax: any;
+                  linePriceWithTax: number;
                   featuredAsset?: { preview: string } | null;
                   productVariant: { id: string; name: string; sku: string };
                   taxLines: Array<{ description: string; taxRate: number }>;
@@ -10422,11 +10438,11 @@ export type AddManualPayment2Mutation = {
                   id: string;
                   description: string;
                   sku?: string | null;
-                  price: any;
-                  priceWithTax: any;
+                  price: number;
+                  priceWithTax: number;
               }>;
               shippingLines: Array<{
-                  priceWithTax: any;
+                  priceWithTax: number;
                   shippingMethod: { id: string; code: string; name: string; description: string };
               }>;
               shippingAddress?: {
@@ -10443,12 +10459,12 @@ export type AddManualPayment2Mutation = {
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
-                  amount: any;
+                  amount: number;
                   method: string;
                   state: string;
                   nextStates: Array<string>;
                   metadata?: any | null;
-                  refunds: Array<{ id: string; total: any; reason?: string | null }>;
+                  refunds: Array<{ id: string; total: number; reason?: string | null }>;
               }> | null;
               fulfillments?: Array<{
                   id: string;
@@ -10563,8 +10579,8 @@ export type GetProductWithVariantListQuery = {
                 languageCode: LanguageCode;
                 name: string;
                 currencyCode: CurrencyCode;
-                price: any;
-                priceWithTax: any;
+                price: number;
+                priceWithTax: number;
                 stockOnHand: number;
                 trackInventory: GlobalFlag;
                 sku: string;
@@ -10780,7 +10796,7 @@ export type TestShippingMethodQueryVariables = Exact<{
 export type TestShippingMethodQuery = {
     testShippingMethod: {
         eligible: boolean;
-        quote?: { price: any; priceWithTax: any; metadata?: any | null } | null;
+        quote?: { price: number; priceWithTax: number; metadata?: any | null } | null;
     };
 };
 
@@ -10793,8 +10809,8 @@ export type TestEligibleMethodsQuery = {
         id: string;
         name: string;
         description: string;
-        price: any;
-        priceWithTax: any;
+        price: number;
+        priceWithTax: number;
         metadata?: any | null;
     }>;
 };

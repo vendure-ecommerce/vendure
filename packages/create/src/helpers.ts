@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import spawn from 'cross-spawn';
@@ -146,24 +146,24 @@ export function checkThatNpmCanReadCwd() {
     }
     console.error(
         chalk.red(
-            `Could not start an npm process in the right directory.\n\n` +
+            'Could not start an npm process in the right directory.\n\n' +
                 `The current directory is: ${chalk.bold(cwd)}\n` +
                 `However, a newly started npm process runs in: ${chalk.bold(npmCWD)}\n\n` +
-                `This is probably caused by a misconfigured system terminal shell.`,
+                'This is probably caused by a misconfigured system terminal shell.',
         ),
     );
     if (process.platform === 'win32') {
         console.error(
-            chalk.red(`On Windows, this can usually be fixed by running:\n\n`) +
+            chalk.red('On Windows, this can usually be fixed by running:\n\n') +
                 `  ${chalk.cyan(
                     'reg',
                 )} delete "HKCU\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n` +
                 `  ${chalk.cyan(
                     'reg',
                 )} delete "HKLM\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n\n` +
-                chalk.red(`Try to run the above two lines in the terminal.\n`) +
+                chalk.red('Try to run the above two lines in the terminal.\n') +
                 chalk.red(
-                    `To learn more about this problem, read: https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433/`,
+                    'To learn more about this problem, read: https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433/',
                 ),
         );
     }
@@ -276,7 +276,7 @@ function dbDriverPackage(dbType: DbType): string {
             return 'oracledb';
         default:
             const n: never = dbType;
-            console.error(chalk.red(`No driver package configured for type "${dbType}"`));
+            console.error(chalk.red(`No driver package configured for type "${dbType as string}"`));
             return '';
     }
 }
@@ -342,7 +342,9 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
         await client.connect();
 
         const schema = await client.query(
-            `SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${options.schema}'`,
+            `SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${
+                options.schema as string
+            }'`,
         );
         if (schema.rows.length === 0) {
             throw new Error('NO_SCHEMA');
@@ -363,9 +365,9 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
 
 function throwConnectionError(err: any) {
     throw new Error(
-        `Could not connect to the database. ` +
+        'Could not connect to the database. ' +
             `Please check the connection settings in your Vendure config.\n[${
-                err.message || err.toString()
+                (err.message || err.toString()) as string
             }]`,
     );
 }
@@ -380,12 +382,13 @@ function throwDatabaseSchemaDoesNotExist(dbName: string, schemaName: string) {
     );
 }
 
-export async function isServerPortInUse(): Promise<boolean> {
+export function isServerPortInUse(): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const tcpPortUsed = require('tcp-port-used');
     try {
         return tcpPortUsed.check(SERVER_PORT);
     } catch (e: any) {
         console.log(chalk.yellow(`Warning: could not determine whether port ${SERVER_PORT} is available`));
-        return false;
+        return Promise.resolve(false);
     }
 }

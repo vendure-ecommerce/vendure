@@ -1,34 +1,57 @@
 @import 'variables';
 
 :host {
-    // flex: 0 0 auto;
-    order: -1;
     background-color: var(--clr-nav-background-color);
 }
 
-nav.sidenav {
+nav.main-nav {
     height: 100%;
     border-right-color: var(--clr-sidenav-border-color);
 }
 
-.sidenav .nav-group {
+.main-nav .nav-group {
+    margin-bottom: calc(var(--space-unit) * 2);
     .nav-list {
         margin: 0;
     }
     .nav-group-header {
         margin: 0;
         line-height: 1.2;
+        font-size: var(--font-size-sm);
+        padding-left: calc(var(--space-unit) * 1);
+        //font-weight: bold;
+        color: var(--color-left-nav-text);
+        opacity: 0.7;
     }
     .nav-link {
-        display: inline-flex;
+        display: flex;
         line-height: 1rem;
-        padding-right: 0.6rem;
+        font-size: var(--font-size-sm);
+        padding: var(--space-unit);
+        border-radius: var(--border-radius);
+        &:link,
+        &:visited {
+            color: var(--color-text-600);
+        }
+        &:hover {
+            color: var(--color-left-nav-text-hover);
+        }
+
+        &.active {
+            background-color: var(--color-primary-600);
+            color: var(--color-text-inverse);
+        }
+        @media screen and (max-width: $breakpoint-medium) {
+            justify-content: center;
+        }
     }
 }
 
 .nav-list clr-icon {
     flex-shrink: 0;
-    margin-right: 12px;
+    @media screen and (min-width: $breakpoint-medium) {
+        margin-right: 12px;
+    }
 }
 
 .nav-group {
@@ -42,8 +65,4 @@ nav.sidenav {
 .nav-group vdr-status-badge {
     left: 10px;
     top: 6px;
-}
-.nav-link vdr-status-badge {
-    left: 25px;
-    top: 3px;
 }

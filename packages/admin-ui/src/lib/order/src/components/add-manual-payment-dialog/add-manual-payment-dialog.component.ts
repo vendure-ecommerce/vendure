@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import {
     CurrencyCode,
     DataService,
@@ -22,9 +22,9 @@ export class AddManualPaymentDialogComponent implements OnInit, Dialog<Omit<Manu
     currencyCode: CurrencyCode;
 
     resolveWith: (result?: Omit<ManualPaymentInput, 'orderId'>) => void;
-    form = new FormGroup({
-        method: new FormControl('', Validators.required),
-        transactionId: new FormControl('', Validators.required),
+    form = new UntypedFormGroup({
+        method: new UntypedFormControl('', Validators.required),
+        transactionId: new UntypedFormControl('', Validators.required),
     });
     paymentMethods$: Observable<Array<ItemOf<GetPaymentMethodListQuery, 'paymentMethods'>>>;
     constructor(private dataService: DataService) {}

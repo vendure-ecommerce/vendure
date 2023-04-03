@@ -1,4 +1,4 @@
-// tslint:disable
+/* eslint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -11,13 +11,9 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: any;
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
-    /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
-    Money: any;
-    /** The `Upload` scalar type represents a file upload. */
+    Money: number;
     Upload: any;
 };
 
@@ -858,6 +854,7 @@ export enum ErrorCode {
     COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
     COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
     EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
+    GUEST_CHECKOUT_ERROR = 'GUEST_CHECKOUT_ERROR',
     IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR',
     IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR = 'IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR',
     INELIGIBLE_PAYMENT_METHOD_ERROR = 'INELIGIBLE_PAYMENT_METHOD_ERROR',
@@ -1027,6 +1024,13 @@ export enum GlobalFlag {
     INHERIT = 'INHERIT',
     TRUE = 'TRUE',
 }
+
+/** Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it. */
+export type GuestCheckoutError = ErrorResult & {
+    errorCode: ErrorCode;
+    errorDetail: Scalars['String'];
+    message: Scalars['String'];
+};
 
 export type HistoryEntry = Node & {
     createdAt: Scalars['DateTime'];
@@ -2809,7 +2813,9 @@ export type SearchInput = {
     collectionId?: InputMaybe<Scalars['ID']>;
     collectionSlug?: InputMaybe<Scalars['String']>;
     facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueOperator?: InputMaybe<LogicalOperator>;
     groupByProduct?: InputMaybe<Scalars['Boolean']>;
     skip?: InputMaybe<Scalars['Int']>;
@@ -2875,6 +2881,7 @@ export type Seller = Node & {
 export type SetCustomerForOrderResult =
     | AlreadyLoggedInError
     | EmailAddressConflictError
+    | GuestCheckoutError
     | NoActiveOrderError
     | Order;
 
@@ -3157,36 +3164,36 @@ export type TestOrderFragmentFragment = {
     code: string;
     state: string;
     active: boolean;
-    subTotal: any;
-    subTotalWithTax: any;
-    shipping: any;
-    shippingWithTax: any;
-    total: any;
-    totalWithTax: any;
+    subTotal: number;
+    subTotalWithTax: number;
+    shipping: number;
+    shippingWithTax: number;
+    total: number;
+    totalWithTax: number;
     couponCodes: Array<string>;
     discounts: Array<{
         adjustmentSource: string;
-        amount: any;
-        amountWithTax: any;
+        amount: number;
+        amountWithTax: number;
         description: string;
         type: AdjustmentType;
     }>;
     lines: Array<{
         id: string;
         quantity: number;
-        linePrice: any;
-        linePriceWithTax: any;
-        unitPrice: any;
-        unitPriceWithTax: any;
-        unitPriceChangeSinceAdded: any;
-        unitPriceWithTaxChangeSinceAdded: any;
-        discountedUnitPriceWithTax: any;
-        proratedUnitPriceWithTax: any;
+        linePrice: number;
+        linePriceWithTax: number;
+        unitPrice: number;
+        unitPriceWithTax: number;
+        unitPriceChangeSinceAdded: number;
+        unitPriceWithTaxChangeSinceAdded: number;
+        discountedUnitPriceWithTax: number;
+        proratedUnitPriceWithTax: number;
         productVariant: { id: string };
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
@@ -3201,26 +3208,26 @@ export type UpdatedOrderFragment = {
     code: string;
     state: string;
     active: boolean;
-    total: any;
-    totalWithTax: any;
+    total: number;
+    totalWithTax: number;
     lines: Array<{
         id: string;
         quantity: number;
-        linePrice: any;
-        linePriceWithTax: any;
+        linePrice: number;
+        linePriceWithTax: number;
         productVariant: { id: string };
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
     }>;
     discounts: Array<{
         adjustmentSource: string;
-        amount: any;
-        amountWithTax: any;
+        amount: number;
+        amountWithTax: number;
         description: string;
         type: AdjustmentType;
     }>;
@@ -3242,26 +3249,26 @@ export type AddItemToOrderMutation = {
                   code: string;
                   state: string;
                   active: boolean;
-                  total: any;
-                  totalWithTax: any;
+                  total: number;
+                  totalWithTax: number;
                   lines: Array<{
                       id: string;
                       quantity: number;
-                      linePrice: any;
-                      linePriceWithTax: any;
+                      linePrice: number;
+                      linePriceWithTax: number;
                       productVariant: { id: string };
                       discounts: Array<{
                           adjustmentSource: string;
-                          amount: any;
-                          amountWithTax: any;
+                          amount: number;
+                          amountWithTax: number;
                           description: string;
                           type: AdjustmentType;
                       }>;
                   }>;
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -3273,26 +3280,26 @@ export type AddItemToOrderMutation = {
               code: string;
               state: string;
               active: boolean;
-              total: any;
-              totalWithTax: any;
+              total: number;
+              totalWithTax: number;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
               }>;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
@@ -3315,7 +3322,7 @@ export type SearchProductsShopQuery = {
             productVariantName: string;
             sku: string;
             collectionIds: Array<string>;
-            price: { min: any; max: any } | { value: any };
+            price: { min: number; max: number } | { value: number };
         }>;
     };
 };
@@ -3471,36 +3478,36 @@ export type GetActiveOrderQuery = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
         lines: Array<{
             id: string;
             quantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPrice: any;
-            unitPriceWithTax: any;
-            unitPriceChangeSinceAdded: any;
-            unitPriceWithTaxChangeSinceAdded: any;
-            discountedUnitPriceWithTax: any;
-            proratedUnitPriceWithTax: any;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            unitPriceChangeSinceAdded: number;
+            unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
+            proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
                 adjustmentSource: string;
-                amount: any;
-                amountWithTax: any;
+                amount: number;
+                amountWithTax: number;
                 description: string;
                 type: AdjustmentType;
             }>;
@@ -3516,21 +3523,21 @@ export type GetActiveOrderWithPriceDataQueryVariables = Exact<{ [key: string]: n
 export type GetActiveOrderWithPriceDataQuery = {
     activeOrder?: {
         id: string;
-        subTotal: any;
-        subTotalWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
         lines: Array<{
             id: string;
-            unitPrice: any;
-            unitPriceWithTax: any;
+            unitPrice: number;
+            unitPriceWithTax: number;
             taxRate: number;
-            linePrice: any;
-            lineTax: any;
-            linePriceWithTax: any;
+            linePrice: number;
+            lineTax: number;
+            linePriceWithTax: number;
             taxLines: Array<{ taxRate: number; description: string }>;
         }>;
-        taxSummary: Array<{ description: string; taxRate: number; taxBase: any; taxTotal: any }>;
+        taxSummary: Array<{ description: string; taxRate: number; taxBase: number; taxTotal: number }>;
     } | null;
 };
 
@@ -3548,36 +3555,36 @@ export type AdjustItemQuantityMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
-                  unitPriceChangeSinceAdded: any;
-                  unitPriceWithTaxChangeSinceAdded: any;
-                  discountedUnitPriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -3601,36 +3608,36 @@ export type RemoveItemFromOrderMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
-                  unitPriceChangeSinceAdded: any;
-                  unitPriceWithTaxChangeSinceAdded: any;
-                  discountedUnitPriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -3648,7 +3655,7 @@ export type GetShippingMethodsQuery = {
     eligibleShippingMethods: Array<{
         id: string;
         code: string;
-        price: any;
+        price: number;
         name: string;
         description: string;
     }>;
@@ -3667,36 +3674,36 @@ export type SetShippingMethodMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
-                  unitPriceChangeSinceAdded: any;
-                  unitPriceWithTaxChangeSinceAdded: any;
-                  discountedUnitPriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -3722,6 +3729,7 @@ export type SetCustomerForOrderMutation = {
     setCustomerForOrder:
         | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string }
+        | { errorCode: ErrorCode; message: string; errorDetail: string }
         | { errorCode: ErrorCode; message: string }
         | {
               id: string;
@@ -3740,36 +3748,36 @@ export type GetOrderByCodeQuery = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
         lines: Array<{
             id: string;
             quantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPrice: any;
-            unitPriceWithTax: any;
-            unitPriceChangeSinceAdded: any;
-            unitPriceWithTaxChangeSinceAdded: any;
-            discountedUnitPriceWithTax: any;
-            proratedUnitPriceWithTax: any;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            unitPriceChangeSinceAdded: number;
+            unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
+            proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
                 adjustmentSource: string;
-                amount: any;
-                amountWithTax: any;
+                amount: number;
+                amountWithTax: number;
                 description: string;
                 type: AdjustmentType;
             }>;
@@ -3790,36 +3798,36 @@ export type GetOrderShopQuery = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
         lines: Array<{
             id: string;
             quantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPrice: any;
-            unitPriceWithTax: any;
-            unitPriceChangeSinceAdded: any;
-            unitPriceWithTaxChangeSinceAdded: any;
-            discountedUnitPriceWithTax: any;
-            proratedUnitPriceWithTax: any;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            unitPriceChangeSinceAdded: number;
+            unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
+            proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
                 adjustmentSource: string;
-                amount: any;
-                amountWithTax: any;
+                amount: number;
+                amountWithTax: number;
                 description: string;
                 type: AdjustmentType;
             }>;
@@ -3840,37 +3848,37 @@ export type GetOrderPromotionsByCodeQuery = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         couponCodes: Array<string>;
         promotions: Array<{ id: string; name: string }>;
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
         lines: Array<{
             id: string;
             quantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPrice: any;
-            unitPriceWithTax: any;
-            unitPriceChangeSinceAdded: any;
-            unitPriceWithTaxChangeSinceAdded: any;
-            discountedUnitPriceWithTax: any;
-            proratedUnitPriceWithTax: any;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            unitPriceChangeSinceAdded: number;
+            unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
+            proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
                 adjustmentSource: string;
-                amount: any;
-                amountWithTax: any;
+                amount: number;
+                amountWithTax: number;
                 description: string;
                 type: AdjustmentType;
             }>;
@@ -3896,36 +3904,36 @@ export type TransitionToStateMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
-                  unitPriceChangeSinceAdded: any;
-                  unitPriceWithTaxChangeSinceAdded: any;
-                  discountedUnitPriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -3993,44 +4001,44 @@ export type TestOrderWithPaymentsFragment = {
     code: string;
     state: string;
     active: boolean;
-    subTotal: any;
-    subTotalWithTax: any;
-    shipping: any;
-    shippingWithTax: any;
-    total: any;
-    totalWithTax: any;
+    subTotal: number;
+    subTotalWithTax: number;
+    shipping: number;
+    shippingWithTax: number;
+    total: number;
+    totalWithTax: number;
     couponCodes: Array<string>;
     payments?: Array<{
         id: string;
         transactionId?: string | null;
         method: string;
-        amount: any;
+        amount: number;
         state: string;
         metadata?: any | null;
     }> | null;
     discounts: Array<{
         adjustmentSource: string;
-        amount: any;
-        amountWithTax: any;
+        amount: number;
+        amountWithTax: number;
         description: string;
         type: AdjustmentType;
     }>;
     lines: Array<{
         id: string;
         quantity: number;
-        linePrice: any;
-        linePriceWithTax: any;
-        unitPrice: any;
-        unitPriceWithTax: any;
-        unitPriceChangeSinceAdded: any;
-        unitPriceWithTaxChangeSinceAdded: any;
-        discountedUnitPriceWithTax: any;
-        proratedUnitPriceWithTax: any;
+        linePrice: number;
+        linePriceWithTax: number;
+        unitPrice: number;
+        unitPriceWithTax: number;
+        unitPriceChangeSinceAdded: number;
+        unitPriceWithTaxChangeSinceAdded: number;
+        discountedUnitPriceWithTax: number;
+        proratedUnitPriceWithTax: number;
         productVariant: { id: string };
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
@@ -4048,44 +4056,44 @@ export type GetActiveOrderWithPaymentsQuery = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         couponCodes: Array<string>;
         payments?: Array<{
             id: string;
             transactionId?: string | null;
             method: string;
-            amount: any;
+            amount: number;
             state: string;
             metadata?: any | null;
         }> | null;
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
         lines: Array<{
             id: string;
             quantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPrice: any;
-            unitPriceWithTax: any;
-            unitPriceChangeSinceAdded: any;
-            unitPriceWithTaxChangeSinceAdded: any;
-            discountedUnitPriceWithTax: any;
-            proratedUnitPriceWithTax: any;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            unitPriceChangeSinceAdded: number;
+            unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
+            proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
                 adjustmentSource: string;
-                amount: any;
-                amountWithTax: any;
+                amount: number;
+                amountWithTax: number;
                 description: string;
                 type: AdjustmentType;
             }>;
@@ -4109,44 +4117,44 @@ export type AddPaymentToOrderMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               couponCodes: Array<string>;
               payments?: Array<{
                   id: string;
                   transactionId?: string | null;
                   method: string;
-                  amount: any;
+                  amount: number;
                   state: string;
                   metadata?: any | null;
               }> | null;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
-                  unitPriceChangeSinceAdded: any;
-                  unitPriceWithTaxChangeSinceAdded: any;
-                  discountedUnitPriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -4170,7 +4178,7 @@ export type GetActiveOrderPaymentsQuery = {
             id: string;
             transactionId?: string | null;
             method: string;
-            amount: any;
+            amount: number;
             state: string;
             errorMessage?: string | null;
             metadata?: any | null;
@@ -4188,44 +4196,44 @@ export type GetOrderByCodeWithPaymentsQuery = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         couponCodes: Array<string>;
         payments?: Array<{
             id: string;
             transactionId?: string | null;
             method: string;
-            amount: any;
+            amount: number;
             state: string;
             metadata?: any | null;
         }> | null;
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
         lines: Array<{
             id: string;
             quantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPrice: any;
-            unitPriceWithTax: any;
-            unitPriceChangeSinceAdded: any;
-            unitPriceWithTaxChangeSinceAdded: any;
-            discountedUnitPriceWithTax: any;
-            proratedUnitPriceWithTax: any;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            unitPriceChangeSinceAdded: number;
+            unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
+            proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
                 adjustmentSource: string;
-                amount: any;
-                amountWithTax: any;
+                amount: number;
+                amountWithTax: number;
                 description: string;
                 type: AdjustmentType;
             }>;
@@ -4299,36 +4307,36 @@ export type ApplyCouponCodeMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
-                  unitPriceChangeSinceAdded: any;
-                  unitPriceWithTaxChangeSinceAdded: any;
-                  discountedUnitPriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -4349,36 +4357,36 @@ export type RemoveCouponCodeMutation = {
         code: string;
         state: string;
         active: boolean;
-        subTotal: any;
-        subTotalWithTax: any;
-        shipping: any;
-        shippingWithTax: any;
-        total: any;
-        totalWithTax: any;
+        subTotal: number;
+        subTotalWithTax: number;
+        shipping: number;
+        shippingWithTax: number;
+        total: number;
+        totalWithTax: number;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
-            amount: any;
-            amountWithTax: any;
+            amount: number;
+            amountWithTax: number;
             description: string;
             type: AdjustmentType;
         }>;
         lines: Array<{
             id: string;
             quantity: number;
-            linePrice: any;
-            linePriceWithTax: any;
-            unitPrice: any;
-            unitPriceWithTax: any;
-            unitPriceChangeSinceAdded: any;
-            unitPriceWithTaxChangeSinceAdded: any;
-            discountedUnitPriceWithTax: any;
-            proratedUnitPriceWithTax: any;
+            linePrice: number;
+            linePriceWithTax: number;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            unitPriceChangeSinceAdded: number;
+            unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
+            proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
                 adjustmentSource: string;
-                amount: any;
-                amountWithTax: any;
+                amount: number;
+                amountWithTax: number;
                 description: string;
                 type: AdjustmentType;
             }>;
@@ -4398,36 +4406,36 @@ export type RemoveAllOrderLinesMutation = {
               code: string;
               state: string;
               active: boolean;
-              subTotal: any;
-              subTotalWithTax: any;
-              shipping: any;
-              shippingWithTax: any;
-              total: any;
-              totalWithTax: any;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
-                  amount: any;
-                  amountWithTax: any;
+                  amount: number;
+                  amountWithTax: number;
                   description: string;
                   type: AdjustmentType;
               }>;
               lines: Array<{
                   id: string;
                   quantity: number;
-                  linePrice: any;
-                  linePriceWithTax: any;
-                  unitPrice: any;
-                  unitPriceWithTax: any;
-                  unitPriceChangeSinceAdded: any;
-                  unitPriceWithTaxChangeSinceAdded: any;
-                  discountedUnitPriceWithTax: any;
-                  proratedUnitPriceWithTax: any;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
+                  proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
                       adjustmentSource: string;
-                      amount: any;
-                      amountWithTax: any;
+                      amount: number;
+                      amountWithTax: number;
                       description: string;
                       type: AdjustmentType;
                   }>;
@@ -4476,7 +4484,10 @@ export type GetActiveCustomerWithOrdersProductPriceQuery = {
     activeCustomer?: {
         orders: {
             items: Array<{
-                lines: Array<{ linePrice: any; productVariant: { id: string; name: string; price: any } }>;
+                lines: Array<{
+                    linePrice: number;
+                    productVariant: { id: string; name: string; price: number };
+                }>;
             }>;
         };
     } | null;

@@ -4,7 +4,7 @@ import http from 'http';
 
 import { ADMIN_API_PATH, API_PORT } from '../../packages/common/src/shared-constants';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * Makes an introspection query to the Vendure server and writes the result to a
@@ -13,7 +13,7 @@ import { ADMIN_API_PATH, API_PORT } from '../../packages/common/src/shared-const
  * If there is an error connecting to the server, the promise resolves to false.
  */
 export function downloadIntrospectionSchema(apiPath: string, outputFilePath: string): Promise<boolean> {
-    const body = JSON.stringify({ query: getIntrospectionQuery() });
+    const body = JSON.stringify({ query: getIntrospectionQuery({ inputValueDeprecation: true }) });
 
     return new Promise((resolve, reject) => {
         const request = http.request(

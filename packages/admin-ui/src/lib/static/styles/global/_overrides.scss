@@ -5,6 +5,11 @@
     background-color: var(--clr-global-app-background);
 }
 
+a:link, a:visited {
+    color: var(--clr-global-link-color);
+    text-decoration: none;
+}
+
 .content-area img, .modal-content img {
     object-fit: cover;
     width: 100%;

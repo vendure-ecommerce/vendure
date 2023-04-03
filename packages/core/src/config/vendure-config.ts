@@ -3,7 +3,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
 import { ValidationContext } from 'graphql';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
@@ -22,15 +22,16 @@ import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
+import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { ActiveOrderStrategy } from './order/active-order-strategy';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
+import { GuestCheckoutStrategy } from './order/guest-checkout-strategy';
 import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
@@ -583,6 +584,14 @@ export interface OrderOptions {
      * @default DefaultOrderSellerStrategy
      */
     orderSellerStrategy?: OrderSellerStrategy;
+    /**
+     * @description
+     * Defines how we deal with guest checkouts.
+     *
+     * @since 2.0.0
+     * @default DefaultGuestCheckoutStrategy
+     */
+    guestCheckoutStrategy?: GuestCheckoutStrategy;
 }
 
 /**
@@ -1049,7 +1058,7 @@ export interface VendureConfig {
      * See the [TypeORM documentation](https://typeorm.io/#/connection-options) for a
      * full description of all available options.
      */
-    dbConnectionOptions: ConnectionOptions;
+    dbConnectionOptions: DataSourceOptions;
     /**
      * @description
      * The token for the default channel. If not specified, a token

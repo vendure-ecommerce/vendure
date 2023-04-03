@@ -25,8 +25,8 @@ export class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
     async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         // Lazy import these dependencies to avoid a circular dependency issue in NestJS.
-        const { OrderService } = await import('../../service/services/order.service');
-        const { SessionService } = await import('../../service/services/session.service');
+        const { OrderService } = await import('../../service/services/order.service.js');
+        const { SessionService } = await import('../../service/services/session.service.js');
         this.orderService = injector.get(OrderService);
         this.sessionService = injector.get(SessionService);
     }
@@ -37,7 +37,7 @@ export class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
 
     async determineActiveOrder(ctx: RequestContext) {
         if (!ctx.session) {
-            throw new InternalServerError(`error.no-active-session`);
+            throw new InternalServerError('error.no-active-session');
         }
         let order = ctx.session.activeOrderId
             ? await this.connection

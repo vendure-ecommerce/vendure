@@ -38,8 +38,7 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                 kind: Kind.FIELD,
                 selectionSet: {
                     kind: Kind.SELECTION_SET,
-                    selections: customFieldsForType.map(customField => {
-                        return {
+                    selections: customFieldsForType.map(customField => ({
                             kind: Kind.FIELD,
                             name: {
                                 kind: Kind.NAME,
@@ -60,8 +59,7 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                                       },
                                   }
                                 : {}),
-                        } as FieldNode;
-                    }),
+                        } as FieldNode)),
                 },
             });
 
@@ -80,15 +78,13 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                     kind: Kind.FIELD,
                     selectionSet: {
                         kind: Kind.SELECTION_SET,
-                        selections: localeStrings.map(customField => {
-                            return {
+                        selections: localeStrings.map(customField => ({
                                 kind: Kind.FIELD,
                                 name: {
                                     kind: Kind.NAME,
                                     value: customField.name,
                                 },
-                            } as FieldNode;
-                        }),
+                            } as FieldNode)),
                     },
                 });
             }

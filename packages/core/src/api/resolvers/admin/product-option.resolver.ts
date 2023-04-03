@@ -13,8 +13,8 @@ import {
 } from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';

@@ -21,7 +21,7 @@ import { EmailDetails, EmailPluginOptions, EmailTransportOptions, InitializedEma
 export class EmailProcessor {
     protected emailSender: EmailSender;
     protected generator: EmailGenerator;
-    protected transport: EmailTransportOptions;
+    protected transport: EmailTransportOptions|((injector?: Injector, ctx?: RequestContext) => EmailTransportOptions | Promise<EmailTransportOptions>);
 
     constructor(
         @Inject(EMAIL_PLUGIN_OPTIONS) protected options: InitializedEmailPluginOptions,
@@ -36,10 +36,26 @@ export class EmailProcessor {
         if (this.generator.onInit) {
             await this.generator.onInit.call(this.generator, this.options);
         }
-        if (!isDevModeOptions(this.options) && !this.options.transport) {
-            throw new InternalServerError(
-                `When devMode is not set to true, the 'transport' property must be set.`,
-            );
+// <<<<<<< HEAD
+//         if (!isDevModeOptions(this.options) && !this.options.transport) {
+//             throw new InternalServerError(
+//                 `When devMode is not set to true, the 'transport' property must be set.`,
+//             );
+// =======
+        if (isDevModeOptions(this.options)) {
+            this.transport = {
+                type: 'file',
+                raw: false,
+                outputPath: this.options.outputPath,
+            };
+        } else {
+            if (!this.options.transport) {
+                throw new InternalServerError(
+                    'When devMode is not set to true, the \'transport\' property must be set.',
+                );
+            }
+            this.transport = this.options.transport;
+// >>>>>>> vendure/major
         }
         const transport = await this.getTransportSettings();
         if (transport.type === 'file') {
@@ -52,6 +68,7 @@ export class EmailProcessor {
 
     async process(data: IntermediateEmailDetails) {
         try {
+// <<<<<<< HEAD
             const ctx = RequestContext.deserialize(data.ctx);
             const bodySource = await this.options.templateLoader.loadTemplate(
                 new Injector(this.moduleRef),
@@ -67,6 +84,10 @@ export class EmailProcessor {
                 bodySource,
                 data.templateVars,
             );
+// =======
+//             const bodySource = await this.templateLoader.loadTemplate(data.type, data.templateFile);
+//             const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
+// >>>>>>> vendure/major
             const emailDetails: EmailDetails = {
                 ...generated,
                 recipient: data.recipient,

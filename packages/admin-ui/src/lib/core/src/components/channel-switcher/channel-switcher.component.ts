@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { combineLatest, Observable } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
@@ -18,7 +18,7 @@ export class ChannelSwitcherComponent implements OnInit {
     readonly displayFilterThreshold = 10;
     channels$: Observable<CurrentUserChannel[]>;
     channelCount$: Observable<number>;
-    filterControl = new FormControl('');
+    filterControl = new UntypedFormControl('');
     activeChannelCode$: Observable<string>;
     constructor(private dataService: DataService, private channelService: ChannelService) {}
 
@@ -26,13 +26,11 @@ export class ChannelSwitcherComponent implements OnInit {
         const channels$ = this.dataService.client.userStatus().mapStream(data => data.userStatus.channels);
         const filterTerm$ = this.filterControl.valueChanges.pipe<string>(startWith(''));
         this.channels$ = combineLatest(channels$, filterTerm$).pipe(
-            map(([channels, filterTerm]) => {
-                return filterTerm
+            map(([channels, filterTerm]) => filterTerm
                     ? channels.filter(c =>
                           c.code.toLocaleLowerCase().includes(filterTerm.toLocaleLowerCase()),
                       )
-                    : channels;
-            }),
+                    : channels),
         );
         this.channelCount$ = channels$.pipe(map(channels => channels.length));
         const activeChannel$ = this.dataService.client

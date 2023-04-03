@@ -11,6 +11,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
@@ -31,10 +32,10 @@ import {
     TaxCategory,
 } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
+import { Product } from '../../entity/product/product.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
-import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
@@ -91,7 +92,7 @@ export class ProductVariantService {
             .build(ProductVariant, options, {
                 relations,
                 channelId: ctx.channelId,
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 ctx,
             })
             .getManyAndCount()
@@ -115,7 +116,7 @@ export class ProductVariantService {
                     ...(relations || ['product', 'featuredAsset', 'product.featuredAsset']),
                     'taxCategory',
                 ],
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
             })
             .then(async result => {
                 if (result) {
@@ -160,7 +161,7 @@ export class ProductVariantService {
                     'taxCategory',
                 ],
                 orderBy: { id: 'ASC' },
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 ctx,
             })
             .innerJoinAndSelect('productvariant.channels', 'channel', 'channel.id = :channelId', {
@@ -396,7 +397,7 @@ export class ProductVariantService {
                 if (optionIds && optionIds.length) {
                     const selectedOptions = await this.connection
                         .getRepository(ctx, ProductOption)
-                        .findByIds(optionIds);
+                        .find({ where: { id: In(optionIds) } });
                     variant.options = selectedOptions;
                 }
                 if (input.facetValueIds) {
@@ -418,7 +419,7 @@ export class ProductVariantService {
             await this.stockMovementService.adjustProductVariantStock(
                 ctx,
                 createdVariant.id,
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 input.stockLevels || input.stockOnHand!,
             );
         }
@@ -478,7 +479,7 @@ export class ProductVariantService {
                     await this.stockMovementService.adjustProductVariantStock(
                         ctx,
                         existingVariant.id,
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         input.stockLevels || input.stockOnHand!,
                     );
                 }
@@ -509,7 +510,7 @@ export class ProductVariantService {
     ): Promise<ProductVariantPrice> {
         let variantPrice = await this.connection.getRepository(ctx, ProductVariantPrice).findOne({
             where: {
-                variant: productVariantId,
+                variant: { id: productVariantId },
                 channelId,
             },
         });
@@ -526,7 +527,9 @@ export class ProductVariantService {
 
     async softDelete(ctx: RequestContext, id: ID | ID[]): Promise<DeletionResponse> {
         const ids = Array.isArray(id) ? id : [id];
-        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(ids);
+        const variants = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .find({ where: { id: In(ids) } });
         for (const variant of variants) {
             variant.deletedAt = new Date();
         }
@@ -554,6 +557,7 @@ export class ProductVariantService {
         let populatePricesPromise = this.requestCache.get<Promise<ProductVariant>>(ctx, cacheKey);
 
         if (!populatePricesPromise) {
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             populatePricesPromise = new Promise(async (resolve, reject) => {
                 try {
                     if (!variant.productVariantPrices?.length) {
@@ -635,9 +639,12 @@ export class ProductVariantService {
         if (!hasPermission) {
             throw new ForbiddenError();
         }
-        const variants = await this.connection
-            .getRepository(ctx, ProductVariant)
-            .findByIds(input.productVariantIds, { relations: ['taxCategory', 'assets'] });
+        const variants = await this.connection.getRepository(ctx, ProductVariant).find({
+            where: {
+                id: In(input.productVariantIds),
+            },
+            relations: ['taxCategory', 'assets'],
+        });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const variant of variants) {
             if (variant.deletedAt) {
@@ -685,12 +692,12 @@ export class ProductVariantService {
         }
         const variants = await this.connection
             .getRepository(ctx, ProductVariant)
-            .findByIds(input.productVariantIds);
+            .find({ where: { id: In(input.productVariantIds) } });
         for (const variant of variants) {
             await this.channelService.removeFromChannels(ctx, ProductVariant, variant.id, [input.channelId]);
             await this.connection.getRepository(ctx, ProductVariantPrice).delete({
                 channelId: input.channelId,
-                variant,
+                variant: { id: variant.id },
             });
             // If none of the ProductVariants is assigned to the Channel, remove the Channel from Product
             const productVariants = await this.connection.getRepository(ctx, ProductVariant).find({
@@ -750,7 +757,7 @@ export class ProductVariantService {
         const product = await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
             channelId: ctx.channelId,
             relations: ['variants', 'variants.options'],
-            loadEagerRelations: false,
+            loadEagerRelations: true,
         });
 
         const inputOptionIds = this.sortJoin(optionIds, ',');

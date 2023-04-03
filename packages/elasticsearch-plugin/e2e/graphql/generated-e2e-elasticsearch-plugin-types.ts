@@ -1,4 +1,4 @@
-// tslint:disable
+/* eslint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -11,13 +11,9 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: any;
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
-    /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
-    Money: any;
-    /** The `Upload` scalar type represents a file upload. */
+    Money: number;
     Upload: any;
 };
 
@@ -1450,6 +1446,7 @@ export enum ErrorCode {
     EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
     FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
     FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+    GUEST_CHECKOUT_ERROR = 'GUEST_CHECKOUT_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
     INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
@@ -1709,6 +1706,13 @@ export type GlobalSettings = {
     serverConfig: ServerConfig;
     trackInventory: Scalars['Boolean'];
     updatedAt: Scalars['DateTime'];
+};
+
+/** Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it. */
+export type GuestCheckoutError = ErrorResult & {
+    errorCode: ErrorCode;
+    errorDetail: Scalars['String'];
+    message: Scalars['String'];
 };
 
 export type HistoryEntry = Node & {
@@ -4763,7 +4767,9 @@ export type SearchInput = {
     collectionId?: InputMaybe<Scalars['ID']>;
     collectionSlug?: InputMaybe<Scalars['String']>;
     facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
+    /** @deprecated Use `facetValueFilters` instead */
     facetValueOperator?: InputMaybe<LogicalOperator>;
     groupByProduct?: InputMaybe<Scalars['Boolean']>;
     skip?: InputMaybe<Scalars['Int']>;
@@ -5695,8 +5701,8 @@ export type SearchGetPricesQueryVariables = Exact<{
 export type SearchGetPricesQuery = {
     search: {
         items: Array<{
-            price: { min: any; max: any } | { value: any };
-            priceWithTax: { min: any; max: any } | { value: any };
+            price: { min: number; max: number } | { value: number };
+            priceWithTax: { min: number; max: number } | { value: number };
         }>;
     };
 };

@@ -2,6 +2,7 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { DefaultNamingStrategy } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
+import { describe, expect, it } from 'vitest';
 
 import { SortParameter } from '../../../common/types/common-types';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';

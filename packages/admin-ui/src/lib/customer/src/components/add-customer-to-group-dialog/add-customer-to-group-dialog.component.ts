@@ -35,11 +35,11 @@ export class AddCustomerToGroupDialogComponent implements Dialog<string[]>, OnIn
 
     ngOnInit() {
         const customerResult$ = this.fetchGroupMembers$.pipe(
-            switchMap(({ skip, take, filterTerm }) => {
-                return this.dataService.customer
+            switchMap(({ skip, take, filterTerm }) =>
+                this.dataService.customer
                     .getCustomerList(take, skip, filterTerm)
-                    .mapStream(res => res.customers);
-            }),
+                    .mapStream(res => res.customers),
+            ),
         );
 
         this.customers$ = customerResult$.pipe(map(res => res.items));

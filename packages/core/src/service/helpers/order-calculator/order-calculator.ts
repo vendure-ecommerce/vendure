@@ -64,7 +64,7 @@ export class OrderCalculator {
 
         let taxZoneChanged = false;
         if (!activeTaxZone) {
-            throw new InternalServerError(`error.no-active-tax-zone`);
+            throw new InternalServerError('error.no-active-tax-zone');
         }
         if (!order.taxZoneId || !idsAreEqual(order.taxZoneId, activeTaxZone.id)) {
             order.taxZoneId = activeTaxZone.id;

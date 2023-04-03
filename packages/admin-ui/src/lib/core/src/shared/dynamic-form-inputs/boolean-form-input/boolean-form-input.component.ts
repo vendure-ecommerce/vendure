@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
@@ -20,6 +20,6 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
 export class BooleanFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'boolean-form-input';
     readonly: boolean;
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     config: DefaultFormComponentConfig<'boolean-form-input'>;
 }

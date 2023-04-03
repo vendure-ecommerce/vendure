@@ -3,6 +3,7 @@ import { createTestEnvironment } from '@vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -116,7 +117,7 @@ describe('Administrator resolver', () => {
                         roleIds: ['999'],
                     },
                 }),
-            `No Role with the id '999' could be found`,
+            'No Role with the id \'999\' could be found',
         ),
     );
 

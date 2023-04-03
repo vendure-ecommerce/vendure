@@ -13,9 +13,9 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
@@ -51,10 +51,11 @@ export class ProductOptionService {
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOption)
-            .findOne(id, {
+            .findOne({
+                where: { id },
                 relations: ['group'],
             })
-            .then(option => option && this.translator.translate(option, ctx));
+            .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }
 
     async create(

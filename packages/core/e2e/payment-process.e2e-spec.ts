@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     CustomOrderProcess,
     CustomPaymentProcess,
@@ -16,6 +16,8 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -32,11 +34,11 @@ import {
 import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
-const initSpy = jest.fn();
-const transitionStartSpy = jest.fn();
-const transitionEndSpy = jest.fn();
-const transitionErrorSpy = jest.fn();
-const settlePaymentSpy = jest.fn();
+const initSpy = vi.fn();
+const transitionStartSpy = vi.fn();
+const transitionEndSpy = vi.fn();
+const transitionErrorSpy = vi.fn();
+const settlePaymentSpy = vi.fn();
 
 describe('Payment process', () => {
     let orderId: string;
@@ -196,7 +198,7 @@ describe('Payment process', () => {
         expect(order?.state).toBe('ArrangingPayment');
         expect(order?.payments?.length).toBe(1);
         expect(order?.payments?.[0].state).toBe('Validating');
-        payment1Id = addPaymentToOrder?.payments?.[0].id!;
+        payment1Id = addPaymentToOrder.payments![0].id;
     });
 
     it('calls transition hooks', async () => {
@@ -289,7 +291,7 @@ describe('Payment process', () => {
             });
 
             orderGuard.assertSuccess(addPaymentToOrder);
-            payment2Id = addPaymentToOrder!.payments![0].id;
+            payment2Id = addPaymentToOrder.payments![0].id;
 
             await adminClient.query<
                 Codegen.AdminTransitionMutation,

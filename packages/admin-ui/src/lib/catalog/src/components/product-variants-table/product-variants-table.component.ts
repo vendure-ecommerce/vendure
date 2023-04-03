@@ -6,7 +6,7 @@ import {
     OnDestroy,
     OnInit,
 } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormGroup } from '@angular/forms';
 import { Permission, ProductDetailFragment, ProductVariantFragment } from '@vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
@@ -20,13 +20,13 @@ import { PaginationConfig, SelectedAssets } from '../product-detail/product-deta
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductVariantsTableComponent implements OnInit, OnDestroy {
-    @Input('productVariantsFormArray') formArray: FormArray;
+    @Input('productVariantsFormArray') formArray: UntypedFormArray;
     @Input() variants: ProductVariantFragment[];
     @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
     @Input() optionGroups: ProductDetailFragment['optionGroups'];
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
-    formGroupMap = new Map<string, FormGroup>();
+    formGroupMap = new Map<string, UntypedFormGroup>();
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
     private subscription: Subscription;
 
@@ -72,7 +72,7 @@ export class ProductVariantsTableComponent implements OnInit, OnDestroy {
     private buildFormGroupMap() {
         this.formGroupMap.clear();
         for (const controlGroup of this.formArray.controls) {
-            this.formGroupMap.set(controlGroup.value.id, controlGroup as FormGroup);
+            this.formGroupMap.set(controlGroup.value.id, controlGroup as UntypedFormGroup);
         }
         this.changeDetector.markForCheck();
     }

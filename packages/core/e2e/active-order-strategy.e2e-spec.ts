@@ -3,6 +3,7 @@ import { mergeConfig, orderPercentageDiscount } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -138,7 +139,7 @@ describe('custom ActiveOrderStrategy', () => {
     });
 
     describe('happy path', () => {
-        const activeOrderInput = `activeOrderInput: { orderToken: { token: "token-2" } }`;
+        const activeOrderInput = 'activeOrderInput: { orderToken: { token: "token-2" } }';
         const TEST_COUPON_CODE = 'TESTCOUPON';
         let firstOrderLineId: string;
 

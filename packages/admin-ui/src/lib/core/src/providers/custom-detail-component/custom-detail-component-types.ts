@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 import { CustomDetailComponentLocationId } from '../../common/component-registry-types';
@@ -13,7 +13,7 @@ import { CustomDetailComponentLocationId } from '../../common/component-registry
  */
 export interface CustomDetailComponent {
     entity$: Observable<any>;
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
 }
 
 /**

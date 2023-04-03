@@ -4,7 +4,7 @@ import { CustomFieldConfig, LanguageCode, ProductDetailFragment } from '../gener
 
 import { createUpdatedTranslatable } from './create-updated-translatable';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('createUpdatedTranslatable()', () => {
     let product: any;
 

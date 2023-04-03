@@ -21,6 +21,7 @@
     --color-text-100: hsl(210, 16%, 93%);
     --color-text-200: hsl(203, 16%, 72%);
     --color-text-300: var(--color-grey-300);
+    --color-text-inverse: var(--clr-global-font-color);
 
     --color-chip-warning-border: var(--color-warning-700);
     --color-chip-warning-text: #fff;
@@ -32,6 +33,9 @@
     --color-chip-error-text: #fff;
     --color-chip-error-bg: var(--color-error-600);
 
+    --color-top-bar-bg: var(--color-component-bg-200);
+    --color-left-nav-bg: var(--color-component-bg-200);
+    --color-left-nav-text-hover: var(--color-primary-200);
     --color-icon-button: var(--color-grey-200);
     --color-form-input-bg: hsl(212, 35%, 95%);
     --color-timeline-thread: var(--color-primary-700);

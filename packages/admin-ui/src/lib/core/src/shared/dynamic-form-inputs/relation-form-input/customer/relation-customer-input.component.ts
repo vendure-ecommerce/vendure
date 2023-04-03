@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
@@ -18,12 +18,12 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
 })
 export class RelationCustomerInputComponent implements OnInit {
     @Input() readonly: boolean;
-    @Input() parentFormControl: FormControl;
+    @Input() parentFormControl: UntypedFormControl;
     @Input() config: RelationCustomFieldConfig;
 
     @ViewChild('selector') template: TemplateRef<any>;
 
-    searchControl = new FormControl('');
+    searchControl = new UntypedFormControl('');
     searchTerm$ = new Subject<string>();
     results$: Observable<Codegen.GetCustomerListQuery['customers']['items']>;
 
@@ -36,11 +36,11 @@ export class RelationCustomerInputComponent implements OnInit {
     ngOnInit() {
         this.results$ = this.searchTerm$.pipe(
             debounceTime(200),
-            switchMap(term => {
-                return this.dataService.customer
+            switchMap(term =>
+                this.dataService.customer
                     .getCustomerList(10, 0, term)
-                    .mapSingle(data => data.customers.items);
-            }),
+                    .mapSingle(data => data.customers.items),
+            ),
         );
     }
 

@@ -30,6 +30,7 @@ export class PostgresInitializer implements TestDbInitializer<PostgresConnection
     private async getPostgresConnection(
         connectionOptions: PostgresConnectionOptions,
     ): Promise<import('pg').Client> {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { Client } = require('pg');
         const client = new Client({
             host: connectionOptions.host,

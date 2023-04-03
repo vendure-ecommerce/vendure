@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 import { CustomFieldConfig, GetAvailableCountriesQuery } from '../../../common/generated-types';
 
@@ -11,6 +11,6 @@ import { CustomFieldConfig, GetAvailableCountriesQuery } from '../../../common/g
 })
 export class AddressFormComponent {
     @Input() customFields: CustomFieldConfig;
-    @Input() formGroup: FormGroup;
+    @Input() formGroup: UntypedFormGroup;
     @Input() availableCountries: Array<GetAvailableCountriesQuery['countries']['items']>;
 }

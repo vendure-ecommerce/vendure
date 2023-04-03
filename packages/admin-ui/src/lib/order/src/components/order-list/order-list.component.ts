@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -41,10 +41,10 @@ export class OrderListComponent
     extends BaseListComponent<GetOrderListQuery, ItemOf<GetOrderListQuery, 'orders'>>
     implements OnInit
 {
-    searchControl = new FormControl('');
-    searchOrderCodeControl = new FormControl('');
-    searchLastNameControl = new FormControl('');
-    customFilterForm: FormGroup;
+    searchControl = new UntypedFormControl('');
+    searchOrderCodeControl = new UntypedFormControl('');
+    searchLastNameControl = new UntypedFormControl('');
+    customFilterForm: UntypedFormGroup;
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
     filterPresets: FilterPreset[] = [
         {
@@ -103,10 +103,10 @@ export class OrderListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),
             data => data.orders,
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (skip, take) =>
                 this.createQueryOptions(
                     skip,
@@ -115,10 +115,6 @@ export class OrderListComponent
                     this.route.snapshot.queryParamMap.get('filter') || 'open',
                 ),
         );
-        const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
-        if (lastFilters) {
-            this.setQueryParam(lastFilters, { replaceUrl: true });
-        }
         this.canCreateDraftOrder = !!this.serverConfigService
             .getOrderProcessStates()
             .find(state => state.name === 'Created')
@@ -130,6 +126,10 @@ export class OrderListComponent
 
     ngOnInit() {
         super.ngOnInit();
+        const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
+        if (lastFilters) {
+            this.setQueryParam(lastFilters, { replaceUrl: true });
+        }
         this.activePreset$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('filter') || 'open'),
             distinctUntilChanged(),
@@ -148,10 +148,10 @@ export class OrderListComponent
             });
 
         const queryParamMap = this.route.snapshot.queryParamMap;
-        this.customFilterForm = new FormGroup({
-            states: new FormControl(queryParamMap.getAll('states') ?? []),
-            placedAtStart: new FormControl(queryParamMap.get('placedAtStart')),
-            placedAtEnd: new FormControl(queryParamMap.get('placedAtEnd')),
+        this.customFilterForm = new UntypedFormGroup({
+            states: new UntypedFormControl(queryParamMap.getAll('states') ?? []),
+            placedAtStart: new UntypedFormControl(queryParamMap.get('placedAtStart')),
+            placedAtEnd: new UntypedFormControl(queryParamMap.get('placedAtEnd')),
         });
     }
 
@@ -185,14 +185,14 @@ export class OrderListComponent
     }
 
     private createQueryOptions(
-        // tslint:disable-next-line:no-shadowed-variable
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         skip: number,
         take: number,
         searchTerm: string,
         activeFilterPreset?: string,
     ): { options: OrderListOptions } {
         const filterConfig = this.filterPresets.find(p => p.name === activeFilterPreset);
-        // tslint:disable-next-line:no-shadowed-variable
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         let filter: OrderFilterParameter = {};
         let filterOperator: LogicalOperator = LogicalOperator.AND;
         if (filterConfig) {

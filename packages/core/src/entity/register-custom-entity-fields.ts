@@ -4,7 +4,7 @@ import {
     Column,
     ColumnOptions,
     ColumnType,
-    ConnectionOptions,
+    DataSourceOptions,
     Index,
     JoinColumn,
     JoinTable,
@@ -67,7 +67,7 @@ const MAX_STRING_LENGTH = 65535;
 function registerCustomFieldsForEntity(
     config: VendureConfig,
     entityName: keyof CustomFields,
-    // tslint:disable-next-line:callable-types
+    // eslint-disable-next-line @typescript-eslint/prefer-function-type
     ctor: { new (): any },
     translation = false,
 ) {
@@ -98,7 +98,8 @@ function registerCustomFieldsForEntity(
                         const length = customField.length || 255;
                         if (MAX_STRING_LENGTH < length) {
                             throw new Error(
-                                `ERROR: The "length" property of the custom field "${customField.name}" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
+                                `ERROR: The "length" property of the custom field "${customField.name}" is ` +
+                                    `greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
                             );
                         }
                         options.length = length;
@@ -168,7 +169,7 @@ function registerCustomFieldsForEntity(
     }
 }
 
-function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: any): Date | string {
+function formatDefaultDatetime(dbEngine: DataSourceOptions['type'], datetime: any): Date | string {
     if (!datetime) {
         return datetime;
     }
@@ -185,7 +186,7 @@ function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: an
 }
 
 function getColumnType(
-    dbEngine: ConnectionOptions['type'],
+    dbEngine: DataSourceOptions['type'],
     type: Exclude<CustomFieldType, 'relation'>,
 ): ColumnType {
     switch (type) {
@@ -232,7 +233,7 @@ function getColumnType(
     return 'varchar';
 }
 
-function getDefault(customField: CustomFieldConfig, dbEngine: ConnectionOptions['type']) {
+function getDefault(customField: CustomFieldConfig, dbEngine: DataSourceOptions['type']) {
     const { name, type, list, defaultValue, nullable } = customField;
     if (list && defaultValue) {
         if (dbEngine === 'mysql') {

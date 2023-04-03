@@ -75,7 +75,6 @@ export interface S3Config {
  *   AssetServerPlugin.init({
  *     route: 'assets',
  *     assetUploadDir: path.join(__dirname, 'assets'),
- *     port: 5002,
  *     namingStrategy: new DefaultAssetNamingStrategy(),
  *     storageStrategyFactory: configureS3AssetStorage({
  *       bucket: 'my-s3-bucket',
@@ -102,7 +101,6 @@ export interface S3Config {
  *   AssetServerPlugin.init({
  *     route: 'assets',
  *     assetUploadDir: path.join(__dirname, 'assets'),
- *     port: 5002,
  *     namingStrategy: new DefaultAssetNamingStrategy(),
  *     storageStrategyFactory: configureS3AssetStorage({
  *       bucket: 'my-minio-bucket',
@@ -171,7 +169,7 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             this.AWS = await import('aws-sdk');
         } catch (e: any) {
             Logger.error(
-                `Could not find the "aws-sdk" package. Make sure it is installed`,
+                'Could not find the "aws-sdk" package. Make sure it is installed',
                 loggerCtx,
                 e.stack,
             );
@@ -294,7 +292,9 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             bucketExists = true;
             Logger.verbose(`Found S3 bucket "${bucket}"`, loggerCtx);
         } catch (e: any) {
-            Logger.verbose(`Could not find bucket "${bucket}: ${e.message ?? ''}". Attempting to create...`);
+            Logger.verbose(
+                `Could not find bucket "${bucket}: ${JSON.stringify(e.message)}". Attempting to create...`,
+            );
         }
         if (!bucketExists) {
             try {
@@ -302,7 +302,7 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
                 Logger.verbose(`Created S3 bucket "${bucket}"`, loggerCtx);
             } catch (e: any) {
                 Logger.error(
-                    `Could not find nor create the S3 bucket "${bucket}: ${e.message ?? ''}"`,
+                    `Could not find nor create the S3 bucket "${bucket}: ${JSON.stringify(e.message)}"`,
                     loggerCtx,
                     e.stack,
                 );

@@ -20,7 +20,7 @@ export class TestingAssetStorageStrategy implements AssetStorageStrategy {
     }
 
     toAbsoluteUrl(reqest: Request, identifier: string): string {
-        const prefix = `test-url/`;
+        const prefix = 'test-url/';
         return identifier.startsWith(prefix) ? identifier : `${prefix}${identifier}`;
     }
 

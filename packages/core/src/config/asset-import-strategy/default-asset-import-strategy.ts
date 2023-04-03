@@ -25,8 +25,12 @@ function fetchUrl(urlString: string): Promise<Readable> {
             res => {
                 const { statusCode } = res;
                 if (statusCode !== 200) {
-                    Logger.error(`Failed to fetch "${urlString.substr(0, 100)}", statusCode: ${statusCode}`);
-                    reject(new Error(`Request failed. Status code: ${statusCode}`));
+                    Logger.error(
+                        `Failed to fetch "${urlString.substr(0, 100)}", statusCode: ${
+                            statusCode || 'unknown'
+                        }`,
+                    );
+                    reject(new Error(`Request failed. Status code: ${statusCode || 'unknown'}`));
                 } else {
                     resolve(res);
                 }

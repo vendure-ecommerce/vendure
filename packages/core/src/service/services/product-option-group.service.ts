@@ -13,10 +13,10 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { Product } from '../../entity/product/product.entity';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
-import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -68,10 +68,11 @@ export class ProductOptionGroupService {
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
-            .findOne(id, {
+            .findOne({
+                where: { id },
                 relations: relations ?? ['options'],
             })
-            .then(group => group && this.translator.translate(group, ctx, ['options']));
+            .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
     }
 
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
@@ -163,9 +164,10 @@ export class ProductOptionGroupService {
         } else {
             // hard delete
 
-            const product = await this.connection
-                .getRepository(ctx, Product)
-                .findOne(productId, { relations: ['optionGroups'] });
+            const product = await this.connection.getRepository(ctx, Product).findOne({
+                where: { id: productId },
+                relations: ['optionGroups'],
+            });
             if (product) {
                 product.optionGroups = product.optionGroups.filter(og => !idsAreEqual(og.id, id));
                 await this.connection.getRepository(ctx, Product).save(product, { reload: false });

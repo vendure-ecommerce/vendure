@@ -20,7 +20,7 @@ export class InMemorySessionCacheStrategy implements SessionCacheStrategy {
     constructor(cacheSize?: number) {
         if (cacheSize != null) {
             if (cacheSize < 1) {
-                throw new Error(`cacheSize must be a positive integer`);
+                throw new Error('cacheSize must be a positive integer');
             }
             this.cacheSize = Math.round(cacheSize);
         }

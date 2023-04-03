@@ -246,7 +246,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                     mimeType = (await fromBuffer(file))?.mime || 'application/octet-stream';
                 }
                 res.contentType(mimeType);
-                res.setHeader('content-security-policy', `default-src 'self'`);
+                res.setHeader('content-security-policy', 'default-src \'self\'');
                 res.setHeader('Cache-Control', this.cacheHeader);
                 res.send(file);
             } catch (e: any) {
@@ -271,7 +271,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                     let file: Buffer;
                     try {
                         file = await AssetServerPlugin.assetStorage.readFileToBuffer(decodedReqPath);
-                    } catch (err: any) {
+                    } catch (_err: any) {
                         res.status(404).send('Resource not found');
                         return;
                     }
@@ -291,7 +291,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                             mimeType = (await fromBuffer(imageBuffer))?.mime || 'image/jpeg';
                         }
                         res.set('Content-Type', mimeType);
-                        res.setHeader('content-security-policy', `default-src 'self'`);
+                        res.setHeader('content-security-policy', 'default-src \'self\'');
                         res.send(imageBuffer);
                         return;
                     } catch (e: any) {
@@ -307,6 +307,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
 
     private getFileNameFromRequest(req: Request): string {
         const { w, h, mode, preset, fpx, fpy, format } = req.query;
+        /* eslint-disable @typescript-eslint/restrict-template-expressions */
         const focalPoint = fpx && fpy ? `_fpx${fpx}_fpy${fpy}` : '';
         const imageFormat = getValidFormat(format);
         let imageParamHash: string | null = null;
@@ -319,6 +320,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}${imageFormat}`);
             }
         }
+        /* eslint-enable @typescript-eslint/restrict-template-expressions */
 
         const decodedReqPath = decodeURIComponent(req.path);
         if (imageParamHash) {

@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, ValidatorFn } from '@angular/forms';
+import { UntypedFormControl, ValidatorFn } from '@angular/forms';
 import { DefaultFormComponentConfig } from '@vendure/common/lib/shared-types';
 import { CodeJar } from 'codejar';
 
@@ -14,7 +14,7 @@ export interface CodeEditorConfig {
 @Directive()
 export abstract class BaseCodeEditorFormInputComponent implements FormInputComponent, AfterViewInit {
     readonly: boolean;
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     config: DefaultFormComponentConfig<'json-editor-form-input'>;
     isValid = true;
     errorMessage: string | undefined;

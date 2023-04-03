@@ -1,6 +1,7 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -98,7 +99,7 @@ describe('ChannelAware Customers', () => {
                         streetLine1: 'Dummy street',
                     },
                 });
-            }, `No Address with the id '1' could be found`),
+            }, "No Address with the id '1' could be found"),
         );
 
         it(
@@ -115,7 +116,7 @@ describe('ChannelAware Customers', () => {
                         countryCode: 'BE',
                     },
                 });
-            }, `No Customer with the id '1' could be found`),
+            }, "No Customer with the id '1' could be found"),
         );
 
         it(
@@ -128,7 +129,7 @@ describe('ChannelAware Customers', () => {
                 >(DELETE_ADDRESS, {
                     id: 'T_1',
                 });
-            }, `No Address with the id '1' could be found`),
+            }, "No Address with the id '1' could be found"),
         );
     });
 
@@ -143,7 +144,7 @@ describe('ChannelAware Customers', () => {
                 >(DELETE_CUSTOMER, {
                     id: firstCustomer.id,
                 });
-            }, `No Customer with the id '1' could be found`),
+            }, "No Customer with the id '1' could be found"),
         );
 
         it(
@@ -160,7 +161,7 @@ describe('ChannelAware Customers', () => {
                         lastName: 'Doe',
                     },
                 });
-            }, `No Customer with the id '1' could be found`),
+            }, "No Customer with the id '1' could be found"),
         );
 
         it('creates customers on current and default channel', async () => {
@@ -326,7 +327,7 @@ describe('ChannelAware Customers', () => {
                     shopClient.query<Codegen.MeQuery>(ME),
                 ]);
             } catch (e: any) {
-                fail('Threw: ' + e.message);
+                fail('Threw: ' + (e.message as string));
             }
 
             adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);

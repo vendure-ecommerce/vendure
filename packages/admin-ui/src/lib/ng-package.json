@@ -9,6 +9,8 @@
     "./static/vendure-ui-config.json",
     "./static/assets/*.*",
     "./static/styles/**/*.scss",
+    "./static/fonts/*.woff2",
+    "./static/fonts/*.css",
     "./static/i18n-messages/*.json"
   ],
   "lib": {

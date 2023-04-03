@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -33,7 +33,7 @@ type ProductWithOptions = NonNullable<GetProductVariantOptionsQuery['product']>;
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWithOptions> implements OnInit {
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     optionGroups$: Observable<ProductWithOptions['optionGroups']>;
     languageCode$: Observable<LanguageCode>;
     availableLanguages$: Observable<LanguageCode[]>;
@@ -48,7 +48,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
         protected serverConfigService: ServerConfigService,
         protected dataService: DataService,
         private productDetailService: ProductDetailService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private changeDetector: ChangeDetectorRef,
         private notificationService: NotificationService,
     ) {
@@ -61,27 +61,27 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
         this.optionGroups$ = this.route.snapshot.data.entity.pipe(
             map((product: ProductWithOptions) => product.optionGroups),
         );
-        this.detailForm = new FormGroup({
-            optionGroups: new FormArray([]),
+        this.detailForm = new UntypedFormGroup({
+            optionGroups: new UntypedFormArray([]),
         });
         super.init();
     }
 
-    getOptionGroups(): FormGroup[] {
+    getOptionGroups(): UntypedFormGroup[] {
         const optionGroups = this.detailForm.get('optionGroups');
-        return (optionGroups as FormArray).controls as FormGroup[];
+        return (optionGroups as UntypedFormArray).controls as UntypedFormGroup[];
     }
 
-    getOptions(optionGroup: FormGroup): FormGroup[] {
+    getOptions(optionGroup: UntypedFormGroup): UntypedFormGroup[] {
         const options = optionGroup.get('options');
-        return (options as FormArray).controls as FormGroup[];
+        return (options as UntypedFormArray).controls as UntypedFormGroup[];
     }
 
     save() {
         if (this.detailForm.invalid || this.detailForm.pristine) {
             return;
         }
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const $product = this.dataService.product.getProduct(this.id).mapSingle(data => data.product!);
         combineLatest(this.entity$, this.languageCode$, $product)
             .pipe(
@@ -148,7 +148,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
 
     private getUpdatedOptionGroup(
         optionGroup: ProductOptionGroupFragment,
-        optionGroupFormGroup: FormGroup,
+        optionGroupFormGroup: UntypedFormGroup,
         languageCode: LanguageCode,
     ): UpdateProductOptionGroupInput {
         const input = createUpdatedTranslatable({
@@ -166,7 +166,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
 
     private getUpdatedOption(
         option: ProductOptionFragment,
-        optionFormGroup: FormGroup,
+        optionFormGroup: UntypedFormGroup,
         languageCode: LanguageCode,
     ): UpdateProductOptionInput {
         const input = createUpdatedTranslatable({
@@ -183,7 +183,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
     }
 
     protected setFormValues(entity: ProductWithOptions, languageCode: LanguageCode): void {
-        const groupsFormArray = new FormArray([]);
+        const groupsFormArray = new UntypedFormArray([]);
         for (const optionGroup of entity.optionGroups) {
             const groupTranslation = findTranslation(optionGroup, languageCode);
             const group = {
@@ -193,7 +193,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
                 code: optionGroup.code,
                 name: groupTranslation ? groupTranslation.name : '',
             };
-            const optionsFormArray = new FormArray([]);
+            const optionsFormArray = new UntypedFormArray([]);
 
             for (const option of optionGroup.options) {
                 const optionTranslation = findTranslation(option, languageCode);

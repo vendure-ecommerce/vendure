@@ -3,7 +3,7 @@
  */
 export function fixPostgresTimezone() {
     if (process.env.DB === 'postgres') {
-        // tslint:disable-next-line:no-var-requires
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const pg = require('pg');
         pg.types.setTypeParser(1114, (stringValue: string) => new Date(`${stringValue}+0000`));
     }

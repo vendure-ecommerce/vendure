@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
@@ -18,12 +18,12 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
 })
 export class RelationProductInputComponent implements OnInit {
     @Input() readonly: boolean;
-    @Input() parentFormControl: FormControl;
+    @Input() parentFormControl: UntypedFormControl;
     @Input() config: RelationCustomFieldConfig;
 
     @ViewChild('selector') template: TemplateRef<any>;
 
-    searchControl = new FormControl('');
+    searchControl = new UntypedFormControl('');
     searchTerm$ = new Subject<string>();
     results$: Observable<Codegen.GetProductListQuery['products']['items']>;
     product$: Observable<Codegen.GetProductSimpleQuery['product'] | undefined>;
@@ -48,8 +48,8 @@ export class RelationProductInputComponent implements OnInit {
 
         this.results$ = this.searchTerm$.pipe(
             debounceTime(200),
-            switchMap(term => {
-                return this.dataService.product
+            switchMap(term =>
+                this.dataService.product
                     .getProducts({
                         ...(term
                             ? {
@@ -62,8 +62,8 @@ export class RelationProductInputComponent implements OnInit {
                             : {}),
                         take: 10,
                     })
-                    .mapSingle(data => data.products.items);
-            }),
+                    .mapSingle(data => data.products.items),
+            ),
         );
     }
 

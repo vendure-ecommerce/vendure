@@ -1,9 +1,10 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -305,7 +306,7 @@ describe('Authorization & permissions', () => {
 
             try {
                 const status = await adminClient.query(gql(GET_PRODUCT_WITH_TRANSACTIONS), { id: 'T_1' });
-                fail(`Should have thrown`);
+                fail('Should have thrown');
             } catch (e: any) {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
             }
@@ -382,7 +383,7 @@ describe('Authorization & permissions', () => {
                 }`),
                     { id: 'T_1' },
                 );
-                fail(`Should have thrown`);
+                fail('Should have thrown');
             } catch (e: any) {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
             }
@@ -396,7 +397,7 @@ describe('Authorization & permissions', () => {
         } catch (e: any) {
             const errorCode = getErrorCode(e);
             if (!errorCode) {
-                fail(`Unexpected failure: ${e}`);
+                fail(`Unexpected failure: ${JSON.stringify(e)}`);
             } else {
                 fail(`Operation should be allowed, got status ${getErrorCode(e)}`);
             }
@@ -406,7 +407,7 @@ describe('Authorization & permissions', () => {
     async function assertRequestForbidden<V>(operation: DocumentNode, variables: V) {
         try {
             const status = await adminClient.query(operation, variables);
-            fail(`Should have thrown`);
+            fail('Should have thrown');
         } catch (e: any) {
             expect(getErrorCode(e)).toBe('FORBIDDEN');
         }
@@ -434,7 +435,7 @@ describe('Authorization & permissions', () => {
         const role = roleResult.createRole;
 
         const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
-        const password = `test`;
+        const password = 'test';
 
         const adminResult = await adminClient.query<
             Codegen.CreateAdministratorMutation,

@@ -24,15 +24,17 @@ export class ModificationDetailComponent implements OnChanges {
     }
 
     getAddedItems() {
-        return [...this.addedItems.entries()].map(([line, count]) => {
-            return { name: line.productVariant.name, quantity: count };
-        });
+        return [...this.addedItems.entries()].map(([line, count]) => ({
+            name: line.productVariant.name,
+            quantity: count,
+        }));
     }
 
     getRemovedItems() {
-        return [...this.removedItems.entries()].map(([line, count]) => {
-            return { name: line.productVariant.name, quantity: count };
-        });
+        return [...this.removedItems.entries()].map(([line, count]) => ({
+            name: line.productVariant.name,
+            quantity: count,
+        }));
     }
 
     private getModifiedLines() {

@@ -84,7 +84,9 @@ export class ProsemirrorService {
                 let state = this.getStateFromText(text);
                 if (document.body.contains(this.editorView.dom)) {
                     const fix = fixTables(state);
-                    if (fix) state = state.apply(fix.setMeta('addToHistory', false));
+                    if (fix) {
+                        state = state.apply(fix.setMeta('addToHistory', false));
+                    }
                     this.editorView.updateState(state);
                 }
             }

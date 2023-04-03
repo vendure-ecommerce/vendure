@@ -9,7 +9,7 @@ import {
     SimpleChanges,
     TemplateRef,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     CollectionFilterParameter,
@@ -49,7 +49,7 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     contentsTotalItems$: Observable<number>;
     contentsItemsPerPage$: Observable<number>;
     contentsCurrentPage$: Observable<number>;
-    filterTermControl = new FormControl('');
+    filterTermControl = new UntypedFormControl('');
     isLoading = false;
     private collectionIdChange$ = new BehaviorSubject<string>('');
     private parentIdChange$ = new BehaviorSubject<string>('');
