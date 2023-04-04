@@ -1,27 +1,27 @@
 {
-  "name": "@vendure/harden-plugin",
-  "version": "2.0.0-next.28",
-  "license": "MIT",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "files": [
-    "lib/**/*"
-  ],
-  "scripts": {
-    "watch": "tsc -p ./tsconfig.build.json --watch",
-    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
-    "lint": "eslint --fix ."
-  },
-  "homepage": "https://www.vendure.io/",
-  "funding": "https://github.com/sponsors/michaelbromley",
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "graphql-query-complexity": "^0.12.0"
-  },
-  "devDependencies": {
-    "@vendure/common": "^2.0.0-next.28",
-    "@vendure/core": "^2.0.0-next.28"
-  }
+    "name": "@vendure/harden-plugin",
+    "version": "2.0.0-beta.0",
+    "license": "MIT",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib/**/*"
+    ],
+    "scripts": {
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+        "lint": "eslint --fix ."
+    },
+    "homepage": "https://www.vendure.io/",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "graphql-query-complexity": "^0.12.0"
+    },
+    "devDependencies": {
+        "@vendure/common": "^2.0.0-beta.0",
+        "@vendure/core": "^2.0.0-beta.0"
+    }
 }
