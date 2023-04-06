@@ -99,6 +99,7 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [],
+    compatibility: '^2.0.0-beta.0',
 })
 export class AdminUiPlugin implements NestModule {
     private static options: AdminUiPluginOptions;

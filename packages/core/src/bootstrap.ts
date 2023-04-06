@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
+import { satisfies } from 'semver';
 import { Connection, DataSourceOptions, EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
@@ -17,9 +18,10 @@ import { runEntityMetadataModifiers } from './entity/run-entity-metadata-modifie
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { setMoneyStrategy } from './entity/set-money-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
-import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
+import { getCompatibility, getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getPluginStartupMessages } from './plugin/plugin-utils';
 import { setProcessContext } from './process-context/process-context';
+import { VENDURE_VERSION } from './version';
 import { VendureWorker } from './worker/vendure-worker';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
@@ -43,6 +45,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
+    checkPluginCompatibility(config);
 
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
@@ -102,6 +105,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
     config.logger.setDefaultContext?.('Vendure Worker');
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
+    checkPluginCompatibility(config);
 
     setProcessContext('worker');
     DefaultLogger.hideNestBoostrapLogs();
@@ -157,6 +161,28 @@ export async function preBootstrapConfig(
     await runEntityMetadataModifiers(config);
     setExposedHeaders(config);
     return config;
+}
+
+function checkPluginCompatibility(config: RuntimeVendureConfig): void {
+    for (const plugin of config.plugins) {
+        const compatibility = getCompatibility(plugin);
+        const pluginName = (plugin as any).name as string;
+        if (!compatibility) {
+            Logger.info(
+                `The plugin "${pluginName}" does not specify a compatibility range, so it is not guaranteed to be compatible with this version of Vendure.`,
+            );
+        } else {
+            if (!satisfies(VENDURE_VERSION, compatibility)) {
+                Logger.error(
+                    `Plugin "${pluginName}" is not compatible with this version of Vendure. ` +
+                        `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
+                );
+                throw new InternalServerError(
+                    `Plugin "${pluginName}" is not compatible with this version of Vendure.`,
+                );
+            }
+        }
+    }
 }
 
 /**
@@ -223,13 +249,6 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
 }
 
 function logWelcomeMessage(config: RuntimeVendureConfig) {
-    let version: string;
-    try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        version = require('../package.json').version;
-    } catch (e: any) {
-        version = ' unknown';
-    }
     const { port, shopApiPath, adminApiPath, hostname } = config.apiOptions;
     const apiCliGreetings: Array<readonly [string, string]> = [];
     const pathToUrl = (path: string) => `http://${hostname || 'localhost'}:${port}/${path}`;
@@ -239,7 +258,7 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
         ...getPluginStartupMessages().map(({ label, path }) => [label, pathToUrl(path)] as const),
     );
     const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
-    const title = `Vendure server (v${version}) now running on port ${port}`;
+    const title = `Vendure server (v${VENDURE_VERSION}) now running on port ${port}`;
     const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
     const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
     Logger.info('='.repeat(maxLineLength));

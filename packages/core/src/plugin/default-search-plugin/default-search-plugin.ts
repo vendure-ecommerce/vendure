@@ -90,6 +90,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
         resolvers: [ShopFulltextSearchResolver],
     },
     entities: [SearchIndexItem],
+    compatibility: '*',
 })
 export class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicationShutdown {
     static options: DefaultSearchPluginInitOptions = {};

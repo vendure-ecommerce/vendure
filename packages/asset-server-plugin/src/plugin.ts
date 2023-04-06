@@ -139,6 +139,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
 @VendurePlugin({
     imports: [PluginCommonModule],
     configuration: config => AssetServerPlugin.configure(config),
+    compatibility: '^2.0.0-beta.0',
 })
 export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     private static assetStorage: AssetStorageStrategy;
@@ -246,7 +247,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                     mimeType = (await fromBuffer(file))?.mime || 'application/octet-stream';
                 }
                 res.contentType(mimeType);
-                res.setHeader('content-security-policy', 'default-src \'self\'');
+                res.setHeader('content-security-policy', "default-src 'self'");
                 res.setHeader('Cache-Control', this.cacheHeader);
                 res.send(file);
             } catch (e: any) {
@@ -291,7 +292,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                             mimeType = (await fromBuffer(imageBuffer))?.mime || 'image/jpeg';
                         }
                         res.set('Content-Type', mimeType);
-                        res.setHeader('content-security-policy', 'default-src \'self\'');
+                        res.setHeader('content-security-policy', "default-src 'self'");
                         res.send(imageBuffer);
                         return;
                     } catch (e: any) {
