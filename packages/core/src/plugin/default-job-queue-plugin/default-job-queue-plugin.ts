@@ -188,7 +188,7 @@ export interface DefaultJobQueueOptions {
         }
         return config;
     },
-    compatibility: '*',
+    compatibility: '>0.0.0',
 })
 export class DefaultJobQueuePlugin {
     /** @internal */

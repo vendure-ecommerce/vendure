@@ -52,7 +52,7 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      * If a plugin does not define this property, a message will be logged on bootstrap that the plugin is not
      * guaranteed to be compatible with the current version of Vendure.
      *
-     * To effectively disable this check for a plugin, you can use an overly-permissive string such as `*`.
+     * To effectively disable this check for a plugin, you can use an overly-permissive string such as `>0.0.0`.
      *
      * @example
      * ```typescript

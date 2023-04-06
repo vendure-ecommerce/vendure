@@ -172,7 +172,7 @@ function checkPluginCompatibility(config: RuntimeVendureConfig): void {
                 `The plugin "${pluginName}" does not specify a compatibility range, so it is not guaranteed to be compatible with this version of Vendure.`,
             );
         } else {
-            if (!satisfies(VENDURE_VERSION, compatibility)) {
+            if (!satisfies(VENDURE_VERSION, compatibility, { loose: true, includePrerelease: true })) {
                 Logger.error(
                     `Plugin "${pluginName}" is not compatible with this version of Vendure. ` +
                         `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
