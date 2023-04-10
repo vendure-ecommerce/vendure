@@ -7,7 +7,7 @@ import { REQUEST_CONTEXT_KEY, REQUEST_CONTEXT_MAP_KEY } from '../../common/const
 import { TransactionWrapper } from '../../connection/transaction-wrapper';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { parseContext } from '../common/parse-context';
-import { TransactionMode, TRANSACTION_MODE_METADATA_KEY } from '../decorators/transaction.decorator';
+import { TransactionMode, TRANSACTION_MODE_METADATA_KEY, TransactionIsolationLevel, TRANSACTION_ISOLATION_LEVEL_METADATA_KEY } from '../decorators/transaction.decorator';
 
 /**
  * @description
@@ -20,7 +20,7 @@ export class TransactionInterceptor implements NestInterceptor {
         private connection: TransactionalConnection,
         private transactionWrapper: TransactionWrapper,
         private reflector: Reflector,
-    ) {}
+    ) { }
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const { isGraphQL, req } = parseContext(context);
@@ -31,7 +31,11 @@ export class TransactionInterceptor implements NestInterceptor {
                 TRANSACTION_MODE_METADATA_KEY,
                 context.getHandler(),
             );
-            
+            const transactionIsolationLevel = this.reflector.get<TransactionIsolationLevel>(
+                TRANSACTION_ISOLATION_LEVEL_METADATA_KEY,
+                context.getHandler(),
+            );
+
             return of(
                 this.transactionWrapper.executeInTransaction(
                     ctx,
@@ -41,6 +45,7 @@ export class TransactionInterceptor implements NestInterceptor {
                         return next.handle()
                     },
                     transactionMode,
+                    transactionIsolationLevel,
                     this.connection.rawConnection,
                 )
             );

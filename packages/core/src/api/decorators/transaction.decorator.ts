@@ -31,6 +31,17 @@ export const TRANSACTION_MODE_METADATA_KEY = '__transaction_mode__';
  */
 export type TransactionMode = 'auto' | 'manual';
 
+export const TRANSACTION_ISOLATION_LEVEL_METADATA_KEY = '__transaction_isolation_level__';
+/**
+ * @description
+ * Transactions can be run at different isolation levels. The default is "SERIALIZABLE", which
+ * is the only correct mode. See the documentation of your database for more information on available
+ * isolation levels.
+ * 
+ * @default 'SERIALIZABLE'
+ */
+export type TransactionIsolationLevel = 'READ UNCOMMITTED' | 'READ COMMITTED' | 'REPEATABLE READ' | 'SERIALIZABLE';
+
 /**
  * @description
  * Runs the decorated method in a TypeORM transaction. It works by creating a transactional
@@ -61,9 +72,10 @@ export type TransactionMode = 'auto' | 'manual';
  * @docsPage Transaction Decorator
  * @docsWeight 0
  */
-export const Transaction = (transactionMode: TransactionMode = 'auto') => {
+export const Transaction = (transactionMode: TransactionMode = 'auto', transactionIsolationLevel: TransactionIsolationLevel = 'SERIALIZABLE') => {
     return applyDecorators(
         SetMetadata(TRANSACTION_MODE_METADATA_KEY, transactionMode),
+        SetMetadata(TRANSACTION_ISOLATION_LEVEL_METADATA_KEY, transactionIsolationLevel),
         UseInterceptors(TransactionInterceptor),
     );
 };
