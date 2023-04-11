@@ -287,7 +287,7 @@
     "view-next-month": "Nächsten Monat anzeigen",
     "view-previous-month": "Vorherigen Monat anzeigen",
     "with-selected": "Auswahl...",
-    "login-title": "Anmelden bei Vendure",
+    "login-title": "Anmelden bei {brand}",
     "login-image-title": "Hallo! Willkommen zurück. Schön, dich zu sehen."
   },
   "customer": {
