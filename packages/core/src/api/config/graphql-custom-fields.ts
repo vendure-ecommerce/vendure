@@ -5,6 +5,7 @@ import {
     GraphQLInputObjectType,
     GraphQLList,
     GraphQLSchema,
+    isInterfaceType,
     parse,
 } from 'graphql';
 
@@ -36,7 +37,20 @@ export function addGraphQLCustomFields(
         `;
     }
 
-    for (const entityName of Object.keys(customFieldConfig)) {
+    let entityNames = Object.keys(customFieldConfig);
+    if (entityNames.includes('Region')) {
+        // Region is an interface and cannot directly be extended. Instead we will use the
+        // concrete types that implement it.
+        const regionType = schema.getType('Region');
+        if (isInterfaceType(regionType)) {
+            const implementations = schema.getImplementations(regionType);
+            entityNames = entityNames
+                .filter(name => name !== 'Region')
+                .concat(implementations.objects.map(t => t.name));
+        }
+    }
+
+    for (const entityName of entityNames) {
         const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
             config => {
                 return !config.internal && (publicOnly === true ? config.public !== false : true);

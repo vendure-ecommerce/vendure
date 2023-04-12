@@ -44,7 +44,7 @@ export class CountryDetailComponent
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Country');
+        this.customFields = this.getCustomFieldConfig('Region');
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             name: ['', Validators.required],

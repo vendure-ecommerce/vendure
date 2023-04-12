@@ -8,8 +8,6 @@ import { Channel } from './channel/channel.entity';
 import { CollectionAsset } from './collection/collection-asset.entity';
 import { CollectionTranslation } from './collection/collection-translation.entity';
 import { Collection } from './collection/collection.entity';
-import { CountryTranslation } from './country/country-translation.entity';
-import { Country } from './country/country.entity';
 import { Customer } from './customer/customer.entity';
 import { CustomerGroup } from './customer-group/customer-group.entity';
 import { FacetTranslation } from './facet/facet-translation.entity';
@@ -45,6 +43,10 @@ import { ProductVariant } from './product-variant/product-variant.entity';
 import { PromotionTranslation } from './promotion/promotion-translation.entity';
 import { Promotion } from './promotion/promotion.entity';
 import { Refund } from './refund/refund.entity';
+import { Country } from './region/country.entity';
+import { Province } from './region/province.entity';
+import { RegionTranslation } from './region/region-translation.entity';
+import { Region } from './region/region.entity';
 import { Role } from './role/role.entity';
 import { Seller } from './seller/seller.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
@@ -85,7 +87,6 @@ export const coreEntitiesMap = {
     CollectionAsset,
     CollectionTranslation,
     Country,
-    CountryTranslation,
     Customer,
     CustomerGroup,
     CustomerHistoryEntry,
@@ -121,8 +122,11 @@ export const coreEntitiesMap = {
     ProductVariantTranslation,
     Promotion,
     PromotionTranslation,
+    Province,
     Refund,
     RefundLine,
+    Region,
+    RegionTranslation,
     Release,
     Role,
     Sale,

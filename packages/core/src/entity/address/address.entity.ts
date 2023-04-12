@@ -3,9 +3,9 @@ import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
-import { Country } from '../country/country.entity';
 import { CustomAddressFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
+import { Country } from '../region/country.entity';
 
 /**
  * @description

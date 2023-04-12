@@ -139,8 +139,10 @@ export type BooleanOperators = {
 export type Channel = Node & {
     code: Scalars['String'];
     createdAt: Scalars['DateTime'];
+    /** @deprecated Use defaultCurrencyCode instead */
     currencyCode: CurrencyCode;
     customFields?: Maybe<Scalars['JSON']>;
+    defaultCurrencyCode: CurrencyCode;
     defaultLanguageCode: LanguageCode;
     defaultShippingZone?: Maybe<Zone>;
     defaultTaxZone?: Maybe<Zone>;
@@ -282,29 +284,25 @@ export type Coordinate = {
     y: Scalars['Float'];
 };
 
-export type Country = Node & {
-    code: Scalars['String'];
-    createdAt: Scalars['DateTime'];
-    customFields?: Maybe<Scalars['JSON']>;
-    enabled: Scalars['Boolean'];
-    id: Scalars['ID'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-    translations: Array<CountryTranslation>;
-    updatedAt: Scalars['DateTime'];
-};
+export type Country = Node &
+    Region & {
+        code: Scalars['String'];
+        createdAt: Scalars['DateTime'];
+        customFields?: Maybe<Scalars['JSON']>;
+        enabled: Scalars['Boolean'];
+        id: Scalars['ID'];
+        languageCode: LanguageCode;
+        name: Scalars['String'];
+        parent?: Maybe<Region>;
+        parentId?: Maybe<Scalars['ID']>;
+        translations: Array<RegionTranslation>;
+        type: Scalars['String'];
+        updatedAt: Scalars['DateTime'];
+    };
 
 export type CountryList = PaginatedList & {
     items: Array<Country>;
     totalItems: Scalars['Int'];
-};
-
-export type CountryTranslation = {
-    createdAt: Scalars['DateTime'];
-    id: Scalars['ID'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-    updatedAt: Scalars['DateTime'];
 };
 
 /** Returned if the provided coupon code is invalid */
@@ -2633,6 +2631,27 @@ export type PromotionTranslation = {
     updatedAt: Scalars['DateTime'];
 };
 
+export type Province = Node &
+    Region & {
+        code: Scalars['String'];
+        createdAt: Scalars['DateTime'];
+        customFields?: Maybe<Scalars['JSON']>;
+        enabled: Scalars['Boolean'];
+        id: Scalars['ID'];
+        languageCode: LanguageCode;
+        name: Scalars['String'];
+        parent?: Maybe<Region>;
+        parentId?: Maybe<Scalars['ID']>;
+        translations: Array<RegionTranslation>;
+        type: Scalars['String'];
+        updatedAt: Scalars['DateTime'];
+    };
+
+export type ProvinceList = PaginatedList & {
+    items: Array<Province>;
+    totalItems: Scalars['Int'];
+};
+
 export type Query = {
     /** The active Channel */
     activeChannel: Channel;
@@ -2745,6 +2764,28 @@ export type RefundLine = {
     quantity: Scalars['Int'];
     refund: Refund;
     refundId: Scalars['ID'];
+};
+
+export type Region = {
+    code: Scalars['String'];
+    createdAt: Scalars['DateTime'];
+    enabled: Scalars['Boolean'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    parent?: Maybe<Region>;
+    parentId?: Maybe<Scalars['ID']>;
+    translations: Array<RegionTranslation>;
+    type: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
+};
+
+export type RegionTranslation = {
+    createdAt: Scalars['DateTime'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
 };
 
 export type RegisterCustomerAccountResult =
@@ -3154,7 +3195,7 @@ export type Zone = Node & {
     createdAt: Scalars['DateTime'];
     customFields?: Maybe<Scalars['JSON']>;
     id: Scalars['ID'];
-    members: Array<Country>;
+    members: Array<Region>;
     name: Scalars['String'];
     updatedAt: Scalars['DateTime'];
 };

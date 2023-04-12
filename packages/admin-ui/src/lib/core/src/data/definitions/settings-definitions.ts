@@ -750,9 +750,6 @@ export const GET_SERVER_CONFIG = gql`
                     Collection {
                         ...CustomFields
                     }
-                    Country {
-                        ...CustomFields
-                    }
                     Customer {
                         ...CustomFields
                     }
@@ -793,6 +790,9 @@ export const GET_SERVER_CONFIG = gql`
                         ...CustomFields
                     }
                     Promotion {
+                        ...CustomFields
+                    }
+                    Region {
                         ...CustomFields
                     }
                     Seller {

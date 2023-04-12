@@ -9,9 +9,11 @@ import {
     ErrorResult,
 } from '../../common/error/generated-graphql-admin-errors';
 import { shopErrorOperationTypeResolvers } from '../../common/error/generated-graphql-shop-errors';
+import { InternalServerError } from '../../common/index';
 import { Translatable } from '../../common/types/locale-types';
 import { ConfigService } from '../../config/config.service';
 import { CustomFieldConfig, RelationCustomFieldConfig } from '../../config/custom-field/custom-field-types';
+import { Region } from '../../entity/region/region.entity';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { ApiType } from '../common/get-api-type';
@@ -53,6 +55,20 @@ export async function generateResolvers(
                     return 'Return';
                 case StockMovementType.RELEASE:
                     return 'Release';
+            }
+        },
+    };
+
+    const regionResolveType = {
+        __resolveType(value: Region) {
+            switch (value.type) {
+                case 'country':
+                    return 'Country';
+                case 'province':
+                    return 'Province';
+                default: {
+                    throw new InternalServerError(`No __resolveType defined for Region type "${value.type}"`);
+                }
             }
         },
     };
@@ -104,6 +120,7 @@ export async function generateResolvers(
                 return value.__typename;
             },
         },
+        Region: regionResolveType,
     };
 
     const customFieldRelationResolvers = generateCustomFieldRelationResolvers(

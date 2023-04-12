@@ -24,8 +24,6 @@ import {
     CustomChannelFields,
     CustomCollectionFields,
     CustomCollectionFieldsTranslation,
-    CustomCountryFields,
-    CustomCountryFieldsTranslation,
     CustomCustomerFields,
     CustomCustomerGroupFields,
     CustomFacetFields,
@@ -46,6 +44,8 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomPromotionFields,
+    CustomRegionFields,
+    CustomRegionFieldsTranslation,
     CustomSellerFields,
     CustomShippingMethodFields,
     CustomShippingMethodFieldsTranslation,
@@ -260,8 +260,6 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFields);
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Channel', CustomChannelFields);
-    registerCustomFieldsForEntity(config, 'Country', CustomCountryFields);
-    registerCustomFieldsForEntity(config, 'Country', CustomCountryFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Customer', CustomCustomerFields);
     registerCustomFieldsForEntity(config, 'CustomerGroup', CustomCustomerGroupFields);
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFields);
@@ -290,6 +288,8 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'TaxRate', CustomTaxRateFields);
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
+    registerCustomFieldsForEntity(config, 'Region', CustomRegionFields);
+    registerCustomFieldsForEntity(config, 'Region', CustomRegionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Seller', CustomSellerFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
