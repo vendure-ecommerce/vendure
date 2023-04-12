@@ -27,7 +27,7 @@ export class TransactionWrapper {
         originalCtx: RequestContext,
         work: (ctx: RequestContext) => Observable<T> | Promise<T>,
         mode: TransactionMode,
-        isolationLevel: TransactionIsolationLevel,
+        isolationLevel: TransactionIsolationLevel | undefined,
         connection: Connection,
     ): Promise<T> {
         // Copy to make sure original context will remain valid after transaction completes
@@ -81,7 +81,7 @@ export class TransactionWrapper {
      * Attempts to start a DB transaction, with retry logic in the case that a transaction
      * is already started for the connection (which is mainly a problem with SQLite/Sql.js)
      */
-    private async startTransaction(queryRunner: QueryRunner, isolationLevel: TransactionIsolationLevel = 'SERIALIZABLE') {
+    private async startTransaction(queryRunner: QueryRunner, isolationLevel: TransactionIsolationLevel | undefined) {
         const maxRetries = 25;
         let attempts = 0;
         let lastError: any;

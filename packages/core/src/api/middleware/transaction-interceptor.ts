@@ -31,7 +31,7 @@ export class TransactionInterceptor implements NestInterceptor {
                 TRANSACTION_MODE_METADATA_KEY,
                 context.getHandler(),
             );
-            const transactionIsolationLevel = this.reflector.get<TransactionIsolationLevel>(
+            const transactionIsolationLevel = this.reflector.get<TransactionIsolationLevel | undefined>(
                 TRANSACTION_ISOLATION_LEVEL_METADATA_KEY,
                 context.getHandler(),
             );

@@ -148,7 +148,7 @@ export class TransactionalConnection {
             ctx = RequestContext.empty();
             work = ctxOrWork;
         }
-        return this.transactionWrapper.executeInTransaction(ctx, work, 'auto', 'SERIALIZABLE', this.rawConnection);
+        return this.transactionWrapper.executeInTransaction(ctx, work, 'auto', undefined, this.rawConnection);
     }
 
     /**
