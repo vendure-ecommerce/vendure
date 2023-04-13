@@ -19,6 +19,7 @@ import { CustomFieldRelationResolverService } from '../common/custom-field-relat
 import { ApiType } from '../common/get-api-type';
 import { RequestContext } from '../common/request-context';
 
+import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
 import { GraphQLMoney } from './money-scalar';
 
 /**
@@ -162,7 +163,8 @@ function generateCustomFieldRelationResolvers(
     const adminResolvers: IResolvers = {};
     const shopResolvers: IResolvers = {};
 
-    for (const [entityName, customFields] of Object.entries(configService.customFields)) {
+    const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(configService.customFields, schema);
+    for (const [entityName, customFields] of customFieldsConfig) {
         const relationCustomFields = customFields.filter(isRelationalType);
         if (relationCustomFields.length === 0 || !schema.getType(entityName)) {
             continue;

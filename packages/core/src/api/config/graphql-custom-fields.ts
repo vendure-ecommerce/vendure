@@ -11,6 +11,8 @@ import {
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 
+import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
+
 /**
  * Given a CustomFields config object, generates an SDL string extending the built-in
  * types with a customFields property for all entities, translations and inputs for which
@@ -37,25 +39,11 @@ export function addGraphQLCustomFields(
         `;
     }
 
-    let entityNames = Object.keys(customFieldConfig);
-    if (entityNames.includes('Region')) {
-        // Region is an interface and cannot directly be extended. Instead we will use the
-        // concrete types that implement it.
-        const regionType = schema.getType('Region');
-        if (isInterfaceType(regionType)) {
-            const implementations = schema.getImplementations(regionType);
-            entityNames = entityNames
-                .filter(name => name !== 'Region')
-                .concat(implementations.objects.map(t => t.name));
-        }
-    }
-
-    for (const entityName of entityNames) {
-        const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
-            config => {
-                return !config.internal && (publicOnly === true ? config.public !== false : true);
-            },
-        );
+    const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(customFieldConfig, schema);
+    for (const [entityName, customFields] of customFieldsConfig) {
+        const customEntityFields = customFields.filter(config => {
+            return !config.internal && (publicOnly === true ? config.public !== false : true);
+        });
 
         for (const fieldDef of customEntityFields) {
             if (fieldDef.type === 'relation') {
