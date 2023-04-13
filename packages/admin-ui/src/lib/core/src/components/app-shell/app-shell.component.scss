@@ -36,28 +36,6 @@
 .main-nav-container {
     overflow: auto;
     flex: 1;
-    /* ===== Scrollbar CSS ===== */
-    /* Firefox */
-    scrollbar-width: auto;
-    scrollbar-color: var(--color-primary-700) #052731;
-
-    /* Chrome, Edge, and Safari */
-    &::-webkit-scrollbar {
-        width: 16px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background-color: #052731;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background-color: var(--color-primary-700);
-        border-radius: var(--border-radius);
-
-        &:hover {
-            background-color: #0f5070;
-        }
-    }
 }
 
 .surface {
