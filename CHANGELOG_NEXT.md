@@ -1,3 +1,27 @@
+## 2.0.0-beta.1 (2023-04-14)
+
+
+#### Features
+
+* **core** Add `compatibility` check to VendurePlugin metadata ([d18d350](https://github.com/vendure-ecommerce/vendure/commit/d18d350)), closes [#1471](https://github.com/vendure-ecommerce/vendure/issues/1471)
+* **core** Add quantity arg to OrderItemPriceCalculationStrategy ([02a0864](https://github.com/vendure-ecommerce/vendure/commit/02a0864)), closes [#1920](https://github.com/vendure-ecommerce/vendure/issues/1920)
+* **core** Export VENDURE_VERSION constant ([b2a910a](https://github.com/vendure-ecommerce/vendure/commit/b2a910a)), closes [#1471](https://github.com/vendure-ecommerce/vendure/issues/1471)
+* **core** Implement Regions & support for Provinces ([7b8f5bf](https://github.com/vendure-ecommerce/vendure/commit/7b8f5bf)), closes [#76](https://github.com/vendure-ecommerce/vendure/issues/76)
+
+#### Fixes
+
+* **admin-ui** Fix scroll bar colour in left nav ([4a080cb](https://github.com/vendure-ecommerce/vendure/commit/4a080cb))
+* **core** Fix updating channel currencyCode ([7e01ecf](https://github.com/vendure-ecommerce/vendure/commit/7e01ecf)), closes [#2114](https://github.com/vendure-ecommerce/vendure/issues/2114)
+* **core** Remove text default values ([dd21a82](https://github.com/vendure-ecommerce/vendure/commit/dd21a82)), closes [#2113](https://github.com/vendure-ecommerce/vendure/issues/2113)
+* **core** Translatable fields default to empty string if falsy ([e119154](https://github.com/vendure-ecommerce/vendure/commit/e119154))
+
+
+### BREAKING CHANGE
+
+* A new `Region` entity has been introduced, which is a base class for `Country` and
+the new `Province` entity. The `Zone.members` property is now an array of `Region` rather than
+`Country`, since Zones may now be composed of both countries and provinces. If you have defined
+any custom fields on `Country`, you'll need to change it to `Region` in your custom fields config.
 ## 2.0.0-beta.0 (2023-04-04)
 
 
