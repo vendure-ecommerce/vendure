@@ -23,7 +23,7 @@ the new `Province` entity. The `Zone.members` property is now an array of `Regio
 `Country`, since Zones may now be composed of both countries and provinces. If you have defined
 any custom fields on `Country`, you'll need to change it to `Region` in your custom fields config.
 
-   If you are updating from beta.0, you'll need to generate a migration and then add the following lines **before any generated `ADD CONSTRAINT` statements** (this is postgres syntax, swap backticks for double-quotes for mysql):
+   If you are updating from beta.0, you'll need to generate a [migration](https://www.vendure.io/docs/developer-guide/migrations/) (for a standard project created with `@vendure/create`, this would be done by running `npm run migration:generate v2_beta1`), then edit the generated migration file and add the following lines in the `up()` method **before any generated `ADD CONSTRAINT` statements** (this is postgres syntax, swap backticks for double-quotes for mysql - but make sure that single quotes around 'country' and 'Country' remain):
    ```ts
    await queryRunner.query(`INSERT INTO "region" ("createdAt", "updatedAt", "code", "type", "enabled", "id", "discriminator") 
                                            SELECT "createdAt", "updatedAt", "code", 'country', "enabled", "id", 'Country' FROM "country"`, undefined);
