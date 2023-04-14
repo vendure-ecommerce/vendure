@@ -22,6 +22,16 @@
 the new `Province` entity. The `Zone.members` property is now an array of `Region` rather than
 `Country`, since Zones may now be composed of both countries and provinces. If you have defined
 any custom fields on `Country`, you'll need to change it to `Region` in your custom fields config.
+
+   If you are updating from beta.0, you'll need to generate a migration and then add the following lines (this is postgres syntax, swap backticks for double-quotes for mysql):
+   ```ts
+   await queryRunner.query(`INSERT INTO "region" ("createdAt", "updatedAt", "code", "type", "enabled", "id", "discriminator") 
+                                           SELECT "createdAt", "updatedAt", "code", 'country', "enabled", "id", 'Country' FROM "country"`, undefined);
+   await queryRunner.query(`INSERT INTO "region_translation" ("createdAt", "updatedAt", "languageCode", "id", "name", "baseId") 
+                                                       SELECT "createdAt", "updatedAt", "languageCode", "id", "name", "baseId" FROM "country_translation"`, undefined);
+   await queryRunner.query(`INSERT INTO "zone_members_region" ("zoneId", "regionId") SELECT "zoneId", "countryId" FROM "zone_members_country"`, undefined);
+   ```
+
 ## 2.0.0-beta.0 (2023-04-04)
 
 
