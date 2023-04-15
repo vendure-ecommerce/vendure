@@ -34,11 +34,13 @@ export type TransactionMode = 'auto' | 'manual';
 export const TRANSACTION_ISOLATION_LEVEL_METADATA_KEY = '__transaction_isolation_level__';
 /**
  * @description
- * Transactions can be run at different isolation levels. The default is "SERIALIZABLE", which
- * is the only correct mode. See the documentation of your database for more information on available
- * isolation levels.
+ * Transactions can be run at different isolation levels. The default is undefined, which
+ * falls back to the default of your database. See the documentation of your database for more
+ * information on available isolation levels.
  * 
- * @default 'SERIALIZABLE'
+ * @default undefined
+ * @docsCategory request
+ * @docsPage Transaction Decorator
  */
 export type TransactionIsolationLevel = 'READ UNCOMMITTED' | 'READ COMMITTED' | 'REPEATABLE READ' | 'SERIALIZABLE';
 
