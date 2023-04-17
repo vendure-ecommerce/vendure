@@ -15,7 +15,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser-esbuild",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "baseHref": "/",
             "outputPath": "dist",
@@ -46,7 +46,7 @@
               }
             ],
             "styles": [
-              "src/global-styles.scss"
+              "src/styles/global-styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

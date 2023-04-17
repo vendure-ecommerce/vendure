@@ -5,10 +5,13 @@ import {
     GraphQLInputObjectType,
     GraphQLList,
     GraphQLSchema,
+    isInterfaceType,
     parse,
 } from 'graphql';
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
+
+import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
 
 /**
  * Given a CustomFields config object, generates an SDL string extending the built-in
@@ -36,12 +39,11 @@ export function addGraphQLCustomFields(
         `;
     }
 
-    for (const entityName of Object.keys(customFieldConfig)) {
-        const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
-            config => {
-                return !config.internal && (publicOnly === true ? config.public !== false : true);
-            },
-        );
+    const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(customFieldConfig, schema);
+    for (const [entityName, customFields] of customFieldsConfig) {
+        const customEntityFields = customFields.filter(config => {
+            return !config.internal && (publicOnly === true ? config.public !== false : true);
+        });
 
         for (const fieldDef of customEntityFields) {
             if (fieldDef.type === 'relation') {

@@ -11,17 +11,16 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
-    ChannelFragment,
     CurrencyCode,
     DeletionResult,
     ErrorCode,
     LanguageCode,
     Permission,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_ADMINISTRATOR,
@@ -121,6 +120,20 @@ describe('Channels', () => {
             },
             pricesIncludeTax: true,
         });
+    });
+
+    it('update currencyCode', async () => {
+        const { updateChannel } = await adminClient.query<
+            Codegen.UpdateChannelMutation,
+            Codegen.UpdateChannelMutationVariables
+        >(UPDATE_CHANNEL, {
+            input: {
+                id: 'T_1',
+                currencyCode: CurrencyCode.MYR,
+            },
+        });
+        channelGuard.assertSuccess(updateChannel);
+        expect(updateChannel.currencyCode).toBe('MYR');
     });
 
     it('superadmin has all permissions on new channel', async () => {

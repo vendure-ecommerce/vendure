@@ -48,11 +48,14 @@ export class ProductInfoComponent implements CustomDetailComponent, OnInit {
 }
 
 @NgModule({
-    imports: [SharedModule],
-    declarations: [ProductInfoComponent],
-    providers: [
-        registerCustomDetailComponent('product-detail', ProductInfoComponent),
-    ]
+  imports: [SharedModule],
+  declarations: [ProductInfoComponent],
+  providers: [
+    registerCustomDetailComponent({
+      locationId: 'product-detail',
+      component: ProductInfoComponent,
+    }),
+  ]
 })
 export class SharedExtensionModule {}
 ```

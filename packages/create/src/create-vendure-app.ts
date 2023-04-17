@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-import chalk from 'chalk';
-import program from 'commander';
+import { program } from 'commander';
 import detectPort from 'detect-port';
 import fs from 'fs-extra';
 import Listr from 'listr';
 import os from 'os';
 import path from 'path';
+import pc from 'picocolors';
 import { Observable } from 'rxjs';
 
 import { REQUIRED_NODE_VERSION, SERVER_PORT } from './constants';
@@ -38,13 +38,13 @@ process.env[createEnvVar] = 'true';
 program
     .version(packageJson.version)
     .arguments('<project-directory>')
-    .usage(`${chalk.green('<project-directory>')} [options]`)
+    .usage(`${pc.green('<project-directory>')} [options]`)
     .action(name => {
         projectName = name;
     })
     .option(
         '--log-level <logLevel>',
-        'Log level, either \'silent\', \'info\', or \'verbose\'',
+        "Log level, either 'silent', 'info', or 'verbose'",
         /^(silent|info|verbose)$/i,
         'silent',
     )
@@ -53,9 +53,9 @@ program
     .parse(process.argv);
 
 const options = program.opts();
-void createApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
+void createVendureApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
 
-async function createApp(
+export async function createVendureApp(
     name: string | undefined,
     useNpm: boolean,
     logLevel: CliLogLevel,
@@ -65,13 +65,13 @@ async function createApp(
         return;
     }
     if (await isServerPortInUse()) {
-        console.log(chalk.red(`Port ${SERVER_PORT} is in use. Please make it available and then re-try.`));
+        console.log(pc.red(`Port ${SERVER_PORT} is in use. Please make it available and then re-try.`));
         process.exit(1);
     }
 
-    console.log(chalk.cyan(`Welcome to @vendure/create v${packageJson.version as string}!`));
+    console.log(pc.cyan(`Welcome to @vendure/create v${packageJson.version as string}!`));
     console.log();
-    console.log('Let\'s configure a new Vendure project. First a few questions:');
+    console.log("Let's configure a new Vendure project. First a few questions:");
     console.log();
 
     const root = path.resolve(name);
@@ -80,7 +80,7 @@ async function createApp(
     const useYarn = useNpm ? false : shouldUseYarn();
     if (scaffoldExists) {
         console.log(
-            chalk.green(
+            pc.green(
                 'It appears that a new Vendure project scaffold already exists. Re-using the existing files...',
             ),
         );
@@ -126,7 +126,7 @@ async function createApp(
     };
 
     console.log();
-    console.log(`Setting up your new Vendure project in ${chalk.green(root)}`);
+    console.log(`Setting up your new Vendure project in ${pc.green(root)}`);
     console.log('This may take a few minutes...');
     console.log();
 
@@ -149,7 +149,7 @@ async function createApp(
                         );
                         const { dependencies, devDependencies } = getDependencies(
                             dbType,
-                            isCi ? `@${packageJson.version as string}` : '',
+                            `@${packageJson.version as string}`,
                         );
 
                         subscriber.next(`Installing ${dependencies.join(', ')}`);
@@ -281,7 +281,7 @@ async function createApp(
                 }
             } catch (e: any) {
                 console.log();
-                console.error(chalk.red(e.message));
+                console.error(pc.red(e.message));
                 console.log();
                 console.log(e);
                 throw e;
@@ -298,12 +298,12 @@ async function createApp(
     }
     const startCommand = useYarn ? 'yarn dev' : 'npm run dev';
     console.log();
-    console.log(chalk.green(`Success! Created a new Vendure server at ${root}`));
+    console.log(pc.green(`Success! Created a new Vendure server at ${root}`));
     console.log();
     console.log('We suggest that you start by typing:');
     console.log();
-    console.log(chalk.green(`    cd ${name}`));
-    console.log(chalk.green(`    ${startCommand}`));
+    console.log(pc.green(`    cd ${name}`));
+    console.log(pc.green(`    ${startCommand}`));
     console.log();
     console.log('Happy hacking!');
     process.exit(0);
@@ -316,10 +316,10 @@ async function createApp(
 function runPreChecks(name: string | undefined, useNpm: boolean): name is string {
     if (typeof name === 'undefined') {
         console.error('Please specify the project directory:');
-        console.log(`  ${chalk.cyan(program.name())} ${chalk.green('<project-directory>')}`);
+        console.log(`  ${pc.cyan(program.name())} ${pc.green('<project-directory>')}`);
         console.log();
         console.log('For example:');
-        console.log(`  ${chalk.cyan(program.name())} ${chalk.green('my-vendure-app')}`);
+        console.log(`  ${pc.cyan(program.name())} ${pc.green('my-vendure-app')}`);
         process.exit(1);
         return false;
     }
@@ -348,6 +348,6 @@ async function copyEmailTemplates(root: string) {
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {
-        console.error(chalk.red('Failed to copy email templates.'));
+        console.error(pc.red('Failed to copy email templates.'));
     }
 }

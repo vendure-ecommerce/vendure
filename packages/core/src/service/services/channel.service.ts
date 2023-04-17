@@ -290,6 +290,9 @@ export class ChannelService {
             const seller = await this.connection.getEntityOrThrow(ctx, Seller, input.sellerId);
             updatedChannel.seller = seller;
         }
+        if (input.currencyCode) {
+            updatedChannel.defaultCurrencyCode = input.currencyCode;
+        }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
         await this.allChannels.refresh(ctx);

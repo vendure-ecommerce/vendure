@@ -98,6 +98,20 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
         expect(adjustOrderLine.lines[1].unitPrice).toEqual(variantPrice);
         expect(adjustOrderLine.subTotal).toEqual(variantPrice + variantPrice);
     });
+
+    it('applies discount for quantity greater than 3', async () => {
+        const { adjustOrderLine } = await shopClient.query(ADJUST_ORDER_LINE_CUSTOM_FIELDS, {
+            orderLineId: secondOrderLineId,
+            quantity: 4,
+            customFields: {
+                giftWrap: false,
+            },
+        });
+
+        const variantPrice = (variants[0].price as SinglePrice).value;
+        expect(adjustOrderLine.lines[1].unitPrice).toEqual(variantPrice / 2);
+        expect(adjustOrderLine.subTotal).toEqual(variantPrice + (variantPrice / 2) * 4);
+    });
 });
 
 const ORDER_WITH_LINES_AND_ITEMS_FRAGMENT = gql`

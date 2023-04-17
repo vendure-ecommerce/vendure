@@ -30,7 +30,7 @@
                     </button>
                     <vdr-dropdown-menu vdrPosition="top-right">
                         <ng-container *ngFor="let item of section.items">
-                            <div *ngIf="shouldDisplayLink(item)">
+                            <div *ngIf="shouldDisplayLink(item)" class="menu-link">
                                 <a
                                     vdrDropdownItem
                                     [attr.data-item-id]="section.id"

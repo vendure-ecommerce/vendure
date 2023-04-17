@@ -1,3 +1,90 @@
+## 2.0.0-beta.1 (2023-04-14)
+
+
+#### Features
+
+* **core** Add `compatibility` check to VendurePlugin metadata ([d18d350](https://github.com/vendure-ecommerce/vendure/commit/d18d350)), closes [#1471](https://github.com/vendure-ecommerce/vendure/issues/1471)
+* **core** Add quantity arg to OrderItemPriceCalculationStrategy ([02a0864](https://github.com/vendure-ecommerce/vendure/commit/02a0864)), closes [#1920](https://github.com/vendure-ecommerce/vendure/issues/1920)
+* **core** Export VENDURE_VERSION constant ([b2a910a](https://github.com/vendure-ecommerce/vendure/commit/b2a910a)), closes [#1471](https://github.com/vendure-ecommerce/vendure/issues/1471)
+* **core** Implement Regions & support for Provinces ([7b8f5bf](https://github.com/vendure-ecommerce/vendure/commit/7b8f5bf)), closes [#76](https://github.com/vendure-ecommerce/vendure/issues/76)
+
+#### Fixes
+
+* **admin-ui** Fix scroll bar colour in left nav ([4a080cb](https://github.com/vendure-ecommerce/vendure/commit/4a080cb))
+* **core** Fix updating channel currencyCode ([7e01ecf](https://github.com/vendure-ecommerce/vendure/commit/7e01ecf)), closes [#2114](https://github.com/vendure-ecommerce/vendure/issues/2114)
+* **core** Remove text default values ([dd21a82](https://github.com/vendure-ecommerce/vendure/commit/dd21a82)), closes [#2113](https://github.com/vendure-ecommerce/vendure/issues/2113)
+* **core** Translatable fields default to empty string if falsy ([e119154](https://github.com/vendure-ecommerce/vendure/commit/e119154))
+
+
+### BREAKING CHANGE
+
+* A new `Region` entity has been introduced, which is a base class for `Country` and
+the new `Province` entity. The `Zone.members` property is now an array of `Region` rather than
+`Country`, since Zones may now be composed of both countries and provinces. If you have defined
+any custom fields on `Country`, you'll need to change it to `Region` in your custom fields config.
+
+   If you are updating from beta.0, you'll need to generate a [migration](https://www.vendure.io/docs/developer-guide/migrations/) (for a standard project created with `@vendure/create`, this would be done by running `npm run migration:generate v2_beta1`), then edit the generated migration file and add the following lines in the `up()` method **before any generated `ADD CONSTRAINT` statements** (this is postgres syntax, swap backticks for double-quotes for mysql - but make sure that single quotes around 'country' and 'Country' remain):
+   ```ts
+   await queryRunner.query(`INSERT INTO "region" ("createdAt", "updatedAt", "code", "type", "enabled", "id", "discriminator") 
+                                           SELECT "createdAt", "updatedAt", "code", 'country', "enabled", "id", 'Country' FROM "country"`, undefined);
+   await queryRunner.query(`INSERT INTO "region_translation" ("createdAt", "updatedAt", "languageCode", "id", "name", "baseId") 
+                                                       SELECT "createdAt", "updatedAt", "languageCode", "id", "name", "baseId" FROM "country_translation"`, undefined);
+   await queryRunner.query(`INSERT INTO "zone_members_region" ("zoneId", "regionId") SELECT "zoneId", "countryId" FROM "zone_members_country"`, undefined);
+   ```
+
+## 2.0.0-beta.0 (2023-04-04)
+
+
+#### Fixes
+
+* **admin-ui** Clean up nav menu styles, make light ([78dcc09](https://github.com/vendure-ecommerce/vendure/commit/78dcc09))
+* **admin-ui** Fix navigation to order list component ([9b4821e](https://github.com/vendure-ecommerce/vendure/commit/9b4821e))
+* **asset-server-plugin** Change image format with no other transforms (#2104) ([6cf1608](https://github.com/vendure-ecommerce/vendure/commit/6cf1608)), closes [#2104](https://github.com/vendure-ecommerce/vendure/issues/2104)
+* **core** Correctly remove invalid promotion couponCodes from Order ([7a1c127](https://github.com/vendure-ecommerce/vendure/commit/7a1c127))
+* **core** Fix concurrent order address update edge case ([f4ca9b2](https://github.com/vendure-ecommerce/vendure/commit/f4ca9b2))
+* **create** Use "create" version for all Vendure dependencies ([844b9ba](https://github.com/vendure-ecommerce/vendure/commit/844b9ba))
+* **payments-plugin** Make peer dependencies optional ([98c764c](https://github.com/vendure-ecommerce/vendure/commit/98c764c))
+* **testing** More graceful shutdown ([aa91bd0](https://github.com/vendure-ecommerce/vendure/commit/aa91bd0))
+
+#### Features
+
+* **admin-ui** Add support for translatable PaymentMethods ([06efc50](https://github.com/vendure-ecommerce/vendure/commit/06efc50)), closes [#1184](https://github.com/vendure-ecommerce/vendure/issues/1184)
+* **admin-ui** Add support for translatable Promotions ([00bd433](https://github.com/vendure-ecommerce/vendure/commit/00bd433)), closes [#1990](https://github.com/vendure-ecommerce/vendure/issues/1990)
+* **admin-ui** New app layout with updated nav menu ([e6f8584](https://github.com/vendure-ecommerce/vendure/commit/e6f8584)), closes [#1645](https://github.com/vendure-ecommerce/vendure/issues/1645)
+* **admin-ui** Update to Angular v15.x ([0c503b4](https://github.com/vendure-ecommerce/vendure/commit/0c503b4))
+* **core** Add currencyCode to variant price model ([24e558b](https://github.com/vendure-ecommerce/vendure/commit/24e558b)), closes [#1691](https://github.com/vendure-ecommerce/vendure/issues/1691)
+* **core** Add ProductVariantPriceSelectionStrategy ([efe23d1](https://github.com/vendure-ecommerce/vendure/commit/efe23d1)), closes [#1691](https://github.com/vendure-ecommerce/vendure/issues/1691)
+* **core** Implement Admin API operations for stock location, e2e tests ([7913b9a](https://github.com/vendure-ecommerce/vendure/commit/7913b9a)), closes [#1545](https://github.com/vendure-ecommerce/vendure/issues/1545)
+* **core** Implement data model & APIs for multi-location stock ([905c1df](https://github.com/vendure-ecommerce/vendure/commit/905c1df)), closes [#1545](https://github.com/vendure-ecommerce/vendure/issues/1545)
+* **core** Implement GuestCheckoutStrategy ([7e0f1d1](https://github.com/vendure-ecommerce/vendure/commit/7e0f1d1)), closes [#911](https://github.com/vendure-ecommerce/vendure/issues/911) [#762](https://github.com/vendure-ecommerce/vendure/issues/762)
+* **core** Implement localeText custom field type ([6a3c61f](https://github.com/vendure-ecommerce/vendure/commit/6a3c61f)), closes [#2000](https://github.com/vendure-ecommerce/vendure/issues/2000)
+* **core** Implement MoneyStrategy ([61ac041](https://github.com/vendure-ecommerce/vendure/commit/61ac041)), closes [#1835](https://github.com/vendure-ecommerce/vendure/issues/1835)
+* **core** Make PaymentMethod entity translatable ([2a4b3bc](https://github.com/vendure-ecommerce/vendure/commit/2a4b3bc)), closes [#1184](https://github.com/vendure-ecommerce/vendure/issues/1184)
+* **core** Make Promotion entity translatable, add description ([dada243](https://github.com/vendure-ecommerce/vendure/commit/dada243)), closes [#1990](https://github.com/vendure-ecommerce/vendure/issues/1990)
+* **core** Normalize email addresses for native auth ([ad7eab8](https://github.com/vendure-ecommerce/vendure/commit/ad7eab8)), closes [#1515](https://github.com/vendure-ecommerce/vendure/issues/1515)
+* **core** Update to TypeScript v4.9.5 ([99da585](https://github.com/vendure-ecommerce/vendure/commit/99da585))
+* **job-queue-plugin** Update bullmq & redis dependencies (#2020) ([eb0b73f](https://github.com/vendure-ecommerce/vendure/commit/eb0b73f)), closes [#2020](https://github.com/vendure-ecommerce/vendure/issues/2020)
+* **testing** Turn productsCsvPath into an optional property for test server initialization (#2038) ([4c2b118](https://github.com/vendure-ecommerce/vendure/commit/4c2b118)), closes [#2038](https://github.com/vendure-ecommerce/vendure/issues/2038)
+* **ui-devkit** Add "exclude" option to UI extensions (#2009) ([dd6eee3](https://github.com/vendure-ecommerce/vendure/commit/dd6eee3)), closes [#2009](https://github.com/vendure-ecommerce/vendure/issues/2009)
+
+
+
+### BREAKING CHANGE
+
+* The `Channel.currencyCode` field has been renamed to `defaultCurrencyCode`, and a
+new `currencyCode` field has been added to the `ProductVariantPrice` entity. This will require
+a database migration with care taken to preserve exiting data.
+* The introduction of the new MoneyStrategy includes a new GraphQL `Money` scalar,
+which replaces `Int` used in v1.x. In practice, this is still a `number` type and should not
+break any client applications. One point to note is that `Money` is based on the `Float` scalar
+and therefore can represent decimal values, allowing fractions of cents to be represented.
+* The minimum Redis recommended version is 6.2.0
+* The Promotion entity is now translatable, which means existing promotions will need
+to be migrated to the new DB schema and care taken to preserve the name data. Also the GraphQL
+API for creating and updating Promotions, as well as the corresponding PromotionService methods
+have changed to take a `translations` array for setting the `name` and `description` in a given
+language.
+
 ## 2.0.0-next.28 (2023-01-27)
 
 

@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-import chalk from 'chalk';
 import { execSync } from 'child_process';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
 import path from 'path';
+import pc from 'picocolors';
 import semver from 'semver';
 
 import { SERVER_PORT, TYPESCRIPT_VERSION } from './constants';
@@ -57,7 +57,7 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
         .filter(file => !errorLogFilePatterns.some(pattern => file.indexOf(pattern) === 0));
 
     if (conflicts.length > 0) {
-        console.log(`The directory ${chalk.green(name)} contains files that could conflict:`);
+        console.log(`The directory ${pc.green(name)} contains files that could conflict:`);
         console.log();
         for (const file of conflicts) {
             console.log(`  ${file}`);
@@ -90,7 +90,7 @@ export function scaffoldAlreadyExists(root: string, name: string): boolean {
 export function checkNodeVersion(requiredVersion: string) {
     if (!semver.satisfies(process.version, requiredVersion)) {
         console.error(
-            chalk.red(
+            pc.red(
                 'You are running Node %s.\n' +
                     'Vendure requires Node %s or higher. \n' +
                     'Please update your version of Node.',
@@ -145,24 +145,22 @@ export function checkThatNpmCanReadCwd() {
         return true;
     }
     console.error(
-        chalk.red(
+        pc.red(
             'Could not start an npm process in the right directory.\n\n' +
-                `The current directory is: ${chalk.bold(cwd)}\n` +
-                `However, a newly started npm process runs in: ${chalk.bold(npmCWD)}\n\n` +
+                `The current directory is: ${pc.bold(cwd)}\n` +
+                `However, a newly started npm process runs in: ${pc.bold(npmCWD)}\n\n` +
                 'This is probably caused by a misconfigured system terminal shell.',
         ),
     );
     if (process.platform === 'win32') {
         console.error(
-            chalk.red('On Windows, this can usually be fixed by running:\n\n') +
-                `  ${chalk.cyan(
-                    'reg',
-                )} delete "HKCU\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n` +
-                `  ${chalk.cyan(
+            pc.red('On Windows, this can usually be fixed by running:\n\n') +
+                `  ${pc.cyan('reg')} delete "HKCU\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n` +
+                `  ${pc.cyan(
                     'reg',
                 )} delete "HKLM\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n\n` +
-                chalk.red('Try to run the above two lines in the terminal.\n') +
-                chalk.red(
+                pc.red('Try to run the above two lines in the terminal.\n') +
+                pc.red(
                     'To learn more about this problem, read: https://blogs.msdn.microsoft.com/oldnewthing/20071121-00/?p=24433/',
                 ),
         );
@@ -276,7 +274,7 @@ function dbDriverPackage(dbType: DbType): string {
             return 'oracledb';
         default:
             const n: never = dbType;
-            console.error(chalk.red(`No driver package configured for type "${dbType as string}"`));
+            console.error(pc.red(`No driver package configured for type "${dbType as string}"`));
             return '';
     }
 }
@@ -388,7 +386,7 @@ export function isServerPortInUse(): Promise<boolean> {
     try {
         return tcpPortUsed.check(SERVER_PORT);
     } catch (e: any) {
-        console.log(chalk.yellow(`Warning: could not determine whether port ${SERVER_PORT} is available`));
+        console.log(pc.yellow(`Warning: could not determine whether port ${SERVER_PORT} is available`));
         return Promise.resolve(false);
     }
 }

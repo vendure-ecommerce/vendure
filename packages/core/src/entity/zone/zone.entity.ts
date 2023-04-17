@@ -3,8 +3,9 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
-import { Country } from '../country/country.entity';
 import { CustomZoneFields } from '../custom-entity-fields';
+import { Country } from '../region/country.entity';
+import { Region } from '../region/region.entity';
 
 /**
  * @description
@@ -21,9 +22,9 @@ export class Zone extends VendureEntity implements HasCustomFields {
 
     @Column() name: string;
 
-    @ManyToMany(type => Country)
+    @ManyToMany(type => Region)
     @JoinTable()
-    members: Country[];
+    members: Region[];
 
     @Column(type => CustomZoneFields)
     customFields: CustomZoneFields;

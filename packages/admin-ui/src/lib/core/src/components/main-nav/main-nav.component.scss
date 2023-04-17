@@ -17,11 +17,12 @@ nav.main-nav {
     .nav-group-header {
         margin: 0;
         line-height: 1.2;
-        font-size: var(--font-size-sm);
+        font-size: var(--font-size-xs);
         padding-left: calc(var(--space-unit) * 1);
         //font-weight: bold;
         color: var(--color-left-nav-text);
         opacity: 0.7;
+        text-transform: uppercase;
     }
     .nav-link {
         display: flex;
@@ -34,12 +35,11 @@ nav.main-nav {
             color: var(--color-text-600);
         }
         &:hover {
-            color: var(--color-primary-200);
+            color: var(--color-left-nav-text-hover);
         }
 
         &.active {
-            background-color: var(--color-primary-600);
-            color: var(--color-text-inverse);
+            color: var(--color-primary-600);
         }
         @media screen and (max-width: $breakpoint-medium) {
             justify-content: center;
@@ -65,8 +65,4 @@ nav.main-nav {
 .nav-group vdr-status-badge {
     left: 10px;
     top: 6px;
-}
-.nav-link vdr-status-badge {
-    left: 25px;
-    top: 3px;
 }

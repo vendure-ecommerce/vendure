@@ -5,7 +5,7 @@ This project was generated with [`@vendure/create`](https://github.com/vendure-e
 Useful links:
 
 - [Vendure docs](https://www.vendure.io/docs)
-- [Vendure Slack community](https://join.slack.com/t/vendure-ecommerce/shared_invite/zt-1exzio25w-vjL5TYkyJZjK52d6jkOsIA)
+- [Vendure Slack community](https://www.vendure.io/slack)
 - [Vendure on GitHub](https://github.com/vendure-ecommerce/vendure)
 - [Vendure plugin template](https://github.com/vendure-ecommerce/plugin-template)
 

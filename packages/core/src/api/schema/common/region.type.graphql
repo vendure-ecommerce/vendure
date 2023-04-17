@@ -1,0 +1,59 @@
+interface Region implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    code: String!
+    type: String!
+    name: String!
+    enabled: Boolean!
+    parent: Region
+    parentId: ID
+    translations: [RegionTranslation!]!
+}
+
+type RegionTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+}
+
+type Country implements Region & Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    code: String!
+    type: String!
+    name: String!
+    enabled: Boolean!
+    parent: Region
+    parentId: ID
+    translations: [RegionTranslation!]!
+}
+
+type CountryList implements PaginatedList {
+    items: [Country!]!
+    totalItems: Int!
+}
+
+type Province implements Region & Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    code: String!
+    type: String!
+    name: String!
+    enabled: Boolean!
+    parent: Region
+    parentId: ID
+    translations: [RegionTranslation!]!
+}
+
+type ProvinceList implements PaginatedList {
+    items: [Province!]!
+    totalItems: Int!
+}

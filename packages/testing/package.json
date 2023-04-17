@@ -1,54 +1,54 @@
 {
-  "name": "@vendure/testing",
-  "version": "2.0.0-next.28",
-  "description": "End-to-end testing tools for Vendure projects",
-  "keywords": [
-    "vendure",
-    "testing",
-    "e2e"
-  ],
-  "author": "Michael Bromley <michael@michaelbromley.co.uk>",
-  "homepage": "https://www.vendure.io/",
-  "license": "MIT",
-  "directories": {
-    "lib": "lib"
-  },
-  "files": [
-    "lib"
-  ],
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vendure-ecommerce/vendure.git"
-  },
-  "funding": "https://github.com/sponsors/michaelbromley",
-  "scripts": {
-    "build": "tsc -p ./tsconfig.build.json",
-    "watch": "tsc -p ./tsconfig.build.json -w",
-    "lint": "eslint --fix .",
-    "ci": "yarn build"
-  },
-  "bugs": {
-    "url": "https://github.com/vendure-ecommerce/vendure/issues"
-  },
-  "dependencies": {
-    "@types/node-fetch": "^2.5.4",
-    "@vendure/common": "^2.0.0-next.28",
-    "faker": "^4.1.0",
-    "form-data": "^3.0.0",
-    "graphql": "16.6.0",
-    "graphql-tag": "^2.10.1",
-    "node-fetch": "^2.6.0",
-    "sql.js": "1.8.0"
-  },
-  "devDependencies": {
-    "@types/mysql": "^2.15.15",
-    "@types/pg": "^7.14.5",
-    "@vendure/core": "^2.0.0-next.28",
-    "mysql": "^2.18.1",
-    "pg": "^8.4.0",
-    "rimraf": "^3.0.0",
-    "typescript": "4.9.5"
-  }
+    "name": "@vendure/testing",
+    "version": "2.0.0-beta.1",
+    "description": "End-to-end testing tools for Vendure projects",
+    "keywords": [
+        "vendure",
+        "testing",
+        "e2e"
+    ],
+    "author": "Michael Bromley <michael@michaelbromley.co.uk>",
+    "homepage": "https://www.vendure.io/",
+    "license": "MIT",
+    "directories": {
+        "lib": "lib"
+    },
+    "files": [
+        "lib"
+    ],
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vendure-ecommerce/vendure.git"
+    },
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "scripts": {
+        "build": "tsc -p ./tsconfig.build.json",
+        "watch": "tsc -p ./tsconfig.build.json -w",
+        "lint": "eslint --fix .",
+        "ci": "yarn build"
+    },
+    "bugs": {
+        "url": "https://github.com/vendure-ecommerce/vendure/issues"
+    },
+    "dependencies": {
+        "@types/node-fetch": "^2.5.4",
+        "@vendure/common": "^2.0.0-beta.1",
+        "faker": "^4.1.0",
+        "form-data": "^3.0.0",
+        "graphql": "16.6.0",
+        "graphql-tag": "^2.10.1",
+        "node-fetch": "^2.6.0",
+        "sql.js": "1.8.0"
+    },
+    "devDependencies": {
+        "@types/mysql": "^2.15.15",
+        "@types/pg": "^7.14.5",
+        "@vendure/core": "^2.0.0-beta.1",
+        "mysql": "^2.18.1",
+        "pg": "^8.4.0",
+        "rimraf": "^3.0.0",
+        "typescript": "4.9.5"
+    }
 }

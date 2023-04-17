@@ -1,9 +1,15 @@
+@import "variables";
+
 :host {
     display: block;
     width: 100%;
     max-width: var(--layout-content-max-width);
     padding: 0 var(--space-unit);
-    margin: 0 auto;
+    margin-right: auto;
+    margin-left: calc(var(--space-unit) * 3);
+    @media screen and (max-width: $breakpoint-medium) {
+        margin-left: calc(var(--space-unit));
+    }
 }
 
 .page-title {
@@ -14,6 +20,7 @@
         //transition: all 0.5s;
         opacity: 1;
         overflow: hidden;
+
         &.folded {
             // max-height: 0;
             opacity: 1;

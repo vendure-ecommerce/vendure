@@ -3,5 +3,6 @@ type Zone implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     name: String!
-    members: [Country!]!
+    members: [Region!]!
 }
+
