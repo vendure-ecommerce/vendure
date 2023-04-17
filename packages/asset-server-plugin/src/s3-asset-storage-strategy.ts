@@ -1,4 +1,5 @@
-import { S3ClientConfig } from '@aws-sdk/client-s3';
+import { PutObjectRequest, S3ClientConfig } from '@aws-sdk/client-s3';
+import { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { AssetStorageStrategy, Logger } from '@vendure/core';
 import { Request } from 'express';
 import * as path from 'node:path';
@@ -7,15 +8,6 @@ import { Readable } from 'node:stream';
 import { getAssetUrlPrefixFn } from './common';
 import { loggerCtx } from './constants';
 import { AssetServerOptions } from './types';
-
-export type S3Credentials = {
-    accessKeyId: string;
-    secretAccessKey: string;
-};
-
-export type S3CredentialsProfile = {
-    profile: string;
-};
 
 /**
  * @description
@@ -27,12 +19,12 @@ export type S3CredentialsProfile = {
 export interface S3Config {
     /**
      * @description
-     * The credentials used to access your s3 account. You can supply either the access key ID & secret,
-     * or you can make use of a
+     * The credentials used to access your s3 account. You can supply either the access key ID & secret, or you can make use of a
      * [shared credentials file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
-     * and supply the profile name (e.g. `'default'`).
+     * To use a shared credentials file, import the `fromIni()` function from the "@aws-sdk/credential-provider-ini" or "@aws-sdk/credential-providers" package and supply
+     * the profile name (e.g. `{ profile: 'default' }`) as its argument.
      */
-    credentials?: S3Credentials | S3CredentialsProfile;
+    credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider;
     /**
      * @description
      * The S3 bucket in which to store the assets. If it does not exist, it will be created on startup.
@@ -59,16 +51,17 @@ export interface S3Config {
  * Returns a configured instance of the {@link S3AssetStorageStrategy} which can then be passed to the {@link AssetServerOptions}
  * `storageStrategyFactory` property.
  *
- * Before using this strategy, make sure you have the `aws-sdk` package installed:
+ * Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
  *
  * ```sh
- * npm install aws-sdk
+ * npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
  * ```
  *
  * @example
  * ```TypeScript
  * import { AssetServerPlugin, configureS3AssetStorage } from '\@vendure/asset-server-plugin';
  * import { DefaultAssetNamingStrategy } from '\@vendure/core';
+ * import { fromEnv } from '\@aws-sdk/credential-providers';
  *
  * // ...
  *
@@ -79,10 +72,7 @@ export interface S3Config {
  *     namingStrategy: new DefaultAssetNamingStrategy(),
  *     storageStrategyFactory: configureS3AssetStorage({
  *       bucket: 'my-s3-bucket',
- *       credentials: {
- *         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
- *         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
- *       },
+ *       credentials: fromEnv(), // or any other credential provider
  *     }),
  * }),
  * ```
@@ -138,12 +128,12 @@ export function configureS3AssetStorage(s3Config: S3Config) {
  * @description
  * An {@link AssetStorageStrategy} which uses [Amazon S3](https://aws.amazon.com/s3/) object storage service.
  * To us this strategy you must first have access to an AWS account.
- * See their [getting started guide](https://aws.amazon.com/s3/getting-started/?nc=sn&loc=5) for how to get set up.
+ * See their [getting started guide](https://aws.amazon.com/s3/getting-started/) for how to get set up.
  *
- * Before using this strategy, make sure you have the `aws-sdk` package installed:
+ * Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
  *
  * ```sh
- * npm install aws-sdk
+ * npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
  * ```
  *
  * **Note:** Rather than instantiating this manually, use the {@link configureS3AssetStorage} function.
@@ -158,58 +148,82 @@ export function configureS3AssetStorage(s3Config: S3Config) {
  */
 export class S3AssetStorageStrategy implements AssetStorageStrategy {
     private AWS: typeof import('@aws-sdk/client-s3');
-    private s3: import('@aws-sdk/client-s3').S3;
-    constructor(
-        private s3Config: S3Config,
-        public readonly toAbsoluteUrl: (request: Request, identifier: string) => string,
-    ) {}
+    private libStorage: typeof import('@aws-sdk/lib-storage');
+    private s3Client: import('@aws-sdk/client-s3').S3Client;
+
+    constructor(private s3Config: S3Config, public readonly toAbsoluteUrl: (request: Request, identifier: string) => string) {}
 
     async init() {
         try {
             this.AWS = await import('@aws-sdk/client-s3');
         } catch (err: any) {
-            Logger.error(
-                'Could not find the "aws-sdk" package. Make sure it is installed',
-                loggerCtx,
-                err.stack,
-            );
+            Logger.error('Could not find the "@aws-sdk/client-s3" package. Make sure it is installed', loggerCtx, err.stack);
+        }
+
+        try {
+            this.libStorage = await import('@aws-sdk/lib-storage');
+        } catch (err: any) {
+            Logger.error('Could not find the "@aws-sdk/lib-storage" package. Make sure it is installed', loggerCtx, err.stack);
         }
 
         const config = {
-            credentials: await this.getS3Credentials(),
             ...this.s3Config.nativeS3Configuration,
+            credentials: await this.getCredentials() // Avoid credentials overriden by nativeS3Configuration
         } satisfies S3ClientConfig
 
-        this.s3 = new this.AWS.S3(config);
-        await this.ensureBucket(this.s3Config.bucket);
+        this.s3Client = new this.AWS.S3Client(config);
+
+        await this.ensureBucket();
     }
 
     destroy?: (() => void | Promise<void>) | undefined;
 
-    async writeFileFromBuffer(fileName: string, data: Buffer): Promise<string> {
-        const upload = new (await import('@aws-sdk/lib-storage')).Upload({
-            client: this.s3,
-            params: {
-                ...this.s3Config.nativeS3UploadConfiguration,
-                Bucket: this.s3Config.bucket,
-                Key: fileName,
-                Body: data,
-            }
-        })
-
-        return upload.done().then((result) => {
-            if (!('Key' in result) || !result.Key) {
-                Logger.error(`Got undefined Key for ${fileName}`, loggerCtx);
-                throw new Error(`Got undefined Key for ${fileName}`);
-            }
-
-            return result.Key;
-        })
+    async writeFileFromBuffer(fileName: string, data: Buffer) {
+        return this.writeFile(fileName, data);
     }
 
-    async writeFileFromStream(fileName: string, data: Readable): Promise<string> {
-        const upload = new (await import('@aws-sdk/lib-storage')).Upload({
-            client: this.s3,
+    async writeFileFromStream(fileName: string, data: Readable) {
+        return this.writeFile(fileName, data);
+    }
+
+    async readFileToBuffer(identifier: string) {
+        const body = await this.readFile(identifier);
+
+        if (!body) {
+            Logger.error(`Got undefined Body for ${identifier}`, loggerCtx);
+            return Buffer.from('');
+        }
+
+        const chunks: Buffer[] = [];
+        for await (const chunk of body) {
+            chunks.push(chunk);
+        }
+
+        return Buffer.concat(chunks);
+    }
+
+    async readFileToStream(identifier: string) {
+        const body = await this.readFile(identifier);
+
+        if (!body) {
+            return new Readable({ read() { this.push(null); } });
+        }
+
+        return body;
+    }
+
+    private async readFile(identifier: string) {
+        const { GetObjectCommand } = this.AWS;
+
+        const result = await this.s3Client.send(new GetObjectCommand(this.getObjectParams(identifier)));
+        return result.Body as Readable | undefined;
+    }
+
+    private async writeFile(fileName: string, data: PutObjectRequest['Body'] | string | Uint8Array | Buffer) {
+        const { Upload } = this.libStorage
+
+        const upload = new Upload({
+            client: this.s3Client,
             params: {
                 ...this.s3Config.nativeS3UploadConfiguration,
                 Bucket: this.s3Config.bucket,
@@ -228,41 +242,16 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
         });
     }
 
-    async readFileToBuffer(identifier: string): Promise<Buffer> {
-        const result = await this.s3.getObject(this.getObjectParams(identifier));
-        const body = result.Body as Readable | undefined;
-
-        if (!body) {
-            Logger.error(`Got undefined Body for ${identifier}`, loggerCtx);
-            return Buffer.from('');
-        }
-
-        const chunks: Buffer[] = [];
-        for await (const chunk of body) {
-            chunks.push(chunk);
-        }
-
-        return Buffer.concat(chunks);
+    async deleteFile(identifier: string) {
+        const { DeleteObjectCommand } = this.AWS
+        await this.s3Client.send(new DeleteObjectCommand(this.getObjectParams(identifier)));
     }
 
-    async readFileToStream(identifier: string): Promise<Readable> {
-        const result = await this.s3.getObject(this.getObjectParams(identifier));
-        const body = result.Body as Readable | undefined;
+    async fileExists(fileName: string) {
+        const { HeadObjectCommand } = this.AWS
 
-        if (!body) {
-            return new Readable({ read() { this.push(null); } });
-        }
-
-        return body;
-    }
-
-    async deleteFile(identifier: string): Promise<void> {
-        await this.s3.deleteObject(this.getObjectParams(identifier));
-    }
-
-    async fileExists(fileName: string): Promise<boolean> {
         try {
-            await this.s3.headObject(this.getObjectParams(fileName));
+            await this.s3Client.send(new HeadObjectCommand(this.getObjectParams(fileName)));
             return true;
         } catch (err: any) {
             return false;
@@ -276,44 +265,43 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
         };
     }
 
-    private async getS3Credentials() {
-        const { credentials } = this.s3Config;
-        if (credentials == null) {
-            return undefined;
-        } else if (this.isCredentialsProfile(credentials)) {
-            return (await import('@aws-sdk/credential-provider-ini')).fromIni(credentials);
-        }
-        return credentials
-    }
+    private async ensureBucket(bucket = this.s3Config.bucket) {
+        const { HeadBucketCommand, CreateBucketCommand } = this.AWS
 
-    private async ensureBucket(bucket: string) {
-        let bucketExists = false;
         try {
-            await this.s3.headBucket({ Bucket: this.s3Config.bucket });
-            bucketExists = true;
+            await this.s3Client.send(new HeadBucketCommand({ Bucket: bucket }));
             Logger.verbose(`Found S3 bucket "${bucket}"`, loggerCtx);
+            return
         } catch (err: any) {
-            Logger.verbose(
-                `Could not find bucket "${bucket}: ${JSON.stringify(err.message)}". Attempting to create...`,
-            );
+            Logger.verbose(`Could not find bucket "${bucket}: ${JSON.stringify(err.message)}". Attempting to create...`);
         }
-        if (!bucketExists) {
-            try {
-                await this.s3.createBucket({ Bucket: bucket, ACL: 'private' });
-                Logger.verbose(`Created S3 bucket "${bucket}"`, loggerCtx);
-            } catch (err: any) {
-                Logger.error(
-                    `Could not find nor create the S3 bucket "${bucket}: ${JSON.stringify(err.message)}"`,
-                    loggerCtx,
-                    err.stack,
-                );
-            }
+
+        try {
+            await this.s3Client.send(new CreateBucketCommand({Bucket: bucket, ACL: 'private'}));
+            Logger.verbose(`Created S3 bucket "${bucket}"`, loggerCtx);
+        } catch (err: any) {
+            Logger.error(`Could not find nor create the S3 bucket "${bucket}: ${JSON.stringify(err.message)}"`, loggerCtx, err.stack);
         }
     }
 
-    private isCredentialsProfile(
-        credentials: S3Credentials | S3CredentialsProfile,
-    ): credentials is S3CredentialsProfile {
-        return credentials.hasOwnProperty('profile');
+    private async getCredentials() {
+        if (this.s3Config.credentials == null) {
+            return undefined;
+        }
+
+        if (this.isCredentialsProfile(this.s3Config.credentials)) {
+            Logger.warn(
+                'The "profile" property of the "s3Config.credentials" is deprecated. ' +
+                'Please use the "fromIni()" function from the "@aws-sdk/credential-provider-ini" or "@aws-sdk/credential-providers" package instead.',
+                loggerCtx
+            );
+            return (await import('@aws-sdk/credential-provider-ini')).fromIni({ profile: this.s3Config.credentials.profile  });
+        }
+
+        return this.s3Config.credentials
+    }
+
+    private isCredentialsProfile(credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider,): credentials is AwsCredentialIdentity & { profile: string } {
+        return credentials !== null && typeof credentials === 'object' && 'profile' in credentials && Object.keys(credentials).length === 1;
     }
 }
