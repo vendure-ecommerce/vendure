@@ -112,6 +112,14 @@ describe('PaymentMethod resolver', () => {
                 ],
                 code: 'dummy-payment-handler',
             },
+            translations: [
+                {
+                    description: 'This is a test payment method',
+                    id: 'T_1',
+                    languageCode: 'en',
+                    name: 'No Checker',
+                },
+            ],
         });
     });
 
@@ -158,6 +166,14 @@ describe('PaymentMethod resolver', () => {
                 ],
                 code: dummyPaymentHandler.code,
             },
+            translations: [
+                {
+                    description: 'modified',
+                    id: 'T_1',
+                    languageCode: 'en',
+                    name: 'No Checker',
+                },
+            ],
         });
     });
 
@@ -483,6 +499,54 @@ describe('PaymentMethod resolver', () => {
             expect(check2.totalItems).toBe(4);
         });
     });
+
+    it('create without description', async () => {
+        const { createPaymentMethod } = await adminClient.query<
+            Codegen.CreatePaymentMethodMutation,
+            Codegen.CreatePaymentMethodMutationVariables
+        >(CREATE_PAYMENT_METHOD, {
+            input: {
+                code: 'no-description',
+                enabled: true,
+                handler: {
+                    code: dummyPaymentHandler.code,
+                    arguments: [{ name: 'automaticSettle', value: 'true' }],
+                },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'No Description',
+                    },
+                ],
+            },
+        });
+
+        expect(createPaymentMethod).toEqual({
+            id: 'T_6',
+            name: 'No Description',
+            code: 'no-description',
+            description: '',
+            enabled: true,
+            checker: null,
+            handler: {
+                args: [
+                    {
+                        name: 'automaticSettle',
+                        value: 'true',
+                    },
+                ],
+                code: 'dummy-payment-handler',
+            },
+            translations: [
+                {
+                    description: '',
+                    id: 'T_6',
+                    languageCode: 'en',
+                    name: 'No Description',
+                },
+            ],
+        });
+    });
 });
 
 export const PAYMENT_METHOD_FRAGMENT = gql`
@@ -505,6 +569,12 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
                 name
                 value
             }
+        }
+        translations {
+            id
+            languageCode
+            name
+            description
         }
     }
 `;

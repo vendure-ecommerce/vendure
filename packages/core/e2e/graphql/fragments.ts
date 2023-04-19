@@ -441,12 +441,19 @@ export const PROMOTION_FRAGMENT = gql`
         startsAt
         endsAt
         name
+        description
         enabled
         conditions {
             ...ConfigurableOperation
         }
         actions {
             ...ConfigurableOperation
+        }
+        translations {
+            id
+            languageCode
+            name
+            description
         }
     }
     ${CONFIGURABLE_FRAGMENT}

@@ -110,6 +110,41 @@ describe('Promotion resolver', () => {
         expect(pick(promotion, snapshotProps)).toMatchSnapshot();
     });
 
+    it('createPromotion with no description', async () => {
+        const { createPromotion } = await adminClient.query<
+            Codegen.CreatePromotionMutation,
+            Codegen.CreatePromotionMutationVariables
+        >(CREATE_PROMOTION, {
+            input: {
+                enabled: true,
+                couponCode: 'TEST567',
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test promotion no description',
+                        customFields: {},
+                    },
+                ],
+                conditions: [],
+                actions: [
+                    {
+                        code: promoAction.code,
+                        arguments: [
+                            {
+                                name: 'facetValueIds',
+                                value: '["T_1"]',
+                            },
+                        ],
+                    },
+                ],
+            },
+        });
+        promotionGuard.assertSuccess(createPromotion);
+        expect(createPromotion.name).toBe('test promotion no description');
+        expect(createPromotion.description).toBe('');
+        expect(createPromotion.translations[0].description).toBe('');
+    });
+
     it('createPromotion return error result with empty conditions and no couponCode', async () => {
         const { createPromotion } = await adminClient.query<
             Codegen.CreatePromotionMutation,
@@ -208,7 +243,7 @@ describe('Promotion resolver', () => {
             Codegen.GetPromotionListQueryVariables
         >(GET_PROMOTION_LIST, {});
 
-        expect(result.promotions.totalItems).toBe(1);
+        expect(result.promotions.totalItems).toBe(2);
         expect(result.promotions.items[0].name).toBe('test promotion');
     });
 
