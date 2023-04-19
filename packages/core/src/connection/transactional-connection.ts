@@ -22,6 +22,7 @@ import { VendureEntity } from '../entity/base/base.entity';
 import { removeCustomFieldsWithEagerRelations } from './remove-custom-fields-with-eager-relations';
 import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
+import { TransactionIsolationLevel } from '../api/decorators/transaction.decorator';
 
 /**
  * @description
@@ -40,7 +41,7 @@ export class TransactionalConnection {
     constructor(
         @InjectConnection() private connection: Connection,
         private transactionWrapper: TransactionWrapper,
-    ) {}
+    ) { }
 
     /**
      * @description
@@ -147,7 +148,7 @@ export class TransactionalConnection {
             ctx = RequestContext.empty();
             work = ctxOrWork;
         }
-        return this.transactionWrapper.executeInTransaction(ctx, work, 'auto', this.rawConnection);
+        return this.transactionWrapper.executeInTransaction(ctx, work, 'auto', undefined, this.rawConnection);
     }
 
     /**
@@ -155,10 +156,10 @@ export class TransactionalConnection {
      * Manually start a transaction if one is not already in progress. This method should be used in
      * conjunction with the `'manual'` mode of the {@link Transaction} decorator.
      */
-    async startTransaction(ctx: RequestContext) {
+    async startTransaction(ctx: RequestContext, isolationLevel?: TransactionIsolationLevel) {
         const transactionManager = this.getTransactionManager(ctx);
-        if (transactionManager?.queryRunner?.isTransactionActive === false) {
-            await transactionManager.queryRunner.startTransaction();
+        if (transactionManager ?.queryRunner ?.isTransactionActive === false) {
+            await transactionManager.queryRunner.startTransaction(isolationLevel);
         }
     }
 
@@ -171,7 +172,7 @@ export class TransactionalConnection {
      */
     async commitOpenTransaction(ctx: RequestContext) {
         const transactionManager = this.getTransactionManager(ctx);
-        if (transactionManager?.queryRunner?.isTransactionActive) {
+        if (transactionManager ?.queryRunner ?.isTransactionActive) {
             await transactionManager.queryRunner.commitTransaction();
         }
     }
@@ -184,7 +185,7 @@ export class TransactionalConnection {
      */
     async rollBackTransaction(ctx: RequestContext) {
         const transactionManager = this.getTransactionManager(ctx);
-        if (transactionManager?.queryRunner?.isTransactionActive) {
+        if (transactionManager ?.queryRunner ?.isTransactionActive) {
             await transactionManager.queryRunner.rollbackTransaction();
         }
     }
