@@ -1,4 +1,13 @@
 <vdr-action-bar>
+    <vdr-ab-left>
+        <input
+        type="text"
+        name="searchTerm"
+        [formControl]="searchControl"
+        [placeholder]="'admin.search-administrator' | translate"
+        class="search-input"
+    />
+    </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="administrator-list"></vdr-action-bar-items>
         <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateAdministrator'">
