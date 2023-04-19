@@ -10,14 +10,7 @@ import {
     Logger,
     PaginatedList,
 } from '@vendure/core';
-import Bull, {
-    ConnectionOptions,
-    JobType,
-    Processor,
-    Queue,
-    Worker,
-    WorkerOptions,
-} from 'bullmq';
+import Bull, { ConnectionOptions, JobType, Processor, Queue, Worker, WorkerOptions } from 'bullmq';
 import { EventEmitter } from 'events';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
 
@@ -94,6 +87,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             if (processFn) {
                 const job = await this.createVendureJob(bullJob);
                 try {
+                    // eslint-disable-next-line
                     job.on('progress', _job => bullJob.updateProgress(_job.progress));
                     const result = await processFn(job);
                     await bullJob.updateProgress(100);
@@ -212,6 +206,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
     }
 
+    // TODO V2: actually make it use the olderThan parameter
     async removeSettledJobs(queueNames?: string[], olderThan?: Date): Promise<number> {
         try {
             const jobCounts = await this.queue.getJobCounts('completed', 'failed');
@@ -224,6 +219,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
@@ -238,19 +234,19 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             this.worker = new Worker(QUEUE_NAME, this.workerProcessor, options)
                 .on('error', e => Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack))
                 .on('closing', e => Logger.verbose(`BullMQ Worker closing: ${e}`, loggerCtx))
-                .on('closed', () => Logger.verbose(`BullMQ Worker closed`))
+                .on('closed', () => Logger.verbose('BullMQ Worker closed'))
                 .on('failed', (job: Bull.Job | undefined, error) => {
                     Logger.warn(
-                        `Job ${job?.id} [${job?.name}] failed (attempt ${job?.attemptsMade} of ${
-                            job?.opts.attempts ?? 1
-                        })`,
+                        `Job ${job?.id ?? '(unknown id)'} [${job?.name ?? 'unknown name'}] failed (attempt ${
+                            job?.attemptsMade ?? 'unknown'
+                        } of ${job?.opts.attempts ?? 1})`,
                     );
                 })
                 .on('stalled', (jobId: string) => {
                     Logger.warn(`BullMQ Worker: job ${jobId} stalled`, loggerCtx);
                 })
                 .on('completed', (job: Bull.Job) => {
-                    Logger.debug(`Job ${job.id} [${job.name}] completed`);
+                    Logger.debug(`Job ${job?.id ?? 'unknown id'} [${job.name}] completed`);
                 });
         }
     }
@@ -263,10 +259,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         if (!this.stopped) {
             this.stopped = true;
             try {
-                await Promise.all([
-                    this.queue.disconnect(),
-                    this.worker.disconnect(),
-                ]);
+                await Promise.all([this.queue.disconnect(), this.worker.disconnect()]);
             } catch (e: any) {
                 Logger.error(e, loggerCtx, e.stack);
             }
