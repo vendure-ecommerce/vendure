@@ -44,14 +44,14 @@ module.exports = {
         {
             files: ['./packages/ui-devkit/src/client/**/*'],
             parserOptions: {
-                project: 'tsconfig.json',
+                project: './packages/ui-devkit/tsconfig.json',
                 sourceType: 'module',
             },
         },
         {
             files: ['./packages/ui-devkit/src/compiler/**/*'],
             parserOptions: {
-                project: 'tsconfig.compiler.json',
+                project: './packages/ui-devkit/tsconfig.compiler.json',
                 sourceType: 'module',
             },
         },

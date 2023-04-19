@@ -5,13 +5,13 @@ import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
-import { CustomCountryFieldsTranslation } from '../custom-entity-fields';
+import { CustomRegionFieldsTranslation } from '../custom-entity-fields';
 
-import { Country } from './country.entity';
+import { Region } from './region.entity';
 
 @Entity()
-export class CountryTranslation extends VendureEntity implements Translation<Country>, HasCustomFields {
-    constructor(input?: DeepPartial<Translation<CountryTranslation>>) {
+export class RegionTranslation extends VendureEntity implements Translation<Region>, HasCustomFields {
+    constructor(input?: DeepPartial<Translation<RegionTranslation>>) {
         super(input);
     }
 
@@ -20,9 +20,9 @@ export class CountryTranslation extends VendureEntity implements Translation<Cou
     @Column() name: string;
 
     @Index()
-    @ManyToOne(type => Country, base => base.translations, { onDelete: 'CASCADE' })
-    base: Country;
+    @ManyToOne(type => Region, base => base.translations, { onDelete: 'CASCADE' })
+    base: Region;
 
-    @Column(type => CustomCountryFieldsTranslation)
-    customFields: CustomCountryFieldsTranslation;
+    @Column(type => CustomRegionFieldsTranslation)
+    customFields: CustomRegionFieldsTranslation;
 }

@@ -173,6 +173,19 @@ Now that we've defined the new mutation and we have a resolver capable of handli
 export class RandomCatPlugin {}
 ```
 
+### Step 9: Specify version compatibility
+
+Since Vendure v2.0.0, it is possible for a plugin to specify which versions of Vendure core it is compatible with. This is especially
+important if the plugin is intended to be made publicly available via npm or another package registry.
+
+```TypeScript
+@VendurePlugin({
+  // imports: [ etc. ]
+  compatibility: '^2.0.0'  
+})
+export class RandomCatPlugin {}
+```
+
 ### Step 8: Add the plugin to the Vendure config
 
 Finally, we need to add an instance of our plugin to the config object with which we bootstrap our Vendure server:
@@ -280,7 +293,8 @@ export class RandomCatResolver {
       name: 'catImageUrl',
     });
     return config;
-  }
+  },
+  compatibility: '^2.0.0',
 })
 export class RandomCatPlugin {}
 ```

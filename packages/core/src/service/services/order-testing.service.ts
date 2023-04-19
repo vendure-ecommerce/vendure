@@ -138,6 +138,7 @@ export class OrderTestingService {
                 productVariant,
                 orderLine.customFields || {},
                 mockOrder,
+                orderLine.quantity,
             );
             const taxRate = productVariant.taxRateApplied;
             orderLine.listPrice = price;

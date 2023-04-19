@@ -208,7 +208,6 @@ export interface CustomFields {
     Asset?: CustomFieldConfig[];
     Channel?: CustomFieldConfig[];
     Collection?: CustomFieldConfig[];
-    Country?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
     CustomerGroup?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];
@@ -223,6 +222,7 @@ export interface CustomFields {
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
+    Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
     StockLocation?: CustomFieldConfig[];

@@ -10,6 +10,7 @@ export const PLUGIN_METADATA = {
     SHOP_API_EXTENSIONS: 'shopApiExtensions',
     ADMIN_API_EXTENSIONS: 'adminApiExtensions',
     ENTITIES: 'entities',
+    COMPATIBILITY: 'compatibility',
 };
 
 export function getEntitiesFromPlugins(plugins?: Array<Type<any> | DynamicModule>): Array<Type<any>> {
@@ -45,8 +46,8 @@ export function getPluginAPIExtensions(
     return extensions.filter(notNullOrUndefined);
 }
 
-export function getPluginModules(plugins: Array<Type<any> | DynamicModule>): Array<Type<any>> {
-    return plugins.map(p => (isDynamicModule(p) ? p.module : p));
+export function getCompatibility(plugin: Type<any> | DynamicModule): string | undefined {
+    return reflectMetadata(plugin, PLUGIN_METADATA.COMPATIBILITY);
 }
 
 export function getConfigurationFunction(

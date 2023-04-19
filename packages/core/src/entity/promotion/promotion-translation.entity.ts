@@ -19,7 +19,7 @@ export class PromotionTranslation extends VendureEntity implements Translation<P
 
     @Column() name: string;
 
-    @Column('text', { default: '' }) description: string;
+    @Column('text', { nullable: true }) description: string;
 
     @Index()
     @ManyToOne(type => Promotion, base => base.translations, { onDelete: 'CASCADE' })

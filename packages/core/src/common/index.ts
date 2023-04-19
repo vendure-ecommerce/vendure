@@ -8,6 +8,7 @@ export * from './injector';
 export * from './permission-definition';
 export * from './ttl-cache';
 export * from './self-refreshing-cache';
+export * from './round-money';
 export * from './types/common-types';
 export * from './types/entity-relation-paths';
 export * from './types/injectable-strategy';

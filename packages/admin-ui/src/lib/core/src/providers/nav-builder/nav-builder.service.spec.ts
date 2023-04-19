@@ -16,7 +16,7 @@ describe('NavBuilderService', () => {
     it('defineNavMenuSections', done => {
         service.defineNavMenuSections(getBaseNav());
 
-        service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+        service.menuConfig$.pipe(take(1)).subscribe(result => {
             expect(result).toEqual(getBaseNav());
             done();
         });
@@ -31,7 +31,7 @@ describe('NavBuilderService', () => {
                 items: [],
             });
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 expect(result.map(section => section.id)).toEqual(['catalog', 'sales', 'reports']);
                 done();
             });
@@ -48,7 +48,7 @@ describe('NavBuilderService', () => {
                 'sales',
             );
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 expect(result.map(section => section.id)).toEqual(['catalog', 'reports', 'sales']);
                 done();
             });
@@ -62,7 +62,7 @@ describe('NavBuilderService', () => {
                 items: [],
             });
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 expect(result.map(section => section.id)).toEqual(['catalog', 'sales']);
                 expect(result[1].label).toBe('Custom Sales');
                 done();
@@ -80,7 +80,7 @@ describe('NavBuilderService', () => {
                 'catalog',
             );
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 expect(result.map(section => section.id)).toEqual(['sales', 'catalog']);
                 expect(result[0].label).toBe('Custom Sales');
                 done();
@@ -101,7 +101,7 @@ describe('NavBuilderService', () => {
                 'farm-tools',
             );
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 expect(console.error).toHaveBeenCalledWith(
                     'Could not add menu item "fulfillments", section "farm-tools" does not exist',
                 );
@@ -120,7 +120,7 @@ describe('NavBuilderService', () => {
                 'sales',
             );
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 const salesSection = result.find(r => r.id === 'sales')!;
 
                 expect(salesSection.items.map(item => item.id)).toEqual(['orders', 'fulfillments']);
@@ -140,7 +140,7 @@ describe('NavBuilderService', () => {
                 'orders',
             );
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 const salesSection = result.find(r => r.id === 'sales')!;
 
                 expect(salesSection.items.map(item => item.id)).toEqual(['fulfillments', 'orders']);
@@ -159,7 +159,7 @@ describe('NavBuilderService', () => {
                 'catalog',
             );
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 const catalogSection = result.find(r => r.id === 'catalog')!;
 
                 expect(catalogSection.items.map(item => item.id)).toEqual(['products', 'facets']);
@@ -180,7 +180,7 @@ describe('NavBuilderService', () => {
                 'products',
             );
 
-            service.mainMenuConfig$.pipe(take(1)).subscribe(result => {
+            service.menuConfig$.pipe(take(1)).subscribe(result => {
                 const catalogSection = result.find(r => r.id === 'catalog')!;
 
                 expect(catalogSection.items.map(item => item.id)).toEqual(['facets', 'products']);

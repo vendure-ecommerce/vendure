@@ -354,8 +354,10 @@ export type Cancellation = Node &
 export type Channel = Node & {
     code: Scalars['String'];
     createdAt: Scalars['DateTime'];
+    /** @deprecated Use defaultCurrencyCode instead */
     currencyCode: CurrencyCode;
     customFields?: Maybe<Scalars['JSON']>;
+    defaultCurrencyCode: CurrencyCode;
     defaultLanguageCode: LanguageCode;
     defaultShippingZone?: Maybe<Zone>;
     defaultTaxZone?: Maybe<Zone>;
@@ -517,17 +519,21 @@ export type CoordinateInput = {
     y: Scalars['Float'];
 };
 
-export type Country = Node & {
-    code: Scalars['String'];
-    createdAt: Scalars['DateTime'];
-    customFields?: Maybe<Scalars['JSON']>;
-    enabled: Scalars['Boolean'];
-    id: Scalars['ID'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-    translations: Array<CountryTranslation>;
-    updatedAt: Scalars['DateTime'];
-};
+export type Country = Node &
+    Region & {
+        code: Scalars['String'];
+        createdAt: Scalars['DateTime'];
+        customFields?: Maybe<Scalars['JSON']>;
+        enabled: Scalars['Boolean'];
+        id: Scalars['ID'];
+        languageCode: LanguageCode;
+        name: Scalars['String'];
+        parent?: Maybe<Region>;
+        parentId?: Maybe<Scalars['ID']>;
+        translations: Array<RegionTranslation>;
+        type: Scalars['String'];
+        updatedAt: Scalars['DateTime'];
+    };
 
 export type CountryFilterParameter = {
     code?: InputMaybe<StringOperators>;
@@ -536,6 +542,8 @@ export type CountryFilterParameter = {
     id?: InputMaybe<IdOperators>;
     languageCode?: InputMaybe<StringOperators>;
     name?: InputMaybe<StringOperators>;
+    parentId?: InputMaybe<IdOperators>;
+    type?: InputMaybe<StringOperators>;
     updatedAt?: InputMaybe<DateOperators>;
 };
 
@@ -562,15 +570,9 @@ export type CountrySortParameter = {
     createdAt?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
     name?: InputMaybe<SortOrder>;
+    parentId?: InputMaybe<SortOrder>;
+    type?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
-};
-
-export type CountryTranslation = {
-    createdAt: Scalars['DateTime'];
-    id: Scalars['ID'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-    updatedAt: Scalars['DateTime'];
 };
 
 export type CountryTranslationInput = {
@@ -792,6 +794,13 @@ export type CreatePromotionInput = {
 };
 
 export type CreatePromotionResult = MissingConditionsError | Promotion;
+
+export type CreateProvinceInput = {
+    code: Scalars['String'];
+    customFields?: InputMaybe<Scalars['JSON']>;
+    enabled: Scalars['Boolean'];
+    translations: Array<ProvinceTranslationInput>;
+};
 
 export type CreateRoleInput = {
     channelIds?: InputMaybe<Array<Scalars['ID']>>;
@@ -1211,7 +1220,6 @@ export type CustomFields = {
     Asset: Array<CustomFieldConfig>;
     Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
-    Country: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;
     CustomerGroup: Array<CustomFieldConfig>;
     Facet: Array<CustomFieldConfig>;
@@ -1226,6 +1234,7 @@ export type CustomFields = {
     ProductOptionGroup: Array<CustomFieldConfig>;
     ProductVariant: Array<CustomFieldConfig>;
     Promotion: Array<CustomFieldConfig>;
+    Region: Array<CustomFieldConfig>;
     Seller: Array<CustomFieldConfig>;
     ShippingMethod: Array<CustomFieldConfig>;
     StockLocation: Array<CustomFieldConfig>;
@@ -2470,6 +2479,8 @@ export type Mutation = {
     /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
     createProductVariants: Array<Maybe<ProductVariant>>;
     createPromotion: CreatePromotionResult;
+    /** Create a new Province */
+    createProvince: Province;
     /** Create a new Role */
     createRole: Role;
     /** Create a new Seller */
@@ -2528,6 +2539,8 @@ export type Mutation = {
     /** Delete multiple Products */
     deleteProducts: Array<DeletionResponse>;
     deletePromotion: DeletionResponse;
+    /** Delete a Province */
+    deleteProvince: DeletionResponse;
     /** Delete an existing Role */
     deleteRole: DeletionResponse;
     /** Delete a Seller */
@@ -2633,6 +2646,8 @@ export type Mutation = {
     /** Update multiple existing Products */
     updateProducts: Array<Product>;
     updatePromotion: UpdatePromotionResult;
+    /** Update an existing Province */
+    updateProvince: Province;
     /** Update an existing Role */
     updateRole: Role;
     /** Update an existing Seller */
@@ -2808,6 +2823,10 @@ export type MutationCreatePromotionArgs = {
     input: CreatePromotionInput;
 };
 
+export type MutationCreateProvinceArgs = {
+    input: CreateProvinceInput;
+};
+
 export type MutationCreateRoleArgs = {
     input: CreateRoleInput;
 };
@@ -2933,6 +2952,10 @@ export type MutationDeleteProductsArgs = {
 };
 
 export type MutationDeletePromotionArgs = {
+    id: Scalars['ID'];
+};
+
+export type MutationDeleteProvinceArgs = {
     id: Scalars['ID'];
 };
 
@@ -3179,6 +3202,10 @@ export type MutationUpdateProductsArgs = {
 
 export type MutationUpdatePromotionArgs = {
     input: UpdatePromotionInput;
+};
+
+export type MutationUpdateProvinceArgs = {
+    input: UpdateProvinceInput;
 };
 
 export type MutationUpdateRoleArgs = {
@@ -4277,6 +4304,69 @@ export type PromotionTranslationInput = {
     name?: InputMaybe<Scalars['String']>;
 };
 
+export type Province = Node &
+    Region & {
+        code: Scalars['String'];
+        createdAt: Scalars['DateTime'];
+        customFields?: Maybe<Scalars['JSON']>;
+        enabled: Scalars['Boolean'];
+        id: Scalars['ID'];
+        languageCode: LanguageCode;
+        name: Scalars['String'];
+        parent?: Maybe<Region>;
+        parentId?: Maybe<Scalars['ID']>;
+        translations: Array<RegionTranslation>;
+        type: Scalars['String'];
+        updatedAt: Scalars['DateTime'];
+    };
+
+export type ProvinceFilterParameter = {
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    enabled?: InputMaybe<BooleanOperators>;
+    id?: InputMaybe<IdOperators>;
+    languageCode?: InputMaybe<StringOperators>;
+    name?: InputMaybe<StringOperators>;
+    parentId?: InputMaybe<IdOperators>;
+    type?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ProvinceList = PaginatedList & {
+    items: Array<Province>;
+    totalItems: Scalars['Int'];
+};
+
+export type ProvinceListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ProvinceFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ProvinceSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']>;
+};
+
+export type ProvinceSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    parentId?: InputMaybe<SortOrder>;
+    type?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ProvinceTranslationInput = {
+    customFields?: InputMaybe<Scalars['JSON']>;
+    id?: InputMaybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: InputMaybe<Scalars['String']>;
+};
+
 /** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
 export type QuantityTooGreatError = ErrorResult & {
     errorCode: ErrorCode;
@@ -4340,6 +4430,8 @@ export type Query = {
     promotionActions: Array<ConfigurableOperationDefinition>;
     promotionConditions: Array<ConfigurableOperationDefinition>;
     promotions: PromotionList;
+    province?: Maybe<Province>;
+    provinces: ProvinceList;
     role?: Maybe<Role>;
     roles: RoleList;
     search: SearchResponse;
@@ -4503,6 +4595,14 @@ export type QueryPromotionsArgs = {
     options?: InputMaybe<PromotionListOptions>;
 };
 
+export type QueryProvinceArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryProvincesArgs = {
+    options?: InputMaybe<ProvinceListOptions>;
+};
+
 export type QueryRoleArgs = {
     id: Scalars['ID'];
 };
@@ -4638,6 +4738,28 @@ export type RefundStateTransitionError = ErrorResult & {
     message: Scalars['String'];
     toState: Scalars['String'];
     transitionError: Scalars['String'];
+};
+
+export type Region = {
+    code: Scalars['String'];
+    createdAt: Scalars['DateTime'];
+    enabled: Scalars['Boolean'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    parent?: Maybe<Region>;
+    parentId?: Maybe<Scalars['ID']>;
+    translations: Array<RegionTranslation>;
+    type: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
+};
+
+export type RegionTranslation = {
+    createdAt: Scalars['DateTime'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
 };
 
 export type RelationCustomFieldConfig = CustomField & {
@@ -5544,6 +5666,14 @@ export type UpdatePromotionInput = {
 
 export type UpdatePromotionResult = MissingConditionsError | Promotion;
 
+export type UpdateProvinceInput = {
+    code?: InputMaybe<Scalars['String']>;
+    customFields?: InputMaybe<Scalars['JSON']>;
+    enabled?: InputMaybe<Scalars['Boolean']>;
+    id: Scalars['ID'];
+    translations?: InputMaybe<Array<ProvinceTranslationInput>>;
+};
+
 export type UpdateRoleInput = {
     channelIds?: InputMaybe<Array<Scalars['ID']>>;
     code?: InputMaybe<Scalars['String']>;
@@ -5620,7 +5750,7 @@ export type Zone = Node & {
     createdAt: Scalars['DateTime'];
     customFields?: Maybe<Scalars['JSON']>;
     id: Scalars['ID'];
-    members: Array<Country>;
+    members: Array<Region>;
     name: Scalars['String'];
     updatedAt: Scalars['DateTime'];
 };
@@ -7738,13 +7868,16 @@ export type PromotionFragment = {
 export type ZoneFragment = {
     id: string;
     name: string;
-    members: Array<{
-        id: string;
-        code: string;
-        name: string;
-        enabled: boolean;
-        translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-    }>;
+    members: Array<
+        | {
+              id: string;
+              code: string;
+              name: string;
+              enabled: boolean;
+              translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+          }
+        | {}
+    >;
 };
 
 export type TaxRateFragment = {
@@ -11110,13 +11243,16 @@ export type GetZoneQuery = {
     zone?: {
         id: string;
         name: string;
-        members: Array<{
-            id: string;
-            code: string;
-            name: string;
-            enabled: boolean;
-            translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-        }>;
+        members: Array<
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
+            | {}
+        >;
     } | null;
 };
 
@@ -11125,7 +11261,7 @@ export type GetActiveChannelWithZoneMembersQueryVariables = Exact<{ [key: string
 export type GetActiveChannelWithZoneMembersQuery = {
     activeChannel: {
         id: string;
-        defaultShippingZone?: { id: string; members: Array<{ name: string }> } | null;
+        defaultShippingZone?: { id: string; members: Array<{ name: string } | { name: string }> } | null;
     };
 };
 
@@ -11137,13 +11273,16 @@ export type CreateZoneMutation = {
     createZone: {
         id: string;
         name: string;
-        members: Array<{
-            id: string;
-            code: string;
-            name: string;
-            enabled: boolean;
-            translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-        }>;
+        members: Array<
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
+            | {}
+        >;
     };
 };
 
@@ -11155,13 +11294,16 @@ export type UpdateZoneMutation = {
     updateZone: {
         id: string;
         name: string;
-        members: Array<{
-            id: string;
-            code: string;
-            name: string;
-            enabled: boolean;
-            translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-        }>;
+        members: Array<
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
+            | {}
+        >;
     };
 };
 
@@ -11174,13 +11316,16 @@ export type AddMembersToZoneMutation = {
     addMembersToZone: {
         id: string;
         name: string;
-        members: Array<{
-            id: string;
-            code: string;
-            name: string;
-            enabled: boolean;
-            translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-        }>;
+        members: Array<
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
+            | {}
+        >;
     };
 };
 
@@ -11193,12 +11338,15 @@ export type RemoveMembersFromZoneMutation = {
     removeMembersFromZone: {
         id: string;
         name: string;
-        members: Array<{
-            id: string;
-            code: string;
-            name: string;
-            enabled: boolean;
-            translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
-        }>;
+        members: Array<
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
+            | {}
+        >;
     };
 };

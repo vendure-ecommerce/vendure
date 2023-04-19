@@ -1670,6 +1670,7 @@ export class OrderService {
                     variant,
                     updatedOrderLine.customFields || {},
                     order,
+                    updatedOrderLine.quantity,
                 );
                 const initialListPrice = updatedOrderLine.initialListPrice ?? priceResult.price;
                 if (initialListPrice !== priceResult.price) {

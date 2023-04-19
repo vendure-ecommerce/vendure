@@ -17,7 +17,7 @@ import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel, TaxRate } from '../../entity';
-import { Country } from '../../entity/country/country.entity';
+import { Country } from '../../entity/region/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ZoneEvent } from '../../event-bus/events/zone-event';

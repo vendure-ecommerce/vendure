@@ -12,43 +12,30 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
+    border-right: 1px solid var(--color-component-border-200);
+    //box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
     z-index: 1;
+    @media screen and (min-width: $breakpoint-medium) {
+        width: 260px;
+    }
 }
 
 .top-bar {
+    position: sticky;
+    top: 0;
     height: 48px;
     width: 100%;
     display: flex;
+    z-index: 20;
     justify-content: space-between;
-    background-color: var(--color-top-bar-bg);
-    border-bottom: 1px solid var(--color-component-border-200);
+    background-color: var(--color-left-nav-bg);
+    //background-color: var(--color-top-bar-bg);
+    //border-bottom: 1px solid var(--color-component-border-200);
 }
 
 .main-nav-container {
     overflow: auto;
     flex: 1;
-    /* ===== Scrollbar CSS ===== */
-    /* Firefox */
-    scrollbar-width: auto;
-    scrollbar-color: var(--color-primary-700) #052731;
-
-    /* Chrome, Edge, and Safari */
-    &::-webkit-scrollbar {
-        width: 16px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background-color: #052731;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background-color: var(--color-primary-700);
-        border-radius: var(--border-radius);
-        &:hover {
-            background-color: #0f5070;
-        }
-    }
 }
 
 .surface {
@@ -65,7 +52,6 @@
 .branding {
     display: flex;
     align-items: center;
-    justify-content: center;
     min-width: 0;
 }
 
@@ -82,15 +68,20 @@
         display: none;
     }
 }
+
 vdr-breadcrumb {
     width: 100%;
     max-width: var(--layout-content-max-width);
     background-color: var(--color-component-bg-100);
     padding: var(--space-unit) 0;
     z-index: 5;
-    margin: 0 auto;
     position: sticky;
     top: 0;
+    margin-right: auto;
+    margin-left: calc(var(--space-unit) * 3);
+    @media screen and (max-width: $breakpoint-medium) {
+        margin-left: calc(var(--space-unit));
+    }
 }
 
 .header-actions {
@@ -100,8 +91,12 @@ vdr-breadcrumb {
 .content-area {
     position: relative;
     max-width: var(--layout-content-max-width);
-    margin: 0 auto;
+    margin-right: auto;
+    margin-left: calc(var(--space-unit) * 3);
     padding: 0 var(--space-unit);
+    @media screen and (max-width: $breakpoint-medium) {
+        margin-left: calc(var(--space-unit));
+    }
 }
 
 ::ng-deep {

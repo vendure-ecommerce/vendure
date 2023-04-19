@@ -80,7 +80,7 @@ export function translateEntity<T extends Translatable & VendureEntity>(
             }
             Object.assign(translated.customFields, value);
         } else if (key !== 'base' && key !== 'id' && key !== 'createdAt' && key !== 'updatedAt') {
-            translated[key] = value;
+            translated[key] = value ?? '';
         }
     }
     return translated;
