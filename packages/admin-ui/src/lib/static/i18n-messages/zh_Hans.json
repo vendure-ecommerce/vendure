@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "添加管理员"
+    "create-new-administrator": "添加管理员",
+    "search-administrator":"通过名字/姓氏/电子邮件搜索"
   },
   "asset": {
     "add-asset": "添加资源",
