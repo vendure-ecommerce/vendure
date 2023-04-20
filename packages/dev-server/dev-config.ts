@@ -14,6 +14,7 @@ import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
@@ -93,6 +94,12 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            // Un-comment to compile a custom admin ui
+            // app: compileUiExtensions({
+            //     outputPath: path.join(__dirname, './custom-admin-ui'),
+            //     extensions: [],
+            //     devMode: true,
+            // }),
         }),
     ],
 };

@@ -65,8 +65,7 @@
     ],
     "nohoist": [
       "**/@types/jasmine",
-      "**/@types/jasminewd2",
-      "**/@angular*/**"
+      "**/@types/jasminewd2"
     ]
   },
   "commitlint": {
