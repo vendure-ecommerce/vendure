@@ -1,7 +1,7 @@
 @use 'sass:math';
 
 // spacing
-$space-unit: 6px;
+$space-unit: 8px;
 
 $space-1: math.div($space-unit, 2);
 $space-2: $space-unit;
@@ -417,6 +417,32 @@ $breakpoint-glue: '\\:' !default;
                         ) !important;
                     }
                 }
+            }
+        }
+    }
+}
+
+// colour classes
+$colors: (
+    'weight',
+    'primary',
+    'secondary',
+    'success',
+    'warning',
+    'error'
+);
+$scale: (100,  125,  150,  200,  300,  400,  500,  600,  700,  800,  900,  950,  975,  1000);
+$properties: (
+    'color': 'color',
+    'bg': 'background-color',
+    'border': 'border-color',
+);
+// create the classes
+@each $color in $colors {
+    @each $scale in $scale {
+        @each $property, $cssProperty in $properties {
+            .#{$property}-#{$color}-#{$scale} {
+                #{$cssProperty}: var(--color-#{$color}-#{$scale});
             }
         }
     }

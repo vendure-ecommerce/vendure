@@ -8,16 +8,16 @@
 
 .active-channel {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     font-size: var(--font-size-xs);
     color: var(--color-left-nav-text);
-    background-color: var(--color-component-bg-200);
-    border: 1px solid var(--color-component-border-200);
+    background-color: var(--color-weight-150);
+    border: none;
     cursor: pointer;
     width: 100%;
-    border-radius: var(--border-radius);
-    padding: var(--space-unit);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-unit) calc(var(--space-unit) * 2);
 
     &:hover {
         background-color: var(--color-component-bg-100);
@@ -35,6 +35,7 @@
 .channel-label {
     margin: 0 3px;
     overflow: hidden;
+    flex: 1;
     max-width: 100px;
     text-overflow: ellipsis;
     @media screen and (max-width: $breakpoint-medium) {

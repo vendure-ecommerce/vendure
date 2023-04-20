@@ -1,22 +1,19 @@
 <div class="app-container">
     <div class="left-nav">
-        <div class="branding py-2 px-2">
+        <div class="branding py-4 px-4">
             <a [routerLink]="['/']"
-                ><img src="assets/logo-75px.png" class="logo" /><span
-                    class="wordmark md:hidden"
-                    *ngIf="!hideVendureBranding"
-                    >vendure</span
-                ></a
+                ><img src="assets/logo.webp" class="logo" /></a
             >
         </div>
-        <div class="mx-2">
+        <div class="mx-4">
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
         </div>
-        <div class="px-2 mt-4 main-nav-container">
+        <div class="main-nav-container">
             <vdr-main-nav></vdr-main-nav>
         </div>
-        <div class="m-2">
-            <vdr-settings-nav></vdr-settings-nav>
+        <div class="settings-nav-container">
+            <hr />
+            <vdr-main-nav displayMode="settings"></vdr-main-nav>
         </div>
         <div class="mx-2"></div>
     </div>

@@ -1,0 +1,12 @@
+.button-small {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 var(--space-unit);
+    height: calc(var(--space-unit) * 3);
+    gap: 12px;
+    border: none;
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+}

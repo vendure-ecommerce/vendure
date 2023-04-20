@@ -71,12 +71,10 @@
     --color-text-300: var(--color-grey-400);
     --color-text-inverse: white;
 
+
+
     // Component-specific colors
     --color-top-bar-bg: white;
-
-    --color-left-nav-bg: var(--color-component-bg-100);
-    --color-left-nav-text: var(--color-text);
-    --color-left-nav-text-hover: var(--color-primary-700);
 
     --color-icon-button: var(--color-grey-600);
     --color-form-input-bg: white;
@@ -101,6 +99,103 @@
     --color-json-editor-key: var(--color-success-500);
     --color-json-editor-error: var(--color-error-500);
 
+
+    --color-white: #fff;
+    --color-black: #000;
+    --color-weight-100: hsl(0 0% 95%);
+    --color-weight-125: hsl(0 0% 93%);
+    --color-weight-150: hsl(0 0% 90%);
+    --color-weight-200: hsl(0 0% 85%);
+    --color-weight-300: hsl(0 0% 75%);
+    --color-weight-400: hsl(0 0% 65%);
+    --color-weight-500: hsl(0 0% 55%);
+    --color-weight-600: hsl(0 0% 45%);
+    --color-weight-700: hsl(0 0% 35%);
+    --color-weight-800: hsl(0 0% 25%);
+    --color-weight-900: hsl(0 0% 15%);
+    --color-weight-950: hsl(0 0% 10%);
+    --color-weight-975: hsl(0 0% 7%);
+    --color-weight-1000: hsl(0 0% 5%);
+
+    --color-primary-100: hsl(196 100% 95%);
+    --color-primary-125: hsl(196 100% 93%);
+    --color-primary-150: hsl(196 100% 90%);
+    --color-primary-200: hsl(196 100% 85%);
+    --color-primary-300: hsl(196 100% 75%);
+    --color-primary-400: hsl(196 100% 65%);
+    --color-primary-500: hsl(196 100% 55%);
+    --color-primary-600: hsl(196 100% 45%);
+    --color-primary-700: hsl(196 100% 35%);
+    --color-primary-800: hsl(196 100% 25%);
+    --color-primary-900: hsl(196 100% 15%);
+    --color-primary-950: hsl(196 100% 10%);
+    --color-primary-975: hsl(196 100% 7%);
+    --color-primary-1000: hsl(196 100 5%);
+
+    --color-accent-100: hsl(35 100% 95%);
+    --color-accent-125: hsl(35 100% 93%);
+    --color-accent-150: hsl(35 100% 90%);
+    --color-accent-200: hsl(35 100% 85%);
+    --color-accent-300: hsl(35 100% 75%);
+    --color-accent-400: hsl(35 100% 65%);
+    --color-accent-500: hsl(35 100% 55%);
+    --color-accent-600: hsl(35 100% 45%);
+    --color-accent-700: hsl(35 100% 35%);
+    --color-accent-800: hsl(35 100% 25%);
+    --color-accent-900: hsl(35 100% 15%);
+    --color-accent-950: hsl(35 100% 10%);
+    --color-accent-975: hsl(35 100% 7%);
+    --color-accent-1000: hsl(35 100% 5%);
+
+    --color-success-100: hsl(158 76% 95%);
+    --color-success-125: hsl(158 76% 93%);
+    --color-success-150: hsl(158 76% 90%);
+    --color-success-200: hsl(158 76% 85%);
+    --color-success-300: hsl(158 76% 75%);
+    --color-success-400: hsl(158 76% 65%);
+    --color-success-500: hsl(158 76% 55%);
+    --color-success-600: hsl(158 76% 45%);
+    --color-success-700: hsl(158 76% 35%);
+    --color-success-800: hsl(158 76% 25%);
+    --color-success-900: hsl(158 76% 15%);
+    --color-success-950: hsl(158 76% 10%);
+    --color-success-975: hsl(158 76% 7%);
+    --color-success-1000: hsl(158 76% 5%);
+
+    --color-warning-100: hsl(53 100% 95%);
+    --color-warning-125: hsl(53 100% 93%);
+    --color-warning-150: hsl(53 100% 90%);
+    --color-warning-200: hsl(53 100% 85%);
+    --color-warning-300: hsl(53 100% 75%);
+    --color-warning-400: hsl(53 100% 65%);
+    --color-warning-500: hsl(53, 100%, 47%);
+    --color-warning-600: hsl(53 100% 45%);
+    --color-warning-700: hsl(53 100% 35%);
+    --color-warning-800: hsl(53 100% 25%);
+    --color-warning-900: hsl(53 100% 15%);
+    --color-warning-950: hsl(53 100% 10%);
+    --color-warning-975: hsl(53 100% 7%);
+    --color-warning-1000: hsl(53 100% 5%);
+
+    --color-error-100: hsl(4 100% 95%);
+    --color-error-125: hsl(4 100% 93%);
+    --color-error-150: hsl(4 100% 90%);
+    --color-error-200: hsl(4 100% 85%);
+    --color-error-300: hsl(4 100% 75%);
+    --color-error-400: hsl(4 100% 65%);
+    --color-error-500: hsl(4, 73%, 51%);
+    --color-error-600: hsl(4 100% 45%);
+    --color-error-700: hsl(4 100% 35%);
+    --color-error-800: hsl(4 100% 25%);
+    --color-error-900: hsl(4 100% 15%);
+    --color-error-950: hsl(4 100% 10%);
+    --color-error-975: hsl(4 100% 7%);
+    --color-error-1000: hsl(4 100% 5%);
+
+    --color-left-nav-bg: var(--color-weight-100);
+    --color-left-nav-text: var(--color-text);
+    --color-left-nav-text-hover: var(--color-primary-700);
+
     // Layout
     --layout-content-max-width: 1200px;
 
@@ -116,7 +211,7 @@
     // Border radius
     --border-radius-sm: div(var(--clr-global-borderradius), 2);
     --border-radius: var(--clr-global-borderradius);
-    --border-radius-lg: var(--clr-global-borderradius) * 2;
+    --border-radius-lg: calc(var(--space-unit) * 3);
     --border-radius-img: var(--clr-global-borderradius);
     --border-radius-input: var(--clr-global-borderradius);
 
