@@ -7,10 +7,8 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orde
 import { Inject, Injectable } from '@nestjs/common';
 import {
     ActiveOrderService,
-    ChannelService,
     EntityHydrator,
     ErrorResult,
-    LanguageCode,
     Logger,
     Order,
     OrderService,
@@ -62,7 +60,6 @@ export class MollieService {
         @Inject(PLUGIN_INIT_OPTIONS) private options: MolliePluginOptions,
         private activeOrderService: ActiveOrderService,
         private orderService: OrderService,
-        private channelService: ChannelService,
         private entityHydrator: EntityHydrator,
         private variantService: ProductVariantService,
     ) {
@@ -167,8 +164,7 @@ export class MollieService {
     /**
      * Update Vendure payments and order status based on the incoming Mollie order
      */
-    async handleMollieStatusUpdate({ channelToken, paymentMethodId, orderId }: OrderStatusInput): Promise<void> {
-        const ctx = await this.createContext(channelToken);
+    async handleMollieStatusUpdate(ctx: RequestContext, { channelToken, paymentMethodId, orderId }: OrderStatusInput): Promise<void> {
         Logger.info(`Received status update for channel ${channelToken} for Mollie order ${orderId}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
@@ -300,16 +296,5 @@ export class MollieService {
     private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
         const paymentMethods = await this.paymentMethodService.findAll(ctx);
         return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
-    }
-
-    private async createContext(channelToken: string): Promise<RequestContext> {
-        const channel = await this.channelService.getChannelFromToken(channelToken);
-        return new RequestContext({
-            apiType: 'admin',
-            isAuthorized: true,
-            authorizedAsOwnerOnly: false,
-            channel,
-            languageCode: LanguageCode.en,
-        });
     }
 }

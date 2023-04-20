@@ -56,7 +56,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         metadata,
     ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
         // Only Admins and internal calls should be allowed to settle and authorize payments
-        if (ctx.apiType !== 'admin') {
+        if (ctx.apiType !== 'admin' && ctx.apiType !== 'custom') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
         if (metadata.status !== 'Authorized' && metadata.status !== 'Settled') {
