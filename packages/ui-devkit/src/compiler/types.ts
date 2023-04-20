@@ -332,6 +332,23 @@ export interface UiExtensionCompilerOptions {
      * of the app, for example with the default value of `'/admin/'`, the Admin UI app
      * will be configured to be served from `http://<host>/admin/`.
      *
+     * Note: if you are using this in conjunction with the {@link AdminUiPlugin} then you should
+     * also set the `route` option to match this value.
+     *
+     * @example
+     * ```TypeScript
+     * AdminUiPlugin.init({
+     *   route: 'my-route',
+     *   port: 5001,
+     *   app: compileUiExtensions({
+     *     baseHref: '/my-route/',
+     *     outputPath: path.join(__dirname, './custom-admin-ui'),
+     *     extensions: [],
+     *     devMode: true,
+     *   }),
+     * }),
+     * ```
+     *
      * @default '/admin/'
      */
     baseHref?: string;

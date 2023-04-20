@@ -7,7 +7,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
-import { copyGlobalStyleFile, setupScaffold } from './scaffold';
+import { copyGlobalStyleFile, setBaseHref, setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
     Extension,
@@ -72,7 +72,8 @@ function runCompileMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const commandArgs = ['run', 'build', `--base-href=${baseHref}`, ...buildProcessArguments(args)];
+            await setBaseHref(outputPath, baseHref);
+            const commandArgs = ['run', 'build', ...buildProcessArguments(args)];
             if (!usingYarn) {
                 // npm requires `--` before any command line args being passed to a script
                 commandArgs.splice(2, 0, '--');
@@ -117,20 +118,17 @@ function runWatchMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
+            await setBaseHref(outputPath, baseHref);
             const adminUiExtensions = extensions.filter(isAdminUiExtension);
             const normalizedExtensions = normalizeExtensions(adminUiExtensions);
             const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
             const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
             const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
-            buildProcess = spawn(
-                cmd,
-                ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`, ...buildProcessArguments(args)],
-                {
-                    cwd: outputPath,
-                    shell: true,
-                    stdio: 'inherit',
-                },
-            );
+            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, ...buildProcessArguments(args)], {
+                cwd: outputPath,
+                shell: true,
+                stdio: 'inherit',
+            });
 
             buildProcess.on('close', code => {
                 if (code !== 0) {

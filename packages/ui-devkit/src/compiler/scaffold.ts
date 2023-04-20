@@ -258,6 +258,13 @@ function copyAdminUiSource(outputPath: string, modulePathMapping: Record<string,
     fs.copySync(adminUiSrc, outputSrc);
 }
 
+export async function setBaseHref(outputPath: string, baseHref: string) {
+    const angularJsonFilePath = path.join(outputPath, '/angular.json');
+    const angularJson = await fs.readJSON(angularJsonFilePath, 'utf-8');
+    angularJson.projects['vendure-admin'].architect.build.options.baseHref = baseHref;
+    await fs.writeJSON(angularJsonFilePath, angularJson, { spaces: 2 });
+}
+
 /**
  * Adds module path mapping to the bundled tsconfig.json file if defined as a UI extension.
  */

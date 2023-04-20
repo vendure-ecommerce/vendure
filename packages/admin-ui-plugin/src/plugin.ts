@@ -37,6 +37,10 @@ export interface AdminUiPluginOptions {
     /**
      * @description
      * The route to the Admin UI.
+     *
+     * Note: If you are using the {@link compileUiExtensions} function to compile a custom version of the Admin UI, then
+     * the route should match the `baseHref` option passed to that function. The default value of `baseHref` is `/admin/`,
+     * so it only needs to be changed if you set this `route` option to something other than `"admin"`.
      */
     route: string;
     /**
