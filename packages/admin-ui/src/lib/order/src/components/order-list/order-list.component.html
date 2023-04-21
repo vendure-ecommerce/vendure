@@ -1,4 +1,4 @@
-<vdr-action-bar>
+<!--<vdr-action-bar>
     <vdr-ab-left>
         <div class="search-form">
             <div class="filter-presets btn-group btn-outline-primary" *ngIf="activePreset$ | async as activePreset">
@@ -75,58 +75,70 @@
     <vdr-ab-right>
         <vdr-action-bar-items locationId="order-list"></vdr-action-bar-items>
         <ng-container *ngIf="canCreateDraftOrder">
-            <a class="btn btn-primary mt1" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
+            <a class="btn btn-primary mt-1" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-draft-order' | translate }}
             </a>
         </ng-container>
     </vdr-ab-right>
-</vdr-action-bar>
-
-<vdr-data-table
-    [items]="items$ | async"
-    [itemsPerPage]="itemsPerPage$ | async"
-    [totalItems]="totalItems$ | async"
-    [currentPage]="currentPage$ | async"
-    (pageChange)="setPageNumber($event)"
-    (itemsPerPageChange)="setItemsPerPage($event)"
->
-    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'order.customer' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'order.order-type' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'order.state' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'order.total' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'order.placed-at' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'order.shipping' | translate }}</vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <ng-template let-order="item">
-        <td class="left align-middle">{{ order.code }}</td>
-        <td class="left align-middle">
-            <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
-        </td>
-        <td class="left align-middle">
-            <vdr-chip>{{ order.type }}</vdr-chip>
-        </td>
-        <td class="left align-middle">
-            <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
-        </td>
-        <td class="left align-middle">{{ order.totalWithTax | localeCurrency: order.currencyCode }}</td>
-        <td class="left align-middle">{{ order.updatedAt | timeAgo }}</td>
-        <td class="left align-middle">{{ order.orderPlacedAt | localeDate: 'medium' }}</td>
-        <td class="left align-middle">{{ getShippingNames(order) }}</td>
-        <td class="right align-middle">
-            <vdr-table-row-action
-                iconShape="shopping-cart"
-                [label]="'common.open' | translate"
-                [linkTo]="
-                    order.state === 'Modifying'
-                        ? ['./', order.id, 'modify']
-                        : order.state === 'Draft'
-                        ? ['./draft', order.id]
-                        : ['./', order.id]
-                "
-            ></vdr-table-row-action>
-        </td>
-    </ng-template>
-</vdr-data-table>
+</vdr-action-bar>-->
+<vdr-page-header>
+    <vdr-page-title />
+    <vdr-page-header-description>Description of the current page (if applicable)</vdr-page-header-description>
+    <vdr-page-header-tabs
+        [tabs]="[
+            { id: 'tab1', label: 'Tab 1' },
+            { id: 'tab2', label: 'Tab 2' },
+            { id: 'tab3', label: 'Tab 3' }
+        ]"
+    ></vdr-page-header-tabs>
+</vdr-page-header>
+<vdr-page-body>
+    <vdr-data-table
+        [items]="items$ | async"
+        [itemsPerPage]="itemsPerPage$ | async"
+        [totalItems]="totalItems$ | async"
+        [currentPage]="currentPage$ | async"
+        (pageChange)="setPageNumber($event)"
+        (itemsPerPageChange)="setItemsPerPage($event)"
+    >
+        <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
+        <vdr-dt-column>{{ 'order.customer' | translate }}</vdr-dt-column>
+        <vdr-dt-column>{{ 'order.order-type' | translate }}</vdr-dt-column>
+        <vdr-dt-column>{{ 'order.state' | translate }}</vdr-dt-column>
+        <vdr-dt-column>{{ 'order.total' | translate }}</vdr-dt-column>
+        <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
+        <vdr-dt-column>{{ 'order.placed-at' | translate }}</vdr-dt-column>
+        <vdr-dt-column>{{ 'order.shipping' | translate }}</vdr-dt-column>
+        <vdr-dt-column></vdr-dt-column>
+        <ng-template let-order="item">
+            <td class="left align-middle">{{ order.code }}</td>
+            <td class="left align-middle">
+                <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
+            </td>
+            <td class="left align-middle">
+                <vdr-chip>{{ order.type }}</vdr-chip>
+            </td>
+            <td class="left align-middle">
+                <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
+            </td>
+            <td class="left align-middle">{{ order.totalWithTax | localeCurrency : order.currencyCode }}</td>
+            <td class="left align-middle">{{ order.updatedAt | timeAgo }}</td>
+            <td class="left align-middle">{{ order.orderPlacedAt | localeDate : 'medium' }}</td>
+            <td class="left align-middle">{{ getShippingNames(order) }}</td>
+            <td class="right align-middle">
+                <vdr-table-row-action
+                    iconShape="shopping-cart"
+                    [label]="'common.open' | translate"
+                    [linkTo]="
+                        order.state === 'Modifying'
+                            ? ['./', order.id, 'modify']
+                            : order.state === 'Draft'
+                            ? ['./draft', order.id]
+                            : ['./', order.id]
+                    "
+                ></vdr-table-row-action>
+            </td>
+        </ng-template>
+    </vdr-data-table>
+</vdr-page-body>

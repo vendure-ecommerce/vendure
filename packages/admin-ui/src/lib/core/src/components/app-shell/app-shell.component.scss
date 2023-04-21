@@ -21,16 +21,12 @@
 }
 
 .top-bar {
-    position: sticky;
-    top: 0;
-    height: 48px;
     width: 100%;
     display: flex;
-    z-index: 20;
+    align-items: center;
     justify-content: space-between;
-    background-color: var(--color-left-nav-bg);
-    //background-color: var(--color-top-bar-bg);
-    //border-bottom: 1px solid var(--color-component-border-200);
+    padding: calc(var(--space-unit) * 4);
+    background-color: var(--color-weight-70);
 }
 
 .main-nav-container {
@@ -52,7 +48,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    background-color: var(--color-component-bg-100);
+    background-color: var(--color-white);
 }
 
 .content-container {
@@ -79,34 +75,13 @@
     }
 }
 
-vdr-breadcrumb {
-    width: 100%;
-    max-width: var(--layout-content-max-width);
-    background-color: var(--color-component-bg-100);
-    padding: var(--space-unit) 0;
-    z-index: 5;
-    position: sticky;
-    top: 0;
-    margin-right: auto;
-    margin-left: calc(var(--space-unit) * 3);
-    @media screen and (max-width: $breakpoint-medium) {
-        margin-left: calc(var(--space-unit));
-    }
-}
-
 .header-actions {
     align-items: center;
 }
 
 .content-area {
     position: relative;
-    max-width: var(--layout-content-max-width);
     margin-right: auto;
-    margin-left: calc(var(--space-unit) * 3);
-    padding: 0 var(--space-unit);
-    @media screen and (max-width: $breakpoint-medium) {
-        margin-left: calc(var(--space-unit));
-    }
 }
 
 ::ng-deep {

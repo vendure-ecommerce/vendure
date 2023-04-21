@@ -1,7 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-left [grow]="true">
         <vdr-asset-search-input
-            class="pr4 mt1"
+            class="pr4 mt-1"
             [tags]="allTags$ | async"
             (searchTermChange)="searchTerm$.next($event)"
             (tagsChange)="filterByTags$.next($event)"

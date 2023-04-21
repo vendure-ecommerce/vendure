@@ -181,14 +181,14 @@
                 </tbody>
             </table>
 
-            <h4 class="mb2">{{ 'order.modifications' | translate }}</h4>
+            <h4 class="mb-2">{{ 'order.modifications' | translate }}</h4>
             <clr-accordion>
                 <clr-accordion-panel>
                     <clr-accordion-title>{{ 'order.add-item-to-order' | translate }}</clr-accordion-title>
                     <clr-accordion-content *clrIfExpanded>
-                        <vdr-product-variant-selector class="mb4" (productSelected)="addItemSelectedVariant = $event">
+                        <vdr-product-variant-selector class="mb-4" (productSelected)="addItemSelectedVariant = $event">
                         </vdr-product-variant-selector>
-                        <div *ngIf="addItemSelectedVariant" class="flex mb4">
+                        <div *ngIf="addItemSelectedVariant" class="flex mb-4">
                             <img
                                 *ngIf="addItemSelectedVariant.productAsset as asset"
                                 [src]="asset | assetPreview: 'tiny'"

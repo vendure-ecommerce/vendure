@@ -3,27 +3,28 @@
 :host {
     display: block;
     padding: 0;
+    position: relative;
 }
 .breadcrumbs {
     list-style-type: none;
     display: flex;
     overflow-x: auto;
     max-width: 100vw;
-    padding: 0 3px;
-    margin: 0 var(--space-unit);
+    line-height: 100%;
+    height: 40px;
+    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2.5);
     font-size: var(--font-size-sm);
-    @media screen and (min-width: $breakpoint-small) {
-        padding: 0;
-    }
+    background-color: var(--color-weight-125);
+    border-radius: var(--border-radius-lg);
     li {
         display: inline-block;
-        margin-right: 10px;
         white-space: nowrap;
+        a:link, a:visited {
+            color: var(--color-weight-700);
+        }
+        &:last-child {
+            font-weight: 600;
+        }
     }
-    li:not(:last-child)::after {
-        content: '›';
-        top: 0;
-        color: var(--color-grey-400);
-        margin-left: 10px;
-    }
+
 }

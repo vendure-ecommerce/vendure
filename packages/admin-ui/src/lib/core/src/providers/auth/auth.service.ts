@@ -40,9 +40,21 @@ export class AuthService {
             switchMap(login => {
                 if (login.__typename === 'CurrentUser') {
                     const { id } = this.getActiveChannel(login.channels);
-                    return this.dataService.client
-                        .loginSuccess(username, id, login.channels)
-                        .pipe(map(() => login));
+                    return this.dataService.administrator.getActiveAdministrator().single$.pipe(
+                        switchMap(({ activeAdministrator }) => {
+                            if (activeAdministrator) {
+                                return this.dataService.client
+                                    .loginSuccess(
+                                        `${activeAdministrator.firstName} ${activeAdministrator.lastName}`,
+                                        id,
+                                        login.channels,
+                                    )
+                                    .pipe(map(() => login));
+                            } else {
+                                return of(login);
+                            }
+                        }),
+                    );
                 }
                 return of(login);
             }),
@@ -89,13 +101,28 @@ export class AuthService {
      */
     validateAuthToken(): Observable<boolean> {
         return this.dataService.auth.currentUser().single$.pipe(
-            mergeMap(result => {
-                if (!result.me) {
+            mergeMap(({ me }) => {
+                if (!me) {
                     return of(false) as any;
                 }
-                this.setChannelToken(result.me.channels);
-                const { id } = this.getActiveChannel(result.me.channels);
-                return this.dataService.client.loginSuccess(result.me.identifier, id, result.me.channels);
+                this.setChannelToken(me.channels);
+
+                const { id } = this.getActiveChannel(me.channels);
+                return this.dataService.administrator.getActiveAdministrator().single$.pipe(
+                    switchMap(({ activeAdministrator }) => {
+                        if (activeAdministrator) {
+                            return this.dataService.client
+                                .loginSuccess(
+                                    `${activeAdministrator.firstName} ${activeAdministrator.lastName}`,
+                                    id,
+                                    me.channels,
+                                )
+                                .pipe(map(() => true));
+                        } else {
+                            return of(false);
+                        }
+                    }),
+                );
             }),
             mapTo(true),
             catchError(err => of(false)),

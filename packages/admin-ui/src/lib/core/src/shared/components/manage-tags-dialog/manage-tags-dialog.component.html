@@ -1,9 +1,9 @@
 <ng-template vdrDialogTitle>
     <span>{{ 'common.manage-tags' | translate }}</span>
 </ng-template>
-<p class="mt0 mb4">{{ 'common.manage-tags-description' | translate }}</p>
+<p class="mt0 mb-4">{{ 'common.manage-tags-description' | translate }}</p>
 <ul class="tag-list" *ngFor="let tag of allTags$ | async">
-    <li class="mb2 p1" [class.to-delete]="markedAsDeleted(tag.id)">
+    <li class="mb-2 p-1" [class.to-delete]="markedAsDeleted(tag.id)">
         <clr-icon shape="tag" class="is-solid mr2" [style.color]="tag.value | stringToColor"></clr-icon>
         <input type="text" (input)="updateTagValue(tag.id, $event.target.value)" [value]="tag.value" />
         <button class="icon-button" (click)="toggleDelete(tag.id)">

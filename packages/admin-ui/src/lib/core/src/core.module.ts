@@ -14,7 +14,6 @@ import { ChannelSwitcherComponent } from './components/channel-switcher/channel-
 import { MainNavComponent } from './components/main-nav/main-nav.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { OverlayHostComponent } from './components/overlay-host/overlay-host.component';
-import { PageTitleComponent } from './components/page-title/page-title.component';
 import { SettingsNavComponent } from './components/settings-nav/settings-nav.component';
 import { ThemeSwitcherComponent } from './components/theme-switcher/theme-switcher.component';
 import { UiLanguageSwitcherDialogComponent } from './components/ui-language-switcher-dialog/ui-language-switcher-dialog.component';
@@ -57,7 +56,6 @@ import { SharedModule } from './shared/shared.module';
         UiLanguageSwitcherDialogComponent,
         ChannelSwitcherComponent,
         ThemeSwitcherComponent,
-        PageTitleComponent,
     ],
 })
 export class CoreModule {

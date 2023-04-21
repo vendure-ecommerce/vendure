@@ -1,0 +1,5 @@
+<div class="tab-bar" *ngIf="tabs.length">
+    <div class="tab" *ngFor="let tab of tabs" [class.active]="selectedTabId === tab.id">
+        {{ tab.label | translate }}
+    </div>
+</div>

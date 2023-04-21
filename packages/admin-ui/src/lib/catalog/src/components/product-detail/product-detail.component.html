@@ -223,7 +223,7 @@
                         </a>
                     </div>
 
-                    <div class="pagination-row mt4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
+                    <div class="pagination-row mt-4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
                         <vdr-items-per-page-controls
                             [itemsPerPage]="itemsPerPage$ | async"
                             (itemsPerPageChange)="setItemsPerPage($event)"
@@ -266,7 +266,7 @@
                         (selectionChange)="selectedVariantIds = $event"
                     ></vdr-product-variants-list>
                 </section>
-                <div class="pagination-row mt4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
+                <div class="pagination-row mt-4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
                     <vdr-items-per-page-controls
                         [itemsPerPage]="itemsPerPage$ | async"
                         (itemsPerPageChange)="setItemsPerPage($event)"

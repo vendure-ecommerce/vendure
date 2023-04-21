@@ -69,6 +69,7 @@ import { DialogTitleDirective } from './components/modal-dialog/dialog-title.dir
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
+import { PageTitleComponent } from './components/page-title/page-title.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
@@ -140,6 +141,10 @@ import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
+import { PageHeaderComponent } from './components/page-header/page-header.component';
+import { PageHeaderDescriptionComponent } from './components/page-header-description/page-header-description.component';
+import { PageHeaderTabsComponent } from './components/page-header-tabs/page-header-tabs.component';
+import { PageBodyComponent } from './components/page-body/page-body.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -280,6 +285,11 @@ const DYNAMIC_FORM_INPUTS = [
     HtmlEditorFormInputComponent,
     ProductMultiSelectorFormInputComponent,
     CombinationModeFormInputComponent,
+    PageHeaderComponent,
+    PageTitleComponent,
+    PageHeaderDescriptionComponent,
+    PageHeaderTabsComponent,
+    PageBodyComponent,
 ];
 
 @NgModule({

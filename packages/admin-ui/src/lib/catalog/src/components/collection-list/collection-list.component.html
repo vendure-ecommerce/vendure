@@ -10,7 +10,7 @@
             />
             <div class="flex center">
                 <clr-toggle-wrapper
-                    class="expand-all-toggle mt2"
+                    class="expand-all-toggle mt-2"
                 >
                     <input type="checkbox" clrToggle [(ngModel)]="expandAll" (change)="toggleExpandAll()" />
                     <label>
@@ -18,7 +18,7 @@
                     </label>
                 </clr-toggle-wrapper>
                 <vdr-language-selector
-                    class="mt2"
+                    class="mt-2"
                     [availableLanguageCodes]="availableLanguages$ | async"
                     [currentLanguageCode]="contentLanguage$ | async"
                     (languageCodeChange)="setLanguage($event)"
