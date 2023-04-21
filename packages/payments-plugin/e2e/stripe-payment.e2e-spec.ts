@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { mergeConfig } from '@vendure/core';
-import { CreateProduct, CreateProductVariants } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
+import {
+    CreateProductMutation,
+    CreateProductMutationVariables,
+    CreateProductVariantsMutation,
+    CreateProductVariantsMutationVariables,
+} from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graphql/shared-definitions';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -17,14 +22,16 @@ import { CREATE_CHANNEL, CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST } from './grap
 import {
     CreateChannelMutation,
     CreateChannelMutationVariables,
-    CreatePaymentMethod,
+    CreatePaymentMethodMutation,
+    CreatePaymentMethodMutationVariables,
     CurrencyCode,
-    GetCustomerList,
     GetCustomerListQuery,
+    GetCustomerListQueryVariables,
     LanguageCode,
 } from './graphql/generated-admin-types';
 import {
-    AddItemToOrder,
+    AddItemToOrderMutation,
+    AddItemToOrderMutationVariables,
     GetActiveOrderQuery,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
@@ -41,8 +48,6 @@ describe('Stripe payments', () => {
     const devConfig = mergeConfig(testConfig(), {
         plugins: [
             StripePlugin.init({
-                apiKey: 'test-api-key',
-                webhookSigningSecret: 'test-signing-secret',
                 storeCustomersInStripe: true,
             }),
         ],
@@ -63,7 +68,7 @@ describe('Stripe payments', () => {
         await adminClient.asSuperAdmin();
         ({
             customers: { items: customers },
-        } = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(GET_CUSTOMER_LIST, {
+        } = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(GET_CUSTOMER_LIST, {
             options: {
                 take: 2,
             },
@@ -74,43 +79,46 @@ describe('Stripe payments', () => {
         await server.destroy();
     });
 
-    it('Should start successfully', async () => {
+    it('Should start successfully', () => {
         expect(started).toEqual(true);
         expect(customers).toHaveLength(2);
     });
 
     it('Should prepare an order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-            ADD_ITEM_TO_ORDER,
-            {
-                productVariantId: 'T_1',
-                quantity: 2,
-            },
-        );
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_1',
+            quantity: 2,
+        });
         order = addItemToOrder as TestOrderFragmentFragment;
         expect(order.code).toBeDefined();
     });
 
     it('Should add a Stripe paymentMethod', async () => {
         const { createPaymentMethod } = await adminClient.query<
-            CreatePaymentMethod.Mutation,
-            CreatePaymentMethod.Variables
+            CreatePaymentMethodMutation,
+            CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: `stripe-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`,
+                translations: [
+                    {
+                        name: 'Stripe payment test',
+                        description: 'This is a Stripe test payment method',
+                        languageCode: LanguageCode.en,
+                    },
+                ],
                 enabled: true,
                 handler: {
                     code: stripePaymentMethodHandler.code,
-                    arguments: [],
+                    arguments: [
+                        { name: 'apiKey', value: 'test-api-key' },
+                        { name: 'webhookSecret', value: 'test-signing-secret' },
+                    ],
                 },
-                translations: [
-                    {
-                        languageCode: LanguageCode.en,
-                        name: 'Stripe payment test',
-                        description: 'This is a Stripe test payment method',
-                    },
-                ],
             },
         });
         expect(createPaymentMethod.code).toBe(`stripe-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`);
@@ -192,8 +200,8 @@ describe('Stripe payments', () => {
             shopClient.setChannelToken(JAPAN_CHANNEL_TOKEN);
 
             const { createProduct } = await adminClient.query<
-                CreateProduct.Mutation,
-                CreateProduct.Variables
+                CreateProductMutation,
+                CreateProductMutationVariables
             >(CREATE_PRODUCT, {
                 input: {
                     translations: [
@@ -207,8 +215,8 @@ describe('Stripe payments', () => {
                 },
             });
             const { createProductVariants } = await adminClient.query<
-                CreateProductVariants.Mutation,
-                CreateProductVariants.Variables
+                CreateProductVariantsMutation,
+                CreateProductVariantsMutationVariables
             >(CREATE_PRODUCT_VARIANTS, {
                 input: [
                     {
@@ -222,13 +230,37 @@ describe('Stripe payments', () => {
                 ],
             });
             japanProductId = createProductVariants[0]!.id;
+            // Create a payment method for the Japan channel
+            await adminClient.query<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>(
+                CREATE_PAYMENT_METHOD,
+                {
+                    input: {
+                        code: `stripe-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`,
+                        translations: [
+                            {
+                                name: 'Stripe payment test',
+                                description: 'This is a Stripe test payment method',
+                                languageCode: LanguageCode.en,
+                            },
+                        ],
+                        enabled: true,
+                        handler: {
+                            code: stripePaymentMethodHandler.code,
+                            arguments: [
+                                { name: 'apiKey', value: 'test-api-key' },
+                                { name: 'webhookSecret', value: 'test-signing-secret' },
+                            ],
+                        },
+                    },
+                },
+            );
         });
 
         it('prepares order', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: japanProductId,
                 quantity: 1,
@@ -252,4 +284,6 @@ describe('Stripe payments', () => {
             expect(createPaymentIntentPayload.currency).toBe('jpy');
         });
     });
+
+    // TODO: Contribution welcome: test webhook handling and order settlement
 });

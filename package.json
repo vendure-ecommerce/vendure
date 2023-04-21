@@ -87,7 +87,7 @@
     "hooks": {
       "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS",
       "post-commit": "git update-index --again",
-      "pre-commit": "lint-staged",
+      "pre-commit": "NODE_OPTIONS=\"--max-old-space-size=8096\" lint-staged",
       "pre-push": "yarn check-imports && yarn check-angular-versions && yarn build && yarn test && yarn e2e"
     }
   },
