@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "Utwórz konto administratora"
+    "create-new-administrator": "Utwórz konto administratora",
+    "search-administrator":"Szukaj według imienia / nazwiska / adresu e-mail"
   },
   "asset": {
     "add-asset": "Dodaj zasób",

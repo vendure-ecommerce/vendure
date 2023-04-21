@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "新增管理員"
+    "create-new-administrator": "新增管理員",
+    "search-administrator": "透過名字/姓氏/電子郵件搜尋"
   },
   "asset": {
     "add-asset": "新增檔案",

@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "Create new administrator"
+    "create-new-administrator": "Create new administrator",
+    "search-administrator": "Search by first name / last name / email"
   },
   "asset": {
     "add-asset": "Add asset",
