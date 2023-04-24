@@ -26,7 +26,7 @@
     align-items: center;
     justify-content: space-between;
     padding: calc(var(--space-unit) * 4);
-    background-color: var(--color-weight-70);
+    background-color: var(--page-header-color);
 }
 
 .main-nav-container {
@@ -82,14 +82,4 @@
 .content-area {
     position: relative;
     margin-right: auto;
-}
-
-::ng-deep {
-    .header {
-        background-image: linear-gradient(
-            to right,
-            var(--color-header-gradient-from),
-            var(--color-header-gradient-to)
-        );
-    }
 }

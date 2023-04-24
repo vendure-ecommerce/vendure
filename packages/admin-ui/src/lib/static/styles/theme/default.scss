@@ -57,7 +57,6 @@
 
     --color-white: #fff;
     --color-black: #000;
-    --color-weight-70: hsl(0 0% 98%);
     --color-weight-100: hsl(0 0% 95%);
     --color-weight-125: hsl(0 0% 93%);
     --color-weight-150: hsl(0 0% 90%);
@@ -161,8 +160,7 @@
     --color-login-gradient-bottom: black;
 
     // header
-    --color-header-gradient-from: var(--color-primary-800);
-    --color-header-gradient-to: var(--color-primary-900);
+    --page-header-color: hsl(0 0% 98%);
 
     // Border radius
     --border-radius-sm: div(var(--clr-global-borderradius), 2);
