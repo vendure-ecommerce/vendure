@@ -94,6 +94,15 @@ export class MollieService {
         if (!order.customer) {
             return new PaymentIntentError('Cannot create payment intent for order without customer');
         }
+        if (!order.customer.firstName.length) {
+            return new PaymentIntentError('Cannot create payment intent for order with customer that has no firstName set');
+        }
+        if (!order.customer.lastName.length) {
+            return new PaymentIntentError('Cannot create payment intent for order with customer that has no lastName set');
+        }
+        if (!order.customer.emailAddress.length) {
+            return new PaymentIntentError('Cannot create payment intent for order with customer that has no emailAddress set');
+        }
         if (!order.shippingLines?.length) {
             return new PaymentIntentError('Cannot create payment intent for order without shippingMethod');
         }
