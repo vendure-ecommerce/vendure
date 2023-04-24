@@ -78,6 +78,7 @@ export type Asset = Node & {
   source: Scalars['String'];
   preview: Scalars['String'];
   focalPoint?: Maybe<Coordinate>;
+  tags: Array<Tag>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -1572,6 +1573,7 @@ export type MolliePaymentIntentError = ErrorResult & {
 };
 
 export type MolliePaymentIntentInput = {
+  redirectUrl?: Maybe<Scalars['String']>;
   paymentMethodCode: Scalars['String'];
   molliePaymentMethodCode?: Maybe<Scalars['String']>;
 };

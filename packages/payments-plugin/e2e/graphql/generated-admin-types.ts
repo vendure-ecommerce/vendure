@@ -162,7 +162,6 @@ export type AlreadyRefundedError = ErrorResult & {
 export type ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError;
 
 export type Asset = Node & {
-  tags: Array<Tag>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -175,6 +174,7 @@ export type Asset = Node & {
   source: Scalars['String'];
   preview: Scalars['String'];
   focalPoint?: Maybe<Coordinate>;
+  tags: Array<Tag>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 

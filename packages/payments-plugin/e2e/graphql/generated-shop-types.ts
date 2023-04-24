@@ -74,6 +74,7 @@ export type Asset = Node & {
   source: Scalars['String'];
   preview: Scalars['String'];
   focalPoint?: Maybe<Coordinate>;
+  tags: Array<Tag>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 

@@ -29,7 +29,8 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
  * This should only be used to locally test the Mollie payment plugin
  */
 /* tslint:disable:no-floating-promises */
-(async () => {
+async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
+    console.log('Starting Mollie dev server with dynamic redirectUrl: ', useDynamicRedirectUrl);
     require('dotenv').config();
 
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
@@ -42,7 +43,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
                 route: 'admin',
                 port: 5001,
             }),
-            MolliePlugin.init({ vendureHost: tunnel.url }),
+            MolliePlugin.init({ vendureHost: tunnel.url, useDynamicRedirectUrl }),
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
         apiOptions: {
@@ -66,24 +67,26 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
         }
     `);
     // Create method
-    await adminClient.query<CreatePaymentMethod.Mutation,
-        CreatePaymentMethod.Variables>(CREATE_PAYMENT_METHOD, {
-        input: {
-            code: 'mollie',
-            name: 'Mollie payment test',
-            description: 'This is a Mollie test payment method',
-            enabled: true,
-            handler: {
-                code: molliePaymentHandler.code,
-                arguments: [
-                    { name: 'redirectUrl', value: `${tunnel.url}/admin/orders?filter=open&page=1` },
-                    // tslint:disable-next-line:no-non-null-assertion
-                    { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
-                    { name: 'autoCapture', value: 'false' },
-                ],
+    await adminClient.query<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
+        CREATE_PAYMENT_METHOD,
+        {
+            input: {
+                code: 'mollie',
+                name: 'Mollie payment test',
+                description: 'This is a Mollie test payment method',
+                enabled: true,
+                handler: {
+                    code: molliePaymentHandler.code,
+                    arguments: [
+                        { name: 'redirectUrl', value: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=false` },
+                        // tslint:disable-next-line:no-non-null-assertion
+                        { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
+                        { name: 'autoCapture', value: 'false' },
+                    ],
+                },
             },
         },
-    });
+    );
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
     await shopClient.query<AddItemToOrder.Order, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
@@ -114,6 +117,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     });
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
+            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
             paymentMethodCode: 'mollie',
 //            molliePaymentMethodCode: 'klarnapaylater'
         },
@@ -122,5 +126,9 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
         throw createMolliePaymentIntent;
     }
     Logger.info(`Mollie payment link: ${createMolliePaymentIntent.url}`, 'Mollie DevServer');
-})();
+};
 
+(async () => {
+    // Change the value of the parameter to true to test with the dynamic redirectUrl functionality
+    await runMollieDevServer(false);
+})()
