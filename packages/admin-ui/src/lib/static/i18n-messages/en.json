@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "Create new administrator"
+    "create-new-administrator": "Create new administrator",
+    "search-administrator": "Search by first name / last name / email"
   },
   "asset": {
     "add-asset": "Add asset",
@@ -287,7 +288,7 @@
     "view-next-month": "View next month",
     "view-previous-month": "View previous month",
     "with-selected": "With {count} selected...",
-    "login-title": "Log in to Vendure",
+    "login-title": "Log in to {brand}",
     "login-image-title": "Hi! Welcome back. Good to see you."
   },
   "customer": {
