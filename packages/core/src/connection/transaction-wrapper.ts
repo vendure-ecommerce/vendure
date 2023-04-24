@@ -4,7 +4,7 @@ import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import { TransactionAlreadyStartedError } from 'typeorm/error/TransactionAlreadyStartedError';
 
 import { RequestContext } from '../api/common/request-context';
-import { TransactionMode } from '../api/decorators/transaction.decorator';
+import { TransactionIsolationLevel, TransactionMode } from '../api/decorators/transaction.decorator';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 
 /**
@@ -27,16 +27,17 @@ export class TransactionWrapper {
         originalCtx: RequestContext,
         work: (ctx: RequestContext) => Observable<T> | Promise<T>,
         mode: TransactionMode,
+        isolationLevel: TransactionIsolationLevel | undefined,
         connection: Connection,
     ): Promise<T> {
         // Copy to make sure original context will remain valid after transaction completes
         const ctx = originalCtx.copy();
 
         const entityManager: EntityManager | undefined = (ctx as any)[TRANSACTION_MANAGER_KEY];
-        const queryRunner = entityManager?.queryRunner || connection.createQueryRunner();
+        const queryRunner = entityManager ?.queryRunner || connection.createQueryRunner();
 
         if (mode === 'auto') {
-            await this.startTransaction(queryRunner);
+            await this.startTransaction(queryRunner, isolationLevel);
         }
         (ctx as any)[TRANSACTION_MANAGER_KEY] = queryRunner.manager;
 
@@ -80,7 +81,7 @@ export class TransactionWrapper {
      * Attempts to start a DB transaction, with retry logic in the case that a transaction
      * is already started for the connection (which is mainly a problem with SQLite/Sql.js)
      */
-    private async startTransaction(queryRunner: QueryRunner) {
+    private async startTransaction(queryRunner: QueryRunner, isolationLevel: TransactionIsolationLevel | undefined) {
         const maxRetries = 25;
         let attempts = 0;
         let lastError: any;
@@ -88,7 +89,7 @@ export class TransactionWrapper {
         // Returns false if a transaction is already in progress
         async function attemptStartTransaction(): Promise<boolean> {
             try {
-                await queryRunner.startTransaction();
+                await queryRunner.startTransaction(isolationLevel);
                 return true;
             } catch (err: any) {
                 lastError = err;

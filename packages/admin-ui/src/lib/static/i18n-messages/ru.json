@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "Создать нового администратора"
+    "create-new-administrator": "Создать нового администратора",
+    "search-administrator": "Поиск по имени / фамилии / электронной почте"
   },
   "asset": {
     "add-asset": "Добавить медиа-объект",

@@ -27,13 +27,6 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'API Key' }],
         },
-        redirectUrl: {
-            type: 'string',
-            label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
-            description: [
-                { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
-            ],
-        },
         autoCapture: {
             type: 'boolean',
             label: [{ languageCode: LanguageCode.en, value: 'Auto capture payments' }],
@@ -48,6 +41,15 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 },
             ],
         },
+        redirectUrl: {
+            type: 'string',
+            required: false,
+            defaultValue: '',
+            label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
+            description: [
+                { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
+            ],
+        }
     },
     init(injector) {
         mollieService = injector.get(MollieService);
@@ -60,7 +62,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         metadata,
     ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
         // Only Admins and internal calls should be allowed to settle and authorize payments
-        if (ctx.apiType !== 'admin') {
+        if (ctx.apiType !== 'admin' && ctx.apiType !== 'custom') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
         if (metadata.status !== 'Authorized' && metadata.status !== 'Settled') {

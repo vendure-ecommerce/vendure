@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "Neuen Administrator anlegen"
+    "create-new-administrator": "Neuen Administrator anlegen",
+    "search-administrator": "Nach Vorname / Nachname / E-Mail suchen"
   },
   "asset": {
     "add-asset": "Asset hinzufügen",
@@ -295,7 +296,9 @@
     "username": "Benutzername",
     "view-next-month": "Nächsten Monat anzeigen",
     "view-previous-month": "Vorherigen Monat anzeigen",
-    "with-selected": "Auswahl..."
+    "with-selected": "Auswahl...",
+    "login-title": "Anmelden bei {brand}",
+    "login-image-title": "Hallo! Willkommen zurück. Schön, dich zu sehen."
   },
   "customer": {
     "add-customer-to-group": "Kunde zu Gruppe hinzufügen",

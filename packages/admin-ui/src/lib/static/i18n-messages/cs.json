@@ -1,6 +1,7 @@
 {
   "admin": {
-    "create-new-administrator": "Vytvořit nového administrátora"
+    "create-new-administrator": "Vytvořit nového administrátora",
+    "search-administrator": "Hledat podle jména / příjmení / e-mailu"
   },
   "asset": {
     "add-asset": "Přidat médium",

@@ -14,7 +14,7 @@
         </div>
         <div class="login-wrapper-form">
             <p class="login-title">
-                {{ 'common.login-title' | translate }}
+                {{ 'common.login-title' | translate: { brand: hideVendureBranding ? brand : "Vendure" } }}
             </p>
             <form class="login-form">
                 <div class="login-group">

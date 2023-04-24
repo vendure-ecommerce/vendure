@@ -7,10 +7,8 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orde
 import { Inject, Injectable } from '@nestjs/common';
 import {
     ActiveOrderService,
-    ChannelService,
     EntityHydrator,
     ErrorResult,
-    LanguageCode,
     Logger,
     Order,
     OrderService,
@@ -59,7 +57,6 @@ export class MollieService {
         @Inject(PLUGIN_INIT_OPTIONS) private options: MolliePluginOptions,
         private activeOrderService: ActiveOrderService,
         private orderService: OrderService,
-        private channelService: ChannelService,
         private entityHydrator: EntityHydrator,
         private variantService: ProductVariantService,
     ) {}
@@ -69,8 +66,10 @@ export class MollieService {
      */
     async createPaymentIntent(
         ctx: RequestContext,
-        { paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput,
+        input: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
+        const { paymentMethodCode, molliePaymentMethodCode } = input;
+        let redirectUrl: string;
         const allowedMethods = Object.values(MollieClientMethod) as string[];
         if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
             return new InvalidInputError(
@@ -93,11 +92,33 @@ export class MollieService {
         if (!order.customer) {
             return new PaymentIntentError('Cannot create payment intent for order without customer');
         }
+        if (!order.customer.firstName.length) {
+            return new PaymentIntentError('Cannot create payment intent for order with customer that has no firstName set');
+        }
+        if (!order.customer.lastName.length) {
+            return new PaymentIntentError('Cannot create payment intent for order with customer that has no lastName set');
+        }
+        if (!order.customer.emailAddress.length) {
+            return new PaymentIntentError('Cannot create payment intent for order with customer that has no emailAddress set');
+        }
         if (!order.shippingLines?.length) {
             return new PaymentIntentError('Cannot create payment intent for order without shippingMethod');
         }
         if (!paymentMethod) {
             return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
+        }
+        if (this.options.useDynamicRedirectUrl == true) {
+            if (!input.redirectUrl) {
+                return new InvalidInputError(`Cannot create payment intent without redirectUrl specified`);
+            }
+            redirectUrl = input.redirectUrl;
+        } else {
+            let paymentMethodRedirectUrl =  paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
+            if (!paymentMethodRedirectUrl) {
+                return new PaymentIntentError(`Cannot create payment intent without redirectUrl specified in paymentMethod`);
+            }
+            redirectUrl = paymentMethodRedirectUrl;
+
         }
         const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
         if (variantsWithInsufficientSaleableStock.length) {
@@ -106,35 +127,28 @@ export class MollieService {
             );
         }
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
-        let redirectUrl = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
-        if (!apiKey || !redirectUrl) {
+        if (!apiKey) {
             Logger.warn(
-                `CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`,
+                `CreatePaymentIntent failed, because no apiKey is configured for ${paymentMethod.code}`,
                 loggerCtx,
             );
-            return new PaymentIntentError(
-                `Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`,
-            );
+            return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey configured`);
         }
         const mollieClient = createMollieClient({ apiKey });
-        redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
+        redirectUrl = redirectUrl.endsWith('/') && this.options.useDynamicRedirectUrl != true ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
-        const billingAddress =
-            toMollieAddress(order.billingAddress, order.customer) ||
-            toMollieAddress(order.shippingAddress, order.customer);
+        const billingAddress = toMollieAddress(order.billingAddress, order.customer) || toMollieAddress(order.shippingAddress, order.customer);
         if (!billingAddress) {
-            return new InvalidInputError(
-                'Order doesn\'t have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.',
-            );
+            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, postalCode, streetline1 and country are needed to create a payment intent.`);
         }
         const alreadyPaid = totalCoveredByPayments(order);
         const amountToPay = order.totalWithTax - alreadyPaid;
         const orderInput: CreateParameters = {
             orderNumber: order.code,
             amount: toAmount(amountToPay, order.currencyCode),
-            redirectUrl: `${redirectUrl}/${order.code}`,
+            redirectUrl: this.options.useDynamicRedirectUrl == true ? redirectUrl :`${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
             locale: getLocale(billingAddress.country, ctx.languageCode),
@@ -147,7 +161,7 @@ export class MollieService {
         Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`);
         const url = mollieOrder.getCheckoutUrl();
         if (!url) {
-            throw Error('Unable to getCheckoutUrl() from Mollie order');
+            throw Error(`Unable to getCheckoutUrl() from Mollie order`);
         }
         return {
             url,
@@ -157,16 +171,8 @@ export class MollieService {
     /**
      * Update Vendure payments and order status based on the incoming Mollie order
      */
-    async handleMollieStatusUpdate({
-        channelToken,
-        paymentMethodId,
-        orderId,
-    }: OrderStatusInput): Promise<void> {
-        const ctx = await this.createContext(channelToken);
-        Logger.info(
-            `Received status update for channel ${channelToken} for Mollie order ${orderId}`,
-            loggerCtx,
-        );
+    async handleMollieStatusUpdate(ctx: RequestContext, { channelToken, paymentMethodId, orderId }: OrderStatusInput): Promise<void> {
+        Logger.info(`Received status update for channel ${channelToken} for Mollie order ${orderId}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
@@ -316,16 +322,5 @@ export class MollieService {
     private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
         const paymentMethods = await this.paymentMethodService.findAll(ctx);
         return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
-    }
-
-    private async createContext(channelToken: string): Promise<RequestContext> {
-        const channel = await this.channelService.getChannelFromToken(channelToken);
-        return new RequestContext({
-            apiType: 'admin',
-            isAuthorized: true,
-            authorizedAsOwnerOnly: false,
-            channel,
-            languageCode: LanguageCode.en,
-        });
     }
 }
