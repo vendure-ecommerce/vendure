@@ -30,7 +30,7 @@ module.exports = {
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        project: 'tsconfig.json',
+        project: true, // Resolve the nearest single tsconfig - See: https://github.com/typescript-eslint/typescript-eslint/issues/1192#issuecomment-1483926773
         sourceType: 'module',
     },
     plugins: [
