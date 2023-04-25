@@ -61,7 +61,7 @@
                 trackBy: trackByFn
             "
         >
-            <td *ngIf="selectionManager" class="align-middle selection-col">
+            <td *ngIf="selectionManager" class="selection-col">
                 <input
                     type="checkbox"
                     clrCheckbox
@@ -82,9 +82,6 @@
                 <td [attr.colspan]="visibleColumns.length + (selectionManager ? 1 : 0)">
                     <vdr-empty-placeholder [emptyStateLabel]="emptyStateLabel"></vdr-empty-placeholder>
                 </td>
-            </tr>
-            <tr>
-                <td *ngFor="let column of visibleColumns" class="left align-middle"></td>
             </tr>
         </ng-container>
     </tbody>

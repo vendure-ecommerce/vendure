@@ -12,7 +12,8 @@ export class DataTable2ColumnComponent<T> implements OnInit {
     @Input() expand = false;
     @Input() heading: string;
     @Input() align: 'left' | 'right' | 'center' = 'left';
-    @Input() optional = false;
+    @Input() optional = true;
+    @Input() hiddenByDefault = false;
     #visible = true;
     #onColumnChangeFns: Array<() => void> = [];
     get visible() {
@@ -22,7 +23,7 @@ export class DataTable2ColumnComponent<T> implements OnInit {
     item: T;
 
     ngOnInit() {
-        this.#visible = this.optional ? false : true;
+        this.#visible = this.hiddenByDefault ? false : true;
     }
 
     setVisibility(isVisible: boolean) {

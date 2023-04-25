@@ -54,11 +54,15 @@ th {
     font-weight: 400;
     background-color: var(--color-weight-100);
     padding: calc(var(--space-unit) * 4) calc(var(--space-unit) * 4);
-    box-shadow: inset -1px 6px 5px -3px #a5a5a540;
+    box-shadow: inset -1px 6px 5px 0px rgb(165 165 165 / 8%);
+    border: 1px solid var(--color-weight-200);
+    border-left-width: 0;
+    border-right-width: 0;
     input {
         width: 100%;
     }
     .filters {
+        margin-top: calc(var(--space-unit) * 1);
         display: flex;
         flex-wrap: wrap;
         gap: calc(var(--space-unit) * 0.5);
@@ -75,9 +79,25 @@ tr th:first-of-type {
     padding-left: calc(var(--space-unit) * 4);
 }
 
+// odd rows
+tbody tr:nth-child(even) {
+    background-color: var(--color-table-alternate-row-bg);
+}
+
+tbody tr:hover {
+    background-color: var(--color-weight-100);
+}
+
+.cell-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .cell-content {
     display: flex;
     align-items: center;
+    color: var(--color-weight-700);
     &.left {
         justify-content: flex-start;
     }

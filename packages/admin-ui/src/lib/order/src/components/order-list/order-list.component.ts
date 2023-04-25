@@ -16,12 +16,10 @@ import {
     OrderType,
     ServerConfigService,
     SortOrder,
-    StateI18nTokenPipe,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
 import { merge } from 'rxjs';
 import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
-import { DataTableFilter } from '../../../../core/src/providers/data-table-filter/data-table-filter';
 import { DataTableFilterService } from '../../../../core/src/providers/data-table-filter/data-table-filter.service';
 
 @Component({
@@ -36,7 +34,6 @@ export class OrderListComponent
 {
     searchControl = new UntypedFormControl('');
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
-    activeFilters: DataTableFilter[] = [];
     readonly filters = this.dataTableFilterService
         .createConfig<OrderFilterParameter>()
         .addFilter({
@@ -102,7 +99,7 @@ export class OrderListComponent
             (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),
             data => data.orders,
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            (skip, take) => this.createQueryOptions(skip, take, this.searchControl.value, this.activeFilters),
+            (skip, take) => this.createQueryOptions(skip, take, this.searchControl.value),
         );
         this.canCreateDraftOrder = !!this.serverConfigService
             .getOrderProcessStates()
@@ -137,7 +134,6 @@ export class OrderListComponent
         skip: number,
         take: number,
         searchTerm: string,
-        activeFilters: DataTableFilter[] = [],
     ): { options: OrderListOptions } {
         let filterOperator: LogicalOperator = LogicalOperator.AND;
         let filterInput = this.filters.createFilterInput();

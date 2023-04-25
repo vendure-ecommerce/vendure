@@ -19,7 +19,6 @@ import { LocalStorageService } from '@vendure/admin-ui/core';
 import { PaginationService } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
-import { DataTableFilter } from '../../../providers/data-table-filter/data-table-filter';
 import { DataTableFilterCollection } from '../../../providers/data-table-filter/data-table-filter-collection';
 
 import { DataTable2ColumnComponent } from './data-table-column.component';
@@ -101,7 +100,6 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     @Input() searchTermControl?: FormControl<string>;
     @Input() searchTermPlaceholder?: string;
     @Input() filters: DataTableFilterCollection;
-    @Input() activeFilters: DataTableFilter[] = [];
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
 
@@ -177,14 +175,14 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
                 dataTableConfig[this.id] = { visibility: [] };
             }
             dataTableConfig[this.id].visibility = this.columns
-                .filter(c => (c.visible && c.optional) || (!c.visible && !c.optional))
+                .filter(c => (c.visible && c.hiddenByDefault) || (!c.visible && !c.hiddenByDefault))
                 .map(c => c.heading);
             this.localStorageService.set('dataTableConfig', dataTableConfig);
         };
 
         this.columns.forEach(column => {
             if (dataTableConfig?.[this.id]?.visibility.includes(column.heading)) {
-                column.setVisibility(column.optional);
+                column.setVisibility(column.hiddenByDefault);
             }
             column.onColumnChange(updateColumnVisibility);
         });

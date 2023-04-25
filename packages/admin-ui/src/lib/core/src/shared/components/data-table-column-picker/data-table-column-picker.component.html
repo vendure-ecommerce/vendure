@@ -7,6 +7,7 @@
             <label>
                 <input
                     type="checkbox"
+                    [disabled]="column.optional === false"
                     [checked]="column.visible"
                     (change)="toggleColumn(column)"
                     class="mr-1"

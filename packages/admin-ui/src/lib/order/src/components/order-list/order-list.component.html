@@ -1,89 +1,17 @@
-<!--<vdr-action-bar>
-    <vdr-ab-left>
-        <div class="search-form">
-            <div class="filter-presets btn-group btn-outline-primary" *ngIf="activePreset$ | async as activePreset">
-                <button
-                    class="btn"
-                    *ngFor="let preset of filterPresets"
-                    [class.btn-primary]="activePreset === preset.name"
-                    (click)="selectFilterPreset(preset.name)"
-                >
-                    {{ preset.label | translate }}
-                </button>
-                <button
-                    class="btn"
-                    [class.btn-primary]="activePreset === 'custom'"
-                    (click)="selectFilterPreset('custom')"
-                >
-                    {{ 'order.filter-custom' | translate }}
-                    <clr-icon shape="angle down"></clr-icon>
-                </button>
-            </div>
-            <input
-                type="text"
-                name="searchTerm"
-                [formControl]="searchControl"
-                [placeholder]="'order.search-by-order-filters' | translate"
-                class="search-input"
-            />
-        </div>
-        <div class="custom-filters" [class.expanded]="(activePreset$ | async) === 'custom'">
-            <form [formGroup]="customFilterForm">
-                <div class="flex align-center">
-                    <ng-select
-                        [items]="orderStates"
-                        appendTo="body"
-                        [addTag]="false"
-                        [multiple]="true"
-                        formControlName="states"
-                        [placeholder]="'state.all-orders' | translate"
-                        [clearable]="true"
-                        [searchable]="false"
-                    >
-                        <ng-template ng-option-tmp let-item="item">{{
-                            item | stateI18nToken | translate
-                        }}</ng-template>
-                        <ng-template ng-label-tmp let-item="item" let-clear="clear">
-                            <span class="ng-value-label"> {{ item | stateI18nToken | translate }}</span>
-                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true"
-                                >×</span
-                            >
-                        </ng-template>
-                    </ng-select>
-                    <button
-                        class="btn btn-secondary"
-                        [disabled]="customFilterForm.pristine"
-                        (click)="applyCustomFilters()"
-                    >
-                        {{ 'order.apply-filters' | translate }}
-                        <clr-icon shape="filter"></clr-icon>
-                    </button>
-                </div>
-                <div class="flex">
-                    <div>
-                        <label>{{ 'order.placed-at-start' | translate }}</label>
-                        <vdr-datetime-picker formControlName="placedAtStart"></vdr-datetime-picker>
-                    </div>
-                    <div>
-                        <label>{{ 'order.placed-at-end' | translate }}</label>
-                        <vdr-datetime-picker formControlName="placedAtEnd"></vdr-datetime-picker>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </vdr-ab-left>
-    <vdr-ab-right>
+<vdr-page-header>
+    <vdr-page-title>
         <vdr-action-bar-items locationId="order-list"></vdr-action-bar-items>
         <ng-container *ngIf="canCreateDraftOrder">
-            <a class="btn btn-primary mt-1" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
+            <a
+                class="btn"
+                *vdrIfPermissions="['CreateOrder']"
+                [routerLink]="['./draft/create']"
+            >
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-draft-order' | translate }}
             </a>
         </ng-container>
-    </vdr-ab-right>
-</vdr-action-bar>-->
-<vdr-page-header>
-    <vdr-page-title />
+    </vdr-page-title>
     <vdr-page-header-description>Description of the current page (if applicable)</vdr-page-header-description>
     <vdr-page-header-tabs
         [tabs]="[
@@ -107,17 +35,23 @@
         (pageChange)="setPageNumber($event)"
         (itemsPerPageChange)="setItemsPerPage($event)"
     >
-        <vdr-dt2-column [heading]="'common.code' | translate">
+        <vdr-dt2-column [heading]="'common.code' | translate" [optional]="false">
             <ng-template let-order="item">
-                {{ order.code }}
+                <a class="button-ghost" [routerLink]="['./', order.id]"
+                    ><span>{{ order.code }}</span>
+                    <clr-icon shape="arrow right"></clr-icon>
+                </a>
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'order.customer' | translate">
             <ng-template let-order="item">
-                <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
+                <vdr-customer-label
+                    [customer]="order.customer"
+                    (click)="$event.stopPropagation()"
+                ></vdr-customer-label>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'order.order-type' | translate" [optional]="true">
+        <vdr-dt2-column [heading]="'order.order-type' | translate" [hiddenByDefault]="true">
             <ng-template let-order="item">
                 <vdr-chip>{{ order.type }}</vdr-chip>
             </ng-template>
@@ -137,7 +71,7 @@
                 {{ order.updatedAt | timeAgo }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'order.placed-at' | translate" [optional]="true">
+        <vdr-dt2-column [heading]="'order.placed-at' | translate">
             <ng-template let-order="item">
                 {{ order.orderPlacedAt | localeDate : 'short' }}
             </ng-template>

@@ -1,11 +1,11 @@
-.button {
+.button, .btn {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
     padding: var(--space-unit);
     font-size: var(--font-size-sm);
-    gap: 12px;
+    gap: var(--space-unit);
     border: none;
     border-radius: var(--border-radius-sm);
     cursor: pointer;
@@ -22,6 +22,31 @@
         background-color: var(--color-weight-100);
         color: var(--color-weight-800);
     }
+}
+
+.button-ghost {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 var(--space-unit);
+    height: calc(var(--space-unit) * 3);
+    font-size: var(--font-size-xs);
+    gap: 4px;
+    border: 1px solid var(--color-weight-300);
+    border-radius: var(--border-radius-lg);
+    cursor: pointer;
+    white-space: nowrap;
+    &:hover {
+        background-color: var(--color-primary-100);
+        color: var(--color-primary-700);
+    }
+}
+a.button-ghost:link, a.button-ghost:visited {
+    color: var(--color-weight-700);
+}
+a.button-ghost:hover {
+    color: var(--color-primary-700);
 }
 
 .button-small {

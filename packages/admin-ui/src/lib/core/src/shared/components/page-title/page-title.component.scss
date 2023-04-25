@@ -1,13 +1,18 @@
-@import "../../../../../static/styles/variables";
-
 :host {
     display: block;
 }
 
 .page-title {
+    display: flex;
+    gap: calc(var(--space-unit) * 2);
     h1 {
         margin-top: 0;
         color: var(--color-weight-900);
         font-weight: 600;
     }
+}
+
+.title-actions {
+    display: flex;
+    align-items: center;
 }

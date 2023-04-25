@@ -11,7 +11,7 @@
         <span *ngIf="filter.value?.operator === 'notContains'">{{
             'common.operator-notContains' | translate
         }}</span>
-        <span *ngIf="filter.value?.operator === 'not-eq'">{{ 'common.operator-notEq' | translate }}</span>
+        <span *ngIf="filter.value?.operator === 'notEq'">{{ 'common.operator-not-eq' | translate }}</span>
         <span *ngIf="filter.value?.operator === 'regex'">{{ 'common.operator-regex' | translate }}</span>
         <span> "{{ filter.value?.term }}"</span>
     </ng-container>
