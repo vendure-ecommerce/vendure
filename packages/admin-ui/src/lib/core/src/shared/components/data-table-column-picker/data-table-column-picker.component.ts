@@ -11,6 +11,6 @@ export class DataTableColumnPickerComponent {
     @Input() columns: Array<DataTable2ColumnComponent<any>>;
 
     toggleColumn(column: DataTable2ColumnComponent<any>) {
-        column.visible = !column.visible;
+        column.setVisibility(!column.visible);
     }
 }

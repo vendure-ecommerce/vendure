@@ -22,13 +22,14 @@ export const clientResolvers: ResolverDefinition = {
         requestCompleted: (_, args, { cache }): number => updateRequestsInFlight(cache, -1),
         setAsLoggedIn: (_, args: Codegen.SetAsLoggedInMutationVariables, { cache }): UserStatus => {
             const {
-                input: { username, loginTime, channels, activeChannelId },
+                input: { username, loginTime, channels, activeChannelId, administratorId },
             } = args;
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const permissions = channels.find(c => c.id === activeChannelId)!.permissions;
             const data: { userStatus: UserStatus } = {
                 userStatus: {
                     __typename: 'UserStatus',
+                    administratorId,
                     username,
                     loginTime,
                     isLoggedIn: true,
@@ -44,6 +45,7 @@ export const clientResolvers: ResolverDefinition = {
             const data: GetUserStatusQuery = {
                 userStatus: {
                     __typename: 'UserStatus',
+                    administratorId: null,
                     username: '',
                     loginTime: '',
                     isLoggedIn: false,

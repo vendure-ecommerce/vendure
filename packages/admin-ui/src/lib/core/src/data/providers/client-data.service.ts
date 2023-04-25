@@ -42,12 +42,18 @@ export class ClientDataService {
         );
     }
 
-    loginSuccess(username: string, activeChannelId: string, channels: CurrentUserChannel[]) {
+    loginSuccess(
+        administratorId: string,
+        username: string,
+        activeChannelId: string,
+        channels: CurrentUserChannel[],
+    ) {
         return this.baseDataService.mutate<
             Codegen.SetAsLoggedInMutation,
             Codegen.SetAsLoggedInMutationVariables
         >(SET_AS_LOGGED_IN, {
             input: {
+                administratorId,
                 username,
                 loginTime: Date.now().toString(),
                 activeChannelId,

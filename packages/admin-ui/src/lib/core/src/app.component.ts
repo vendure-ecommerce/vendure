@@ -45,10 +45,14 @@ export class AppComponent implements OnInit {
             .mapStream(({ userStatus }) => userStatus.isLoggedIn)
             .pipe(
                 filter(loggedIn => loggedIn === true),
-                switchMap(() => this.dataService.client.uiState().mapStream(data => data.uiState.contentLanguage)),
-                switchMap(contentLang => this.serverConfigService
+                switchMap(() =>
+                    this.dataService.client.uiState().mapStream(data => data.uiState.contentLanguage),
+                ),
+                switchMap(contentLang =>
+                    this.serverConfigService
                         .getAvailableLanguages()
-                        .pipe(map(available => [contentLang, available] as const))),
+                        .pipe(map(available => [contentLang, available] as const)),
+                ),
             )
             .subscribe({
                 next: ([contentLanguage, availableLanguages]) => {
@@ -57,6 +61,13 @@ export class AppComponent implements OnInit {
                         this.dataService.client.setContentLanguage(availableLanguages[0]).subscribe();
                     }
                 },
+            });
+
+        this.dataService.client
+            .userStatus()
+            .mapStream(({ userStatus }) => userStatus.administratorId)
+            .subscribe(administratorId => {
+                this.localStorageService.setAdminId(administratorId);
             });
 
         if (isDevMode()) {

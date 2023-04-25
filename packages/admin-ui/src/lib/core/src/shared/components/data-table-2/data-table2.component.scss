@@ -22,16 +22,6 @@ table.no-select {
     user-select: none;
 }
 
-//thead th {
-//    position: sticky;
-//    top: 24px;
-//    z-index: 1;
-//
-//    &.expand {
-//        width: 100%;
-//    }
-//}
-
 th {
     font-size: var(--font-size-xs);
     font-weight: 600;
@@ -43,6 +33,20 @@ th {
     position: absolute;
     right: 2px;
     top: 7px;
+}
+
+.search-wrapper {
+    position: relative;
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 8px;
+        color: var(--color-weight-600);
+    }
+    > input {
+        padding-left: 32px !important;
+    }
 }
 
 .filter-row {

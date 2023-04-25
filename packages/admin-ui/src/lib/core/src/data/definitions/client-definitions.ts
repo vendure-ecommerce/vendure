@@ -14,6 +14,7 @@ export const REQUEST_COMPLETED = gql`
 
 export const USER_STATUS_FRAGMENT = gql`
     fragment UserStatus on UserStatus {
+        administratorId
         username
         isLoggedIn
         loginTime

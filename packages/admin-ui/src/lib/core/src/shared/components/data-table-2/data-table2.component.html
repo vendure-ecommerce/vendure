@@ -12,7 +12,11 @@
                     (change)="onToggleAllClick()"
                 />
             </th>
-            <th *ngFor="let column of visibleColumns; last as isLast" class="align-middle" [class.expand]="column.expand">
+            <th
+                *ngFor="let column of visibleColumns; last as isLast"
+                class="align-middle"
+                [class.expand]="column.expand"
+            >
                 <div class="cell-content" [ngClass]="column.align">
                     {{ column.heading }}
                 </div>
@@ -23,7 +27,10 @@
         </tr>
         <tr *ngIf="searchTermControl || filters?.length">
             <th [attr.colspan]="visibleColumns.length + (selectionManager ? 1 : 0)" class="filter-row">
-                <input [formControl]="searchTermControl" [placeholder]="searchTermPlaceholder" />
+                <div class="search-wrapper">
+                    <clr-icon shape="search" class="search-icon"></clr-icon>
+                    <input [formControl]="searchTermControl" [placeholder]="searchTermPlaceholder" />
+                </div>
                 <div class="filters">
                     <vdr-data-table-filters
                         *ngFor="let activeFilter of filters.getActiveFilters()"

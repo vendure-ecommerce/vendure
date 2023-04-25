@@ -45,6 +45,7 @@ export class AuthService {
                             if (activeAdministrator) {
                                 return this.dataService.client
                                     .loginSuccess(
+                                        activeAdministrator.id,
                                         `${activeAdministrator.firstName} ${activeAdministrator.lastName}`,
                                         id,
                                         login.channels,
@@ -113,6 +114,7 @@ export class AuthService {
                         if (activeAdministrator) {
                             return this.dataService.client
                                 .loginSuccess(
+                                    activeAdministrator.id,
                                     `${activeAdministrator.firstName} ${activeAdministrator.lastName}`,
                                     id,
                                     me.channels,

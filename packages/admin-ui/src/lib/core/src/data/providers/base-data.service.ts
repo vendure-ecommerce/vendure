@@ -1,11 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-    DataProxy,
-    MutationUpdaterFn,
-    SingleExecutionResult,
-    WatchQueryFetchPolicy,
-} from '@apollo/client/core';
+import { MutationUpdaterFn, SingleExecutionResult, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { Apollo } from 'apollo-angular';
 import { DocumentNode } from 'graphql/language/ast';
@@ -13,7 +8,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { CustomFields } from '../../common/generated-types';
-import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
 import { addCustomFields } from '../utils/add-custom-fields';
@@ -28,7 +22,6 @@ export class BaseDataService {
     constructor(
         private apollo: Apollo,
         private httpClient: HttpClient,
-        private localStorageService: LocalStorageService,
         private serverConfigService: ServerConfigService,
     ) {}
 

@@ -1,8 +1,15 @@
 import { Location } from '@angular/common';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 
 import { LanguageCode } from '../../common/generated-types';
+import { DataService } from '../../data/providers/data.service';
 import { WidgetLayoutDefinition } from '../dashboard-widget/dashboard-widget-types';
+
+export type DataTableConfig = {
+    [id: string]: {
+        visibility: string[];
+    };
+};
 
 export type LocalStorageTypeMap = {
     activeChannelToken: string;
@@ -14,6 +21,7 @@ export type LocalStorageTypeMap = {
     dashboardWidgetLayout: WidgetLayoutDefinition;
     activeTheme: string;
     livePreviewCollectionContents: boolean;
+    dataTableConfig: DataTableConfig;
 };
 
 export type LocalStorageLocationBasedTypeMap = {
@@ -30,7 +38,13 @@ const PREFIX = 'vnd_';
     providedIn: 'root',
 })
 export class LocalStorageService {
+    private adminId = '__global__';
     constructor(private location: Location) {}
+
+    public setAdminId(adminId?: string | null) {
+        this.adminId = adminId ?? '__global__';
+    }
+
     /**
      * Set a key-value pair in the browser's LocalStorage
      */
@@ -96,6 +110,6 @@ export class LocalStorageService {
     }
 
     private keyName(key: keyof LocalStorageTypeMap): string {
-        return PREFIX + key;
+        return `${PREFIX}_${this.adminId}_${key}`;
     }
 }

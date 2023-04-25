@@ -13,11 +13,24 @@ export class DataTable2ColumnComponent<T> implements OnInit {
     @Input() heading: string;
     @Input() align: 'left' | 'right' | 'center' = 'left';
     @Input() optional = false;
-    visible = true;
+    #visible = true;
+    #onColumnChangeFns: Array<() => void> = [];
+    get visible() {
+        return this.#visible;
+    }
     @ContentChild(TemplateRef, { static: false }) template: TemplateRef<any>;
     item: T;
 
     ngOnInit() {
-        this.visible = this.optional ? false : true;
+        this.#visible = this.optional ? false : true;
+    }
+
+    setVisibility(isVisible: boolean) {
+        this.#visible = isVisible;
+        this.#onColumnChangeFns.forEach(fn => fn());
+    }
+
+    onColumnChange(callback: () => void) {
+        this.#onColumnChangeFns.push(callback);
     }
 }

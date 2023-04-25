@@ -15,6 +15,7 @@ import {
     TemplateRef,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { LocalStorageService } from '@vendure/admin-ui/core';
 import { PaginationService } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
@@ -90,6 +91,7 @@ import { DataTable2ColumnComponent } from './data-table-column.component';
     providers: [PaginationService],
 })
 export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnInit, OnDestroy {
+    @Input() id: string;
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
@@ -113,7 +115,10 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     disableSelect = false;
     private subscription: Subscription | undefined;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        private changeDetectorRef: ChangeDetectorRef,
+        private localStorageService: LocalStorageService,
+    ) {}
 
     get visibleColumns() {
         return this.columns?.filter(c => c.visible) ?? [];
@@ -162,6 +167,27 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
 
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
+        const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
+
+        if (!this.id) {
+            console.warn(`No id was assigned to the data table component`);
+        }
+        const updateColumnVisibility = () => {
+            if (!dataTableConfig[this.id]) {
+                dataTableConfig[this.id] = { visibility: [] };
+            }
+            dataTableConfig[this.id].visibility = this.columns
+                .filter(c => (c.visible && c.optional) || (!c.visible && !c.optional))
+                .map(c => c.heading);
+            this.localStorageService.set('dataTableConfig', dataTableConfig);
+        };
+
+        this.columns.forEach(column => {
+            if (dataTableConfig?.[this.id]?.visibility.includes(column.heading)) {
+                column.setVisibility(column.optional);
+            }
+            column.onColumnChange(updateColumnVisibility);
+        });
     }
 
     trackByFn(index: number, item: any) {

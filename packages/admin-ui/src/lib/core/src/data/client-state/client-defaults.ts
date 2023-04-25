@@ -14,6 +14,7 @@ export function getClientDefaults(localStorageService: LocalStorageService) {
             __typename: 'NetworkStatus',
         } as GetNetworkStatusQuery['networkStatus'],
         userStatus: {
+            administratorId: null,
             username: '',
             isLoggedIn: false,
             loginTime: '',

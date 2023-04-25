@@ -6129,6 +6129,7 @@ export type User = Node & {
 export type UserStatus = {
   __typename?: 'UserStatus';
   activeChannelId?: Maybe<Scalars['ID']>;
+  administratorId?: Maybe<Scalars['ID']>;
   channels: Array<CurrentUserChannel>;
   isLoggedIn: Scalars['Boolean'];
   loginTime: Scalars['String'];
@@ -6138,6 +6139,7 @@ export type UserStatus = {
 
 export type UserStatusInput = {
   activeChannelId: Scalars['ID'];
+  administratorId: Scalars['ID'];
   channels: Array<CurrentUserChannelInput>;
   loginTime: Scalars['String'];
   username: Scalars['String'];
@@ -6306,19 +6308,19 @@ export type RequestCompletedMutationVariables = Exact<{ [key: string]: never; }>
 
 export type RequestCompletedMutation = { requestCompleted: number };
 
-export type UserStatusFragment = { __typename?: 'UserStatus', username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> };
+export type UserStatusFragment = { __typename?: 'UserStatus', administratorId?: string | null, username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> };
 
 export type SetAsLoggedInMutationVariables = Exact<{
   input: UserStatusInput;
 }>;
 
 
-export type SetAsLoggedInMutation = { setAsLoggedIn: { __typename?: 'UserStatus', username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
+export type SetAsLoggedInMutation = { setAsLoggedIn: { __typename?: 'UserStatus', administratorId?: string | null, username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
 
 export type SetAsLoggedOutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SetAsLoggedOutMutation = { setAsLoggedOut: { __typename?: 'UserStatus', username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
+export type SetAsLoggedOutMutation = { setAsLoggedOut: { __typename?: 'UserStatus', administratorId?: string | null, username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
 
 export type SetUiLanguageMutationVariables = Exact<{
   languageCode: LanguageCode;
@@ -6364,7 +6366,7 @@ export type GetNetworkStatusQuery = { networkStatus: { __typename?: 'NetworkStat
 export type GetUserStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserStatusQuery = { userStatus: { __typename?: 'UserStatus', username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
+export type GetUserStatusQuery = { userStatus: { __typename?: 'UserStatus', administratorId?: string | null, username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
 
 export type GetUiStateQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -6374,21 +6376,21 @@ export type GetUiStateQuery = { uiState: { __typename?: 'UiState', language: Lan
 export type GetClientStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetClientStateQuery = { networkStatus: { __typename?: 'NetworkStatus', inFlightRequests: number }, userStatus: { __typename?: 'UserStatus', username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> }, uiState: { __typename?: 'UiState', language: LanguageCode, locale?: string | null, contentLanguage: LanguageCode, theme: string, displayUiExtensionPoints: boolean } };
+export type GetClientStateQuery = { networkStatus: { __typename?: 'NetworkStatus', inFlightRequests: number }, userStatus: { __typename?: 'UserStatus', administratorId?: string | null, username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> }, uiState: { __typename?: 'UiState', language: LanguageCode, locale?: string | null, contentLanguage: LanguageCode, theme: string, displayUiExtensionPoints: boolean } };
 
 export type SetActiveChannelMutationVariables = Exact<{
   channelId: Scalars['ID'];
 }>;
 
 
-export type SetActiveChannelMutation = { setActiveChannel: { __typename?: 'UserStatus', username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
+export type SetActiveChannelMutation = { setActiveChannel: { __typename?: 'UserStatus', administratorId?: string | null, username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
 
 export type UpdateUserChannelsMutationVariables = Exact<{
   channels: Array<CurrentUserChannelInput> | CurrentUserChannelInput;
 }>;
 
 
-export type UpdateUserChannelsMutation = { updateUserChannels: { __typename?: 'UserStatus', username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
+export type UpdateUserChannelsMutation = { updateUserChannels: { __typename?: 'UserStatus', administratorId?: string | null, username: string, isLoggedIn: boolean, loginTime: string, activeChannelId?: string | null, permissions: Array<Permission>, channels: Array<{ __typename?: 'CurrentUserChannel', id: string, code: string, token: string, permissions: Array<Permission> }> } };
 
 export type GetCollectionFiltersQueryVariables = Exact<{ [key: string]: never; }>;
 

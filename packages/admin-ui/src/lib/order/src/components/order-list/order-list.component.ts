@@ -83,6 +83,7 @@ export class OrderListComponent
             }),
         })
         .connectToRoute(this.route);
+
     canCreateDraftOrder = false;
     private activeChannelIsDefaultChannel = false;
 
