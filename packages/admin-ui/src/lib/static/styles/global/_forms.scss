@@ -42,6 +42,10 @@ textarea,
             background-size: 0% 100%;
         }
     }
+    font-weight: 400;
+    &::placeholder {
+        color: var(--color-weight-400);
+    }
 }
 
 input,

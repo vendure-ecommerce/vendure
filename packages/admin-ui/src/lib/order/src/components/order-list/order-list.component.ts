@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -7,6 +7,7 @@ import {
     ChannelService,
     DataService,
     GetOrderListQuery,
+    getOrderStateTranslationToken,
     ItemOf,
     LocalStorageService,
     LogicalOperator,
@@ -15,21 +16,13 @@ import {
     OrderType,
     ServerConfigService,
     SortOrder,
+    StateI18nTokenPipe,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
-import { merge, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-
-interface OrderFilterConfig {
-    active?: boolean;
-    states?: string[];
-}
-
-interface FilterPreset {
-    name: string;
-    label: string;
-    config: OrderFilterConfig;
-}
+import { merge } from 'rxjs';
+import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
+import { DataTableFilter } from '../../../../core/src/providers/data-table-filter/data-table-filter';
+import { DataTableFilterService } from '../../../../core/src/providers/data-table-filter/data-table-filter.service';
 
 @Component({
     selector: 'vdr-order-list',
@@ -42,54 +35,54 @@ export class OrderListComponent
     implements OnInit
 {
     searchControl = new UntypedFormControl('');
-    searchOrderCodeControl = new UntypedFormControl('');
-    searchLastNameControl = new UntypedFormControl('');
-    customFilterForm: UntypedFormGroup;
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
-    filterPresets: FilterPreset[] = [
-        {
-            name: 'open',
-            label: _('order.filter-preset-open'),
-            config: {
-                active: false,
-                states: this.orderStates.filter(
-                    s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped' && s !== 'Draft',
-                ),
+    activeFilters: DataTableFilter[] = [];
+    readonly filters = this.dataTableFilterService
+        .createConfig<OrderFilterParameter>()
+        .addFilter({
+            id: 'active',
+            type: { kind: 'boolean' },
+            label: _('order.filter-is-active'),
+            toFilterInput: value => ({
+                active: {
+                    eq: value,
+                },
+            }),
+        })
+        .addFilter({
+            id: 'state',
+            type: {
+                kind: 'select',
+                options: this.orderStates.map(s => ({ value: s, label: getOrderStateTranslationToken(s) })),
             },
-        },
-        {
-            name: 'shipped',
-            label: _('order.filter-preset-shipped'),
-            config: {
-                active: false,
-                states: ['Shipped'],
+            label: _('order.state'),
+            toFilterInput: value => ({
+                state: {
+                    in: value,
+                },
+            }),
+        })
+        .addFilter({
+            id: 'orderPlacedAt',
+            type: {
+                kind: 'dateRange',
             },
-        },
-        {
-            name: 'completed',
-            label: _('order.filter-preset-completed'),
-            config: {
-                active: false,
-                states: ['Delivered', 'Cancelled'],
-            },
-        },
-        {
-            name: 'active',
-            label: _('order.filter-preset-active'),
-            config: {
-                active: true,
-            },
-        },
-        {
-            name: 'draft',
-            label: _('order.filter-preset-draft'),
-            config: {
-                active: false,
-                states: ['Draft'],
-            },
-        },
-    ];
-    activePreset$: Observable<string>;
+            label: _('order.placed-at'),
+            toFilterInput: value => ({
+                orderPlacedAt: value.dateOperators,
+            }),
+        })
+        .addFilter({
+            id: 'customerLastName',
+            type: { kind: 'text' },
+            label: _('customer.last-name'),
+            toFilterInput: value => ({
+                customerLastName: {
+                    [value.operator]: value.term,
+                },
+            }),
+        })
+        .connectToRoute(this.route);
     canCreateDraftOrder = false;
     private activeChannelIsDefaultChannel = false;
 
@@ -98,6 +91,7 @@ export class OrderListComponent
         private dataService: DataService,
         private localStorageService: LocalStorageService,
         private channelService: ChannelService,
+        private dataTableFilterService: DataTableFilterService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -107,21 +101,12 @@ export class OrderListComponent
             (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),
             data => data.orders,
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            (skip, take) =>
-                this.createQueryOptions(
-                    skip,
-                    take,
-                    this.searchControl.value,
-                    this.route.snapshot.queryParamMap.get('filter') || 'open',
-                ),
+            (skip, take) => this.createQueryOptions(skip, take, this.searchControl.value, this.activeFilters),
         );
         this.canCreateDraftOrder = !!this.serverConfigService
             .getOrderProcessStates()
             .find(state => state.name === 'Created')
             ?.to.includes('Draft');
-        if (!this.canCreateDraftOrder) {
-            this.filterPresets = this.filterPresets.filter(p => p.name !== 'draft');
-        }
     }
 
     ngOnInit() {
@@ -130,10 +115,6 @@ export class OrderListComponent
         if (lastFilters) {
             this.setQueryParam(lastFilters, { replaceUrl: true });
         }
-        this.activePreset$ = this.route.queryParamMap.pipe(
-            map(qpm => qpm.get('filter') || 'open'),
-            distinctUntilChanged(),
-        );
         const searchTerms$ = merge(this.searchControl.valueChanges).pipe(
             filter(value => 2 < value.length || value.length === 0),
             debounceTime(250),
@@ -141,47 +122,13 @@ export class OrderListComponent
         const isDefaultChannel$ = this.channelService.defaultChannelIsActive$.pipe(
             tap(isDefault => (this.activeChannelIsDefaultChannel = isDefault)),
         );
-        merge(searchTerms$, isDefaultChannel$, this.route.queryParamMap)
+        merge(searchTerms$, isDefaultChannel$, this.route.queryParamMap, this.filters.valueChanges)
             .pipe(debounceTime(50), takeUntil(this.destroy$))
             .subscribe(val => {
                 this.refresh();
             });
 
         const queryParamMap = this.route.snapshot.queryParamMap;
-        this.customFilterForm = new UntypedFormGroup({
-            states: new UntypedFormControl(queryParamMap.getAll('states') ?? []),
-            placedAtStart: new UntypedFormControl(queryParamMap.get('placedAtStart')),
-            placedAtEnd: new UntypedFormControl(queryParamMap.get('placedAtEnd')),
-        });
-    }
-
-    selectFilterPreset(presetName: string) {
-        const lastCustomFilters = this.localStorageService.get('orderListLastCustomFilters') ?? {};
-        const emptyCustomFilters = { states: undefined, placedAtStart: undefined, placedAtEnd: undefined };
-        const filters = presetName === 'custom' ? lastCustomFilters : emptyCustomFilters;
-        this.setQueryParam(
-            {
-                filter: presetName,
-                page: 1,
-                ...filters,
-            },
-            { replaceUrl: true },
-        );
-    }
-
-    applyCustomFilters() {
-        const formValue = this.customFilterForm.value;
-        const customFilters = {
-            states: formValue.states,
-            placedAtStart: formValue.placedAtStart,
-            placedAtEnd: formValue.placedAtEnd,
-        };
-        this.setQueryParam({
-            filter: 'custom',
-            ...customFilters,
-        });
-        this.customFilterForm.markAsPristine();
-        this.localStorageService.set('orderListLastCustomFilters', customFilters);
     }
 
     private createQueryOptions(
@@ -189,60 +136,20 @@ export class OrderListComponent
         skip: number,
         take: number,
         searchTerm: string,
-        activeFilterPreset?: string,
+        activeFilters: DataTableFilter[] = [],
     ): { options: OrderListOptions } {
-        const filterConfig = this.filterPresets.find(p => p.name === activeFilterPreset);
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        let filter: OrderFilterParameter = {};
         let filterOperator: LogicalOperator = LogicalOperator.AND;
-        if (filterConfig) {
-            if (filterConfig.config.active != null) {
-                filter.active = {
-                    eq: filterConfig.config.active,
-                };
-            }
-            if (filterConfig.config.states) {
-                filter.state = {
-                    in: filterConfig.config.states,
-                };
-            }
-        } else if (activeFilterPreset === 'custom') {
-            const queryParams = this.route.snapshot.queryParamMap;
-            const states = queryParams.getAll('states') ?? [];
-            const placedAtStart = queryParams.get('placedAtStart');
-            const placedAtEnd = queryParams.get('placedAtEnd');
-            if (states.length) {
-                filter.state = {
-                    in: states,
-                };
-            }
-            if (placedAtStart && placedAtEnd) {
-                filter.orderPlacedAt = {
-                    between: {
-                        start: placedAtStart,
-                        end: placedAtEnd,
-                    },
-                };
-            } else if (placedAtStart) {
-                filter.orderPlacedAt = {
-                    after: placedAtStart,
-                };
-            } else if (placedAtEnd) {
-                filter.orderPlacedAt = {
-                    before: placedAtEnd,
-                };
-            }
-        }
+        let filterInput = this.filters.createFilterInput();
         if (this.activeChannelIsDefaultChannel) {
-            filter = {
-                ...(filter ?? {}),
+            filterInput = {
+                ...(filterInput ?? {}),
                 type: {
                     notEq: OrderType.Seller,
                 },
             };
         }
         if (searchTerm) {
-            filter = {
+            filterInput = {
                 customerLastName: {
                     contains: searchTerm,
                 },
@@ -260,7 +167,7 @@ export class OrderListComponent
                 skip,
                 take,
                 filter: {
-                    ...(filter ?? {}),
+                    ...(filterInput ?? {}),
                 },
                 sort: {
                     updatedAt: SortOrder.DESC,

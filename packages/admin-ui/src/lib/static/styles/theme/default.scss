@@ -163,6 +163,7 @@
     --page-header-color: hsl(0 0% 98%);
 
     // Border radius
+    --clr-global-borderradius: 4px;
     --border-radius-sm: div(var(--clr-global-borderradius), 2);
     --border-radius: var(--clr-global-borderradius);
     --border-radius-lg: calc(var(--space-unit) * 3);

@@ -6,6 +6,9 @@
 }
 
 ::ng-deep {
+    .dropdown-menu {
+        max-width: initial;
+    }
     .dropdown-menu .dropdown-item {
         display: flex;
         align-items: center;

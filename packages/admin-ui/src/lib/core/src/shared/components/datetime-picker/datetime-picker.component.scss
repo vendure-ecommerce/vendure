@@ -20,6 +20,8 @@ input.selected-datetime {
     margin: 0;
     border-radius: 0;
     border-left: none;
+    border-top: 1px solid var(--color-weight-200);
+    border-bottom: 1px solid var(--color-weight-200);
     border-color: var(--color-component-border-200);
     background-color: white;
     color: var(--color-grey-500);
@@ -33,6 +35,10 @@ input.selected-datetime {
     margin: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    border: 1px solid var(--color-weight-200);
+    border-radius: var(--border-radius-sm);
+    border-left: none;
+    height: 100%;
 }
 
 .datetime-picker {

@@ -39,6 +39,8 @@ import { CurrencyInputComponent } from './components/currency-input/currency-inp
 import { CustomDetailComponentHostComponent } from './components/custom-detail-component-host/custom-detail-component-host.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
+import { DataTable2ColumnComponent } from './components/data-table-2/data-table-column.component';
+import { DataTable2Component } from './components/data-table-2/data-table2.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { DatetimePickerComponent } from './components/datetime-picker/datetime-picker.component';
@@ -145,6 +147,8 @@ import { PageHeaderComponent } from './components/page-header/page-header.compon
 import { PageHeaderDescriptionComponent } from './components/page-header-description/page-header-description.component';
 import { PageHeaderTabsComponent } from './components/page-header-tabs/page-header-tabs.component';
 import { PageBodyComponent } from './components/page-body/page-body.component';
+import { DataTableFiltersComponent } from './components/data-table-filters/data-table-filters.component';
+import { DataTableFilterLabelComponent } from './components/data-table-filter-label/data-table-filter-label.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -258,6 +262,10 @@ const DECLARATIONS = [
     BulkActionMenuComponent,
     RadioCardComponent,
     RadioCardFieldsetComponent,
+    DataTable2Component,
+    DataTable2ColumnComponent,
+    DataTableFiltersComponent,
+    DataTableFilterLabelComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

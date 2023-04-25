@@ -32,12 +32,18 @@ export class StateI18nTokenPipe implements PipeTransform {
             if (defaultStateToken) {
                 return defaultStateToken;
             }
-            return ('state.' +
-                value
-                    .replace(/([a-z])([A-Z])/g, '$1-$2')
-                    .replace(/ +/g, '-')
-                    .toLowerCase()) as any;
+            return getOrderStateTranslationToken(value as string) as T;
         }
         return value;
     }
+}
+
+export function getOrderStateTranslationToken(state: string): string {
+    return (
+        'state.' +
+        state
+            .replace(/([a-z])([A-Z])/g, '$1-$2')
+            .replace(/ +/g, '-')
+            .toLowerCase()
+    );
 }

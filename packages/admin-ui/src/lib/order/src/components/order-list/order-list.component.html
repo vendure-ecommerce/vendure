@@ -94,51 +94,57 @@
     ></vdr-page-header-tabs>
 </vdr-page-header>
 <vdr-page-body>
-    <vdr-data-table
+    <vdr-data-table-2
+        class="mt-2"
         [items]="items$ | async"
         [itemsPerPage]="itemsPerPage$ | async"
         [totalItems]="totalItems$ | async"
         [currentPage]="currentPage$ | async"
+        [searchTermControl]="searchControl"
+        [searchTermPlaceholder]="'order.search-by-order-filters' | translate"
+        [filters]="filters"
         (pageChange)="setPageNumber($event)"
         (itemsPerPageChange)="setItemsPerPage($event)"
     >
-        <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
-        <vdr-dt-column>{{ 'order.customer' | translate }}</vdr-dt-column>
-        <vdr-dt-column>{{ 'order.order-type' | translate }}</vdr-dt-column>
-        <vdr-dt-column>{{ 'order.state' | translate }}</vdr-dt-column>
-        <vdr-dt-column>{{ 'order.total' | translate }}</vdr-dt-column>
-        <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
-        <vdr-dt-column>{{ 'order.placed-at' | translate }}</vdr-dt-column>
-        <vdr-dt-column>{{ 'order.shipping' | translate }}</vdr-dt-column>
-        <vdr-dt-column></vdr-dt-column>
-        <ng-template let-order="item">
-            <td class="left align-middle">{{ order.code }}</td>
-            <td class="left align-middle">
+        <vdr-dt2-column [heading]="'common.code' | translate">
+            <ng-template let-order="item">
+                {{ order.code }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'order.customer' | translate">
+            <ng-template let-order="item">
                 <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
-            </td>
-            <td class="left align-middle">
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'order.order-type' | translate">
+            <ng-template let-order="item">
                 <vdr-chip>{{ order.type }}</vdr-chip>
-            </td>
-            <td class="left align-middle">
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'order.state' | translate">
+            <ng-template let-order="item">
                 <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
-            </td>
-            <td class="left align-middle">{{ order.totalWithTax | localeCurrency : order.currencyCode }}</td>
-            <td class="left align-middle">{{ order.updatedAt | timeAgo }}</td>
-            <td class="left align-middle">{{ order.orderPlacedAt | localeDate : 'medium' }}</td>
-            <td class="left align-middle">{{ getShippingNames(order) }}</td>
-            <td class="right align-middle">
-                <vdr-table-row-action
-                    iconShape="shopping-cart"
-                    [label]="'common.open' | translate"
-                    [linkTo]="
-                        order.state === 'Modifying'
-                            ? ['./', order.id, 'modify']
-                            : order.state === 'Draft'
-                            ? ['./draft', order.id]
-                            : ['./', order.id]
-                    "
-                ></vdr-table-row-action>
-            </td>
-        </ng-template>
-    </vdr-data-table>
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'order.total' | translate">
+            <ng-template let-order="item">
+                {{ order.totalWithTax | localeCurrency : order.currencyCode }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'common.updated-at' | translate">
+            <ng-template let-order="item">
+                {{ order.updatedAt | timeAgo }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'order.placed-at' | translate">
+            <ng-template let-order="item">
+                {{ order.orderPlacedAt | localeDate : 'short' }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'order.shipping' | translate">
+            <ng-template let-order="item">
+                {{ getShippingNames(order) }}
+            </ng-template>
+        </vdr-dt2-column>
+    </vdr-data-table-2>
 </vdr-page-body>

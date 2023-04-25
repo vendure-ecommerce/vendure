@@ -1,0 +1,29 @@
+<span>{{ filter.label | translate }}:</span>
+<div>
+    <ng-container *ngIf="filter.isSelect()">
+        {{ filter.value?.join(', ') }}
+    </ng-container>
+    <ng-container *ngIf="filter.isText()">
+        <span *ngIf="filter.value?.operator === 'contains'">{{
+            'common.operator-contains' | translate
+        }}</span>
+        <span *ngIf="filter.value?.operator === 'eq'">{{ 'common.operator-eq' | translate }}</span>
+        <span *ngIf="filter.value?.operator === 'notContains'">{{
+            'common.operator-notContains' | translate
+        }}</span>
+        <span *ngIf="filter.value?.operator === 'not-eq'">{{ 'common.operator-notEq' | translate }}</span>
+        <span *ngIf="filter.value?.operator === 'regex'">{{ 'common.operator-regex' | translate }}</span>
+        <span> "{{ filter.value?.term }}"</span>
+    </ng-container>
+    <ng-container *ngIf="filter.isBoolean()">
+        <span *ngIf="filter?.value">{{ 'common.boolean-true' | translate }}</span>
+        <span *ngIf="!filter?.value">{{ 'common.boolean-false' | translate }}</span>
+    </ng-container>
+    <ng-container *ngIf="filter.isDateRange()">
+        <span *ngIf="filter.value?.start && filter.value?.end">
+            {{ filter.value?.start | localeDate : 'shortDate' }} - {{ filter.value?.end | localeDate : 'shortDate' }}
+        </span>
+        <span *ngIf="filter.value?.start && !filter.value?.end"> > {{ filter.value?.start | localeDate : 'shortDate' }} </span>
+        <span *ngIf="filter.value?.end && !filter.value?.start"> < {{ filter.value?.end | localeDate : 'shortDate' }} </span>
+    </ng-container>
+</div>

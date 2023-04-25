@@ -7,12 +7,12 @@
         (keydown.space)="dropdownComponent.toggleOpen()"
         #datetimeInput
     />
-    <button class="clear-value-button btn" [class.visible]="!disabled && !readonly && (selected$ | async)" (click)="clearValue()">
+    <button class="clear-value-button" [class.visible]="!disabled && !readonly && (selected$ | async)" (click)="clearValue()">
         <clr-icon shape="times"></clr-icon>
     </button>
 </div>
 <vdr-dropdown #dropdownComponent>
-    <button class="btn btn-outline calendar-button" vdrDropdownTrigger [disabled]="readonly || disabled">
+    <button class="calendar-button" vdrDropdownTrigger [disabled]="readonly || disabled">
         <clr-icon shape="calendar"></clr-icon>
     </button>
     <vdr-dropdown-menu>
