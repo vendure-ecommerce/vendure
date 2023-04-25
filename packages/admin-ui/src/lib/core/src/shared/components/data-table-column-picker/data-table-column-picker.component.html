@@ -1,0 +1,18 @@
+<vdr-dropdown [manualToggle]="true">
+    <button class="button-small" vdrDropdownTrigger [title]="'common.select-table-columns' | translate">
+        <clr-icon shape="view-columns"></clr-icon>
+    </button>
+    <vdr-dropdown-menu vdrPosition="bottom-left">
+        <div *ngFor="let column of columns; index as i" class="mx-2">
+            <label>
+                <input
+                    type="checkbox"
+                    [checked]="column.visible"
+                    (change)="toggleColumn(column)"
+                    class="mr-1"
+                />
+                <span>{{ column.heading | translate }}</span>
+            </label>
+        </div>
+    </vdr-dropdown-menu>
+</vdr-dropdown>

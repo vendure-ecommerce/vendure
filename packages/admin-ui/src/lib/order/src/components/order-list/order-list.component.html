@@ -136,7 +136,7 @@
                 {{ order.updatedAt | timeAgo }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'order.placed-at' | translate">
+        <vdr-dt2-column [heading]="'order.placed-at' | translate" [optional]="true">
             <ng-template let-order="item">
                 {{ order.orderPlacedAt | localeDate : 'short' }}
             </ng-template>

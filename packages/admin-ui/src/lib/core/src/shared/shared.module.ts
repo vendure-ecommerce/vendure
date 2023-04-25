@@ -149,6 +149,7 @@ import { PageHeaderTabsComponent } from './components/page-header-tabs/page-head
 import { PageBodyComponent } from './components/page-body/page-body.component';
 import { DataTableFiltersComponent } from './components/data-table-filters/data-table-filters.component';
 import { DataTableFilterLabelComponent } from './components/data-table-filter-label/data-table-filter-label.component';
+import { DataTableColumnPickerComponent } from './components/data-table-column-picker/data-table-column-picker.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -266,6 +267,7 @@ const DECLARATIONS = [
     DataTable2ColumnComponent,
     DataTableFiltersComponent,
     DataTableFilterLabelComponent,
+    DataTableColumnPickerComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

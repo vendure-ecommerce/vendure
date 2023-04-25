@@ -36,6 +36,13 @@ th {
     font-size: var(--font-size-xs);
     font-weight: 600;
     text-transform: uppercase;
+    position: relative;
+}
+
+.column-picker {
+    position: absolute;
+    right: 2px;
+    top: 7px;
 }
 
 .filter-row {

@@ -115,6 +115,10 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
+    get visibleColumns() {
+        return this.columns?.filter(c => c.visible) ?? [];
+    }
+
     private shiftDownHandler = (event: KeyboardEvent) => {
         if (event.shiftKey && !this.disableSelect) {
             this.disableSelect = true;
