@@ -6,6 +6,7 @@ import {
     BaseListComponent,
     ChannelService,
     DataService,
+    FacetSortParameter,
     GetOrderListQuery,
     getOrderStateTranslationToken,
     ItemOf,
@@ -13,6 +14,7 @@ import {
     LogicalOperator,
     OrderFilterParameter,
     OrderListOptions,
+    OrderSortParameter,
     OrderType,
     ServerConfigService,
     SortOrder,
@@ -20,7 +22,7 @@ import {
 import { Order } from '@vendure/common/lib/generated-types';
 import { merge } from 'rxjs';
 import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
-import { DataTableFilterService } from '../../../../core/src/providers/data-table-filter/data-table-filter.service';
+import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 @Component({
     selector: 'vdr-order-list',
@@ -34,10 +36,18 @@ export class OrderListComponent
 {
     searchControl = new UntypedFormControl('');
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
-    readonly filters = this.dataTableFilterService
-        .createConfig<OrderFilterParameter>()
+    readonly filters = this.dataTableService
+        .createFilterCollection<OrderFilterParameter>()
         .addFilter({
-            id: 'active',
+            name: 'createdAt',
+            type: { kind: 'dateRange' },
+            label: _('common.created-at'),
+            toFilterInput: value => ({
+                createdAt: value.dateOperators,
+            }),
+        })
+        .addFilter({
+            name: 'active',
             type: { kind: 'boolean' },
             label: _('order.filter-is-active'),
             toFilterInput: value => ({
@@ -47,7 +57,7 @@ export class OrderListComponent
             }),
         })
         .addFilter({
-            id: 'state',
+            name: 'state',
             type: {
                 kind: 'select',
                 options: this.orderStates.map(s => ({ value: s, label: getOrderStateTranslationToken(s) })),
@@ -60,7 +70,7 @@ export class OrderListComponent
             }),
         })
         .addFilter({
-            id: 'orderPlacedAt',
+            name: 'orderPlacedAt',
             type: {
                 kind: 'dateRange',
             },
@@ -70,7 +80,7 @@ export class OrderListComponent
             }),
         })
         .addFilter({
-            id: 'customerLastName',
+            name: 'customerLastName',
             type: { kind: 'text' },
             label: _('customer.last-name'),
             toFilterInput: value => ({
@@ -78,6 +88,33 @@ export class OrderListComponent
                     [value.operator]: value.term,
                 },
             }),
+        })
+        .addFilter({
+            name: 'transactionId',
+            type: { kind: 'text' },
+            label: _('order.transaction-id'),
+            toFilterInput: value => ({
+                transactionId: {
+                    [value.operator]: value.term,
+                },
+            }),
+        })
+        .connectToRoute(this.route);
+
+    readonly sorts = this.dataTableService
+        .createSortCollection<OrderSortParameter>()
+        .defaultSort('updatedAt', 'DESC')
+        .addSort({
+            name: 'orderPlacedAt',
+        })
+        .addSort({
+            name: 'customerLastName',
+        })
+        .addSort({
+            name: 'state',
+        })
+        .addSort({
+            name: 'totalWithTax',
         })
         .connectToRoute(this.route);
 
@@ -89,7 +126,7 @@ export class OrderListComponent
         private dataService: DataService,
         private localStorageService: LocalStorageService,
         private channelService: ChannelService,
-        private dataTableFilterService: DataTableFilterService,
+        private dataTableService: DataTableService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -135,7 +172,6 @@ export class OrderListComponent
         take: number,
         searchTerm: string,
     ): { options: OrderListOptions } {
-        let filterOperator: LogicalOperator = LogicalOperator.AND;
         let filterInput = this.filters.createFilterInput();
         if (this.activeChannelIsDefaultChannel) {
             filterInput = {
@@ -147,17 +183,10 @@ export class OrderListComponent
         }
         if (searchTerm) {
             filterInput = {
-                customerLastName: {
-                    contains: searchTerm,
-                },
-                transactionId: {
-                    contains: searchTerm,
-                },
                 code: {
                     contains: searchTerm,
                 },
             };
-            filterOperator = LogicalOperator.OR;
         }
         return {
             options: {
@@ -166,10 +195,7 @@ export class OrderListComponent
                 filter: {
                     ...(filterInput ?? {}),
                 },
-                sort: {
-                    updatedAt: SortOrder.DESC,
-                },
-                filterOperator,
+                sort: this.sorts.createSortInput(),
             },
         };
     }

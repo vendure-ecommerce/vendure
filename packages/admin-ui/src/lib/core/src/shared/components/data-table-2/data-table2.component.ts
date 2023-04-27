@@ -20,7 +20,7 @@ import { BulkActionMenuComponent, LocalStorageService } from '@vendure/admin-ui/
 import { PaginationService } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
-import { DataTableFilterCollection } from '../../../providers/data-table-filter/data-table-filter-collection';
+import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
 
 import { DataTable2ColumnComponent } from './data-table-column.component';
 import { DataTable2SearchComponent } from './data-table-search.component';
@@ -98,7 +98,6 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     @Input() currentPage: number;
     @Input() totalItems: number;
     @Input() emptyStateLabel: string;
-    @Input() selectionManager?: SelectionManager<T>;
     @Input() filters: DataTableFilterCollection;
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
@@ -121,6 +120,10 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         private localStorageService: LocalStorageService,
     ) {}
 
+    get selectionManager() {
+        return this.bulkActionMenuComponent?.selectionManager;
+    }
+
     get visibleColumns() {
         return this.columns?.filter(c => c.visible) ?? [];
     }
@@ -140,11 +143,6 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     };
 
     ngOnInit() {
-        if (this.selectionManager) {
-            document.addEventListener('keydown', this.shiftDownHandler, { passive: true });
-            document.addEventListener('keyup', this.shiftUpHandler, { passive: true });
-        }
-
         this.subscription = this.selectionManager?.selectionChanges$.subscribe(() =>
             this.changeDetectorRef.markForCheck(),
         );
@@ -189,6 +187,14 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
             }
             column.onColumnChange(updateColumnVisibility);
         });
+
+        if (this.selectionManager) {
+            document.addEventListener('keydown', this.shiftDownHandler, { passive: true });
+            document.addEventListener('keyup', this.shiftUpHandler, { passive: true });
+            this.bulkActionMenuComponent.onClearSelection(() => {
+                this.changeDetectorRef.markForCheck();
+            });
+        }
     }
 
     trackByFn(index: number, item: any) {

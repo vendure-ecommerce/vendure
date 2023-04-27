@@ -33,7 +33,6 @@
         [totalItems]="totalItems$ | async"
         [currentPage]="currentPage$ | async"
         [filters]="filters"
-        [selectionManager]="selectionManager"
         (pageChange)="setPageNumber($event)"
         (itemsPerPageChange)="setItemsPerPage($event)"
     >

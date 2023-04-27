@@ -5,11 +5,8 @@ import { DateOperators } from '@vendure/admin-ui/core';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { I18nService } from '../../../providers/i18n/i18n.service';
-import {
-    DataTableFilter,
-    DataTableFilterSelectType,
-} from '../../../providers/data-table-filter/data-table-filter';
-import { DataTableFilterCollection } from '../../../providers/data-table-filter/data-table-filter-collection';
+import { DataTableFilter, DataTableFilterSelectType } from '../../../providers/data-table/data-table-filter';
+import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
 
 @Component({
     selector: 'vdr-data-table-filters',
@@ -29,7 +26,7 @@ export class DataTableFiltersComponent implements AfterViewInit, OnInit {
 
     ngOnInit() {
         if (this.filter) {
-            const filterConfig = this.filters.getFilter(this.filter?.id);
+            const filterConfig = this.filters.getFilter(this.filter?.name);
             if (filterConfig) {
                 this.selectFilter(filterConfig);
                 this.state = 'active';

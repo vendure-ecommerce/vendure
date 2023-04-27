@@ -1,4 +1,5 @@
 import { Component, ContentChild, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { DataTableSort } from '../../../providers/data-table/data-table-sort';
 
 @Component({
     selector: 'vdr-dt2-column',
@@ -12,6 +13,7 @@ export class DataTable2ColumnComponent<T> implements OnInit {
     @Input() expand = false;
     @Input() heading: string;
     @Input() align: 'left' | 'right' | 'center' = 'left';
+    @Input() sort: DataTableSort<any>;
     @Input() optional = true;
     @Input() hiddenByDefault = false;
     #visible = true;

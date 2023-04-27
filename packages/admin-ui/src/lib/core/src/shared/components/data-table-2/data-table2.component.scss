@@ -36,6 +36,30 @@ table.no-select {
      position: relative;
 }
 
+.sort-toggle {
+    display: flex;
+    align-items: center;
+    margin-left: calc(var(--space-unit) * 0.5);
+    button {
+        border: 0;
+        border-radius: var(--border-radius-lg);
+        color: var(--color-weight-500);
+        padding: 0 2px;
+        cursor: pointer;
+        background-color: transparent;
+        &.active {
+            color: var(--color-primary-700);
+        }
+    }
+    .sort-label {
+        margin-left: calc(var(--space-unit) * 0.5);
+        font-size: 10px;
+        color: var(--color-primary-600);
+        font-weight: 400;
+    }
+
+}
+
 .filter-row {
     font-size: var(--font-size-base);
     font-weight: 400;

@@ -36,6 +36,7 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     userPermissions: string[] = [];
 
     private subscription: Subscription;
+    private onClearSelectionFns: Array<() => void> = [];
 
     constructor(
         private bulkActionRegistryService: BulkActionRegistryService,
@@ -113,5 +114,10 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     clearSelection() {
         this.selectionManager.clearSelection();
         this.changeDetectorRef.markForCheck();
+        this.onClearSelectionFns.forEach(fn => fn());
+    }
+
+    onClearSelection(callback: () => void) {
+        this.onClearSelectionFns.push(callback);
     }
 }

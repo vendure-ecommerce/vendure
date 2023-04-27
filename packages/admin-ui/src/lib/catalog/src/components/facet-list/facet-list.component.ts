@@ -6,17 +6,22 @@ import {
     BaseListComponent,
     DataService,
     DeletionResult,
+    FacetFilterParameter,
+    FacetSortParameter,
     GetFacetListQuery,
+    getOrderStateTranslationToken,
     ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
+    OrderFilterParameter,
     SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-types';
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, merge, Observable } from 'rxjs';
 import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 @Component({
     selector: 'vdr-facet-list',
@@ -27,18 +32,50 @@ export class FacetListComponent
     extends BaseListComponent<GetFacetListQuery, ItemOf<GetFacetListQuery, 'facets'>>
     implements OnInit
 {
-    filterTermControl = new UntypedFormControl('');
+    searchTermControl = new UntypedFormControl('');
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
     selectionManager: SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>;
 
+    readonly filters = this.dataTableService
+        .createFilterCollection<FacetFilterParameter>()
+        .addFilter({
+            name: 'createdAt',
+            type: { kind: 'dateRange' },
+            label: _('common.created-at'),
+            toFilterInput: value => ({
+                createdAt: value.dateOperators,
+            }),
+        })
+        .addFilter({
+            name: 'visibility',
+            type: { kind: 'boolean' },
+            label: _('common.visibility'),
+            toFilterInput: value => ({
+                isPrivate: { eq: value },
+            }),
+        })
+        .connectToRoute(this.route);
+
+    readonly sorts = this.dataTableService
+        .createSortCollection<FacetSortParameter>()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({
+            name: 'name',
+        })
+        .addSort({
+            name: 'code',
+        })
+        .connectToRoute(this.route);
+
     constructor(
         private dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
         private serverConfigService: ServerConfigService,
+        private dataTableService: DataTableService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -52,12 +89,11 @@ export class FacetListComponent
                     take,
                     filter: {
                         name: {
-                            contains: this.filterTermControl.value,
+                            contains: this.searchTermControl.value,
                         },
+                        ...this.filters.createFilterInput(),
                     },
-                    sort: {
-                        createdAt: SortOrder.DESC,
-                    },
+                    sort: this.sorts.createSortInput(),
                 },
             }),
         );
@@ -75,12 +111,12 @@ export class FacetListComponent
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage)
             .pipe(tap(() => this.refresh()));
-        this.filterTermControl.valueChanges
-            .pipe(
-                filter(value => 2 <= value.length || value.length === 0),
-                debounceTime(250),
-                takeUntil(this.destroy$),
-            )
+        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
+            filter(value => 2 <= value.length || value.length === 0),
+            debounceTime(250),
+        );
+        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
+            .pipe(takeUntil(this.destroy$))
             .subscribe(() => this.refresh());
     }
 

@@ -28,7 +28,7 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     }
 
     getFilter(id: string): DataTableFilter<FilterInput> | undefined {
-        return this.filters.find(f => f.id === id);
+        return this.filters.find(f => f.name === id);
     }
 
     getFilters(): Array<DataTableFilter<FilterInput>> {
@@ -41,25 +41,9 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
 
     createFilterInput(): FilterInput {
         return this.getActiveFilters().reduce(
-            (acc, f) => ({ ...acc, ...(f.value ? f.toFilterInput(f.value) : {}) }),
+            (acc, f) => ({ ...acc, ...(f.value != null ? f.toFilterInput(f.value) : {}) }),
             {} as FilterInput,
         );
-    }
-
-    serialize(): string {
-        return this.getActiveFilters()
-            .map(f => `${f.id}:${f.serializeValue()}`)
-            .join(';');
-    }
-
-    parseQueryString(queryString: string): void {
-        const params = new URLSearchParams(queryString);
-        this.filters.forEach(f => {
-            const value = params.get(f.id);
-            if (value !== null) {
-                f.setValue(value);
-            }
-        });
     }
 
     connectToRoute(route: ActivatedRoute) {
@@ -84,9 +68,15 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
         return this;
     }
 
+    private serialize(): string {
+        return this.getActiveFilters()
+            .map(f => `${f.name}:${f.serializeValue()}`)
+            .join(';');
+    }
+
     private onSetValue() {
         this.valueChanges$.next(
-            this.filters.filter(f => f.value !== undefined).map(f => ({ id: f.id, value: f.value })),
+            this.filters.filter(f => f.value !== undefined).map(f => ({ id: f.name, value: f.value })),
         );
     }
 }

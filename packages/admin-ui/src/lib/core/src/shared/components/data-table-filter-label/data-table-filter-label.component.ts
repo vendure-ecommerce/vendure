@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { DataTableFilter } from '../../../providers/data-table-filter/data-table-filter';
+import { DataTableFilter } from '../../../providers/data-table/data-table-filter';
 
 @Component({
     selector: 'vdr-data-table-filter-label',

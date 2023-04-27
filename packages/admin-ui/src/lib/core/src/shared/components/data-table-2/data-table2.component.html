@@ -12,13 +12,19 @@
                     (change)="onToggleAllClick()"
                 />
             </th>
-            <th
-                *ngFor="let column of visibleColumns; last as isLast"
-                [class.expand]="column.expand"
-            >
+            <th *ngFor="let column of visibleColumns; last as isLast" [class.expand]="column.expand">
                 <div class="cell-content" [ngClass]="column.align">
-                    {{ column.heading }}
+                    <span>{{ column.heading }}</span>
+                    <div *ngIf="column.sort as sort" class="sort-toggle">
+                        <button (click)="sort.toggleSortOrder()" [class.active]="sort.sortOrder">
+                            <clr-icon *ngIf="!sort.sortOrder" shape="two-way-arrows left"></clr-icon>
+                            <clr-icon *ngIf="sort.sortOrder === 'ASC'" shape="arrow up"></clr-icon>
+                            <clr-icon *ngIf="sort.sortOrder === 'DESC'" shape="arrow down"></clr-icon>
+                        </button>
+                        <div class="sort-label" *ngIf="sort.sortOrder">{{ sort.sortOrder }}</div>
+                    </div>
                 </div>
+
                 <div *ngIf="isLast" class="column-picker">
                     <vdr-data-table-colum-picker [columns]="columns?.toArray()"></vdr-data-table-colum-picker>
                 </div>
@@ -32,19 +38,21 @@
                 </div>-->
                 <ng-container *ngTemplateOutlet="searchComponent?.template"></ng-container>
                 <ng-container *ngTemplateOutlet="customSearchTemplate"></ng-container>
-                <div class="filters">
-                    <vdr-data-table-filters
-                        *ngFor="let activeFilter of filters.getActiveFilters()"
-                        [filter]="activeFilter"
-                        [filters]="filters"
-                        class="mt-1"
-                    ></vdr-data-table-filters>
-                    <vdr-data-table-filters
-                        *ngIf="filters.length"
-                        [filters]="filters"
-                        class="mt-1"
-                    ></vdr-data-table-filters>
-                </div>
+                <ng-container *ngIf="filters">
+                    <div class="filters">
+                        <vdr-data-table-filters
+                            *ngFor="let activeFilter of filters.getActiveFilters()"
+                            [filter]="activeFilter"
+                            [filters]="filters"
+                            class="mt-1"
+                        ></vdr-data-table-filters>
+                        <vdr-data-table-filters
+                            *ngIf="filters.length"
+                            [filters]="filters"
+                            class="mt-1"
+                        ></vdr-data-table-filters>
+                    </div>
+                </ng-container>
             </th>
         </tr>
     </thead>

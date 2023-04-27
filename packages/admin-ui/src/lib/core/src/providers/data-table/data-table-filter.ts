@@ -35,7 +35,7 @@ export interface DataTableFilterOptions<
     FilterInput extends Record<string, any> = any,
     Type extends DataTableFilterType = DataTableFilterType,
 > {
-    readonly id: string;
+    readonly name: string;
     readonly type: Type;
     readonly label: string;
     readonly toFilterInput: (value: KindValueMap[Type['kind']]) => Partial<FilterInput>;
@@ -55,8 +55,8 @@ export class DataTableFilter<
         return this._value;
     }
 
-    get id(): string {
-        return this.options.id;
+    get name(): string {
+        return this.options.name;
     }
 
     get type(): Type {

@@ -21,7 +21,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
-import { DataTableFilterService } from '../../../../core/src/providers/data-table-filter/data-table-filter.service';
+import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
 
@@ -44,9 +44,9 @@ export class ProductListComponent
     pendingSearchIndexUpdates = 0;
     selectionManager: SelectionManager<SearchItem>;
     readonly filters = this.dataTableFilterService
-        .createConfig<SearchInput>()
+        .createFilterCollection<SearchInput>()
         .addFilter({
-            id: 'collectionSlug',
+            name: 'collectionSlug',
             type: { kind: 'text' },
             label: _('catalog.collection-slug'),
             toFilterInput: value => ({
@@ -64,7 +64,7 @@ export class ProductListComponent
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
         private serverConfigService: ServerConfigService,
-        private dataTableFilterService: DataTableFilterService,
+        private dataTableFilterService: DataTableService,
         router: Router,
         route: ActivatedRoute,
     ) {
