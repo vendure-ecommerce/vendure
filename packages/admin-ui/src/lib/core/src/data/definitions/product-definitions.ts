@@ -485,6 +485,16 @@ export const SEARCH_PRODUCTS = gql`
                 enabled
                 productId
                 productName
+                slug
+                priceWithTax {
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                    ... on SinglePrice {
+                        value
+                    }
+                }
                 productAsset {
                     id
                     preview
@@ -493,6 +503,7 @@ export const SEARCH_PRODUCTS = gql`
                         y
                     }
                 }
+                currencyCode
                 productVariantId
                 productVariantName
                 productVariantAsset {

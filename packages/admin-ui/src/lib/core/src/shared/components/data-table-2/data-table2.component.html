@@ -3,7 +3,7 @@
 </div>
 <table class="" [class.no-select]="disableSelect" [style.table-layout]="!items?.length ? 'fixed' : 'inherit'">
     <thead [class.items-selected]="selectionManager?.selection.length">
-        <tr>
+        <tr class="heading-row">
             <th *ngIf="selectionManager" class="align-middle">
                 <input
                     type="checkbox"
@@ -14,7 +14,6 @@
             </th>
             <th
                 *ngFor="let column of visibleColumns; last as isLast"
-                class="align-middle"
                 [class.expand]="column.expand"
             >
                 <div class="cell-content" [ngClass]="column.align">
@@ -25,12 +24,14 @@
                 </div>
             </th>
         </tr>
-        <tr *ngIf="searchTermControl || filters?.length">
+        <tr *ngIf="searchComponent || customSearchTemplate || filters?.length">
             <th [attr.colspan]="visibleColumns.length + (selectionManager ? 1 : 0)" class="filter-row">
-                <div class="search-wrapper">
+                <!--<div class="search-wrapper">
                     <clr-icon shape="search" class="search-icon"></clr-icon>
                     <input [formControl]="searchTermControl" [placeholder]="searchTermPlaceholder" />
-                </div>
+                </div>-->
+                <ng-container *ngTemplateOutlet="searchComponent?.template"></ng-container>
+                <ng-container *ngTemplateOutlet="customSearchTemplate"></ng-container>
                 <div class="filters">
                     <vdr-data-table-filters
                         *ngFor="let activeFilter of filters.getActiveFilters()"

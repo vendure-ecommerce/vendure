@@ -1,71 +1,5 @@
-<vdr-action-bar>
-    <vdr-ab-left [grow]="true">
-        <div class="search-form">
-            <vdr-product-search-input
-                #productSearchInputComponent
-                [facetValueResults]="facetValues$ | async"
-                (searchTermChange)="setSearchTerm($event)"
-                (facetValueChange)="setFacetValueIds($event)"
-            ></vdr-product-search-input>
-            <vdr-dropdown class="search-settings-menu mr3">
-                <button
-                    type="button"
-                    class="icon-button search-index-button"
-                    [title]="
-                        (pendingSearchIndexUpdates
-                            ? 'catalog.pending-search-index-updates'
-                            : 'catalog.search-index-controls'
-                        ) | translate
-                    "
-                    vdrDropdownTrigger
-                >
-                    <clr-icon shape="cog"></clr-icon>
-                    <vdr-status-badge *ngIf="pendingSearchIndexUpdates" type="warning"></vdr-status-badge>
-                </button>
-                <vdr-dropdown-menu vdrPosition="bottom-right">
-                    <h4 class="dropdown-header">{{ 'catalog.search-index-controls' | translate }}</h4>
-                    <ng-container *ngIf="pendingSearchIndexUpdates">
-                        <button
-                            type="button"
-                            class="run-updates-button"
-                            vdrDropdownItem
-                            (click)="runPendingSearchIndexUpdates()"
-                            [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
-                        >
-                            <vdr-status-badge type="warning"></vdr-status-badge>
-                            {{
-                                'catalog.run-pending-search-index-updates'
-                                    | translate: { count: pendingSearchIndexUpdates }
-                            }}
-                        </button>
-                        <div class="dropdown-divider"></div>
-                    </ng-container>
-                    <button
-                        type="button"
-                        vdrDropdownItem
-                        (click)="rebuildSearchIndex()"
-                        [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
-                    >
-                        {{ 'catalog.rebuild-search-index' | translate }}
-                    </button>
-                </vdr-dropdown-menu>
-            </vdr-dropdown>
-        </div>
-        <div class="flex wrap">
-            <clr-toggle-wrapper class="mt-2">
-                <input type="checkbox" clrToggle [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
-                <label>
-                    {{ 'catalog.group-by-product' | translate }}
-                </label>
-            </clr-toggle-wrapper>
-            <vdr-language-selector
-                [availableLanguageCodes]="availableLanguages$ | async"
-                [currentLanguageCode]="contentLanguage$ | async"
-                (languageCodeChange)="setLanguage($event)"
-            ></vdr-language-selector>
-        </div>
-    </vdr-ab-left>
-    <vdr-ab-right>
+<vdr-page-header>
+    <vdr-page-title>
         <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
         <a
             class="btn btn-primary"
@@ -75,78 +9,140 @@
             <clr-icon shape="plus"></clr-icon>
             {{ 'catalog.create-new-product' | translate }}
         </a>
-    </vdr-ab-right>
-</vdr-action-bar>
-
-<vdr-data-table
-    [items]="items$ | async"
-    [itemsPerPage]="itemsPerPage$ | async"
-    [totalItems]="totalItems$ | async"
-    [currentPage]="currentPage$ | async"
-    (pageChange)="setPageNumber($event)"
-    (itemsPerPageChange)="setItemsPerPage($event)"
-    [selectionManager]="selectionManager"
->
-    <vdr-bulk-action-menu
-        locationId="product-list"
-        [hostComponent]="this"
+    </vdr-page-title>
+</vdr-page-header>
+<vdr-page-body>
+    <div class="flex wrap ml-4">
+        <clr-toggle-wrapper class="mt-2">
+            <input type="checkbox" clrToggle [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
+            <label>
+                {{ 'catalog.group-by-product' | translate }}
+            </label>
+        </clr-toggle-wrapper>
+        <vdr-language-selector
+            [availableLanguageCodes]="availableLanguages$ | async"
+            [currentLanguageCode]="contentLanguage$ | async"
+            (languageCodeChange)="setLanguage($event)"
+        ></vdr-language-selector>
+    </div>
+    <vdr-data-table-2
+        class="mt-2"
+        id="product-list"
+        [items]="items$ | async"
+        [itemsPerPage]="itemsPerPage$ | async"
+        [totalItems]="totalItems$ | async"
+        [currentPage]="currentPage$ | async"
+        [filters]="filters"
         [selectionManager]="selectionManager"
-    ></vdr-bulk-action-menu>
-    <vdr-dt-column> </vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <ng-template let-result="item">
-        <td class="left align-middle image-col" [class.disabled]="!result.enabled">
-            <div class="image-placeholder">
-                <img
-                    *ngIf="
-                        groupByProduct
-                            ? result.productAsset
-                            : result.productVariantAsset || result.productAsset as asset;
-                        else imagePlaceholder
-                    "
-                    [src]="asset | assetPreview: 'tiny'"
-                />
-                <ng-template #imagePlaceholder>
-                    <div class="placeholder">
-                        <clr-icon shape="image" size="48"></clr-icon>
-                    </div>
-                </ng-template>
-            </div>
-        </td>
-        <td class="left align-middle" [class.disabled]="!result.enabled">
-            <div>{{ groupByProduct ? result.productName : result.productVariantName }}</div>
-            <div *ngIf="!groupByProduct" class="sku">{{ result.sku }}</div>
-        </td>
-        <td class="align-middle" [class.disabled]="!result.enabled">
-            <vdr-chip *ngIf="!result.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
-        </td>
-        <td class="right align-middle" [class.disabled]="!result.enabled">
-            <vdr-table-row-action
-                class="edit-button"
-                iconShape="edit"
-                [label]="'common.edit' | translate"
-                [linkTo]="['./', result.productId]"
-            ></vdr-table-row-action>
-            <vdr-dropdown>
-                <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
-                    {{ 'common.actions' | translate }}
-                    <clr-icon shape="caret down"></clr-icon>
-                </button>
-                <vdr-dropdown-menu vdrPosition="bottom-right">
+        (pageChange)="setPageNumber($event)"
+        (itemsPerPageChange)="setItemsPerPage($event)"
+    >
+        <vdr-bulk-action-menu
+            locationId="product-list"
+            [hostComponent]="this"
+            [selectionManager]="selectionManager"
+        ></vdr-bulk-action-menu>
+        <ng-template #vdrDt2CustomSearch>
+            <div class="search-form">
+                <vdr-product-search-input
+                    #productSearchInputComponent
+                    [facetValueResults]="facetValues$ | async"
+                    (searchTermChange)="setSearchTerm($event)"
+                    (facetValueChange)="setFacetValueIds($event)"
+                ></vdr-product-search-input>
+                <vdr-dropdown class="search-settings-menu mr3">
                     <button
                         type="button"
-                        class="delete-button"
-                        (click)="deleteProduct(result.productId)"
-                        [disabled]="!(['DeleteCatalog', 'DeleteProduct'] | hasPermission)"
-                        vdrDropdownItem
+                        class="icon-button search-index-button"
+                        [title]="
+                            (pendingSearchIndexUpdates
+                                ? 'catalog.pending-search-index-updates'
+                                : 'catalog.search-index-controls'
+                            ) | translate
+                        "
+                        vdrDropdownTrigger
                     >
-                        <clr-icon shape="trash" class="is-danger"></clr-icon>
-                        {{ 'common.delete' | translate }}
+                        <clr-icon shape="cog"></clr-icon>
+                        <vdr-status-badge *ngIf="pendingSearchIndexUpdates" type="warning"></vdr-status-badge>
                     </button>
-                </vdr-dropdown-menu>
-            </vdr-dropdown>
-        </td>
-    </ng-template>
-</vdr-data-table>
+                    <vdr-dropdown-menu vdrPosition="bottom-right">
+                        <h4 class="dropdown-header">{{ 'catalog.search-index-controls' | translate }}</h4>
+                        <ng-container *ngIf="pendingSearchIndexUpdates">
+                            <button
+                                type="button"
+                                class="run-updates-button"
+                                vdrDropdownItem
+                                (click)="runPendingSearchIndexUpdates()"
+                                [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                            >
+                                <vdr-status-badge type="warning"></vdr-status-badge>
+                                {{
+                                    'catalog.run-pending-search-index-updates'
+                                        | translate : { count: pendingSearchIndexUpdates }
+                                }}
+                            </button>
+                            <div class="dropdown-divider"></div>
+                        </ng-container>
+                        <button
+                            type="button"
+                            vdrDropdownItem
+                            (click)="rebuildSearchIndex()"
+                            [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                        >
+                            {{ 'catalog.rebuild-search-index' | translate }}
+                        </button>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
+            </div>
+        </ng-template>
+        <vdr-dt2-column [heading]="'common.image' | translate">
+            <ng-template let-result="item">
+                <div class="image-placeholder">
+                    <img
+                        *ngIf="
+                            groupByProduct
+                                ? result.productAsset
+                                : result.productVariantAsset || result.productAsset as asset;
+                            else imagePlaceholder
+                        "
+                        [src]="asset | assetPreview : 'tiny'"
+                    />
+                    <ng-template #imagePlaceholder>
+                        <div class="placeholder">
+                            <clr-icon shape="image" size="48"></clr-icon>
+                        </div>
+                    </ng-template>
+                </div>
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false">
+            <ng-template let-result="item">
+                <a class="button-ghost" [routerLink]="['./', result.productId]"
+                    ><span>{{ groupByProduct ? result.productName : result.productVariantName }}</span
+                    ><clr-icon shape="arrow right"
+                /></a>
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'catalog.sku' | translate" [optional]="false">
+            <ng-template let-result="item">
+                {{ result.sku }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'common.enabled' | translate">
+            <ng-template let-result="item">
+                <vdr-chip *ngIf="!result.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'catalog.price' | translate">
+            <ng-template let-result="item">
+                <span *ngIf="result.priceWithTax.min"
+                    >{{ result.priceWithTax.min | localeCurrency : result.currencyCode }} -
+                    {{ result.priceWithTax.max | localeCurrency : result.currencyCode }}</span
+                >
+                <span *ngIf="result.priceWithTax.value">{{
+                    result.priceWithTax.value | localeCurrency : result.currencyCode
+                }}</span>
+            </ng-template>
+        </vdr-dt2-column>
+    </vdr-data-table-2>
+</vdr-page-body>

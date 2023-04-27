@@ -11,6 +11,7 @@ import {
     LogicalOperator,
     ModalService,
     NotificationService,
+    OrderFilterParameter,
     ProductSearchInputComponent,
     SearchInput,
     SearchProductsQuery,
@@ -20,6 +21,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { DataTableFilterService } from '../../../../core/src/providers/data-table-filter/data-table-filter.service';
 
 export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
 
@@ -29,11 +31,7 @@ export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
     styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent
-    extends BaseListComponent<
-        SearchProductsQuery,
-        SearchItem,
-        SearchProductsQueryVariables
-    >
+    extends BaseListComponent<SearchProductsQuery, SearchItem, SearchProductsQueryVariables>
     implements OnInit, AfterViewInit
 {
     searchTerm = '';
@@ -45,6 +43,17 @@ export class ProductListComponent
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
     selectionManager: SelectionManager<SearchItem>;
+    readonly filters = this.dataTableFilterService
+        .createConfig<SearchInput>()
+        .addFilter({
+            id: 'collectionSlug',
+            type: { kind: 'text' },
+            label: _('catalog.collection-slug'),
+            toFilterInput: value => ({
+                collectionSlug: value.term,
+            }),
+        })
+        .connectToRoute(this.route);
 
     @ViewChild('productSearchInputComponent', { static: true })
     private productSearchInput: ProductSearchInputComponent;
@@ -55,6 +64,7 @@ export class ProductListComponent
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
         private serverConfigService: ServerConfigService,
+        private dataTableFilterService: DataTableFilterService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -117,6 +127,8 @@ export class ProductListComponent
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage)
             .pipe(tap(() => this.refresh()));
+
+        this.filters.valueChanges.subscribe(() => this.refresh());
 
         this.dataService.product
             .getPendingSearchIndexUpdates()

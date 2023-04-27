@@ -3,6 +3,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ContentChild,
     ContentChildren,
     EventEmitter,
     Input,
@@ -15,13 +16,14 @@ import {
     TemplateRef,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { LocalStorageService } from '@vendure/admin-ui/core';
+import { BulkActionMenuComponent, LocalStorageService } from '@vendure/admin-ui/core';
 import { PaginationService } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
 import { DataTableFilterCollection } from '../../../providers/data-table-filter/data-table-filter-collection';
 
 import { DataTable2ColumnComponent } from './data-table-column.component';
+import { DataTable2SearchComponent } from './data-table-search.component';
 
 /**
  * @description
@@ -97,13 +99,14 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     @Input() totalItems: number;
     @Input() emptyStateLabel: string;
     @Input() selectionManager?: SelectionManager<T>;
-    @Input() searchTermControl?: FormControl<string>;
-    @Input() searchTermPlaceholder?: string;
     @Input() filters: DataTableFilterCollection;
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
 
     @ContentChildren(DataTable2ColumnComponent) columns: QueryList<DataTable2ColumnComponent<T>>;
+    @ContentChild(DataTable2SearchComponent) searchComponent: DataTable2SearchComponent;
+    @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
+    @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
     rowTemplate: TemplateRef<any>;
     currentStart: number;

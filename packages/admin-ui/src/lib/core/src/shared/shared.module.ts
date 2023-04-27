@@ -40,6 +40,7 @@ import { CustomDetailComponentHostComponent } from './components/custom-detail-c
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 import { DataTable2ColumnComponent } from './components/data-table-2/data-table-column.component';
+import { DataTable2SearchComponent } from './components/data-table-2/data-table-search.component';
 import { DataTable2Component } from './components/data-table-2/data-table2.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
@@ -268,6 +269,7 @@ const DECLARATIONS = [
     DataTableFiltersComponent,
     DataTableFilterLabelComponent,
     DataTableColumnPickerComponent,
+    DataTable2SearchComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
