@@ -7,7 +7,7 @@
         <button vdrDropdownTrigger class="">
             <span *ngIf="state === 'new'">{{ 'common.add-filter' | translate }}</span>
             <span *ngIf="state === 'active'">
-                <vdr-data-table-filter-label [filter]="filter"></vdr-data-table-filter-label>
+                <vdr-data-table-filter-label [filterWithValue]="filterWithValue"></vdr-data-table-filter-label>
             </span>
             <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
         </button>
@@ -49,6 +49,24 @@
                             <option value="regex">{{ 'common.operator-regex' | translate }}</option>
                         </select>
                         <input type="text" formControlName="term" />
+                    </div>
+                </div>
+                <div *ngSwitchCase="'number'">
+                    <div [formGroup]="formControl">
+                        <select clrSelect name="options" formControlName="operator" class="mb-1">
+                            <option value="eq">{{ 'common.operator-eq' | translate }}</option>
+                            <option value="gt">{{ 'common.operator-gt' | translate }}</option>
+                            <option value="lt">{{ 'common.operator-lt' | translate }}</option>
+                        </select>
+                        <input
+                            *ngIf="$any(selectedFilter.type).inputType !== 'currency'"
+                            type="text"
+                            formControlName="amount"
+                        />
+                        <vdr-currency-input
+                            *ngIf="$any(selectedFilter.type).inputType === 'currency'"
+                            formControlName="amount"
+                        />
                     </div>
                 </div>
                 <div *ngSwitchCase="'dateRange'">

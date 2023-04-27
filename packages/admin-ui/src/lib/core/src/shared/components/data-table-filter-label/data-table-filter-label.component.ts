@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { DataTableFilter } from '../../../providers/data-table/data-table-filter';
+import { FilterWithValue } from '../../../providers/data-table/data-table-filter-collection';
 
 @Component({
     selector: 'vdr-data-table-filter-label',
@@ -8,5 +9,5 @@ import { DataTableFilter } from '../../../providers/data-table/data-table-filter
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DataTableFilterLabelComponent {
-    @Input() filter: DataTableFilter;
+    @Input() filterWithValue: FilterWithValue;
 }

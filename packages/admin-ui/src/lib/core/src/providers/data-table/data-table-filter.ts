@@ -1,5 +1,5 @@
-import { DateOperators } from '@vendure/admin-ui/core';
 import { assertNever } from '@vendure/common/lib/shared-utils';
+import { DateOperators } from '../../common/generated-types';
 
 export interface DataTableFilterTextType {
     kind: 'text';
@@ -15,6 +15,11 @@ export interface DataTableFilterBooleanType {
     kind: 'boolean';
 }
 
+export interface DataTableFilterNumberType {
+    kind: 'number';
+    inputType?: 'number' | 'currency';
+}
+
 export interface DataTableFilterDateRangeType {
     kind: 'dateRange';
 }
@@ -24,12 +29,14 @@ export type KindValueMap = {
     select: string[];
     boolean: boolean;
     dateRange: { start?: string; end?: string; dateOperators: DateOperators };
+    number: { operator: 'eq' | 'gt' | 'lt'; amount: string };
 };
 export type DataTableFilterType =
     | DataTableFilterTextType
     | DataTableFilterSelectType
     | DataTableFilterBooleanType
-    | DataTableFilterDateRangeType;
+    | DataTableFilterDateRangeType
+    | DataTableFilterNumberType;
 
 export interface DataTableFilterOptions<
     FilterInput extends Record<string, any> = any,
@@ -38,8 +45,10 @@ export interface DataTableFilterOptions<
     readonly name: string;
     readonly type: Type;
     readonly label: string;
-    readonly toFilterInput: (value: KindValueMap[Type['kind']]) => Partial<FilterInput>;
+    readonly toFilterInput: (value: DataTableFilterValue<Type>) => Partial<FilterInput>;
 }
+
+export type DataTableFilterValue<Type extends DataTableFilterType> = KindValueMap[Type['kind']];
 
 export class DataTableFilter<
     FilterInput extends Record<string, any> = any,
@@ -47,13 +56,11 @@ export class DataTableFilter<
 > {
     constructor(
         private readonly options: DataTableFilterOptions<FilterInput, Type>,
-        private onSetValue?: (value: KindValueMap[Type['kind']] | undefined) => void,
+        private onActivate?: (
+            filter: DataTableFilter<FilterInput, Type>,
+            value: DataTableFilterValue<Type> | undefined,
+        ) => void,
     ) {}
-    private _value: any | undefined;
-
-    get value(): KindValueMap[Type['kind']] | undefined {
-        return this._value;
-    }
 
     get name(): string {
         return this.options.name;
@@ -67,79 +74,22 @@ export class DataTableFilter<
         return this.options.label;
     }
 
-    toFilterInput(value: KindValueMap[Type['kind']]): Partial<FilterInput> {
+    toFilterInput(value: DataTableFilterValue<Type>): Partial<FilterInput> {
         return this.options.toFilterInput(value);
     }
 
-    setValue(value: KindValueMap[Type['kind']]): void {
-        this._value = value;
-        if (this.onSetValue) {
-            this.onSetValue(value);
-        }
-    }
-
-    clearValue(): void {
-        this._value = undefined;
-        if (this.onSetValue) {
-            this.onSetValue(undefined);
-        }
-    }
-
-    serializeValue(): string | undefined {
-        if (this.value === undefined) {
-            return undefined;
-        }
-        const kind = this.type.kind;
-        switch (kind) {
-            case 'text': {
-                const value = this.getValueForKind(kind);
-                return `${value?.operator},${value?.term}`;
-            }
-            case 'select': {
-                const value = this.getValueForKind(kind);
-                return value?.join(',');
-            }
-            case 'boolean': {
-                const value = this.getValueForKind(kind);
-                return value ? '1' : '0';
-            }
-            case 'dateRange': {
-                const value = this.getValueForKind(kind);
-                const start = value?.start ? new Date(value.start).getTime() : '';
-                const end = value?.end ? new Date(value.end).getTime() : '';
-                return `${start},${end}`;
-            }
-            default:
-                assertNever(this.type);
-        }
-    }
-
-    deserializeValue(value: string): void {
-        switch (this.type.kind) {
-            case 'text': {
-                const [operator, term] = value.split(',');
-                this._value = { operator, term };
-                break;
-            }
-            case 'select':
-                this._value = value.split(',');
-                break;
-            case 'boolean':
-                this._value = value === '1';
-                break;
-            case 'dateRange':
-                const [startTimestamp, endTimestamp] = value.split(',');
-                const start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
-                const end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
-                this._value = { start, end };
-                break;
-            default:
-                assertNever(this.type);
+    activate(value: DataTableFilterValue<Type>) {
+        if (this.onActivate) {
+            this.onActivate(this, value);
         }
     }
 
     isText(): this is DataTableFilter<FilterInput, DataTableFilterTextType> {
         return this.type.kind === 'text';
+    }
+
+    isNumber(): this is DataTableFilter<FilterInput, DataTableFilterNumberType> {
+        return this.type.kind === 'number';
     }
 
     isBoolean(): this is DataTableFilter<FilterInput, DataTableFilterBooleanType> {
@@ -154,18 +104,7 @@ export class DataTableFilter<
         return this.type.kind === 'dateRange';
     }
 
-    private getValueForKind<Kind extends Type['kind']>(kind: Kind): KindValueMap[Kind] | undefined {
-        switch (kind) {
-            case 'text':
-                return this.value as any;
-            case 'select':
-                return this.value as any;
-            case 'boolean':
-                return this.value as any;
-            case 'dateRange':
-                return this.value as any;
-            default:
-                assertNever(kind);
-        }
-    }
+    // private getValueForKind<Kind extends Type['kind']>(kind: Kind): KindValueMap[Kind] | undefined {
+    //     return this.value as any;
+    // }
 }

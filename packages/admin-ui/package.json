@@ -48,6 +48,7 @@
         "core-js": "^3.29.0",
         "dayjs": "^1.10.4",
         "graphql": "16.6.0",
+        "just-extend": "^6.2.0",
         "messageformat": "2.3.0",
         "ngx-pagination": "^6.0.3",
         "ngx-translate-messageformat-compiler": "^6.2.0",

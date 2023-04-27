@@ -57,6 +57,16 @@ export class OrderListComponent
             }),
         })
         .addFilter({
+            name: 'totalWithTax',
+            type: { kind: 'number', inputType: 'currency', currencyCode: 'USD' },
+            label: _('order.total'),
+            toFilterInput: value => ({
+                totalWithTax: {
+                    [value.operator]: +value.amount,
+                },
+            }),
+        })
+        .addFilter({
             name: 'state',
             type: {
                 kind: 'select',

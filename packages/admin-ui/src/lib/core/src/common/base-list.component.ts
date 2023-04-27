@@ -1,6 +1,5 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, takeUntil } from 'rxjs/operators';
 
