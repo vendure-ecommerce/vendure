@@ -16,6 +16,7 @@ import {
     ProductOptionGroup,
     ProductOptionGroupFragment,
     ServerConfigService,
+    TranslationOf,
     UpdateProductOptionGroupInput,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
@@ -89,7 +90,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
                 mergeMap(([{ optionGroups }, languageCode, product]) => {
                     const updateOperations: Array<Observable<any>> = [];
                     for (const optionGroupForm of this.getOptionGroups()) {
-                        if (optionGroupForm.get('name')?.dirty || optionGroupForm.get('code')?.dirty) {
+                        if (optionGroupForm.dirty) {
                             const optionGroupEntity = optionGroups.find(
                                 og => og.id === optionGroupForm.value.id,
                             );
@@ -106,7 +107,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
                         }
 
                         for (const optionForm of this.getOptions(optionGroupForm)) {
-                            if (optionForm.get('name')?.dirty || optionForm.get('code')?.dirty) {
+                            if (optionForm.dirty) {
                                 const optionGroup = optionGroups
                                     .find(og => og.id === optionGroupForm.value.id)
                                     ?.options.find(o => o.id === optionForm.value.id);
@@ -172,7 +173,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
         const input = createUpdatedTranslatable({
             translatable: option,
             updatedFields: optionFormGroup.value,
-            customFieldConfig: this.optionGroupCustomFields,
+            customFieldConfig: this.optionCustomFields,
             languageCode,
             defaultTranslation: {
                 languageCode,
@@ -182,35 +183,101 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
         return input;
     }
 
-    protected setFormValues(entity: ProductWithOptions, languageCode: LanguageCode): void {
-        const groupsFormArray = new UntypedFormArray([]);
+    protected setFormValues(entity: GetProductVariantOptions.Product, languageCode: LanguageCode): void {
+        const groupsForm = this.detailForm.get('optionGroups') as UntypedFormArray;
         for (const optionGroup of entity.optionGroups) {
             const groupTranslation = findTranslation(optionGroup, languageCode);
-            const group = {
-                id: optionGroup.id,
-                createdAt: optionGroup.createdAt,
-                updatedAt: optionGroup.updatedAt,
-                code: optionGroup.code,
-                name: groupTranslation ? groupTranslation.name : '',
-            };
-            const optionsFormArray = new UntypedFormArray([]);
 
+            const groupForm = this.setOptionGroupForm(optionGroup, groupsForm, groupTranslation);
+            this.setCustomFieldsForm(this.optionGroupCustomFields, groupForm, optionGroup, groupTranslation);
+
+            let optionsForm = groupForm.get('options') as UntypedFormArray;
+            if (!optionsForm) {
+                optionsForm = this.formBuilder.array([]);
+                groupForm.addControl('options', optionsForm);
+            }
             for (const option of optionGroup.options) {
                 const optionTranslation = findTranslation(option, languageCode);
-                const optionControl = this.formBuilder.group({
-                    id: option.id,
-                    createdAt: option.createdAt,
-                    updatedAt: option.updatedAt,
-                    code: option.code,
-                    name: optionTranslation ? optionTranslation.name : '',
-                });
-                optionsFormArray.push(optionControl);
-            }
+                const optionForm = this.setOptionForm(option, optionsForm, optionTranslation);
 
-            const groupControl = this.formBuilder.group(group);
-            groupControl.addControl('options', optionsFormArray);
-            groupsFormArray.push(groupControl);
+                this.setCustomFieldsForm(this.optionCustomFields, optionForm, option, optionTranslation);
+            }
         }
-        this.detailForm.setControl('optionGroups', groupsFormArray);
+    }
+
+    protected setCustomFieldsForm<
+        T extends GetProductVariantOptions.OptionGroups | GetProductVariantOptions.Options,
+    >(
+        customFields: CustomFieldConfig[],
+        formGroup: FormGroup,
+        entity: T,
+        currentTranslation?: TranslationOf<T>,
+    ) {
+        if (customFields.length) {
+            let customValueFieldsGroup = formGroup.get(['customFields']);
+            if (!customValueFieldsGroup) {
+                customValueFieldsGroup = this.formBuilder.group(
+                    customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+                );
+                formGroup.addControl('customFields', customValueFieldsGroup);
+            }
+            this.setCustomFieldFormValues(customFields, customValueFieldsGroup, entity, currentTranslation);
+        }
+    }
+
+    protected setOptionGroupForm(
+        entity: GetProductVariantOptions.OptionGroups,
+        groupsForm: UntypedFormArray,
+        currentTranslation?: TranslationOf<GetProductVariantOptions.OptionGroups>,
+    ) {
+        const group = {
+            id: entity.id,
+            createdAt: entity.createdAt,
+            updatedAt: entity.updatedAt,
+            code: entity.code,
+            name: currentTranslation?.name ?? '',
+        };
+        let groupForm = groupsForm.controls.find(control => control.value.id === entity.id) as
+            | UntypedFormGroup
+            | undefined;
+        if (groupForm) {
+            groupForm.get('id')?.setValue(group.id);
+            groupForm.get('code')?.setValue(group.code);
+            groupForm.get('name')?.setValue(group.name);
+            groupForm.get('createdAt')?.setValue(group.name);
+            groupForm.get('updatedAt')?.setValue(group.name);
+        } else {
+            groupForm = this.formBuilder.group(group);
+            groupsForm.push(groupForm);
+        }
+        return groupForm;
+    }
+
+    protected setOptionForm(
+        entity: GetProductVariantOptionsQuery,
+        optionsForm: UntypedFormArray,
+        currentTranslation?: TranslationOf<GetProductVariantOptionsQuery>,
+    ) {
+        const group = {
+            id: entity.id,
+            createdAt: entity.createdAt,
+            updatedAt: entity.updatedAt,
+            code: entity.code,
+            name: currentTranslation?.name ?? '',
+        };
+        let optionForm = optionsForm.controls.find(control => control.value.id === entity.id) as
+            | UntypedFormGroup
+            | undefined;
+        if (optionForm) {
+            optionForm.get('id')?.setValue(group.id);
+            optionForm.get('code')?.setValue(group.code);
+            optionForm.get('name')?.setValue(group.name);
+            optionForm.get('createdAt')?.setValue(group.name);
+            optionForm.get('updatedAt')?.setValue(group.name);
+        } else {
+            optionForm = this.formBuilder.group(group);
+            optionsForm.push(optionForm);
+        }
+        return optionForm;
     }
 }

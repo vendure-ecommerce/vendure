@@ -54,6 +54,7 @@ export class I18nService implements OnModuleInit {
             .use(Backend as any)
             .use(ICU as any)
             .init({
+                nsSeparator: false,
                 preload: ['en', 'de', 'ru', 'uk'],
                 fallbackLng: 'en',
                 detection: {
