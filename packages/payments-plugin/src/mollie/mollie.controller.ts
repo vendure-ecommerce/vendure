@@ -20,9 +20,17 @@ export class MollieController {
             return Logger.warn(' Ignoring incoming webhook, because it has no body.id.', loggerCtx);
         }
         try {
-            await this.mollieService.handleMollieStatusUpdate(ctx, { channelToken, paymentMethodId, orderId: body.id });
-        } catch (error) {
-            Logger.error(`Failed to process incoming webhook: ${JSON.stringify(error?.message)}`, loggerCtx, error);
+            await this.mollieService.handleMollieStatusUpdate(ctx, {
+                channelToken,
+                paymentMethodId,
+                orderId: body.id,
+            });
+        } catch (error: any) {
+            Logger.error(
+                `Failed to process incoming webhook: ${JSON.stringify(error?.message)}`,
+                loggerCtx,
+                error,
+            );
             throw error;
         }
     }

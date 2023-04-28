@@ -183,7 +183,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
         return input;
     }
 
-    protected setFormValues(entity: GetProductVariantOptions.Product, languageCode: LanguageCode): void {
+    protected setFormValues(entity: ProductWithOptions, languageCode: LanguageCode): void {
         const groupsForm = this.detailForm.get('optionGroups') as UntypedFormArray;
         for (const optionGroup of entity.optionGroups) {
             const groupTranslation = findTranslation(optionGroup, languageCode);
@@ -206,10 +206,10 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
     }
 
     protected setCustomFieldsForm<
-        T extends GetProductVariantOptions.OptionGroups | GetProductVariantOptions.Options,
+        T extends ProductWithOptions['optionGroups'][0] | ProductWithOptions['optionGroups'][0]['options'][0],
     >(
         customFields: CustomFieldConfig[],
-        formGroup: FormGroup,
+        formGroup: UntypedFormGroup,
         entity: T,
         currentTranslation?: TranslationOf<T>,
     ) {
@@ -226,9 +226,9 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
     }
 
     protected setOptionGroupForm(
-        entity: GetProductVariantOptions.OptionGroups,
+        entity: ProductWithOptions['optionGroups'][0],
         groupsForm: UntypedFormArray,
-        currentTranslation?: TranslationOf<GetProductVariantOptions.OptionGroups>,
+        currentTranslation?: TranslationOf<ProductWithOptions['optionGroups'][0]>,
     ) {
         const group = {
             id: entity.id,
@@ -254,9 +254,9 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
     }
 
     protected setOptionForm(
-        entity: GetProductVariantOptionsQuery,
+        entity: ProductWithOptions['optionGroups'][0]['options'][0],
         optionsForm: UntypedFormArray,
-        currentTranslation?: TranslationOf<GetProductVariantOptionsQuery>,
+        currentTranslation?: TranslationOf<ProductWithOptions['optionGroups'][0]['options'][0]>,
     ) {
         const group = {
             id: entity.id,
