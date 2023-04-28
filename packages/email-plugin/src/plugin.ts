@@ -293,21 +293,21 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
         @Inject(EMAIL_PLUGIN_OPTIONS) private options: InitializedEmailPluginOptions,
-    ) { }
+    ) {}
 
     /**
      * Set the plugin options.
      */
     static init(options: EmailPluginOptions | EmailPluginDevModeOptions): Type<EmailPlugin> {
         if (options.templateLoader) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             Logger.info(`Using custom template loader '${options.templateLoader.constructor.name}'`);
         } else if (!options.templateLoader && options.templatePath) {
-            // TODO: this else-if can be removed when deprecated templatePath is removed, 
-            //       because we will either have a custom template loader, or the default loader with a default path
+            // TODO: this else-if can be removed when deprecated templatePath is removed,
+            // because we will either have a custom template loader, or the default loader with a default path
             options.templateLoader = new FileBasedTemplateLoader(options.templatePath);
         } else {
-            throw new
-            Error('You must either supply a templatePath or provide a custom templateLoader');
+            throw new Error('You must either supply a templatePath or provide a custom templateLoader');
         }
         this.options = options as InitializedEmailPluginOptions;
         return EmailPlugin;
