@@ -1,3 +1,47 @@
+## 2.0.0-beta.2 (2023-04-28)
+
+
+#### Features
+
+* **admin-ui** Implement custom fields updating of ProductOptionGroup and ProductOption entities ([d2a0824](https://github.com/vendure-ecommerce/vendure/commit/d2a0824))
+* **admin-ui** Search field added on administrators list on dashboard -> administrator. (#2130) ([0cc20f2](https://github.com/vendure-ecommerce/vendure/commit/0cc20f2)), closes [#2130](https://github.com/vendure-ecommerce/vendure/issues/2130)
+* **asset-server-plugin** Update s3 asset storage strategy to use AWS sdk v3 (#2102) ([d628659](https://github.com/vendure-ecommerce/vendure/commit/d628659)), closes [#2102](https://github.com/vendure-ecommerce/vendure/issues/2102)
+* **core** Allow specifying transaction isolation level (#2116) ([bf2b1f5](https://github.com/vendure-ecommerce/vendure/commit/bf2b1f5)), closes [#2116](https://github.com/vendure-ecommerce/vendure/issues/2116)
+* **email-plugin** Add support for dynamic templates & SMTP settings ([c6686cd](https://github.com/vendure-ecommerce/vendure/commit/c6686cd)), closes [#2043](https://github.com/vendure-ecommerce/vendure/issues/2043) [#2044](https://github.com/vendure-ecommerce/vendure/issues/2044)
+* **payments-plugin** Make Mollie plugin `redirecturl` dynamic (#2094) ([b452419](https://github.com/vendure-ecommerce/vendure/commit/b452419)), closes [#2094](https://github.com/vendure-ecommerce/vendure/issues/2094) [#2093](https://github.com/vendure-ecommerce/vendure/issues/2093)
+* **payments-plugin** Make Stripe plugin channel-aware (#2058) ([3b88702](https://github.com/vendure-ecommerce/vendure/commit/3b88702)), closes [#2058](https://github.com/vendure-ecommerce/vendure/issues/2058)
+
+#### Fixes
+
+* **admin-ui** Add branding to welcome page (#2115) ([f0f8769](https://github.com/vendure-ecommerce/vendure/commit/f0f8769)), closes [#2115](https://github.com/vendure-ecommerce/vendure/issues/2115) [#2040](https://github.com/vendure-ecommerce/vendure/issues/2040)
+* **core** Fix error messages containing colon char ([2cfc874](https://github.com/vendure-ecommerce/vendure/commit/2cfc874)), closes [#2153](https://github.com/vendure-ecommerce/vendure/issues/2153)
+* **core** Fix issues with Promotion & PaymentMethod null descriptions ([7b407de](https://github.com/vendure-ecommerce/vendure/commit/7b407de))
+* **ui-devkit** Fix baseHref configuration ([c7836b2](https://github.com/vendure-ecommerce/vendure/commit/c7836b2)), closes [#1794](https://github.com/vendure-ecommerce/vendure/issues/1794)
+
+
+### BREAKING CHANGE
+
+* `Promotion` & `PaymentMethod` `description` is once again non-nullable. This will
+require a simple non-destructive DB migration.
+* If you are using the s3 storage strategy of the AssetServerPlugin, it has been updated to use v3 of the AWS SDKs. This update introduces [an improved modular architecture to the AWS sdk](https://aws.amazon.com/blogs/developer/modular-packages-in-aws-sdk-for-javascript/), resulting in smaller bundle sizes. You need to install the `@aws-sdk/client-s3` & `@aws-sdk/lib-storage` packages, and can remove the `aws-sdk` package.
+* The Stripe plugin has been made channel aware. This means your api key and webhook secret are now stored in the database, per channel, instead of environment variables.
+
+To migrate to v2 of the Stripe plugin from @vendure/payments you need to:
+
+Remove the apiKey and webhookSigningSecret from the plugin initialization in vendure-config.ts:
+```diff
+-StripePlugin.init({
+-    apiKey: process.env.YOUR_STRIPE_SECRET_KEY,
+-    webhookSigningSecret: process.env.YOUR_STRIPE_WEBHOOK_SIGNING_SECRET,
+-    storeCustomersInStripe: true,
+-}),
++StripePlugin.init({
++    storeCustomersInStripe: true,
++ }),
+```
+Start the server and login as administrator.
+
+For each channel that you'd like to use Stripe payments, you need to create a payment method with payment handler Stripe payment and the apiKey and webhookSigningSecret belonging to that channel's Stripe account.
 ## 2.0.0-beta.1 (2023-04-14)
 
 
