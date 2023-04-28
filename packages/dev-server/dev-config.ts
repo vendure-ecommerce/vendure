@@ -97,7 +97,19 @@ export const devConfig: VendureConfig = {
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({
             //     outputPath: path.join(__dirname, './custom-admin-ui'),
-            //     extensions: [],
+            //     extensions: [
+            //         {
+            //             extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
+            //             ngModules: [
+            //                 {
+            //                     type: 'lazy',
+            //                     route: 'greet',
+            //                     ngModuleFileName: 'greeter.module.ts',
+            //                     ngModuleName: 'GreeterModule',
+            //                 },
+            //             ],
+            //         },
+            //     ],
             //     devMode: true,
             // }),
         }),
