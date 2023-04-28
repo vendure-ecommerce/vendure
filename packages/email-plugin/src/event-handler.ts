@@ -144,7 +144,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
 
-    constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
+    constructor(public listener: EmailEventListener<T>, public event: Type<Event>) { }
 
     /** @internal */
     get type(): T {
@@ -268,6 +268,9 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * @description
      * Add configuration for another template other than the default `"body.hbs"`. Use this method to define specific
      * templates for channels or languageCodes other than the default.
+     * 
+     * @deprecated Define a custom TemplateLoader on plugin initalization to define templates based on the RequestContext.
+     * E.g. `EmailPlugin.init({ templateLoader: new CustomTemplateLoader() })`
      */
     addTemplate(config: EmailTemplateConfig): EmailEventHandler<T, Event> {
         this.configurations.push(config);
@@ -346,14 +349,14 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         }
         if (!this.setRecipientFn) {
             throw new Error(
-                'No setRecipientFn has been defined. ' +
-                    `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`,
+                `No setRecipientFn has been defined. ` +
+                `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         if (this.from === undefined) {
             throw new Error(
-                'No from field has been defined. ' +
-                    `Remember to call ".setFrom()" when setting up the EmailEventHandler for ${this.type}`,
+                `No from field has been defined. ` +
+                `Remember to call ".setFrom()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         const { ctx } = event;
@@ -362,8 +365,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const subject = configuration ? configuration.subject : this.defaultSubject;
         if (subject == null) {
             throw new Error(
-                'No subject field has been defined. ' +
-                    `Remember to call ".setSubject()" when setting up the EmailEventHandler for ${this.type}`,
+                `No subject field has been defined. ` +
+                `Remember to call ".setSubject()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         const recipient = this.setRecipientFn(event);
@@ -377,6 +380,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const attachments = await serializeAttachments(attachmentsArray);
         const optionalAddressFields = (await this.setOptionalAddressFieldsFn?.(event)) ?? {};
         return {
+            ctx: event.ctx.serialize(),
             type: this.type,
             recipient,
             from: this.from,
