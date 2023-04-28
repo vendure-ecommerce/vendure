@@ -50,6 +50,8 @@ export interface EmailPluginOptions {
      * @description
      * An optional TemplateLoader which can be used to load templates from a custom location or async service.
      * The default uses the FileBasedTemplateLoader which loads templates from `<project root>/vendure/email/templates`
+     *
+     * @since 2.0.0
      */
     templateLoader?: TemplateLoader;
     /**

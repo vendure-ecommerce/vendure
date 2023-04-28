@@ -17,6 +17,7 @@ import {
     registerPluginStartupMessage,
     RequestContext,
     Type,
+    UserInputError,
     VendurePlugin,
 } from '@vendure/core';
 import Module from 'module';
@@ -85,26 +86,6 @@ import {
  *   ],
  * };
  * ```
- * ### Channel aware SMTP settings
- * If you would like to have different SMTP settings per channel, then you can configure the `transport` field to fetch the values.
- * ```
- * EmailPlugin.init({
- *  transport: async (ctx) => {
- *      // Get your SMTP settings based on the requestContext
- *      const settings = await myService.getSmtpSettings(ctx);
- * 
- *        return {
- *          type: 'smtp',
- *          host: settings.host,
- *          port: settings.port,
- *          auth: {
- *          user: settings.user,
- *            pass: settings.password,
- *          }
- *        }
- *        ...
- *  })
- * ```
  *
  * ## Email templates
  *
@@ -121,7 +102,7 @@ import {
  * ```ts
  *   EmailPlugin.init({
  *    ...,
- *    templateLoader: new FileBasedTemplateLoader(my/order-confirmation/template)
+ *    templateLoader: new FileBasedTemplateLoader(my/order-confirmation/templates)
  *   })
  * ```
  * ## Customizing templates
@@ -211,14 +192,15 @@ import {
  *
  * For all available methods of extending a handler, see the {@link EmailEventHandler} documentation.
  *
- * ## Dynamic transport settings
+ * ## Dynamic SMTP settings
  *
- * Instead of defining static transport settings, you can also provide a function that dynamically resolves the transport settings.
+ * Instead of defining static transport settings, you can also provide a function that dynamically resolves
+ * channel aware transport settings.
  *
  * @example
  * ```ts
  * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
- *
+ * import { MyTransportService } from './transport.services.ts';
  * const config: VendureConfig = {
  *   plugins: [
  *     EmailPlugin.init({
@@ -228,7 +210,11 @@ import {
  *         if (ctx) {
  *           return injector.get(MyTransportService).getSettings(ctx);
  *         } else {
- *           return defaultSettings;
+ *           return {
+                type: 'smtp',
+                host: 'smtp.example.com',
+                // ... etc.
+              }
  *         }
  *       }
  *     }),
@@ -319,7 +305,8 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
             //       because we will either have a custom template loader, or the default loader with a default path
             options.templateLoader = new FileBasedTemplateLoader(options.templatePath);
         } else {
-            options.templateLoader = new FileBasedTemplateLoader('./vendure/static/email/templates');
+            throw new
+            Error('You must either supply a templatePath or provide a custom templateLoader');
         }
         this.options = options as InitializedEmailPluginOptions;
         return EmailPlugin;
