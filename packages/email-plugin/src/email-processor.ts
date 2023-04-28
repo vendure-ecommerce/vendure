@@ -1,16 +1,24 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InternalServerError, Logger } from '@vendure/core';
+import { ModuleRef } from '@nestjs/core';
+import { Ctx, Injector, InternalServerError, Logger, RequestContext } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';
-import { isDevModeOptions } from './common';
+import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { EmailGenerator } from './email-generator';
 import { EmailSender } from './email-sender';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { NodemailerEmailSender } from './nodemailer-email-sender';
-import { TemplateLoader } from './template-loader';
-import { EmailDetails, EmailPluginOptions, EmailTransportOptions, IntermediateEmailDetails } from './types';
+import { FileBasedTemplateLoader } from './template-loader';
+import {
+    EmailDetails,
+    EmailPluginOptions,
+    EmailTransportOptions,
+    InitializedEmailPluginOptions,
+    IntermediateEmailDetails,
+    TemplateLoader,
+} from './types';
 
 /**
  * This class combines the template loading, generation, and email sending - the actual "work" of
@@ -19,15 +27,21 @@ import { EmailDetails, EmailPluginOptions, EmailTransportOptions, IntermediateEm
  */
 @Injectable()
 export class EmailProcessor {
-    protected templateLoader: TemplateLoader;
     protected emailSender: EmailSender;
     protected generator: EmailGenerator;
-    protected transport: EmailTransportOptions;
+    protected transport:
+        | EmailTransportOptions
+        | ((
+              injector?: Injector,
+              ctx?: RequestContext,
+          ) => EmailTransportOptions | Promise<EmailTransportOptions>);
 
-    constructor(@Inject(EMAIL_PLUGIN_OPTIONS) protected options: EmailPluginOptions) {}
+    constructor(
+        @Inject(EMAIL_PLUGIN_OPTIONS) protected options: InitializedEmailPluginOptions,
+        private moduleRef: ModuleRef,
+    ) {}
 
     async init() {
-        this.templateLoader = new TemplateLoader(this.options.templatePath);
         this.emailSender = this.options.emailSender ? this.options.emailSender : new NodemailerEmailSender();
         this.generator = this.options.emailGenerator
             ? this.options.emailGenerator
@@ -44,22 +58,31 @@ export class EmailProcessor {
         } else {
             if (!this.options.transport) {
                 throw new InternalServerError(
-                    'When devMode is not set to true, the \'transport\' property must be set.',
+                    "When devMode is not set to true, the 'transport' property must be set.",
                 );
             }
             this.transport = this.options.transport;
         }
-        if (this.transport.type === 'file') {
+        const transport = await this.getTransportSettings();
+        if (transport.type === 'file') {
             // ensure the configured directory exists before
             // we attempt to write files to it
-            const emailPath = this.transport.outputPath;
+            const emailPath = transport.outputPath;
             await fs.ensureDir(emailPath);
         }
     }
 
     async process(data: IntermediateEmailDetails) {
         try {
-            const bodySource = await this.templateLoader.loadTemplate(data.type, data.templateFile);
+            const ctx = RequestContext.deserialize(data.ctx);
+            const bodySource = await this.options.templateLoader.loadTemplate(
+                new Injector(this.moduleRef),
+                ctx,
+                {
+                    templateName: data.templateFile,
+                    type: data.type,
+                },
+            );
             const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
             const emailDetails: EmailDetails = {
                 ...generated,
@@ -69,7 +92,8 @@ export class EmailProcessor {
                 bcc: data.bcc,
                 replyTo: data.replyTo,
             };
-            await this.emailSender.send(emailDetails, this.transport);
+            const transportSettings = await this.getTransportSettings(ctx);
+            await this.emailSender.send(emailDetails, transportSettings);
             return true;
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -78,6 +102,18 @@ export class EmailProcessor {
                 Logger.error(String(err), loggerCtx);
             }
             throw err;
+        }
+    }
+
+    async getTransportSettings(ctx?: RequestContext): Promise<EmailTransportOptions> {
+        if (isDevModeOptions(this.options)) {
+            return {
+                type: 'file',
+                raw: false,
+                outputPath: this.options.outputPath,
+            };
+        } else {
+            return resolveTransportSettings(this.options, new Injector(this.moduleRef), ctx);
         }
     }
 }

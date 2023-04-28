@@ -51,7 +51,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                     {
                         adjustmentSource: 'Promotion:1',
                         type: AdjustmentType.PROMOTION,
-                        amount: -1000,
+                        amount: -1000 as any,
                         description: '$10 off computer equipment',
                     },
                 ],

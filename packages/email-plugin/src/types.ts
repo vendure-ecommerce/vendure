@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Injector, RequestContext, VendureEvent } from '@vendure/core';
+import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from '@vendure/core';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport'
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
@@ -42,13 +42,23 @@ export interface EmailPluginOptions {
      * @description
      * The path to the location of the email templates. In a default Vendure installation,
      * the templates are installed to `<project root>/vendure/email/templates`.
+     * 
+     * @deprecated Use `templateLoader` to define a template path: `templateLoader: new FileBasedTemplateLoader('../your-path/templates')`
      */
-    templatePath: string;
+    templatePath?: string;
+    /**
+     * @description
+     * An optional TemplateLoader which can be used to load templates from a custom location or async service.
+     * The default uses the FileBasedTemplateLoader which loads templates from `<project root>/vendure/email/templates`
+     *
+     * @since 2.0.0
+     */
+    templateLoader?: TemplateLoader;
     /**
      * @description
      * Configures how the emails are sent.
      */
-    transport: EmailTransportOptions;
+    transport: EmailTransportOptions | ((injector?: Injector, ctx?: RequestContext) => EmailTransportOptions | Promise<EmailTransportOptions>)
     /**
      * @description
      * An array of {@link EmailEventHandler}s which define which Vendure events will trigger
@@ -79,6 +89,11 @@ export interface EmailPluginOptions {
      */
     emailGenerator?: EmailGenerator;
 }
+
+/**
+ * EmailPLuginOptions type after initialization, where templateLoader is no longer optional
+ */
+export type InitializedEmailPluginOptions = EmailPluginOptions & { templateLoader: TemplateLoader };
 
 /**
  * @description
@@ -285,6 +300,7 @@ export type SerializedAttachment = OptionalToNullable<
 >;
 
 export type IntermediateEmailDetails = {
+    ctx: SerializedRequestContext;
     type: string;
     from: string;
     recipient: string;
@@ -301,9 +317,8 @@ export type IntermediateEmailDetails = {
  * @description
  * Configures the {@link EmailEventHandler} to handle a particular channel & languageCode
  * combination.
- *
- * @docsCategory EmailPlugin
- * @docsPage Email Plugin Types
+ * 
+ * @deprecated Use a custom {@link TemplateLoader} instead. 
  */
 export interface EmailTemplateConfig {
     /**
@@ -329,6 +344,54 @@ export interface EmailTemplateConfig {
      * be used inside the subject.
      */
     subject: string;
+}
+
+export interface LoadTemplateInput {
+    type: string,
+    templateName: string
+}
+
+export interface Partial {
+    name: string,
+    content: string
+}
+
+/**
+ * @description
+ * Load an email template based on the given request context, type and template name
+ * and return the template as a string.
+ * 
+ * @example
+ * ```TypeScript
+ * import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+ * 
+ * class MyTemplateLoader implements TemplateLoader {
+ *      loadTemplate(injector, ctx, { type, templateName }){
+ *          return myCustomTemplateFunction(ctx);
+ *      }
+ * }
+ * 
+ * // In vendure-config.ts:
+ * ...
+ * EmailPlugin.init({
+ *     templateLoader: new MyTemplateLoader()
+ *     ...
+ * })
+ * ```
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Custom Template Loader
+ */
+export interface TemplateLoader {
+    /**
+     * Load template and return it's content as a string
+     */
+    loadTemplate(injector: Injector, ctx: RequestContext, input: LoadTemplateInput): Promise<string>;
+    /**
+     * Load partials and return their contents. 
+     * This method is only called during initalization, i.e. during server startup. 
+     */
+    loadPartials?(): Promise<Partial[]>;
 }
 
 /**
