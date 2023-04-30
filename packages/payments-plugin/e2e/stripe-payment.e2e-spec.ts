@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { mergeConfig } from '@vendure/core';
+import { EntityHydrator, mergeConfig } from '@vendure/core';
 import { CreateProduct, CreateProductVariants } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graphql/shared-definitions';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
@@ -160,6 +160,40 @@ describe('Stripe payments', () => {
             'metadata[orderCode]': activeOrder?.code,
         });
         expect(createStripePaymentIntent).toEqual('test-client-secret');
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1935
+    it('should attach metadata to stripe payment intent', async () => {
+        StripePlugin.options.metadata = async (ctx, currentOrder) => {
+            const hydrator = server.app.get(EntityHydrator);
+            await hydrator.hydrate(ctx, currentOrder, { relations: ['customer'] });
+            return {
+                customerEmail: currentOrder.customer?.emailAddress ?? 'demo',
+            };
+        };
+        let createPaymentIntentPayload: any;
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        nock('https://api.stripe.com/')
+            .post('/v1/payment_intents', body => {
+                createPaymentIntentPayload = body;
+                return true;
+            })
+            .reply(200, {
+                client_secret: 'test-client-secret',
+            });
+        const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
+        expect(createPaymentIntentPayload).toEqual({
+            amount: activeOrder?.totalWithTax.toString(),
+            currency: activeOrder?.currencyCode?.toLowerCase(),
+            customer: 'new-customer-id',
+            'automatic_payment_methods[enabled]': 'true',
+            'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
+            'metadata[orderId]': '1',
+            'metadata[orderCode]': activeOrder?.code,
+            'metadata[customerEmail]': customers[0].emailAddress,
+        });
+        expect(createStripePaymentIntent).toEqual('test-client-secret');
+        StripePlugin.options.metadata = undefined;
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/1630

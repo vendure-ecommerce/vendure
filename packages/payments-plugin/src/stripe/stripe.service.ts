@@ -1,8 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Customer, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
+import {
+    Customer,
+    EntityHydrator,
+    Logger,
+    Order,
+    RequestContext,
+    TransactionalConnection,
+} from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { sanitizeMetadata } from './metadata-sanitize';
 import { getAmountInStripeMinorUnits } from './stripe-utils';
 import { StripePluginOptions } from './types';
 
@@ -26,6 +34,14 @@ export class StripeService {
             customerId = await this.getStripeCustomerId(ctx, order);
         }
         const amountInMinorUnits = getAmountInStripeMinorUnits(order);
+
+        const metadata = sanitizeMetadata({
+            ...(typeof this.options.metadata === 'function' ? await this.options.metadata(ctx, order) : {}),
+            channelToken: ctx.channel.token,
+            orderId: order.id,
+            orderCode: order.code,
+        });
+
         const { client_secret } = await this.stripe.paymentIntents.create(
             {
                 amount: amountInMinorUnits,
@@ -34,11 +50,7 @@ export class StripeService {
                 automatic_payment_methods: {
                     enabled: true,
                 },
-                metadata: {
-                    channelToken: ctx.channel.token,
-                    orderId: order.id,
-                    orderCode: order.code,
-                },
+                metadata,
             },
             { idempotencyKey: `${order.code}_${amountInMinorUnits}` },
         );
