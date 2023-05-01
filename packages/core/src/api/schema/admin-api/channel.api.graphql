@@ -1,5 +1,5 @@
 type Query {
-    channels: [Channel!]!
+    channels(options: ChannelListOptions): ChannelList!
     channel(id: ID!): Channel
     activeChannel: Channel!
 }
@@ -14,6 +14,13 @@ type Mutation {
     "Delete a Channel"
     deleteChannel(id: ID!): DeletionResponse!
 }
+
+type ChannelList implements PaginatedList {
+    items: [Channel!]!
+    totalItems: Int!
+}
+
+input ChannelListOptions
 
 input CreateChannelInput {
     code: String!

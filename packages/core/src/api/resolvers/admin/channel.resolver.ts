@@ -7,8 +7,10 @@ import {
     MutationUpdateChannelArgs,
     Permission,
     QueryChannelArgs,
+    QueryChannelsArgs,
     UpdateChannelResult,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
 import { Channel } from '../../../entity/channel/channel.entity';
@@ -25,9 +27,11 @@ export class ChannelResolver {
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadChannel)
-    async channels(@Ctx() ctx: RequestContext): Promise<Channel[]> {
-        const { items } = await this.channelService.findAll(ctx);
-        return items
+    async channels(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryChannelsArgs,
+    ): Promise<PaginatedList<Channel>> {
+        return this.channelService.findAll(ctx, args.options || undefined);
     }
 
     @Query()

@@ -379,6 +379,44 @@ export type ChannelDefaultLanguageError = ErrorResult & {
     message: Scalars['String'];
 };
 
+export type ChannelFilterParameter = {
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    currencyCode?: InputMaybe<StringOperators>;
+    defaultCurrencyCode?: InputMaybe<StringOperators>;
+    defaultLanguageCode?: InputMaybe<StringOperators>;
+    id?: InputMaybe<IdOperators>;
+    pricesIncludeTax?: InputMaybe<BooleanOperators>;
+    token?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ChannelList = PaginatedList & {
+    items: Array<Channel>;
+    totalItems: Scalars['Int'];
+};
+
+export type ChannelListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ChannelFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ChannelSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']>;
+};
+
+export type ChannelSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    token?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
+};
+
 export type Collection = Node & {
     assets: Array<Asset>;
     breadcrumbs: Array<CollectionBreadcrumb>;
@@ -4383,7 +4421,7 @@ export type Query = {
     /** Get a list of Assets */
     assets: AssetList;
     channel?: Maybe<Channel>;
-    channels: Array<Channel>;
+    channels: ChannelList;
     /** Get a Collection either by id or slug. If neither id nor slug is specified, an error will result. */
     collection?: Maybe<Collection>;
     collectionFilters: Array<ConfigurableOperationDefinition>;
@@ -4473,6 +4511,10 @@ export type QueryAssetsArgs = {
 
 export type QueryChannelArgs = {
     id: Scalars['ID'];
+};
+
+export type QueryChannelsArgs = {
+    options?: InputMaybe<ChannelListOptions>;
 };
 
 export type QueryCollectionArgs = {

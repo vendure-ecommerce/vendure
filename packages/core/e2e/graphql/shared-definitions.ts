@@ -1006,9 +1006,11 @@ export const DELETE_PROMOTION = gql`
 export const GET_CHANNELS = gql`
     query GetChannels {
         channels {
-            id
-            code
-            token
+            items {
+                id
+                code
+                token
+            }
         }
     }
 `;
