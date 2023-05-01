@@ -260,7 +260,7 @@ export class Importer {
                     featuredAssetId: variantAssets.length ? variantAssets[0].id : undefined,
                     assetIds: variantAssets.map(a => a.id),
                     sku: variant.sku,
-                    taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories),
+                    taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories.items),
                     stockOnHand: variant.stockOnHand,
                     trackInventory: variant.trackInventory,
                     optionIds,

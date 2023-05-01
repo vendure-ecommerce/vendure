@@ -5,8 +5,10 @@ import {
     MutationDeleteTaxCategoryArgs,
     MutationUpdateTaxCategoryArgs,
     Permission,
+    QueryTaxCategoriesArgs,
     QueryTaxCategoryArgs,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
@@ -26,8 +28,11 @@ export class TaxCategoryResolver {
         Permission.ReadProduct,
         Permission.ReadTaxCategory,
     )
-    async taxCategories(@Ctx() ctx: RequestContext): Promise<TaxCategory[]> {
-        return this.taxCategoryService.findAll(ctx);
+    async taxCategories(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryTaxCategoriesArgs,
+    ): Promise<PaginatedList<TaxCategory>> {
+        return this.taxCategoryService.findAll(ctx, args.options || undefined);
     }
 
     @Query()

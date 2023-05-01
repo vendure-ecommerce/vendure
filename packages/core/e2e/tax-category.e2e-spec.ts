@@ -185,9 +185,11 @@ describe('TaxCategory resolver', () => {
 const GET_TAX_CATEGORY_LIST = gql`
     query GetTaxCategoryList {
         taxCategories {
-            id
-            name
-            isDefault
+            items {
+                id
+                name
+                isDefault
+            }
         }
     }
 `;

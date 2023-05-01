@@ -4483,7 +4483,7 @@ export type Query = {
     stockLocations: StockLocationList;
     tag: Tag;
     tags: TagList;
-    taxCategories: Array<TaxCategory>;
+    taxCategories: TaxCategoryList;
     taxCategory?: Maybe<TaxCategory>;
     taxRate?: Maybe<TaxRate>;
     taxRates: TaxRateList;
@@ -4687,6 +4687,10 @@ export type QueryTagArgs = {
 
 export type QueryTagsArgs = {
     options?: InputMaybe<TagListOptions>;
+};
+
+export type QueryTaxCategoriesArgs = {
+    options?: InputMaybe<TaxCategoryListOptions>;
 };
 
 export type QueryTaxCategoryArgs = {
@@ -5377,6 +5381,39 @@ export type TaxCategory = Node & {
     isDefault: Scalars['Boolean'];
     name: Scalars['String'];
     updatedAt: Scalars['DateTime'];
+};
+
+export type TaxCategoryFilterParameter = {
+    createdAt?: InputMaybe<DateOperators>;
+    id?: InputMaybe<IdOperators>;
+    isDefault?: InputMaybe<BooleanOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type TaxCategoryList = PaginatedList & {
+    items: Array<TaxCategory>;
+    totalItems: Scalars['Int'];
+};
+
+export type TaxCategoryListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<TaxCategoryFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<TaxCategorySortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']>;
+};
+
+export type TaxCategorySortParameter = {
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type TaxLine = {
