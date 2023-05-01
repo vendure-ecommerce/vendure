@@ -14,7 +14,7 @@
 <vdr-page-body>
     <vdr-data-table-2
         class="mt-2"
-        id="taxCategory-list"
+        id="tax-category-list"
         [items]="items$ | async"
         [itemsPerPage]="itemsPerPage$ | async"
         [totalItems]="totalItems$ | async"
@@ -27,11 +27,16 @@
             locationId="tax-category-list"
             [hostComponent]="this"
             [selectionManager]="selectionManager"
-        ></vdr-bulk-action-menu>
+        />
         <vdr-dt2-search
             [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        ></vdr-dt2-search>
+        />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-taxCategory="item">
+                {{ taxCategory.id }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"

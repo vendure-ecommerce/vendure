@@ -32,11 +32,16 @@
             locationId="shippingMethod-list"
             [hostComponent]="this"
             [selectionManager]="selectionManager"
-        ></vdr-bulk-action-menu>
+        />
         <vdr-dt2-search
             [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        ></vdr-dt2-search>
+        />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-shippingMethod="item">
+                {{ shippingMethod.id }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"
@@ -68,7 +73,11 @@
                 {{ shippingMethod.code }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.description' | translate" [sort]="sorts.get('description')" [hiddenByDefault]="true">
+        <vdr-dt2-column
+            [heading]="'common.description' | translate"
+            [sort]="sorts.get('description')"
+            [hiddenByDefault]="true"
+        >
             <ng-template let-shippingMethod="item">
                 {{ shippingMethod.description }}
             </ng-template>

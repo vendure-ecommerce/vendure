@@ -23,11 +23,16 @@
             locationId="administrator-list"
             [hostComponent]="this"
             [selectionManager]="selectionManager"
-        ></vdr-bulk-action-menu>
+        />
         <vdr-dt2-search
             [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        ></vdr-dt2-search>
+        />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-administrator="item">
+                {{ administrator.id }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"
@@ -46,7 +51,11 @@
                 {{ administrator.updatedAt | localeDate : 'short' }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('lastName')">
+        <vdr-dt2-column
+            [heading]="'common.name' | translate"
+            [optional]="false"
+            [sort]="sorts.get('lastName')"
+        >
             <ng-template let-administrator="item">
                 <a class="button-ghost" [routerLink]="['./', administrator.id]"
                     ><span>{{ administrator.firstName }} {{ administrator.lastName }}</span>
@@ -54,10 +63,7 @@
                 </a>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'settings.emailAddress' | translate"
-            [sort]="sorts.get('emailAddress')"
-        >
+        <vdr-dt2-column [heading]="'settings.emailAddress' | translate" [sort]="sorts.get('emailAddress')">
             <ng-template let-administrator="item">
                 {{ administrator.emailAddress }}
             </ng-template>

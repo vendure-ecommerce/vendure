@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -7,20 +6,15 @@ import {
     AdministratorSortParameter,
     BaseListComponent,
     DataService,
+    DataTableService,
     GetAdministratorsQuery,
-    GetFacetListQuery,
     ItemOf,
     LogicalOperator,
     ModalService,
     NotificationService,
-    SelectionManager,
-    SellerFilterParameter,
-    SellerSortParameter,
-    SortOrder,
 } from '@vendure/admin-ui/core';
-import { EMPTY, merge } from 'rxjs';
-import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
-import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
+import { EMPTY } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-administrator-list',
@@ -31,26 +25,9 @@ export class AdministratorListComponent
     extends BaseListComponent<GetAdministratorsQuery, ItemOf<GetAdministratorsQuery, 'administrators'>>
     implements OnInit
 {
-    searchTermControl = new FormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
     readonly filters = this.dataTableService
         .createFilterCollection<AdministratorFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'firstName',
             type: { kind: 'text' },
@@ -98,15 +75,7 @@ export class AdministratorListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        const searchTerms$ = merge(this.searchTermControl.valueChanges).pipe(
-            filter(value => (value && 2 < value.length) || value?.length === 0),
-            debounceTime(250),
-        );
-        merge(searchTerms$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(val => {
-                this.refresh();
-            });
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     deleteAdministrator(administrator: ItemOf<GetAdministratorsQuery, 'administrators'>) {

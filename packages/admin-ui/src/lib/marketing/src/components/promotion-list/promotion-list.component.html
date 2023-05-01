@@ -26,9 +26,12 @@
             [selectionManager]="selectionManager"
         />
         <vdr-dt2-search
-            [searchTermControl]="searchTerm"
+            [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'marketing.search-by-name-or-coupon-code' | translate"
         />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-promotion="item">{{ promotion.id }}</ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"

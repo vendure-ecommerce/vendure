@@ -47,26 +47,10 @@ export class ShippingMethodListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     private fetchTestResult$ = new Subject<[TestAddress, TestOrderLine[]]>();
-    searchTermControl = new FormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
+
     readonly filters = this.dataTableService
         .createFilterCollection<ShippingMethodFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'name',
             type: { kind: 'text' },
@@ -144,17 +128,11 @@ export class ShippingMethodListComponent
             .getActiveChannel()
             .mapStream(data => data.activeChannel);
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-
-        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
-            filter(value => value != null && (2 <= value.length || value.length === 0)),
-            debounceTime(250),
-        );
         this.contentLanguage$ = this.dataService.client
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage);
-        merge(searchTerm$, this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+
+        super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     deleteShippingMethod(id: string) {

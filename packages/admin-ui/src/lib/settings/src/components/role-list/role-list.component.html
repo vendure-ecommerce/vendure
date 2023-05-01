@@ -23,11 +23,16 @@
             locationId="role-list"
             [hostComponent]="this"
             [selectionManager]="selectionManager"
-        ></vdr-bulk-action-menu>
+        />
         <vdr-dt2-search
             [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        ></vdr-dt2-search>
+        />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-role="item">
+                {{ role.id }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"
@@ -82,27 +87,29 @@
         <vdr-dt2-column [heading]="'settings.permissions' | translate">
             <ng-template let-role="item">
                 <ng-container *ngIf="!isDefaultRole(role); else defaultRole">
-              <div class="permissions-list">
-                    <vdr-chip
-                        *ngFor="let permission of role.permissions | slice : 0 : displayLimit[role.id] || 3"
-                        >{{ permission }}</vdr-chip
-                    >
-                    <button
-                        class="button-ghost"
-                        *ngIf="role.permissions.length > initialLimit"
-                        (click)="toggleDisplayLimit(role)"
-                    >
-                        <ng-container
-                            *ngIf="(displayLimit[role.id] || 0) < role.permissions.length; else collapse"
+                    <div class="permissions-list">
+                        <vdr-chip
+                            *ngFor="
+                                let permission of role.permissions | slice : 0 : displayLimit[role.id] || 3
+                            "
+                            >{{ permission }}</vdr-chip
                         >
-                            <clr-icon shape="plus"></clr-icon>
-                            {{ role.permissions.length - initialLimit }}
-                        </ng-container>
-                        <ng-template #collapse>
-                            <clr-icon shape="minus"></clr-icon>
-                        </ng-template>
-                    </button>
-              </div>
+                        <button
+                            class="button-ghost"
+                            *ngIf="role.permissions.length > initialLimit"
+                            (click)="toggleDisplayLimit(role)"
+                        >
+                            <ng-container
+                                *ngIf="(displayLimit[role.id] || 0) < role.permissions.length; else collapse"
+                            >
+                                <clr-icon shape="plus"></clr-icon>
+                                {{ role.permissions.length - initialLimit }}
+                            </ng-container>
+                            <ng-template #collapse>
+                                <clr-icon shape="minus"></clr-icon>
+                            </ng-template>
+                        </button>
+                    </div>
                 </ng-container>
                 <ng-template #defaultRole>
                     <span class="default-role-label">{{ 'settings.default-role-label' | translate }}</span>

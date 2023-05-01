@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
     DataTableService,
-    GetFacetListQuery,
     GetRolesQuery,
     ItemOf,
     ModalService,
@@ -14,11 +12,10 @@ import {
     Role,
     RoleFilterParameter,
     RoleSortParameter,
-    SelectionManager,
 } from '@vendure/admin-ui/core';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
-import { EMPTY, merge, Observable } from 'rxjs';
-import { debounceTime, filter, map, switchMap, takeUntil } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-role-list',
@@ -32,28 +29,9 @@ export class RoleListComponent
 {
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    visibleRoles$: Observable<Array<ItemOf<GetRolesQuery, 'roles'>>>;
-    searchTermControl = new FormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
-
     readonly filters = this.dataTableService
         .createFilterCollection<RoleFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'code',
             type: { kind: 'text' },
@@ -101,16 +79,7 @@ export class RoleListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        this.visibleRoles$ = this.items$.pipe(
-            map(roles => roles.filter(role => role.code !== CUSTOMER_ROLE_CODE)),
-        );
-        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
-            filter(value => value != null && (2 <= value.length || value.length === 0)),
-            debounceTime(250),
-        );
-        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     toggleDisplayLimit(role: ItemOf<GetRolesQuery, 'roles'>) {

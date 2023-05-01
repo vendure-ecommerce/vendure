@@ -1,27 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
-    DeletionResult,
+    DataTableService,
     FacetFilterParameter,
     FacetSortParameter,
     GetFacetListQuery,
-    getOrderStateTranslationToken,
     ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
-    OrderFilterParameter,
-    SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { SortOrder } from '@vendure/common/lib/generated-types';
-import { EMPTY, merge, Observable } from 'rxjs';
-import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'vdr-facet-list',
@@ -32,31 +25,14 @@ export class FacetListComponent
     extends BaseListComponent<GetFacetListQuery, ItemOf<GetFacetListQuery, 'facets'>>
     implements OnInit
 {
-    searchTermControl = new UntypedFormControl('');
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
 
     readonly filters = this.dataTableService
         .createFilterCollection<FacetFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'visibility',
             type: { kind: 'boolean' },
@@ -110,15 +86,8 @@ export class FacetListComponent
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
         this.contentLanguage$ = this.dataService.client
             .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage)
-            .pipe(tap(() => this.refresh()));
-        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
-            filter(value => 2 <= value.length || value.length === 0),
-            debounceTime(250),
-        );
-        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+            .mapStream(({ uiState }) => uiState.contentLanguage);
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges, this.contentLanguage$);
     }
 
     toggleDisplayLimit(facet: ItemOf<GetFacetListQuery, 'facets'>) {
@@ -129,57 +98,7 @@ export class FacetListComponent
         }
     }
 
-    deleteFacet(facetValueId: string) {
-        this.showModalAndDelete(facetValueId)
-            .pipe(
-                switchMap(response => {
-                    if (response.result === DeletionResult.DELETED) {
-                        return [true];
-                    } else {
-                        return this.showModalAndDelete(facetValueId, response.message || '').pipe(
-                            map(r => r.result === DeletionResult.DELETED),
-                        );
-                    }
-                }),
-                // Refresh the cached facets to reflect the changes
-                switchMap(() => this.dataService.facet.getAllFacets().single$),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'FacetValue',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'FacetValue',
-                    });
-                },
-            );
-    }
-
     setLanguage(code: LanguageCode) {
         this.dataService.client.setContentLanguage(code).subscribe();
-    }
-
-    private showModalAndDelete(facetId: string, message?: string) {
-        return this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-facet'),
-                body: message,
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    {
-                        type: 'danger',
-                        label: message ? _('common.force-delete') : _('common.delete'),
-                        returnValue: true,
-                    },
-                ],
-            })
-            .pipe(
-                switchMap(res => (res ? this.dataService.facet.deleteFacet(facetId, !!message) : EMPTY)),
-                map(res => res.deleteFacet),
-            );
     }
 }

@@ -32,6 +32,11 @@
             [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
         />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-taxRate="item">
+                {{ taxRate.id }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"

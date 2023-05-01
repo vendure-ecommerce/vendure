@@ -1,28 +1,23 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     ChannelService,
     DataService,
-    FacetSortParameter,
+    DataTableService,
     GetOrderListQuery,
     getOrderStateTranslationToken,
     ItemOf,
     LocalStorageService,
-    LogicalOperator,
     OrderFilterParameter,
     OrderListOptions,
     OrderSortParameter,
     OrderType,
     ServerConfigService,
-    SortOrder,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
-import { merge } from 'rxjs';
-import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
-import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
+import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-order-list',
@@ -34,23 +29,11 @@ export class OrderListComponent
     extends BaseListComponent<GetOrderListQuery, ItemOf<GetOrderListQuery, 'orders'>>
     implements OnInit
 {
-    searchControl = new UntypedFormControl('');
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
 
     readonly filters = this.dataTableService
         .createFilterCollection<OrderFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'active',
             type: { kind: 'boolean' },
@@ -121,7 +104,7 @@ export class OrderListComponent
             (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),
             data => data.orders,
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            (skip, take) => this.createQueryOptions(skip, take, this.searchControl.value),
+            (skip, take) => this.createQueryOptions(skip, take, this.searchTermControl.value),
         );
         this.canCreateDraftOrder = !!this.serverConfigService
             .getOrderProcessStates()
@@ -131,31 +114,17 @@ export class OrderListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
-        if (lastFilters) {
-            this.setQueryParam(lastFilters, { replaceUrl: true });
-        }
-        const searchTerms$ = merge(this.searchControl.valueChanges).pipe(
-            filter(value => 2 < value.length || value.length === 0),
-            debounceTime(250),
-        );
         const isDefaultChannel$ = this.channelService.defaultChannelIsActive$.pipe(
             tap(isDefault => (this.activeChannelIsDefaultChannel = isDefault)),
         );
-        merge(searchTerms$, isDefaultChannel$, this.route.queryParamMap, this.filters.valueChanges)
-            .pipe(debounceTime(50), takeUntil(this.destroy$))
-            .subscribe(val => {
-                this.refresh();
-            });
-
-        const queryParamMap = this.route.snapshot.queryParamMap;
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges, isDefaultChannel$);
     }
 
     private createQueryOptions(
         // eslint-disable-next-line @typescript-eslint/no-shadow
         skip: number,
         take: number,
-        searchTerm: string,
+        searchTerm: string | null,
     ): { options: OrderListOptions } {
         let filterInput = this.filters.createFilterInput();
         if (this.activeChannelIsDefaultChannel) {

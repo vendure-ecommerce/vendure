@@ -17,7 +17,6 @@ export type LocalStorageTypeMap = {
     uiLanguageCode: LanguageCode;
     uiLocale: string | undefined;
     contentLanguageCode: LanguageCode;
-    orderListLastCustomFilters: any;
     dashboardWidgetLayout: WidgetLayoutDefinition;
     activeTheme: string;
     livePreviewCollectionContents: boolean;

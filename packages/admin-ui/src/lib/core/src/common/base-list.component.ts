@@ -1,13 +1,17 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, merge, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/operators';
 
 import { QueryResult } from '../data/query-result';
+import { GetFacetListQuery } from './generated-types';
+import { SelectionManager } from './utilities/selection-manager';
 
 export type ListQueryFn<R> = (take: number, skip: number, ...args: any[]) => QueryResult<R, any>;
 export type MappingFn<T, R> = (result: R) => { items: T[]; totalItems: number };
 export type OnPageChangeFn<V> = (skip: number, take: number) => V;
+
 /**
  * Unwraps a query that returns a paginated list with an "items" property,
  * returning the type of one of the items in the array.
@@ -17,6 +21,7 @@ export type ItemOf<T, K extends keyof T> = T[K] extends { items: infer R }
         ? R[number]
         : R
     : never;
+
 /**
  * @description
  * This is a base class which implements the logic required to fetch and manipulate
@@ -88,6 +93,12 @@ export type ItemOf<T, K extends keyof T> = T[K] extends { items: infer R }
 export class BaseListComponent<ResultType, ItemType, VariableType extends Record<string, any> = any>
     implements OnInit, OnDestroy
 {
+    searchTermControl = new FormControl('');
+    selectionManager = new SelectionManager<any>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: true,
+    });
     result$: Observable<ResultType>;
     items$: Observable<ItemType[]>;
     totalItems$: Observable<number>;
@@ -156,6 +167,21 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
         combineLatest(this.currentPage$, this.itemsPerPage$, this.refresh$)
             .pipe(takeUntil(this.destroy$))
             .subscribe(fetchPage);
+    }
+
+    /**
+     * @description
+     * Accepts a list of Observables which will trigger a refresh of the list when any of them emit.
+     */
+    protected refreshListOnChanges(...streams: Array<Observable<any>>) {
+        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
+            filter(value => value !== null && (2 < value.length || value.length === 0)),
+            debounceTime(250),
+        );
+
+        merge(searchTerm$, ...streams)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.refresh$.next(undefined));
     }
 
     /** @internal */

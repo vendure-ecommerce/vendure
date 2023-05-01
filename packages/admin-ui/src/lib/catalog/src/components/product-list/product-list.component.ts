@@ -42,7 +42,12 @@ export class ProductListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
-    selectionManager: SelectionManager<SearchItem>;
+    selectionManager = new SelectionManager<SearchItem>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) =>
+            this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,
+        additiveMode: true,
+    });
     readonly filters = this.dataTableFilterService
         .createFilterCollection<SearchInput>()
         .addFilter({
@@ -102,12 +107,6 @@ export class ProductListComponent
                 } as SearchInput,
             }),
         );
-        this.selectionManager = new SelectionManager({
-            multiSelect: true,
-            itemsAreEqual: (a, b) =>
-                this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,
-            additiveMode: true,
-        });
     }
 
     ngOnInit() {

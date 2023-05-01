@@ -1,22 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
     DataTableService,
-    GetFacetListQuery,
     GetSellersQuery,
     ItemOf,
     ModalService,
     NotificationService,
-    SelectionManager,
     SellerFilterParameter,
     SellerSortParameter,
 } from '@vendure/admin-ui/core';
-import { EMPTY, merge, switchMap } from 'rxjs';
-import { debounceTime, filter, takeUntil } from 'rxjs/operators';
+import { EMPTY, switchMap } from 'rxjs';
 
 @Component({
     selector: 'vdr-seller-list',
@@ -28,27 +24,9 @@ export class SellerListComponent
     extends BaseListComponent<GetSellersQuery, ItemOf<GetSellersQuery, 'sellers'>>
     implements OnInit
 {
-    searchTermControl = new FormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
-
     readonly filters = this.dataTableService
         .createFilterCollection<SellerFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -89,13 +67,7 @@ export class SellerListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
-            filter(value => value != null && (2 <= value.length || value.length === 0)),
-            debounceTime(250),
-        );
-        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     deleteSeller(id: string) {

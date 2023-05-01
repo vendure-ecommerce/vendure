@@ -1,8 +1,9 @@
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Subject } from 'rxjs';
 import extend from 'just-extend';
-import { NumberOperators, StringOperators } from '../../common/generated-types';
+import { DateOperators, NumberOperators, StringOperators } from '../../common/generated-types';
 import {
     DataTableFilter,
     DataTableFilterBooleanType,
@@ -80,6 +81,27 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             new DataTableFilter(config, (filter, value) => this.onActivateFilter(filter, value)),
         );
         return this;
+    }
+
+    addDateFilters(): FilterInput extends {
+        createdAt?: DateOperators | null;
+        updatedAt?: DateOperators | null;
+    }
+        ? DataTableFilterCollection<FilterInput>
+        : never {
+        this.addFilter({
+            name: 'createdAt',
+            type: { kind: 'dateRange' },
+            label: _('common.created-at'),
+            filterField: 'createdAt',
+        });
+        this.addFilter({
+            name: 'updatedAt',
+            type: { kind: 'dateRange' },
+            label: _('common.updated-at'),
+            filterField: 'updatedAt',
+        });
+        return this as any;
     }
 
     getFilter(name: string): DataTableFilter<FilterInput> | undefined {

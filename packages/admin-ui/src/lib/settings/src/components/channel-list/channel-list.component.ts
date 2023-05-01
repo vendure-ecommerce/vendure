@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -8,15 +7,13 @@ import {
     ChannelSortParameter,
     DataService,
     GetChannelsQuery,
-    GetFacetListQuery,
     ItemOf,
     ModalService,
     NotificationService,
-    SelectionManager,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { EMPTY, merge } from 'rxjs';
-import { debounceTime, filter, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
+import { mergeMap, switchMap } from 'rxjs/operators';
 import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 @Component({
@@ -29,27 +26,9 @@ export class ChannelListComponent
     extends BaseListComponent<GetChannelsQuery, ItemOf<GetChannelsQuery, 'channels'>>
     implements OnInit
 {
-    searchTermControl = new FormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
-
     readonly filters = this.dataTableService
         .createFilterCollection<ChannelFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'code',
             type: { kind: 'text' },
@@ -103,13 +82,7 @@ export class ChannelListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
-            filter(value => value != null && (2 <= value.length || value.length === 0)),
-            debounceTime(250),
-        );
-        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     isDefaultChannel(channelCode: string): boolean {

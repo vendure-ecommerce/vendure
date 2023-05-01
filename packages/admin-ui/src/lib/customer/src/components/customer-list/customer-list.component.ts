@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -7,16 +6,15 @@ import {
     CustomerFilterParameter,
     CustomerSortParameter,
     DataService,
+    DataTableService,
     GetCustomerListQuery,
     ItemOf,
     LogicalOperator,
     ModalService,
     NotificationService,
-    SelectionManager,
 } from '@vendure/admin-ui/core';
-import { EMPTY, merge } from 'rxjs';
-import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
-import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
+import { EMPTY } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-customer-list',
@@ -27,26 +25,9 @@ export class CustomerListComponent
     extends BaseListComponent<GetCustomerListQuery, ItemOf<GetCustomerListQuery, 'customers'>>
     implements OnInit
 {
-    searchTerm = new UntypedFormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetCustomerListQuery, 'customers'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
     readonly filters = this.dataTableService
         .createFilterCollection<CustomerFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'firstName',
             type: { kind: 'text' },
@@ -94,17 +75,17 @@ export class CustomerListComponent
                     take,
                     filter: {
                         emailAddress: {
-                            contains: this.searchTerm.value,
+                            contains: this.searchTermControl.value,
                         },
                         lastName: {
-                            contains: this.searchTerm.value,
+                            contains: this.searchTermControl.value,
                         },
                         postalCode: {
-                            contains: this.searchTerm.value,
+                            contains: this.searchTermControl.value,
                         },
                         ...this.filters.createFilterInput(),
                     },
-                    filterOperator: this.searchTerm.value ? LogicalOperator.OR : LogicalOperator.AND,
+                    filterOperator: this.searchTermControl.value ? LogicalOperator.OR : LogicalOperator.AND,
                     sort: this.sorts.createSortInput(),
                 },
             }),
@@ -113,13 +94,7 @@ export class CustomerListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        const searchTerm$ = this.searchTerm.valueChanges.pipe(
-            filter(value => 2 < value.length || value.length === 0),
-            debounceTime(250),
-        );
-        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     deleteCustomer(customer: ItemOf<GetCustomerListQuery, 'customers'>) {

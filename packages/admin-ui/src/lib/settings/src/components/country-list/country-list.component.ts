@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -10,18 +9,14 @@ import {
     DataTableService,
     DeletionResult,
     GetCountryListQuery,
-    GetFacetListQuery,
     ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
-    SelectionManager,
-    SellerFilterParameter,
-    SellerSortParameter,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { EMPTY, merge, Observable } from 'rxjs';
-import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
+import { EMPTY, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-country-list',
@@ -33,29 +28,12 @@ export class CountryListComponent
     extends BaseListComponent<GetCountryListQuery, ItemOf<GetCountryListQuery, 'countries'>>
     implements OnInit
 {
-    searchTermControl = new FormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
 
     readonly filters = this.dataTableService
         .createFilterCollection<CountryFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'name',
             type: { kind: 'text' },
@@ -114,13 +92,7 @@ export class CountryListComponent
             .mapStream(({ uiState }) => uiState.contentLanguage);
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
 
-        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
-            filter(value => value != null && (2 <= value.length || value.length === 0)),
-            debounceTime(250),
-        );
-        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges, this.contentLanguage$);
     }
 
     setLanguage(code: LanguageCode) {

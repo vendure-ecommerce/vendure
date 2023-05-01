@@ -30,9 +30,14 @@
         (itemsPerPageChange)="setItemsPerPage($event)"
     >
         <vdr-dt2-search
-            [searchTermControl]="searchControl"
+            [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'order.search-by-order-filters' | translate"
-        ></vdr-dt2-search>
+        />
+        <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+            <ng-template let-order="item">
+                {{ order.createdAt | localeDate : 'short' }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.code' | translate" [optional]="false">
             <ng-template let-order="item">
                 <a class="button-ghost" [routerLink]="['./', order.id]"
@@ -62,11 +67,6 @@
         <vdr-dt2-column [heading]="'order.total' | translate" [sort]="sorts.get('totalWithTax')">
             <ng-template let-order="item">
                 {{ order.totalWithTax | localeCurrency : order.currencyCode }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
-            <ng-template let-order="item">
-                {{ order.createdAt | localeDate : 'short' }}
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.updated-at' | translate">

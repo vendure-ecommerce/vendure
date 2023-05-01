@@ -34,27 +34,9 @@ export class PromotionListComponent
     extends BaseListComponent<GetPromotionListQuery, ItemOf<GetPromotionListQuery, 'promotions'>>
     implements OnInit
 {
-    searchTerm = new FormControl('');
-    selectionManager = new SelectionManager<ItemOf<GetPromotionListQuery, 'promotions'>>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) => a.id === b.id,
-        additiveMode: true,
-    });
-
     readonly filters = this.dataTableService
         .createFilterCollection<PromotionFilterParameter>()
-        .addFilter({
-            name: 'createdAt',
-            type: { kind: 'dateRange' },
-            label: _('common.created-at'),
-            filterField: 'createdAt',
-        })
-        .addFilter({
-            name: 'updatedAt',
-            type: { kind: 'dateRange' },
-            label: _('common.updated-at'),
-            filterField: 'updatedAt',
-        })
+        .addDateFilters()
         .addFilter({
             name: 'startsAt',
             type: { kind: 'dateRange' },
@@ -123,18 +105,13 @@ export class PromotionListComponent
         super.setQueryFn(
             (...args: any[]) => this.dataService.promotion.getPromotions(...args).refetchOnChannelChange(),
             data => data.promotions,
-            (skip, take) => this.createQueryOptions(skip, take, this.searchTerm.value),
+            (skip, take) => this.createQueryOptions(skip, take, this.searchTermControl.value),
         );
     }
 
     ngOnInit(): void {
         super.ngOnInit();
-        const searchTerm$ = this.searchTerm.valueChanges.pipe(debounceTime(250));
-        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(val => {
-                this.refresh();
-            });
+        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     deletePromotion(promotionId: string) {

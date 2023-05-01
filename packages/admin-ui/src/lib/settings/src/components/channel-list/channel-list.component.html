@@ -1,10 +1,14 @@
 <vdr-page-header>
     <vdr-page-title>
         <vdr-action-bar-items locationId="channel-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['SuperAdmin', 'CreateChannel']">
-                  <clr-icon shape="plus"></clr-icon>
-                  {{ 'settings.create-new-channel' | translate }}
-              </a>
+        <a
+            class="btn btn-primary"
+            [routerLink]="['./create']"
+            *vdrIfPermissions="['SuperAdmin', 'CreateChannel']"
+        >
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'settings.create-new-channel' | translate }}
+        </a>
     </vdr-page-title>
 </vdr-page-header>
 <vdr-page-body>
@@ -23,11 +27,16 @@
             locationId="channel-list"
             [hostComponent]="this"
             [selectionManager]="selectionManager"
-        ></vdr-bulk-action-menu>
+        />
         <vdr-dt2-search
             [searchTermControl]="searchTermControl"
             [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        ></vdr-dt2-search>
+        />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-channel="item">
+                {{ channel.id }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"
@@ -54,10 +63,7 @@
                 </a>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'settings.channel-token' | translate"
-            [sort]="sorts.get('token')"
-        >
+        <vdr-dt2-column [heading]="'settings.channel-token' | translate" [sort]="sorts.get('token')">
             <ng-template let-channel="item">
                 {{ channel.token }}
             </ng-template>
