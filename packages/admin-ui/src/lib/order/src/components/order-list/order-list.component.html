@@ -8,14 +8,14 @@
             </a>
         </ng-container>
     </vdr-page-title>
-    <vdr-page-header-description>Description of the current page (if applicable)</vdr-page-header-description>
+ <!--   <vdr-page-header-description>Description of the current page (if applicable)</vdr-page-header-description>
     <vdr-page-header-tabs
         [tabs]="[
             { id: 'tab1', label: 'Tab 1' },
             { id: 'tab2', label: 'Tab 2' },
             { id: 'tab3', label: 'Tab 3' }
         ]"
-    ></vdr-page-header-tabs>
+    ></vdr-page-header-tabs>-->
 </vdr-page-header>
 <vdr-page-body>
     <vdr-data-table-2
@@ -62,6 +62,11 @@
         <vdr-dt2-column [heading]="'order.total' | translate" [sort]="sorts.get('totalWithTax')">
             <ng-template let-order="item">
                 {{ order.totalWithTax | localeCurrency : order.currencyCode }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+            <ng-template let-order="item">
+                {{ order.createdAt | localeDate : 'short' }}
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.updated-at' | translate">

@@ -37,7 +37,11 @@ export class FacetListComponent
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    selectionManager: SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>;
+    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: true,
+    });
 
     readonly filters = this.dataTableService
         .createFilterCollection<FacetFilterParameter>()
@@ -45,16 +49,20 @@ export class FacetListComponent
             name: 'createdAt',
             type: { kind: 'dateRange' },
             label: _('common.created-at'),
-            toFilterInput: value => ({
-                createdAt: value.dateOperators,
-            }),
+            filterField: 'createdAt',
+        })
+        .addFilter({
+            name: 'updatedAt',
+            type: { kind: 'dateRange' },
+            label: _('common.updated-at'),
+            filterField: 'updatedAt',
         })
         .addFilter({
             name: 'visibility',
             type: { kind: 'boolean' },
             label: _('common.visibility'),
             toFilterInput: value => ({
-                isPrivate: { eq: value },
+                isPrivate: { eq: !value },
             }),
         })
         .connectToRoute(this.route);
@@ -62,12 +70,10 @@ export class FacetListComponent
     readonly sorts = this.dataTableService
         .createSortCollection<FacetSortParameter>()
         .defaultSort('createdAt', 'DESC')
-        .addSort({
-            name: 'name',
-        })
-        .addSort({
-            name: 'code',
-        })
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .addSort({ name: 'code' })
         .connectToRoute(this.route);
 
     constructor(
@@ -97,11 +103,6 @@ export class FacetListComponent
                 },
             }),
         );
-        this.selectionManager = new SelectionManager({
-            multiSelect: true,
-            itemsAreEqual: (a, b) => a.id === b.id,
-            additiveMode: true,
-        });
     }
 
     ngOnInit() {

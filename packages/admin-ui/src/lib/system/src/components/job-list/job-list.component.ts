@@ -74,9 +74,7 @@ export class JobListComponent
         this.queues$ = this.dataService.settings
             .getJobQueues()
             .mapStream(res => res.jobQueues)
-            .pipe(
-                map(queues => [{ name: 'all', running: true }, ...queues]),
-            );
+            .pipe(map(queues => [{ name: 'all', running: true }, ...queues]));
     }
 
     hasResult(job: ItemOf<GetAllJobsQuery, 'jobs'>): boolean {

@@ -180,9 +180,12 @@ export const TAX_CATEGORY_FRAGMENT = gql`
 `;
 
 export const GET_TAX_CATEGORIES = gql`
-    query GetTaxCategories {
-        taxCategories {
-            ...TaxCategory
+    query GetTaxCategories($options: TaxCategoryListOptions) {
+        taxCategories(options: $options) {
+            items {
+                ...TaxCategory
+            }
+            totalItems
         }
     }
     ${TAX_CATEGORY_FRAGMENT}
@@ -353,11 +356,13 @@ export const SELLER_FRAGMENT = gql`
     }
 `;
 
-// TODO v2: change this to paginated list
 export const GET_CHANNELS = gql`
-    query GetChannels {
-        channels {
-            ...Channel
+    query GetChannels($options: ChannelListOptions) {
+        channels(options: $options) {
+            items {
+                ...Channel
+            }
+            totalItems
         }
     }
     ${CHANNEL_FRAGMENT}

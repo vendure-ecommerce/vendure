@@ -1,17 +1,23 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
+    DataTableService,
     DeletionResult,
+    GetFacetListQuery,
     GetTaxRateListQuery,
     ItemOf,
     ModalService,
     NotificationService,
+    SelectionManager,
+    TaxRateFilterParameter,
+    TaxRateSortParameter,
 } from '@vendure/admin-ui/core';
-import { EMPTY } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { EMPTY, merge } from 'rxjs';
+import { debounceTime, filter, map, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-tax-rate-list',
@@ -19,22 +25,97 @@ import { map, switchMap } from 'rxjs/operators';
     styleUrls: ['./tax-rate-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaxRateListComponent extends BaseListComponent<
-    GetTaxRateListQuery,
-    ItemOf<GetTaxRateListQuery, 'taxRates'>
-> {
+export class TaxRateListComponent
+    extends BaseListComponent<GetTaxRateListQuery, ItemOf<GetTaxRateListQuery, 'taxRates'>>
+    implements OnInit
+{
+    searchTermControl = new FormControl('');
+    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: true,
+    });
+
+    readonly filters = this.dataTableService
+        .createFilterCollection<TaxRateFilterParameter>()
+        .addFilter({
+            name: 'createdAt',
+            type: { kind: 'dateRange' },
+            label: _('common.created-at'),
+            filterField: 'createdAt',
+        })
+        .addFilter({
+            name: 'updatedAt',
+            type: { kind: 'dateRange' },
+            label: _('common.updated-at'),
+            filterField: 'updatedAt',
+        })
+        .addFilter({
+            name: 'name',
+            type: { kind: 'text' },
+            label: _('common.name'),
+            filterField: 'name',
+        })
+        .addFilter({
+            name: 'enabled',
+            type: { kind: 'boolean' },
+            label: _('common.enabled'),
+            filterField: 'enabled',
+        })
+        .addFilter({
+            name: 'value',
+            type: { kind: 'number' },
+            label: _('common.value'),
+            filterField: 'value',
+        })
+        .connectToRoute(this.route);
+
+    readonly sorts = this.dataTableService
+        .createSortCollection<TaxRateSortParameter>()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .addSort({ name: 'value' })
+        .connectToRoute(this.route);
+
     constructor(
         private modalService: ModalService,
         private notificationService: NotificationService,
         private dataService: DataService,
         router: Router,
         route: ActivatedRoute,
+        private dataTableService: DataTableService,
     ) {
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getTaxRates(...args),
             data => data.taxRates,
+            (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    sort: this.sorts.createSortInput(),
+                },
+            }),
         );
+    }
+
+    ngOnInit() {
+        super.ngOnInit();
+        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
+            filter(value => value != null && (2 <= value.length || value.length === 0)),
+            debounceTime(250),
+        );
+        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.refresh());
     }
 
     deleteTaxRate(taxRate: ItemOf<GetTaxRateListQuery, 'taxRates'>) {

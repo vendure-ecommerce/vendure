@@ -77,6 +77,8 @@ export type ActionBarLocationId =
     | 'promotion-list'
     | 'role-detail'
     | 'role-list'
+    | 'seller-detail'
+    | 'seller-list'
     | 'shipping-method-detail'
     | 'shipping-method-list'
     | 'tax-category-detail'

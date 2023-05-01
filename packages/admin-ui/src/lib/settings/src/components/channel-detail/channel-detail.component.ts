@@ -69,7 +69,7 @@ export class ChannelDetailComponent
         this.init();
         this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
         // TODO: make this lazy-loaded autocomplete
-        this.sellers$ = this.dataService.settings.getSellers().mapSingle(data => data.sellers.items);
+        this.sellers$ = this.dataService.settings.getSellerList().mapSingle(data => data.sellers.items);
         this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();
     }
 

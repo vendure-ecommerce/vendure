@@ -1,20 +1,27 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    BaseListComponent,
+    CountryFilterParameter,
+    CountrySortParameter,
     DataService,
+    DataTableService,
     DeletionResult,
     GetCountryListQuery,
-    GetZonesQuery,
+    GetFacetListQuery,
     ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
+    SelectionManager,
+    SellerFilterParameter,
+    SellerSortParameter,
     ServerConfigService,
-    ZoneFragment,
 } from '@vendure/admin-ui/core';
-import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { EMPTY, merge, Observable } from 'rxjs';
+import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-country-list',
@@ -22,58 +29,98 @@ import { map, startWith, switchMap, tap } from 'rxjs/operators';
     styleUrls: ['./country-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CountryListComponent implements OnInit, OnDestroy {
-    searchTerm = new UntypedFormControl('');
-    countriesWithZones$: Observable<
-        Array<ItemOf<GetCountryListQuery, 'countries'> & { zones: GetZonesQuery['zones'] }>
-    >;
-    zones$: Observable<GetZonesQuery['zones']>;
+export class CountryListComponent
+    extends BaseListComponent<GetCountryListQuery, ItemOf<GetCountryListQuery, 'countries'>>
+    implements OnInit
+{
+    searchTermControl = new FormControl('');
+    selectionManager = new SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: true,
+    });
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
 
-    private countries: GetCountryListQuery['countries']['items'] = [];
-    private destroy$ = new Subject<void>();
-    private refresh$ = new Subject<void>();
+    readonly filters = this.dataTableService
+        .createFilterCollection<CountryFilterParameter>()
+        .addFilter({
+            name: 'createdAt',
+            type: { kind: 'dateRange' },
+            label: _('common.created-at'),
+            filterField: 'createdAt',
+        })
+        .addFilter({
+            name: 'updatedAt',
+            type: { kind: 'dateRange' },
+            label: _('common.updated-at'),
+            filterField: 'updatedAt',
+        })
+        .addFilter({
+            name: 'name',
+            type: { kind: 'text' },
+            label: _('common.name'),
+            filterField: 'name',
+        })
+        .addFilter({
+            name: 'enabled',
+            type: { kind: 'boolean' },
+            label: _('common.enabled'),
+            filterField: 'enabled',
+        })
+        .connectToRoute(this.route);
+
+    readonly sorts = this.dataTableService
+        .createSortCollection<CountrySortParameter>()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .connectToRoute(this.route);
 
     constructor(
         private dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
         private serverConfigService: ServerConfigService,
-    ) {}
+        route: ActivatedRoute,
+        router: Router,
+        private dataTableService: DataTableService,
+    ) {
+        super(router, route);
+        super.setQueryFn(
+            (...args: any[]) => this.dataService.settings.getCountries(...args).refetchOnChannelChange(),
+            data => data.countries,
+            (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    sort: this.sorts.createSortInput(),
+                },
+            }),
+        );
+    }
 
     ngOnInit() {
+        super.ngOnInit();
         this.contentLanguage$ = this.dataService.client
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage);
-
-        const countries$ = combineLatest(
-            this.contentLanguage$,
-            this.searchTerm.valueChanges.pipe(startWith(null)),
-        ).pipe(
-            map(([__, term]) => term),
-            switchMap(term => this.dataService.settings.getCountries(999, 0, term).single$),
-            tap(data => {
-                this.countries = data.countries.items;
-            }),
-            map(data => data.countries.items),
-        );
-
-        this.zones$ = this.dataService.settings.getZones().mapStream(data => data.zones);
-
-        this.countriesWithZones$ = combineLatest(countries$, this.zones$).pipe(
-            map(([countries, zones]) => countries.map(country => ({
-                    ...country,
-                    zones: zones.filter(z => !!z.members.find(c => c.id === country.id)),
-                }))),
-        );
-
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-    }
 
-    ngOnDestroy() {
-        this.destroy$.next(undefined);
-        this.destroy$.complete();
+        const searchTerm$ = this.searchTermControl.valueChanges.pipe(
+            filter(value => value != null && (2 <= value.length || value.length === 0)),
+            debounceTime(250),
+        );
+        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.refresh());
     }
 
     setLanguage(code: LanguageCode) {
@@ -111,9 +158,5 @@ export class CountryListComponent implements OnInit, OnDestroy {
                     });
                 },
             );
-    }
-
-    private isZone(input: ZoneFragment | { name: string } | string): input is ZoneFragment {
-        return input.hasOwnProperty('id');
     }
 }

@@ -379,6 +379,45 @@ export type ChannelDefaultLanguageError = ErrorResult & {
   message: Scalars['String'];
 };
 
+export type ChannelFilterParameter = {
+  code?: InputMaybe<StringOperators>;
+  createdAt?: InputMaybe<DateOperators>;
+  currencyCode?: InputMaybe<StringOperators>;
+  defaultCurrencyCode?: InputMaybe<StringOperators>;
+  defaultLanguageCode?: InputMaybe<StringOperators>;
+  id?: InputMaybe<IdOperators>;
+  pricesIncludeTax?: InputMaybe<BooleanOperators>;
+  token?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ChannelList = PaginatedList & {
+  __typename?: 'ChannelList';
+  items: Array<Channel>;
+  totalItems: Scalars['Int'];
+};
+
+export type ChannelListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<ChannelFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<ChannelSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+export type ChannelSortParameter = {
+  code?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  token?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
 export type Collection = Node & {
   __typename?: 'Collection';
   assets: Array<Asset>;
@@ -4679,7 +4718,7 @@ export type Query = {
   /** Get a list of Assets */
   assets: AssetList;
   channel?: Maybe<Channel>;
-  channels: Array<Channel>;
+  channels: ChannelList;
   /** Get a Collection either by id or slug. If neither id nor slug is specified, an error will result. */
   collection?: Maybe<Collection>;
   collectionFilters: Array<ConfigurableOperationDefinition>;
@@ -4742,7 +4781,7 @@ export type Query = {
   stockLocations: StockLocationList;
   tag: Tag;
   tags: TagList;
-  taxCategories: Array<TaxCategory>;
+  taxCategories: TaxCategoryList;
   taxCategory?: Maybe<TaxCategory>;
   taxRate?: Maybe<TaxRate>;
   taxRates: TaxRateList;
@@ -4777,6 +4816,11 @@ export type QueryAssetsArgs = {
 
 export type QueryChannelArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryChannelsArgs = {
+  options?: InputMaybe<ChannelListOptions>;
 };
 
 
@@ -4991,6 +5035,11 @@ export type QueryTagArgs = {
 
 export type QueryTagsArgs = {
   options?: InputMaybe<TagListOptions>;
+};
+
+
+export type QueryTaxCategoriesArgs = {
+  options?: InputMaybe<TaxCategoryListOptions>;
 };
 
 
@@ -5704,6 +5753,40 @@ export type TaxCategory = Node & {
   isDefault: Scalars['Boolean'];
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type TaxCategoryFilterParameter = {
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  isDefault?: InputMaybe<BooleanOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type TaxCategoryList = PaginatedList & {
+  __typename?: 'TaxCategoryList';
+  items: Array<TaxCategory>;
+  totalItems: Scalars['Int'];
+};
+
+export type TaxCategoryListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<TaxCategoryFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<TaxCategorySortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+export type TaxCategorySortParameter = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type TaxLine = {
@@ -7395,10 +7478,12 @@ export type RemoveMembersFromZoneMutation = { removeMembersFromZone: { __typenam
 
 export type TaxCategoryFragment = { __typename?: 'TaxCategory', id: string, createdAt: any, updatedAt: any, name: string, isDefault: boolean };
 
-export type GetTaxCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetTaxCategoriesQueryVariables = Exact<{
+  options?: InputMaybe<TaxCategoryListOptions>;
+}>;
 
 
-export type GetTaxCategoriesQuery = { taxCategories: Array<{ __typename?: 'TaxCategory', id: string, createdAt: any, updatedAt: any, name: string, isDefault: boolean }> };
+export type GetTaxCategoriesQuery = { taxCategories: { __typename?: 'TaxCategoryList', totalItems: number, items: Array<{ __typename?: 'TaxCategory', id: string, createdAt: any, updatedAt: any, name: string, isDefault: boolean }> } };
 
 export type GetTaxCategoryQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -7476,10 +7561,12 @@ export type ChannelFragment = { __typename?: 'Channel', id: string, createdAt: a
 
 export type SellerFragment = { __typename?: 'Seller', id: string, createdAt: any, updatedAt: any, name: string };
 
-export type GetChannelsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetChannelsQueryVariables = Exact<{
+  options?: InputMaybe<ChannelListOptions>;
+}>;
 
 
-export type GetChannelsQuery = { channels: Array<{ __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller?: { __typename?: 'Seller', id: string, name: string } | null }> };
+export type GetChannelsQuery = { channels: { __typename?: 'ChannelList', totalItems: number, items: Array<{ __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller?: { __typename?: 'Seller', id: string, name: string } | null }> } };
 
 export type GetChannelQueryVariables = Exact<{
   id: Scalars['ID'];

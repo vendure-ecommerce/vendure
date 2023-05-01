@@ -1,17 +1,17 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { DataTableSort, DataTableSortOptions, SortOrder } from './data-table-sort';
+import { DataTableSort, DataTableSortOptions, DataTableSortOrder } from './data-table-sort';
 
 export class DataTableSortCollection<
     SortInput extends Record<string, 'ASC' | 'DESC'>,
     Names extends [...Array<keyof SortInput>] = [],
 > {
     readonly #sorts: Array<DataTableSort<SortInput>> = [];
-    #valueChanges$ = new Subject<Array<{ name: string; sortOrder: SortOrder | undefined }>>();
+    #valueChanges$ = new Subject<Array<{ name: string; sortOrder: DataTableSortOrder | undefined }>>();
     #connectedToRouter = false;
     valueChanges = this.#valueChanges$.asObservable();
     readonly #sortQueryParamName = 'sort';
-    #defaultSort: { name: keyof SortInput; sortOrder: SortOrder } | undefined;
+    #defaultSort: { name: keyof SortInput; sortOrder: DataTableSortOrder } | undefined;
 
     constructor(private router: Router) {}
 
@@ -31,7 +31,7 @@ export class DataTableSortCollection<
         return this as unknown as DataTableSortCollection<SortInput, [...Names, Name]>;
     }
 
-    defaultSort(name: keyof SortInput, sortOrder: SortOrder) {
+    defaultSort(name: keyof SortInput, sortOrder: DataTableSortOrder) {
         this.#defaultSort = { name, sortOrder };
         return this;
     }

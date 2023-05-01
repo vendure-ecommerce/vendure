@@ -5,13 +5,14 @@ import {
     DataService,
     Dialog,
     GetChannelsQuery,
+    ItemOf,
     NotificationService,
     ProductVariantFragment,
 } from '@vendure/admin-ui/core';
 import { combineLatest, from, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
-type Channel = GetChannelsQuery['channels'][number];
+type Channel = ItemOf<GetChannelsQuery, 'channels'>;
 
 @Component({
     selector: 'vdr-assign-products-to-channel-dialog',
@@ -47,8 +48,8 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
 
         combineLatest(activeChannelId$, allChannels$).subscribe(([activeChannelId, channels]) => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.currentChannel = channels.find(c => c.id === activeChannelId)!;
-            this.availableChannels = channels;
+            this.currentChannel = channels.items.find(c => c.id === activeChannelId)!;
+            this.availableChannels = channels.items;
         });
 
         this.selectedChannelIdControl.valueChanges.subscribe(ids => {
@@ -59,12 +60,14 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
             from(this.getTopVariants(10)),
             this.priceFactorControl.valueChanges.pipe(startWith(1)),
         ).pipe(
-            map(([variants, factor]) => variants.map(v => ({
+            map(([variants, factor]) =>
+                variants.map(v => ({
                     id: v.id,
                     name: v.name,
                     price: v.price,
                     pricePreview: v.price * +factor,
-                }))),
+                })),
+            ),
         );
     }
 

@@ -2,7 +2,13 @@ import { FetchPolicy, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
 
 import * as Codegen from '../../common/generated-types';
-import { JobListOptions, JobState, SellerListOptions } from '../../common/generated-types';
+import {
+    ChannelListOptions,
+    JobListOptions,
+    JobState,
+    SellerListOptions,
+    TaxCategoryListOptions,
+} from '../../common/generated-types';
 import {
     ADD_MEMBERS_TO_ZONE,
     CANCEL_JOB,
@@ -168,8 +174,13 @@ export class SettingsDataService {
         });
     }
 
-    getTaxCategories() {
-        return this.baseDataService.query<Codegen.GetTaxCategoriesQuery>(GET_TAX_CATEGORIES);
+    getTaxCategories(options: TaxCategoryListOptions = {}) {
+        return this.baseDataService.query<
+            Codegen.GetTaxCategoriesQuery,
+            Codegen.GetTaxCategoriesQueryVariables
+        >(GET_TAX_CATEGORIES, {
+            options,
+        });
     }
 
     getTaxCategory(id: string) {
@@ -273,8 +284,11 @@ export class SettingsDataService {
         });
     }
 
-    getChannels() {
-        return this.baseDataService.query<Codegen.GetChannelsQuery>(GET_CHANNELS);
+    getChannels(options: ChannelListOptions = {}) {
+        return this.baseDataService.query<Codegen.GetChannelsQuery, Codegen.GetChannelsQueryVariables>(
+            GET_CHANNELS,
+            { options },
+        );
     }
 
     getChannel(id: string) {
@@ -286,7 +300,7 @@ export class SettingsDataService {
         );
     }
 
-    getSellers(options?: SellerListOptions) {
+    getSellerList(options?: SellerListOptions) {
         return this.baseDataService.query<Codegen.GetSellersQuery, Codegen.GetSellersQueryVariables>(
             GET_SELLERS,
             { options },

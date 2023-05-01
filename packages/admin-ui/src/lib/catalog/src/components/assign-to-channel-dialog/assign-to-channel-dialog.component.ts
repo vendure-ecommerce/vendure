@@ -3,7 +3,7 @@ import { UntypedFormControl } from '@angular/forms';
 import { DataService, Dialog, GetChannelsQuery, ItemOf, NotificationService } from '@vendure/admin-ui/core';
 import { combineLatest } from 'rxjs';
 
-type Channel = GetChannelsQuery['channels'][number];
+type Channel = ItemOf<GetChannelsQuery, 'channels'>;
 
 @Component({
     selector: 'vdr-assign-to-channel-dialog',
@@ -30,8 +30,8 @@ export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel> {
 
         combineLatest(activeChannelId$, allChannels$).subscribe(([activeChannelId, channels]) => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.currentChannel = channels.find(c => c.id === activeChannelId)!;
-            this.availableChannels = channels;
+            this.currentChannel = channels.items.find(c => c.id === activeChannelId)!;
+            this.availableChannels = channels.items;
         });
 
         this.selectedChannelIdControl.valueChanges.subscribe(ids => {

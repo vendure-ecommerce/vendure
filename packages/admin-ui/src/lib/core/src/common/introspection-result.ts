@@ -166,6 +166,7 @@ const result: PossibleTypesResultData = {
         PaginatedList: [
             'AdministratorList',
             'AssetList',
+            'ChannelList',
             'CollectionList',
             'CountryList',
             'CustomerGroupList',
@@ -185,6 +186,7 @@ const result: PossibleTypesResultData = {
             'ShippingMethodList',
             'StockLocationList',
             'TagList',
+            'TaxCategoryList',
             'TaxRateList',
         ],
         RefundOrderResult: [

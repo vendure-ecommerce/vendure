@@ -66,7 +66,7 @@ export class TaxRateDetailComponent
         this.init();
         this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.taxCategories);
+            .mapSingle(data => data.taxCategories.items);
         this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
     }
 

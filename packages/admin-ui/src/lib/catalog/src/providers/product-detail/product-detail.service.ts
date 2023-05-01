@@ -36,7 +36,7 @@ export class ProductDetailService {
     getTaxCategories() {
         return this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.taxCategories)
+            .mapSingle(data => data.taxCategories.items)
             .pipe(shareReplay(1));
     }
 
@@ -53,15 +53,15 @@ export class ProductDetailService {
             mergeMap(([{ createProduct }, optionGroups]) => {
                 const addOptionsToProduct$ = optionGroups.length
                     ? forkJoin(
-                          optionGroups.map(optionGroup => this.dataService.product.addOptionGroupToProduct({
+                          optionGroups.map(optionGroup =>
+                              this.dataService.product.addOptionGroupToProduct({
                                   productId: createProduct.id,
                                   optionGroupId: optionGroup.id,
-                              })),
+                              }),
+                          ),
                       )
                     : of([]);
-                return addOptionsToProduct$.pipe(
-                    map(() => ({ createProduct, optionGroups })),
-                );
+                return addOptionsToProduct$.pipe(map(() => ({ createProduct, optionGroups })));
             }),
             mergeMap(({ createProduct, optionGroups }) => {
                 const variants = createVariantsConfig.variants.map(v => {
@@ -90,7 +90,8 @@ export class ProductDetailService {
     createProductOptionGroups(groups: Array<{ name: string; values: string[] }>, languageCode: LanguageCode) {
         return groups.length
             ? forkJoin(
-                  groups.map(c => this.dataService.product
+                  groups.map(c =>
+                      this.dataService.product
                           .createProductOptionGroups({
                               code: normalizeString(c.name, '-'),
                               translations: [{ languageCode, name: c.name }],
@@ -99,7 +100,8 @@ export class ProductDetailService {
                                   translations: [{ languageCode, name: v }],
                               })),
                           })
-                          .pipe(map(data => data.createProductOptionGroup))),
+                          .pipe(map(data => data.createProductOptionGroup)),
+                  ),
               )
             : of([]);
     }

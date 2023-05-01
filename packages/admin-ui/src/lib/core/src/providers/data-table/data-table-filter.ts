@@ -1,5 +1,10 @@
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { DateOperators } from '../../common/generated-types';
+import {
+    BooleanOperators,
+    DateOperators,
+    NumberOperators,
+    StringOperators,
+} from '../../common/generated-types';
 
 export interface DataTableFilterTextType {
     kind: 'text';
@@ -25,11 +30,17 @@ export interface DataTableFilterDateRangeType {
 }
 
 export type KindValueMap = {
-    text: { operator: 'contains' | 'eq' | 'notContains' | 'notEq' | 'regex'; term: string };
-    select: string[];
-    boolean: boolean;
-    dateRange: { start?: string; end?: string; dateOperators: DateOperators };
-    number: { operator: 'eq' | 'gt' | 'lt'; amount: string };
+    text: {
+        raw: {
+            operator: keyof StringOperators;
+            term: string;
+        };
+        input: StringOperators;
+    };
+    select: { raw: string[]; input: StringOperators };
+    boolean: { raw: boolean; input: BooleanOperators };
+    dateRange: { raw: { start?: string; end?: string }; input: DateOperators };
+    number: { raw: { operator: keyof NumberOperators; amount: number }; input: NumberOperators };
 };
 export type DataTableFilterType =
     | DataTableFilterTextType
@@ -45,10 +56,12 @@ export interface DataTableFilterOptions<
     readonly name: string;
     readonly type: Type;
     readonly label: string;
-    readonly toFilterInput: (value: DataTableFilterValue<Type>) => Partial<FilterInput>;
+    readonly filterField?: keyof FilterInput;
+    readonly toFilterInput?: (value: DataTableFilterValue<Type>) => Partial<FilterInput>;
 }
 
-export type DataTableFilterValue<Type extends DataTableFilterType> = KindValueMap[Type['kind']];
+export type DataTableFilterValue<Type extends DataTableFilterType> = KindValueMap[Type['kind']]['raw'];
+export type DataTableFilterOperator<Type extends DataTableFilterType> = KindValueMap[Type['kind']]['input'];
 
 export class DataTableFilter<
     FilterInput extends Record<string, any> = any,
@@ -74,8 +87,59 @@ export class DataTableFilter<
         return this.options.label;
     }
 
+    getFilterOperator(value: any): DataTableFilterOperator<Type> {
+        const type = this.options.type;
+        switch (type.kind) {
+            case 'boolean':
+                return {
+                    eq: !!value,
+                };
+            case 'dateRange': {
+                let dateOperators: DateOperators;
+                const start = value.start ?? undefined;
+                const end = value.end ?? undefined;
+                if (start && end) {
+                    dateOperators = {
+                        between: { start, end },
+                    };
+                } else if (start) {
+                    dateOperators = {
+                        after: start,
+                    };
+                } else {
+                    dateOperators = {
+                        before: end,
+                    };
+                }
+                return dateOperators;
+            }
+            case 'number':
+                return {
+                    [value.operator]: Number(value.amount),
+                };
+
+            case 'select':
+                return { in: value };
+            case 'text':
+                return {
+                    [value.operator]: value.term,
+                };
+            default:
+                assertNever(type);
+        }
+    }
+
     toFilterInput(value: DataTableFilterValue<Type>): Partial<FilterInput> {
-        return this.options.toFilterInput(value);
+        if (this.options.toFilterInput) {
+            return this.options.toFilterInput(value);
+        }
+        if (this.options.filterField) {
+            return { [this.options.filterField]: this.getFilterOperator(value) } as Partial<FilterInput>;
+        } else {
+            throw new Error(
+                `Either "filterField" or "toFilterInput" must be provided (for filter "${this.name}"))`,
+            );
+        }
     }
 
     activate(value: DataTableFilterValue<Type>) {
@@ -103,8 +167,4 @@ export class DataTableFilter<
     isDateRange(): this is DataTableFilter<FilterInput, DataTableFilterDateRangeType> {
         return this.type.kind === 'dateRange';
     }
-
-    // private getValueForKind<Kind extends Type['kind']>(kind: Kind): KindValueMap[Kind] | undefined {
-    //     return this.value as any;
-    // }
 }

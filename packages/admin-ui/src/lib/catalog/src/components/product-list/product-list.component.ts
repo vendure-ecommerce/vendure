@@ -49,9 +49,7 @@ export class ProductListComponent
             name: 'collectionSlug',
             type: { kind: 'text' },
             label: _('catalog.collection-slug'),
-            toFilterInput: value => ({
-                collectionSlug: value.term,
-            }),
+            filterField: 'collectionSlug',
         })
         .connectToRoute(this.route);
 

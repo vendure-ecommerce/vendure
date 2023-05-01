@@ -4,16 +4,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
+    CustomerFilterParameter,
+    CustomerSortParameter,
     DataService,
     GetCustomerListQuery,
     ItemOf,
     LogicalOperator,
     ModalService,
     NotificationService,
+    SelectionManager,
 } from '@vendure/admin-ui/core';
-import { SortOrder } from '@vendure/common/lib/generated-types';
-import { EMPTY } from 'rxjs';
+import { EMPTY, merge } from 'rxjs';
 import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
+import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 @Component({
     selector: 'vdr-customer-list',
@@ -25,12 +28,61 @@ export class CustomerListComponent
     implements OnInit
 {
     searchTerm = new UntypedFormControl('');
+    selectionManager = new SelectionManager<ItemOf<GetCustomerListQuery, 'customers'>>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: true,
+    });
+    readonly filters = this.dataTableService
+        .createFilterCollection<CustomerFilterParameter>()
+        .addFilter({
+            name: 'createdAt',
+            type: { kind: 'dateRange' },
+            label: _('common.created-at'),
+            filterField: 'createdAt',
+        })
+        .addFilter({
+            name: 'updatedAt',
+            type: { kind: 'dateRange' },
+            label: _('common.updated-at'),
+            filterField: 'updatedAt',
+        })
+        .addFilter({
+            name: 'firstName',
+            type: { kind: 'text' },
+            label: _('customer.first-name'),
+            filterField: 'firstName',
+        })
+        .addFilter({
+            name: 'lastName',
+            type: { kind: 'text' },
+            label: _('customer.last-name'),
+            filterField: 'lastName',
+        })
+        .addFilter({
+            name: 'emailAddress',
+            type: { kind: 'text' },
+            label: _('customer.email-address'),
+            filterField: 'emailAddress',
+        })
+        .connectToRoute(this.route);
+
+    readonly sorts = this.dataTableService
+        .createSortCollection<CustomerSortParameter>()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'lastName' })
+        .addSort({ name: 'emailAddress' })
+        .connectToRoute(this.route);
+
     constructor(
         private dataService: DataService,
         router: Router,
         route: ActivatedRoute,
         private modalService: ModalService,
         private notificationService: NotificationService,
+        private dataTableService: DataTableService,
     ) {
         super(router, route);
         super.setQueryFn(
@@ -50,11 +102,10 @@ export class CustomerListComponent
                         postalCode: {
                             contains: this.searchTerm.value,
                         },
+                        ...this.filters.createFilterInput(),
                     },
-                    filterOperator: LogicalOperator.OR,
-                    sort: {
-                        createdAt: SortOrder.DESC,
-                    },
+                    filterOperator: this.searchTerm.value ? LogicalOperator.OR : LogicalOperator.AND,
+                    sort: this.sorts.createSortInput(),
                 },
             }),
         );
@@ -62,12 +113,12 @@ export class CustomerListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        this.searchTerm.valueChanges
-            .pipe(
-                filter(value => 2 < value.length || value.length === 0),
-                debounceTime(250),
-                takeUntil(this.destroy$),
-            )
+        const searchTerm$ = this.searchTerm.valueChanges.pipe(
+            filter(value => 2 < value.length || value.length === 0),
+            debounceTime(250),
+        );
+        merge(searchTerm$, this.filters.valueChanges, this.sorts.valueChanges)
+            .pipe(takeUntil(this.destroy$))
             .subscribe(() => this.refresh());
     }
 

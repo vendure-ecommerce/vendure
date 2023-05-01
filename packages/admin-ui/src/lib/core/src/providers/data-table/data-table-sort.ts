@@ -1,22 +1,22 @@
 import { DataTableFilterOptions, KindValueMap } from './data-table-filter';
 
-export type SortOrder = 'ASC' | 'DESC';
+export type DataTableSortOrder = 'ASC' | 'DESC';
 
 export interface DataTableSortOptions<
-    SortInput extends Record<string, SortOrder>,
+    SortInput extends Record<string, DataTableSortOrder>,
     Name extends keyof SortInput,
 > {
     name: Name;
 }
 
-export class DataTableSort<SortInput extends Record<string, SortOrder>> {
+export class DataTableSort<SortInput extends Record<string, DataTableSortOrder>> {
     constructor(
         private readonly options: DataTableSortOptions<SortInput, any>,
-        private onSetValue?: (name: keyof SortInput, state: SortOrder | undefined) => void,
+        private onSetValue?: (name: keyof SortInput, state: DataTableSortOrder | undefined) => void,
     ) {}
-    #sortOrder: SortOrder | undefined;
+    #sortOrder: DataTableSortOrder | undefined;
 
-    get sortOrder(): SortOrder | undefined {
+    get sortOrder(): DataTableSortOrder | undefined {
         return this.#sortOrder;
     }
 
@@ -37,7 +37,7 @@ export class DataTableSort<SortInput extends Record<string, SortOrder>> {
         }
     }
 
-    setSortOrder(sortOrder: SortOrder | undefined): void {
+    setSortOrder(sortOrder: DataTableSortOrder | undefined): void {
         this.#sortOrder = sortOrder;
         if (this.onSetValue) {
             this.onSetValue(this.name, this.#sortOrder);

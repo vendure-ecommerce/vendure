@@ -36,35 +36,32 @@ export class OrderListComponent
 {
     searchControl = new UntypedFormControl('');
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
+
     readonly filters = this.dataTableService
         .createFilterCollection<OrderFilterParameter>()
         .addFilter({
             name: 'createdAt',
             type: { kind: 'dateRange' },
             label: _('common.created-at'),
-            toFilterInput: value => ({
-                createdAt: value.dateOperators,
-            }),
+            filterField: 'createdAt',
+        })
+        .addFilter({
+            name: 'updatedAt',
+            type: { kind: 'dateRange' },
+            label: _('common.updated-at'),
+            filterField: 'updatedAt',
         })
         .addFilter({
             name: 'active',
             type: { kind: 'boolean' },
             label: _('order.filter-is-active'),
-            toFilterInput: value => ({
-                active: {
-                    eq: value,
-                },
-            }),
+            filterField: 'active',
         })
         .addFilter({
             name: 'totalWithTax',
             type: { kind: 'number', inputType: 'currency', currencyCode: 'USD' },
             label: _('order.total'),
-            toFilterInput: value => ({
-                totalWithTax: {
-                    [value.operator]: +value.amount,
-                },
-            }),
+            filterField: 'totalWithTax',
         })
         .addFilter({
             name: 'state',
@@ -73,59 +70,37 @@ export class OrderListComponent
                 options: this.orderStates.map(s => ({ value: s, label: getOrderStateTranslationToken(s) })),
             },
             label: _('order.state'),
-            toFilterInput: value => ({
-                state: {
-                    in: value,
-                },
-            }),
+            filterField: 'state',
         })
         .addFilter({
             name: 'orderPlacedAt',
-            type: {
-                kind: 'dateRange',
-            },
+            type: { kind: 'dateRange' },
             label: _('order.placed-at'),
-            toFilterInput: value => ({
-                orderPlacedAt: value.dateOperators,
-            }),
+            filterField: 'orderPlacedAt',
         })
         .addFilter({
             name: 'customerLastName',
             type: { kind: 'text' },
             label: _('customer.last-name'),
-            toFilterInput: value => ({
-                customerLastName: {
-                    [value.operator]: value.term,
-                },
-            }),
+            filterField: 'customerLastName',
         })
         .addFilter({
             name: 'transactionId',
             type: { kind: 'text' },
             label: _('order.transaction-id'),
-            toFilterInput: value => ({
-                transactionId: {
-                    [value.operator]: value.term,
-                },
-            }),
+            filterField: 'transactionId',
         })
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
         .createSortCollection<OrderSortParameter>()
         .defaultSort('updatedAt', 'DESC')
-        .addSort({
-            name: 'orderPlacedAt',
-        })
-        .addSort({
-            name: 'customerLastName',
-        })
-        .addSort({
-            name: 'state',
-        })
-        .addSort({
-            name: 'totalWithTax',
-        })
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'orderPlacedAt' })
+        .addSort({ name: 'customerLastName' })
+        .addSort({ name: 'state' })
+        .addSort({ name: 'totalWithTax' })
         .connectToRoute(this.route);
 
     canCreateDraftOrder = false;

@@ -2,6 +2,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Subject } from 'rxjs';
 import extend from 'just-extend';
+import { NumberOperators, StringOperators } from '../../common/generated-types';
 import {
     DataTableFilter,
     DataTableFilterBooleanType,
@@ -153,15 +154,15 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
         }
     }
 
-    deserializeValue(filter: DataTableFilter, value: string): any {
+    deserializeValue(filter: DataTableFilter, value: string): DataTableFilterValue<DataTableFilterType> {
         switch (filter.type.kind) {
             case 'text': {
-                const [operator, term] = value.split(',');
+                const [operator, term] = value.split(',') as [keyof StringOperators, string];
                 return { operator, term };
             }
             case 'number': {
-                const [operator, amount] = value.split(',');
-                return { operator, amount };
+                const [operator, amount] = value.split(',') as [keyof NumberOperators, string];
+                return { operator, amount: +amount };
             }
             case 'select':
                 return value.split(',');
@@ -191,7 +192,10 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
         this.#valueChanges$.next(this.#activeFilters);
     }
 
-    private createFacetWithValue(filter: DataTableFilter<any, any>, value: DataTableFilterValue<any>) {
+    private createFacetWithValue(
+        filter: DataTableFilter<any, any>,
+        value: DataTableFilterValue<DataTableFilterType>,
+    ) {
         return new FilterWithValue(filter, value, v => this.#valueChanges$.next(v));
     }
 }
