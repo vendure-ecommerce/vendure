@@ -1,12 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-    Customer,
-    EntityHydrator,
-    Logger,
-    Order,
-    RequestContext,
-    TransactionalConnection,
-} from '@vendure/core';
+import { ModuleRef } from '@nestjs/core';
+import { Customer, Injector, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
@@ -21,6 +15,7 @@ export class StripeService {
     constructor(
         private connection: TransactionalConnection,
         @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
+        private moduleRef: ModuleRef,
     ) {
         this.stripe = new Stripe(this.options.apiKey, {
             apiVersion: '2020-08-27',
@@ -36,7 +31,9 @@ export class StripeService {
         const amountInMinorUnits = getAmountInStripeMinorUnits(order);
 
         const metadata = sanitizeMetadata({
-            ...(typeof this.options.metadata === 'function' ? await this.options.metadata(ctx, order) : {}),
+            ...(typeof this.options.metadata === 'function'
+                ? await this.options.metadata(new Injector(this.moduleRef), ctx, order)
+                : {}),
             channelToken: ctx.channel.token,
             orderId: order.id,
             orderCode: order.code,

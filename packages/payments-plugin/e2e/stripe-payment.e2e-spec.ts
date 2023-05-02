@@ -164,8 +164,8 @@ describe('Stripe payments', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1935
     it('should attach metadata to stripe payment intent', async () => {
-        StripePlugin.options.metadata = async (ctx, currentOrder) => {
-            const hydrator = server.app.get(EntityHydrator);
+        StripePlugin.options.metadata = async (injector, ctx, currentOrder) => {
+            const hydrator = await injector.get(EntityHydrator);
             await hydrator.hydrate(ctx, currentOrder, { relations: ['customer'] });
             return {
                 customerEmail: currentOrder.customer?.emailAddress ?? 'demo',

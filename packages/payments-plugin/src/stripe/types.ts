@@ -1,4 +1,4 @@
-import { Order, RequestContext } from '@vendure/core';
+import { Injector, Order, RequestContext } from '@vendure/core';
 import '@vendure/core/dist/entity/custom-entity-fields';
 import { Request } from 'express';
 import Stripe from 'stripe';
@@ -46,7 +46,11 @@ export interface StripePluginOptions {
      *
      * @since 1.9.7
      */
-    metadata?: (ctx: RequestContext, order: Order) => Stripe.MetadataParam | Promise<Stripe.MetadataParam>;
+    metadata?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => Stripe.MetadataParam | Promise<Stripe.MetadataParam>;
 }
 
 export interface RequestWithRawBody extends Request {
