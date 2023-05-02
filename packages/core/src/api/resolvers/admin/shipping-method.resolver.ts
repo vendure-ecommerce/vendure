@@ -4,6 +4,7 @@ import {
     DeletionResponse,
     MutationCreateShippingMethodArgs,
     MutationDeleteShippingMethodArgs,
+    MutationDeleteShippingMethodsArgs,
     MutationUpdateShippingMethodArgs,
     Permission,
     QueryShippingMethodArgs,
@@ -98,6 +99,16 @@ export class ShippingMethodResolver {
     ): Promise<DeletionResponse> {
         const { id } = args;
         return this.shippingMethodService.softDelete(ctx, id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeleteShippingMethod)
+    deleteShippingMethods(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteShippingMethodsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.shippingMethodService.softDelete(ctx, id)));
     }
 
     @Query()

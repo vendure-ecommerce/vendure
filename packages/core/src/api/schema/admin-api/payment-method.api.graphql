@@ -12,6 +12,8 @@ type Mutation {
     updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
     "Delete a PaymentMethod"
     deletePaymentMethod(id: ID!, force: Boolean): DeletionResponse!
+    "Delete multiple PaymentMethods"
+    deletePaymentMethods(ids: [ID!]!, force: Boolean): [DeletionResponse!]!
 }
 
 type PaymentMethodList implements PaginatedList {

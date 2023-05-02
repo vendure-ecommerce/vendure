@@ -4,6 +4,7 @@ import {
     MutationAssignRoleToAdministratorArgs,
     MutationCreateAdministratorArgs,
     MutationDeleteAdministratorArgs,
+    MutationDeleteAdministratorsArgs,
     MutationUpdateActiveAdministratorArgs,
     MutationUpdateAdministratorArgs,
     Permission,
@@ -109,5 +110,15 @@ export class AdministratorResolver {
     ): Promise<DeletionResponse> {
         const { id } = args;
         return this.administratorService.softDelete(ctx, id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteAdministrator)
+    deleteAdministrators(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteAdministratorsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.administratorService.softDelete(ctx, id)));
     }
 }

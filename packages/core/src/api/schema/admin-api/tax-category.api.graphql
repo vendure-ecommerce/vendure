@@ -19,6 +19,9 @@ type Mutation {
 
     "Deletes a TaxCategory"
     deleteTaxCategory(id: ID!): DeletionResponse!
+
+    "Deletes multiple TaxCategories"
+    deleteTaxCategories(ids: [ID!]!): [DeletionResponse!]!
 }
 
 input CreateTaxCategoryInput {

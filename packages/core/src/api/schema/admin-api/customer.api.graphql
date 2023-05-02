@@ -13,6 +13,9 @@ type Mutation {
     "Delete a Customer"
     deleteCustomer(id: ID!): DeletionResponse!
 
+    "Deletes Customers"
+    deleteCustomers(ids: [ID!]!): [DeletionResponse!]!
+
     "Create a new Address and associate it with the Customer specified by customerId"
     createCustomerAddress(customerId: ID!, input: CreateAddressInput!): Address!
 

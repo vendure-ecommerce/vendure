@@ -10,6 +10,8 @@ type Mutation {
   updateSeller(input: UpdateSellerInput!): Seller!
   "Delete a Seller"
   deleteSeller(id: ID!): DeletionResponse!
+  "Delete multiple Sellers"
+  deleteSellers(ids: [ID!]!): [DeletionResponse!]!
 }
 
 type SellerList implements PaginatedList {

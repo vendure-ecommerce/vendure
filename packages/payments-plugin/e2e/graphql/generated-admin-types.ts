@@ -2536,16 +2536,22 @@ export type Mutation = {
     createZone: Zone;
     /** Delete an Administrator */
     deleteAdministrator: DeletionResponse;
+    /** Delete multiple Administrators */
+    deleteAdministrators: Array<DeletionResponse>;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
     deleteAssets: DeletionResponse;
     /** Delete a Channel */
     deleteChannel: DeletionResponse;
+    /** Delete multiple Channels */
+    deleteChannels: Array<DeletionResponse>;
     /** Delete a Collection and all of its descendants */
     deleteCollection: DeletionResponse;
     /** Delete multiple Collections and all of their descendants */
     deleteCollections: Array<DeletionResponse>;
+    /** Delete multiple Countries */
+    deleteCountries: Array<DeletionResponse>;
     /** Delete a Country */
     deleteCountry: DeletionResponse;
     /** Delete a Customer */
@@ -2554,7 +2560,11 @@ export type Mutation = {
     deleteCustomerAddress: Success;
     /** Delete a CustomerGroup */
     deleteCustomerGroup: DeletionResponse;
+    /** Delete multiple CustomerGroups */
+    deleteCustomerGroups: Array<DeletionResponse>;
     deleteCustomerNote: DeletionResponse;
+    /** Deletes Customers */
+    deleteCustomers: Array<DeletionResponse>;
     /** Deletes a draft Order */
     deleteDraftOrder: DeletionResponse;
     /** Delete an existing Facet */
@@ -2566,6 +2576,8 @@ export type Mutation = {
     deleteOrderNote: DeletionResponse;
     /** Delete a PaymentMethod */
     deletePaymentMethod: DeletionResponse;
+    /** Delete multiple PaymentMethods */
+    deletePaymentMethods: Array<DeletionResponse>;
     /** Delete a Product */
     deleteProduct: DeletionResponse;
     /** Delete a ProductOption */
@@ -2577,23 +2589,36 @@ export type Mutation = {
     /** Delete multiple Products */
     deleteProducts: Array<DeletionResponse>;
     deletePromotion: DeletionResponse;
+    deletePromotions: Array<DeletionResponse>;
     /** Delete a Province */
     deleteProvince: DeletionResponse;
     /** Delete an existing Role */
     deleteRole: DeletionResponse;
+    /** Delete multiple Roles */
+    deleteRoles: Array<DeletionResponse>;
     /** Delete a Seller */
     deleteSeller: DeletionResponse;
+    /** Delete multiple Sellers */
+    deleteSellers: Array<DeletionResponse>;
     /** Delete a ShippingMethod */
     deleteShippingMethod: DeletionResponse;
+    /** Delete multiple ShippingMethods */
+    deleteShippingMethods: Array<DeletionResponse>;
     deleteStockLocation: DeletionResponse;
     /** Delete an existing Tag */
     deleteTag: DeletionResponse;
+    /** Deletes multiple TaxCategories */
+    deleteTaxCategories: Array<DeletionResponse>;
     /** Deletes a TaxCategory */
     deleteTaxCategory: DeletionResponse;
     /** Delete a TaxRate */
     deleteTaxRate: DeletionResponse;
+    /** Delete multiple TaxRates */
+    deleteTaxRates: Array<DeletionResponse>;
     /** Delete a Zone */
     deleteZone: DeletionResponse;
+    /** Delete a Zone */
+    deleteZones: Array<DeletionResponse>;
     flushBufferedJobs: Success;
     importProducts?: Maybe<ImportInfo>;
     /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
@@ -2901,6 +2926,10 @@ export type MutationDeleteAdministratorArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeleteAdministratorsArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteAssetArgs = {
     input: DeleteAssetInput;
 };
@@ -2913,11 +2942,19 @@ export type MutationDeleteChannelArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeleteChannelsArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteCollectionArgs = {
     id: Scalars['ID'];
 };
 
 export type MutationDeleteCollectionsArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
+export type MutationDeleteCountriesArgs = {
     ids: Array<Scalars['ID']>;
 };
 
@@ -2937,8 +2974,16 @@ export type MutationDeleteCustomerGroupArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeleteCustomerGroupsArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteCustomerNoteArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationDeleteCustomersArgs = {
+    ids: Array<Scalars['ID']>;
 };
 
 export type MutationDeleteDraftOrderArgs = {
@@ -2969,6 +3014,11 @@ export type MutationDeletePaymentMethodArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeletePaymentMethodsArgs = {
+    force?: InputMaybe<Scalars['Boolean']>;
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteProductArgs = {
     id: Scalars['ID'];
 };
@@ -2993,6 +3043,10 @@ export type MutationDeletePromotionArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeletePromotionsArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteProvinceArgs = {
     id: Scalars['ID'];
 };
@@ -3001,12 +3055,24 @@ export type MutationDeleteRoleArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeleteRolesArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteSellerArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeleteSellersArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteShippingMethodArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationDeleteShippingMethodsArgs = {
+    ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 export type MutationDeleteStockLocationArgs = {
@@ -3017,6 +3083,10 @@ export type MutationDeleteTagArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeleteTaxCategoriesArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteTaxCategoryArgs = {
     id: Scalars['ID'];
 };
@@ -3025,8 +3095,16 @@ export type MutationDeleteTaxRateArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationDeleteTaxRatesArgs = {
+    ids: Array<Scalars['ID']>;
+};
+
 export type MutationDeleteZoneArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationDeleteZonesArgs = {
+    ids: Array<Scalars['ID']>;
 };
 
 export type MutationFlushBufferedJobsArgs = {

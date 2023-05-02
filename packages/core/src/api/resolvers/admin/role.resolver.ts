@@ -3,6 +3,7 @@ import {
     DeletionResponse,
     MutationCreateRoleArgs,
     MutationDeleteRoleArgs,
+    MutationDeleteRolesArgs,
     MutationUpdateRoleArgs,
     Permission,
     QueryRoleArgs,
@@ -64,5 +65,15 @@ export class RoleResolver {
     deleteRole(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteRoleArgs): Promise<DeletionResponse> {
         const { id } = args;
         return this.roleService.delete(ctx, id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteAdministrator)
+    deleteRoles(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteRolesArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.roleService.delete(ctx, id)));
     }
 }

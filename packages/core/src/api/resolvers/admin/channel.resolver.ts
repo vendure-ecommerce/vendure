@@ -4,6 +4,7 @@ import {
     DeletionResponse,
     MutationCreateChannelArgs,
     MutationDeleteChannelArgs,
+    MutationDeleteChannelsArgs,
     MutationUpdateChannelArgs,
     Permission,
     QueryChannelArgs,
@@ -86,5 +87,15 @@ export class ChannelResolver {
         @Args() args: MutationDeleteChannelArgs,
     ): Promise<DeletionResponse> {
         return this.channelService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.SuperAdmin, Permission.DeleteChannel)
+    async deleteChannels(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteChannelsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.channelService.delete(ctx, id)));
     }
 }

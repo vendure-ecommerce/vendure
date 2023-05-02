@@ -4,6 +4,7 @@ import {
     MutationAddMembersToZoneArgs,
     MutationCreateZoneArgs,
     MutationDeleteZoneArgs,
+    MutationDeleteZonesArgs,
     MutationRemoveMembersFromZoneArgs,
     MutationUpdateZoneArgs,
     Permission,
@@ -55,6 +56,16 @@ export class ZoneResolver {
         @Args() args: MutationDeleteZoneArgs,
     ): Promise<DeletionResponse> {
         return this.zoneService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeleteZone)
+    async deleteZones(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteZonesArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.zoneService.delete(ctx, id)));
     }
 
     @Transaction()

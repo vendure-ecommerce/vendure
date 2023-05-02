@@ -10,6 +10,8 @@ type Mutation {
     updateCustomerGroup(input: UpdateCustomerGroupInput!): CustomerGroup!
     "Delete a CustomerGroup"
     deleteCustomerGroup(id: ID!): DeletionResponse!
+    "Delete multiple CustomerGroups"
+    deleteCustomerGroups(ids: [ID!]!): [DeletionResponse!]!
     "Add Customers to a CustomerGroup"
     addCustomersToGroup(customerGroupId: ID!, customerIds: [ID!]!): CustomerGroup!
     "Remove Customers from a CustomerGroup"

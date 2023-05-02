@@ -9,6 +9,7 @@ type Mutation {
     createPromotion(input: CreatePromotionInput!): CreatePromotionResult!
     updatePromotion(input: UpdatePromotionInput!): UpdatePromotionResult!
     deletePromotion(id: ID!): DeletionResponse!
+    deletePromotions(ids: [ID!]!): [DeletionResponse!]!
     "Assigns Promotions to the specified Channel"
     assignPromotionsToChannel(input: AssignPromotionsToChannelInput!): [Promotion!]!
     "Removes Promotions from the specified Channel"

@@ -4,6 +4,7 @@ import {
     MutationCreateTaxCategoryArgs,
     MutationDeleteTaxCategoryArgs,
     MutationUpdateTaxCategoryArgs,
+    MutationDeleteTaxCategoriesArgs,
     Permission,
     QueryTaxCategoriesArgs,
     QueryTaxCategoryArgs,
@@ -72,5 +73,15 @@ export class TaxCategoryResolver {
         @Args() args: MutationDeleteTaxCategoryArgs,
     ): Promise<DeletionResponse> {
         return this.taxCategoryService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeleteTaxCategory)
+    async deleteTaxCategories(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteTaxCategoriesArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.taxCategoryService.delete(ctx, id)));
     }
 }

@@ -4,6 +4,7 @@ import {
     DeletionResponse,
     MutationCreatePaymentMethodArgs,
     MutationDeletePaymentMethodArgs,
+    MutationDeletePaymentMethodsArgs,
     MutationUpdatePaymentMethodArgs,
     Permission,
     QueryPaymentMethodArgs,
@@ -71,6 +72,16 @@ export class PaymentMethodResolver {
         @Args() args: MutationDeletePaymentMethodArgs,
     ): Promise<DeletionResponse> {
         return this.paymentMethodService.delete(ctx, args.id, args.force);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeletePaymentMethod)
+    deletePaymentMethods(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeletePaymentMethodsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.paymentMethodService.delete(ctx, id, args.force)));
     }
 
     @Query()

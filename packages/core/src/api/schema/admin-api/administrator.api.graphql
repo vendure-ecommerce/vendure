@@ -13,6 +13,8 @@ type Mutation {
     updateActiveAdministrator(input: UpdateActiveAdministratorInput!): Administrator!
     "Delete an Administrator"
     deleteAdministrator(id: ID!): DeletionResponse!
+    "Delete multiple Administrators"
+    deleteAdministrators(ids: [ID!]!): [DeletionResponse!]!
     "Assign a Role to an Administrator"
     assignRoleToAdministrator(administratorId: ID!, roleId: ID!): Administrator!
 }

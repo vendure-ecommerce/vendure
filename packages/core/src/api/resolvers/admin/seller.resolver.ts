@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
     MutationCreateSellerArgs,
-    MutationDeleteSellerArgs,
+    MutationDeleteSellerArgs, MutationDeleteSellersArgs,
     MutationUpdateSellerArgs,
     Permission,
     QuerySellerArgs,
@@ -55,5 +55,15 @@ export class SellerResolver {
         @Args() args: MutationDeleteSellerArgs,
     ): Promise<DeletionResponse> {
         return this.sellerService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSeller)
+    async deleteSellers(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteSellersArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.sellerService.delete(ctx, id));
     }
 }

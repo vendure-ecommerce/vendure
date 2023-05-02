@@ -13,6 +13,9 @@ type Mutation {
     "Delete a Zone"
     deleteZone(id: ID!): DeletionResponse!
 
+    "Delete a Zone"
+    deleteZones(ids: [ID!]!): [DeletionResponse!]!
+
     "Add members to a Zone"
     addMembersToZone(zoneId: ID!, memberIds: [ID!]!): Zone!
 

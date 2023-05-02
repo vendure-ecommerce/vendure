@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
     MutationCreateCountryArgs,
+    MutationDeleteCountriesArgs,
     MutationDeleteCountryArgs,
     MutationUpdateCountryArgs,
     Permission,
@@ -71,5 +72,15 @@ export class CountryResolver {
         @Args() args: MutationDeleteCountryArgs,
     ): Promise<DeletionResponse> {
         return this.countryService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeleteCountry)
+    async deleteCountries(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteCountriesArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.countryService.delete(ctx, id)));
     }
 }
