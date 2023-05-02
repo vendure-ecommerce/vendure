@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -7,21 +6,17 @@ import {
     DataService,
     DataTableService,
     GetActiveChannelQuery,
-    GetFacetListQuery,
     GetShippingMethodListQuery,
     ItemOf,
     LanguageCode,
-    ModalService,
-    NotificationService,
-    SelectionManager,
     ServerConfigService,
     ShippingMethodFilterParameter,
     ShippingMethodQuote,
     ShippingMethodSortParameter,
     TestEligibleShippingMethodsInput,
 } from '@vendure/admin-ui/core';
-import { EMPTY, merge, Observable, Subject } from 'rxjs';
-import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { TestAddress } from '../test-address-form/test-address-form.component';
 import { TestOrderLine } from '../test-order-builder/test-order-builder.component';
@@ -82,12 +77,10 @@ export class ShippingMethodListComponent
         .connectToRoute(this.route);
 
     constructor(
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-        private dataService: DataService,
-        private serverConfigService: ServerConfigService,
         router: Router,
         route: ActivatedRoute,
+        private dataService: DataService,
+        private serverConfigService: ServerConfigService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
@@ -133,35 +126,6 @@ export class ShippingMethodListComponent
             .mapStream(({ uiState }) => uiState.contentLanguage);
 
         super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    deleteShippingMethod(id: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-shipping-method'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(response =>
-                    response ? this.dataService.shippingMethod.deleteShippingMethod(id) : EMPTY,
-                ),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'ShippingMethod',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'ShippingMethod',
-                    });
-                },
-            );
     }
 
     setTestOrderLines(event: TestOrderLine[]) {

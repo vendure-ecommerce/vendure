@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Neuen Administrator anlegen",
-    "search-administrator": "Nach Vorname / Nachname / E-Mail suchen"
+    "create-new-administrator": "Neuen Administrator anlegen"
   },
   "asset": {
     "add-asset": "Asset hinzufügen",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Wenn Sie diese Sammlung löschen, werden auch alle untergeordneten Sammlungen gelöscht.",
     "confirm-delete-country": "Land löschen?",
     "confirm-delete-customer": "Kunden löschen?",
-    "confirm-delete-facet": "Facette löschen?",
     "confirm-delete-facet-value": "Facettenwert löschen?",
     "confirm-delete-product": "Produkt löschen?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Kein \"Featured Asset\"",
     "no-selection": "Keine Auswahl",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Gast",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } pro Seite",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Sprache",
     "launch-extension": "Erweiterung starten",
+    "list-items-and-n-more": "",
     "live-update": "Live-Aktualisierung",
     "locale": "",
     "log-out": "Abmelden",
@@ -313,6 +314,7 @@
     "update": "Aktualisieren",
     "updated-at": "Aktualisiert am",
     "username": "Benutzername",
+    "value": "",
     "view-next-month": "Nächsten Monat anzeigen",
     "view-previous-month": "Vorherigen Monat anzeigen",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Standard-Steuerzone",
     "eligible": "Verfügbar",
     "email-address": "E-Mail-Adresse",
+    "emailAddress": "",
     "filter-by-member-name": "Nach Land filtern",
     "first-name": "Vorname",
     "fulfillment-handler": "Abwicklung über",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Aus Zone entfernen",
     "roles": "Rollen",
     "search-by-product-name-or-sku": "Suche nach Produktname oder Artikelnummer",
-    "search-country-by-name": "Länder nach Namen suchen",
     "shipping-calculator": "Versandkostenrechner",
     "shipping-eligibility-checker": "Verfügbarkeit der Versandart prüfen",
     "shipping-method": "Versandart",

@@ -1,23 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
+    DataTableService,
     GetPromotionListQuery,
     ItemOf,
     LogicalOperator,
-    ModalService,
-    NotificationService,
     PromotionFilterParameter,
     PromotionListOptions,
     PromotionSortParameter,
-    SelectionManager,
 } from '@vendure/admin-ui/core';
-import { EMPTY, merge } from 'rxjs';
-import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
-import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 export type PromotionSearchForm = {
     name: string;
@@ -94,11 +88,9 @@ export class PromotionListComponent
         .connectToRoute(this.route);
 
     constructor(
-        private dataService: DataService,
         router: Router,
         route: ActivatedRoute,
-        private notificationService: NotificationService,
-        private modalService: ModalService,
+        private dataService: DataService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
@@ -112,35 +104,6 @@ export class PromotionListComponent
     ngOnInit(): void {
         super.ngOnInit();
         super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    deletePromotion(promotionId: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-promotion'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(response =>
-                    response ? this.dataService.promotion.deletePromotion(promotionId) : EMPTY,
-                ),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Promotion',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Promotion',
-                    });
-                },
-            );
     }
 
     private createQueryOptions(

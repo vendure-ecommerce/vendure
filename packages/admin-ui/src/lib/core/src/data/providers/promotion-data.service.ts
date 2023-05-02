@@ -4,6 +4,7 @@ import * as Codegen from '../../common/generated-types';
 import {
     CREATE_PROMOTION,
     DELETE_PROMOTION,
+    DELETE_PROMOTIONS,
     GET_ADJUSTMENT_OPERATIONS,
     GET_PROMOTION,
     GET_PROMOTION_LIST,
@@ -85,5 +86,12 @@ export class PromotionDataService {
             Codegen.DeletePromotionMutation,
             Codegen.DeletePromotionMutationVariables
         >(DELETE_PROMOTION, { id });
+    }
+
+    deletePromotions(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeletePromotionsMutation,
+            Codegen.DeletePromotionsMutationVariables
+        >(DELETE_PROMOTIONS, { ids });
     }
 }

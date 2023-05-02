@@ -102,6 +102,15 @@ export const DELETE_ADMINISTRATOR = gql`
     }
 `;
 
+export const DELETE_ADMINISTRATORS = gql`
+    mutation DeleteAdministrators($ids: [ID!]!) {
+        deleteAdministrators(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_ROLES = gql`
     query GetRoles($options: RoleListOptions) {
         roles(options: $options) {
@@ -144,6 +153,15 @@ export const UPDATE_ROLE = gql`
 export const DELETE_ROLE = gql`
     mutation DeleteRole($id: ID!) {
         deleteRole(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_ROLES = gql`
+    mutation DeleteRoles($ids: [ID!]!) {
+        deleteRoles(ids: $ids) {
             result
             message
         }

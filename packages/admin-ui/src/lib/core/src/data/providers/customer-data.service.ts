@@ -20,6 +20,7 @@ import {
     UPDATE_CUSTOMER_ADDRESS,
     UPDATE_CUSTOMER_GROUP,
     UPDATE_CUSTOMER_NOTE,
+    DELETE_CUSTOMERS,
 } from '../definitions/customer-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -87,6 +88,13 @@ export class CustomerDataService {
             Codegen.DeleteCustomerMutation,
             Codegen.DeleteCustomerMutationVariables
         >(DELETE_CUSTOMER, { id });
+    }
+
+    deleteCustomers(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomersMutation,
+            Codegen.DeleteCustomersMutationVariables
+        >(DELETE_CUSTOMERS, { ids });
     }
 
     createCustomerAddress(customerId: string, input: Codegen.CreateAddressInput) {

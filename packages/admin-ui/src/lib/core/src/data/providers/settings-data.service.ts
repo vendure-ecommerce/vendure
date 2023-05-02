@@ -57,6 +57,12 @@ import {
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
     UPDATE_ZONE,
+    DELETE_SELLERS,
+    DELETE_CHANNELS,
+    DELETE_PAYMENT_METHODS,
+    DELETE_TAX_CATEGORIES,
+    DELETE_TAX_RATES,
+    DELETE_COUNTRIES,
 } from '../definitions/settings-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -114,6 +120,15 @@ export class SettingsDataService {
             Codegen.DeleteCountryMutationVariables
         >(DELETE_COUNTRY, {
             id,
+        });
+    }
+
+    deleteCountries(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCountriesMutation,
+            Codegen.DeleteCountriesMutationVariables
+        >(DELETE_COUNTRIES, {
+            ids,
         });
     }
 
@@ -213,9 +228,18 @@ export class SettingsDataService {
     deleteTaxCategory(id: string) {
         return this.baseDataService.mutate<
             Codegen.DeleteTaxCategoryMutation,
-            Codegen.DeleteTaxRateMutationVariables
+            Codegen.DeleteTaxCategoryMutationVariables
         >(DELETE_TAX_CATEGORY, {
             id,
+        });
+    }
+
+    deleteTaxCategories(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteTaxCategoriesMutation,
+            Codegen.DeleteTaxCategoriesMutationVariables
+        >(DELETE_TAX_CATEGORIES, {
+            ids,
         });
     }
 
@@ -284,6 +308,15 @@ export class SettingsDataService {
         });
     }
 
+    deleteTaxRates(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteTaxRatesMutation,
+            Codegen.DeleteTaxRatesMutationVariables
+        >(DELETE_TAX_RATES, {
+            ids,
+        });
+    }
+
     getChannels(options: ChannelListOptions = {}) {
         return this.baseDataService.query<Codegen.GetChannelsQuery, Codegen.GetChannelsQueryVariables>(
             GET_CHANNELS,
@@ -343,6 +376,15 @@ export class SettingsDataService {
         });
     }
 
+    deleteSellers(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteSellersMutation,
+            Codegen.DeleteSellersMutationVariables
+        >(DELETE_SELLERS, {
+            ids,
+        });
+    }
+
     getActiveChannel(fetchPolicy?: FetchPolicy) {
         return this.baseDataService.query<
             Codegen.GetActiveChannelQuery,
@@ -374,6 +416,15 @@ export class SettingsDataService {
             Codegen.DeleteChannelMutationVariables
         >(DELETE_CHANNEL, {
             id,
+        });
+    }
+
+    deleteChannels(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteChannelsMutation,
+            Codegen.DeleteChannelsMutationVariables
+        >(DELETE_CHANNELS, {
+            ids,
         });
     }
 
@@ -430,6 +481,16 @@ export class SettingsDataService {
             Codegen.DeletePaymentMethodMutationVariables
         >(DELETE_PAYMENT_METHOD, {
             id,
+            force,
+        });
+    }
+
+    deletePaymentMethods(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<
+            Codegen.DeletePaymentMethodsMutation,
+            Codegen.DeletePaymentMethodsMutationVariables
+        >(DELETE_PAYMENT_METHODS, {
+            ids,
             force,
         });
     }

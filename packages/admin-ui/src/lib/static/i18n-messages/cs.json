@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Vytvořit nového administrátora",
-    "search-administrator": "Hledat podle jména / příjmení / e-mailu"
+    "create-new-administrator": "Vytvořit nového administrátora"
   },
   "asset": {
     "add-asset": "Přidat médium",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Deleting this collection will also delete all child collections",
     "confirm-delete-country": "Smazat zemi?",
     "confirm-delete-customer": "Smazat zákazníka?",
-    "confirm-delete-facet": "Smazat atribut?",
     "confirm-delete-facet-value": "Smazat hodnotu atributu?",
     "confirm-delete-product": "Smazat produkt?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Žádné zvýrazněné médium",
     "no-selection": "Žádný výběr",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Host",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } na stránku",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Jazyk",
     "launch-extension": "Spustit rozšíření",
+    "list-items-and-n-more": "",
     "live-update": "Živé aktualizace",
     "locale": "",
     "log-out": "Odhlásit",
@@ -313,6 +314,7 @@
     "update": "Aktualizovat",
     "updated-at": "Aktualizováno",
     "username": "Uživatelské jméno",
+    "value": "",
     "view-next-month": "Další měsíc",
     "view-previous-month": "Předchozí měsíc",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Výchozí daňová zóna",
     "eligible": "Způsobilé",
     "email-address": "E-mailová adresa",
+    "emailAddress": "",
     "filter-by-member-name": "Filtrovat dle země",
     "first-name": "Jméno",
     "fulfillment-handler": "Způsob zpracování",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Odebrat ze zóny",
     "roles": "Role",
     "search-by-product-name-or-sku": "Hledat dle názvu nebo SKU produktu",
-    "search-country-by-name": "Vyhledat zemi dle jména",
     "shipping-calculator": "Kalkulátor poštovného",
     "shipping-eligibility-checker": "Test způsobilosti k dodací metodě",
     "shipping-method": "Dodací metoda",

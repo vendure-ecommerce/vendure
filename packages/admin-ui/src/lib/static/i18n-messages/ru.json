@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Создать нового администратора",
-    "search-administrator": "Поиск по имени / фамилии / электронной почте"
+    "create-new-administrator": "Создать нового администратора"
   },
   "asset": {
     "add-asset": "Добавить медиа-объект",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Удаление этой коллекции также приведет к удалению всех дочерних коллекций.",
     "confirm-delete-country": "Удалить страну?",
     "confirm-delete-customer": "Удалить клиента?",
-    "confirm-delete-facet": "Удалить тег?",
     "confirm-delete-facet-value": "Удалить значение тега?",
     "confirm-delete-product": "Удалить товар?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Нет избранного медиа-объекта",
     "no-selection": "Не выбрано",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Гость",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } на странице",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Язык",
     "launch-extension": "Запуск расширения",
+    "list-items-and-n-more": "",
     "live-update": "Обновление в режиме реального времени",
     "locale": "",
     "log-out": "Выйти",
@@ -313,6 +314,7 @@
     "update": "Обновить",
     "updated-at": "Обновлено в",
     "username": "Имя пользователя",
+    "value": "",
     "view-next-month": "Посмотреть следующий месяц",
     "view-previous-month": "Посмотреть предыдущий месяц",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Налоговая зона по умолчанию",
     "eligible": "Имеющий право",
     "email-address": "Адрес электронной почты",
+    "emailAddress": "",
     "filter-by-member-name": "Фильтровать по стране",
     "first-name": "Имя",
     "fulfillment-handler": "Обработчик выполнения",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Удалить из зоны",
     "roles": "Роли",
     "search-by-product-name-or-sku": "Поиск по названию товара или артикулу",
-    "search-country-by-name": "Поиск страны по названию",
     "shipping-calculator": "Калькулятор доставки",
     "shipping-eligibility-checker": "Контролер приемлемости доставки",
     "shipping-method": "Способ доставки",

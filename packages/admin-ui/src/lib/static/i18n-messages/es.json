@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Crear nuevo administrador",
-    "search-administrator": "Buscar por nombre / apellido / correo electrónico"
+    "create-new-administrator": "Crear nuevo administrador"
   },
   "asset": {
     "add-asset": "Añadir recurso",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Eliminar esta colección también eliminará las sub-colecciones",
     "confirm-delete-country": "¿Eliminar país?",
     "confirm-delete-customer": "¿Eliminar cliente?",
-    "confirm-delete-facet": "¿Eliminar faceta?",
     "confirm-delete-facet-value": "¿Eliminar valor de faceta?",
     "confirm-delete-product": "¿Eliminar producto?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Sin recurso destacado",
     "no-selection": "Sin selección",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Invitado",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } por página",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Idioma",
     "launch-extension": "Ejecutar extensión",
+    "list-items-and-n-more": "",
     "live-update": "Actualización en vivo",
     "locale": "",
     "log-out": "Salir",
@@ -313,6 +314,7 @@
     "update": "Actualizar",
     "updated-at": "Actualizado el",
     "username": "Nombre de usuario",
+    "value": "",
     "view-next-month": "Ver próximo mes",
     "view-previous-month": "Ver mes anterior",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Zona de impuestos por defecto",
     "eligible": "Disponible",
     "email-address": "Dirección de email",
+    "emailAddress": "",
     "filter-by-member-name": "Filtrar por país",
     "first-name": "Nombre",
     "fulfillment-handler": "Gestor de ejecución de pedidos",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Eliminar de la zona",
     "roles": "Roles",
     "search-by-product-name-or-sku": "Buscar producto por nombre o código de referencia",
-    "search-country-by-name": "Buscar país por nombre",
     "shipping-calculator": "Calculador de envíos",
     "shipping-eligibility-checker": "Comprueba disponibilidad de envío",
     "shipping-method": "Método de envío",

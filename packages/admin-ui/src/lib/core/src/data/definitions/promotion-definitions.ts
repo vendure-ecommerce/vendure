@@ -95,3 +95,12 @@ export const DELETE_PROMOTION = gql`
         }
     }
 `;
+
+export const DELETE_PROMOTIONS = gql`
+    mutation DeletePromotions($ids: [ID!]!) {
+        deletePromotions(ids: $ids) {
+            result
+            message
+        }
+    }
+`;

@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Utwórz konto administratora",
-    "search-administrator": "Szukaj według imienia / nazwiska / adresu e-mail"
+    "create-new-administrator": "Utwórz konto administratora"
   },
   "asset": {
     "add-asset": "Dodaj zasób",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Usunięcie tej kolekcji spowoduje usunięcie także podkategorii",
     "confirm-delete-country": "Usunąć kraj?",
     "confirm-delete-customer": "",
-    "confirm-delete-facet": "Usunąć faset?",
     "confirm-delete-facet-value": "Usunąć wartość faseta?",
     "confirm-delete-product": "Usunąć produkt?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Brak polecanego zasobu",
     "no-selection": "Brak zaznaczenia",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Gość",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } na stronę",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Język",
     "launch-extension": "Uruchom rozszerzenie",
+    "list-items-and-n-more": "",
     "live-update": "Aktualizacja live",
     "locale": "",
     "log-out": "Wyloguj",
@@ -313,6 +314,7 @@
     "update": "Aktualizuj",
     "updated-at": "Zaaktualizowano dnia",
     "username": "Nazwa użytkownika",
+    "value": "",
     "view-next-month": "Wyświetl następny miesiąc",
     "view-previous-month": "Wyświetl poprzedni miesiąc",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Domyślna strefa podatkowa",
     "eligible": "Wybieralny",
     "email-address": "Email",
+    "emailAddress": "",
     "filter-by-member-name": "",
     "first-name": "Imię",
     "fulfillment-handler": "",
@@ -686,7 +689,6 @@
     "remove-from-zone": "",
     "roles": "Role",
     "search-by-product-name-or-sku": "Szukaj produktu po nazwie lub SKU",
-    "search-country-by-name": "Szukaj kraju po nazwie",
     "shipping-calculator": "Kalkulator wysyłki",
     "shipping-eligibility-checker": "Sprawdź możliwość wysyłki",
     "shipping-method": "Metoda wysyłki",

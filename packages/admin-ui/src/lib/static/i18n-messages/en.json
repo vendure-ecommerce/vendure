@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Create new administrator",
-    "search-administrator": "Search by first name / last name / email"
+    "create-new-administrator": "Create new administrator"
   },
   "asset": {
     "add-asset": "Add asset",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Deleting this collection will also delete all child collections",
     "confirm-delete-country": "Delete country?",
     "confirm-delete-customer": "Delete customer?",
-    "confirm-delete-facet": "Delete facet?",
     "confirm-delete-facet-value": "Delete facet value?",
     "confirm-delete-product": "Delete product?",
     "confirm-delete-product-option": "Delete product option \"{name}\"?",
@@ -127,6 +125,7 @@
     "no-featured-asset": "No featured asset",
     "no-selection": "No selection",
     "notify-bulk-delete-collections-success": "Successfully deleted {count, plural, one {1 collection} other {{count} collections}}",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "Successfully deleted {count, plural, one {1 facet} other {{count} facets}}",
     "notify-bulk-delete-products-success": "Successfully deleted {count, plural, one {1 product} other {{count} products}}",
     "notify-remove-collections-from-channel-success": "Successfully removed {count, plural, one {1 collection} other {{count} collections}} from { channelCode }",
@@ -240,12 +239,14 @@
     "force-remove": "Force remove",
     "general": "General",
     "guest": "Guest",
+    "id": "",
     "image": "Image",
     "items-per-page-option": "{ count } per page",
     "items-selected-count": "{ count } {count, plural, one {item} other {items}} selected",
     "keep-editing": "Keep editing",
     "language": "Language",
     "launch-extension": "Launch extension",
+    "list-items-and-n-more": "{ items } and {nMore} more",
     "live-update": "Live update",
     "locale": "Locale",
     "log-out": "Log out",
@@ -313,6 +314,7 @@
     "update": "Update",
     "updated-at": "Updated at",
     "username": "Username",
+    "value": "",
     "view-next-month": "View next month",
     "view-previous-month": "View previous month",
     "visibility": "Visibility",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Default tax zone",
     "eligible": "Eligible",
     "email-address": "Email address",
+    "emailAddress": "",
     "filter-by-member-name": "Filter by country",
     "first-name": "First name",
     "fulfillment-handler": "Fulfillment handler",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Remove from zone",
     "roles": "Roles",
     "search-by-product-name-or-sku": "Search by product name or SKU",
-    "search-country-by-name": "Search countries by name",
     "shipping-calculator": "Shipping calculator",
     "shipping-eligibility-checker": "Shipping eligibility checker",
     "shipping-method": "Shipping Method",

@@ -7,6 +7,7 @@
                 [class.collapsible]="section.collapsible"
                 [class.collapsed]="section.collapsible && !expandedSections.includes(section.id)"
                 routerLinkActive="active"
+                (isActiveChange)="setExpanded(section, $event)"
                 *ngIf="shouldDisplayLink(section)"
             >
                 <vdr-ui-extension-point

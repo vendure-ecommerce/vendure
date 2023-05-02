@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Створити нового адміністратора",
-    "search-administrator": "Пошук за ім'ям / прізвищем / електронною поштою"
+    "create-new-administrator": "Створити нового адміністратора"
   },
   "asset": {
     "add-asset": "Додати медіа-об'єкт",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Видалення цієї колекції також призведе до видалення всіх дочірніх колекцій.",
     "confirm-delete-country": "Видалити країну?",
     "confirm-delete-customer": "Видалити клієнта?",
-    "confirm-delete-facet": "Видалити тег?",
     "confirm-delete-facet-value": "Видалити значення тегу?",
     "confirm-delete-product": "Видалити товар?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Немає обраного медіа-об'єкта",
     "no-selection": "Не вибрано",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Гість",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } на сторінці",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Мова",
     "launch-extension": "Запуск розширення",
+    "list-items-and-n-more": "",
     "live-update": "Оновлення в режимі реального часу",
     "locale": "",
     "log-out": "Вийти",
@@ -313,6 +314,7 @@
     "update": "Оновити",
     "updated-at": "Оновлено в",
     "username": "Ім'я користувача",
+    "value": "",
     "view-next-month": "Переглянути наступний місяць",
     "view-previous-month": "Переглянути попередній місяць",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Податкова зона за замовчуванням",
     "eligible": "Який має право",
     "email-address": "Адреса електронної пошти",
+    "emailAddress": "",
     "filter-by-member-name": "Фільтрувати по країні",
     "first-name": "Ім'я",
     "fulfillment-handler": "Обробник виконання",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Видалити із зони",
     "roles": "Ролі",
     "search-by-product-name-or-sku": "Пошук за назвою товару або артикулу",
-    "search-country-by-name": "Пошук країни за назвою",
     "shipping-calculator": "Калькулятор доставки",
     "shipping-eligibility-checker": "Контролер прийнятності доставки",
     "shipping-method": "Спосіб доставки",

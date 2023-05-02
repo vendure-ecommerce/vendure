@@ -90,6 +90,15 @@ export const DELETE_SHIPPING_METHOD = gql`
     }
 `;
 
+export const DELETE_SHIPPING_METHODS = gql`
+    mutation DeleteShippingMethods($ids: [ID!]!) {
+        deleteShippingMethods(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const TEST_SHIPPING_METHOD = gql`
     query TestShippingMethod($input: TestShippingMethodInput!) {
         testShippingMethod(input: $input) {

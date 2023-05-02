@@ -85,6 +85,15 @@ export const DELETE_COUNTRY = gql`
     }
 `;
 
+export const DELETE_COUNTRIES = gql`
+    mutation DeleteCountries($ids: [ID!]!) {
+        deleteCountries(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const ZONE_FRAGMENT = gql`
     fragment Zone on Zone {
         id
@@ -227,6 +236,15 @@ export const DELETE_TAX_CATEGORY = gql`
     }
 `;
 
+export const DELETE_TAX_CATEGORIES = gql`
+    mutation DeleteTaxCategories($ids: [ID!]!) {
+        deleteTaxCategories(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const TAX_RATE_FRAGMENT = gql`
     fragment TaxRate on TaxRate {
         id
@@ -316,6 +334,15 @@ export const UPDATE_TAX_RATE = gql`
 export const DELETE_TAX_RATE = gql`
     mutation DeleteTaxRate($id: ID!) {
         deleteTaxRate(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_TAX_RATES = gql`
+    mutation DeleteTaxRates($ids: [ID!]!) {
+        deleteTaxRates(ids: $ids) {
             result
             message
         }
@@ -425,6 +452,15 @@ export const DELETE_SELLER = gql`
     }
 `;
 
+export const DELETE_SELLERS = gql`
+    mutation DeleteSellers($ids: [ID!]!) {
+        deleteSellers(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_ACTIVE_CHANNEL = gql`
     query GetActiveChannel {
         activeChannel {
@@ -459,6 +495,15 @@ export const UPDATE_CHANNEL = gql`
 export const DELETE_CHANNEL = gql`
     mutation DeleteChannel($id: ID!) {
         deleteChannel(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_CHANNELS = gql`
+    mutation DeleteChannels($ids: [ID!]!) {
+        deleteChannels(ids: $ids) {
             result
             message
         }
@@ -544,6 +589,15 @@ export const UPDATE_PAYMENT_METHOD = gql`
 export const DELETE_PAYMENT_METHOD = gql`
     mutation DeletePaymentMethod($id: ID!, $force: Boolean) {
         deletePaymentMethod(id: $id, force: $force) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_PAYMENT_METHODS = gql`
+    mutation DeletePaymentMethods($ids: [ID!]!, $force: Boolean) {
+        deletePaymentMethods(ids: $ids, force: $force) {
             result
             message
         }

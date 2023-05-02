@@ -1,18 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
     DataTableService,
     GetSellersQuery,
     ItemOf,
-    ModalService,
-    NotificationService,
     SellerFilterParameter,
     SellerSortParameter,
 } from '@vendure/admin-ui/core';
-import { EMPTY, switchMap } from 'rxjs';
 
 @Component({
     selector: 'vdr-seller-list',
@@ -38,11 +34,9 @@ export class SellerListComponent
         .connectToRoute(this.route);
 
     constructor(
-        private dataService: DataService,
-        private modalService: ModalService,
-        private notificationService: NotificationService,
         route: ActivatedRoute,
         router: Router,
+        private dataService: DataService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
@@ -68,30 +62,5 @@ export class SellerListComponent
     ngOnInit() {
         super.ngOnInit();
         super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    deleteSeller(id: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-seller'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(switchMap(response => (response ? this.dataService.settings.deleteSeller(id) : EMPTY)))
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Seller',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Seller',
-                    });
-                },
-            );
     }
 }

@@ -10,11 +10,7 @@ import {
     GetCustomerListQuery,
     ItemOf,
     LogicalOperator,
-    ModalService,
-    NotificationService,
 } from '@vendure/admin-ui/core';
-import { EMPTY } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-customer-list',
@@ -58,11 +54,9 @@ export class CustomerListComponent
         .connectToRoute(this.route);
 
     constructor(
-        private dataService: DataService,
         router: Router,
         route: ActivatedRoute,
-        private modalService: ModalService,
-        private notificationService: NotificationService,
+        private dataService: DataService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
@@ -95,31 +89,5 @@ export class CustomerListComponent
     ngOnInit() {
         super.ngOnInit();
         super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    deleteCustomer(customer: ItemOf<GetCustomerListQuery, 'customers'>) {
-        return this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-customer'),
-                body: `${customer.firstName} ${customer.lastName}`,
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(switchMap(res => (res ? this.dataService.customer.deleteCustomer(customer.id) : EMPTY)))
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Customer',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Customer',
-                    });
-                },
-            );
     }
 }

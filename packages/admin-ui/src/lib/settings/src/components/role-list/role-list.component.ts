@@ -7,15 +7,11 @@ import {
     DataTableService,
     GetRolesQuery,
     ItemOf,
-    ModalService,
-    NotificationService,
     Role,
     RoleFilterParameter,
     RoleSortParameter,
 } from '@vendure/admin-ui/core';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
-import { EMPTY } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-role-list',
@@ -50,11 +46,9 @@ export class RoleListComponent
         .connectToRoute(this.route);
 
     constructor(
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-        private dataService: DataService,
         router: Router,
         route: ActivatedRoute,
+        private dataService: DataService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
@@ -92,30 +86,5 @@ export class RoleListComponent
 
     isDefaultRole(role: Role): boolean {
         return role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE;
-    }
-
-    deleteRole(id: string) {
-        this.modalService
-            .dialog({
-                title: _('settings.confirm-delete-role'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(switchMap(response => (response ? this.dataService.administrator.deleteRole(id) : EMPTY)))
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Role',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Role',
-                    });
-                },
-            );
     }
 }

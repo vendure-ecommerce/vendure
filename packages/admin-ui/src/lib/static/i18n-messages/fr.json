@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Creer nouveau administrateur",
-    "search-administrator": "Rechercher par prénom / nom de famille / email"
+    "create-new-administrator": "Creer nouveau administrateur"
   },
   "asset": {
     "add-asset": "Ajout fichier",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Supprimer cette collection va aussi supprimer toutes les collections enfants",
     "confirm-delete-country": "Supprimer pays ?",
     "confirm-delete-customer": "Supprimer client ?",
-    "confirm-delete-facet": "Supprimer composant ?",
     "confirm-delete-facet-value": "Supprimer valeur du composant ?",
     "confirm-delete-product": "Supprimer produit ?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Pas de fichier vedette",
     "no-selection": "Pas de sélection",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Invité",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } par page",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Langue",
     "launch-extension": "Lancer extension",
+    "list-items-and-n-more": "",
     "live-update": "Mise à jour automatique",
     "locale": "",
     "log-out": "Déconnexion",
@@ -313,6 +314,7 @@
     "update": "Mettre à jour",
     "updated-at": "Mis à jour à",
     "username": "Nom d'utilisateur",
+    "value": "",
     "view-next-month": "Voir le mois suivant",
     "view-previous-month": "Voir le mois précédent",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Zone de taxe par défaut",
     "eligible": "Eligible",
     "email-address": "Adresse email",
+    "emailAddress": "",
     "filter-by-member-name": "Filtrer par pays",
     "first-name": "Prénom",
     "fulfillment-handler": "Gestionnaire de remplissage",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Retirer de la zone",
     "roles": "Roles",
     "search-by-product-name-or-sku": "Chercher par nom de produit ou par UGS",
-    "search-country-by-name": "Chercher pays par le nom",
     "shipping-calculator": "Calculateur de frais d'expédition",
     "shipping-eligibility-checker": "Controleur d'égibilité de livraison",
     "shipping-method": "Mode d'expédition",

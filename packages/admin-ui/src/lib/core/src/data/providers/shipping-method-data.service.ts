@@ -4,6 +4,7 @@ import * as Codegen from '../../common/generated-types';
 import {
     CREATE_SHIPPING_METHOD,
     DELETE_SHIPPING_METHOD,
+    DELETE_SHIPPING_METHODS,
     GET_SHIPPING_METHOD,
     GET_SHIPPING_METHOD_LIST,
     GET_SHIPPING_METHOD_OPERATIONS,
@@ -85,6 +86,15 @@ export class ShippingMethodDataService {
             Codegen.DeleteShippingMethodMutationVariables
         >(DELETE_SHIPPING_METHOD, {
             id,
+        });
+    }
+
+    deleteShippingMethods(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteShippingMethodsMutation,
+            Codegen.DeleteShippingMethodsMutationVariables
+        >(DELETE_SHIPPING_METHODS, {
+            ids,
         });
     }
 

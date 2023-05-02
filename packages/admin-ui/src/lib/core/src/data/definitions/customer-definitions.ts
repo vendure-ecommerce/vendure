@@ -133,6 +133,15 @@ export const DELETE_CUSTOMER = gql`
     }
 `;
 
+export const DELETE_CUSTOMERS = gql`
+    mutation DeleteCustomers($ids: [ID!]!) {
+        deleteCustomers(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const CREATE_CUSTOMER_ADDRESS = gql`
     mutation CreateCustomerAddress($customerId: ID!, $input: CreateAddressInput!) {
         createCustomerAddress(customerId: $customerId, input: $input) {

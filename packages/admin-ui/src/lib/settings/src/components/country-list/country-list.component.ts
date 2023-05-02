@@ -7,16 +7,12 @@ import {
     CountrySortParameter,
     DataService,
     DataTableService,
-    DeletionResult,
     GetCountryListQuery,
     ItemOf,
     LanguageCode,
-    ModalService,
-    NotificationService,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { EMPTY, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'vdr-country-list',
@@ -57,12 +53,10 @@ export class CountryListComponent
         .connectToRoute(this.route);
 
     constructor(
-        private dataService: DataService,
-        private notificationService: NotificationService,
-        private modalService: ModalService,
-        private serverConfigService: ServerConfigService,
         route: ActivatedRoute,
         router: Router,
+        private dataService: DataService,
+        private serverConfigService: ServerConfigService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
@@ -97,38 +91,5 @@ export class CountryListComponent
 
     setLanguage(code: LanguageCode) {
         this.dataService.client.setContentLanguage(code).subscribe();
-    }
-
-    deleteCountry(countryId: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-country'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(response =>
-                    response ? this.dataService.settings.deleteCountry(countryId) : EMPTY,
-                ),
-            )
-            .subscribe(
-                response => {
-                    if (response.deleteCountry.result === DeletionResult.DELETED) {
-                        this.notificationService.success(_('common.notify-delete-success'), {
-                            entity: 'Country',
-                        });
-                        this.dataService.settings.getCountries(999, 0).single$.subscribe();
-                    } else {
-                        this.notificationService.error(response.deleteCountry.message || '');
-                    }
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Country',
-                    });
-                },
-            );
     }
 }

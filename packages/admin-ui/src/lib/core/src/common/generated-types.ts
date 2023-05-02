@@ -2592,16 +2592,22 @@ export type Mutation = {
   createZone: Zone;
   /** Delete an Administrator */
   deleteAdministrator: DeletionResponse;
+  /** Delete multiple Administrators */
+  deleteAdministrators: Array<DeletionResponse>;
   /** Delete an Asset */
   deleteAsset: DeletionResponse;
   /** Delete multiple Assets */
   deleteAssets: DeletionResponse;
   /** Delete a Channel */
   deleteChannel: DeletionResponse;
+  /** Delete multiple Channels */
+  deleteChannels: Array<DeletionResponse>;
   /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse;
   /** Delete multiple Collections and all of their descendants */
   deleteCollections: Array<DeletionResponse>;
+  /** Delete multiple Countries */
+  deleteCountries: Array<DeletionResponse>;
   /** Delete a Country */
   deleteCountry: DeletionResponse;
   /** Delete a Customer */
@@ -2611,6 +2617,8 @@ export type Mutation = {
   /** Delete a CustomerGroup */
   deleteCustomerGroup: DeletionResponse;
   deleteCustomerNote: DeletionResponse;
+  /** Deletes Customers */
+  deleteCustomers: Array<DeletionResponse>;
   /** Deletes a draft Order */
   deleteDraftOrder: DeletionResponse;
   /** Delete an existing Facet */
@@ -2622,6 +2630,8 @@ export type Mutation = {
   deleteOrderNote: DeletionResponse;
   /** Delete a PaymentMethod */
   deletePaymentMethod: DeletionResponse;
+  /** Delete multiple PaymentMethods */
+  deletePaymentMethods: Array<DeletionResponse>;
   /** Delete a Product */
   deleteProduct: DeletionResponse;
   /** Delete a ProductOption */
@@ -2633,21 +2643,32 @@ export type Mutation = {
   /** Delete multiple Products */
   deleteProducts: Array<DeletionResponse>;
   deletePromotion: DeletionResponse;
+  deletePromotions: Array<DeletionResponse>;
   /** Delete a Province */
   deleteProvince: DeletionResponse;
   /** Delete an existing Role */
   deleteRole: DeletionResponse;
+  /** Delete multiple Roles */
+  deleteRoles: Array<DeletionResponse>;
   /** Delete a Seller */
   deleteSeller: DeletionResponse;
+  /** Delete multiple Sellers */
+  deleteSellers: Array<DeletionResponse>;
   /** Delete a ShippingMethod */
   deleteShippingMethod: DeletionResponse;
+  /** Delete multiple ShippingMethods */
+  deleteShippingMethods: Array<DeletionResponse>;
   deleteStockLocation: DeletionResponse;
   /** Delete an existing Tag */
   deleteTag: DeletionResponse;
+  /** Deletes multiple TaxCategories */
+  deleteTaxCategories: Array<DeletionResponse>;
   /** Deletes a TaxCategory */
   deleteTaxCategory: DeletionResponse;
   /** Delete a TaxRate */
   deleteTaxRate: DeletionResponse;
+  /** Delete multiple TaxRates */
+  deleteTaxRates: Array<DeletionResponse>;
   /** Delete a Zone */
   deleteZone: DeletionResponse;
   flushBufferedJobs: Success;
@@ -3016,6 +3037,11 @@ export type MutationDeleteAdministratorArgs = {
 };
 
 
+export type MutationDeleteAdministratorsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteAssetArgs = {
   input: DeleteAssetInput;
 };
@@ -3031,12 +3057,22 @@ export type MutationDeleteChannelArgs = {
 };
 
 
+export type MutationDeleteChannelsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteCollectionArgs = {
   id: Scalars['ID'];
 };
 
 
 export type MutationDeleteCollectionsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteCountriesArgs = {
   ids: Array<Scalars['ID']>;
 };
 
@@ -3063,6 +3099,11 @@ export type MutationDeleteCustomerGroupArgs = {
 
 export type MutationDeleteCustomerNoteArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCustomersArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -3100,6 +3141,12 @@ export type MutationDeletePaymentMethodArgs = {
 };
 
 
+export type MutationDeletePaymentMethodsArgs = {
+  force?: InputMaybe<Scalars['Boolean']>;
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteProductArgs = {
   id: Scalars['ID'];
 };
@@ -3130,6 +3177,11 @@ export type MutationDeletePromotionArgs = {
 };
 
 
+export type MutationDeletePromotionsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteProvinceArgs = {
   id: Scalars['ID'];
 };
@@ -3140,13 +3192,28 @@ export type MutationDeleteRoleArgs = {
 };
 
 
+export type MutationDeleteRolesArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteSellerArgs = {
   id: Scalars['ID'];
 };
 
 
+export type MutationDeleteSellersArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteShippingMethodArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteShippingMethodsArgs = {
+  ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
@@ -3160,6 +3227,11 @@ export type MutationDeleteTagArgs = {
 };
 
 
+export type MutationDeleteTaxCategoriesArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteTaxCategoryArgs = {
   id: Scalars['ID'];
 };
@@ -3167,6 +3239,11 @@ export type MutationDeleteTaxCategoryArgs = {
 
 export type MutationDeleteTaxRateArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteTaxRatesArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -6317,6 +6394,13 @@ export type DeleteAdministratorMutationVariables = Exact<{
 
 export type DeleteAdministratorMutation = { deleteAdministrator: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
 
+export type DeleteAdministratorsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteAdministratorsMutation = { deleteAdministrators: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
+
 export type GetRolesQueryVariables = Exact<{
   options?: InputMaybe<RoleListOptions>;
 }>;
@@ -6351,6 +6435,13 @@ export type DeleteRoleMutationVariables = Exact<{
 
 
 export type DeleteRoleMutation = { deleteRole: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeleteRolesMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteRolesMutation = { deleteRoles: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type AssignRoleToAdministratorMutationVariables = Exact<{
   administratorId: Scalars['ID'];
@@ -6603,6 +6694,13 @@ export type DeleteCustomerMutationVariables = Exact<{
 
 
 export type DeleteCustomerMutation = { deleteCustomer: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeleteCustomersMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteCustomersMutation = { deleteCustomers: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type CreateCustomerAddressMutationVariables = Exact<{
   customerId: Scalars['ID'];
@@ -7383,6 +7481,13 @@ export type DeletePromotionMutationVariables = Exact<{
 
 export type DeletePromotionMutation = { deletePromotion: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
 
+export type DeletePromotionsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeletePromotionsMutation = { deletePromotions: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
+
 export type CountryFragment = { __typename?: 'Country', id: string, createdAt: any, updatedAt: any, code: string, name: string, enabled: boolean, translations: Array<{ __typename?: 'RegionTranslation', id: string, languageCode: LanguageCode, name: string }> };
 
 export type GetCountryListQueryVariables = Exact<{
@@ -7424,6 +7529,13 @@ export type DeleteCountryMutationVariables = Exact<{
 
 
 export type DeleteCountryMutation = { deleteCountry: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeleteCountriesMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteCountriesMutation = { deleteCountries: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type ZoneFragment = { __typename?: 'Zone', id: string, createdAt: any, updatedAt: any, name: string, members: Array<{ __typename?: 'Country', id: string, createdAt: any, updatedAt: any, code: string, name: string, enabled: boolean, translations: Array<{ __typename?: 'RegionTranslation', id: string, languageCode: LanguageCode, name: string }> } | { __typename?: 'Province' }> };
 
@@ -7513,6 +7625,13 @@ export type DeleteTaxCategoryMutationVariables = Exact<{
 
 export type DeleteTaxCategoryMutation = { deleteTaxCategory: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
 
+export type DeleteTaxCategoriesMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteTaxCategoriesMutation = { deleteTaxCategories: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
+
 export type TaxRateFragment = { __typename?: 'TaxRate', id: string, createdAt: any, updatedAt: any, name: string, enabled: boolean, value: number, category: { __typename?: 'TaxCategory', id: string, name: string }, zone: { __typename?: 'Zone', id: string, name: string }, customerGroup?: { __typename?: 'CustomerGroup', id: string, name: string } | null };
 
 export type GetTaxRateListQueryVariables = Exact<{
@@ -7556,6 +7675,13 @@ export type DeleteTaxRateMutationVariables = Exact<{
 
 
 export type DeleteTaxRateMutation = { deleteTaxRate: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeleteTaxRatesMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteTaxRatesMutation = { deleteTaxRates: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type ChannelFragment = { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller?: { __typename?: 'Seller', id: string, name: string } | null };
 
@@ -7610,6 +7736,13 @@ export type DeleteSellerMutationVariables = Exact<{
 
 export type DeleteSellerMutation = { deleteSeller: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
 
+export type DeleteSellersMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteSellersMutation = { deleteSellers: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
+
 export type GetActiveChannelQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -7635,6 +7768,13 @@ export type DeleteChannelMutationVariables = Exact<{
 
 
 export type DeleteChannelMutation = { deleteChannel: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeleteChannelsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteChannelsMutation = { deleteChannels: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type PaymentMethodFragment = { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, translations: Array<{ __typename?: 'PaymentMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }>, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } };
 
@@ -7678,6 +7818,14 @@ export type DeletePaymentMethodMutationVariables = Exact<{
 
 
 export type DeletePaymentMethodMutation = { deletePaymentMethod: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeletePaymentMethodsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+  force?: InputMaybe<Scalars['Boolean']>;
+}>;
+
+
+export type DeletePaymentMethodsMutation = { deletePaymentMethods: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type GlobalSettingsFragment = { __typename?: 'GlobalSettings', id: string, availableLanguages: Array<LanguageCode>, trackInventory: boolean, outOfStockThreshold: number, serverConfig: { __typename?: 'ServerConfig', permissions: Array<{ __typename?: 'PermissionDefinition', name: string, description: string, assignable: boolean }>, orderProcess: Array<{ __typename?: 'OrderProcessState', name: string }> } };
 
@@ -7937,6 +8085,13 @@ export type DeleteShippingMethodMutationVariables = Exact<{
 
 
 export type DeleteShippingMethodMutation = { deleteShippingMethod: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeleteShippingMethodsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteShippingMethodsMutation = { deleteShippingMethods: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type TestShippingMethodQueryVariables = Exact<{
   input: TestShippingMethodInput;

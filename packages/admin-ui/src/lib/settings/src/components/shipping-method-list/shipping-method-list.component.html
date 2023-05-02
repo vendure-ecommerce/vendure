@@ -13,13 +13,14 @@
 </vdr-page-header>
 <vdr-page-body>
     <vdr-language-selector
+        class="mx-4 my-2"
         [availableLanguageCodes]="availableLanguages$ | async"
         [currentLanguageCode]="contentLanguage$ | async"
         (languageCodeChange)="setLanguage($event)"
     ></vdr-language-selector>
     <vdr-data-table-2
         class="mt-2"
-        id="shippingMethod-list"
+        id="shipping-method-list"
         [items]="items$ | async"
         [itemsPerPage]="itemsPerPage$ | async"
         [totalItems]="totalItems$ | async"
@@ -29,7 +30,7 @@
         (itemsPerPageChange)="setItemsPerPage($event)"
     >
         <vdr-bulk-action-menu
-            locationId="shippingMethod-list"
+            locationId="shipping-method-list"
             [hostComponent]="this"
             [selectionManager]="selectionManager"
         />

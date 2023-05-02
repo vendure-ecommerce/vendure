@@ -34,6 +34,14 @@ export class MainNavComponent extends BaseNavComponent implements OnInit {
         }
     }
 
+    setExpanded(section: NavMenuSection, expanded: boolean) {
+        if (expanded) {
+            this.expandedSections.push(section.id);
+        } else {
+            this.expandedSections = this.expandedSections.filter(id => id !== section.id);
+        }
+    }
+
     getStyleForSection(section: NavMenuSection) {
         if (section.collapsible) {
             if (this.expandedSections.includes(section.id)) {

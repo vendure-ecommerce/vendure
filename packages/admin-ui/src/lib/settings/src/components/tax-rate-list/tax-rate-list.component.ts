@@ -5,16 +5,11 @@ import {
     BaseListComponent,
     DataService,
     DataTableService,
-    DeletionResult,
     GetTaxRateListQuery,
     ItemOf,
-    ModalService,
-    NotificationService,
     TaxRateFilterParameter,
     TaxRateSortParameter,
 } from '@vendure/admin-ui/core';
-import { EMPTY } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-tax-rate-list',
@@ -59,11 +54,9 @@ export class TaxRateListComponent
         .connectToRoute(this.route);
 
     constructor(
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-        private dataService: DataService,
         router: Router,
         route: ActivatedRoute,
+        private dataService: DataService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
@@ -89,40 +82,5 @@ export class TaxRateListComponent
     ngOnInit() {
         super.ngOnInit();
         super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    deleteTaxRate(taxRate: ItemOf<GetTaxRateListQuery, 'taxRates'>) {
-        return this.modalService
-            .dialog({
-                title: _('settings.confirm-delete-tax-rate'),
-                body: taxRate.name,
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(res => (res ? this.dataService.settings.deleteTaxRate(taxRate.id) : EMPTY)),
-                map(res => res.deleteTaxRate),
-            )
-            .subscribe(
-                res => {
-                    if (res.result === DeletionResult.DELETED) {
-                        this.notificationService.success(_('common.notify-delete-success'), {
-                            entity: 'TaxRate',
-                        });
-                        this.refresh();
-                    } else {
-                        this.notificationService.error(res.message || _('common.notify-delete-error'), {
-                            entity: 'TaxRate',
-                        });
-                    }
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'TaxRate',
-                    });
-                },
-            );
     }
 }

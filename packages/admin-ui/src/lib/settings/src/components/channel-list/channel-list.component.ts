@@ -6,15 +6,13 @@ import {
     ChannelFilterParameter,
     ChannelSortParameter,
     DataService,
+    DataTableService,
     GetChannelsQuery,
     ItemOf,
     ModalService,
     NotificationService,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { EMPTY } from 'rxjs';
-import { mergeMap, switchMap } from 'rxjs/operators';
-import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 @Component({
     selector: 'vdr-channel-list',
@@ -87,35 +85,5 @@ export class ChannelListComponent
 
     isDefaultChannel(channelCode: string): boolean {
         return channelCode === DEFAULT_CHANNEL_CODE;
-    }
-
-    deleteChannel(id: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-channel'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(response => (response ? this.dataService.settings.deleteChannel(id) : EMPTY)),
-                mergeMap(() => this.dataService.auth.currentUser().single$),
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                mergeMap(data => this.dataService.client.updateUserChannels(data.me!.channels)),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Channel',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Channel',
-                    });
-                },
-            );
     }
 }

@@ -5,7 +5,9 @@ import {
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,
     DELETE_ADMINISTRATOR,
+    DELETE_ADMINISTRATORS,
     DELETE_ROLE,
+    DELETE_ROLES,
     GET_ACTIVE_ADMINISTRATOR,
     GET_ADMINISTRATOR,
     GET_ADMINISTRATORS,
@@ -74,6 +76,13 @@ export class AdministratorDataService {
         >(DELETE_ADMINISTRATOR, { id });
     }
 
+    deleteAdministrators(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteAdministratorsMutation,
+            Codegen.DeleteAdministratorsMutationVariables
+        >(DELETE_ADMINISTRATORS, { ids });
+    }
+
     getRoles(take: number = 10, skip: number = 0) {
         return this.baseDataService.query<Codegen.GetRolesQuery, Codegen.GetRolesQueryVariables>(GET_ROLES, {
             options: {
@@ -112,6 +121,15 @@ export class AdministratorDataService {
             DELETE_ROLE,
             {
                 id,
+            },
+        );
+    }
+
+    deleteRoles(ids: string[]) {
+        return this.baseDataService.mutate<Codegen.DeleteRolesMutation, Codegen.DeleteRolesMutationVariables>(
+            DELETE_ROLES,
+            {
+                ids,
             },
         );
     }

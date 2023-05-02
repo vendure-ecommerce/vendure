@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "添加管理员",
-    "search-administrator": "通过名字/姓氏/电子邮件搜索"
+    "create-new-administrator": "添加管理员"
   },
   "asset": {
     "add-asset": "添加资源",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "删除这个系列会删除它所包含的子系列，确认删除码?",
     "confirm-delete-country": "确认删除国家?",
     "confirm-delete-customer": "确认删除客户吗?",
-    "confirm-delete-facet": "确认删除特征?",
     "confirm-delete-facet-value": "确认删除特征值?",
     "confirm-delete-product": "确认删除商品?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "无特征图片",
     "no-selection": "尚未选择",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "游客",
+    "id": "",
     "image": "",
     "items-per-page-option": "每页显示 { count } 条",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "语言",
     "launch-extension": "启动扩展插件",
+    "list-items-and-n-more": "",
     "live-update": "在线更新",
     "locale": "",
     "log-out": "退出",
@@ -313,6 +314,7 @@
     "update": "确认修改",
     "updated-at": "修改时间",
     "username": "用户名",
+    "value": "",
     "view-next-month": "查看下个月",
     "view-previous-month": "查看下个月",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "默认销售区域",
     "eligible": "符合条件",
     "email-address": "电子邮件",
+    "emailAddress": "",
     "filter-by-member-name": "",
     "first-name": "名",
     "fulfillment-handler": "",
@@ -686,7 +689,6 @@
     "remove-from-zone": "",
     "roles": "角色列表",
     "search-by-product-name-or-sku": "输入要搜索的产品名称或库存编码",
-    "search-country-by-name": "输入要搜索的国家名称",
     "shipping-calculator": "配送费计算",
     "shipping-eligibility-checker": "使用此配送方式的合格条件",
     "shipping-method": "配送方式",

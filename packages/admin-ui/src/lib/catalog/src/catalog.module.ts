@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BulkActionRegistryService, SharedModule } from '@vendure/admin-ui/core';
+import { deleteCustomersBulkAction } from '../../customer/src/components/customer-list/customer-list-bulk-actions';
 
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';

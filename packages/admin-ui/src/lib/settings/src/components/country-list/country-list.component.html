@@ -13,6 +13,7 @@
 </vdr-page-header>
 <vdr-page-body>
     <vdr-language-selector
+        class="mx-4 my-2"
         [availableLanguageCodes]="availableLanguages$ | async"
         [currentLanguageCode]="contentLanguage$ | async"
         (languageCodeChange)="setLanguage($event)"

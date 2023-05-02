@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { BulkActionRegistryService, SharedModule } from '@vendure/admin-ui/core';
 
 import { AddCustomerToGroupDialogComponent } from './components/add-customer-to-group-dialog/add-customer-to-group-dialog.component';
 import { AddressCardComponent } from './components/address-card/address-card.component';
@@ -11,6 +11,7 @@ import { CustomerGroupListComponent } from './components/customer-group-list/cus
 import { CustomerGroupMemberListComponent } from './components/customer-group-member-list/customer-group-member-list.component';
 import { CustomerHistoryEntryHostComponent } from './components/customer-history/customer-history-entry-host.component';
 import { CustomerHistoryComponent } from './components/customer-history/customer-history.component';
+import { deleteCustomersBulkAction } from './components/customer-list/customer-list-bulk-actions';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerStatusLabelComponent } from './components/customer-status-label/customer-status-label.component';
 import { SelectCustomerGroupDialogComponent } from './components/select-customer-group-dialog/select-customer-group-dialog.component';
@@ -34,4 +35,8 @@ import { customerRoutes } from './customer.routes';
     ],
     exports: [AddressCardComponent],
 })
-export class CustomerModule {}
+export class CustomerModule {
+    constructor(private bulkActionRegistryService: BulkActionRegistryService) {
+        bulkActionRegistryService.registerBulkAction(deleteCustomersBulkAction);
+    }
+}

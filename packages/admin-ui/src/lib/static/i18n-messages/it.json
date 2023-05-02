@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Crea nuovo amministratore",
-    "search-administrator": "Cerca per nome / cognome / email"
+    "create-new-administrator": "Crea nuovo amministratore"
   },
   "asset": {
     "add-asset": "Aggiungi immagine",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Eliminare questa collezione rimuoverà anche le sue sotto-collezioni",
     "confirm-delete-country": "Eliminare la Nazione?",
     "confirm-delete-customer": "Eliminare questo Cliente?",
-    "confirm-delete-facet": "Eliminare l'attributo?",
     "confirm-delete-facet-value": "Eliminare il valore attributo?",
     "confirm-delete-product": "Eliminare il prodotto?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Nessun media in evidenza",
     "no-selection": "Nessuna selezione",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "",
     "guest": "Ospite",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } per pagina",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Lingua",
     "launch-extension": "Lancia estensione",
+    "list-items-and-n-more": "",
     "live-update": "Aggiornamenti live",
     "locale": "",
     "log-out": "Log out",
@@ -313,6 +314,7 @@
     "update": "Aggiorna",
     "updated-at": "Aggiornare a",
     "username": "Username",
+    "value": "",
     "view-next-month": "Vedi mese successivo",
     "view-previous-month": "Vedi mese precedente",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Zona di tassazione predefinita",
     "eligible": "Compatibile",
     "email-address": "Indirizzo email",
+    "emailAddress": "",
     "filter-by-member-name": "Filtra per nazione",
     "first-name": "Nome",
     "fulfillment-handler": "Gestore spedizione",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Rimuovi dalla zona",
     "roles": "Ruoli",
     "search-by-product-name-or-sku": "Cerca per prodotto o codice SKU",
-    "search-country-by-name": "Cerca nazioni per nome",
     "shipping-calculator": "Calcolo prezzo spedizioni",
     "shipping-eligibility-checker": "Criterio di selezione metodi di spedizione",
     "shipping-method": "Metodo di spedizione",

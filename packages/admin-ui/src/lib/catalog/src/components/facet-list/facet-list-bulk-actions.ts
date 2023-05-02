@@ -1,9 +1,9 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BulkAction,
+    createBulkDeleteAction,
     currentChannelIsNotDefault,
     DataService,
-    DeletionResult,
     getChannelCodeFromUserStatus,
     GetFacetListQuery,
     isMultiChannel,
@@ -20,89 +20,16 @@ import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assi
 
 import { FacetListComponent } from './facet-list.component';
 
-export const deleteFacetsBulkAction: BulkAction<ItemOf<GetFacetListQuery, 'facets'>, FacetListComponent> = {
+export const deleteFacetsBulkAction = createBulkDeleteAction<ItemOf<GetFacetListQuery, 'facets'>>({
     location: 'facet-list',
-    label: _('common.delete'),
-    icon: 'trash',
-    iconClass: 'is-danger',
     requiresPermission: userPermissions =>
         userPermissions.includes(Permission.DeleteFacet) ||
         userPermissions.includes(Permission.DeleteCatalog),
-    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
-        const modalService = injector.get(ModalService);
-        const dataService = injector.get(DataService);
-        const notificationService = injector.get(NotificationService);
-
-        function showModalAndDelete(facetIds: string[], message?: string) {
-            return modalService
-                .dialog({
-                    title: _('catalog.confirm-bulk-delete-facets'),
-                    translationVars: {
-                        count: selection.length,
-                    },
-                    size: message ? 'lg' : 'md',
-                    body: message,
-                    buttons: [
-                        { type: 'secondary', label: _('common.cancel') },
-                        {
-                            type: 'danger',
-                            label: message ? _('common.force-delete') : _('common.delete'),
-                            returnValue: true,
-                        },
-                    ],
-                })
-                .pipe(
-                    switchMap(res =>
-                        res
-                            ? dataService.facet
-                                  .deleteFacets(facetIds, !!message)
-                                  .pipe(map(res2 => res2.deleteFacets))
-                            : of([]),
-                    ),
-                );
-        }
-
-        showModalAndDelete(unique(selection.map(f => f.id)))
-            .pipe(
-                switchMap(result => {
-                    let deletedCount = 0;
-                    const errors: string[] = [];
-                    const errorIds: string[] = [];
-                    let i = 0;
-                    for (const item of result) {
-                        if (item.result === DeletionResult.DELETED) {
-                            deletedCount++;
-                        } else if (item.message) {
-                            errors.push(item.message);
-                            errorIds.push(selection[i]?.id);
-                        }
-                        i++;
-                    }
-                    if (0 < errorIds.length) {
-                        return showModalAndDelete(errorIds, errors.join('\n')).pipe(
-                            map(result2 => {
-                                const deletedCount2 = result2.filter(
-                                    r => r.result === DeletionResult.DELETED,
-                                ).length;
-                                return deletedCount + deletedCount2;
-                            }),
-                        );
-                    } else {
-                        return of(deletedCount);
-                    }
-                }),
-            )
-            .subscribe(deletedCount => {
-                if (deletedCount) {
-                    hostComponent.refresh();
-                    clearSelection();
-                    notificationService.success(_('catalog.notify-bulk-delete-facets-success'), {
-                        count: deletedCount,
-                    });
-                }
-            });
-    },
-};
+    getItemName: item => item.name,
+    shouldRetryItem: (response, item) => !!response.message,
+    bulkDelete: (dataService, ids, retrying) =>
+        dataService.facet.deleteFacets(ids, retrying).pipe(map(res => res.deleteFacets)),
+});
 
 export const assignFacetsToChannelBulkAction: BulkAction<
     ItemOf<GetFacetListQuery, 'facets'>,

@@ -1,7 +1,6 @@
 {
   "admin": {
-    "create-new-administrator": "Adicionar novo administrador",
-    "search-administrator": "Procurar por primeiro nome / último nome / e-mail"
+    "create-new-administrator": "Adicionar novo administrador"
   },
   "asset": {
     "add-asset": "Adicionar imagens",
@@ -83,7 +82,6 @@
     "confirm-delete-collection-and-children-body": "Ao eliminar a categoria, todas as categorias filho serão eliminadas",
     "confirm-delete-country": "Eliminar país?",
     "confirm-delete-customer": "Eliminar cliente?",
-    "confirm-delete-facet": "Eliminar etiqueta?",
     "confirm-delete-facet-value": "Eliminar valor da etiqueta?",
     "confirm-delete-product": "Eliminar produto?",
     "confirm-delete-product-option": "",
@@ -127,6 +125,7 @@
     "no-featured-asset": "Nenhum recurso em destaque",
     "no-selection": "Nenhuma imagem seleccionada",
     "notify-bulk-delete-collections-success": "",
+    "notify-bulk-delete-customers-success": "",
     "notify-bulk-delete-facets-success": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-collections-from-channel-success": "",
@@ -240,12 +239,14 @@
     "force-remove": "",
     "general": "Geral",
     "guest": "Convidado",
+    "id": "",
     "image": "",
     "items-per-page-option": "{ count } por página",
     "items-selected-count": "",
     "keep-editing": "",
     "language": "Idioma",
     "launch-extension": "Iniciar extensão",
+    "list-items-and-n-more": "",
     "live-update": "Actualização em tempo real",
     "locale": "Localidade",
     "log-out": "Sair",
@@ -313,6 +314,7 @@
     "update": "Actualização",
     "updated-at": "Actualizado em",
     "username": "Nome do utilizador",
+    "value": "",
     "view-next-month": "Visualizar próximo mês",
     "view-previous-month": "Visualizar mês anterior",
     "visibility": "",
@@ -668,6 +670,7 @@
     "default-tax-zone": "Região de imposto padrão",
     "eligible": "Elegível",
     "email-address": "E-mail",
+    "emailAddress": "",
     "filter-by-member-name": "Filtrar por país",
     "first-name": "Nome",
     "fulfillment-handler": "Manipulador para a execução de envio",
@@ -686,7 +689,6 @@
     "remove-from-zone": "Eliminar da região",
     "roles": "Regras",
     "search-by-product-name-or-sku": "Pesquisa por nome do produto ou SKU",
-    "search-country-by-name": "Pesquisa países por nome",
     "shipping-calculator": "Calculadora de envio",
     "shipping-eligibility-checker": "Validação da elegibilidade do método",
     "shipping-method": "Método de envio",
