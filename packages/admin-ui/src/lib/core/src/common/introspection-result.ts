@@ -188,6 +188,7 @@ const result: PossibleTypesResultData = {
             'TagList',
             'TaxCategoryList',
             'TaxRateList',
+            'ZoneList',
         ],
         RefundOrderResult: [
             'AlreadyRefundedError',

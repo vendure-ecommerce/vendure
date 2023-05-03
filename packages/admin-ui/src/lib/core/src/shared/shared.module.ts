@@ -42,6 +42,9 @@ import { CustomerLabelComponent } from './components/customer-label/customer-lab
 import { DataTable2ColumnComponent } from './components/data-table-2/data-table-column.component';
 import { DataTable2SearchComponent } from './components/data-table-2/data-table-search.component';
 import { DataTable2Component } from './components/data-table-2/data-table2.component';
+import { DataTableColumnPickerComponent } from './components/data-table-column-picker/data-table-column-picker.component';
+import { DataTableFilterLabelComponent } from './components/data-table-filter-label/data-table-filter-label.component';
+import { DataTableFiltersComponent } from './components/data-table-filters/data-table-filters.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { DatetimePickerComponent } from './components/datetime-picker/datetime-picker.component';
@@ -72,13 +75,17 @@ import { DialogTitleDirective } from './components/modal-dialog/dialog-title.dir
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
+import { PageBodyComponent } from './components/page-body/page-body.component';
+import { PageHeaderDescriptionComponent } from './components/page-header-description/page-header-description.component';
+import { PageHeaderTabsComponent } from './components/page-header-tabs/page-header-tabs.component';
+import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { PageTitleComponent } from './components/page-title/page-title.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
+import { ProductVariantSelectorComponent } from './components/product-variant-selector/product-variant-selector.component';
 import { RadioCardFieldsetComponent } from './components/radio-card/radio-card-fieldset.component';
 import { RadioCardComponent } from './components/radio-card/radio-card.component';
-import { ProductVariantSelectorComponent } from './components/product-variant-selector/product-variant-selector.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
 import { ContextMenuComponent } from './components/rich-text-editor/prosemirror/context-menu/context-menu.component';
@@ -86,6 +93,11 @@ import { RawHtmlDialogComponent } from './components/rich-text-editor/raw-html-d
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
+import {
+    SplitViewLeftDirective,
+    SplitViewRightDirective,
+} from './components/split-view/split-view.directive';
+import { SplitViewComponent } from './components/split-view/split-view.component';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { TabbedCustomFieldsComponent } from './components/tabbed-custom-fields/tabbed-custom-fields.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
@@ -144,13 +156,6 @@ import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
-import { PageHeaderComponent } from './components/page-header/page-header.component';
-import { PageHeaderDescriptionComponent } from './components/page-header-description/page-header-description.component';
-import { PageHeaderTabsComponent } from './components/page-header-tabs/page-header-tabs.component';
-import { PageBodyComponent } from './components/page-body/page-body.component';
-import { DataTableFiltersComponent } from './components/data-table-filters/data-table-filters.component';
-import { DataTableFilterLabelComponent } from './components/data-table-filter-label/data-table-filter-label.component';
-import { DataTableColumnPickerComponent } from './components/data-table-column-picker/data-table-column-picker.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -270,6 +275,9 @@ const DECLARATIONS = [
     DataTableFilterLabelComponent,
     DataTableColumnPickerComponent,
     DataTable2SearchComponent,
+    SplitViewComponent,
+    SplitViewLeftDirective,
+    SplitViewRightDirective,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

@@ -70,7 +70,7 @@
                 trackBy: trackByFn
             "
         >
-            <td *ngIf="selectionManager" class="selection-col">
+            <td *ngIf="selectionManager" class="selection-col" [class.active]="activeIndex === i">
                 <input
                     type="checkbox"
                     clrCheckbox
@@ -78,7 +78,7 @@
                     (click)="onRowClick(item, $event)"
                 />
             </td>
-            <td *ngFor="let column of visibleColumns">
+            <td *ngFor="let column of visibleColumns" [class.active]="activeIndex === i">
                 <div class="cell-content" [ngClass]="column.align">
                     <ng-container
                         *ngTemplateOutlet="column.template; context: { item: item, index: i }"

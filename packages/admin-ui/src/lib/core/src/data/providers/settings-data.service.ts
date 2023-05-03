@@ -47,7 +47,7 @@ import {
     GET_TAX_RATE,
     GET_TAX_RATE_LIST,
     GET_TAX_RATE_LIST_SIMPLE,
-    GET_ZONES,
+    GET_ZONE_LIST,
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
@@ -63,6 +63,8 @@ import {
     DELETE_TAX_CATEGORIES,
     DELETE_TAX_RATES,
     DELETE_COUNTRIES,
+    GET_ZONE,
+    DELETE_ZONES,
 } from '../definitions/settings-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -132,12 +134,15 @@ export class SettingsDataService {
         });
     }
 
-    getZones() {
-        return this.baseDataService.query<Codegen.GetZonesQuery>(GET_ZONES);
+    getZones(options?: Codegen.ZoneListOptions) {
+        return this.baseDataService.query<Codegen.GetZoneListQuery, Codegen.GetZoneListQueryVariables>(
+            GET_ZONE_LIST,
+            { options },
+        );
     }
 
     getZone(id: string) {
-        return this.baseDataService.query<Codegen.GetZoneQuery, Codegen.GetZoneQueryVariables>(GET_ZONES, {
+        return this.baseDataService.query<Codegen.GetZoneQuery, Codegen.GetZoneQueryVariables>(GET_ZONE, {
             id,
         });
     }
@@ -165,6 +170,15 @@ export class SettingsDataService {
             DELETE_ZONE,
             {
                 id,
+            },
+        );
+    }
+
+    deleteZones(ids: string[]) {
+        return this.baseDataService.mutate<Codegen.DeleteZonesMutation, Codegen.DeleteZonesMutationVariables>(
+            DELETE_ZONES,
+            {
+                ids,
             },
         );
     }

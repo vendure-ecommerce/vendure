@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { DataService, Dialog, GetCountryListQuery, GetZonesQuery, ItemOf } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetCountryListQuery, GetZoneListQuery, ItemOf } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ import { filter, map } from 'rxjs/operators';
 export class AddCountryToZoneDialogComponent implements Dialog<string[]>, OnInit {
     resolveWith: (result?: string[]) => void;
     zoneName: string;
-    currentMembers: GetZonesQuery['zones'][number]['members'] = [];
+    currentMembers: ItemOf<GetZoneListQuery, 'zones'>['members'] = [];
     availableCountries$: Observable<Array<ItemOf<GetCountryListQuery, 'countries'>>>;
     selectedMemberIds: string[] = [];
 

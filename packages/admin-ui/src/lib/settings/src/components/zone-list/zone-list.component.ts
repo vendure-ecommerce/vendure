@@ -2,15 +2,20 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    BaseListComponent,
     DataService,
-    DeletionResult,
-    GetZonesQuery,
+    DataTableService,
+    GetZoneListQuery,
+    ItemOf,
     LanguageCode,
+    LogicalOperator,
     ModalService,
     NotificationService,
     ServerConfigService,
+    ZoneFilterParameter,
+    ZoneSortParameter,
 } from '@vendure/admin-ui/core';
-import { combineLatest, EMPTY, Observable, of } from 'rxjs';
+import { combineLatest, EMPTY, Observable } from 'rxjs';
 import { distinctUntilChanged, map, mapTo, switchMap, tap } from 'rxjs/operators';
 
 import { AddCountryToZoneDialogComponent } from '../add-country-to-zone-dialog/add-country-to-zone-dialog.component';
@@ -22,43 +27,94 @@ import { ZoneDetailDialogComponent } from '../zone-detail-dialog/zone-detail-dia
     styleUrls: ['./zone-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZoneListComponent implements OnInit {
-    activeZone$: Observable<GetZonesQuery['zones'][number] | undefined>;
-    zones$: Observable<GetZonesQuery['zones']>;
-    members$: Observable<GetZonesQuery['zones'][number]['members']>;
+export class ZoneListComponent
+    extends BaseListComponent<GetZoneListQuery, ItemOf<GetZoneListQuery, 'zones'>>
+    implements OnInit
+{
+    activeZone$: Observable<ItemOf<GetZoneListQuery, 'zones'> | undefined>;
+    activeIndex$: Observable<number>;
+    members$: Observable<ItemOf<GetZoneListQuery, 'zones'>['members']>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     selectedMemberIds: string[] = [];
 
+    readonly filters = this.dataTableService
+        .createFilterCollection<ZoneFilterParameter>()
+        .addDateFilters()
+        .addFilter({
+            name: 'name',
+            type: { kind: 'text' },
+            label: _('common.name'),
+            filterField: 'name',
+        })
+        .connectToRoute(this.route);
+
+    readonly sorts = this.dataTableService
+        .createSortCollection<ZoneSortParameter>()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .connectToRoute(this.route);
+
     constructor(
+        route: ActivatedRoute,
+        router: Router,
         private dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
-        private route: ActivatedRoute,
-        private router: Router,
         private serverConfigService: ServerConfigService,
-    ) {}
+        private dataTableService: DataTableService,
+    ) {
+        super(router, route);
+        super.setQueryFn(
+            (...args: any[]) => this.dataService.settings.getZones(...args).refetchOnChannelChange(),
+            data => data.zones,
+            (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    filterOperator: this.searchTermControl.value ? LogicalOperator.OR : LogicalOperator.AND,
+                    sort: this.sorts.createSortInput(),
+                },
+            }),
+        );
+    }
 
     ngOnInit(): void {
-        const zonesQueryRef = this.dataService.settings.getZones().ref;
-        this.zones$ = zonesQueryRef.valueChanges.pipe(map(data => data.data.zones));
+        super.ngOnInit();
         const activeZoneId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
             tap(() => (this.selectedMemberIds = [])),
         );
-        this.activeZone$ = combineLatest(this.zones$, activeZoneId$).pipe(
+        this.activeZone$ = combineLatest(this.items$, activeZoneId$).pipe(
             map(([zones, activeZoneId]) => {
                 if (activeZoneId) {
                     return zones.find(z => z.id === activeZoneId);
                 }
             }),
         );
+        this.activeIndex$ = combineLatest(this.items$, activeZoneId$).pipe(
+            map(([zones, activeZoneId]) => {
+                if (activeZoneId) {
+                    return zones.findIndex(g => g.id === activeZoneId);
+                } else {
+                    return -1;
+                }
+            }),
+        );
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
         this.contentLanguage$ = this.dataService.client
             .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage)
-            .pipe(tap(() => zonesQueryRef.refetch()));
+            .mapStream(({ uiState }) => uiState.contentLanguage);
+        super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     setLanguage(code: LanguageCode) {
@@ -72,14 +128,13 @@ export class ZoneListComponent implements OnInit {
                 switchMap(result =>
                     result ? this.dataService.settings.createZone({ ...result, memberIds: [] }) : EMPTY,
                 ),
-                // refresh list
-                switchMap(() => this.dataService.settings.getZones().single$),
             )
             .subscribe(
                 () => {
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'Zone',
                     });
+                    this.refresh();
                 },
                 err => {
                     this.notificationService.error(_('common.notify-create-error'), {
@@ -89,48 +144,7 @@ export class ZoneListComponent implements OnInit {
             );
     }
 
-    delete(zoneId: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.confirm-delete-zone'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(response => (response ? this.dataService.settings.deleteZone(zoneId) : EMPTY)),
-
-                switchMap(result => {
-                    if (result.deleteZone.result === DeletionResult.DELETED) {
-                        // refresh list
-                        return this.dataService.settings
-                            .getZones()
-                            .mapSingle(() => ({ errorMessage: false }));
-                    } else {
-                        return of({ errorMessage: result.deleteZone.message });
-                    }
-                }),
-            )
-            .subscribe(
-                result => {
-                    if (typeof result.errorMessage === 'string') {
-                        this.notificationService.error(result.errorMessage);
-                    } else {
-                        this.notificationService.success(_('common.notify-delete-success'), {
-                            entity: 'Zone',
-                        });
-                    }
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Zone',
-                    });
-                },
-            );
-    }
-
-    update(zone: GetZonesQuery['zones'][number]) {
+    update(zone: ItemOf<GetZoneListQuery, 'zones'>) {
         this.modalService
             .fromComponent(ZoneDetailDialogComponent, { locals: { zone } })
             .pipe(
@@ -158,7 +172,7 @@ export class ZoneListComponent implements OnInit {
         this.router.navigate(['./', params], { relativeTo: this.route, queryParamsHandling: 'preserve' });
     }
 
-    addToZone(zone: GetZonesQuery['zones'][number]) {
+    addToZone(zone: ItemOf<GetZoneListQuery, 'zones'>) {
         this.modalService
             .fromComponent(AddCountryToZoneDialogComponent, {
                 locals: {
@@ -187,16 +201,5 @@ export class ZoneListComponent implements OnInit {
                     this.notificationService.error(err);
                 },
             });
-    }
-
-    removeFromZone(zone: GetZonesQuery['zones'][number], memberIds: string[]) {
-        this.dataService.settings.removeMembersFromZone(zone.id, memberIds).subscribe({
-            complete: () => {
-                this.notificationService.success(_(`settings.remove-countries-from-zone-success`), {
-                    countryCount: memberIds.length,
-                    zoneName: zone.name,
-                });
-            },
-        });
     }
 }

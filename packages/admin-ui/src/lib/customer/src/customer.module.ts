@@ -7,7 +7,9 @@ import { AddressCardComponent } from './components/address-card/address-card.com
 import { AddressDetailDialogComponent } from './components/address-detail-dialog/address-detail-dialog.component';
 import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';
 import { CustomerGroupDetailDialogComponent } from './components/customer-group-detail-dialog/customer-group-detail-dialog.component';
+import { deleteCustomerGroupsBulkAction } from './components/customer-group-list/customer-group-list-bulk-actions';
 import { CustomerGroupListComponent } from './components/customer-group-list/customer-group-list.component';
+import { removeCustomerGroupMembersBulkAction } from './components/customer-group-member-list/customer-group-member-list-bulk-actions';
 import { CustomerGroupMemberListComponent } from './components/customer-group-member-list/customer-group-member-list.component';
 import { CustomerHistoryEntryHostComponent } from './components/customer-history/customer-history-entry-host.component';
 import { CustomerHistoryComponent } from './components/customer-history/customer-history.component';
@@ -38,5 +40,7 @@ import { customerRoutes } from './customer.routes';
 export class CustomerModule {
     constructor(private bulkActionRegistryService: BulkActionRegistryService) {
         bulkActionRegistryService.registerBulkAction(deleteCustomersBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteCustomerGroupsBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeCustomerGroupMembersBulkAction);
     }
 }

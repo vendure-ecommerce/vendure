@@ -37,8 +37,10 @@ import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.c
 import { TestAddressFormComponent } from './components/test-address-form/test-address-form.component';
 import { TestOrderBuilderComponent } from './components/test-order-builder/test-order-builder.component';
 import { ZoneDetailDialogComponent } from './components/zone-detail-dialog/zone-detail-dialog.component';
+import { deleteZonesBulkAction } from './components/zone-list/zone-list-bulk-actions';
 import { ZoneListComponent } from './components/zone-list/zone-list.component';
 import { ZoneMemberControlsDirective } from './components/zone-member-list/zone-member-controls.directive';
+import { removeZoneMembersBulkAction } from './components/zone-member-list/zone-member-list-bulk-actions';
 import { ZoneMemberListHeaderDirective } from './components/zone-member-list/zone-member-list-header.directive';
 import { ZoneMemberListComponent } from './components/zone-member-list/zone-member-list.component';
 import { settingsRoutes } from './settings.routes';
@@ -89,5 +91,7 @@ export class SettingsModule {
         bulkActionRegistryService.registerBulkAction(deleteTaxCategoriesBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteTaxRatesBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCountriesBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteZonesBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeZoneMembersBulkAction);
     }
 }

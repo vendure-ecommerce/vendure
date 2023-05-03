@@ -1,6 +1,7 @@
 <vdr-dropdown *ngIf="actions$ | async as actions">
     <button
-        class="btn btn-sm btn-outline mr1"
+        *ngIf="actions.length"
+        class="btn btn-sm btn-outline mr-2"
         vdrDropdownTrigger
         [disabled]="!selectionManager.selection?.length"
         [class.hidden]="!selectionManager.selection?.length"
@@ -34,7 +35,7 @@
     </vdr-dropdown-menu>
 </vdr-dropdown>
 <button
-    class="button-small ml-2"
+    class="button-small"
     (click)="clearSelection()"
     [class.hidden]="!selectionManager.selection?.length"
 >

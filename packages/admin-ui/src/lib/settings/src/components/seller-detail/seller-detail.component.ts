@@ -8,7 +8,8 @@ import {
     CurrencyCode,
     CustomFieldConfig,
     DataService,
-    GetZonesQuery,
+    GetZoneListQuery,
+    ItemOf,
     LanguageCode,
     NotificationService,
     Permission,
@@ -27,7 +28,7 @@ import { mergeMap, take } from 'rxjs/operators';
 })
 export class SellerDetailComponent extends BaseDetailComponent<SellerFragment> implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
-    zones$: Observable<GetZonesQuery['zones']>;
+    zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
     detailForm: UntypedFormGroup;
     currencyCodes = Object.values(CurrencyCode);
     availableLanguageCodes$: Observable<LanguageCode[]>;

@@ -2616,6 +2616,8 @@ export type Mutation = {
   deleteCustomerAddress: Success;
   /** Delete a CustomerGroup */
   deleteCustomerGroup: DeletionResponse;
+  /** Delete multiple CustomerGroups */
+  deleteCustomerGroups: Array<DeletionResponse>;
   deleteCustomerNote: DeletionResponse;
   /** Deletes Customers */
   deleteCustomers: Array<DeletionResponse>;
@@ -2671,6 +2673,8 @@ export type Mutation = {
   deleteTaxRates: Array<DeletionResponse>;
   /** Delete a Zone */
   deleteZone: DeletionResponse;
+  /** Delete a Zone */
+  deleteZones: Array<DeletionResponse>;
   flushBufferedJobs: Success;
   importProducts?: Maybe<ImportInfo>;
   /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
@@ -3097,6 +3101,11 @@ export type MutationDeleteCustomerGroupArgs = {
 };
 
 
+export type MutationDeleteCustomerGroupsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteCustomerNoteArgs = {
   id: Scalars['ID'];
 };
@@ -3249,6 +3258,11 @@ export type MutationDeleteTaxRatesArgs = {
 
 export type MutationDeleteZoneArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteZonesArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -4867,7 +4881,7 @@ export type Query = {
   uiState: UiState;
   userStatus: UserStatus;
   zone?: Maybe<Zone>;
-  zones: Array<Zone>;
+  zones: ZoneList;
 };
 
 
@@ -5147,6 +5161,11 @@ export type QueryTestShippingMethodArgs = {
 
 export type QueryZoneArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryZonesArgs = {
+  options?: InputMaybe<ZoneListOptions>;
 };
 
 export type Refund = Node & {
@@ -6315,6 +6334,39 @@ export type Zone = Node & {
   updatedAt: Scalars['DateTime'];
 };
 
+export type ZoneFilterParameter = {
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ZoneList = PaginatedList & {
+  __typename?: 'ZoneList';
+  items: Array<Zone>;
+  totalItems: Scalars['Int'];
+};
+
+export type ZoneListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<ZoneFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<ZoneSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+export type ZoneSortParameter = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
 export type GetProductsWithFacetValuesByIdsQueryVariables = Exact<{
   ids: Array<Scalars['String']> | Scalars['String'];
 }>;
@@ -6744,6 +6796,13 @@ export type DeleteCustomerGroupMutationVariables = Exact<{
 
 
 export type DeleteCustomerGroupMutation = { deleteCustomerGroup: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type DeleteCustomerGroupsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteCustomerGroupsMutation = { deleteCustomerGroups: Array<{ __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null }> };
 
 export type GetCustomerGroupsQueryVariables = Exact<{
   options?: InputMaybe<CustomerGroupListOptions>;
@@ -7539,10 +7598,12 @@ export type DeleteCountriesMutation = { deleteCountries: Array<{ __typename?: 'D
 
 export type ZoneFragment = { __typename?: 'Zone', id: string, createdAt: any, updatedAt: any, name: string, members: Array<{ __typename?: 'Country', id: string, createdAt: any, updatedAt: any, code: string, name: string, enabled: boolean, translations: Array<{ __typename?: 'RegionTranslation', id: string, languageCode: LanguageCode, name: string }> } | { __typename?: 'Province' }> };
 
-export type GetZonesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetZoneListQueryVariables = Exact<{
+  options?: InputMaybe<ZoneListOptions>;
+}>;
 
 
-export type GetZonesQuery = { zones: Array<{ __typename?: 'Zone', id: string, createdAt: any, updatedAt: any, name: string, members: Array<{ __typename?: 'Country', createdAt: any, updatedAt: any, id: string, name: string, code: string, enabled: boolean, translations: Array<{ __typename?: 'RegionTranslation', id: string, languageCode: LanguageCode, name: string }> } | { __typename?: 'Province', createdAt: any, updatedAt: any, id: string, name: string, code: string, enabled: boolean }> }> };
+export type GetZoneListQuery = { zones: { __typename?: 'ZoneList', totalItems: number, items: Array<{ __typename?: 'Zone', id: string, createdAt: any, updatedAt: any, name: string, members: Array<{ __typename?: 'Country', createdAt: any, updatedAt: any, id: string, name: string, code: string, enabled: boolean, translations: Array<{ __typename?: 'RegionTranslation', id: string, languageCode: LanguageCode, name: string }> } | { __typename?: 'Province', createdAt: any, updatedAt: any, id: string, name: string, code: string, enabled: boolean }> }> } };
 
 export type GetZoneQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -7571,6 +7632,13 @@ export type DeleteZoneMutationVariables = Exact<{
 
 
 export type DeleteZoneMutation = { deleteZone: { __typename?: 'DeletionResponse', message?: string | null, result: DeletionResult } };
+
+export type DeleteZonesMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteZonesMutation = { deleteZones: Array<{ __typename?: 'DeletionResponse', message?: string | null, result: DeletionResult }> };
 
 export type AddMembersToZoneMutationVariables = Exact<{
   zoneId: Scalars['ID'];

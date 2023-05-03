@@ -107,18 +107,21 @@ export const ZONE_FRAGMENT = gql`
     ${COUNTRY_FRAGMENT}
 `;
 
-export const GET_ZONES = gql`
-    query GetZones {
-        zones {
-            ...Zone
-            members {
-                createdAt
-                updatedAt
-                id
-                name
-                code
-                enabled
+export const GET_ZONE_LIST = gql`
+    query GetZoneList($options: ZoneListOptions) {
+        zones(options: $options) {
+            items {
+                ...Zone
+                members {
+                    createdAt
+                    updatedAt
+                    id
+                    name
+                    code
+                    enabled
+                }
             }
+            totalItems
         }
     }
     ${ZONE_FRAGMENT}
@@ -154,6 +157,15 @@ export const UPDATE_ZONE = gql`
 export const DELETE_ZONE = gql`
     mutation DeleteZone($id: ID!) {
         deleteZone(id: $id) {
+            message
+            result
+        }
+    }
+`;
+
+export const DELETE_ZONES = gql`
+    mutation DeleteZones($ids: [ID!]!) {
+        deleteZones(ids: $ids) {
             message
             result
         }

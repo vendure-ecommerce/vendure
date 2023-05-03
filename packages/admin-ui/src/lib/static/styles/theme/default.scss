@@ -14,47 +14,6 @@
     --color-grey-800: #202223;
     --color-grey-900: #0f1011;
 
-    // Universal semantic colors
-    --color-component-bg-100: var(--color-grey-100);
-    --color-component-bg-200: var(--color-grey-200);
-    --color-component-bg-300: var(--color-grey-300);
-    --color-component-border-100: var(--color-grey-200);
-    --color-component-border-200: var(--color-grey-300);
-    --color-component-border-300: var(--color-grey-400);
-    --color-text-100: var(--clr-global-font-color);
-    --color-text-200: var(--clr-global-font-color-secondary);
-    --color-text-300: var(--color-grey-400);
-    --color-text-inverse: white;
-
-
-
-    // Component-specific colors
-    --color-top-bar-bg: white;
-
-    --color-icon-button: var(--color-grey-600);
-    --color-form-input-bg: white;
-    --color-timeline-thread: var(--color-primary-100);
-
-    --color-chip-warning-border: var(--color-warning-200);
-    --color-chip-warning-text: var(--color-warning-600);
-    --color-chip-warning-bg: var(--color-warning-100);
-    --color-chip-success-border: var(--color-success-200);
-    --color-chip-success-text: var(--color-success-600);
-    --color-chip-success-bg: var(--color-success-100);
-    --color-chip-error-border: var(--color-error-200);
-    --color-chip-error-text: var(--color-error-600);
-    --color-chip-error-bg: var(--color-error-100);
-
-    --color-json-editor-background-color: var(--color-grey-200);
-    --color-json-editor-text: var(--color-grey-600);
-    --color-json-editor-string: var(--color-secondary-600);
-    --color-json-editor-number: var(--color-primary-600);
-    --color-json-editor-boolean: var(--color-primary-600);
-    --color-json-editor-null: var(--color-grey-500);
-    --color-json-editor-key: var(--color-success-500);
-    --color-json-editor-error: var(--color-error-500);
-
-
     --color-white: #fff;
     --color-black: #000;
     --color-weight-100: hsl(0 0% 95%);
@@ -151,7 +110,6 @@
     --color-left-nav-text: var(--color-text);
     --color-left-nav-text-hover: var(--color-primary-700);
 
-    --color-table-alternate-row-bg: hsl(0 0% 98% / 1);
 
     // Layout
     --layout-content-max-width: 1200px;
@@ -181,4 +139,50 @@
 
     // spacing
     --space-unit: 8px;
+
+
+    // Universal semantic colors
+    --color-component-bg-100: var(--color-grey-100);
+    --color-component-bg-200: var(--color-grey-200);
+    --color-component-bg-300: var(--color-grey-300);
+    --color-component-border-100: var(--color-grey-200);
+    --color-component-border-200: var(--color-grey-300);
+    --color-component-border-300: var(--color-grey-400);
+    --color-text-100: var(--clr-global-font-color);
+    --color-text-200: var(--clr-global-font-color-secondary);
+    --color-text-300: var(--color-grey-400);
+    --color-text-inverse: white;
+
+    // Component-specific colors
+    --color-top-bar-bg: white;
+
+    --color-icon-button: var(--color-grey-600);
+    --color-form-input-bg: white;
+    --color-timeline-thread: var(--color-primary-100);
+
+    --color-chip-warning-border: var(--color-warning-200);
+    --color-chip-warning-text: var(--color-warning-600);
+    --color-chip-warning-bg: var(--color-warning-100);
+    --color-chip-success-border: var(--color-success-200);
+    --color-chip-success-text: var(--color-success-600);
+    --color-chip-success-bg: var(--color-success-100);
+    --color-chip-error-border: var(--color-error-200);
+    --color-chip-error-text: var(--color-error-600);
+    --color-chip-error-bg: var(--color-error-100);
+
+    --color-json-editor-background-color: var(--color-grey-200);
+    --color-json-editor-text: var(--color-grey-600);
+    --color-json-editor-string: var(--color-secondary-600);
+    --color-json-editor-number: var(--color-primary-600);
+    --color-json-editor-boolean: var(--color-primary-600);
+    --color-json-editor-null: var(--color-grey-500);
+    --color-json-editor-key: var(--color-success-500);
+    --color-json-editor-error: var(--color-error-500);
+
+    --color-table-alternate-row-bg: hsl(0 0% 98% / 1);
+    --color-table-row-hover-bg: var(--color-weight-100);
+    --color-table-row-active-bg: var(--color-primary-100);
+
+    --color-split-view-separator-border: var(--color-weight-150);
+    --color-split-view-separator-resize-border: var(--color-primary-400);
 }

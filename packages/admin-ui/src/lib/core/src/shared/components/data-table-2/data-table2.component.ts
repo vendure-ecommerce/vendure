@@ -99,6 +99,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     @Input() totalItems: number;
     @Input() emptyStateLabel: string;
     @Input() filters: DataTableFilterCollection;
+    @Input() activeIndex = -1;
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
 

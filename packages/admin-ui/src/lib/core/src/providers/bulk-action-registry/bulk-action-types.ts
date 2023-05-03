@@ -14,6 +14,9 @@ export type BulkActionLocationId =
     | 'facet-list'
     | 'collection-list'
     | 'customer-list'
+    | 'customer-group-list'
+    | 'customer-group-members-list'
+    | 'customer-group-members-picker-list'
     | 'promotion-list'
     | 'seller-list'
     | 'channel-list'
@@ -23,6 +26,8 @@ export type BulkActionLocationId =
     | 'payment-method-list'
     | 'tax-category-list'
     | 'tax-rate-list'
+    | 'zone-list'
+    | 'zone-members-list'
     | string;
 
 /**

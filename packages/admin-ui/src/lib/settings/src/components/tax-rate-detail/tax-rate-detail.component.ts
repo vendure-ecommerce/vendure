@@ -8,7 +8,8 @@ import {
     CustomerGroup,
     CustomFieldConfig,
     DataService,
-    GetZonesQuery,
+    GetZoneListQuery,
+    ItemOf,
     LanguageCode,
     NotificationService,
     Permission,
@@ -32,7 +33,7 @@ export class TaxRateDetailComponent
     implements OnInit, OnDestroy
 {
     taxCategories$: Observable<TaxCategoryFragment[]>;
-    zones$: Observable<GetZonesQuery['zones']>;
+    zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
     groups$: Observable<CustomerGroup[]>;
     detailForm: UntypedFormGroup;
     customFields: CustomFieldConfig[];
@@ -67,7 +68,7 @@ export class TaxRateDetailComponent
         this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
             .mapSingle(data => data.taxCategories.items);
-        this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
+        this.zones$ = this.dataService.settings.getZones({ take: 999 }).mapSingle(data => data.zones.items);
     }
 
     ngOnDestroy() {

@@ -96,13 +96,17 @@ tbody tr:nth-child(even) {
 }
 
 tbody tr:hover {
-    background-color: var(--color-weight-100);
+    background-color: var(--color-table-row-hover-bg);
 }
 
 .cell-link {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+td.active {
+    background-color: var(--color-table-row-active-bg);
 }
 
 .cell-content {

@@ -10,7 +10,8 @@ import {
     CustomFieldConfig,
     DataService,
     GetSellersQuery,
-    GetZonesQuery,
+    GetZoneListQuery,
+    ItemOf,
     LanguageCode,
     NotificationService,
     Permission,
@@ -32,7 +33,7 @@ export class ChannelDetailComponent
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];
-    zones$: Observable<GetZonesQuery['zones']>;
+    zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
     sellers$: Observable<GetSellersQuery['sellers']['items']>;
     detailForm: UntypedFormGroup;
     currencyCodes = Object.values(CurrencyCode);
@@ -67,7 +68,7 @@ export class ChannelDetailComponent
 
     ngOnInit() {
         this.init();
-        this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
+        this.zones$ = this.dataService.settings.getZones({ take: 999 }).mapSingle(data => data.zones.items);
         // TODO: make this lazy-loaded autocomplete
         this.sellers$ = this.dataService.settings.getSellerList().mapSingle(data => data.sellers.items);
         this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();

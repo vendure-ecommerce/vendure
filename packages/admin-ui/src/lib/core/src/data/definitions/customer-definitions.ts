@@ -195,6 +195,15 @@ export const DELETE_CUSTOMER_GROUP = gql`
     }
 `;
 
+export const DELETE_CUSTOMER_GROUPS = gql`
+    mutation DeleteCustomerGroups($ids: [ID!]!) {
+        deleteCustomerGroups(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_CUSTOMER_GROUPS = gql`
     query GetCustomerGroups($options: CustomerGroupListOptions) {
         customerGroups(options: $options) {

@@ -21,6 +21,7 @@ import {
     UPDATE_CUSTOMER_GROUP,
     UPDATE_CUSTOMER_NOTE,
     DELETE_CUSTOMERS,
+    DELETE_CUSTOMER_GROUPS,
 } from '../definitions/customer-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -146,6 +147,13 @@ export class CustomerDataService {
             Codegen.DeleteCustomerGroupMutation,
             Codegen.DeleteCustomerGroupMutationVariables
         >(DELETE_CUSTOMER_GROUP, { id });
+    }
+
+    deleteCustomerGroups(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomerGroupsMutation,
+            Codegen.DeleteCustomerGroupsMutationVariables
+        >(DELETE_CUSTOMER_GROUPS, { ids });
     }
 
     getCustomerGroupList(options?: Codegen.CustomerGroupListOptions) {
