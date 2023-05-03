@@ -57,7 +57,7 @@ export class OrderCalculator {
         // We reset the promotions array as all promotions
         // must be revalidated on any changes to an Order.
         order.promotions = [];
-        const zones = await this.zoneService.findAll(ctx);
+        const zones = await this.zoneService.getAllWithMembers(ctx);
         const activeTaxZone = await this.requestContextCache.get(ctx, 'activeTaxZone', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );

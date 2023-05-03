@@ -9,7 +9,9 @@ import {
     MutationUpdateZoneArgs,
     Permission,
     QueryZoneArgs,
+    QueryZonesArgs,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Zone } from '../../../entity/zone/zone.entity';
 import { ZoneService } from '../../../service/services/zone.service';
@@ -24,8 +26,8 @@ export class ZoneResolver {
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadZone)
-    zones(@Ctx() ctx: RequestContext): Promise<Zone[]> {
-        return this.zoneService.findAll(ctx);
+    zones(@Ctx() ctx: RequestContext, @Args() args: QueryZonesArgs): Promise<PaginatedList<Zone>> {
+        return this.zoneService.findAll(ctx, args.options || undefined);
     }
 
     @Query()

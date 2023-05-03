@@ -7,11 +7,12 @@ import {
     MutationRemoveMembersFromZoneArgs,
     UpdateZoneInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ListQueryOptions } from '../../common/index';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -22,6 +23,7 @@ import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ZoneEvent } from '../../event-bus/events/zone-event';
 import { ZoneMembersEvent } from '../../event-bus/events/zone-members-event';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -42,6 +44,7 @@ export class ZoneService {
         private configService: ConfigService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     /** @internal */
@@ -68,14 +71,21 @@ export class ZoneService {
         });
     }
 
-    async findAll(ctx: RequestContext): Promise<Zone[]> {
-        return this.zones.memoize([], [ctx], zones => {
-            return zones.map((zone, i) => {
-                const cloneZone = { ...zone };
-                cloneZone.members = zone.members.map(country => this.translator.translate(country, ctx));
-                return cloneZone;
+    async findAll(ctx: RequestContext, options?: ListQueryOptions<Zone>): Promise<PaginatedList<Zone>> {
+        return this.listQueryBuilder
+            .build(Zone, options, { relations: ['members'] })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                const translated = items.map((zone, i) => {
+                    const cloneZone = { ...zone };
+                    cloneZone.members = zone.members.map(country => this.translator.translate(country, ctx));
+                    return cloneZone;
+                });
+                return {
+                    items: translated,
+                    totalItems,
+                };
             });
-        });
     }
 
     findOne(ctx: RequestContext, zoneId: ID): Promise<Zone | undefined> {
@@ -91,6 +101,16 @@ export class ZoneService {
                     return zone;
                 }
             });
+    }
+
+    async getAllWithMembers(ctx: RequestContext): Promise<Zone[]> {
+        return this.zones.memoize([], [ctx], zones => {
+            return zones.map((zone, i) => {
+                const cloneZone = { ...zone };
+                cloneZone.members = zone.members.map(country => this.translator.translate(country, ctx));
+                return cloneZone;
+            });
+        });
     }
 
     async create(ctx: RequestContext, input: CreateZoneInput): Promise<Zone> {

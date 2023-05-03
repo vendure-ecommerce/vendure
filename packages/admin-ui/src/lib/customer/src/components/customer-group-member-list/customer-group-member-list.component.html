@@ -1,37 +1,52 @@
-<input
-    type="text"
-    name="searchTerm"
-    [formControl]="filterTermControl"
-    [placeholder]="'customer.search-customers-by-email' | translate"
-    class="search-input"
-/>
-
-<vdr-data-table
+<vdr-data-table-2
+    [id]="locationId"
     [items]="members"
     [itemsPerPage]="membersItemsPerPage$ | async"
     [totalItems]="totalItems"
     [currentPage]="membersCurrentPage$ | async"
     (pageChange)="setContentsPageNumber($event)"
     (itemsPerPageChange)="setContentsItemsPerPage($event)"
-    [allSelected]="areAllSelected()"
-    [isRowSelectedFn]="('UpdateCustomerGroup' | hasPermission) && isMemberSelected"
-    (rowSelectChange)="toggleSelectMember($event)"
-    (allSelectChange)="toggleSelectAll()"
 >
-    <vdr-dt-column [expand]="true">{{ 'customer.name' | translate }}</vdr-dt-column>
-    <vdr-dt-column [expand]="true">{{ 'customer.email-address' | translate }}</vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <ng-template let-customer="item">
-        <td class="left align-middle">
-            {{ customer.title }} {{ customer.firstName }} {{ customer.lastName }}
-        </td>
-        <td class="left align-middle">{{ customer.emailAddress }}</td>
-        <td class="right align-middle">
-            <vdr-table-row-action
-                iconShape="edit"
-                [label]="'common.edit' | translate"
-                [linkTo]="['/customer', 'customers', customer.id]"
-            ></vdr-table-row-action>
-        </td>
-    </ng-template>
-</vdr-data-table>
+    <vdr-bulk-action-menu
+        [locationId]="locationId"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    ></vdr-bulk-action-menu>
+    <vdr-dt2-search
+        [searchTermControl]="filterTermControl"
+        [searchTermPlaceholder]="'customer.search-customers-by-email' | translate"
+    ></vdr-dt2-search>
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-customerGroup="item">
+            {{ customerGroup.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+        <ng-template let-customer="item">
+            {{ customer.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.updated-at' | translate" [hiddenByDefault]="true">
+        <ng-template let-customer="item">
+            {{ customer.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'customer.name' | translate" [optional]="false">
+        <ng-template let-customer="item">
+            <a class="button-ghost" [routerLink]="['/customer/customers', customer.id]"
+                ><span> {{ customer.title }} {{ customer.firstName }} {{ customer.lastName }} </span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.status' | translate" [hiddenByDefault]="true">
+        <ng-template let-customer="item">
+            <vdr-customer-status-label [customer]="customer" />
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'customer.email-address' | translate">
+        <ng-template let-customer="item">
+            {{ customer.emailAddress }}
+        </ng-template>
+    </vdr-dt2-column>
+</vdr-data-table-2>

@@ -227,10 +227,13 @@ const DELETE_ZONE = gql`
 `;
 
 const GET_ZONE_LIST = gql`
-    query GetZones {
-        zones {
-            id
-            name
+    query GetZones($options: ZoneListOptions) {
+        zones(options: $options) {
+            items {
+                id
+                name
+            }
+            totalItems
         }
     }
 `;

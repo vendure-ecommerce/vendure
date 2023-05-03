@@ -4810,7 +4810,7 @@ export type Query = {
   testEligibleShippingMethods: Array<ShippingMethodQuote>;
   testShippingMethod: TestShippingMethodResult;
   zone?: Maybe<Zone>;
-  zones: Array<Zone>;
+  zones: ZoneList;
 };
 
 
@@ -5090,6 +5090,11 @@ export type QueryTestShippingMethodArgs = {
 
 export type QueryZoneArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryZonesArgs = {
+  options?: InputMaybe<ZoneListOptions>;
 };
 
 export type Refund = Node & {
@@ -6228,4 +6233,37 @@ export type Zone = Node & {
   members: Array<Region>;
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+};
+
+export type ZoneFilterParameter = {
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ZoneList = PaginatedList & {
+  __typename?: 'ZoneList';
+  items: Array<Zone>;
+  totalItems: Scalars['Int'];
+};
+
+export type ZoneListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<ZoneFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<ZoneSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+export type ZoneSortParameter = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };

@@ -232,7 +232,7 @@ export class Populator {
 
     private async populateCountries(ctx: RequestContext, countries: CountryDefinition[]): Promise<ZoneMap> {
         const zoneMap: ZoneMap = new Map();
-        const existingZones = await this.zoneService.findAll(ctx);
+        const existingZones = await this.zoneService.getAllWithMembers(ctx);
         for (const zone of existingZones) {
             zoneMap.set(zone.name, { entity: zone, members: zone.members.map(m => m.id) });
         }
