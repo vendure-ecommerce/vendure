@@ -1472,6 +1472,7 @@ export enum ErrorCode {
   PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
   REFUND_PAYMENT_ID_MISSING_ERROR = 'REFUND_PAYMENT_ID_MISSING_ERROR',
   MANUAL_PAYMENT_STATE_ERROR = 'MANUAL_PAYMENT_STATE_ERROR',
+  FULFILLMENT_NOT_IN_PENDING_ERROR = 'FULFILLMENT_NOT_IN_PENDING_ERROR',
   PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
   MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
   NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
@@ -1699,6 +1700,13 @@ export type FulfillmentLineSummary = {
   quantity: Scalars['Int'];
 };
 
+/** Returned when try to update a fulfillment which is NOT in PENDING state */
+export type FulfillmentNotInPendingError = ErrorResult & {
+  __typename?: 'FulfillmentNotInPendingError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
 /** Returned when there is an error in transitioning the Fulfillment state */
 export type FulfillmentStateTransitionError = ErrorResult & {
   __typename?: 'FulfillmentStateTransitionError';
@@ -1789,6 +1797,7 @@ export enum HistoryEntryType {
   ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
   ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
   ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
+  ORDER_FULFILLMENT_CODE_UPDATED = 'ORDER_FULFILLMENT_CODE_UPDATED',
   ORDER_CANCELLATION = 'ORDER_CANCELLATION',
   ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
   ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
@@ -2638,6 +2647,7 @@ export type Mutation = {
   updateOrderNote: HistoryEntry;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
+  updatePendingFulfillment: UpdatePendingFulfillmentResult;
   /** Update an existing Product */
   updateProduct: Product;
   /** Create a new ProductOption within a ProductOptionGroup */
@@ -3303,6 +3313,11 @@ export type MutationUpdateOrderNoteArgs = {
 
 export type MutationUpdatePaymentMethodArgs = {
   input: UpdatePaymentMethodInput;
+};
+
+
+export type MutationUpdatePendingFulfillmentArgs = {
+  input: UpdatePendingFulfillmentInput;
 };
 
 
@@ -5561,6 +5576,14 @@ export type UpdatePaymentMethodInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdatePendingFulfillmentInput = {
+  fulfillmentId: Scalars['ID'];
+  trackingCode?: Maybe<Scalars['String']>;
+  method?: Maybe<Scalars['String']>;
+};
+
+export type UpdatePendingFulfillmentResult = Fulfillment | FulfillmentNotInPendingError;
+
 export type UpdateProductInput = {
   id: Scalars['ID'];
   enabled?: Maybe<Scalars['Boolean']>;
@@ -7359,6 +7382,21 @@ export type SetDraftOrderShippingMethodMutation = { setDraftOrderShippingMethod:
   ) | (
     { __typename?: 'NoActiveOrderError' }
     & ErrorResult_NoActiveOrderError_Fragment
+  ) };
+
+export type UpdatePendingFulfillmentMutationVariables = Exact<{
+  fulfillmentId: Scalars['ID'];
+  method?: Maybe<Scalars['String']>;
+  trackingCode?: Maybe<Scalars['String']>;
+}>;
+
+
+export type UpdatePendingFulfillmentMutation = { updatePendingFulfillment: (
+    { __typename?: 'Fulfillment' }
+    & FulfillmentFragment
+  ) | (
+    { __typename?: 'FulfillmentNotInPendingError' }
+    & ErrorResult_FulfillmentNotInPendingError_Fragment
   ) };
 
 export type AssetFragment = (
@@ -9614,6 +9652,11 @@ type ErrorResult_FacetInUseError_Fragment = (
   & Pick<FacetInUseError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_FulfillmentNotInPendingError_Fragment = (
+  { __typename?: 'FulfillmentNotInPendingError' }
+  & Pick<FulfillmentNotInPendingError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_FulfillmentStateTransitionError_Fragment = (
   { __typename?: 'FulfillmentStateTransitionError' }
   & Pick<FulfillmentStateTransitionError, 'errorCode' | 'message'>
@@ -9764,7 +9807,7 @@ type ErrorResult_SettlePaymentError_Fragment = (
   & Pick<SettlePaymentError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentNotInPendingError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }
@@ -10702,6 +10745,12 @@ export namespace SetDraftOrderShippingMethod {
   export type Variables = SetDraftOrderShippingMethodMutationVariables;
   export type Mutation = SetDraftOrderShippingMethodMutation;
   export type SetDraftOrderShippingMethod = (NonNullable<SetDraftOrderShippingMethodMutation['setDraftOrderShippingMethod']>);
+}
+
+export namespace UpdatePendingFulfillment {
+  export type Variables = UpdatePendingFulfillmentMutationVariables;
+  export type Mutation = UpdatePendingFulfillmentMutation;
+  export type UpdatePendingFulfillment = (NonNullable<UpdatePendingFulfillmentMutation['updatePendingFulfillment']>);
 }
 
 export namespace Asset {

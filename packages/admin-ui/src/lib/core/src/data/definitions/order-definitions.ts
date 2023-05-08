@@ -622,3 +622,16 @@ export const SET_DRAFT_ORDER_SHIPPING_METHOD = gql`
     ${ORDER_DETAIL_FRAGMENT}
     ${ERROR_RESULT_FRAGMENT}
 `;
+
+export const UPDATE_PENDING_FULFILLMENT = gql`
+    mutation UpdatePendingFulfillment($fulfillmentId: ID!, $method: String, $trackingCode: String) {
+        updatePendingFulfillment(
+            input: { fulfillmentId: $fulfillmentId, method: $method, trackingCode: $trackingCode }
+        ) {
+            ...Fulfillment
+            ...ErrorResult
+        }
+    }
+    ${FULFILLMENT_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;

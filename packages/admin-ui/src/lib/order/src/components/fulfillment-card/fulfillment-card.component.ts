@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Fulfillment, OrderDetail } from '@vendure/admin-ui/core';
+import { DataService, Fulfillment, ModalService, OrderDetail } from '@vendure/admin-ui/core';
+import { of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+
+import { FulfillmentUpdateTrackingCodeComponent } from '../fulfillment-update-tracking-code-dialog/fulfillment-update-tracking-code-dialog.component';
 
 @Component({
     selector: 'vdr-fulfillment-card',
@@ -11,6 +15,8 @@ export class FulfillmentCardComponent {
     @Input() fulfillment: Fulfillment.Fragment | undefined;
     @Input() order: OrderDetail.Fragment;
     @Output() transitionState = new EventEmitter<string>();
+
+    constructor(private modalService: ModalService, private dataService: DataService) {}
 
     nextSuggestedState(): string | undefined {
         if (!this.fulfillment) {
@@ -35,5 +41,31 @@ export class FulfillmentCardComponent {
         }
         const suggested = this.nextSuggestedState();
         return this.fulfillment.nextStates.filter(s => s !== suggested);
+    }
+
+    updateTrackingCode() {
+        this.modalService
+            .fromComponent(FulfillmentUpdateTrackingCodeComponent, {
+                size: 'md',
+                locals: {
+                    fulfillment: this.fulfillment,
+                },
+            })
+            .pipe(
+                switchMap(input => {
+                    if (!this.fulfillment || !input) return of(undefined);
+
+                    return this.dataService.order
+                        .updatePendingFulfillment({
+                            fulfillmentId: this.fulfillment.id,
+                            method: input.method,
+                            trackingCode: input.trackingCode,
+                        })
+                        .pipe(map(data => data.updatePendingFulfillment));
+                }),
+            )
+            .subscribe(data => {
+                if (data) this.transitionState.next('Pending');
+            });
     }
 }

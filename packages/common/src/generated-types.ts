@@ -1464,6 +1464,7 @@ export enum ErrorCode {
   PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
   REFUND_PAYMENT_ID_MISSING_ERROR = 'REFUND_PAYMENT_ID_MISSING_ERROR',
   MANUAL_PAYMENT_STATE_ERROR = 'MANUAL_PAYMENT_STATE_ERROR',
+  FULFILLMENT_NOT_IN_PENDING_ERROR = 'FULFILLMENT_NOT_IN_PENDING_ERROR',
   PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
   MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
   NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
@@ -1691,6 +1692,13 @@ export type FulfillmentLineSummary = {
   quantity: Scalars['Int'];
 };
 
+/** Returned when try to update a fulfillment which is NOT in PENDING state */
+export type FulfillmentNotInPendingError = ErrorResult & {
+  __typename?: 'FulfillmentNotInPendingError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
 /** Returned when there is an error in transitioning the Fulfillment state */
 export type FulfillmentStateTransitionError = ErrorResult & {
   __typename?: 'FulfillmentStateTransitionError';
@@ -1781,6 +1789,7 @@ export enum HistoryEntryType {
   ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
   ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
   ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
+  ORDER_FULFILLMENT_CODE_UPDATED = 'ORDER_FULFILLMENT_CODE_UPDATED',
   ORDER_CANCELLATION = 'ORDER_CANCELLATION',
   ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
   ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
@@ -2500,6 +2509,7 @@ export type Mutation = {
   settlePayment: SettlePaymentResult;
   cancelPayment: CancelPaymentResult;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
+  updatePendingFulfillment: UpdatePendingFulfillmentResult;
   cancelOrder: CancelOrderResult;
   refundOrder: RefundOrderResult;
   settleRefund: SettleRefundResult;
@@ -2935,6 +2945,11 @@ export type MutationCancelPaymentArgs = {
 
 export type MutationAddFulfillmentToOrderArgs = {
   input: FulfillOrderInput;
+};
+
+
+export type MutationUpdatePendingFulfillmentArgs = {
+  input: UpdatePendingFulfillmentInput;
 };
 
 
@@ -5483,6 +5498,14 @@ export type UpdatePaymentMethodInput = {
   handler?: Maybe<ConfigurableOperationInput>;
   customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type UpdatePendingFulfillmentInput = {
+  fulfillmentId: Scalars['ID'];
+  trackingCode?: Maybe<Scalars['String']>;
+  method?: Maybe<Scalars['String']>;
+};
+
+export type UpdatePendingFulfillmentResult = Fulfillment | FulfillmentNotInPendingError;
 
 export type UpdateProductInput = {
   id: Scalars['ID'];

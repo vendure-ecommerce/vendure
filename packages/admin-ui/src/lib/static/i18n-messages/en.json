@@ -516,6 +516,7 @@
     "history-fulfillment-delivered": "Fulfillment delivered",
     "history-fulfillment-shipped": "Fulfillment shipped",
     "history-fulfillment-transition": "Fulfillment transitioned from {from} to {to}",
+    "history-fulfillment-updated": "Fulfillment updated",
     "history-items-cancelled": "{count} {count, plural, one {item} other {items}} cancelled",
     "history-order-cancelled": "Order cancelled",
     "history-order-created": "Order created",
@@ -620,7 +621,8 @@
     "transitioned-to-state-success": "Successfully transitioned to { state }",
     "unable-to-transition-to-state-try-another": "The order could not be transitioned back to the \"{state}\" state. Please select an alternative state.",
     "unfulfilled": "Unfulfilled",
-    "unit-price": "Unit price"
+    "unit-price": "Unit price",
+    "update-tracking-code": "Update tracking code"
   },
   "settings": {
     "add-countries-to-zone": "Add countries to { zoneName }",

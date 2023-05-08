@@ -8,6 +8,7 @@ export * from './components/fulfill-order-dialog/fulfill-order-dialog.component'
 export * from './components/fulfillment-card/fulfillment-card.component';
 export * from './components/fulfillment-detail/fulfillment-detail.component';
 export * from './components/fulfillment-state-label/fulfillment-state-label.component';
+export * from './components/fulfillment-update-tracking-code-dialog/fulfillment-update-tracking-code-dialog.component';
 export * from './components/line-fulfillment/line-fulfillment.component';
 export * from './components/line-refunds/line-refunds.component';
 export * from './components/modification-detail/modification-detail.component';
