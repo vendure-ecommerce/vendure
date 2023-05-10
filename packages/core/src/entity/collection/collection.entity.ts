@@ -1,5 +1,5 @@
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import {
     Column,
     Entity,
@@ -20,6 +20,7 @@ import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomCollectionFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 
 import { CollectionAsset } from './collection-asset.entity';
@@ -85,6 +86,9 @@ export class Collection
 
     @TreeParent()
     parent: Collection;
+
+    @EntityId({ nullable: true })
+    parentId: ID;
 
     @ManyToMany(type => Channel)
     @JoinTable()

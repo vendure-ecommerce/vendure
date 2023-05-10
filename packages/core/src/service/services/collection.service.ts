@@ -153,27 +153,31 @@ export class CollectionService implements OnModuleInit {
 
     async findAll(
         ctx: RequestContext,
-        options?: ListQueryOptions<Collection>,
+        options?: ListQueryOptions<Collection> & { topLevelOnly?: boolean },
         relations?: RelationPaths<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.listQueryBuilder
-            .build(Collection, options, {
-                relations: relations ?? ['featuredAsset', 'parent', 'channels'],
-                channelId: ctx.channelId,
-                where: { isRoot: false },
-                orderBy: { position: 'ASC' },
-                ctx,
-            })
-            .getManyAndCount()
-            .then(async ([collections, totalItems]) => {
-                const items = collections.map(collection =>
-                    this.translator.translate(collection, ctx, ['parent']),
-                );
-                return {
-                    items,
-                    totalItems,
-                };
-            });
+        const qb = this.listQueryBuilder.build(Collection, options, {
+            relations: relations ?? ['featuredAsset', 'parent', 'channels'],
+            channelId: ctx.channelId,
+            where: { isRoot: false },
+            orderBy: { position: 'ASC' },
+            ctx,
+        });
+
+        if (options?.topLevelOnly === true) {
+            qb.leftJoin('collection.parent', 'parent');
+            qb.andWhere('parent.isRoot = :isRoot', { isRoot: true });
+        }
+
+        return qb.getManyAndCount().then(async ([collections, totalItems]) => {
+            const items = collections.map(collection =>
+                this.translator.translate(collection, ctx, ['parent']),
+            );
+            return {
+                items,
+                totalItems,
+            };
+        });
     }
 
     async findOne(
