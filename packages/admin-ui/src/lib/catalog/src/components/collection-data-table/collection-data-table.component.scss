@@ -1,0 +1,24 @@
+.selection-col {
+    display: flex;
+}
+.drag-handle {
+    cursor: grab;
+}
+
+/* Animate items as they're being sorted. */
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Animate an item that has been dropped. */
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-preview {
+    opacity: 0;
+}
+
+.cdk-drag-placeholder {
+    background-color: var(--color-primary-100) !important;
+}

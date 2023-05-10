@@ -16,6 +16,7 @@ import { CollectionDetailComponent } from './components/collection-detail/collec
 import {
     assignCollectionsToChannelBulkAction,
     deleteCollectionsBulkAction,
+    moveCollectionsBulkAction,
     removeCollectionsFromChannelBulkAction,
 } from './components/collection-list/collection-list-bulk-actions';
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
@@ -45,6 +46,9 @@ import { ProductVariantsListComponent } from './components/product-variants-list
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
+import { CollectionDataTableComponent } from './components/collection-data-table/collection-data-table.component';
+import { CollectionBreadcrumbPipe } from './components/collection-list/collection-breadcrumb.pipe';
+import { MoveCollectionsDialogComponent } from './components/move-collections-dialog/move-collections-dialog.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -72,6 +76,9 @@ const CATALOG_COMPONENTS = [
     ProductOptionsEditorComponent,
     BulkAddFacetValuesDialogComponent,
     AssignToChannelDialogComponent,
+    CollectionDataTableComponent,
+    CollectionBreadcrumbPipe,
+    MoveCollectionsDialogComponent,
 ];
 
 @NgModule({
@@ -93,5 +100,6 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(assignCollectionsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
+        bulkActionRegistryService.registerBulkAction(moveCollectionsBulkAction);
     }
 }

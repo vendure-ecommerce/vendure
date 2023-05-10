@@ -27,15 +27,12 @@ export class CollectionDataService {
         return this.baseDataService.query<Codegen.GetCollectionFiltersQuery>(GET_COLLECTION_FILTERS);
     }
 
-    getCollections(take: number = 10, skip: number = 0) {
+    getCollections(options?: Codegen.CollectionListOptions) {
         return this.baseDataService.query<
             Codegen.GetCollectionListQuery,
             Codegen.GetCollectionListQueryVariables
         >(GET_COLLECTION_LIST, {
-            options: {
-                take,
-                skip,
-            },
+            options,
         });
     }
 

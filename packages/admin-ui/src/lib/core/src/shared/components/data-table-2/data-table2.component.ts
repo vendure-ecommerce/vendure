@@ -117,8 +117,8 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     private subscription: Subscription | undefined;
 
     constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private localStorageService: LocalStorageService,
+        protected changeDetectorRef: ChangeDetectorRef,
+        protected localStorageService: LocalStorageService,
     ) {}
 
     get selectionManager() {

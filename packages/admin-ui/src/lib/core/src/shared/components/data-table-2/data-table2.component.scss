@@ -83,6 +83,7 @@ table.no-select {
 th,
 td {
     padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 1);
+    font-size: var(--font-size-sm);
 }
 
 tr td:first-of-type,

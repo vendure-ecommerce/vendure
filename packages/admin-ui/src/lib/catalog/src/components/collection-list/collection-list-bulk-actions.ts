@@ -7,6 +7,7 @@ import {
     getChannelCodeFromUserStatus,
     isMultiChannel,
     ModalService,
+    MoveCollectionInput,
     NotificationService,
     Permission,
 } from '@vendure/admin-ui/core';
@@ -16,6 +17,7 @@ import { mapTo, switchMap } from 'rxjs/operators';
 
 import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
 import { CollectionPartial } from '../collection-tree/collection-tree.types';
+import { MoveCollectionsDialogComponent } from '../move-collections-dialog/move-collections-dialog.component';
 
 import { CollectionListComponent } from './collection-list.component';
 
@@ -70,6 +72,46 @@ export const deleteCollectionsBulkAction: BulkAction<CollectionPartial, Collecti
                 }
                 hostComponent.refresh();
                 clearSelection();
+            });
+    },
+};
+
+export const moveCollectionsBulkAction: BulkAction<CollectionPartial, CollectionListComponent> = {
+    location: 'collection-list',
+    label: _('catalog.move-collections'),
+    icon: 'layers',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateCatalog) ||
+        userPermissions.includes(Permission.UpdateProduct),
+    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        const dataService = injector.get(DataService);
+        const notificationService = injector.get(NotificationService);
+        modalService
+            .fromComponent(MoveCollectionsDialogComponent, {
+                size: 'xl',
+                closable: true,
+            })
+            .pipe(
+                switchMap(result => {
+                    if (result) {
+                        const inputs: MoveCollectionInput[] = selection.map(c => ({
+                            collectionId: c.id,
+                            parentId: result.id,
+                            index: 0,
+                        }));
+                        return dataService.collection.moveCollection(inputs);
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+            )
+            .subscribe(result => {
+                notificationService.success(_('catalog.move-collections-success'), {
+                    count: selection.length,
+                });
+                clearSelection();
+                hostComponent.refresh();
             });
     },
 };

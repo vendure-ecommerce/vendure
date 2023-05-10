@@ -62,14 +62,22 @@ export const GET_COLLECTION_LIST = gql`
         collections(options: $options) {
             items {
                 id
+                createdAt
+                updatedAt
                 name
                 slug
-                description
+                position
                 isPrivate
+                breadcrumbs {
+                    id
+                    name
+                    slug
+                }
                 featuredAsset {
                     ...Asset
                 }
-                parent {
+                parentId
+                children {
                     id
                 }
             }

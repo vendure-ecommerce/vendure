@@ -110,7 +110,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
     private mappingFn: MappingFn<ItemType, ResultType>;
     private onPageChangeFn: OnPageChangeFn<VariableType> = (skip, take) =>
         ({ options: { skip, take } } as any);
-    private refresh$ = new BehaviorSubject<undefined>(undefined);
+    protected refresh$ = new BehaviorSubject<undefined>(undefined);
     private defaults: { take: number; skip: number } = { take: 10, skip: 0 };
 
     constructor(protected router: Router, protected route: ActivatedRoute) {}
