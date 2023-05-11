@@ -4,23 +4,23 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
+    GetProductListQuery,
+    GetProductListQueryVariables,
     ItemOf,
     JobQueueService,
     JobState,
     LanguageCode,
-    LogicalOperator,
     ModalService,
     NotificationService,
-    OrderFilterParameter,
+    ProductFilterParameter,
     ProductSearchInputComponent,
-    SearchInput,
+    ProductSortParameter,
     SearchProductsQuery,
-    SearchProductsQueryVariables,
     SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
-import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { delay, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
 
 export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
@@ -31,7 +31,11 @@ export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
     styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent
-    extends BaseListComponent<SearchProductsQuery, SearchItem, SearchProductsQueryVariables>
+    extends BaseListComponent<
+        GetProductListQuery,
+        ItemOf<GetProductListQuery, 'products'>,
+        GetProductListQueryVariables
+    >
     implements OnInit, AfterViewInit
 {
     searchTerm = '';
@@ -48,14 +52,37 @@ export class ProductListComponent
             this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,
         additiveMode: true,
     });
-    readonly filters = this.dataTableFilterService
-        .createFilterCollection<SearchInput>()
+    readonly filters = this.dataTableService
+        .createFilterCollection<ProductFilterParameter>()
+        .addDateFilters()
         .addFilter({
-            name: 'collectionSlug',
+            name: 'id',
             type: { kind: 'text' },
-            label: _('catalog.collection-slug'),
-            filterField: 'collectionSlug',
+            label: _('common.id'),
+            filterField: 'id',
         })
+        .addFilter({
+            name: 'enabled',
+            type: { kind: 'boolean' },
+            label: _('common.enabled'),
+            filterField: 'enabled',
+        })
+        .addFilter({
+            name: 'slug',
+            type: { kind: 'text' },
+            label: _('common.slug'),
+            filterField: 'slug',
+        })
+        .connectToRoute(this.route);
+
+    readonly sorts = this.dataTableService
+        .createSortCollection<ProductSortParameter>()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'id' })
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .addSort({ name: 'slug' })
         .connectToRoute(this.route);
 
     @ViewChild('productSearchInputComponent', { static: true })
@@ -67,7 +94,7 @@ export class ProductListComponent
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
         private serverConfigService: ServerConfigService,
-        private dataTableFilterService: DataTableService,
+        private dataTableService: DataTableService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -92,19 +119,21 @@ export class ProductListComponent
             }
         });
         super.setQueryFn(
-            (...args: any[]) =>
-                this.dataService.product.searchProducts(this.searchTerm, ...args).refetchOnChannelChange(),
-            data => data.search,
+            (args: any) => this.dataService.product.getProducts(args).refetchOnChannelChange(),
+            data => data.products,
             // eslint-disable-next-line @typescript-eslint/no-shadow
             (skip, take) => ({
-                input: {
+                options: {
                     skip,
                     take,
-                    term: this.searchTerm,
-                    facetValueIds: this.facetValueIds,
-                    facetValueOperator: LogicalOperator.AND,
-                    groupByProduct: this.groupByProduct,
-                } as SearchInput,
+                    filter: {
+                        name: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    sort: this.sorts.createSortInput(),
+                },
             }),
         );
     }
@@ -112,25 +141,25 @@ export class ProductListComponent
     ngOnInit() {
         super.ngOnInit();
 
-        this.facetValues$ = this.result$.pipe(map(data => data.search.facetValues));
-
-        this.facetValues$
-            .pipe(take(1), delay(100), withLatestFrom(this.selectedFacetValueIds$))
-            .subscribe(([__, ids]) => {
-                this.productSearchInput.setFacetValues(ids);
-            });
+        // this.facetValues$ = this.result$.pipe(map(data => data.search.facetValues));
+        //
+        // this.facetValues$
+        //     .pipe(take(1), delay(100), withLatestFrom(this.selectedFacetValueIds$))
+        //     .subscribe(([__, ids]) => {
+        //         this.productSearchInput.setFacetValues(ids);
+        //     });
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
         this.contentLanguage$ = this.dataService.client
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage)
             .pipe(tap(() => this.refresh()));
 
-        this.filters.valueChanges.subscribe(() => this.refresh());
-
         this.dataService.product
             .getPendingSearchIndexUpdates()
             .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates)
             .subscribe(value => (this.pendingSearchIndexUpdates = value));
+
+        super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     ngAfterViewInit() {

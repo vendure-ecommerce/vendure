@@ -197,7 +197,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
                 this.changeDetectorRef.markForCheck();
             });
         }
-        this.showSearchFilterRow = dataTableConfig?.[this.id].showSearchFilterRow ?? false;
+        this.showSearchFilterRow = dataTableConfig?.[this.id]?.showSearchFilterRow ?? false;
     }
 
     toggleSearchFilterRow() {

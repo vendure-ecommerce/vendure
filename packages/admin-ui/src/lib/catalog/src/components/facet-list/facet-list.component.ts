@@ -46,6 +46,7 @@ export class FacetListComponent
     readonly sorts = this.dataTableService
         .createSortCollection<FacetSortParameter>()
         .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'id' })
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })

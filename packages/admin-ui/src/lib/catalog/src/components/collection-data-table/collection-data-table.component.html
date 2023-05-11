@@ -131,7 +131,7 @@
 
 <ng-template #collectionRowTmp let-item="item" let-i="i" let-depth="depth">
     <tr #collectionRow cdkDrag [cdkDragData]="{ depth: depth, collection: item }" cdkDragBoundary="tbody">
-        <td *ngIf="selectionManager" class="selection-col" [class.active]="activeIndex === i">
+        <td *ngIf="selectionManager" class="flex" [class.active]="activeIndex === i">
             <div class="drag-handle" cdkDragHandle [title]="'catalog.reorder-collection' | translate">
                 <clr-icon shape="drag-handle"></clr-icon>
             </div>

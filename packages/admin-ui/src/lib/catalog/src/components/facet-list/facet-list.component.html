@@ -38,6 +38,16 @@
                 [searchTermControl]="searchTermControl"
                 [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
             ></vdr-dt2-search>
+            <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+                <ng-template let-facet="item">
+                    {{ facet.id }}
+                </ng-template>
+            </vdr-dt2-column>
+            <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true" [sort]="sorts.get('createdAt')">
+                <ng-template let-facet="item">
+                    {{ facet.createdAt | localeDate : 'short' }}
+                </ng-template>
+            </vdr-dt2-column>
             <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true" [sort]="sorts.get('createdAt')">
                 <ng-template let-facet="item">
                     {{ facet.createdAt | localeDate : 'short' }}

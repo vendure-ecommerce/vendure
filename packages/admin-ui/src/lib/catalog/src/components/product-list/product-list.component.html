@@ -10,15 +10,22 @@
             {{ 'catalog.create-new-product' | translate }}
         </a>
     </vdr-page-title>
+       <!--<vdr-page-header-description>Description of the current page (if applicable)</vdr-page-header-description>-->
+         <vdr-page-header-tabs
+             [tabs]="[
+                 { id: 'products', label: 'catalog.products' | translate },
+                 { id: 'variants', label: 'catalog.product-variants' | translate }
+             ]"
+         ></vdr-page-header-tabs>
 </vdr-page-header>
 <vdr-page-body>
     <div class="flex wrap ml-4">
-        <clr-toggle-wrapper class="mt-2">
+        <!-- <clr-toggle-wrapper class="mt-2">
             <input type="checkbox" clrToggle [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
             <label>
                 {{ 'catalog.group-by-product' | translate }}
             </label>
-        </clr-toggle-wrapper>
+        </clr-toggle-wrapper>-->
         <vdr-language-selector
             [availableLanguageCodes]="availableLanguages$ | async"
             [currentLanguageCode]="contentLanguage$ | async"
@@ -41,7 +48,7 @@
             [hostComponent]="this"
             [selectionManager]="selectionManager"
         ></vdr-bulk-action-menu>
-        <ng-template #vdrDt2CustomSearch>
+        <!--<ng-template #vdrDt2CustomSearch>
             <div class="search-form">
                 <vdr-product-search-input
                     #productSearchInputComponent
@@ -93,17 +100,39 @@
                     </vdr-dropdown-menu>
                 </vdr-dropdown>
             </div>
-        </ng-template>
+        </ng-template>-->
+        <vdr-dt2-search
+            [searchTermControl]="searchTermControl"
+            [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+        />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+            <ng-template let-product="item">
+                {{ product.id }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column
+            [heading]="'common.created-at' | translate"
+            [hiddenByDefault]="true"
+            [sort]="sorts.get('createdAt')"
+        >
+            <ng-template let-product="item">
+                {{ product.createdAt | localeDate : 'short' }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column
+            [heading]="'common.updated-at' | translate"
+            [hiddenByDefault]="true"
+            [sort]="sorts.get('updatedAt')"
+        >
+            <ng-template let-product="item">
+                {{ product.updatedAt | localeDate : 'short' }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.image' | translate">
-            <ng-template let-result="item">
+            <ng-template let-product="item">
                 <div class="image-placeholder">
                     <img
-                        *ngIf="
-                            groupByProduct
-                                ? result.productAsset
-                                : result.productVariantAsset || result.productAsset as asset;
-                            else imagePlaceholder
-                        "
+                        *ngIf="product.featuredAsset as asset; else imagePlaceholder"
                         [src]="asset | assetPreview : 'tiny'"
                     />
                     <ng-template #imagePlaceholder>
@@ -114,33 +143,32 @@
                 </div>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false">
-            <ng-template let-result="item">
-                <a class="button-ghost" [routerLink]="['./', result.productId]"
-                    ><span>{{ groupByProduct ? result.productName : result.productVariantName }}</span
+        <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+            <ng-template let-product="item">
+                <a class="button-ghost" [routerLink]="['./', product.id]"
+                    ><span>{{ product.name }}</span
                     ><clr-icon shape="arrow right"
                 /></a>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'catalog.sku' | translate" [optional]="false">
-            <ng-template let-result="item">
-                {{ result.sku }}
+        <vdr-dt2-column [heading]="'common.slug' | translate" [sort]="sorts.get('slug')">
+            <ng-template let-product="item">
+                {{ product.slug }}
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.enabled' | translate">
-            <ng-template let-result="item">
-                <vdr-chip *ngIf="!result.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
+            <ng-template let-product="item">
+                <vdr-chip *ngIf="product.enabled" colorType="success">{{
+                    'common.enabled' | translate
+                }}</vdr-chip>
+                <vdr-chip *ngIf="!product.enabled" colorType="warning">{{
+                    'common.disabled' | translate
+                }}</vdr-chip>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'catalog.price' | translate">
-            <ng-template let-result="item">
-                <span *ngIf="result.priceWithTax.min"
-                    >{{ result.priceWithTax.min | localeCurrency : result.currencyCode }} -
-                    {{ result.priceWithTax.max | localeCurrency : result.currencyCode }}</span
-                >
-                <span *ngIf="result.priceWithTax.value">{{
-                    result.priceWithTax.value | localeCurrency : result.currencyCode
-                }}</span>
+        <vdr-dt2-column [heading]="'catalog.number-of-variants' | translate">
+            <ng-template let-product="item">
+                {{ 'catalog.variant-count' | translate : { count: product.variantList?.totalItems } }}
             </ng-template>
         </vdr-dt2-column>
     </vdr-data-table-2>

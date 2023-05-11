@@ -7322,7 +7322,7 @@ export type GetProductListQueryVariables = Exact<{
 }>;
 
 
-export type GetProductListQuery = { products: { __typename?: 'ProductList', totalItems: number, items: Array<{ __typename?: 'Product', id: string, createdAt: any, updatedAt: any, enabled: boolean, languageCode: LanguageCode, name: string, slug: string, featuredAsset?: { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, preview: string } | null }> } };
+export type GetProductListQuery = { products: { __typename?: 'ProductList', totalItems: number, items: Array<{ __typename?: 'Product', id: string, createdAt: any, updatedAt: any, enabled: boolean, languageCode: LanguageCode, name: string, slug: string, featuredAsset?: { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, preview: string, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null, variantList: { __typename?: 'ProductVariantList', totalItems: number } }> } };
 
 export type GetProductOptionGroupsQueryVariables = Exact<{
   filterTerm?: InputMaybe<Scalars['String']>;
@@ -7558,7 +7558,7 @@ export type GetCountryListQueryVariables = Exact<{
 }>;
 
 
-export type GetCountryListQuery = { countries: { __typename?: 'CountryList', totalItems: number, items: Array<{ __typename?: 'Country', id: string, code: string, name: string, enabled: boolean }> } };
+export type GetCountryListQuery = { countries: { __typename?: 'CountryList', totalItems: number, items: Array<{ __typename?: 'Country', id: string, createdAt: any, updatedAt: any, code: string, name: string, enabled: boolean }> } };
 
 export type GetAvailableCountriesQueryVariables = Exact<{ [key: string]: never; }>;
 

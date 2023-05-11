@@ -380,6 +380,13 @@ export const GET_PRODUCT_LIST = gql`
                     createdAt
                     updatedAt
                     preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
+                variantList {
+                    totalItems
                 }
             }
             totalItems
