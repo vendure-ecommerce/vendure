@@ -60,8 +60,8 @@
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.enabled' | translate">
             <ng-template let-promotion="item">
-                <div class="badge success" *ngIf="promotion.enabled">{{ 'common.enabled' }}</div>
-                <div class="badge warning" *ngIf="!promotion.enabled">{{ 'common.disabled' }}</div>
+                <vdr-chip  *ngIf="promotion.enabled" colorType="success">{{ 'common.enabled' | translate }}</vdr-chip>
+                <vdr-chip  *ngIf="!promotion.enabled" colorType="warning">{{ 'common.disabled' | translate }}</vdr-chip>
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'marketing.coupon-code' | translate" [sort]="sorts.get('couponCode')">

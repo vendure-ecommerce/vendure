@@ -80,8 +80,8 @@
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.enabled' | translate">
             <ng-template let-country="item">
-                <div class="badge success" *ngIf="country.enabled">{{ 'common.enabled' }}</div>
-                <div class="badge warning" *ngIf="!country.enabled">{{ 'common.disabled' }}</div>
+                <vdr-chip  *ngIf="country.enabled" colorType="success">{{ 'common.enabled' | translate }}</vdr-chip>
+                <vdr-chip  *ngIf="!country.enabled" colorType="warning">{{ 'common.disabled' | translate }}</vdr-chip>
             </ng-template>
         </vdr-dt2-column>
     </vdr-data-table-2>

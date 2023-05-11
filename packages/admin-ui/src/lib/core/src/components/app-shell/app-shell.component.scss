@@ -15,9 +15,8 @@
     border-right: 1px solid var(--color-weight-150);
     //box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
     z-index: 1;
-    @media screen and (min-width: $breakpoint-medium) {
-        width: 300px;
-    }
+    width: var(--left-nav-width);
+    max-width: var(--left-nav-width);
 }
 
 .top-bar {

@@ -67,8 +67,8 @@
             </vdr-dt2-column>
             <vdr-dt2-column [heading]="'common.visibility' | translate">
                 <ng-template let-facet="item">
-                    <div class="badge warning" *ngIf="facet.isPrivate">{{ 'common.private' }}</div>
-                    <div class="badge success" *ngIf="!facet.isPrivate">{{ 'common.public' }}</div>
+                    <vdr-chip  *ngIf="facet.isPrivate" colorType="warning">{{ 'common.private' | translate }}</vdr-chip>
+                    <vdr-chip  *ngIf="!facet.isPrivate" colorType="success">{{ 'common.public' | translate }}</vdr-chip>
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column [heading]="'catalog.values' | translate">
@@ -81,7 +81,7 @@
                             [displayFacetName]="false"
                         ></vdr-facet-value-chip>
                         <button
-                            class="button-ghost"
+                            class="button-small"
                             *ngIf="facet.values.length > initialLimit"
                             (click)="toggleDisplayLimit(facet)"
                         >

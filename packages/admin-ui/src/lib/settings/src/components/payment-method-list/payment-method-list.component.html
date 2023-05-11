@@ -71,8 +71,8 @@
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.enabled' | translate">
             <ng-template let-paymentMethod="item">
-                <div class="badge success" *ngIf="paymentMethod.enabled">{{ 'common.enabled' }}</div>
-                <div class="badge warning" *ngIf="!paymentMethod.enabled">{{ 'common.disabled' }}</div>
+                <vdr-chip  *ngIf="paymentMethod.enabled" colorType="success">{{ 'common.enabled' | translate }}</vdr-chip>
+                <vdr-chip  *ngIf="!paymentMethod.enabled" colorType="warning">{{ 'common.disabled' | translate }}</vdr-chip>
             </ng-template>
         </vdr-dt2-column>
     </vdr-data-table-2>
