@@ -27,6 +27,8 @@ export const GET_COUNTRY_LIST = gql`
         countries(options: $options) {
             items {
                 id
+                createdAt
+                updatedAt
                 code
                 name
                 enabled

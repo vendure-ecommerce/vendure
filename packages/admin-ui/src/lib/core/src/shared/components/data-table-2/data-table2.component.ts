@@ -114,6 +114,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     // This is used to apply a `user-select: none` CSS rule to the table,
     // which allows shift-click multi-row selection
     disableSelect = false;
+    showSearchFilterRow = false;
     private subscription: Subscription | undefined;
 
     constructor(
@@ -174,7 +175,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         }
         const updateColumnVisibility = () => {
             if (!dataTableConfig[this.id]) {
-                dataTableConfig[this.id] = { visibility: [] };
+                dataTableConfig[this.id] = { visibility: [], showSearchFilterRow: false };
             }
             dataTableConfig[this.id].visibility = this.columns
                 .filter(c => (c.visible && c.hiddenByDefault) || (!c.visible && !c.hiddenByDefault))
@@ -196,6 +197,17 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
                 this.changeDetectorRef.markForCheck();
             });
         }
+        this.showSearchFilterRow = dataTableConfig?.[this.id].showSearchFilterRow ?? false;
+    }
+
+    toggleSearchFilterRow() {
+        this.showSearchFilterRow = !this.showSearchFilterRow;
+        const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
+        if (!dataTableConfig[this.id]) {
+            dataTableConfig[this.id] = { visibility: [], showSearchFilterRow: false };
+        }
+        dataTableConfig[this.id].showSearchFilterRow = this.showSearchFilterRow;
+        this.localStorageService.set('dataTableConfig', dataTableConfig);
     }
 
     trackByFn(index: number, item: any) {

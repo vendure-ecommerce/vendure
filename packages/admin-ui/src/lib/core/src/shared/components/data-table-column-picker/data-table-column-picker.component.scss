@@ -1,0 +1,7 @@
+button {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    &:hover, &:focus, &:active {
+        opacity: 1;
+    }
+}
