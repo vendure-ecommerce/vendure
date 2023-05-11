@@ -1,6 +1,7 @@
 <div class="table-wrapper">
     <div class="progress loop" [class.visible]="isLoading"></div>
     <vdr-data-table-2
+        id="collection-contents"
         [class.loading]="isLoading"
         [items]="contents$ | async"
         [itemsPerPage]="contentsItemsPerPage$ | async"

@@ -1,39 +1,40 @@
-<vdr-action-bar>
-    <vdr-ab-left [grow]="true">
-        <vdr-asset-search-input
-            class="pr4 mt-1"
-            [tags]="allTags$ | async"
-            (searchTermChange)="searchTerm$.next($event)"
-            (tagsChange)="filterByTags$.next($event)"
-        ></vdr-asset-search-input>
-    </vdr-ab-left>
-    <vdr-ab-right>
+<vdr-page-header>
+    <vdr-page-title>
         <vdr-action-bar-items locationId="asset-list"></vdr-action-bar-items>
         <vdr-asset-file-input
             (selectFiles)="filesSelected($event)"
             [uploading]="uploading"
             dropZoneTarget=".content-area"
         ></vdr-asset-file-input>
-    </vdr-ab-right>
-</vdr-action-bar>
+    </vdr-page-title>
+</vdr-page-header>
+<vdr-page-body>
+    <div class="ml-4">
+        <vdr-asset-search-input
+            class="my-2"
+            [tags]="allTags$ | async"
+            (searchTermChange)="searchTerm$.next($event)"
+            (tagsChange)="filterByTags$.next($event)"
+        ></vdr-asset-search-input>
+        <vdr-asset-gallery
+            [assets]="(items$ | async)! | paginate : (paginationConfig$ | async) || {}"
+            [multiSelect]="true"
+            [canDelete]="['DeleteCatalog', 'DeleteAsset'] | hasPermission"
+            (deleteAssets)="deleteAssets($event)"
+        ></vdr-asset-gallery>
 
-<vdr-asset-gallery
-    [assets]="(items$ | async)! | paginate: (paginationConfig$ | async) || {}"
-    [multiSelect]="true"
-    [canDelete]="['DeleteCatalog', 'DeleteAsset'] | hasPermission"
-    (deleteAssets)="deleteAssets($event)"
-></vdr-asset-gallery>
+        <div class="paging-controls">
+            <vdr-items-per-page-controls
+                [itemsPerPage]="itemsPerPage$ | async"
+                (itemsPerPageChange)="setItemsPerPage($event)"
+            ></vdr-items-per-page-controls>
 
-<div class="paging-controls">
-    <vdr-items-per-page-controls
-        [itemsPerPage]="itemsPerPage$ | async"
-        (itemsPerPageChange)="setItemsPerPage($event)"
-    ></vdr-items-per-page-controls>
-
-    <vdr-pagination-controls
-        [currentPage]="currentPage$ | async"
-        [itemsPerPage]="itemsPerPage$ | async"
-        [totalItems]="totalItems$ | async"
-        (pageChange)="setPageNumber($event)"
-    ></vdr-pagination-controls>
-</div>
+            <vdr-pagination-controls
+                [currentPage]="currentPage$ | async"
+                [itemsPerPage]="itemsPerPage$ | async"
+                [totalItems]="totalItems$ | async"
+                (pageChange)="setPageNumber($event)"
+            ></vdr-pagination-controls>
+        </div>
+    </div>
+</vdr-page-body>
