@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { BulkActionRegistryService, SharedModule } from '@vendure/admin-ui/core';
-import { deleteCustomersBulkAction } from '../../customer/src/components/customer-list/customer-list-bulk-actions';
+import { RouterModule, ROUTES } from '@angular/router';
+import { BulkActionRegistryService, SharedModule, PageService } from '@vendure/admin-ui/core';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
-import { catalogRoutes } from './catalog.routes';
+import { createRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
@@ -12,7 +12,9 @@ import { AssignProductsToChannelDialogComponent } from './components/assign-prod
 import { AssignToChannelDialogComponent } from './components/assign-to-channel-dialog/assign-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
+import { CollectionDataTableComponent } from './components/collection-data-table/collection-data-table.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
+import { CollectionBreadcrumbPipe } from './components/collection-list/collection-breadcrumb.pipe';
 import {
     assignCollectionsToChannelBulkAction,
     deleteCollectionsBulkAction,
@@ -31,6 +33,7 @@ import {
 } from './components/facet-list/facet-list-bulk-actions';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
+import { MoveCollectionsDialogComponent } from './components/move-collections-dialog/move-collections-dialog.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import {
@@ -41,14 +44,12 @@ import {
 } from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
+import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
-import { CollectionDataTableComponent } from './components/collection-data-table/collection-data-table.component';
-import { CollectionBreadcrumbPipe } from './components/collection-list/collection-breadcrumb.pipe';
-import { MoveCollectionsDialogComponent } from './components/move-collections-dialog/move-collections-dialog.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -79,15 +80,27 @@ const CATALOG_COMPONENTS = [
     CollectionDataTableComponent,
     CollectionBreadcrumbPipe,
     MoveCollectionsDialogComponent,
+    ProductVariantListComponent,
 ];
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(catalogRoutes)],
+    imports: [SharedModule, RouterModule.forChild([])],
     exports: [...CATALOG_COMPONENTS],
     declarations: [...CATALOG_COMPONENTS],
+    providers: [
+        {
+            provide: ROUTES,
+            useFactory: (pageService: PageService) => createRoutes(pageService),
+            multi: true,
+            deps: [PageService],
+        },
+    ],
 })
 export class CatalogModule {
-    constructor(private bulkActionRegistryService: BulkActionRegistryService) {
+    constructor(
+        private bulkActionRegistryService: BulkActionRegistryService,
+        private pageService: PageService,
+    ) {
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeProductsFromChannelBulkAction);
@@ -101,5 +114,18 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
         bulkActionRegistryService.registerBulkAction(moveCollectionsBulkAction);
+
+        pageService.registerPageTab({
+            location: 'product-list',
+            tab: _('catalog.products'),
+            route: '',
+            component: ProductListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'product-list',
+            tab: _('catalog.product-variants'),
+            route: 'variants',
+            component: ProductVariantListComponent,
+        });
     }
 }

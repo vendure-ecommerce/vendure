@@ -142,6 +142,7 @@
     "product-details": "Dettagli prodotto",
     "product-name": "Nome del Prodotto",
     "product-variants": "Varianti del Prodotto",
+    "products": "",
     "public": "Pubblico",
     "reindex-error": "Si è verificato un errore nella ricostruzione dell'indice di ricerca",
     "reindex-successful": "{count, plural, one {Indicizzata una variante prodotto} other {Indicizzate {count} varianti prodotto}} in {time}ms",

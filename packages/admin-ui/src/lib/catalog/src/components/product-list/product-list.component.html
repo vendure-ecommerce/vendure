@@ -1,54 +1,27 @@
-<vdr-page-header>
-    <vdr-page-title>
-        <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
-        <a
-            class="btn btn-primary"
-            [routerLink]="['./create']"
-            *vdrIfPermissions="['CreateCatalog', 'CreateProduct']"
-        >
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'catalog.create-new-product' | translate }}
-        </a>
-    </vdr-page-title>
-       <!--<vdr-page-header-description>Description of the current page (if applicable)</vdr-page-header-description>-->
-         <vdr-page-header-tabs
-             [tabs]="[
-                 { id: 'products', label: 'catalog.products' | translate },
-                 { id: 'variants', label: 'catalog.product-variants' | translate }
-             ]"
-         ></vdr-page-header-tabs>
-</vdr-page-header>
-<vdr-page-body>
-    <div class="flex wrap ml-4">
-        <!-- <clr-toggle-wrapper class="mt-2">
-            <input type="checkbox" clrToggle [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
-            <label>
-                {{ 'catalog.group-by-product' | translate }}
-            </label>
-        </clr-toggle-wrapper>-->
-        <vdr-language-selector
-            [availableLanguageCodes]="availableLanguages$ | async"
-            [currentLanguageCode]="contentLanguage$ | async"
-            (languageCodeChange)="setLanguage($event)"
-        ></vdr-language-selector>
-    </div>
-    <vdr-data-table-2
-        class="mt-2"
-        id="product-list"
-        [items]="items$ | async"
-        [itemsPerPage]="itemsPerPage$ | async"
-        [totalItems]="totalItems$ | async"
-        [currentPage]="currentPage$ | async"
-        [filters]="filters"
-        (pageChange)="setPageNumber($event)"
-        (itemsPerPageChange)="setItemsPerPage($event)"
-    >
-        <vdr-bulk-action-menu
-            locationId="product-list"
-            [hostComponent]="this"
-            [selectionManager]="selectionManager"
-        ></vdr-bulk-action-menu>
-        <!--<ng-template #vdrDt2CustomSearch>
+<div class="flex wrap ml-4">
+    <vdr-language-selector
+        [availableLanguageCodes]="availableLanguages$ | async"
+        [currentLanguageCode]="contentLanguage$ | async"
+        (languageCodeChange)="setLanguage($event)"
+    ></vdr-language-selector>
+</div>
+<vdr-data-table-2
+    class="mt-2"
+    id="product-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <vdr-bulk-action-menu
+        locationId="product-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    ></vdr-bulk-action-menu>
+    <!--<ng-template #vdrDt2CustomSearch>
             <div class="search-form">
                 <vdr-product-search-input
                     #productSearchInputComponent
@@ -101,75 +74,74 @@
                 </vdr-dropdown>
             </div>
         </ng-template>-->
-        <vdr-dt2-search
-            [searchTermControl]="searchTermControl"
-            [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        />
-        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
-            <ng-template let-product="item">
-                {{ product.id }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.created-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('createdAt')"
-        >
-            <ng-template let-product="item">
-                {{ product.createdAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.updated-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('updatedAt')"
-        >
-            <ng-template let-product="item">
-                {{ product.updatedAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.image' | translate">
-            <ng-template let-product="item">
-                <div class="image-placeholder">
-                    <img
-                        *ngIf="product.featuredAsset as asset; else imagePlaceholder"
-                        [src]="asset | assetPreview : 'tiny'"
-                    />
-                    <ng-template #imagePlaceholder>
-                        <div class="placeholder">
-                            <clr-icon shape="image" size="48"></clr-icon>
-                        </div>
-                    </ng-template>
-                </div>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false" [sort]="sorts.get('name')">
-            <ng-template let-product="item">
-                <a class="button-ghost" [routerLink]="['./', product.id]"
-                    ><span>{{ product.name }}</span
-                    ><clr-icon shape="arrow right"
-                /></a>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.slug' | translate" [sort]="sorts.get('slug')">
-            <ng-template let-product="item">
-                {{ product.slug }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.enabled' | translate">
-            <ng-template let-product="item">
-                <vdr-chip *ngIf="product.enabled" colorType="success">{{
-                    'common.enabled' | translate
-                }}</vdr-chip>
-                <vdr-chip *ngIf="!product.enabled" colorType="warning">{{
-                    'common.disabled' | translate
-                }}</vdr-chip>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'catalog.number-of-variants' | translate">
-            <ng-template let-product="item">
-                {{ 'catalog.variant-count' | translate : { count: product.variantList?.totalItems } }}
-            </ng-template>
-        </vdr-dt2-column>
-    </vdr-data-table-2>
-</vdr-page-body>
+    <vdr-dt2-search
+        [searchTermControl]="searchTermControl"
+        [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+    />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+        <ng-template let-product="item">
+            {{ product.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.created-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('createdAt')"
+    >
+        <ng-template let-product="item">
+            {{ product.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.updated-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('updatedAt')"
+    >
+        <ng-template let-product="item">
+            {{ product.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.image' | translate">
+        <ng-template let-product="item">
+            <div class="image-placeholder">
+                <img
+                    *ngIf="product.featuredAsset as asset; else imagePlaceholder"
+                    [src]="asset | assetPreview : 'tiny'"
+                />
+                <ng-template #imagePlaceholder>
+                    <div class="placeholder">
+                        <clr-icon shape="image" size="48"></clr-icon>
+                    </div>
+                </ng-template>
+            </div>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+        <ng-template let-product="item">
+            <a class="button-ghost" [routerLink]="['./', product.id]"
+                ><span>{{ product.name }}</span
+                ><clr-icon shape="arrow right"
+            /></a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.slug' | translate" [sort]="sorts.get('slug')">
+        <ng-template let-product="item">
+            {{ product.slug }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.enabled' | translate">
+        <ng-template let-product="item">
+            <vdr-chip *ngIf="product.enabled" colorType="success">{{
+                'common.enabled' | translate
+            }}</vdr-chip>
+            <vdr-chip *ngIf="!product.enabled" colorType="warning">{{
+                'common.disabled' | translate
+            }}</vdr-chip>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'catalog.number-of-variants' | translate">
+        <ng-template let-product="item">
+            {{ 'catalog.variant-count' | translate : { count: product.variantList?.totalItems } }}
+        </ng-template>
+    </vdr-dt2-column>
+</vdr-data-table-2>

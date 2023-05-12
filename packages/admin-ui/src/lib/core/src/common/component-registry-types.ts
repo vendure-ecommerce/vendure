@@ -42,13 +42,7 @@ export type InputComponentConfig = {
     [prop: string]: any;
 };
 
-/**
- * @description
- * The valid locationIds for registering action bar items.
- *
- * @docsCategory action-bar
- */
-export type ActionBarLocationId =
+export type PageLocationId =
     | 'administrator-detail'
     | 'administrator-list'
     | 'asset-detail'
@@ -86,6 +80,14 @@ export type ActionBarLocationId =
     | 'tax-rate-detail'
     | 'tax-rate-list'
     | 'zone-list';
+
+/**
+ * @description
+ * The valid locationIds for registering action bar items.
+ *
+ * @docsCategory action-bar
+ */
+export type ActionBarLocationId = PageLocationId;
 
 /**
  * @description

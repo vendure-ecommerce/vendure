@@ -142,6 +142,7 @@
     "product-details": "Информация о товаре",
     "product-name": "Имя товара",
     "product-variants": "Вариант товара",
+    "products": "",
     "public": "Публичный",
     "reindex-error": "Произошла ошибка при перестройке индекса поиска",
     "reindex-successful": "Проиндексировано {count, plural, one {вариант товара} other {{count} вариантов товара}} за {time}мс",

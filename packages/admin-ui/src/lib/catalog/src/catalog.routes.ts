@@ -10,6 +10,8 @@ import {
     GetProductWithVariantsQuery,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
+import { PageService } from '../../core/src/providers/page/page.service';
+import { PageComponent } from '../../core/src/shared/components/page/page.component';
 
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
@@ -27,13 +29,15 @@ import { FacetResolver } from './providers/routing/facet-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
 import { ProductVariantsResolver } from './providers/routing/product-variants-resolver';
 
-export const catalogRoutes: Route[] = [
+export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: 'products',
-        component: ProductListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'product-list',
             breadcrumb: _('breadcrumb.products'),
         },
+        children: pageService.getPageTabRoutes('product-list'),
     },
     {
         path: 'products/:id',
@@ -43,6 +47,7 @@ export const catalogRoutes: Route[] = [
         data: {
             breadcrumb: productBreadcrumb,
         },
+        children: pageService.getPageTabRoutes('product-detail'),
     },
     {
         path: 'products/:id/manage-variants',
@@ -68,6 +73,7 @@ export const catalogRoutes: Route[] = [
         data: {
             breadcrumb: _('breadcrumb.facets'),
         },
+        children: pageService.getPageTabRoutes('facet-list'),
     },
     {
         path: 'facets/:id',
@@ -77,6 +83,7 @@ export const catalogRoutes: Route[] = [
         data: {
             breadcrumb: facetBreadcrumb,
         },
+        children: pageService.getPageTabRoutes('facet-detail'),
     },
     {
         path: 'collections',
@@ -84,6 +91,7 @@ export const catalogRoutes: Route[] = [
         data: {
             breadcrumb: _('breadcrumb.collections'),
         },
+        children: pageService.getPageTabRoutes('collection-list'),
     },
     {
         path: 'collections/:id',
@@ -93,6 +101,7 @@ export const catalogRoutes: Route[] = [
         data: {
             breadcrumb: collectionBreadcrumb,
         },
+        children: pageService.getPageTabRoutes('collection-detail'),
     },
     {
         path: 'assets',
@@ -100,6 +109,7 @@ export const catalogRoutes: Route[] = [
         data: {
             breadcrumb: _('breadcrumb.assets'),
         },
+        children: pageService.getPageTabRoutes('asset-list'),
     },
     {
         path: 'assets/:id',
@@ -108,6 +118,7 @@ export const catalogRoutes: Route[] = [
         data: {
             breadcrumb: assetBreadcrumb,
         },
+        children: pageService.getPageTabRoutes('asset-detail'),
     },
 ];
 
@@ -124,38 +135,38 @@ export function productBreadcrumb(data: any, params: any) {
 export function productVariantEditorBreadcrumb(data: any, params: any) {
     return data.entity.pipe(
         map((entity: any) => [
-                {
-                    label: _('breadcrumb.products'),
-                    link: ['../', 'products'],
-                },
-                {
-                    label: `${entity.name}`,
-                    link: ['../', 'products', params.id, { tab: 'variants' }],
-                },
-                {
-                    label: _('breadcrumb.manage-variants'),
-                    link: ['manage-variants'],
-                },
-            ]),
+            {
+                label: _('breadcrumb.products'),
+                link: ['../', 'products'],
+            },
+            {
+                label: `${entity.name}`,
+                link: ['../', 'products', params.id, { tab: 'variants' }],
+            },
+            {
+                label: _('breadcrumb.manage-variants'),
+                link: ['manage-variants'],
+            },
+        ]),
     );
 }
 
 export function productOptionsEditorBreadcrumb(data: any, params: any) {
     return data.entity.pipe(
         map((entity: any) => [
-                {
-                    label: _('breadcrumb.products'),
-                    link: ['../', 'products'],
-                },
-                {
-                    label: `${entity.name}`,
-                    link: ['../', 'products', params.id, { tab: 'variants' }],
-                },
-                {
-                    label: _('breadcrumb.product-options'),
-                    link: ['options'],
-                },
-            ]),
+            {
+                label: _('breadcrumb.products'),
+                link: ['../', 'products'],
+            },
+            {
+                label: `${entity.name}`,
+                link: ['../', 'products', params.id, { tab: 'variants' }],
+            },
+            {
+                label: _('breadcrumb.product-options'),
+                link: ['options'],
+            },
+        ]),
     );
 }
 

@@ -156,6 +156,7 @@ import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
+import { PageComponent } from './components/page/page.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -278,6 +279,7 @@ const DECLARATIONS = [
     SplitViewComponent,
     SplitViewLeftDirective,
     SplitViewRightDirective,
+    PageComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

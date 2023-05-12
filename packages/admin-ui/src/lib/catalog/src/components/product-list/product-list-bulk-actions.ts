@@ -5,7 +5,9 @@ import {
     DataService,
     DeletionResult,
     getChannelCodeFromUserStatus,
+    GetProductListQuery,
     isMultiChannel,
+    ItemOf,
     ModalService,
     NotificationService,
     Permission,
@@ -17,9 +19,12 @@ import { mapTo, switchMap } from 'rxjs/operators';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from '../bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 
-import { ProductListComponent, SearchItem } from './product-list.component';
+import { ProductListComponent } from './product-list.component';
 
-export const deleteProductsBulkAction: BulkAction<SearchItem, ProductListComponent> = {
+export const deleteProductsBulkAction: BulkAction<
+    ItemOf<GetProductListQuery, 'products'>,
+    ProductListComponent
+> = {
     location: 'product-list',
     label: _('common.delete'),
     icon: 'trash',
@@ -44,9 +49,7 @@ export const deleteProductsBulkAction: BulkAction<SearchItem, ProductListCompone
             })
             .pipe(
                 switchMap(response =>
-                    response
-                        ? dataService.product.deleteProducts(unique(selection.map(p => p.productId)))
-                        : EMPTY,
+                    response ? dataService.product.deleteProducts(unique(selection.map(p => p.id))) : EMPTY,
                 ),
             )
             .subscribe(result => {
@@ -73,7 +76,10 @@ export const deleteProductsBulkAction: BulkAction<SearchItem, ProductListCompone
     },
 };
 
-export const assignProductsToChannelBulkAction: BulkAction<SearchItem, ProductListComponent> = {
+export const assignProductsToChannelBulkAction: BulkAction<
+    ItemOf<GetProductListQuery, 'products'>,
+    ProductListComponent
+> = {
     location: 'product-list',
     label: _('catalog.assign-to-channel'),
     icon: 'layers',
@@ -89,7 +95,7 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchItem, ProductLi
             .fromComponent(AssignProductsToChannelDialogComponent, {
                 size: 'lg',
                 locals: {
-                    productIds: unique(selection.map(p => p.productId)),
+                    productIds: unique(selection.map(p => p.id)),
                     currentChannelIds: [],
                 },
             })
@@ -101,7 +107,10 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchItem, ProductLi
     },
 };
 
-export const removeProductsFromChannelBulkAction: BulkAction<SearchItem, ProductListComponent> = {
+export const removeProductsFromChannelBulkAction: BulkAction<
+    ItemOf<GetProductListQuery, 'products'>,
+    ProductListComponent
+> = {
     location: 'product-list',
     label: _('catalog.remove-from-channel'),
     requiresPermission: userPermissions =>
@@ -144,7 +153,7 @@ export const removeProductsFromChannelBulkAction: BulkAction<SearchItem, Product
                                   activeChannelId
                                       ? dataService.product.removeProductsFromChannel({
                                             channelId: activeChannelId,
-                                            productIds: selection.map(p => p.productId),
+                                            productIds: selection.map(p => p.id),
                                         })
                                       : EMPTY,
                               ),
@@ -165,7 +174,10 @@ export const removeProductsFromChannelBulkAction: BulkAction<SearchItem, Product
     },
 };
 
-export const assignFacetValuesToProductsBulkAction: BulkAction<SearchItem, ProductListComponent> = {
+export const assignFacetValuesToProductsBulkAction: BulkAction<
+    ItemOf<GetProductListQuery, 'products'>,
+    ProductListComponent
+> = {
     location: 'product-list',
     label: _('catalog.edit-facet-values'),
     icon: 'tag',
@@ -177,10 +189,7 @@ export const assignFacetValuesToProductsBulkAction: BulkAction<SearchItem, Produ
         const dataService = injector.get(DataService);
         const notificationService = injector.get(NotificationService);
         const mode: 'product' | 'variant' = hostComponent.groupByProduct ? 'product' : 'variant';
-        const ids =
-            mode === 'product'
-                ? unique(selection.map(p => p.productId))
-                : unique(selection.map(p => p.productVariantId));
+        const ids = unique(selection.map(p => p.id));
         return modalService
             .fromComponent(BulkAddFacetValuesDialogComponent, {
                 size: 'xl',

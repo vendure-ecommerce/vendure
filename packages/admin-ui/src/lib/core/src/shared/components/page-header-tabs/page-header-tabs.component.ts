@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 export interface HeaderTab {
     id: string;
@@ -13,13 +13,6 @@ export interface HeaderTab {
     styleUrls: ['./page-header-tabs.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageHeaderTabsComponent implements OnChanges {
+export class PageHeaderTabsComponent {
     @Input() tabs: HeaderTab[] = [];
-    @Input() selectedTabId: string | undefined;
-
-    ngOnChanges(changes: SimpleChanges) {
-        if (this.tabs.length && !this.selectedTabId) {
-            this.selectedTabId = this.tabs[0]?.id;
-        }
-    }
 }

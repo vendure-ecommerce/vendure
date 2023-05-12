@@ -191,10 +191,12 @@ export class NavBuilderService {
      * `data-location-id` attribute.
      */
     addActionBarItem(config: ActionBarItem) {
-        this.addedActionBarItems.push({
-            requiresPermission: Permission.Authenticated,
-            ...config,
-        });
+        if (!this.addedActionBarItems.find(item => item.id === config.id)) {
+            this.addedActionBarItems.push({
+                requiresPermission: Permission.Authenticated,
+                ...config,
+            });
+        }
     }
 
     getRouterLink(config: { routerLink?: RouterLinkDefinition }, route: ActivatedRoute): string[] | null {

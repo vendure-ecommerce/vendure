@@ -140,7 +140,11 @@ tr:last-of-type td:last-of-type {
 
 // odd rows
 tbody tr:nth-child(even) {
-    background-color: var(--color-table-alternate-row-bg);
+    //background-color: var(--color-table-alternate-row-bg);
+}
+
+tbody td {
+    border-bottom: 1px solid var(--color-weight-100);
 }
 
 tbody tr:hover {

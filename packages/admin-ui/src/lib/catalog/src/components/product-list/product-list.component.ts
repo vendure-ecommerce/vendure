@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
+    DataTableService,
     GetProductListQuery,
     GetProductListQueryVariables,
     ItemOf,
@@ -11,19 +12,16 @@ import {
     JobState,
     LanguageCode,
     ModalService,
+    NavBuilderService,
     NotificationService,
     ProductFilterParameter,
     ProductSearchInputComponent,
     ProductSortParameter,
     SearchProductsQuery,
-    SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { DataTableService } from '../../../../core/src/providers/data-table/data-table.service';
-
-export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
 
 @Component({
     selector: 'vdr-products-list',
@@ -36,9 +34,8 @@ export class ProductListComponent
         ItemOf<GetProductListQuery, 'products'>,
         GetProductListQueryVariables
     >
-    implements OnInit, AfterViewInit
+    implements OnInit
 {
-    searchTerm = '';
     facetValueIds: string[] = [];
     groupByProduct = true;
     selectedFacetValueIds$: Observable<string[]>;
@@ -46,12 +43,6 @@ export class ProductListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
-    selectionManager = new SelectionManager<SearchItem>({
-        multiSelect: true,
-        itemsAreEqual: (a, b) =>
-            this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,
-        additiveMode: true,
-    });
     readonly filters = this.dataTableService
         .createFilterCollection<ProductFilterParameter>()
         .addDateFilters()
@@ -95,17 +86,25 @@ export class ProductListComponent
         private jobQueueService: JobQueueService,
         private serverConfigService: ServerConfigService,
         private dataTableService: DataTableService,
+        private navBuilderService: NavBuilderService,
         router: Router,
         route: ActivatedRoute,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-product',
+            label: _('catalog.create-new-product'),
+            locationId: 'product-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateCatalog', 'CreateProduct'],
+        });
         this.route.queryParamMap
             .pipe(
                 map(qpm => qpm.get('q')),
                 takeUntil(this.destroy$),
             )
             .subscribe(term => {
-                this.searchTerm = term || '';
                 if (this.productSearchInput) {
                     this.productSearchInput.setSearchTerm(term);
                 }
@@ -162,14 +161,7 @@ export class ProductListComponent
         super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
     }
 
-    ngAfterViewInit() {
-        if (this.productSearchInput && this.searchTerm) {
-            setTimeout(() => this.productSearchInput.setSearchTerm(this.searchTerm));
-        }
-    }
-
     setSearchTerm(term: string) {
-        this.searchTerm = term;
         this.setQueryParam({ q: term || null, page: 1 });
         this.refresh();
     }

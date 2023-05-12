@@ -96,7 +96,7 @@ export interface ActionBarItem {
     buttonColor?: 'primary' | 'success' | 'warning';
     buttonStyle?: 'solid' | 'outline' | 'link';
     icon?: string;
-    requiresPermission?: string;
+    requiresPermission?: string | string[];
 }
 
 export type RouterLinkDefinition = ((route: ActivatedRoute) => any[]) | any[];

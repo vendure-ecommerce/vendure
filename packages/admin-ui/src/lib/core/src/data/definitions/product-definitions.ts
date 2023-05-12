@@ -766,12 +766,41 @@ export const GET_PRODUCT_VARIANT_LIST = gql`
     query GetProductVariantList($options: ProductVariantListOptions!, $productId: ID) {
         productVariants(options: $options, productId: $productId) {
             items {
-                ...ProductVariant
+                id
+                createdAt
+                updatedAt
+                enabled
+                languageCode
+                name
+                price
+                currencyCode
+                priceWithTax
+                trackInventory
+                outOfStockThreshold
+                stockLevels {
+                    id
+                    createdAt
+                    updatedAt
+                    stockLocationId
+                    stockOnHand
+                    stockAllocated
+                    stockLocation {
+                        id
+                        createdAt
+                        updatedAt
+                        name
+                    }
+                }
+                useGlobalOutOfStockThreshold
+                sku
+                featuredAsset {
+                    ...Asset
+                }
             }
             totalItems
         }
     }
-    ${PRODUCT_VARIANT_FRAGMENT}
+    ${ASSET_FRAGMENT}
 `;
 
 export const GET_TAG_LIST = gql`

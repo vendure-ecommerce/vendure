@@ -142,6 +142,7 @@
     "product-details": "Product details",
     "product-name": "Product name",
     "product-variants": "Product variants",
+    "products": "Products",
     "public": "Public",
     "reindex-error": "An error occurred while rebuilding search index",
     "reindex-successful": "Indexed {count, plural, one {product variant} other {{count} product variants}} in {time}ms",

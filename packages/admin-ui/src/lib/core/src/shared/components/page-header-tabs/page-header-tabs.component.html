@@ -1,5 +1,11 @@
 <div class="tab-bar" *ngIf="tabs.length">
-    <div class="tab" *ngFor="let tab of tabs" [class.active]="selectedTabId === tab.id">
+    <a
+        [routerLink]="tab.route"
+        class="tab"
+        *ngFor="let tab of tabs"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+    >
         {{ tab.label | translate }}
-    </div>
+    </a>
 </div>

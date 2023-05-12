@@ -142,6 +142,7 @@
     "product-details": "Detaily produktu",
     "product-name": "Jméno produktu",
     "product-variants": "Varianty produktu",
+    "products": "",
     "public": "Veřejný",
     "reindex-error": "Při regeneraci vyhledávacího indexu došlo k chybě",
     "reindex-successful": "Zaindexováno: {count, plural, one {varianta produktu} other {{count} variant produktu}} během {time}ms",
