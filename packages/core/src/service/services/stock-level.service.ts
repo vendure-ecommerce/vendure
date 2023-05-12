@@ -54,6 +54,9 @@ export class StockLevelService {
             where: {
                 productVariantId,
             },
+            relations: {
+                stockLocation: true,
+            },
         });
     }
 
