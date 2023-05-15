@@ -188,7 +188,7 @@ export const assignFacetValuesToProductsBulkAction: BulkAction<
         const modalService = injector.get(ModalService);
         const dataService = injector.get(DataService);
         const notificationService = injector.get(NotificationService);
-        const mode: 'product' | 'variant' = hostComponent.groupByProduct ? 'product' : 'variant';
+        const mode = 'product';
         const ids = unique(selection.map(p => p.id));
         return modalService
             .fromComponent(BulkAddFacetValuesDialogComponent, {

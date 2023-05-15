@@ -26,6 +26,7 @@ import {
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_VARIANT,
     GET_PRODUCT_VARIANT_LIST,
+    GET_PRODUCT_VARIANT_LIST_FOR_PRODUCT,
     GET_PRODUCT_VARIANT_LIST_SIMPLE,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
@@ -129,11 +130,18 @@ export class ProductDataService {
         >(GET_PRODUCT_VARIANT_LIST_SIMPLE, { options, productId });
     }
 
-    getProductVariants(options: Codegen.ProductVariantListOptions, productId?: string) {
+    getProductVariants(options: Codegen.ProductVariantListOptions) {
         return this.baseDataService.query<
             Codegen.GetProductVariantListQuery,
             Codegen.GetProductVariantListQueryVariables
-        >(GET_PRODUCT_VARIANT_LIST, { options, productId });
+        >(GET_PRODUCT_VARIANT_LIST, { options });
+    }
+
+    getProductVariantsForProduct(options: Codegen.ProductVariantListOptions, productId: string) {
+        return this.baseDataService.query<
+            Codegen.GetProductVariantListForProductQuery,
+            Codegen.GetProductVariantListForProductQueryVariables
+        >(GET_PRODUCT_VARIANT_LIST_FOR_PRODUCT, { options, productId });
     }
 
     getProductVariant(id: string) {
@@ -206,12 +214,12 @@ export class ProductDataService {
     }
 
     deleteProducts(ids: string[]) {
-        return this.baseDataService.mutate<Codegen.DeleteProductsMutation, Codegen.DeleteProductsMutationVariables>(
-            DELETE_PRODUCTS,
-            {
-                ids,
-            },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteProductsMutation,
+            Codegen.DeleteProductsMutationVariables
+        >(DELETE_PRODUCTS, {
+            ids,
+        });
     }
 
     createProductVariants(input: Codegen.CreateProductVariantInput[]) {

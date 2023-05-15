@@ -253,4 +253,5 @@
 
 html, body:not([cds-text]) {
     font-family: Inter, sans-serif !important;
+    font-size: var(--font-size-base);
 }

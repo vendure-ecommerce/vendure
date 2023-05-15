@@ -48,4 +48,7 @@
             +filterWithValue.value?.amount
         }}</span>
     </ng-container>
+    <ng-container *ngIf="filterWithValue.isCustom()">
+        <span>{{ customFilterLabel$ | async }}</span>
+    </ng-container>
 </div>

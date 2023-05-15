@@ -23,7 +23,8 @@
     }
 
     .ng-select.ng-select-multiple .ng-select-container .ng-value-container {
-        padding: 0;
+        padding: 0 3px;
+        gap: 3px;
     }
 
     .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-placeholder {

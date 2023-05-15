@@ -44,6 +44,7 @@ import { DataTable2SearchComponent } from './components/data-table-2/data-table-
 import { DataTable2Component } from './components/data-table-2/data-table2.component';
 import { DataTableColumnPickerComponent } from './components/data-table-column-picker/data-table-column-picker.component';
 import { DataTableFilterLabelComponent } from './components/data-table-filter-label/data-table-filter-label.component';
+import { CustomFilterComponentDirective } from './components/data-table-filters/custom-filter-component.directive';
 import { DataTableFiltersComponent } from './components/data-table-filters/data-table-filters.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
@@ -280,6 +281,7 @@ const DECLARATIONS = [
     SplitViewLeftDirective,
     SplitViewRightDirective,
     PageComponent,
+    CustomFilterComponentDirective,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

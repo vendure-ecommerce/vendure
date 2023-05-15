@@ -5,6 +5,15 @@
     background-color: var(--clr-global-app-background);
 }
 
+h1:not([cds-text]),
+h2:not([cds-text]),
+h3:not([cds-text]),
+h4:not([cds-text]),
+h5:not([cds-text]),
+h6:not([cds-text]) {
+    font-family: Inter, sans-serif !important;
+}
+
 a:link, a:visited {
     color: var(--clr-global-link-color);
     text-decoration: none;
@@ -73,5 +82,5 @@ button.icon-button {
 }
 
 .cdk-overlay-container {
-    z-index: 1060;
+    z-index: 1050;
 }

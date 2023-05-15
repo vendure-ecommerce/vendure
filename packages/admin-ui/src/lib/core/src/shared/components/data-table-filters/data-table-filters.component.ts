@@ -1,19 +1,24 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import {
-    DataTableFilterType,
-    DataTableFilterValue,
-    DateOperators,
-    KindValueMap,
-} from '@vendure/admin-ui/core';
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ComponentRef,
+    Input,
+    ViewChild,
+} from '@angular/core';
+import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { DataTableFilter } from '../../../providers/data-table/data-table-filter';
+import { FormInputComponent } from '../../../common/component-registry-types';
+import { DateOperators } from '../../../common/generated-types';
+import { DataTableFilter, KindValueMap } from '../../../providers/data-table/data-table-filter';
 import {
     DataTableFilterCollection,
     FilterWithValue,
 } from '../../../providers/data-table/data-table-filter-collection';
 import { I18nService } from '../../../providers/i18n/i18n.service';
 import { DropdownComponent } from '../dropdown/dropdown.component';
+import { CustomFilterComponentDirective } from './custom-filter-component.directive';
 
 @Component({
     selector: 'vdr-data-table-filters',
@@ -21,23 +26,21 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
     styleUrls: ['./data-table-filters.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataTableFiltersComponent implements AfterViewInit, OnInit {
+export class DataTableFiltersComponent implements AfterViewInit {
     @Input() filters: DataTableFilterCollection;
     @Input() filterWithValue?: FilterWithValue;
     @ViewChild('dropdown', { static: true }) dropdown: DropdownComponent;
+    @ViewChild('customComponentHost', { static: false, read: CustomFilterComponentDirective })
+    set customComponentHost(content: CustomFilterComponentDirective) {
+        this._customComponentHost = content;
+    }
+    _customComponentHost: CustomFilterComponentDirective;
     protected state: 'new' | 'active' = 'new';
     protected formControl: AbstractControl;
     protected selectedFilter: DataTableFilter | undefined;
+    protected customComponent?: ComponentRef<FormInputComponent>;
 
-    constructor(private i18nService: I18nService) {}
-
-    ngOnInit() {
-        if (this.filterWithValue) {
-            const { filter, value } = this.filterWithValue;
-            this.selectFilter(filter, value);
-            this.state = 'active';
-        }
-    }
+    constructor(private i18nService: I18nService, private changeDetectorRef: ChangeDetectorRef) {}
 
     ngAfterViewInit() {
         this.dropdown.onOpenChange(isOpen => {
@@ -45,6 +48,12 @@ export class DataTableFiltersComponent implements AfterViewInit, OnInit {
                 this.selectedFilter = undefined;
             }
         });
+        if (this.filterWithValue) {
+            const { filter, value } = this.filterWithValue;
+            this.selectFilter(filter, value);
+            this.state = 'active';
+        }
+        setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
     selectFilter(filter: DataTableFilter, value?: any) {
@@ -100,6 +109,14 @@ export class DataTableFiltersComponent implements AfterViewInit, OnInit {
                     return null;
                 },
             );
+        } else if (filter.isCustom() && this._customComponentHost) {
+            // this.#customComponentHost.viewContainerRef.clear();
+            this.customComponent = this._customComponentHost.viewContainerRef.createComponent(
+                filter.type.component,
+            );
+            this.formControl = new FormControl<any>(value ?? []);
+            this.customComponent.instance.config = {};
+            this.customComponent.instance.formControl = new FormControl<any>(value ?? []);
         }
     }
 
@@ -151,6 +168,13 @@ export class DataTableFiltersComponent implements AfterViewInit, OnInit {
                     operator: this.formControl.value.operator,
                     term: this.formControl.value.term,
                 } as KindValueMap[typeof type.kind]['raw'];
+                break;
+            case 'custom':
+                value = this.customComponent?.instance.formControl.value;
+                this.formControl.setValue(value);
+                if (this.state === 'new') {
+                    this._customComponentHost.viewContainerRef.clear();
+                }
                 break;
             default:
                 assertNever(type);

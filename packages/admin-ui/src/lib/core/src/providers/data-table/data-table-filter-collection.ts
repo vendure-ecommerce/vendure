@@ -7,6 +7,7 @@ import { DateOperators, NumberOperators, StringOperators } from '../../common/ge
 import {
     DataTableFilter,
     DataTableFilterBooleanType,
+    DataTableFilterCustomType,
     DataTableFilterDateRangeType,
     DataTableFilterNumberType,
     DataTableFilterOptions,
@@ -17,16 +18,25 @@ import {
 } from './data-table-filter';
 
 export class FilterWithValue<Type extends DataTableFilterType = DataTableFilterType> {
+    private onUpdateFns = new Set<(value: DataTableFilterValue<Type>) => void>();
     constructor(
         public readonly filter: DataTableFilter<any, Type>,
         public value: DataTableFilterValue<Type>,
-        private onUpdate?: (value: DataTableFilterValue<Type>) => void,
-    ) {}
+        onUpdate?: (value: DataTableFilterValue<Type>) => void,
+    ) {
+        if (onUpdate) {
+            this.onUpdateFns.add(onUpdate);
+        }
+    }
+
+    onUpdate(fn: (value: DataTableFilterValue<Type>) => void) {
+        this.onUpdateFns.add(fn);
+    }
 
     updateValue(value: DataTableFilterValue<Type>) {
         this.value = value;
-        if (this.onUpdate) {
-            this.onUpdate(value);
+        for (const fn of this.onUpdateFns) {
+            fn(value);
         }
     }
 
@@ -48,6 +58,10 @@ export class FilterWithValue<Type extends DataTableFilterType = DataTableFilterT
 
     isDateRange(): this is FilterWithValue<DataTableFilterDateRangeType> {
         return this.filter.type.kind === 'dateRange';
+    }
+
+    isCustom(): this is FilterWithValue<DataTableFilterCustomType> {
+        return this.filter.type.kind === 'custom';
     }
 }
 
@@ -173,6 +187,8 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             const start = val.start ? new Date(val.start).getTime() : '';
             const end = val.end ? new Date(val.end).getTime() : '';
             return `${start},${end}`;
+        } else if (filterWithValue.isCustom()) {
+            return filterWithValue.filter.type.serializeValue(filterWithValue.value);
         }
     }
 
@@ -195,6 +211,8 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
                 const start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
                 const end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
                 return { start, end };
+            case 'custom':
+                return filter.type.deserializeValue(value);
             default:
                 assertNever(filter.type);
         }

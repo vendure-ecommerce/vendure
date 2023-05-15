@@ -155,7 +155,7 @@ export class ProductDetailService {
 
         const variants$ = autoUpdate
             ? this.dataService.product
-                  .getProductVariants({}, product.id)
+                  .getProductVariantsForProduct({}, product.id)
                   .mapSingle(({ productVariants }) => productVariants.items)
             : of([]);
 
@@ -217,7 +217,7 @@ export class ProductDetailService {
     ) {
         const variants$ = input.autoUpdate
             ? this.dataService.product
-                  .getProductVariants({}, product.id)
+                  .getProductVariantsForProduct({}, product.id)
                   .mapSingle(({ productVariants }) => productVariants.items)
             : of([]);
 

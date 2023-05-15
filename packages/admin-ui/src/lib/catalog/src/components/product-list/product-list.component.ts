@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
     DataTableService,
+    FacetValueFormInputComponent,
     GetProductListQuery,
     GetProductListQueryVariables,
     ItemOf,
@@ -15,13 +16,11 @@ import {
     NavBuilderService,
     NotificationService,
     ProductFilterParameter,
-    ProductSearchInputComponent,
     ProductSortParameter,
-    SearchProductsQuery,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { EMPTY, Observable } from 'rxjs';
-import { delay, map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { EMPTY, lastValueFrom, Observable } from 'rxjs';
+import { delay, switchMap, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-products-list',
@@ -36,10 +35,6 @@ export class ProductListComponent
     >
     implements OnInit
 {
-    facetValueIds: string[] = [];
-    groupByProduct = true;
-    selectedFacetValueIds$: Observable<string[]>;
-    facetValues$: Observable<SearchProductsQuery['search']['facetValues']>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
@@ -64,6 +59,37 @@ export class ProductListComponent
             label: _('common.slug'),
             filterField: 'slug',
         })
+        .addFilter({
+            name: 'facetValues',
+            type: {
+                kind: 'custom',
+                component: FacetValueFormInputComponent,
+                serializeValue: value => value.map(v => v.id).join(','),
+                deserializeValue: value => value.split(',').map(id => ({ id })),
+                getLabel: value => {
+                    if (value.length === 0) {
+                        return '';
+                    }
+                    if (value[0].name) {
+                        return value.map(v => v.name).join(', ');
+                    } else {
+                        return lastValueFrom(
+                            this.dataService.facet
+                                .getFacetValues({ filter: { id: { in: value.map(v => v.id) } } })
+                                .mapSingle(({ facetValues }) =>
+                                    facetValues.items.map(fv => fv.name).join(', '),
+                                ),
+                        );
+                    }
+                },
+            },
+            label: _('catalog.facet-values'),
+            toFilterInput: (value: any[]) => ({
+                facetValueId: {
+                    in: value.map(v => v.id),
+                },
+            }),
+        })
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -75,9 +101,6 @@ export class ProductListComponent
         .addSort({ name: 'name' })
         .addSort({ name: 'slug' })
         .connectToRoute(this.route);
-
-    @ViewChild('productSearchInputComponent', { static: true })
-    private productSearchInput: ProductSearchInputComponent;
 
     constructor(
         private dataService: DataService,
@@ -98,24 +121,6 @@ export class ProductListComponent
             icon: 'plus',
             routerLink: ['./create'],
             requiresPermission: ['CreateCatalog', 'CreateProduct'],
-        });
-        this.route.queryParamMap
-            .pipe(
-                map(qpm => qpm.get('q')),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(term => {
-                if (this.productSearchInput) {
-                    this.productSearchInput.setSearchTerm(term);
-                }
-            });
-        this.selectedFacetValueIds$ = this.route.queryParamMap.pipe(map(qpm => qpm.getAll('fvids')));
-
-        this.selectedFacetValueIds$.pipe(takeUntil(this.destroy$)).subscribe(ids => {
-            this.facetValueIds = ids;
-            if (this.productSearchInput) {
-                this.productSearchInput.setFacetValues(ids);
-            }
         });
         super.setQueryFn(
             (args: any) => this.dataService.product.getProducts(args).refetchOnChannelChange(),
@@ -139,14 +144,6 @@ export class ProductListComponent
 
     ngOnInit() {
         super.ngOnInit();
-
-        // this.facetValues$ = this.result$.pipe(map(data => data.search.facetValues));
-        //
-        // this.facetValues$
-        //     .pipe(take(1), delay(100), withLatestFrom(this.selectedFacetValueIds$))
-        //     .subscribe(([__, ids]) => {
-        //         this.productSearchInput.setFacetValues(ids);
-        //     });
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
         this.contentLanguage$ = this.dataService.client
             .uiState()
@@ -159,17 +156,6 @@ export class ProductListComponent
             .subscribe(value => (this.pendingSearchIndexUpdates = value));
 
         super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    setSearchTerm(term: string) {
-        this.setQueryParam({ q: term || null, page: 1 });
-        this.refresh();
-    }
-
-    setFacetValueIds(ids: string[]) {
-        this.facetValueIds = ids;
-        this.setQueryParam({ fvids: ids, page: 1 });
-        this.refresh();
     }
 
     rebuildSearchIndex() {

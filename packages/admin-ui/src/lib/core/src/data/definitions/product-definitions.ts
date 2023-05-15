@@ -762,9 +762,21 @@ export const GET_PRODUCT_VARIANT_LIST_SIMPLE = gql`
     }
 `;
 
-export const GET_PRODUCT_VARIANT_LIST = gql`
-    query GetProductVariantList($options: ProductVariantListOptions!, $productId: ID) {
+export const GET_PRODUCT_VARIANT_LIST_FOR_PRODUCT = gql`
+    query GetProductVariantListForProduct($options: ProductVariantListOptions!, $productId: ID) {
         productVariants(options: $options, productId: $productId) {
+            items {
+                ...ProductVariant
+            }
+            totalItems
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
+export const GET_PRODUCT_VARIANT_LIST = gql`
+    query GetProductVariantList($options: ProductVariantListOptions!) {
+        productVariants(options: $options) {
             items {
                 id
                 createdAt

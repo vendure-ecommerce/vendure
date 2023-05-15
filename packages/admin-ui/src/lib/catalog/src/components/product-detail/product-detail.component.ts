@@ -148,8 +148,9 @@ export class ProductDetailComponent
             skipUntil(initialVariants$),
             skip(1),
             debounceTime(100),
-            switchMap(([term, currentPage, itemsPerPage]) => this.dataService.product
-                    .getProductVariants(
+            switchMap(([term, currentPage, itemsPerPage]) =>
+                this.dataService.product
+                    .getProductVariantsForProduct(
                         {
                             skip: (currentPage - 1) * itemsPerPage,
                             take: itemsPerPage,
@@ -160,7 +161,8 @@ export class ProductDetailComponent
                         },
                         this.id,
                     )
-                    .mapStream(({ productVariants }) => productVariants)),
+                    .mapStream(({ productVariants }) => productVariants),
+            ),
             shareReplay({ bufferSize: 1, refCount: true }),
         );
         const updatedVariants$ = variantsList$.pipe(map(result => result.items));
@@ -248,13 +250,15 @@ export class ProductDetailComponent
         this.productChannels$
             .pipe(
                 take(1),
-                switchMap(channels => this.modalService.fromComponent(AssignProductsToChannelDialogComponent, {
+                switchMap(channels =>
+                    this.modalService.fromComponent(AssignProductsToChannelDialogComponent, {
                         size: 'lg',
                         locals: {
                             productIds: [this.id],
                             currentChannelIds: channels.map(c => c.id),
                         },
-                    })),
+                    }),
+                ),
             )
             .subscribe();
     }
@@ -262,7 +266,8 @@ export class ProductDetailComponent
     removeFromChannel(channelId: string) {
         from(getChannelCodeFromUserStatus(this.dataService, channelId))
             .pipe(
-                switchMap(({ channelCode }) => this.modalService.dialog({
+                switchMap(({ channelCode }) =>
+                    this.modalService.dialog({
                         title: _('catalog.remove-product-from-channel'),
                         buttons: [
                             { type: 'secondary', label: _('common.cancel') },
@@ -273,7 +278,8 @@ export class ProductDetailComponent
                                 returnValue: true,
                             },
                         ],
-                    })),
+                    }),
+                ),
                 switchMap(response =>
                     response
                         ? this.dataService.product.removeProductsFromChannel({
@@ -309,7 +315,8 @@ export class ProductDetailComponent
     removeVariantFromChannel({ channelId, variant }: { channelId: string; variant: ProductVariantFragment }) {
         from(getChannelCodeFromUserStatus(this.dataService, channelId))
             .pipe(
-                switchMap(({ channelCode }) => this.modalService.dialog({
+                switchMap(({ channelCode }) =>
+                    this.modalService.dialog({
                         title: _('catalog.remove-product-variant-from-channel'),
                         buttons: [
                             { type: 'secondary', label: _('common.cancel') },
@@ -320,7 +327,8 @@ export class ProductDetailComponent
                                 returnValue: true,
                             },
                         ],
-                    })),
+                    }),
+                ),
                 switchMap(response =>
                     response
                         ? this.dataService.product.removeVariantsFromChannel({

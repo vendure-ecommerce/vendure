@@ -1,4 +1,6 @@
+import { Type as ComponentType } from '@angular/core';
 import { assertNever } from '@vendure/common/lib/shared-utils';
+import { FormInputComponent } from '../../common/component-registry-types';
 import {
     BooleanOperators,
     DateOperators,
@@ -29,6 +31,14 @@ export interface DataTableFilterDateRangeType {
     kind: 'dateRange';
 }
 
+export interface DataTableFilterCustomType {
+    kind: 'custom';
+    component: ComponentType<FormInputComponent>;
+    serializeValue: (value: any) => string;
+    deserializeValue: (serialized: string) => any;
+    getLabel(value: any): string | Promise<string>;
+}
+
 export type KindValueMap = {
     text: {
         raw: {
@@ -41,13 +51,15 @@ export type KindValueMap = {
     boolean: { raw: boolean; input: BooleanOperators };
     dateRange: { raw: { start?: string; end?: string }; input: DateOperators };
     number: { raw: { operator: keyof NumberOperators; amount: number }; input: NumberOperators };
+    custom: { raw: any; input: any };
 };
 export type DataTableFilterType =
     | DataTableFilterTextType
     | DataTableFilterSelectType
     | DataTableFilterBooleanType
     | DataTableFilterDateRangeType
-    | DataTableFilterNumberType;
+    | DataTableFilterNumberType
+    | DataTableFilterCustomType;
 
 export interface DataTableFilterOptions<
     FilterInput extends Record<string, any> = any,
@@ -124,6 +136,9 @@ export class DataTableFilter<
                 return {
                     [value.operator]: value.term,
                 };
+            case 'custom': {
+                return value;
+            }
             default:
                 assertNever(type);
         }
@@ -166,5 +181,9 @@ export class DataTableFilter<
 
     isDateRange(): this is DataTableFilter<FilterInput, DataTableFilterDateRangeType> {
         return this.type.kind === 'dateRange';
+    }
+
+    isCustom(): this is DataTableFilter<FilterInput, DataTableFilterCustomType> {
+        return this.type.kind === 'custom';
     }
 }
