@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { from, merge, Observable, of, Subject, switchMap } from 'rxjs';
+import { LanguageCode, LocalizedString } from '../../../common/generated-types';
 import { DataTableFilter } from '../../../providers/data-table/data-table-filter';
 import { FilterWithValue } from '../../../providers/data-table/data-table-filter-collection';
 
@@ -11,7 +12,6 @@ import { FilterWithValue } from '../../../providers/data-table/data-table-filter
 })
 export class DataTableFilterLabelComponent implements OnInit {
     @Input() filterWithValue: FilterWithValue;
-
     protected customFilterLabel$?: Observable<string>;
 
     ngOnInit() {

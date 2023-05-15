@@ -1,4 +1,4 @@
-<span>{{ filterWithValue.filter.label | translate }}:</span>
+<span><vdr-localized-text [text]="filterWithValue.filter.label" />:</span>
 <div>
     <ng-container *ngIf="filterWithValue.isSelect()">
         {{ filterWithValue.value?.join(', ') }}
@@ -7,9 +7,7 @@
         <span *ngIf="filterWithValue.value?.operator === 'contains'">{{
             'common.operator-contains' | translate
         }}</span>
-        <span *ngIf="filterWithValue.value?.operator === 'eq'">{{
-            'common.operator-eq' | translate
-        }}</span>
+        <span *ngIf="filterWithValue.value?.operator === 'eq'">{{ 'common.operator-eq' | translate }}</span>
         <span *ngIf="filterWithValue.value?.operator === 'notContains'">{{
             'common.operator-notContains' | translate
         }}</span>

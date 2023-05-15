@@ -13,6 +13,7 @@ import {
     ViewChildren,
 } from '@angular/core';
 import {
+    DataService,
     DataTable2Component,
     GetCollectionListQuery,
     ItemOf,
@@ -49,9 +50,10 @@ export class CollectionDataTableComponent
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
         protected localStorageService: LocalStorageService,
+        protected dataService: DataService,
         private dragDrop: DragDrop,
     ) {
-        super(changeDetectorRef, localStorageService);
+        super(changeDetectorRef, localStorageService, dataService);
     }
 
     ngOnInit() {

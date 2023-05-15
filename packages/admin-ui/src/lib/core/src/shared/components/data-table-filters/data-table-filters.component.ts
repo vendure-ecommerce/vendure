@@ -10,7 +10,7 @@ import {
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { FormInputComponent } from '../../../common/component-registry-types';
-import { DateOperators } from '../../../common/generated-types';
+import { DateOperators, LanguageCode } from '../../../common/generated-types';
 import { DataTableFilter, KindValueMap } from '../../../providers/data-table/data-table-filter';
 import {
     DataTableFilterCollection,

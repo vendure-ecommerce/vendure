@@ -144,4 +144,9 @@
             {{ 'catalog.variant-count' | translate : { count: product.variantList?.totalItems } }}
         </ng-template>
     </vdr-dt2-column>
+    <vdr-dt2-custom-field-column
+        *ngFor="let customField of customFields"
+        [customField]="customField"
+        [sorts]="sorts"
+    />
 </vdr-data-table-2>

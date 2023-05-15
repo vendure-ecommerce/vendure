@@ -57,34 +57,41 @@ export const COLLECTION_FRAGMENT = gql`
     ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
+export const COLLECTION_FOR_LIST_FRAGMENT = gql`
+    fragment CollectionForList on Collection {
+        id
+        createdAt
+        updatedAt
+        name
+        slug
+        position
+        isPrivate
+        breadcrumbs {
+            id
+            name
+            slug
+        }
+        featuredAsset {
+            ...Asset
+        }
+        parentId
+        children {
+            id
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
 export const GET_COLLECTION_LIST = gql`
     query GetCollectionList($options: CollectionListOptions) {
         collections(options: $options) {
             items {
-                id
-                createdAt
-                updatedAt
-                name
-                slug
-                position
-                isPrivate
-                breadcrumbs {
-                    id
-                    name
-                    slug
-                }
-                featuredAsset {
-                    ...Asset
-                }
-                parentId
-                children {
-                    id
-                }
+                ...CollectionForList
             }
             totalItems
         }
     }
-    ${ASSET_FRAGMENT}
+    ${COLLECTION_FOR_LIST_FRAGMENT}
 `;
 
 export const GET_COLLECTION = gql`

@@ -1,4 +1,5 @@
 import { Component, ContentChild, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { LocalizedString } from '../../../common/generated-types';
 import { DataTableSort } from '../../../providers/data-table/data-table-sort';
 
 @Component({
@@ -13,16 +14,18 @@ export class DataTable2ColumnComponent<T> implements OnInit {
     @Input() expand = false;
     @Input() heading: string;
     @Input() align: 'left' | 'right' | 'center' = 'left';
-    @Input() sort: DataTableSort<any>;
+    @Input() sort?: DataTableSort<any>;
     @Input() optional = true;
     @Input() hiddenByDefault = false;
     #visible = true;
     #onColumnChangeFns: Array<() => void> = [];
+    get id(): string {
+        return this.heading.toLowerCase().replace(/ /g, '-');
+    }
     get visible() {
         return this.#visible;
     }
     @ContentChild(TemplateRef, { static: false }) template: TemplateRef<any>;
-    item: T;
 
     ngOnInit() {
         this.#visible = this.hiddenByDefault ? false : true;

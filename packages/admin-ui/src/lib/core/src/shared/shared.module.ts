@@ -40,6 +40,7 @@ import { CustomDetailComponentHostComponent } from './components/custom-detail-c
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 import { DataTable2ColumnComponent } from './components/data-table-2/data-table-column.component';
+import { DataTableCustomFieldColumnComponent } from './components/data-table-2/data-table-custom-field-column.component';
 import { DataTable2SearchComponent } from './components/data-table-2/data-table-search.component';
 import { DataTable2Component } from './components/data-table-2/data-table2.component';
 import { DataTableColumnPickerComponent } from './components/data-table-column-picker/data-table-column-picker.component';
@@ -158,6 +159,7 @@ import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 import { PageComponent } from './components/page/page.component';
+import { LocalizedTextComponent } from './components/localized-text/localized-text.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -277,6 +279,7 @@ const DECLARATIONS = [
     DataTableFilterLabelComponent,
     DataTableColumnPickerComponent,
     DataTable2SearchComponent,
+    DataTableCustomFieldColumnComponent,
     SplitViewComponent,
     SplitViewLeftDirective,
     SplitViewRightDirective,
@@ -314,6 +317,7 @@ const DYNAMIC_FORM_INPUTS = [
     PageHeaderDescriptionComponent,
     PageHeaderTabsComponent,
     PageBodyComponent,
+    LocalizedTextComponent,
 ];
 
 @NgModule({

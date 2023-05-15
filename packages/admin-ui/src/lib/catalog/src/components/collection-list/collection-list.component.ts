@@ -35,6 +35,7 @@ export class CollectionListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     expandedIds: string[] = [];
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Collection');
 
     readonly filters = this.dataTableService
         .createFilterCollection<CollectionFilterParameter>()

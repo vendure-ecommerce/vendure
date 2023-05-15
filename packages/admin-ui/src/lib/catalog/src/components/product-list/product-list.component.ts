@@ -38,6 +38,8 @@ export class ProductListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Product');
+
     readonly filters = this.dataTableService
         .createFilterCollection<ProductFilterParameter>()
         .addDateFilters()
@@ -90,6 +92,7 @@ export class ProductListComponent
                 },
             }),
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -100,6 +103,7 @@ export class ProductListComponent
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
         .addSort({ name: 'slug' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
@@ -107,9 +111,9 @@ export class ProductListComponent
         private modalService: ModalService,
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
-        private serverConfigService: ServerConfigService,
         private dataTableService: DataTableService,
         private navBuilderService: NavBuilderService,
+        private serverConfigService: ServerConfigService,
         router: Router,
         route: ActivatedRoute,
     ) {

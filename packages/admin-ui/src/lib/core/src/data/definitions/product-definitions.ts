@@ -364,34 +364,41 @@ export const GET_PRODUCT_SIMPLE = gql`
     ${ASSET_FRAGMENT}
 `;
 
+export const PRODUCT_FOR_LIST_FRAGMENT = gql`
+    fragment ProductForList on Product {
+        id
+        createdAt
+        updatedAt
+        enabled
+        languageCode
+        name
+        slug
+        featuredAsset {
+            id
+            createdAt
+            updatedAt
+            preview
+            focalPoint {
+                x
+                y
+            }
+        }
+        variantList {
+            totalItems
+        }
+    }
+`;
+
 export const GET_PRODUCT_LIST = gql`
     query GetProductList($options: ProductListOptions) {
         products(options: $options) {
             items {
-                id
-                createdAt
-                updatedAt
-                enabled
-                languageCode
-                name
-                slug
-                featuredAsset {
-                    id
-                    createdAt
-                    updatedAt
-                    preview
-                    focalPoint {
-                        x
-                        y
-                    }
-                }
-                variantList {
-                    totalItems
-                }
+                ...ProductForList
             }
             totalItems
         }
     }
+    ${PRODUCT_FOR_LIST_FRAGMENT}
 `;
 
 export const GET_PRODUCT_OPTION_GROUPS = gql`

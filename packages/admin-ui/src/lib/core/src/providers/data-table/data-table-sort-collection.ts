@@ -1,5 +1,8 @@
 import { ActivatedRoute, Router } from '@angular/router';
+import { CustomFieldType } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Subject } from 'rxjs';
+import { CustomFieldConfig } from '../../common/generated-types';
 import { DataTableSort, DataTableSortOptions, DataTableSortOrder } from './data-table-sort';
 
 export class DataTableSortCollection<
@@ -29,6 +32,33 @@ export class DataTableSortCollection<
         }
         this.#sorts.push(new DataTableSort<SortInput>(config, () => this.onSetValue()));
         return this as unknown as DataTableSortCollection<SortInput, [...Names, Name]>;
+    }
+
+    addCustomFieldSorts(customFields: CustomFieldConfig[]) {
+        for (const config of customFields) {
+            const type = config.type as CustomFieldType;
+            if (config.list) {
+                continue;
+            }
+            switch (type) {
+                case 'string':
+                case 'localeString':
+                case 'boolean':
+                case 'int':
+                case 'float':
+                case 'datetime':
+                case 'localeText':
+                case 'text':
+                    this.addSort({ name: config.name });
+                    break;
+                case 'relation':
+                    // Cannot sort relations
+                    break;
+                default:
+                    assertNever(type);
+            }
+        }
+        return this;
     }
 
     defaultSort(name: keyof SortInput, sortOrder: DataTableSortOrder) {

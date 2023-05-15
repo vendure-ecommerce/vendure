@@ -19,13 +19,13 @@
             <div class="filter-heading">Filter by:</div>
             <div *ngFor="let filter of filters.getFilters()">
                 <button vdrDropdownItem (click)="selectFilter(filter)">
-                    {{ filter.label | translate }}
+                    <vdr-localized-text [text]="filter?.label" />
                 </button>
             </div>
         </div>
 
         <div class="filter-heading" *ngIf="selectedFilter">
-            Filter by {{ selectedFilter.label | translate }}:
+            Filter by <vdr-localized-text [text]="selectedFilter.label" />:
         </div>
         <div class="mx-2 mt-1">
             <div vdrCustomFilterComponentHost #customComponentHost></div>

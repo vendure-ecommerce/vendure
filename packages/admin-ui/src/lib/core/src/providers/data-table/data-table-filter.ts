@@ -1,4 +1,5 @@
 import { Type as ComponentType } from '@angular/core';
+import { LocalizedString } from '@vendure/common/lib/generated-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { FormInputComponent } from '../../common/component-registry-types';
 import {
@@ -67,7 +68,7 @@ export interface DataTableFilterOptions<
 > {
     readonly name: string;
     readonly type: Type;
-    readonly label: string;
+    readonly label: string | LocalizedString[];
     readonly filterField?: keyof FilterInput;
     readonly toFilterInput?: (value: DataTableFilterValue<Type>) => Partial<FilterInput>;
 }
@@ -95,7 +96,7 @@ export class DataTableFilter<
         return this.options.type;
     }
 
-    get label(): string {
+    get label(): string | LocalizedString[] {
         return this.options.label;
     }
 

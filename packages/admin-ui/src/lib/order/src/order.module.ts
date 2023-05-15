@@ -80,5 +80,6 @@ import { orderRoutes } from './order.routes';
         OrderHistoryEntryHostComponent,
         SellerOrdersCardComponent,
     ],
+    exports: [OrderCustomFieldsCardComponent],
 })
 export class OrderModule {}

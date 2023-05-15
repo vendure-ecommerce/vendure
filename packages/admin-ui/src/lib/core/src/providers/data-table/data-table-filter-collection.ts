@@ -1,9 +1,15 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Subject } from 'rxjs';
 import extend from 'just-extend';
-import { DateOperators, NumberOperators, StringOperators } from '../../common/generated-types';
+import {
+    CustomFieldConfig,
+    DateOperators,
+    NumberOperators,
+    StringOperators,
+} from '../../common/generated-types';
 import {
     DataTableFilter,
     DataTableFilterBooleanType,
@@ -116,6 +122,48 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             filterField: 'updatedAt',
         });
         return this as any;
+    }
+
+    addCustomFieldFilters(customFields: CustomFieldConfig[]) {
+        for (const config of customFields) {
+            const type = config.type as CustomFieldType;
+            if (config.list) {
+                continue;
+            }
+            let filterType: DataTableFilterType | undefined;
+            switch (type) {
+                case 'boolean':
+                    filterType = { kind: 'boolean' };
+                    break;
+                case 'int':
+                case 'float':
+                    filterType = { kind: 'number' };
+                    break;
+                case 'datetime':
+                    filterType = { kind: 'dateRange' };
+                    break;
+                case 'string':
+                case 'localeString':
+                case 'localeText':
+                case 'text':
+                    filterType = { kind: 'text' };
+                    break;
+                case 'relation':
+                    // Cannot sort relations
+                    break;
+                default:
+                    assertNever(type);
+            }
+            if (filterType) {
+                this.addFilter({
+                    name: config.name,
+                    type: filterType,
+                    label: config.label ?? config.name,
+                    filterField: config.name,
+                });
+            }
+        }
+        return this;
     }
 
     getFilter(name: string): DataTableFilter<FilterInput> | undefined {

@@ -793,9 +793,20 @@ export type CreatePaymentMethodInput = {
   translations: Array<PaymentMethodTranslationInput>;
 };
 
+export type CreateProductCustomFieldsInput = {
+  boost?: InputMaybe<Scalars['Int']>;
+  keyFeatures?: InputMaybe<Scalars['String']>;
+  minimumOrderQuantity?: InputMaybe<Scalars['Int']>;
+  pageType?: InputMaybe<Scalars['String']>;
+  searchKeywords?: InputMaybe<Scalars['String']>;
+  seoImageId?: InputMaybe<Scalars['ID']>;
+  variantOrdering?: InputMaybe<Scalars['String']>;
+  videoUrls?: InputMaybe<Array<Scalars['String']>>;
+};
+
 export type CreateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<Scalars['JSON']>;
+  customFields?: InputMaybe<CreateProductCustomFieldsInput>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
@@ -4392,7 +4403,7 @@ export type Product = Node & {
   channels: Array<Channel>;
   collections: Array<Collection>;
   createdAt: Scalars['DateTime'];
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ProductCustomFields>;
   description: Scalars['String'];
   enabled: Scalars['Boolean'];
   facetValues: Array<FacetValue>;
@@ -4415,16 +4426,39 @@ export type ProductVariantListArgs = {
   options?: InputMaybe<ProductVariantListOptions>;
 };
 
+export type ProductCustomFields = {
+  __typename?: 'ProductCustomFields';
+  boost?: Maybe<Scalars['Int']>;
+  keyFeatures?: Maybe<Scalars['String']>;
+  minimumOrderQuantity?: Maybe<Scalars['Int']>;
+  pageType?: Maybe<Scalars['String']>;
+  searchKeywords?: Maybe<Scalars['String']>;
+  seoDescription?: Maybe<Scalars['String']>;
+  seoImage?: Maybe<Asset>;
+  seoTitle?: Maybe<Scalars['String']>;
+  variantOrdering?: Maybe<Scalars['String']>;
+  videoUrls?: Maybe<Array<Scalars['String']>>;
+};
+
 export type ProductFilterParameter = {
+  boost?: InputMaybe<NumberOperators>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
   facetValueId?: InputMaybe<IdOperators>;
   id?: InputMaybe<IdOperators>;
+  keyFeatures?: InputMaybe<StringOperators>;
   languageCode?: InputMaybe<StringOperators>;
+  minimumOrderQuantity?: InputMaybe<NumberOperators>;
   name?: InputMaybe<StringOperators>;
+  pageType?: InputMaybe<StringOperators>;
+  searchKeywords?: InputMaybe<StringOperators>;
+  seoDescription?: InputMaybe<StringOperators>;
+  seoTitle?: InputMaybe<StringOperators>;
   slug?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
+  variantOrdering?: InputMaybe<StringOperators>;
+  videoUrls?: InputMaybe<StringListOperators>;
 };
 
 export type ProductList = PaginatedList & {
@@ -4514,17 +4548,27 @@ export type ProductOptionTranslationInput = {
 };
 
 export type ProductSortParameter = {
+  boost?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
+  keyFeatures?: InputMaybe<SortOrder>;
+  minimumOrderQuantity?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
+  pageType?: InputMaybe<SortOrder>;
+  searchKeywords?: InputMaybe<SortOrder>;
+  seoDescription?: InputMaybe<SortOrder>;
+  seoImage?: InputMaybe<SortOrder>;
+  seoTitle?: InputMaybe<SortOrder>;
   slug?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+  variantOrdering?: InputMaybe<SortOrder>;
 };
 
 export type ProductTranslation = {
   __typename?: 'ProductTranslation';
   createdAt: Scalars['DateTime'];
+  customFields?: Maybe<ProductTranslationCustomFields>;
   description: Scalars['String'];
   id: Scalars['ID'];
   languageCode: LanguageCode;
@@ -4533,13 +4577,24 @@ export type ProductTranslation = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type ProductTranslationCustomFields = {
+  __typename?: 'ProductTranslationCustomFields';
+  seoDescription?: Maybe<Scalars['String']>;
+  seoTitle?: Maybe<Scalars['String']>;
+};
+
 export type ProductTranslationInput = {
-  customFields?: InputMaybe<Scalars['JSON']>;
+  customFields?: InputMaybe<ProductTranslationInputCustomFields>;
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   languageCode: LanguageCode;
   name?: InputMaybe<Scalars['String']>;
   slug?: InputMaybe<Scalars['String']>;
+};
+
+export type ProductTranslationInputCustomFields = {
+  seoDescription?: InputMaybe<Scalars['String']>;
+  seoTitle?: InputMaybe<Scalars['String']>;
 };
 
 export type ProductVariant = Node & {
@@ -6173,9 +6228,20 @@ export type UpdatePaymentMethodInput = {
   translations?: InputMaybe<Array<PaymentMethodTranslationInput>>;
 };
 
+export type UpdateProductCustomFieldsInput = {
+  boost?: InputMaybe<Scalars['Int']>;
+  keyFeatures?: InputMaybe<Scalars['String']>;
+  minimumOrderQuantity?: InputMaybe<Scalars['Int']>;
+  pageType?: InputMaybe<Scalars['String']>;
+  searchKeywords?: InputMaybe<Scalars['String']>;
+  seoImageId?: InputMaybe<Scalars['ID']>;
+  variantOrdering?: InputMaybe<Scalars['String']>;
+  videoUrls?: InputMaybe<Array<Scalars['String']>>;
+};
+
 export type UpdateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<Scalars['JSON']>;
+  customFields?: InputMaybe<UpdateProductCustomFieldsInput>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
@@ -6630,6 +6696,8 @@ export type GetCollectionFiltersQueryVariables = Exact<{ [key: string]: never; }
 export type GetCollectionFiltersQuery = { collectionFilters: Array<{ __typename?: 'ConfigurableOperationDefinition', code: string, description: string, args: Array<{ __typename?: 'ConfigArgDefinition', name: string, type: string, required: boolean, defaultValue?: any | null, list: boolean, ui?: any | null, label?: string | null, description?: string | null }> }> };
 
 export type CollectionFragment = { __typename?: 'Collection', id: string, createdAt: any, updatedAt: any, name: string, slug: string, description: string, isPrivate: boolean, languageCode?: LanguageCode | null, inheritFilters: boolean, breadcrumbs: Array<{ __typename?: 'CollectionBreadcrumb', id: string, name: string, slug: string }>, featuredAsset?: { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, name: string, fileSize: number, mimeType: string, type: AssetType, preview: string, source: string, width: number, height: number, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null, assets: Array<{ __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, name: string, fileSize: number, mimeType: string, type: AssetType, preview: string, source: string, width: number, height: number, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null }>, filters: Array<{ __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> }>, translations: Array<{ __typename?: 'CollectionTranslation', id: string, languageCode: LanguageCode, name: string, slug: string, description: string }>, parent?: { __typename?: 'Collection', id: string, name: string } | null, children?: Array<{ __typename?: 'Collection', id: string, name: string }> | null };
+
+export type CollectionForListFragment = { __typename?: 'Collection', id: string, createdAt: any, updatedAt: any, name: string, slug: string, position: number, isPrivate: boolean, parentId: string, breadcrumbs: Array<{ __typename?: 'CollectionBreadcrumb', id: string, name: string, slug: string }>, featuredAsset?: { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, name: string, fileSize: number, mimeType: string, type: AssetType, preview: string, source: string, width: number, height: number, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null, children?: Array<{ __typename?: 'Collection', id: string }> | null };
 
 export type GetCollectionListQueryVariables = Exact<{
   options?: InputMaybe<CollectionListOptions>;
@@ -7318,6 +7386,8 @@ export type GetProductSimpleQueryVariables = Exact<{
 
 
 export type GetProductSimpleQuery = { product?: { __typename?: 'Product', id: string, name: string, featuredAsset?: { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, name: string, fileSize: number, mimeType: string, type: AssetType, preview: string, source: string, width: number, height: number, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null } | null };
+
+export type ProductForListFragment = { __typename?: 'Product', id: string, createdAt: any, updatedAt: any, enabled: boolean, languageCode: LanguageCode, name: string, slug: string, featuredAsset?: { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, preview: string, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null, variantList: { __typename?: 'ProductVariantList', totalItems: number } };
 
 export type GetProductListQueryVariables = Exact<{
   options?: InputMaybe<ProductListOptions>;

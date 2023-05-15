@@ -33,7 +33,8 @@
 
                     <div *ngIf="isLast" class="column-picker">
                         <vdr-data-table-colum-picker
-                            [columns]="columns?.toArray()"
+                            [uiLanguage]="uiLanguage$ | async"
+                            [columns]="allColumns"
                         ></vdr-data-table-colum-picker>
                     </div>
                 </th>

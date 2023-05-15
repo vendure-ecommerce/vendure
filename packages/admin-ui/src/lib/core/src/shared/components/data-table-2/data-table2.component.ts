@@ -15,14 +15,19 @@ import {
     SimpleChanges,
     TemplateRef,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BulkActionMenuComponent, LocalStorageService } from '@vendure/admin-ui/core';
+import {
+    BulkActionMenuComponent,
+    DataService,
+    LanguageCode,
+    LocalStorageService,
+} from '@vendure/admin-ui/core';
 import { PaginationService } from 'ngx-pagination';
-import { Subscription } from 'rxjs';
-import { SelectionManager } from '../../../common/utilities/selection-manager';
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
 
 import { DataTable2ColumnComponent } from './data-table-column.component';
+import { DataTableCustomFieldColumnComponent } from './data-table-custom-field-column.component';
 import { DataTable2SearchComponent } from './data-table-search.component';
 
 /**
@@ -104,6 +109,8 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     @Output() itemsPerPageChange = new EventEmitter<number>();
 
     @ContentChildren(DataTable2ColumnComponent) columns: QueryList<DataTable2ColumnComponent<T>>;
+    @ContentChildren(DataTableCustomFieldColumnComponent)
+    customFieldColumns: QueryList<DataTableCustomFieldColumnComponent<T>>;
     @ContentChild(DataTable2SearchComponent) searchComponent: DataTable2SearchComponent;
     @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
     @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
@@ -115,19 +122,32 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
     // which allows shift-click multi-row selection
     disableSelect = false;
     showSearchFilterRow = false;
+    protected uiLanguage$: Observable<LanguageCode>;
     private subscription: Subscription | undefined;
 
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
         protected localStorageService: LocalStorageService,
-    ) {}
+        protected dataService: DataService,
+    ) {
+        this.uiLanguage$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => uiState.language));
+    }
 
     get selectionManager() {
         return this.bulkActionMenuComponent?.selectionManager;
     }
 
+    get allColumns() {
+        return [...(this.columns ?? []), ...(this.customFieldColumns ?? [])];
+    }
+
     get visibleColumns() {
-        return this.columns?.filter(c => c.visible) ?? [];
+        return [
+            ...(this.columns?.filter(c => c.visible) ?? []),
+            ...(this.customFieldColumns?.filter(c => c.visible) ?? []),
+        ];
     }
 
     private shiftDownHandler = (event: KeyboardEvent) => {
@@ -177,14 +197,14 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
             if (!dataTableConfig[this.id]) {
                 dataTableConfig[this.id] = { visibility: [], showSearchFilterRow: false };
             }
-            dataTableConfig[this.id].visibility = this.columns
+            dataTableConfig[this.id].visibility = this.allColumns
                 .filter(c => (c.visible && c.hiddenByDefault) || (!c.visible && !c.hiddenByDefault))
-                .map(c => c.heading);
+                .map(c => c.id);
             this.localStorageService.set('dataTableConfig', dataTableConfig);
         };
 
-        this.columns.forEach(column => {
-            if (dataTableConfig?.[this.id]?.visibility.includes(column.heading)) {
+        this.allColumns.forEach(column => {
+            if (dataTableConfig?.[this.id]?.visibility.includes(column.id)) {
                 column.setVisibility(column.hiddenByDefault);
             }
             column.onColumnChange(updateColumnVisibility);

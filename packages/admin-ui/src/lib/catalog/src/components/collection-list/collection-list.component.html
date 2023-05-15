@@ -95,10 +95,7 @@
                             *ngIf="collection.children?.length"
                             (click)="toggleExpanded(collection)"
                         >
-                            <clr-icon
-                                shape="folder"
-                                *ngIf="!expandedIds.includes(collection.id)"
-                            ></clr-icon>
+                            <clr-icon shape="folder" *ngIf="!expandedIds.includes(collection.id)"></clr-icon>
                             <clr-icon
                                 shape="folder-open"
                                 *ngIf="expandedIds.includes(collection.id)"
@@ -129,10 +126,7 @@
                         {{ collection.slug }}
                     </ng-template>
                 </vdr-dt2-column>
-                <vdr-dt2-column
-                    [heading]="'common.view-contents' | translate"
-                    [optional]="false"
-                >
+                <vdr-dt2-column [heading]="'common.view-contents' | translate" [optional]="false">
                     <ng-template let-collection="item">
                         <a
                             class="button-small bg-weight-150"
@@ -144,11 +138,17 @@
                         </a>
                     </ng-template>
                 </vdr-dt2-column>
+                <vdr-dt2-custom-field-column
+                    *ngFor="let customField of customFields"
+                    [customField]="customField"
+                />
             </vdr-collection-data-table>
         </ng-template>
         <ng-template vdrSplitViewRight [splitViewTitle]="activeCollectionTitle$ | async">
             <ng-container *ngIf="activeCollectionId$ | async as activeGroup">
-                <vdr-collection-contents [collectionId]="activeCollectionId$ | async"></vdr-collection-contents>
+                <vdr-collection-contents
+                    [collectionId]="activeCollectionId$ | async"
+                ></vdr-collection-contents>
             </ng-container>
         </ng-template>
     </vdr-split-view>
