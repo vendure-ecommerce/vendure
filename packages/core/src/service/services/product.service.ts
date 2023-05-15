@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import {
     AssignProductsToChannelInput,
     CreateProductInput,
+    CustomerListOptions,
     DeletionResponse,
     DeletionResult,
+    ProductListOptions,
     RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
     UpdateProductInput,
@@ -78,12 +80,20 @@ export class ProductService {
         options?: ListQueryOptions<Product>,
         relations?: RelationPaths<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
+        const effectiveRelations = relations || this.relations;
+        const customPropertyMap: { [name: string]: string } = {};
+        const hasFacetValueIdFilter = !!(options as ProductListOptions)?.filter?.facetValueId;
+        if (hasFacetValueIdFilter) {
+            effectiveRelations.push('facetValues');
+            customPropertyMap.facetValueId = 'facetValues.id';
+        }
         return this.listQueryBuilder
             .build(Product, options, {
-                relations: relations || this.relations,
+                relations: effectiveRelations,
                 channelId: ctx.channelId,
                 where: { deletedAt: IsNull() },
                 ctx,
+                customPropertyMap,
             })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {

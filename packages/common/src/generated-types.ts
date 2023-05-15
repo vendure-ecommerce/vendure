@@ -4351,6 +4351,7 @@ export type ProductFilterParameter = {
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
+  facetValueId?: InputMaybe<IdOperators>;
   id?: InputMaybe<IdOperators>;
   languageCode?: InputMaybe<StringOperators>;
   name?: InputMaybe<StringOperators>;
@@ -4517,6 +4518,7 @@ export type ProductVariantFilterParameter = {
   createdAt?: InputMaybe<DateOperators>;
   currencyCode?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
+  facetValueId?: InputMaybe<IdOperators>;
   id?: InputMaybe<IdOperators>;
   languageCode?: InputMaybe<StringOperators>;
   name?: InputMaybe<StringOperators>;

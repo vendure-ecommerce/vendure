@@ -6,6 +6,8 @@ import {
     DeletionResult,
     GlobalFlag,
     Permission,
+    ProductListOptions,
+    ProductVariantListOptions,
     RemoveProductVariantsFromChannelInput,
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
@@ -88,12 +90,19 @@ export class ProductVariantService {
         options?: ListQueryOptions<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         const relations = ['featuredAsset', 'taxCategory', 'channels'];
+        const customPropertyMap: { [name: string]: string } = {};
+        const hasFacetValueIdFilter = !!(options as ProductVariantListOptions)?.filter?.facetValueId;
+        if (hasFacetValueIdFilter) {
+            relations.push('facetValues');
+            customPropertyMap.facetValueId = 'facetValues.id';
+        }
         return this.listQueryBuilder
             .build(ProductVariant, options, {
                 relations,
                 channelId: ctx.channelId,
                 where: { deletedAt: IsNull() },
                 ctx,
+                customPropertyMap,
             })
             .getManyAndCount()
             .then(async ([variants, totalItems]) => {
