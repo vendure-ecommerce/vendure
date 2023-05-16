@@ -793,20 +793,9 @@ export type CreatePaymentMethodInput = {
   translations: Array<PaymentMethodTranslationInput>;
 };
 
-export type CreateProductCustomFieldsInput = {
-  boost?: InputMaybe<Scalars['Int']>;
-  keyFeatures?: InputMaybe<Scalars['String']>;
-  minimumOrderQuantity?: InputMaybe<Scalars['Int']>;
-  pageType?: InputMaybe<Scalars['String']>;
-  searchKeywords?: InputMaybe<Scalars['String']>;
-  seoImageId?: InputMaybe<Scalars['ID']>;
-  variantOrdering?: InputMaybe<Scalars['String']>;
-  videoUrls?: InputMaybe<Array<Scalars['String']>>;
-};
-
 export type CreateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<CreateProductCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
@@ -4403,7 +4392,7 @@ export type Product = Node & {
   channels: Array<Channel>;
   collections: Array<Collection>;
   createdAt: Scalars['DateTime'];
-  customFields?: Maybe<ProductCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
   description: Scalars['String'];
   enabled: Scalars['Boolean'];
   facetValues: Array<FacetValue>;
@@ -4426,39 +4415,16 @@ export type ProductVariantListArgs = {
   options?: InputMaybe<ProductVariantListOptions>;
 };
 
-export type ProductCustomFields = {
-  __typename?: 'ProductCustomFields';
-  boost?: Maybe<Scalars['Int']>;
-  keyFeatures?: Maybe<Scalars['String']>;
-  minimumOrderQuantity?: Maybe<Scalars['Int']>;
-  pageType?: Maybe<Scalars['String']>;
-  searchKeywords?: Maybe<Scalars['String']>;
-  seoDescription?: Maybe<Scalars['String']>;
-  seoImage?: Maybe<Asset>;
-  seoTitle?: Maybe<Scalars['String']>;
-  variantOrdering?: Maybe<Scalars['String']>;
-  videoUrls?: Maybe<Array<Scalars['String']>>;
-};
-
 export type ProductFilterParameter = {
-  boost?: InputMaybe<NumberOperators>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
   facetValueId?: InputMaybe<IdOperators>;
   id?: InputMaybe<IdOperators>;
-  keyFeatures?: InputMaybe<StringOperators>;
   languageCode?: InputMaybe<StringOperators>;
-  minimumOrderQuantity?: InputMaybe<NumberOperators>;
   name?: InputMaybe<StringOperators>;
-  pageType?: InputMaybe<StringOperators>;
-  searchKeywords?: InputMaybe<StringOperators>;
-  seoDescription?: InputMaybe<StringOperators>;
-  seoTitle?: InputMaybe<StringOperators>;
   slug?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
-  variantOrdering?: InputMaybe<StringOperators>;
-  videoUrls?: InputMaybe<StringListOperators>;
 };
 
 export type ProductList = PaginatedList & {
@@ -4548,27 +4514,17 @@ export type ProductOptionTranslationInput = {
 };
 
 export type ProductSortParameter = {
-  boost?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
-  keyFeatures?: InputMaybe<SortOrder>;
-  minimumOrderQuantity?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
-  pageType?: InputMaybe<SortOrder>;
-  searchKeywords?: InputMaybe<SortOrder>;
-  seoDescription?: InputMaybe<SortOrder>;
-  seoImage?: InputMaybe<SortOrder>;
-  seoTitle?: InputMaybe<SortOrder>;
   slug?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
-  variantOrdering?: InputMaybe<SortOrder>;
 };
 
 export type ProductTranslation = {
   __typename?: 'ProductTranslation';
   createdAt: Scalars['DateTime'];
-  customFields?: Maybe<ProductTranslationCustomFields>;
   description: Scalars['String'];
   id: Scalars['ID'];
   languageCode: LanguageCode;
@@ -4577,24 +4533,13 @@ export type ProductTranslation = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type ProductTranslationCustomFields = {
-  __typename?: 'ProductTranslationCustomFields';
-  seoDescription?: Maybe<Scalars['String']>;
-  seoTitle?: Maybe<Scalars['String']>;
-};
-
 export type ProductTranslationInput = {
-  customFields?: InputMaybe<ProductTranslationInputCustomFields>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['ID']>;
   languageCode: LanguageCode;
   name?: InputMaybe<Scalars['String']>;
   slug?: InputMaybe<Scalars['String']>;
-};
-
-export type ProductTranslationInputCustomFields = {
-  seoDescription?: InputMaybe<Scalars['String']>;
-  seoTitle?: InputMaybe<Scalars['String']>;
 };
 
 export type ProductVariant = Node & {
@@ -6228,20 +6173,9 @@ export type UpdatePaymentMethodInput = {
   translations?: InputMaybe<Array<PaymentMethodTranslationInput>>;
 };
 
-export type UpdateProductCustomFieldsInput = {
-  boost?: InputMaybe<Scalars['Int']>;
-  keyFeatures?: InputMaybe<Scalars['String']>;
-  minimumOrderQuantity?: InputMaybe<Scalars['Int']>;
-  pageType?: InputMaybe<Scalars['String']>;
-  searchKeywords?: InputMaybe<Scalars['String']>;
-  seoImageId?: InputMaybe<Scalars['ID']>;
-  variantOrdering?: InputMaybe<Scalars['String']>;
-  videoUrls?: InputMaybe<Array<Scalars['String']>>;
-};
-
 export type UpdateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<UpdateProductCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
