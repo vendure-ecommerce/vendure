@@ -160,6 +160,7 @@ import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 import { PageComponent } from './components/page/page.component';
 import { LocalizedTextComponent } from './components/localized-text/localized-text.component';
+import { PageBlockComponent } from './components/page-block/page-block.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -317,6 +318,7 @@ const DYNAMIC_FORM_INPUTS = [
     PageHeaderDescriptionComponent,
     PageHeaderTabsComponent,
     PageBodyComponent,
+    PageBlockComponent,
     LocalizedTextComponent,
 ];
 

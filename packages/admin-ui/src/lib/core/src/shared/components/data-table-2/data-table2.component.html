@@ -17,7 +17,10 @@
                         (change)="onToggleAllClick()"
                     />
                 </th>
-                <th *ngFor="let column of visibleSortedColumns; last as isLast" [class.expand]="column.expand">
+                <th
+                    *ngFor="let column of visibleSortedColumns; last as isLast"
+                    [class.expand]="column.expand"
+                >
                     <div class="cell-content" [ngClass]="column.align">
                         <span>{{ column.heading }}</span>
                         <div *ngIf="column.sort as sort" class="sort-toggle">
@@ -29,8 +32,9 @@
                             <div class="sort-label" *ngIf="sort.sortOrder">{{ sort.sortOrder }}</div>
                         </div>
                     </div>
-
-                    <div *ngIf="isLast" class="column-picker">
+                </th>
+                <th>
+                    <div class="column-picker">
                         <vdr-data-table-colum-picker
                             [uiLanguage]="uiLanguage$ | async"
                             [columns]="sortedColumns"
@@ -41,7 +45,7 @@
             </tr>
             <tr *ngIf="searchComponent || customSearchTemplate || filters?.length">
                 <th
-                    [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 1 : 0)"
+                    [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)"
                     class="filter-row"
                     [class.active]="showSearchFilterRow"
                 >
@@ -105,10 +109,11 @@
                         ></ng-container>
                     </div>
                 </td>
+                <td><!-- column select --></td>
             </tr>
             <ng-container>
                 <tr *ngIf="!items?.length">
-                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 1 : 0)">
+                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)">
                         <vdr-empty-placeholder [emptyStateLabel]="emptyStateLabel"></vdr-empty-placeholder>
                     </td>
                 </tr>
@@ -116,7 +121,7 @@
         </tbody>
     </table>
 </div>
-<div class="table-footer ml-4">
+<div class="table-footer">
     <vdr-items-per-page-controls
         *ngIf="totalItems"
         [itemsPerPage]="itemsPerPage"

@@ -34,7 +34,7 @@
                     <div *ngIf="isLast" class="column-picker">
                         <vdr-data-table-colum-picker
                             [uiLanguage]="uiLanguage$ | async"
-                            [columns]="allColumns"
+                            [columns]="sortedColumns"
                             (reorder)="onColumnReorder($event)"
                         ></vdr-data-table-colum-picker>
                     </div>

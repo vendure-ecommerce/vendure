@@ -25,6 +25,7 @@
     align-items: center;
     justify-content: space-between;
     padding: calc(var(--space-unit) * 4);
+    padding-left: var(--surface-margin-left);
     background-color: var(--page-header-color);
 }
 

@@ -1,10 +1,11 @@
-<div class="flex wrap ml-4">
+<vdr-page-block>
     <vdr-language-selector
         [availableLanguageCodes]="availableLanguages$ | async"
         [currentLanguageCode]="contentLanguage$ | async"
         (languageCodeChange)="setLanguage($event)"
     ></vdr-language-selector>
-</div>
+    some content
+</vdr-page-block>
 <vdr-data-table-2
     class="mt-2"
     id="product-list"

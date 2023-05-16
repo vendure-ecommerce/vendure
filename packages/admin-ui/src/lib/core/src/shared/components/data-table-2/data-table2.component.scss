@@ -1,3 +1,5 @@
+@import 'variables';
+
 :host {
     display: block;
     max-width: 100%;
@@ -6,7 +8,13 @@
 }
 
 .bulk-actions {
-    margin-left: calc(var(--space-unit) * 8);
+    margin-left: calc(var(--space-unit) * 5);
+    @media screen and (min-width: $breakpoint-medium) {
+        margin-left: calc(var(--space-unit) * 8.5);
+    }
+    @media screen and (min-width: $breakpoint-large) {
+        margin-left: calc(var(--space-unit) * 10.5);
+    }
     // gradient bg from white to transparent
     background-image: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
     z-index: 10;
@@ -28,9 +36,7 @@ table.no-select {
 }
 
 .column-picker {
-    position: absolute;
-    right: 2px;
-    top: 12px;
+    width: 24px;
 }
 
 .heading-row th {
@@ -68,6 +74,9 @@ table.no-select {
     position: absolute;
     top: -12px;
     left: 4px;
+    @media screen and (min-width: $breakpoint-large) {
+        left: 8px;
+    }
     &.active {
         background-color: var(--color-primary-700);
         color: var(--color-primary-100);
@@ -123,7 +132,7 @@ td {
 
 tr td:first-of-type,
 tr th:first-of-type {
-    padding-left: calc(var(--space-unit) * 4);
+    padding-left: var(--surface-margin-left);
 }
 
 th:last-of-type,
@@ -190,4 +199,5 @@ vdr-empty-placeholder {
     align-items: baseline;
     justify-content: space-between;
     margin-top: 6px;
+    margin-left: var(--surface-margin-left);
 }

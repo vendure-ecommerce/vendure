@@ -114,20 +114,24 @@
     --layout-content-max-width: 1600px;
     --left-nav-width: 0px;
     --surface-width: 100vw;
+    --surface-margin-left: 4px;
 
     @media screen and (min-width: $breakpoint-small) {
         --left-nav-width: 100px;
         --surface-width: calc(100vw - 100px);
+        --surface-margin-left: 4px;
     }
 
     @media screen and (min-width: $breakpoint-medium) {
         --left-nav-width: 250px;
         --surface-width: calc(100vw - 250px);
+        --surface-margin-left: calc(var(--space-unit) * 4);
     }
 
     @media screen and (min-width: $breakpoint-large) {
         --left-nav-width: 300px;
         --surface-width: calc(100vw - 300px);
+        --surface-margin-left: calc(var(--space-unit) * 6);
     }
 
     // Login page
