@@ -156,6 +156,8 @@ export const GET_COLLECTION_CONTENTS = gql`
             productVariants(options: $options) {
                 items {
                     id
+                    createdAt
+                    updatedAt
                     productId
                     name
                     sku
@@ -174,6 +176,8 @@ export const PREVIEW_COLLECTION_CONTENTS = gql`
         previewCollectionVariants(input: $input, options: $options) {
             items {
                 id
+                createdAt
+                updatedAt
                 productId
                 name
                 sku

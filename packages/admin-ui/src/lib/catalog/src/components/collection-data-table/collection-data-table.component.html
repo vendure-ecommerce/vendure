@@ -9,16 +9,21 @@
     >
         <thead [class.items-selected]="selectionManager?.selection.length">
             <tr class="heading-row">
-                <th *ngIf="selectionManager" class="flex">
-                    <div class="drag-handle-spacer"></div>
-                    <input
-                        type="checkbox"
-                        clrCheckbox
-                        [checked]="selectionManager?.areAllCurrentItemsSelected()"
-                        (change)="onToggleAllClick()"
-                    />
+                <th *ngIf="selectionManager" class="selection-col">
+                    <div class="flex">
+                        <div class="drag-handle-spacer"></div>
+                        <input
+                            type="checkbox"
+                            clrCheckbox
+                            [checked]="selectionManager?.areAllCurrentItemsSelected()"
+                            (change)="onToggleAllClick()"
+                        />
+                    </div>
                 </th>
-                <th *ngFor="let column of visibleSortedColumns; last as isLast" [class.expand]="column.expand">
+                <th
+                    *ngFor="let column of visibleSortedColumns; last as isLast"
+                    [class.expand]="column.expand"
+                >
                     <div class="cell-content" [ngClass]="column.align">
                         <span>{{ column.heading }}</span>
                         <div *ngIf="column.sort as sort" class="sort-toggle">
@@ -30,19 +35,21 @@
                             <div class="sort-label" *ngIf="sort.sortOrder">{{ sort.sortOrder }}</div>
                         </div>
                     </div>
-
-                    <div *ngIf="isLast" class="column-picker">
+                </th>
+                <th>
+                    <div class="column-picker">
                         <vdr-data-table-colum-picker
                             [uiLanguage]="uiLanguage$ | async"
                             [columns]="sortedColumns"
                             (reorder)="onColumnReorder($event)"
+                            (resetColumns)="onColumnsReset()"
                         ></vdr-data-table-colum-picker>
                     </div>
                 </th>
             </tr>
             <tr *ngIf="searchComponent || customSearchTemplate || filters?.length">
                 <th
-                    [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 1 : 0)"
+                    [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)"
                     class="filter-row"
                     [class.active]="showSearchFilterRow"
                 >
@@ -103,7 +110,7 @@
             </ng-container>
             <ng-container>
                 <tr *ngIf="!items?.length">
-                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 1 : 0)">
+                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)">
                         <vdr-empty-placeholder [emptyStateLabel]="emptyStateLabel"></vdr-empty-placeholder>
                     </td>
                 </tr>
@@ -111,13 +118,13 @@
         </tbody>
     </table>
 </div>
-<div class="table-footer ml-4">
+<div class="table-footer">
     <vdr-items-per-page-controls
         *ngIf="totalItems"
         [itemsPerPage]="itemsPerPage"
         (itemsPerPageChange)="itemsPerPageChange.emit($event)"
     ></vdr-items-per-page-controls>
-    <div *ngIf="totalItems" class="p5">
+    <div *ngIf="totalItems" class="p5 total-items-count">
         {{ 'common.total-items' | translate : { currentStart, currentEnd, totalItems } }}
     </div>
 
@@ -131,30 +138,40 @@
     ></vdr-pagination-controls>
 </div>
 
-<ng-template #collectionRowTmp let-item="item" let-i="i" let-depth="depth">
+<ng-template #collectionRowTmp let-item="item" let-depth="depth">
     <tr #collectionRow cdkDrag [cdkDragData]="{ depth: depth, collection: item }" cdkDragBoundary="tbody">
-        <td *ngIf="selectionManager" class="flex" [class.active]="activeIndex === i">
-            <div class="drag-handle" cdkDragHandle [title]="'catalog.reorder-collection' | translate">
-                <clr-icon shape="drag-handle"></clr-icon>
+        <td
+            *ngIf="selectionManager"
+            [class.active]="activeIndex === absoluteIndex[item.id]"
+            class="selection-col"
+        >
+            <div class="flex">
+                <div class="drag-handle" cdkDragHandle [title]="'catalog.reorder-collection' | translate">
+                    <clr-icon shape="drag-handle"></clr-icon>
+                </div>
+                <input
+                    type="checkbox"
+                    clrCheckbox
+                    [checked]="selectionManager?.isSelected(item)"
+                    (click)="onRowClick(item, $event)"
+                />
             </div>
-            <input
-                type="checkbox"
-                clrCheckbox
-                [checked]="selectionManager?.isSelected(item)"
-                (click)="onRowClick(item, $event)"
-            />
         </td>
-        <td *ngFor="let column of visibleSortedColumns" [class.active]="activeIndex === i">
+        <td
+            *ngFor="let column of visibleSortedColumns"
+            [class.active]="activeIndex === absoluteIndex[item.id]"
+        >
             <div class="cell-content" [ngClass]="column.align">
                 <ng-container
-                    *ngTemplateOutlet="column.template; context: { item: item, index: i, depth: depth }"
+                    *ngTemplateOutlet="column.template; context: { item: item, depth: depth }"
                 ></ng-container>
             </div>
         </td>
+        <td [class.active]="activeIndex === absoluteIndex[item.id]"><!-- column select --></td>
     </tr>
-    <ng-container *ngFor="let subCollection of getSubcollections(item); index as j">
+    <ng-container *ngFor="let subCollection of getSubcollections(item)">
         <ng-container
-            *ngTemplateOutlet="collectionRowTmp; context: { item: subCollection, i: i + j, depth: depth + 1 }"
+            *ngTemplateOutlet="collectionRowTmp; context: { item: subCollection, depth: depth + 1 }"
         ></ng-container>
     </ng-container>
 </ng-template>

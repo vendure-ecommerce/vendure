@@ -1,5 +1,9 @@
 @import "variables";
 
+:host {
+    margin-top: var(--space-unit);
+    display: block;
+}
 .page-block {
     margin-left: var(--surface-margin-left);
 }

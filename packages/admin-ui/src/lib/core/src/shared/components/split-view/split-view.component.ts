@@ -12,6 +12,7 @@ import {
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { fromEvent, merge, Observable, switchMap } from 'rxjs';
 import { map, mapTo, startWith, takeUntil } from 'rxjs/operators';
 import { SplitViewLeftDirective, SplitViewRightDirective } from './split-view.directive';
@@ -32,9 +33,10 @@ export class SplitViewComponent implements AfterContentInit, AfterViewInit {
     rightTemplate: SplitViewRightDirective;
     @ViewChild('resizeHandle', { static: true, read: ElementRef }) resizeHandle: ElementRef<HTMLDivElement>;
     protected rightPanelWidth$: Observable<number>;
+    protected leftPanelWidth$: Observable<SafeStyle>;
     protected resizing$: Observable<boolean>;
 
-    constructor(private viewContainerRef: ViewContainerRef) {}
+    constructor(private viewContainerRef: ViewContainerRef, private domSanitizer: DomSanitizer) {}
 
     ngAfterContentInit(): void {
         if (!this.leftTemplate) {
@@ -61,6 +63,9 @@ export class SplitViewComponent implements AfterContentInit, AfterViewInit {
                 return Math.max(100, Math.min(width, hostElementWidth - 100));
             }),
             startWith(hostElementWidth / 2),
+        );
+        this.leftPanelWidth$ = this.rightPanelWidth$.pipe(
+            map(width => `calc(var(--surface-width) - ${width}px)`),
         );
 
         this.resizing$ = merge(mouseDown$.pipe(mapTo(true)), mouseUp$.pipe(mapTo(false)));

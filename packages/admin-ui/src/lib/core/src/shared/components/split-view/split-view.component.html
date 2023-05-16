@@ -1,5 +1,5 @@
 <div class="split-view-wrapper" [class.expanded]="rightPanelOpen" [class.resizing]="resizing$ | async">
-    <div class="left-panel">
+    <div class="left-panel" [style.width]="leftPanelWidth$ | async">
         <ng-container *ngTemplateOutlet="leftTemplate"></ng-container>
     </div>
     <div class="separator" [class.hidden]="!rightPanelOpen">

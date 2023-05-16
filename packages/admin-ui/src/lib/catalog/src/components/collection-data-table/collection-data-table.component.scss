@@ -1,15 +1,11 @@
 .bulk-actions {
     margin-left: calc(var(--space-unit) * 10);
 }
-
-.selection-col {
-    display: flex;
-}
 .drag-handle {
     cursor: grab;
 }
 .drag-handle-spacer {
-    width: 14px;
+    width: 16px;
 }
 
 /* Animate items as they're being sorted. */

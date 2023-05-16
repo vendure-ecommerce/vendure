@@ -1,5 +1,6 @@
 :host {
     --separator-border: var(--color-split-view-separator-border);
+    max-width: var(--surface-width);
 }
 
 .split-view-wrapper {
@@ -69,7 +70,7 @@
     display: flex;
     justify-content: space-between;
     padding: calc(var(--space-unit) * 1);
-    padding-left: calc(var(--space-unit) * 4);
+    padding-left: var(--surface-margin-left);
     padding-right: 4px;
 }
 .right-panel {

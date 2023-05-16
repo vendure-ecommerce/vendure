@@ -6,9 +6,11 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnInit,
     Output,
     QueryList,
+    SimpleChanges,
     ViewChild,
     ViewChildren,
 } from '@angular/core';
@@ -37,7 +39,7 @@ export type CollectionOrderEvent = {
 })
 export class CollectionDataTableComponent
     extends DataTable2Component<CollectionTableItem>
-    implements OnInit, AfterViewInit
+    implements OnInit, OnChanges, AfterViewInit
 {
     @Input() subCollections: CollectionTableItem[];
     @Output() changeOrder = new EventEmitter<CollectionOrderEvent>();
@@ -47,6 +49,7 @@ export class CollectionDataTableComponent
     }>;
     @ViewChildren('collectionRow', { read: CdkDrag }) collectionRowList: QueryList<CdkDrag>;
     dragRefs: DragRef[] = [];
+    absoluteIndex: { [id: string]: number } = {};
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
         protected localStorageService: LocalStorageService,
@@ -58,6 +61,19 @@ export class CollectionDataTableComponent
 
     ngOnInit() {
         super.ngOnInit();
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        super.ngOnChanges(changes);
+        if (changes.subCollections || changes.items) {
+            const allCollections: CollectionTableItem[] = [];
+            for (const collection of this.items ?? []) {
+                allCollections.push(collection);
+                const subCollectionMatches = this.getSubcollections(collection);
+                allCollections.push(...subCollectionMatches.flat());
+            }
+            allCollections.forEach((collection, index) => (this.absoluteIndex[collection.id] = index));
+        }
     }
 
     ngAfterViewInit() {
@@ -72,7 +88,7 @@ export class CollectionDataTableComponent
     }
 
     getSubcollections(item: CollectionTableItem) {
-        return this.subCollections?.filter(c => c.parentId === item.id);
+        return this.subCollections?.filter(c => c.parentId === item.id) ?? [];
     }
 
     /**

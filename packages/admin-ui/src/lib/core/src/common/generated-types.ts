@@ -6696,7 +6696,7 @@ export type PreviewCollectionContentsQueryVariables = Exact<{
 }>;
 
 
-export type PreviewCollectionContentsQuery = { previewCollectionVariants: { __typename?: 'ProductVariantList', totalItems: number, items: Array<{ __typename?: 'ProductVariant', id: string, productId: string, name: string, sku: string }> } };
+export type PreviewCollectionContentsQuery = { previewCollectionVariants: { __typename?: 'ProductVariantList', totalItems: number, items: Array<{ __typename?: 'ProductVariant', id: string, createdAt: any, updatedAt: any, productId: string, name: string, sku: string }> } };
 
 export type AssignCollectionsToChannelMutationVariables = Exact<{
   input: AssignCollectionsToChannelInput;

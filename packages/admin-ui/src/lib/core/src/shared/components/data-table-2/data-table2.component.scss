@@ -5,6 +5,7 @@
     max-width: 100%;
     position: relative;
     margin-bottom: calc(var(--space-unit) * 4);
+    container-type: inline-size;
 }
 
 .bulk-actions {
@@ -198,6 +199,15 @@ vdr-empty-placeholder {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-top: 6px;
+    margin-top: var(--space-unit);
     margin-left: var(--surface-margin-left);
+    margin-right: 3px;
+}
+.total-items-count {
+    font-size: var(--font-size-xs);
+}
+@container (max-width: 500px) {
+    .total-items-count {
+        display: none;
+    }
 }
