@@ -8,6 +8,7 @@ import { WidgetLayoutDefinition } from '../dashboard-widget/dashboard-widget-typ
 export type DataTableConfig = {
     [id: string]: {
         visibility: string[];
+        order: { [id: string]: number };
         showSearchFilterRow: boolean;
     };
 };

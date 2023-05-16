@@ -48,11 +48,6 @@
                     {{ facet.createdAt | localeDate : 'short' }}
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true" [sort]="sorts.get('createdAt')">
-                <ng-template let-facet="item">
-                    {{ facet.createdAt | localeDate : 'short' }}
-                </ng-template>
-            </vdr-dt2-column>
             <vdr-dt2-column [heading]="'common.updated-at' | translate" [hiddenByDefault]="true" [sort]="sorts.get('updatedAt')">
                 <ng-template let-facet="item">
                     {{ facet.updatedAt | localeDate : 'short' }}

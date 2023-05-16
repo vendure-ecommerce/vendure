@@ -18,7 +18,7 @@
                         (change)="onToggleAllClick()"
                     />
                 </th>
-                <th *ngFor="let column of visibleColumns; last as isLast" [class.expand]="column.expand">
+                <th *ngFor="let column of visibleSortedColumns; last as isLast" [class.expand]="column.expand">
                     <div class="cell-content" [ngClass]="column.align">
                         <span>{{ column.heading }}</span>
                         <div *ngIf="column.sort as sort" class="sort-toggle">
@@ -35,13 +35,14 @@
                         <vdr-data-table-colum-picker
                             [uiLanguage]="uiLanguage$ | async"
                             [columns]="allColumns"
+                            (reorder)="onColumnReorder($event)"
                         ></vdr-data-table-colum-picker>
                     </div>
                 </th>
             </tr>
             <tr *ngIf="searchComponent || customSearchTemplate || filters?.length">
                 <th
-                    [attr.colspan]="visibleColumns.length + (selectionManager ? 1 : 0)"
+                    [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 1 : 0)"
                     class="filter-row"
                     [class.active]="showSearchFilterRow"
                 >
@@ -102,7 +103,7 @@
             </ng-container>
             <ng-container>
                 <tr *ngIf="!items?.length">
-                    <td [attr.colspan]="visibleColumns.length + (selectionManager ? 1 : 0)">
+                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 1 : 0)">
                         <vdr-empty-placeholder [emptyStateLabel]="emptyStateLabel"></vdr-empty-placeholder>
                     </td>
                 </tr>
@@ -143,7 +144,7 @@
                 (click)="onRowClick(item, $event)"
             />
         </td>
-        <td *ngFor="let column of visibleColumns" [class.active]="activeIndex === i">
+        <td *ngFor="let column of visibleSortedColumns" [class.active]="activeIndex === i">
             <div class="cell-content" [ngClass]="column.align">
                 <ng-container
                     *ngTemplateOutlet="column.template; context: { item: item, index: i, depth: depth }"

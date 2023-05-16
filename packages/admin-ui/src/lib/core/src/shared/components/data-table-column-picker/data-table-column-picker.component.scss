@@ -5,3 +5,19 @@ button {
         opacity: 1;
     }
 }
+.column-list {
+    display: flex;
+    align-items: center;
+}
+
+.drag-handle {
+    cursor: grab;
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-preview {
+    opacity: 0;
+}

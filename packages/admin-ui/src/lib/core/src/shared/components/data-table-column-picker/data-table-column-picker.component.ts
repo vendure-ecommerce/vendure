@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { LanguageCode } from '../../../common/generated-types';
 import { DataTable2ColumnComponent } from '../data-table-2/data-table-column.component';
 
@@ -11,8 +12,16 @@ import { DataTable2ColumnComponent } from '../data-table-2/data-table-column.com
 export class DataTableColumnPickerComponent {
     @Input() columns: Array<DataTable2ColumnComponent<any>>;
     @Input() uiLanguage: LanguageCode;
+    @Output() reorder = new EventEmitter<{ column: DataTable2ColumnComponent<any>; newIndex: number }>();
 
     toggleColumn(column: DataTable2ColumnComponent<any>) {
         column.setVisibility(!column.visible);
+    }
+
+    drop(event: CdkDragDrop<Array<DataTable2ColumnComponent<any>>>) {
+        this.reorder.emit({
+            column: event.item.data,
+            newIndex: event.currentIndex,
+        });
     }
 }

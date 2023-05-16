@@ -18,6 +18,7 @@ import {
 import {
     BulkActionMenuComponent,
     DataService,
+    DataTableConfig,
     LanguageCode,
     LocalStorageService,
 } from '@vendure/admin-ui/core';
@@ -143,11 +144,22 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         return [...(this.columns ?? []), ...(this.customFieldColumns ?? [])];
     }
 
-    get visibleColumns() {
-        return [
-            ...(this.columns?.filter(c => c.visible) ?? []),
-            ...(this.customFieldColumns?.filter(c => c.visible) ?? []),
-        ];
+    get visibleSortedColumns() {
+        return this.sortedColumns.filter(c => c.visible);
+    }
+
+    get sortedColumns() {
+        const columns = this.allColumns;
+        const dataTableConfig = this.getDataTableConfig();
+        for (const [id, index] of Object.entries(dataTableConfig[this.id].order)) {
+            const column = columns.find(c => c.id === id);
+            const currentIndex = columns.findIndex(c => c.id === id);
+            if (currentIndex !== -1 && column) {
+                columns.splice(currentIndex, 1);
+                columns.splice(index, 0, column);
+            }
+        }
+        return columns;
     }
 
     private shiftDownHandler = (event: KeyboardEvent) => {
@@ -195,7 +207,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         }
         const updateColumnVisibility = () => {
             if (!dataTableConfig[this.id]) {
-                dataTableConfig[this.id] = { visibility: [], showSearchFilterRow: false };
+                dataTableConfig[this.id] = { visibility: [], order: {}, showSearchFilterRow: false };
             }
             dataTableConfig[this.id].visibility = this.allColumns
                 .filter(c => (c.visible && c.hiddenByDefault) || (!c.visible && !c.hiddenByDefault))
@@ -220,12 +232,20 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         this.showSearchFilterRow = dataTableConfig?.[this.id]?.showSearchFilterRow ?? false;
     }
 
+    onColumnReorder(event: { column: DataTable2ColumnComponent<any>; newIndex: number }) {
+        const naturalIndex = this.allColumns.findIndex(c => c.id === event.column.id);
+        const dataTableConfig = this.getDataTableConfig();
+        if (naturalIndex === event.newIndex) {
+            delete dataTableConfig[this.id].order[event.column.id];
+        } else {
+            dataTableConfig[this.id].order[event.column.id] = event.newIndex;
+        }
+        this.localStorageService.set('dataTableConfig', dataTableConfig);
+    }
+
     toggleSearchFilterRow() {
         this.showSearchFilterRow = !this.showSearchFilterRow;
-        const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
-        if (!dataTableConfig[this.id]) {
-            dataTableConfig[this.id] = { visibility: [], showSearchFilterRow: false };
-        }
+        const dataTableConfig = this.getDataTableConfig();
         dataTableConfig[this.id].showSearchFilterRow = this.showSearchFilterRow;
         this.localStorageService.set('dataTableConfig', dataTableConfig);
     }
@@ -244,5 +264,13 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
 
     onRowClick(item: T, event: MouseEvent) {
         this.selectionManager?.toggleSelection(item, event);
+    }
+
+    private getDataTableConfig(): DataTableConfig {
+        const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
+        if (!dataTableConfig[this.id]) {
+            dataTableConfig[this.id] = { visibility: [], order: {}, showSearchFilterRow: false };
+        }
+        return dataTableConfig;
     }
 }
