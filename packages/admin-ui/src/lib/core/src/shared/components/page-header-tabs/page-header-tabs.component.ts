@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { IsActiveMatchOptions } from '@angular/router';
 
 export interface HeaderTab {
     id: string;
@@ -15,4 +16,11 @@ export interface HeaderTab {
 })
 export class PageHeaderTabsComponent {
     @Input() tabs: HeaderTab[] = [];
+
+    readonly routerLinkActiveOptions: IsActiveMatchOptions = {
+        matrixParams: 'ignored',
+        queryParams: 'ignored',
+        fragment: 'ignored',
+        paths: 'exact',
+    };
 }

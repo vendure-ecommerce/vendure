@@ -26,5 +26,11 @@
                 </label>
             </div>
         </div>
+        <div class="mt-1 mx-1 flex center">
+            <button class="button-small" (click)="reset()">
+                <span>{{ 'common.reset-columns' | translate }}</span>
+                <clr-icon shape="history"></clr-icon>
+            </button>
+        </div>
     </vdr-dropdown-menu>
 </vdr-dropdown>

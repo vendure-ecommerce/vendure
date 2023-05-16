@@ -13,6 +13,7 @@ export class DataTableColumnPickerComponent {
     @Input() columns: Array<DataTable2ColumnComponent<any>>;
     @Input() uiLanguage: LanguageCode;
     @Output() reorder = new EventEmitter<{ column: DataTable2ColumnComponent<any>; newIndex: number }>();
+    @Output() resetColumns = new EventEmitter<void>();
 
     toggleColumn(column: DataTable2ColumnComponent<any>) {
         column.setVisibility(!column.visible);
@@ -23,5 +24,10 @@ export class DataTableColumnPickerComponent {
             column: event.item.data,
             newIndex: event.currentIndex,
         });
+    }
+
+    reset() {
+        this.columns.forEach(c => c.resetVisibility());
+        this.resetColumns.emit();
     }
 }

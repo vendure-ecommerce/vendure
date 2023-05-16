@@ -243,6 +243,13 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         this.localStorageService.set('dataTableConfig', dataTableConfig);
     }
 
+    onColumnsReset() {
+        const dataTableConfig = this.getDataTableConfig();
+        dataTableConfig[this.id].order = {};
+        dataTableConfig[this.id].visibility = [];
+        this.localStorageService.set('dataTableConfig', dataTableConfig);
+    }
+
     toggleSearchFilterRow() {
         this.showSearchFilterRow = !this.showSearchFilterRow;
         const dataTableConfig = this.getDataTableConfig();

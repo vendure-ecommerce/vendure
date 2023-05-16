@@ -36,6 +36,10 @@ export class DataTable2ColumnComponent<T> implements OnInit {
         this.#onColumnChangeFns.forEach(fn => fn());
     }
 
+    resetVisibility() {
+        this.setVisibility(!this.hiddenByDefault);
+    }
+
     onColumnChange(callback: () => void) {
         this.#onColumnChangeFns.push(callback);
     }

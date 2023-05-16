@@ -4,7 +4,7 @@
         class="tab"
         *ngFor="let tab of tabs"
         routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
+        [routerLinkActiveOptions]="routerLinkActiveOptions"
     >
         {{ tab.label | translate }}
     </a>

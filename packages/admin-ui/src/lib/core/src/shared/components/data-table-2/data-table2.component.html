@@ -39,6 +39,7 @@
                             [uiLanguage]="uiLanguage$ | async"
                             [columns]="sortedColumns"
                             (reorder)="onColumnReorder($event)"
+                            (resetColumns)="onColumnsReset()"
                         ></vdr-data-table-colum-picker>
                     </div>
                 </th>
