@@ -10,6 +10,7 @@ import {
     getOrderStateTranslationToken,
     ItemOf,
     LocalStorageService,
+    NavBuilderService,
     OrderFilterParameter,
     OrderListOptions,
     OrderSortParameter,
@@ -30,7 +31,7 @@ export class OrderListComponent
     implements OnInit
 {
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
-
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Order');
     readonly filters = this.dataTableService
         .createFilterCollection<OrderFilterParameter>()
         .addDateFilters()
@@ -73,6 +74,7 @@ export class OrderListComponent
             label: _('order.transaction-id'),
             filterField: 'transactionId',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -84,6 +86,7 @@ export class OrderListComponent
         .addSort({ name: 'customerLastName' })
         .addSort({ name: 'state' })
         .addSort({ name: 'totalWithTax' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     canCreateDraftOrder = false;
@@ -95,10 +98,19 @@ export class OrderListComponent
         private localStorageService: LocalStorageService,
         private channelService: ChannelService,
         private dataTableService: DataTableService,
+        navBuilderService: NavBuilderService,
         router: Router,
         route: ActivatedRoute,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-draft-order',
+            label: _('catalog.create-draft-order'),
+            locationId: 'order-list',
+            icon: 'plus',
+            routerLink: ['./draft/create'],
+            requiresPermission: ['CreateOrder'],
+        });
         super.setQueryFn(
             // eslint-disable-next-line @typescript-eslint/no-shadow
             (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),

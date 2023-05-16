@@ -69,8 +69,9 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'facets',
-        component: FacetListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'facet-list',
             breadcrumb: _('breadcrumb.facets'),
         },
         children: pageService.getPageTabRoutes('facet-list'),
@@ -87,8 +88,9 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'collections',
-        component: CollectionListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'collection-list',
             breadcrumb: _('breadcrumb.collections'),
         },
         children: pageService.getPageTabRoutes('collection-list'),
@@ -105,8 +107,9 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'assets',
-        component: AssetListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'asset-list',
             breadcrumb: _('breadcrumb.assets'),
         },
         children: pageService.getPageTabRoutes('asset-list'),

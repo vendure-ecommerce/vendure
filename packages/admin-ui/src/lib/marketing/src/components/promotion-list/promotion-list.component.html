@@ -1,92 +1,85 @@
-<vdr-page-header>
-    <vdr-page-title>
-        <vdr-action-bar-items locationId="promotion-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" *vdrIfPermissions="'CreatePromotion'" [routerLink]="['./create']">
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'marketing.create-new-promotion' | translate }}
-        </a>
-    </vdr-page-title>
-</vdr-page-header>
-
-<vdr-page-body>
-    <vdr-data-table-2
-        class="mt-2"
-        id="promotion-list"
-        [items]="items$ | async"
-        [itemsPerPage]="itemsPerPage$ | async"
-        [totalItems]="totalItems$ | async"
-        [currentPage]="currentPage$ | async"
-        [filters]="filters"
-        (pageChange)="setPageNumber($event)"
-        (itemsPerPageChange)="setItemsPerPage($event)"
+<vdr-data-table-2
+    class="mt-2"
+    id="promotion-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <vdr-bulk-action-menu
+        locationId="promotion-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    />
+    <vdr-dt2-search
+        [searchTermControl]="searchTermControl"
+        [searchTermPlaceholder]="'marketing.search-by-name-or-coupon-code' | translate"
+    />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-promotion="item">{{ promotion.id }}</ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.created-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('createdAt')"
     >
-        <vdr-bulk-action-menu
-            locationId="promotion-list"
-            [hostComponent]="this"
-            [selectionManager]="selectionManager"
-        />
-        <vdr-dt2-search
-            [searchTermControl]="searchTermControl"
-            [searchTermPlaceholder]="'marketing.search-by-name-or-coupon-code' | translate"
-        />
-        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
-            <ng-template let-promotion="item">{{ promotion.id }}</ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.created-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('createdAt')"
-        >
-            <ng-template let-promotion="item">
-                {{ promotion.createdAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.updated-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('updatedAt')"
-        >
-            <ng-template let-promotion="item">
-                {{ promotion.updatedAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
-            <ng-template let-promotion="item">
-                <a class="button-ghost" [routerLink]="['./', promotion.id]"
-                    ><span> {{ promotion.name }}</span>
-                    <clr-icon shape="arrow right"></clr-icon>
-                </a>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.enabled' | translate">
-            <ng-template let-promotion="item">
-                <vdr-chip  *ngIf="promotion.enabled" colorType="success">{{ 'common.enabled' | translate }}</vdr-chip>
-                <vdr-chip  *ngIf="!promotion.enabled" colorType="warning">{{ 'common.disabled' | translate }}</vdr-chip>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'marketing.coupon-code' | translate" [sort]="sorts.get('couponCode')">
-            <ng-template let-promotion="item">
-                {{ promotion.couponCode }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'marketing.starts-at' | translate" [sort]="sorts.get('startsAt')">
-            <ng-template let-promotion="item">
-                {{ promotion.startsAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'marketing.ends-at' | translate" [sort]="sorts.get('endsAt')">
-            <ng-template let-promotion="item">
-                {{ promotion.endsAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'marketing.per-customer-limit' | translate"
-            [sort]="sorts.get('perCustomerUsageLimit')"
-            [hiddenByDefault]="true"
-        >
-            <ng-template let-promotion="item">
-                {{ promotion.perCustomerUsageLimit }}
-            </ng-template>
-        </vdr-dt2-column>
-    </vdr-data-table-2>
-</vdr-page-body>
+        <ng-template let-promotion="item">
+            {{ promotion.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.updated-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('updatedAt')"
+    >
+        <ng-template let-promotion="item">
+            {{ promotion.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+        <ng-template let-promotion="item">
+            <a class="button-ghost" [routerLink]="['./', promotion.id]"
+                ><span> {{ promotion.name }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.enabled' | translate">
+        <ng-template let-promotion="item">
+            <vdr-chip *ngIf="promotion.enabled" colorType="success">{{
+                'common.enabled' | translate
+            }}</vdr-chip>
+            <vdr-chip *ngIf="!promotion.enabled" colorType="warning">{{
+                'common.disabled' | translate
+            }}</vdr-chip>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'marketing.coupon-code' | translate" [sort]="sorts.get('couponCode')">
+        <ng-template let-promotion="item">
+            {{ promotion.couponCode }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'marketing.starts-at' | translate" [sort]="sorts.get('startsAt')">
+        <ng-template let-promotion="item">
+            {{ promotion.startsAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'marketing.ends-at' | translate" [sort]="sorts.get('endsAt')">
+        <ng-template let-promotion="item">
+            {{ promotion.endsAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'marketing.per-customer-limit' | translate"
+        [sort]="sorts.get('perCustomerUsageLimit')"
+        [hiddenByDefault]="true"
+    >
+        <ng-template let-promotion="item">
+            {{ promotion.perCustomerUsageLimit }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" />
+</vdr-data-table-2>

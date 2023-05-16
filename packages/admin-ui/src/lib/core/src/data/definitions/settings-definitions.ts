@@ -31,6 +31,7 @@ export const GET_COUNTRY_LIST = gql`
                 updatedAt
                 code
                 name
+                type
                 enabled
             }
             totalItems

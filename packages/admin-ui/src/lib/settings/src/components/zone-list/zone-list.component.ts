@@ -10,6 +10,7 @@ import {
     LanguageCode,
     LogicalOperator,
     ModalService,
+    NavBuilderService,
     NotificationService,
     ServerConfigService,
     ZoneFilterParameter,
@@ -37,7 +38,7 @@ export class ZoneListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     selectedMemberIds: string[] = [];
-
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Zone');
     readonly filters = this.dataTableService
         .createFilterCollection<ZoneFilterParameter>()
         .addDateFilters()
@@ -47,6 +48,7 @@ export class ZoneListComponent
             label: _('common.name'),
             filterField: 'name',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -55,11 +57,13 @@ export class ZoneListComponent
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         route: ActivatedRoute,
         router: Router,
+        navBuilderService: NavBuilderService,
         private dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
@@ -67,6 +71,14 @@ export class ZoneListComponent
         private dataTableService: DataTableService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-zone',
+            label: _('settings.create-new-zone'),
+            locationId: 'zone-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateSettings', 'CreateZone'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getZones(...args).refetchOnChannelChange(),
             data => data.zones,

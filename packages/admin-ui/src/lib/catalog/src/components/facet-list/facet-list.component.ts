@@ -11,6 +11,7 @@ import {
     ItemOf,
     LanguageCode,
     ModalService,
+    NavBuilderService,
     NotificationService,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
@@ -30,6 +31,7 @@ export class FacetListComponent
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
 
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Facet');
     readonly filters = this.dataTableService
         .createFilterCollection<FacetFilterParameter>()
         .addDateFilters()
@@ -41,6 +43,7 @@ export class FacetListComponent
                 isPrivate: { eq: !value },
             }),
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -51,6 +54,7 @@ export class FacetListComponent
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
         .addSort({ name: 'code' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
@@ -59,10 +63,19 @@ export class FacetListComponent
         private notificationService: NotificationService,
         private serverConfigService: ServerConfigService,
         private dataTableService: DataTableService,
+        navBuilderService: NavBuilderService,
         router: Router,
         route: ActivatedRoute,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-facet',
+            label: _('catalog.create-new-facet'),
+            locationId: 'facet-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateCatalog', 'CreateFacet'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.facet.getFacets(...args).refetchOnChannelChange(),
             data => data.facets,

@@ -14,6 +14,11 @@
             [searchTermControl]="filterTermControl"
             [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
         />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-variant="item">
+                {{ variant.id }}
+            </ng-template>
+        </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
             <ng-template let-variant="item">
                 {{ variant.createdAt | localeDate : 'short' }}

@@ -1,116 +1,74 @@
-<vdr-page-header>
-    <vdr-page-title>
-        <vdr-action-bar-items locationId="shipping-method-list"></vdr-action-bar-items>
-        <a
-            class="btn btn-primary"
-            [routerLink]="['./create']"
-            *vdrIfPermissions="['CreateSettings', 'CreateShippingMethod']"
-        >
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'settings.create-new-shipping-method' | translate }}
-        </a>
-    </vdr-page-title>
-</vdr-page-header>
-<vdr-page-body>
+<vdr-page-block>
     <vdr-language-selector
-        class="mx-4 my-2"
         [availableLanguageCodes]="availableLanguages$ | async"
         [currentLanguageCode]="contentLanguage$ | async"
         (languageCodeChange)="setLanguage($event)"
     ></vdr-language-selector>
-    <vdr-data-table-2
-        class="mt-2"
-        id="shipping-method-list"
-        [items]="items$ | async"
-        [itemsPerPage]="itemsPerPage$ | async"
-        [totalItems]="totalItems$ | async"
-        [currentPage]="currentPage$ | async"
-        [filters]="filters"
-        (pageChange)="setPageNumber($event)"
-        (itemsPerPageChange)="setItemsPerPage($event)"
+</vdr-page-block>
+<vdr-data-table-2
+    class="mt-2"
+    id="shipping-method-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <vdr-bulk-action-menu
+        locationId="shipping-method-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    />
+    <vdr-dt2-search
+        [searchTermControl]="searchTermControl"
+        [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+    />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-shippingMethod="item">
+            {{ shippingMethod.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.created-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('createdAt')"
     >
-        <vdr-bulk-action-menu
-            locationId="shipping-method-list"
-            [hostComponent]="this"
-            [selectionManager]="selectionManager"
-        />
-        <vdr-dt2-search
-            [searchTermControl]="searchTermControl"
-            [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        />
-        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
-            <ng-template let-shippingMethod="item">
-                {{ shippingMethod.id }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.created-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('createdAt')"
-        >
-            <ng-template let-shippingMethod="item">
-                {{ shippingMethod.createdAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.updated-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('updatedAt')"
-        >
-            <ng-template let-shippingMethod="item">
-                {{ shippingMethod.updatedAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
-            <ng-template let-shippingMethod="item">
-                <a class="button-ghost" [routerLink]="['./', shippingMethod.id]"
-                    ><span>{{ shippingMethod.name }}</span>
-                    <clr-icon shape="arrow right"></clr-icon>
-                </a>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.code' | translate" [sort]="sorts.get('code')">
-            <ng-template let-shippingMethod="item">
-                {{ shippingMethod.code }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.description' | translate"
-            [sort]="sorts.get('description')"
-            [hiddenByDefault]="true"
-        >
-            <ng-template let-shippingMethod="item">
-                {{ shippingMethod.description }}
-            </ng-template>
-        </vdr-dt2-column>
-    </vdr-data-table-2>
-
-    <div class="testing-tool">
-        <clr-accordion>
-            <clr-accordion-panel>
-                <clr-accordion-title>{{ 'settings.test-shipping-methods' | translate }}</clr-accordion-title>
-                <clr-accordion-content *clrIfExpanded>
-                    <div class="clr-row">
-                        <div class="clr-col">
-                            <vdr-test-order-builder
-                                (orderLinesChange)="setTestOrderLines($event)"
-                            ></vdr-test-order-builder>
-                        </div>
-                        <div class="clr-col">
-                            <vdr-test-address-form
-                                (addressChange)="setTestAddress($event)"
-                            ></vdr-test-address-form>
-                            <vdr-shipping-eligibility-test-result
-                                [currencyCode]="(activeChannel$ | async)?.currencyCode"
-                                [okToRun]="allTestDataPresent()"
-                                [testDataUpdated]="testDataUpdated"
-                                [testResult]="testResult$ | async"
-                                (runTest)="runTest()"
-                            ></vdr-shipping-eligibility-test-result>
-                        </div>
-                    </div>
-                </clr-accordion-content>
-            </clr-accordion-panel>
-        </clr-accordion>
-    </div>
-</vdr-page-body>
+        <ng-template let-shippingMethod="item">
+            {{ shippingMethod.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.updated-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('updatedAt')"
+    >
+        <ng-template let-shippingMethod="item">
+            {{ shippingMethod.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+        <ng-template let-shippingMethod="item">
+            <a class="button-ghost" [routerLink]="['./', shippingMethod.id]"
+                ><span>{{ shippingMethod.name }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.code' | translate" [sort]="sorts.get('code')">
+        <ng-template let-shippingMethod="item">
+            {{ shippingMethod.code }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.description' | translate"
+        [sort]="sorts.get('description')"
+        [hiddenByDefault]="true"
+    >
+        <ng-template let-shippingMethod="item">
+            {{ shippingMethod.description }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" />
+</vdr-data-table-2>

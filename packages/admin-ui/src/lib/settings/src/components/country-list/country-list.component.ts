@@ -10,6 +10,7 @@ import {
     GetCountryListQuery,
     ItemOf,
     LanguageCode,
+    NavBuilderService,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
@@ -27,6 +28,7 @@ export class CountryListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
 
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Region');
     readonly filters = this.dataTableService
         .createFilterCollection<CountryFilterParameter>()
         .addDateFilters()
@@ -42,6 +44,7 @@ export class CountryListComponent
             label: _('common.enabled'),
             filterField: 'enabled',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -50,16 +53,26 @@ export class CountryListComponent
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         route: ActivatedRoute,
         router: Router,
+        navBuilderService: NavBuilderService,
         private dataService: DataService,
         private serverConfigService: ServerConfigService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-country',
+            label: _('settings.create-new-country'),
+            locationId: 'country-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateSettings', 'CreateCountry'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getCountries(...args).refetchOnChannelChange(),
             data => data.countries,

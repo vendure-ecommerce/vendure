@@ -5,6 +5,8 @@ import {
     CanDeactivateDetailGuard,
     detailBreadcrumb,
     OrderDetailFragment,
+    PageComponent,
+    PageService,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
@@ -15,13 +17,15 @@ import { OrderListComponent } from './components/order-list/order-list.component
 import { OrderResolver } from './providers/routing/order-resolver';
 import { OrderGuard } from './providers/routing/order.guard';
 
-export const orderRoutes: Route[] = [
+export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: '',
-        component: OrderListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'order-list',
             breadcrumb: _('breadcrumb.orders'),
         },
+        children: pageService.getPageTabRoutes('order-list'),
     },
     {
         path: 'draft/:id',

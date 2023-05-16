@@ -7,6 +7,8 @@ import {
     CountryFragment,
     createResolveData,
     detailBreadcrumb,
+    PageComponent,
+    PageService,
     PaymentMethodFragment,
     Role,
     Seller,
@@ -48,7 +50,7 @@ import { ShippingMethodResolver } from './providers/routing/shipping-method-reso
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
 import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
 
-export const settingsRoutes: Route[] = [
+export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: 'profile',
         component: ProfileComponent,
@@ -60,10 +62,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'administrators',
-        component: AdministratorListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'administrator-list',
             breadcrumb: _('breadcrumb.administrators'),
         },
+        children: pageService.getPageTabRoutes('administrator-list'),
     },
     {
         path: 'administrators/:id',
@@ -74,10 +78,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'channels',
-        component: ChannelListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'channel-list',
             breadcrumb: _('breadcrumb.channels'),
         },
+        children: pageService.getPageTabRoutes('channel-list'),
     },
     {
         path: 'channels/:id',
@@ -88,10 +94,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'sellers',
-        component: SellerListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'seller-list',
             breadcrumb: _('breadcrumb.sellers'),
         },
+        children: pageService.getPageTabRoutes('seller-list'),
     },
     {
         path: 'sellers/:id',
@@ -102,10 +110,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'roles',
-        component: RoleListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'role-list',
             breadcrumb: _('breadcrumb.roles'),
         },
+        children: pageService.getPageTabRoutes('role-list'),
     },
     {
         path: 'roles/:id',
@@ -116,10 +126,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'tax-categories',
-        component: TaxCategoryListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'tax-category-list',
             breadcrumb: _('breadcrumb.tax-categories'),
         },
+        children: pageService.getPageTabRoutes('tax-category-list'),
     },
     {
         path: 'tax-categories/:id',
@@ -132,10 +144,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'tax-rates',
-        component: TaxRateListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'tax-rate-list',
             breadcrumb: _('breadcrumb.tax-rates'),
         },
+        children: pageService.getPageTabRoutes('tax-rate-list'),
     },
     {
         path: 'tax-rates/:id',
@@ -148,10 +162,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'countries',
-        component: CountryListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'country-list',
             breadcrumb: _('breadcrumb.countries'),
         },
+        children: pageService.getPageTabRoutes('country-list'),
     },
     {
         path: 'countries/:id',
@@ -164,17 +180,21 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'zones',
-        component: ZoneListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'zone-list',
             breadcrumb: _('breadcrumb.zones'),
         },
+        children: pageService.getPageTabRoutes('zone-list'),
     },
     {
         path: 'shipping-methods',
-        component: ShippingMethodListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'shipping-method-list',
             breadcrumb: _('breadcrumb.shipping-methods'),
         },
+        children: pageService.getPageTabRoutes('shipping-method-list'),
     },
     {
         path: 'shipping-methods/:id',
@@ -187,10 +207,12 @@ export const settingsRoutes: Route[] = [
     },
     {
         path: 'payment-methods',
-        component: PaymentMethodListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'payment-method-list',
             breadcrumb: _('breadcrumb.payment-methods'),
         },
+        children: pageService.getPageTabRoutes('payment-method-list'),
     },
     {
         path: 'payment-methods/:id',

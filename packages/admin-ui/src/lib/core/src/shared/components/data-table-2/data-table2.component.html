@@ -110,7 +110,7 @@
                         ></ng-container>
                     </div>
                 </td>
-                <td><!-- column select --></td>
+                <td [class.active]="activeIndex === i"><!-- column select --></td>
             </tr>
             <ng-container>
                 <tr *ngIf="!items?.length">

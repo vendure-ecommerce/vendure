@@ -1,72 +1,58 @@
-<vdr-page-header>
-    <vdr-page-title>
-        <vdr-action-bar-items locationId="administrator-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateAdministrator'">
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'admin.create-new-administrator' | translate }}
-        </a>
-    </vdr-page-title>
-</vdr-page-header>
-<vdr-page-body>
-    <vdr-data-table-2
-        class="mt-2"
-        id="administrator-list"
-        [items]="items$ | async"
-        [itemsPerPage]="itemsPerPage$ | async"
-        [totalItems]="totalItems$ | async"
-        [currentPage]="currentPage$ | async"
-        [filters]="filters"
-        (pageChange)="setPageNumber($event)"
-        (itemsPerPageChange)="setItemsPerPage($event)"
+<vdr-data-table-2
+    class="mt-2"
+    id="administrator-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <vdr-bulk-action-menu
+        locationId="administrator-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    />
+    <vdr-dt2-search
+        [searchTermControl]="searchTermControl"
+        [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+    />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-administrator="item">
+            {{ administrator.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.created-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('createdAt')"
     >
-        <vdr-bulk-action-menu
-            locationId="administrator-list"
-            [hostComponent]="this"
-            [selectionManager]="selectionManager"
-        />
-        <vdr-dt2-search
-            [searchTermControl]="searchTermControl"
-            [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        />
-        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
-            <ng-template let-administrator="item">
-                {{ administrator.id }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.created-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('createdAt')"
-        >
-            <ng-template let-administrator="item">
-                {{ administrator.createdAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.updated-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('updatedAt')"
-        >
-            <ng-template let-administrator="item">
-                {{ administrator.updatedAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.name' | translate"
-            [optional]="false"
-            [sort]="sorts.get('lastName')"
-        >
-            <ng-template let-administrator="item">
-                <a class="button-ghost" [routerLink]="['./', administrator.id]"
-                    ><span>{{ administrator.firstName }} {{ administrator.lastName }}</span>
-                    <clr-icon shape="arrow right"></clr-icon>
-                </a>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'settings.email-address' | translate" [sort]="sorts.get('emailAddress')">
-            <ng-template let-administrator="item">
-                {{ administrator.emailAddress }}
-            </ng-template>
-        </vdr-dt2-column>
-    </vdr-data-table-2>
-</vdr-page-body>
+        <ng-template let-administrator="item">
+            {{ administrator.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.updated-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('updatedAt')"
+    >
+        <ng-template let-administrator="item">
+            {{ administrator.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('lastName')">
+        <ng-template let-administrator="item">
+            <a class="button-ghost" [routerLink]="['./', administrator.id]"
+                ><span>{{ administrator.firstName }} {{ administrator.lastName }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'settings.email-address' | translate" [sort]="sorts.get('emailAddress')">
+        <ng-template let-administrator="item">
+            {{ administrator.emailAddress }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" />
+</vdr-data-table-2>

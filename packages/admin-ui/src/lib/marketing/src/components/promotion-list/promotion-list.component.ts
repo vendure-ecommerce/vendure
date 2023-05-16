@@ -8,9 +8,11 @@ import {
     GetPromotionListQuery,
     ItemOf,
     LogicalOperator,
+    NavBuilderService,
     PromotionFilterParameter,
     PromotionListOptions,
     PromotionSortParameter,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
 
 export type PromotionSearchForm = {
@@ -28,6 +30,7 @@ export class PromotionListComponent
     extends BaseListComponent<GetPromotionListQuery, ItemOf<GetPromotionListQuery, 'promotions'>>
     implements OnInit
 {
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Promotion');
     readonly filters = this.dataTableService
         .createFilterCollection<PromotionFilterParameter>()
         .addDateFilters()
@@ -73,6 +76,7 @@ export class PromotionListComponent
             label: _('marketing.per-customer-limit'),
             filterField: 'perCustomerUsageLimit',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -85,15 +89,26 @@ export class PromotionListComponent
         .addSort({ name: 'name' })
         .addSort({ name: 'couponCode' })
         .addSort({ name: 'perCustomerUsageLimit' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         router: Router,
         route: ActivatedRoute,
+        navBuilderService: NavBuilderService,
+        private serverConfigService: ServerConfigService,
         private dataService: DataService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-promotion',
+            label: _('marketing.create-new-promotion'),
+            locationId: 'promotion-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreatePromotion'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.promotion.getPromotions(...args).refetchOnChannelChange(),
             data => data.promotions,

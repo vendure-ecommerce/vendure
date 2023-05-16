@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { RouterModule, ROUTES } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { PageService, SharedModule } from '@vendure/admin-ui/core';
 
 import { AddManualPaymentDialogComponent } from './components/add-manual-payment-dialog/add-manual-payment-dialog.component';
 import { CancelOrderDialogComponent } from './components/cancel-order-dialog/cancel-order-dialog.component';
@@ -38,10 +39,18 @@ import { SelectShippingMethodDialogComponent } from './components/select-shippin
 import { SellerOrdersCardComponent } from './components/seller-orders-card/seller-orders-card.component';
 import { SettleRefundDialogComponent } from './components/settle-refund-dialog/settle-refund-dialog.component';
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
-import { orderRoutes } from './order.routes';
+import { createRoutes } from './order.routes';
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(orderRoutes)],
+    imports: [SharedModule, RouterModule.forChild([])],
+    providers: [
+        {
+            provide: ROUTES,
+            useFactory: (pageService: PageService) => createRoutes(pageService),
+            multi: true,
+            deps: [PageService],
+        },
+    ],
     declarations: [
         OrderListComponent,
         OrderDetailComponent,
@@ -82,4 +91,13 @@ import { orderRoutes } from './order.routes';
     ],
     exports: [OrderCustomFieldsCardComponent],
 })
-export class OrderModule {}
+export class OrderModule {
+    constructor(private pageService: PageService) {
+        pageService.registerPageTab({
+            location: 'order-list',
+            tab: _('orders.orders'),
+            route: '',
+            component: OrderListComponent,
+        });
+    }
+}

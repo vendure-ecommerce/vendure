@@ -8,6 +8,7 @@ import {
     GetPaymentMethodListQuery,
     ItemOf,
     LanguageCode,
+    NavBuilderService,
     PaymentMethodFilterParameter,
     PaymentMethodSortParameter,
     ServerConfigService,
@@ -26,6 +27,7 @@ export class PaymentMethodListComponent
 {
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('PaymentMethod');
     readonly filters = this.dataTableService
         .createFilterCollection<PaymentMethodFilterParameter>()
         .addDateFilters()
@@ -53,6 +55,7 @@ export class PaymentMethodListComponent
             label: _('common.description'),
             filterField: 'description',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -63,16 +66,26 @@ export class PaymentMethodListComponent
         .addSort({ name: 'name' })
         .addSort({ name: 'code' })
         .addSort({ name: 'description' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         router: Router,
         route: ActivatedRoute,
+        navBuilderService: NavBuilderService,
         private dataService: DataService,
         private dataTableService: DataTableService,
         private serverConfigService: ServerConfigService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-payment-method',
+            label: _('settings.create-new-payment-method'),
+            locationId: 'payment-method-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateSettings', 'CreatePaymentMethod'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getPaymentMethods(...args).refetchOnChannelChange(),
             data => data.paymentMethods,

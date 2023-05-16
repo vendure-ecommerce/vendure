@@ -4,6 +4,8 @@ import {
     CanDeactivateDetailGuard,
     createResolveData,
     detailBreadcrumb,
+    PageComponent,
+    PageService,
     PromotionFragment,
 } from '@vendure/admin-ui/core';
 
@@ -11,13 +13,15 @@ import { PromotionDetailComponent } from './components/promotion-detail/promotio
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
 import { PromotionResolver } from './providers/routing/promotion-resolver';
 
-export const marketingRoutes: Route[] = [
+export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: 'promotions',
-        component: PromotionListComponent,
+        component: PageComponent,
         data: {
+            locationId: 'promotion-list',
             breadcrumb: _('breadcrumb.promotions'),
         },
+        children: pageService.getPageTabRoutes('promotion-list'),
     },
     {
         path: 'promotions/:id',

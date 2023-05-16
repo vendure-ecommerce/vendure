@@ -6688,7 +6688,7 @@ export type GetCollectionContentsQueryVariables = Exact<{
 }>;
 
 
-export type GetCollectionContentsQuery = { collection?: { __typename?: 'Collection', id: string, name: string, productVariants: { __typename?: 'ProductVariantList', totalItems: number, items: Array<{ __typename?: 'ProductVariant', id: string, productId: string, name: string, sku: string }> } } | null };
+export type GetCollectionContentsQuery = { collection?: { __typename?: 'Collection', id: string, name: string, productVariants: { __typename?: 'ProductVariantList', totalItems: number, items: Array<{ __typename?: 'ProductVariant', id: string, createdAt: any, updatedAt: any, productId: string, name: string, sku: string }> } } | null };
 
 export type PreviewCollectionContentsQueryVariables = Exact<{
   input: PreviewCollectionVariantsInput;
@@ -7571,7 +7571,7 @@ export type GetCountryListQueryVariables = Exact<{
 }>;
 
 
-export type GetCountryListQuery = { countries: { __typename?: 'CountryList', totalItems: number, items: Array<{ __typename?: 'Country', id: string, createdAt: any, updatedAt: any, code: string, name: string, enabled: boolean }> } };
+export type GetCountryListQuery = { countries: { __typename?: 'CountryList', totalItems: number, items: Array<{ __typename?: 'Country', id: string, createdAt: any, updatedAt: any, code: string, name: string, type: string, enabled: boolean }> } };
 
 export type GetAvailableCountriesQueryVariables = Exact<{ [key: string]: never; }>;
 

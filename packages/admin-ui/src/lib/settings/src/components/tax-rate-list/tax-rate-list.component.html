@@ -1,86 +1,76 @@
-<vdr-page-header>
-    <vdr-page-title>
-        <vdr-action-bar-items locationId="tax-rate-list"></vdr-action-bar-items>
-        <a
-            class="btn btn-primary"
-            [routerLink]="['./create']"
-            *vdrIfPermissions="['CreateSettings', 'CreateTaxRate']"
-        >
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'settings.create-new-tax-rate' | translate }}
-        </a>
-    </vdr-page-title>
-</vdr-page-header>
-<vdr-page-body>
-    <vdr-data-table-2
-        class="mt-2"
-        id="tax-rate-list"
-        [items]="items$ | async"
-        [itemsPerPage]="itemsPerPage$ | async"
-        [totalItems]="totalItems$ | async"
-        [currentPage]="currentPage$ | async"
-        [filters]="filters"
-        (pageChange)="setPageNumber($event)"
-        (itemsPerPageChange)="setItemsPerPage($event)"
+<vdr-data-table-2
+    class="mt-2"
+    id="tax-rate-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <vdr-bulk-action-menu
+        locationId="tax-rate-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    />
+    <vdr-dt2-search
+        [searchTermControl]="searchTermControl"
+        [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+    />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-taxRate="item">
+            {{ taxRate.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.created-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('createdAt')"
     >
-        <vdr-bulk-action-menu
-            locationId="tax-rate-list"
-            [hostComponent]="this"
-            [selectionManager]="selectionManager"
-        />
-        <vdr-dt2-search
-            [searchTermControl]="searchTermControl"
-            [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
-        />
-        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
-            <ng-template let-taxRate="item">
-                {{ taxRate.id }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.created-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('createdAt')"
-        >
-            <ng-template let-taxRate="item">
-                {{ taxRate.createdAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column
-            [heading]="'common.updated-at' | translate"
-            [hiddenByDefault]="true"
-            [sort]="sorts.get('updatedAt')"
-        >
-            <ng-template let-taxRate="item">
-                {{ taxRate.updatedAt | localeDate : 'short' }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
-            <ng-template let-taxRate="item">
-                <a class="button-ghost" [routerLink]="['./', taxRate.id]"
-                    ><span>{{ taxRate.name }}</span>
-                    <clr-icon shape="arrow right"></clr-icon>
-                </a>
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'settings.tax-category' | translate">
-            <ng-template let-taxRate="item">
-                {{ taxRate.category.name }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'settings.zone' | translate">
-            <ng-template let-taxRate="item">
-                {{ taxRate.zone.name }}
-            </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'settings.tax-rate' | translate" [sort]="sorts.get('value')">
-            <ng-template let-taxRate="item"> {{ taxRate.value }}% </ng-template>
-        </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.enabled' | translate">
-            <ng-template let-taxRate="item">
-                <vdr-chip  *ngIf="taxRate.enabled" colorType="success">{{ 'common.enabled' | translate }}</vdr-chip>
-                <vdr-chip  *ngIf="!taxRate.enabled" colorType="warning">{{ 'common.disabled' | translate }}</vdr-chip>
-            </ng-template>
-        </vdr-dt2-column>
-    </vdr-data-table-2>
-</vdr-page-body>
+        <ng-template let-taxRate="item">
+            {{ taxRate.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.updated-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('updatedAt')"
+    >
+        <ng-template let-taxRate="item">
+            {{ taxRate.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+        <ng-template let-taxRate="item">
+            <a class="button-ghost" [routerLink]="['./', taxRate.id]"
+                ><span>{{ taxRate.name }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'settings.tax-category' | translate">
+        <ng-template let-taxRate="item">
+            {{ taxRate.category.name }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'settings.zone' | translate">
+        <ng-template let-taxRate="item">
+            {{ taxRate.zone.name }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'settings.tax-rate' | translate" [sort]="sorts.get('value')">
+        <ng-template let-taxRate="item"> {{ taxRate.value }}% </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.enabled' | translate">
+        <ng-template let-taxRate="item">
+            <vdr-chip *ngIf="taxRate.enabled" colorType="success">{{
+                'common.enabled' | translate
+            }}</vdr-chip>
+            <vdr-chip *ngIf="!taxRate.enabled" colorType="warning">{{
+                'common.disabled' | translate
+            }}</vdr-chip>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" />
+</vdr-data-table-2>

@@ -11,7 +11,9 @@ import {
     ItemOf,
     LogicalOperator,
     ModalService,
+    NavBuilderService,
     NotificationService,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { EMPTY } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -25,6 +27,7 @@ export class AdministratorListComponent
     extends BaseListComponent<GetAdministratorsQuery, ItemOf<GetAdministratorsQuery, 'administrators'>>
     implements OnInit
 {
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Administrator');
     readonly filters = this.dataTableService
         .createFilterCollection<AdministratorFilterParameter>()
         .addDateFilters()
@@ -46,6 +49,7 @@ export class AdministratorListComponent
             label: _('settings.email-address'),
             filterField: 'emailAddress',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -55,17 +59,28 @@ export class AdministratorListComponent
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'lastName' })
         .addSort({ name: 'emailAddress' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         private dataService: DataService,
         router: Router,
         route: ActivatedRoute,
+        navBuilderService: NavBuilderService,
         private modalService: ModalService,
         private notificationService: NotificationService,
         private dataTableService: DataTableService,
+        private serverConfigService: ServerConfigService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-administrator',
+            label: _('admin.create-new-administrator'),
+            locationId: 'administrator-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateAdministrator'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.administrator.getAdministrators(...args),
             data => data.administrators,

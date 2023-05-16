@@ -7,6 +7,7 @@ import {
     DataTableService,
     GetRolesQuery,
     ItemOf,
+    NavBuilderService,
     Role,
     RoleFilterParameter,
     RoleSortParameter,
@@ -48,10 +49,19 @@ export class RoleListComponent
     constructor(
         router: Router,
         route: ActivatedRoute,
+        navBuilderService: NavBuilderService,
         private dataService: DataService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-role',
+            label: _('settings.create-new-role'),
+            locationId: 'role-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateAdministrator'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.administrator.getRoles(...args),
             data => data.roles,

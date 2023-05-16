@@ -10,7 +10,9 @@ import {
     GetChannelsQuery,
     ItemOf,
     ModalService,
+    NavBuilderService,
     NotificationService,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 
@@ -24,6 +26,7 @@ export class ChannelListComponent
     extends BaseListComponent<GetChannelsQuery, ItemOf<GetChannelsQuery, 'channels'>>
     implements OnInit
 {
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Channel');
     readonly filters = this.dataTableService
         .createFilterCollection<ChannelFilterParameter>()
         .addDateFilters()
@@ -39,6 +42,7 @@ export class ChannelListComponent
             label: _('settings.channel-token'),
             filterField: 'token',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -48,6 +52,7 @@ export class ChannelListComponent
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'code' })
         .addSort({ name: 'token' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
@@ -56,9 +61,19 @@ export class ChannelListComponent
         private notificationService: NotificationService,
         route: ActivatedRoute,
         router: Router,
+        navBuilderService: NavBuilderService,
+        private serverConfigService: ServerConfigService,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-channel',
+            label: _('settings.create-new-channel'),
+            locationId: 'channel-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['SuperAdmin', 'CreateChannel'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getChannels(...args).refetchOnChannelChange(),
             data => data.channels,

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { BulkActionRegistryService, SharedModule } from '@vendure/admin-ui/core';
+import { RouterModule, ROUTES } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { BulkActionRegistryService, PageService, SharedModule } from '@vendure/admin-ui/core';
 
 import { AddCountryToZoneDialogComponent } from './components/add-country-to-zone-dialog/add-country-to-zone-dialog.component';
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
@@ -43,10 +44,19 @@ import { ZoneMemberControlsDirective } from './components/zone-member-list/zone-
 import { removeZoneMembersBulkAction } from './components/zone-member-list/zone-member-list-bulk-actions';
 import { ZoneMemberListHeaderDirective } from './components/zone-member-list/zone-member-list-header.directive';
 import { ZoneMemberListComponent } from './components/zone-member-list/zone-member-list.component';
-import { settingsRoutes } from './settings.routes';
+import { createRoutes } from './settings.routes';
+import { TestShippingMethodsComponent } from './components/test-shipping-methods/test-shipping-methods.component';
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(settingsRoutes)],
+    imports: [SharedModule, RouterModule.forChild([])],
+    providers: [
+        {
+            provide: ROUTES,
+            useFactory: (pageService: PageService) => createRoutes(pageService),
+            multi: true,
+            deps: [PageService],
+        },
+    ],
     declarations: [
         TaxCategoryListComponent,
         TaxCategoryDetailComponent,
@@ -79,10 +89,11 @@ import { settingsRoutes } from './settings.routes';
         ZoneMemberControlsDirective,
         ZoneDetailDialogComponent,
         ProfileComponent,
+        TestShippingMethodsComponent,
     ],
 })
 export class SettingsModule {
-    constructor(private bulkActionRegistryService: BulkActionRegistryService) {
+    constructor(private bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
         bulkActionRegistryService.registerBulkAction(deleteSellersBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteChannelsBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteAdministratorsBulkAction);
@@ -93,5 +104,72 @@ export class SettingsModule {
         bulkActionRegistryService.registerBulkAction(deleteCountriesBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteZonesBulkAction);
         bulkActionRegistryService.registerBulkAction(removeZoneMembersBulkAction);
+
+        pageService.registerPageTab({
+            location: 'seller-list',
+            tab: _('breadcrumb.sellers'),
+            route: '',
+            component: SellerListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'channel-list',
+            tab: _('breadcrumb.channels'),
+            route: '',
+            component: ChannelListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'administrator-list',
+            tab: _('breadcrumb.administrators'),
+            route: '',
+            component: AdministratorListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'role-list',
+            tab: _('breadcrumb.roles'),
+            route: '',
+            component: RoleListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'shipping-method-list',
+            tab: _('breadcrumb.shipping-methods'),
+            route: '',
+            component: ShippingMethodListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'shipping-method-list',
+            tab: _('settings.test-shipping-methods'),
+            route: 'test',
+            component: TestShippingMethodsComponent,
+        });
+        pageService.registerPageTab({
+            location: 'payment-method-list',
+            tab: _('breadcrumb.payment-methods'),
+            route: '',
+            component: PaymentMethodListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'tax-category-list',
+            tab: _('breadcrumb.tax-categories'),
+            route: '',
+            component: TaxCategoryListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'tax-rate-list',
+            tab: _('breadcrumb.tax-rates'),
+            route: '',
+            component: TaxRateListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'country-list',
+            tab: _('breadcrumb.countries'),
+            route: '',
+            component: CountryListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'zone-list',
+            tab: _('breadcrumb.zones'),
+            route: '',
+            component: ZoneListComponent,
+        });
     }
 }

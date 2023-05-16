@@ -7,6 +7,8 @@ import {
     DataTableService,
     GetTaxCategoriesQuery,
     ItemOf,
+    NavBuilderService,
+    ServerConfigService,
     TaxCategoryFilterParameter,
     TaxCategorySortParameter,
 } from '@vendure/admin-ui/core';
@@ -21,6 +23,7 @@ export class TaxCategoryListComponent
     extends BaseListComponent<GetTaxCategoriesQuery, ItemOf<GetTaxCategoriesQuery, 'taxCategories'>>
     implements OnInit
 {
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('TaxCategory');
     readonly filters = this.dataTableService
         .createFilterCollection<TaxCategoryFilterParameter>()
         .addDateFilters()
@@ -30,6 +33,7 @@ export class TaxCategoryListComponent
             label: _('common.name'),
             filterField: 'name',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -38,15 +42,26 @@ export class TaxCategoryListComponent
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         route: ActivatedRoute,
         router: Router,
+        navBuilderService: NavBuilderService,
         private dataService: DataService,
         private dataTableService: DataTableService,
+        private serverConfigService: ServerConfigService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-tax-category',
+            label: _('settings.create-new-tax-category'),
+            locationId: 'tax-category-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateSettings', 'CreateTaxCategory'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getTaxCategories(...args),
             data => data.taxCategories,

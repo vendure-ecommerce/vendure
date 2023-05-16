@@ -7,6 +7,8 @@ import {
     DataTableService,
     GetTaxRateListQuery,
     ItemOf,
+    NavBuilderService,
+    ServerConfigService,
     TaxRateFilterParameter,
     TaxRateSortParameter,
 } from '@vendure/admin-ui/core';
@@ -21,6 +23,7 @@ export class TaxRateListComponent
     extends BaseListComponent<GetTaxRateListQuery, ItemOf<GetTaxRateListQuery, 'taxRates'>>
     implements OnInit
 {
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('TaxRate');
     readonly filters = this.dataTableService
         .createFilterCollection<TaxRateFilterParameter>()
         .addDateFilters()
@@ -42,6 +45,7 @@ export class TaxRateListComponent
             label: _('common.value'),
             filterField: 'value',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -51,15 +55,26 @@ export class TaxRateListComponent
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
         .addSort({ name: 'value' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         router: Router,
         route: ActivatedRoute,
+        navBuilderService: NavBuilderService,
         private dataService: DataService,
         private dataTableService: DataTableService,
+        private serverConfigService: ServerConfigService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-tax-rate',
+            label: _('settings.create-new-tax-rate'),
+            locationId: 'facet-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateSettings', 'CreateTaxRate'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getTaxRates(...args),
             data => data.taxRates,

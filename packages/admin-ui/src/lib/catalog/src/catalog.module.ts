@@ -127,5 +127,23 @@ export class CatalogModule {
             route: 'variants',
             component: ProductVariantListComponent,
         });
+        pageService.registerPageTab({
+            location: 'facet-list',
+            tab: _('catalog.facets'),
+            route: '',
+            component: FacetListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'collection-list',
+            tab: _('catalog.facets'),
+            route: '',
+            component: CollectionListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'asset-list',
+            tab: _('catalog.assets'),
+            route: '',
+            component: AssetListComponent,
+        });
     }
 }

@@ -11,6 +11,7 @@ import {
     ItemOf,
     LanguageCode,
     ModalService,
+    NavBuilderService,
     NotificationService,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
@@ -36,7 +37,6 @@ export class CollectionListComponent
     contentLanguage$: Observable<LanguageCode>;
     expandedIds: string[] = [];
     readonly customFields = this.serverConfigService.getCustomFieldsFor('Collection');
-
     readonly filters = this.dataTableService
         .createFilterCollection<CollectionFilterParameter>()
         .addDateFilters()
@@ -46,8 +46,8 @@ export class CollectionListComponent
             type: { kind: 'text' },
             filterField: 'slug',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
-
     readonly sorts = this.dataTableService
         .createSortCollection<CollectionSortParameter>()
         .defaultSort('position', 'ASC')
@@ -56,6 +56,7 @@ export class CollectionListComponent
         .addSort({ name: 'name' })
         .addSort({ name: 'slug' })
         .addSort({ name: 'position' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
@@ -64,11 +65,20 @@ export class CollectionListComponent
         private modalService: ModalService,
         router: Router,
         route: ActivatedRoute,
+        navBuilderService: NavBuilderService,
         private serverConfigService: ServerConfigService,
         private changeDetectorRef: ChangeDetectorRef,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-collection',
+            label: _('catalog.create-new-collection'),
+            locationId: 'collection-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['CreateCatalog', 'CreateCollection'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.collection.getCollections().refetchOnChannelChange(),
             data => data.collections,
@@ -124,17 +134,38 @@ export class CollectionListComponent
             }),
         );
 
-        this.activeCollectionTitle$ = combineLatest(this.activeCollectionId$, this.items$).pipe(
-            map(([id, collections]) => {
+        this.activeCollectionTitle$ = combineLatest(
+            this.activeCollectionId$,
+            this.items$,
+            this.subCollections$,
+        ).pipe(
+            map(([id, collections, subCollections]) => {
                 if (id) {
-                    const match = collections.find(c => c.id === id);
+                    const match = [...collections, ...subCollections].find(c => c.id === id);
                     return match ? match.name : '';
                 }
                 return '';
             }),
         );
-        this.activeCollectionIndex$ = combineLatest(this.activeCollectionId$, this.items$).pipe(
-            map(([id, collections]) => (id ? collections.findIndex(c => c.id === id) : -1)),
+        this.activeCollectionIndex$ = combineLatest(
+            this.activeCollectionId$,
+            this.items$,
+            this.subCollections$,
+        ).pipe(
+            map(([id, collections, subCollections]) => {
+                if (id) {
+                    const allCollections: typeof collections = [];
+                    for (const collection of collections) {
+                        allCollections.push(collection);
+                        const subCollectionMatches = subCollections.filter(
+                            c => c.parentId && c.parentId === collection.id,
+                        );
+                        allCollections.push(...subCollectionMatches);
+                    }
+                    return allCollections.findIndex(c => c.id === id);
+                }
+                return -1;
+            }),
         );
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
         this.contentLanguage$ = this.dataService.client

@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
     DataTableService,
     GetSellersQuery,
     ItemOf,
+    NavBuilderService,
     SellerFilterParameter,
     SellerSortParameter,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
 
 @Component({
@@ -20,9 +23,11 @@ export class SellerListComponent
     extends BaseListComponent<GetSellersQuery, ItemOf<GetSellersQuery, 'sellers'>>
     implements OnInit
 {
+    readonly customFields = this.serverConfigService.getCustomFieldsFor('Seller');
     readonly filters = this.dataTableService
         .createFilterCollection<SellerFilterParameter>()
         .addDateFilters()
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.dataTableService
@@ -31,15 +36,26 @@ export class SellerListComponent
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
         route: ActivatedRoute,
         router: Router,
+        navBuilderService: NavBuilderService,
         private dataService: DataService,
         private dataTableService: DataTableService,
+        private serverConfigService: ServerConfigService,
     ) {
         super(router, route);
+        navBuilderService.addActionBarItem({
+            id: 'create-seller',
+            label: _('settings.create-new-seller'),
+            locationId: 'seller-list',
+            icon: 'plus',
+            routerLink: ['./create'],
+            requiresPermission: ['SuperAdmin', 'CreateSeller'],
+        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getSellerList(...args).refetchOnChannelChange(),
             data => data.sellers,
