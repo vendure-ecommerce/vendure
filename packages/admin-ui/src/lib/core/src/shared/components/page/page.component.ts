@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Observable, of, switchMap } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PageLocationId } from '../../../common/component-registry-types';
 import { HeaderTab } from '../page-header-tabs/page-header-tabs.component';
 import { PageService } from '../../../providers/page/page.service';
@@ -14,6 +16,7 @@ export class PageComponent {
     headerTabs: HeaderTab[] = [];
     @Input() protected locationId: PageLocationId;
     @Input() protected description: string;
+    entity$: Observable<{ id: string; createdAt?: string; updatedAt?: string } | undefined>;
     constructor(private route: ActivatedRoute, private pageService: PageService) {
         this.locationId = this.route.snapshot.data.locationId;
         this.description = this.route.snapshot.data.description ?? '';
@@ -23,5 +26,8 @@ export class PageComponent {
             icon: tab.tabIcon,
             route: tab.route ? [tab.route] : ['./'],
         }));
+        this.entity$ = this.route.data.pipe(
+            switchMap(data => (data.entity as Observable<any>) ?? of(undefined)),
+        );
     }
 }

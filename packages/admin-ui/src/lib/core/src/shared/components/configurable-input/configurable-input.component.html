@@ -21,7 +21,7 @@
         </form>
     </div>
     <div class="card-footer" *ngIf="!readonly && removable">
-        <button class="btn btn-sm btn-link btn-warning" (click)="remove.emit(operation)">
+        <button class="button-small warning" (click)="remove.emit(operation)">
             <clr-icon shape="times"></clr-icon>
             {{ 'common.remove' | translate }}
         </button>

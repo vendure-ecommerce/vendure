@@ -97,11 +97,12 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'collections/:id',
-        component: CollectionDetailComponent,
+        component: PageComponent,
         resolve: createResolveData(CollectionResolver),
-        canDeactivate: [CanDeactivateDetailGuard],
         data: {
+            locationId: 'collection-detail',
             breadcrumb: collectionBreadcrumb,
+            canDeactivate: [CanDeactivateDetailGuard],
         },
         children: pageService.getPageTabRoutes('collection-detail'),
     },

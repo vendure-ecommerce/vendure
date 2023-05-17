@@ -84,3 +84,12 @@ button.icon-button {
 .cdk-overlay-container {
     z-index: 1050;
 }
+
+.card {
+    margin-top: 0;
+}
+
+// clr tabs
+.btn.btn-link.nav-link {
+    background-color: transparent;
+}

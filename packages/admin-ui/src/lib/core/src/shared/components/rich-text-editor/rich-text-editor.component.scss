@@ -3,7 +3,6 @@
 
 :host {
     display: block;
-    max-width: 710px;
     margin-bottom: 0.5rem;
 
     &.readonly {
@@ -13,10 +12,13 @@
     }
 }
 
+label.rich-text-label {
+    font-size: var(--font-size-sm);
+    color: var(--font-weight-700);
+}
+
 ::ng-deep .ProseMirror-menubar {
     position: sticky;
-    top: 24px;
-    margin-top: 6px;
     border: 1px solid var(--color-component-border-200);
     border-bottom: none;
     background-color: var(--color-component-bg-200);

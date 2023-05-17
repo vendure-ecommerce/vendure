@@ -1,5 +1,10 @@
 <div class="table-wrapper">
     <div class="progress loop" [class.visible]="isLoading"></div>
+    <div class="header-title-row">
+        <ng-container
+            *ngTemplateOutlet="headerTemplate; context: { $implicit: contentsTotalItems$ | async }"
+        ></ng-container>
+    </div>
     <vdr-data-table-2
         id="collection-contents"
         [class.loading]="isLoading"

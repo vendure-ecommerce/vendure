@@ -135,9 +135,15 @@ export class CatalogModule {
         });
         pageService.registerPageTab({
             location: 'collection-list',
-            tab: _('catalog.facets'),
+            tab: _('catalog.collections'),
             route: '',
             component: CollectionListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'collection-detail',
+            tab: _('catalog.collection'),
+            route: '',
+            component: CollectionDetailComponent,
         });
         pageService.registerPageTab({
             location: 'asset-list',

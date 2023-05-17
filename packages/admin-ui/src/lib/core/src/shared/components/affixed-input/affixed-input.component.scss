@@ -1,6 +1,10 @@
 
 :host {
-    display: inline-flex;
+    display: flex;
+}
+
+.input-wrapper {
+    flex: 1;
 }
 
 .affix {
@@ -17,7 +21,7 @@
 
 ::ng-deep .has-prefix input {
     border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important
 }
 
 .prefix {
