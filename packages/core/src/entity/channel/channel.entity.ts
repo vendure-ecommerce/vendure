@@ -41,6 +41,9 @@ export class Channel extends VendureEntity {
 
     @Column('varchar') defaultLanguageCode: LanguageCode;
 
+    @Column('simple-array')
+    availableLanguageCodes: LanguageCode[];
+
     @Index()
     @ManyToOne(type => Zone)
     defaultTaxZone: Zone;
@@ -51,6 +54,26 @@ export class Channel extends VendureEntity {
 
     @Column('varchar')
     defaultCurrencyCode: CurrencyCode;
+
+    @Column('simple-array')
+    availableCurrencyCodes: CurrencyCode[];
+
+    /**
+     * @description
+     * Specifies the default value for inventory tracking for ProductVariants.
+     * Can be overridden per ProductVariant, but this value determines the default
+     * if not otherwise specified.
+     */
+    @Column({ default: true })
+    trackInventory: boolean;
+
+    /**
+     * @description
+     * Specifies the value of stockOnHand at which a given ProductVariant is considered
+     * out of stock.
+     */
+    @Column({ default: 0 })
+    outOfStockThreshold: number;
 
     @Column(type => CustomChannelFields)
     customFields: CustomChannelFields;

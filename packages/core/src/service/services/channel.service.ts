@@ -228,6 +228,7 @@ export class ChannelService {
         const channel = new Channel({
             ...input,
             defaultCurrencyCode: input.currencyCode,
+            availableCurrencyCodes: input.availableCurrencyCodes ?? [input.currencyCode],
         });
         const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
         if (isGraphQlErrorResult(defaultLanguageValidationResult)) {

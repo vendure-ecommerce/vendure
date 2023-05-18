@@ -352,6 +352,8 @@ export type Cancellation = Node &
     };
 
 export type Channel = Node & {
+    availableCurrencyCodes: Array<CurrencyCode>;
+    availableLanguageCodes?: Maybe<Array<LanguageCode>>;
     code: Scalars['String'];
     createdAt: Scalars['DateTime'];
     /** @deprecated Use defaultCurrencyCode instead */
@@ -362,9 +364,11 @@ export type Channel = Node & {
     defaultShippingZone?: Maybe<Zone>;
     defaultTaxZone?: Maybe<Zone>;
     id: Scalars['ID'];
+    outOfStockThreshold?: Maybe<Scalars['Int']>;
     pricesIncludeTax: Scalars['Boolean'];
     seller?: Maybe<Seller>;
     token: Scalars['String'];
+    trackInventory?: Maybe<Scalars['Boolean']>;
     updatedAt: Scalars['DateTime'];
 };
 
@@ -386,8 +390,10 @@ export type ChannelFilterParameter = {
     defaultCurrencyCode?: InputMaybe<StringOperators>;
     defaultLanguageCode?: InputMaybe<StringOperators>;
     id?: InputMaybe<IdOperators>;
+    outOfStockThreshold?: InputMaybe<NumberOperators>;
     pricesIncludeTax?: InputMaybe<BooleanOperators>;
     token?: InputMaybe<StringOperators>;
+    trackInventory?: InputMaybe<BooleanOperators>;
     updatedAt?: InputMaybe<DateOperators>;
 };
 
@@ -413,6 +419,7 @@ export type ChannelSortParameter = {
     code?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
+    outOfStockThreshold?: InputMaybe<SortOrder>;
     token?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
 };
@@ -679,15 +686,19 @@ export type CreateAssetInput = {
 export type CreateAssetResult = Asset | MimeTypeError;
 
 export type CreateChannelInput = {
+    availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
+    availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
     code: Scalars['String'];
     currencyCode: CurrencyCode;
     customFields?: InputMaybe<Scalars['JSON']>;
     defaultLanguageCode: LanguageCode;
     defaultShippingZoneId: Scalars['ID'];
     defaultTaxZoneId: Scalars['ID'];
+    outOfStockThreshold?: InputMaybe<Scalars['Int']>;
     pricesIncludeTax: Scalars['Boolean'];
     sellerId?: InputMaybe<Scalars['ID']>;
     token: Scalars['String'];
+    trackInventory?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type CreateChannelResult = Channel | LanguageNotAvailableError;
@@ -5646,6 +5657,8 @@ export type UpdateAssetInput = {
 };
 
 export type UpdateChannelInput = {
+    availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
+    availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
     code?: InputMaybe<Scalars['String']>;
     currencyCode?: InputMaybe<CurrencyCode>;
     customFields?: InputMaybe<Scalars['JSON']>;
@@ -5653,9 +5666,11 @@ export type UpdateChannelInput = {
     defaultShippingZoneId?: InputMaybe<Scalars['ID']>;
     defaultTaxZoneId?: InputMaybe<Scalars['ID']>;
     id: Scalars['ID'];
+    outOfStockThreshold?: InputMaybe<Scalars['Int']>;
     pricesIncludeTax?: InputMaybe<Scalars['Boolean']>;
     sellerId?: InputMaybe<Scalars['ID']>;
     token?: InputMaybe<Scalars['String']>;
+    trackInventory?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type UpdateChannelResult = Channel | LanguageNotAvailableError;

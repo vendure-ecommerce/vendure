@@ -145,6 +145,8 @@ export type BooleanOperators = {
 
 export type Channel = Node & {
     __typename?: 'Channel';
+    availableCurrencyCodes: Array<CurrencyCode>;
+    availableLanguageCodes?: Maybe<Array<LanguageCode>>;
     code: Scalars['String'];
     createdAt: Scalars['DateTime'];
     /** @deprecated Use defaultCurrencyCode instead */
@@ -155,9 +157,11 @@ export type Channel = Node & {
     defaultShippingZone?: Maybe<Zone>;
     defaultTaxZone?: Maybe<Zone>;
     id: Scalars['ID'];
+    outOfStockThreshold?: Maybe<Scalars['Int']>;
     pricesIncludeTax: Scalars['Boolean'];
     seller?: Maybe<Seller>;
     token: Scalars['String'];
+    trackInventory?: Maybe<Scalars['Boolean']>;
     updatedAt: Scalars['DateTime'];
 };
 
