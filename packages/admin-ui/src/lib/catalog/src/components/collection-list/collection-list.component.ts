@@ -65,20 +65,11 @@ export class CollectionListComponent
         private modalService: ModalService,
         router: Router,
         route: ActivatedRoute,
-        navBuilderService: NavBuilderService,
         private serverConfigService: ServerConfigService,
         private changeDetectorRef: ChangeDetectorRef,
         private dataTableService: DataTableService,
     ) {
         super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-collection',
-            label: _('catalog.create-new-collection'),
-            locationId: 'collection-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateCatalog', 'CreateCollection'],
-        });
         super.setQueryFn(
             (...args: any[]) => this.dataService.collection.getCollections().refetchOnChannelChange(),
             data => data.collections,

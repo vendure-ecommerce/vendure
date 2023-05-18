@@ -58,6 +58,7 @@
     "add-facets": "Añadir facetas",
     "add-option": "Añadir opción",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "Producto asignado a \"{ channel }\" con éxito",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "Actualiza los nombres de las variantes de producto automáticamente usando esta opción",
     "auto-update-product-variant-name": "Actualiza los nombres de las variantes de producto automáticamente",
     "channel-price-preview": "Vista previa de precio para el canal de ventas",
+    "collection": "",
     "collection-contents": "Contenidos de la colección",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "Añadir {count, plural, one {1 variante} other {{count} variantes}}",
     "add-note": "Añadir nota",
     "apply": "",
+    "assets": "",
     "available-languages": "Idiomas disponibles",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "Confirmar",
     "confirm-delete-note": "¿Eliminar nota?",
     "confirm-navigation": "Confirmar navegación",
+    "contents": "",
     "create": "Crear",
     "created-at": "Creado el",
     "custom-fields": "Campos personalizados",
@@ -236,7 +241,6 @@
     "guest": "Invitado",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "{ count } por página",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "El pedido no pudo ser transferido al estado \"{state}\". Por favor, seleccione un estado alternativo.",
     "unfulfilled": "Fulfillment no completado",
     "unit-price": "Precio unitario"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Añadir países a zona...",

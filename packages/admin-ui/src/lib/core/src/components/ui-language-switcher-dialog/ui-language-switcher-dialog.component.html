@@ -1,19 +1,12 @@
 <ng-template vdrDialogTitle>{{ 'common.select-display-language' | translate }}</ng-template>
 <div class="clr-row">
     <div class="clr-col-md-6">
-        <clr-select-container>
-            <label>{{ 'common.language' | translate }}</label>
-            <select
-                clrSelect
-                name="options"
-                [(ngModel)]="currentLanguage"
-                (ngModelChange)="updatePreviewLocale()"
-            >
-                <option *ngFor="let code of availableLanguages | sort" [value]="code">
-                    {{ code | uppercase }} ({{ code | localeLanguageName }})
-                </option>
-            </select>
-        </clr-select-container>
+        <label for="options">{{ 'common.language' | translate }}</label>
+        <select name="options" [(ngModel)]="currentLanguage" (ngModelChange)="updatePreviewLocale()">
+            <option *ngFor="let code of availableLanguages | sort" [value]="code">
+                {{ code | uppercase }} ({{ code | localeLanguageName }})
+            </option>
+        </select>
     </div>
     <div class="clr-col-md-6">
         <clr-datalist-container>
@@ -36,28 +29,29 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <span class="p-2">{{ 'common.sample-formatting' | translate }}:</span><strong>{{ previewLocale | localeLanguageName:previewLocale }}</strong>
+        <span class="p-2">{{ 'common.sample-formatting' | translate }}:</span
+        ><strong>{{ previewLocale | localeLanguageName : previewLocale }}</strong>
     </div>
     <div class="card-block">
         <div class="clr-row">
             <div class="clr-col-sm-4">
                 <vdr-labeled-data [label]="'common.medium-date' | translate">
-                    {{ now | localeDate: 'medium':previewLocale }}
+                    {{ now | localeDate : 'medium' : previewLocale }}
                 </vdr-labeled-data>
                 <vdr-labeled-data [label]="'common.short-date' | translate">
-                    {{ now | localeDate: 'short':previewLocale }}
+                    {{ now | localeDate : 'short' : previewLocale }}
                 </vdr-labeled-data>
             </div>
             <div class="clr-col-sm-4">
-                <select clrSelect name="currency" class="currency" [(ngModel)]="selectedCurrencyCode">
+                <select name="currency" class="currency" [(ngModel)]="selectedCurrencyCode">
                     <option *ngFor="let code of availableCurrencyCodes | sort" [value]="code">
-                        {{ code | uppercase }} ({{ code | localeCurrencyName: 'full':previewLocale }})
+                        {{ code | uppercase }} ({{ code | localeCurrencyName : 'full' : previewLocale }})
                     </option>
                 </select>
             </div>
             <div class="clr-col-sm-4">
                 <vdr-labeled-data [label]="'common.price' | translate">
-                    {{ 12345 | localeCurrency: selectedCurrencyCode:previewLocale }}
+                    {{ 12345 | localeCurrency : selectedCurrencyCode : previewLocale }}
                 </vdr-labeled-data>
             </div>
         </div>
@@ -65,11 +59,7 @@
 </div>
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button
-        type="submit"
-        (click)="setLanguage()"
-        class="btn btn-primary"
-    >
+    <button type="submit" (click)="setLanguage()" class="btn btn-primary">
         {{ 'common.set-language' | translate }}
     </button>
 </ng-template>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, ROUTES } from '@angular/router';
-import { BulkActionRegistryService, SharedModule, PageService } from '@vendure/admin-ui/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { BulkActionRegistryService, PageService, SharedModule } from '@vendure/admin-ui/core';
 
 import { createRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
@@ -36,6 +36,7 @@ import { GenerateProductVariantsComponent } from './components/generate-product-
 import { MoveCollectionsDialogComponent } from './components/move-collections-dialog/move-collections-dialog.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
+import { ProductDetail2Component } from './components/product-detail2/product-detail.component';
 import {
     assignFacetValuesToProductsBulkAction,
     assignProductsToChannelBulkAction,
@@ -81,6 +82,7 @@ const CATALOG_COMPONENTS = [
     CollectionBreadcrumbPipe,
     MoveCollectionsDialogComponent,
     ProductVariantListComponent,
+    ProductDetail2Component,
 ];
 
 @NgModule({
@@ -120,6 +122,12 @@ export class CatalogModule {
             tab: _('catalog.products'),
             route: '',
             component: ProductListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'product-detail',
+            tab: _('catalog.products'),
+            route: '',
+            component: ProductDetail2Component,
         });
         pageService.registerPageTab({
             location: 'product-list',

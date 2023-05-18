@@ -58,6 +58,7 @@
     "add-facets": "Add facets",
     "add-option": "Add option",
     "asset-preview-links": "Asset preview links",
+    "assets": "Assets",
     "assign-collections-to-channel-success": "Successfully assigned {count, plural, one {1 collection} other {{count} collections}} to { channelCode }",
     "assign-facets-to-channel-success": "Successfully assigned {count, plural, one {1 facet} other {{count} facets}} to { channelCode }",
     "assign-product-to-channel-success": "Successfully assigned {count, plural, one {1 product} other {{count} products}} to { channel }",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "Automatically update the names of ProductVariants using this option",
     "auto-update-product-variant-name": "Automatically update the names of ProductVariants",
     "channel-price-preview": "Channel price preview",
+    "collection": "Collection",
     "collection-contents": "Collection contents",
+    "collections": "Collections",
     "confirm-bulk-delete": "Delete multiple items?",
     "confirm-bulk-delete-collections": "Delete {count} collections?",
     "confirm-bulk-delete-products": "Delete {count} products?",
@@ -211,6 +214,7 @@
     "confirm": "Confirm",
     "confirm-delete-note": "Delete note?",
     "confirm-navigation": "Confirm navigation",
+    "contents": "Contents",
     "create": "Create",
     "created-at": "Created at",
     "custom-fields": "Custom fields",
@@ -642,6 +646,9 @@
     "unable-to-transition-to-state-try-another": "The order could not be transitioned back to the \"{state}\" state. Please select an alternative state.",
     "unfulfilled": "Unfulfilled",
     "unit-price": "Unit price"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Add countries to { zoneName }",

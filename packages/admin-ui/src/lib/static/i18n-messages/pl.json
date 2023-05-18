@@ -58,6 +58,7 @@
     "add-facets": "Dodaj faset",
     "add-option": "Dodaj opcje",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "Pomyślnie przypisano produkt do \"{ channel }\"",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "",
     "auto-update-product-variant-name": "",
     "channel-price-preview": "Podgląd cen kanału",
+    "collection": "",
     "collection-contents": "Zawartość kolekcji",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "Dodaj {count, plural, one {1 wariant} other {{count} wariantów}}",
     "add-note": "",
     "apply": "",
+    "assets": "",
     "available-languages": "Dostępne języki",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "",
     "confirm-delete-note": "",
     "confirm-navigation": "Potwierdź nawigacje",
+    "contents": "",
     "create": "Utwórz",
     "created-at": "Utworzone dnia",
     "custom-fields": "Dodatkowe pola",
@@ -236,7 +241,6 @@
     "guest": "Gość",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "{ count } na stronę",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "",
     "unfulfilled": "Unfulfilled",
     "unit-price": "Cena jednostkowa"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Dodaj kraje do strefy...",

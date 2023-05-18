@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -35,6 +35,8 @@ export class ProductVariantListComponent
     >
     implements OnInit
 {
+    @Input() productId?: string;
+    @Input() hideLanguageSelect = false;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     readonly filters = this.dataTableService
@@ -109,6 +111,7 @@ export class ProductVariantListComponent
                             contains: this.searchTermControl.value,
                         },
                         ...this.filters.createFilterInput(),
+                        ...(this.productId ? { productId: { eq: this.productId } } : {}),
                     },
                     sort: this.sorts.createSortInput(),
                 },

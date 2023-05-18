@@ -8,4 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class CardComponent {
     @Input() title: string;
+    @Input() paddingX = true;
 }

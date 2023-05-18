@@ -1,10 +1,10 @@
-<div class="flex wrap ml-4">
+<vdr-page-block *ngIf="!hideLanguageSelect">
     <vdr-language-selector
         [availableLanguageCodes]="availableLanguages$ | async"
         [currentLanguageCode]="contentLanguage$ | async"
         (languageCodeChange)="setLanguage($event)"
     ></vdr-language-selector>
-</div>
+</vdr-page-block>
 <vdr-data-table-2
     class="mt-2"
     id="product-variant-list"

@@ -1,6 +1,8 @@
 import { Injectable, Type } from '@angular/core';
 import { Route } from '@angular/router';
+import { BaseDetailComponent } from '../../common/base-detail.component';
 import { PageLocationId } from '../../common/component-registry-types';
+import { CanDeactivateDetailGuard } from '../../shared/providers/routing/can-deactivate-detail-guard';
 
 export interface PageTabConfig {
     location: PageLocationId;
@@ -30,11 +32,18 @@ export class PageService {
 
     getPageTabRoutes(location: PageLocationId): Route[] {
         const configs = this.registry.get(location) || [];
-        return configs.map(config => ({
-            path: config.route || '',
-            pathMatch: config.route ? 'prefix' : 'full',
-            component: config.component,
-        }));
+        return configs.map(config => {
+            const guards =
+                typeof config.component.prototype.canDeactivate === 'function'
+                    ? [CanDeactivateDetailGuard]
+                    : [];
+            return {
+                path: config.route || '',
+                pathMatch: config.route ? 'prefix' : 'full',
+                component: config.component,
+                canDeactivate: guards,
+            };
+        });
     }
 
     getPageTabs(location: PageLocationId): PageTabConfig[] {

@@ -58,6 +58,7 @@
     "add-facets": "Přidat atribut",
     "add-option": "Přidat možnost",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "Produkt byl úspěšně přiřazen do \"{ channel }\"",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "Automaticky aktualizovat jména variant pomocí této",
     "auto-update-product-variant-name": "Automaticky aktualizovat jména variant",
     "channel-price-preview": "Náhled ceny v kanálu",
+    "collection": "",
     "collection-contents": "Obsah kolekce",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "Přidat {count, plural, one {variantu} few {{count} varianty} other {{count} variant}}",
     "add-note": "Přidat poznámku",
     "apply": "",
+    "assets": "",
     "available-languages": "Dostupné jazyky",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "Potvrdit",
     "confirm-delete-note": "Smazat poznámku?",
     "confirm-navigation": "Potvrdit navigaci",
+    "contents": "",
     "create": "Vytvořit",
     "created-at": "Vytvořeno",
     "custom-fields": "Extra pole",
@@ -236,7 +241,6 @@
     "guest": "Host",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "{ count } na stránku",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "Objednávka nemohla být přesunuta do stavu \"{state}\". Prosím, vyberte jiný stav.",
     "unfulfilled": "Nevyřízeno",
     "unit-price": "Cena za kus"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Přidat země do { zoneName }",

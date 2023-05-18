@@ -78,6 +78,7 @@
             <vdr-dt2-custom-field-column
                 *ngFor="let customField of customFields"
                 [customField]="customField"
+                [sort]="sorts"
             />
         </vdr-data-table-2>
     </ng-template>

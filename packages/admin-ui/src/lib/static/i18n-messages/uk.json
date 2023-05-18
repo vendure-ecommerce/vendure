@@ -58,6 +58,7 @@
     "add-facets": "Додати тег",
     "add-option": "Додати опцію",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "Товар успішно доданий в канал \"{ channel }\"",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "Автоматично оновлювати назви варіантів товару, використовуючи цю опцію",
     "auto-update-product-variant-name": "Автоматично оновлювати назви варіантів товару",
     "channel-price-preview": "Попередній перегляд цін каналу",
+    "collection": "",
     "collection-contents": "Зміст колекції",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "Додати {count, plural, one {1 варіант} other {{count} варіантів}}",
     "add-note": "Додати замітку",
     "apply": "",
+    "assets": "",
     "available-languages": "Доступні мови",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "Підтверджувати",
     "confirm-delete-note": "Видалити замітку?",
     "confirm-navigation": "Підтвердіть навігацію",
+    "contents": "",
     "create": "Створити",
     "created-at": "Створено в",
     "custom-fields": "Настроювані поля",
@@ -236,7 +241,6 @@
     "guest": "Гість",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "{ count } на сторінці",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "Замовлення не може бути переведено зворотно на \"{state}\" стан. Будь ласка, виберіть альтернативний стан.",
     "unfulfilled": "Невиконано",
     "unit-price": "Ціна за одиницю"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Додати країни в { zoneName }",

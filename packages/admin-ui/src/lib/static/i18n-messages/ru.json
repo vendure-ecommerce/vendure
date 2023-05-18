@@ -58,6 +58,7 @@
     "add-facets": "Добавить тег",
     "add-option": "Добавить опции",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "Товар успешно добавлен в канал \"{ channel }\"",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "Автоматически обновлять названия вариантов товара с помощью этой опции",
     "auto-update-product-variant-name": "Автоматически обновлять названия вариантов товара",
     "channel-price-preview": "Предварительный просмотр цен канала",
+    "collection": "",
     "collection-contents": "Содержание коллекции",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "Добавить {count, plural, one {1 вариант} other {{count} вариантов}}",
     "add-note": "Добавить заметку",
     "apply": "",
+    "assets": "",
     "available-languages": "Доступные языки",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "Подтверждать",
     "confirm-delete-note": "Удалить заметку?",
     "confirm-navigation": "Подтвердите навигацию",
+    "contents": "",
     "create": "Создать",
     "created-at": "Создано в",
     "custom-fields": "Настраиваемые поля",
@@ -236,7 +241,6 @@
     "guest": "Гость",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "{ count } на странице",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "Заказ не может быть переведен обратно на \"{state}\" состояние. Пожалуйста, выберите альтернативное состояние.",
     "unfulfilled": "Невыполненный",
     "unit-price": "Цена за единицу"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Добавить страны в { zoneName }",

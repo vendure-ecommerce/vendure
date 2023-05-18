@@ -58,6 +58,7 @@
     "add-facets": "Aggiungi attributi",
     "add-option": "Aggiungi opzione",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "Prodotto assegnato correttamente a \"{ channel }\"",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "Aggiorna automaticamente i nomi delle Varianti utilizzando questa opzione",
     "auto-update-product-variant-name": "Aggiorna automaticamente i nomi delle Varianti",
     "channel-price-preview": "Anteprima prezzo canale",
+    "collection": "",
     "collection-contents": "Contenuti della Collezione",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "Aggiungi {count, plural, one {1 variante} other {{count} varianti}}",
     "add-note": "Aggiungi nota",
     "apply": "",
+    "assets": "",
     "available-languages": "Lingue disponibili",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "Conferma",
     "confirm-delete-note": "Cancellare la nota?",
     "confirm-navigation": "Prosegui con la navigazione",
+    "contents": "",
     "create": "Crea",
     "created-at": "Creato il",
     "custom-fields": "Campi personalizzati",
@@ -236,7 +241,6 @@
     "guest": "Ospite",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "{ count } per pagina",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "Non è stato possibile tornare allo stato \"{state}\". Per favore seleziona un altro stato.",
     "unfulfilled": "Non consegnato",
     "unit-price": "Prezzo unitario"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Aggiungi nazioni a { zoneName }",

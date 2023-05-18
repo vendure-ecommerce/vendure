@@ -91,10 +91,6 @@ export class CollectionDataTableComponent
         return this.subCollections?.filter(c => c.parentId === item.id) ?? [];
     }
 
-    /**
-     * Predicate function that only allows even numbers to be
-     * sorted into even indices and odd numbers at odd indices.
-     */
     sortPredicate = (index: number, item: CdkDrag<{ depth: number; collection: CollectionTableItem }>) => {
         const itemAtIndex = this.dropList.getSortedItems()[index];
         return itemAtIndex?.data.collection.parentId === item.data.collection.parentId;

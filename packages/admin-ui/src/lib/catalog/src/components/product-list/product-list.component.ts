@@ -13,7 +13,6 @@ import {
     JobState,
     LanguageCode,
     ModalService,
-    NavBuilderService,
     NotificationService,
     ProductFilterParameter,
     ProductSortParameter,
@@ -112,20 +111,11 @@ export class ProductListComponent
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
         private dataTableService: DataTableService,
-        private navBuilderService: NavBuilderService,
         private serverConfigService: ServerConfigService,
         router: Router,
         route: ActivatedRoute,
     ) {
         super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-product',
-            label: _('catalog.create-new-product'),
-            locationId: 'product-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateCatalog', 'CreateProduct'],
-        });
         super.setQueryFn(
             (args: any) => this.dataService.product.getProducts(args).refetchOnChannelChange(),
             data => data.products,

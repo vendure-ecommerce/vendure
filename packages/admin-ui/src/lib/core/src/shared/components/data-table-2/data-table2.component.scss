@@ -201,7 +201,7 @@ vdr-empty-placeholder {
     justify-content: space-between;
     margin-top: var(--space-unit);
     margin-left: var(--surface-margin-left);
-    margin-right: 3px;
+    margin-right: var(--space-unit);
 }
 .total-items-count {
     font-size: var(--font-size-xs);

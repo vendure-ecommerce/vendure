@@ -1,4 +1,4 @@
-<div class="card-container">
+<div class="card-container" [class.padding-x]="paddingX">
     <div *ngIf="title" class="title">{{ title }}</div>
     <ng-content></ng-content>
 </div>

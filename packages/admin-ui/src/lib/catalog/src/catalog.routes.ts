@@ -41,10 +41,11 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'products/:id',
-        component: ProductDetailComponent,
+        component: PageComponent,
         resolve: createResolveData(ProductResolver),
-        canDeactivate: [CanDeactivateDetailGuard],
+        // canDeactivate: [CanDeactivateDetailGuard],
         data: {
+            locationId: 'product-detail',
             breadcrumb: productBreadcrumb,
         },
         children: pageService.getPageTabRoutes('product-detail'),

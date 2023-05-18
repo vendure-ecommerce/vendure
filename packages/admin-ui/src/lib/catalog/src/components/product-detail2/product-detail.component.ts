@@ -1,0 +1,457 @@
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import {
+    BaseDetailComponent,
+    CreateProductInput,
+    createUpdatedTranslatable,
+    DataService,
+    findTranslation,
+    getChannelCodeFromUserStatus,
+    GetProductWithVariantsQuery,
+    LanguageCode,
+    ModalService,
+    NotificationService,
+    Permission,
+    ProductDetailFragment,
+    ProductVariantFragment,
+    ServerConfigService,
+    unicodePatternValidator,
+    UpdateProductInput,
+    UpdateProductMutation,
+    UpdateProductOptionInput,
+    UpdateProductVariantInput,
+    UpdateProductVariantsMutation,
+} from '@vendure/admin-ui/core';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { unique } from '@vendure/common/lib/unique';
+import { combineLatest, concat, EMPTY, from, Observable } from 'rxjs';
+import {
+    distinctUntilChanged,
+    map,
+    mergeMap,
+    shareReplay,
+    skip,
+    switchMap,
+    switchMapTo,
+    take,
+} from 'rxjs/operators';
+
+import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
+import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
+import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
+import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
+
+import { SelectedAssets } from './product-detail.types';
+
+@Component({
+    selector: 'vdr-product-detail2',
+    templateUrl: './product-detail.component.html',
+    styleUrls: ['./product-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ProductDetail2Component
+    extends BaseDetailComponent<NonNullable<GetProductWithVariantsQuery['product']>>
+    implements OnInit, OnDestroy
+{
+    product$: Observable<NonNullable<GetProductWithVariantsQuery['product']>>;
+    readonly customFields = this.getCustomFieldConfig('Product');
+    detailForm = this.formBuilder.group({
+        enabled: true,
+        name: ['', Validators.required],
+        autoUpdateVariantNames: true,
+        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
+        description: '',
+        facetValueIds: [[] as string[]],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
+    assetChanges: SelectedAssets = {};
+    productChannels$: Observable<ProductDetailFragment['channels']>;
+    facetValues$: Observable<ProductDetailFragment['facetValues']>;
+    createVariantsConfig: CreateProductVariantsConfig = { groups: [], variants: [] };
+    public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
+
+    constructor(
+        route: ActivatedRoute,
+        router: Router,
+        serverConfigService: ServerConfigService,
+        private productDetailService: ProductDetailService,
+        private formBuilder: FormBuilder,
+        private modalService: ModalService,
+        private notificationService: NotificationService,
+        protected dataService: DataService,
+        private changeDetector: ChangeDetectorRef,
+    ) {
+        super(route, router, serverConfigService, dataService);
+    }
+
+    ngOnInit() {
+        this.init();
+        this.product$ = this.entity$;
+        const productFacetValues$ = this.product$.pipe(map(product => product.facetValues));
+        const productGroup = this.detailForm;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const formFacetValueIdChanges$ = productGroup.get('facetValueIds')!.valueChanges.pipe(
+            skip(1),
+            distinctUntilChanged(),
+            switchMap(ids =>
+                this.dataService.facet
+                    .getFacetValues({ filter: { id: { in: ids } } })
+                    .mapSingle(({ facetValues }) => facetValues.items),
+            ),
+            shareReplay(1),
+        );
+        this.facetValues$ = concat(
+            productFacetValues$.pipe(take(1)),
+            productFacetValues$.pipe(switchMapTo(formFacetValueIdChanges$)),
+        );
+        this.productChannels$ = this.product$.pipe(map(p => p.channels));
+    }
+
+    ngOnDestroy() {
+        this.destroy();
+    }
+
+    isDefaultChannel(channelCode: string): boolean {
+        return channelCode === DEFAULT_CHANNEL_CODE;
+    }
+
+    assignToChannel() {
+        this.productChannels$
+            .pipe(
+                take(1),
+                switchMap(channels =>
+                    this.modalService.fromComponent(AssignProductsToChannelDialogComponent, {
+                        size: 'lg',
+                        locals: {
+                            productIds: [this.id],
+                            currentChannelIds: channels.map(c => c.id),
+                        },
+                    }),
+                ),
+            )
+            .subscribe();
+    }
+
+    removeFromChannel(channelId: string) {
+        from(getChannelCodeFromUserStatus(this.dataService, channelId))
+            .pipe(
+                switchMap(({ channelCode }) =>
+                    this.modalService.dialog({
+                        title: _('catalog.remove-product-from-channel'),
+                        buttons: [
+                            { type: 'secondary', label: _('common.cancel') },
+                            {
+                                type: 'danger',
+                                label: _('catalog.remove-from-channel'),
+                                translationVars: { channelCode },
+                                returnValue: true,
+                            },
+                        ],
+                    }),
+                ),
+                switchMap(response =>
+                    response
+                        ? this.dataService.product.removeProductsFromChannel({
+                              channelId,
+                              productIds: [this.id],
+                          })
+                        : EMPTY,
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('catalog.notify-remove-product-from-channel-success'));
+                },
+                err => {
+                    this.notificationService.error(_('catalog.notify-remove-product-from-channel-error'));
+                },
+            );
+    }
+
+    assignVariantToChannel(variant: ProductVariantFragment) {
+        return this.modalService
+            .fromComponent(AssignProductsToChannelDialogComponent, {
+                size: 'lg',
+                locals: {
+                    productIds: [this.id],
+                    productVariantIds: [variant.id],
+                    currentChannelIds: variant.channels.map(c => c.id),
+                },
+            })
+            .subscribe();
+    }
+
+    removeVariantFromChannel({ channelId, variant }: { channelId: string; variant: ProductVariantFragment }) {
+        from(getChannelCodeFromUserStatus(this.dataService, channelId))
+            .pipe(
+                switchMap(({ channelCode }) =>
+                    this.modalService.dialog({
+                        title: _('catalog.remove-product-variant-from-channel'),
+                        buttons: [
+                            { type: 'secondary', label: _('common.cancel') },
+                            {
+                                type: 'danger',
+                                label: _('catalog.remove-from-channel'),
+                                translationVars: { channelCode },
+                                returnValue: true,
+                            },
+                        ],
+                    }),
+                ),
+                switchMap(response =>
+                    response
+                        ? this.dataService.product.removeVariantsFromChannel({
+                              channelId,
+                              productVariantIds: [variant.id],
+                          })
+                        : EMPTY,
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('catalog.notify-remove-variant-from-channel-success'));
+                },
+                err => {
+                    this.notificationService.error(_('catalog.notify-remove-variant-from-channel-error'));
+                },
+            );
+    }
+
+    assetsChanged(): boolean {
+        return !!Object.values(this.assetChanges).length;
+    }
+
+    /**
+     * If creating a new product, automatically generate the slug based on the product name.
+     */
+    updateSlug(nameValue: string) {
+        combineLatest(this.entity$, this.languageCode$)
+            .pipe(take(1))
+            .subscribe(([entity, languageCode]) => {
+                const slugControl = this.detailForm.get(['product', 'slug']);
+                const currentTranslation = findTranslation(entity, languageCode);
+                const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
+                if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
+                    slugControl.setValue(normalizeString(`${nameValue}`, '-'));
+                }
+            });
+    }
+
+    selectProductFacetValue() {
+        this.displayFacetValueModal().subscribe(facetValueIds => {
+            if (facetValueIds) {
+                const productGroup = this.detailForm;
+                const currentFacetValueIds = productGroup.value.facetValueIds ?? [];
+                productGroup.patchValue({
+                    facetValueIds: unique([...currentFacetValueIds, ...facetValueIds]),
+                });
+                productGroup.markAsDirty();
+            }
+        });
+    }
+
+    updateProductOption(input: UpdateProductOptionInput & { autoUpdate: boolean }) {
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([product, languageCode]) =>
+                    this.productDetailService.updateProductOption(input, product, languageCode),
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('common.notify-update-success'), {
+                        entity: 'ProductOption',
+                    });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-update-error'), {
+                        entity: 'ProductOption',
+                    });
+                },
+            );
+    }
+
+    removeProductFacetValue(facetValueId: string) {
+        const productGroup = this.detailForm;
+        const currentFacetValueIds = productGroup.value.facetValueIds ?? [];
+        productGroup.patchValue({
+            facetValueIds: currentFacetValueIds.filter(id => id !== facetValueId),
+        });
+        productGroup.markAsDirty();
+    }
+
+    private displayFacetValueModal(): Observable<string[] | undefined> {
+        return this.modalService
+            .fromComponent(ApplyFacetDialogComponent, {
+                size: 'md',
+                closable: true,
+            })
+            .pipe(map(facetValues => facetValues && facetValues.map(v => v.id)));
+    }
+
+    create() {
+        const productGroup = this.detailForm;
+        if (!productGroup.dirty) {
+            return;
+        }
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([product, languageCode]) => {
+                    const newProduct = this.getUpdatedProduct(
+                        product,
+                        productGroup as UntypedFormGroup,
+                        languageCode,
+                    ) as CreateProductInput;
+                    return this.productDetailService.createProductWithVariants(
+                        newProduct,
+                        this.createVariantsConfig,
+                        languageCode,
+                    );
+                }),
+            )
+            .subscribe(
+                ({ createProductVariants, productId }) => {
+                    this.notificationService.success(_('common.notify-create-success'), {
+                        entity: 'Product',
+                    });
+                    this.assetChanges = {};
+                    this.detailForm.markAsPristine();
+                    this.router.navigate(['../', productId], { relativeTo: this.route });
+                },
+                err => {
+                    // eslint-disable-next-line no-console
+                    console.error(err);
+                    this.notificationService.error(_('common.notify-create-error'), {
+                        entity: 'Product',
+                    });
+                },
+            );
+    }
+
+    save() {
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([product, languageCode]) => {
+                    const productGroup = this.detailForm;
+                    let productInput: UpdateProductInput | undefined;
+                    let variantsInput: UpdateProductVariantInput[] | undefined;
+
+                    if (productGroup.dirty || this.assetsChanged()) {
+                        productInput = this.getUpdatedProduct(
+                            product,
+                            productGroup as UntypedFormGroup,
+                            languageCode,
+                        ) as UpdateProductInput;
+                    }
+
+                    return this.productDetailService.updateProduct({
+                        product,
+                        languageCode,
+                        autoUpdate:
+                            this.detailForm.get(['product', 'autoUpdateVariantNames'])?.value ?? false,
+                        productInput,
+                        variantsInput,
+                    });
+                }),
+            )
+            .subscribe(
+                result => {
+                    this.updateSlugAfterSave(result);
+                    this.detailForm.markAsPristine();
+                    this.assetChanges = {};
+                    this.notificationService.success(_('common.notify-update-success'), {
+                        entity: 'Product',
+                    });
+                    this.changeDetector.markForCheck();
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-update-error'), {
+                        entity: 'Product',
+                    });
+                },
+            );
+    }
+
+    canDeactivate(): boolean {
+        return super.canDeactivate() && !this.assetChanges.assets && !this.assetChanges.featuredAsset;
+    }
+
+    /**
+     * Sets the values of the form on changes to the product or current language.
+     */
+    protected setFormValues(
+        product: NonNullable<GetProductWithVariantsQuery['product']>,
+        languageCode: LanguageCode,
+    ) {
+        const currentTranslation = findTranslation(product, languageCode);
+        this.detailForm.patchValue({
+            enabled: product.enabled,
+            name: currentTranslation ? currentTranslation.name : '',
+            slug: currentTranslation ? currentTranslation.slug : '',
+            description: currentTranslation ? currentTranslation.description : '',
+            facetValueIds: product.facetValues.map(fv => fv.id),
+        });
+
+        if (this.customFields.length) {
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['customFields']),
+                product,
+                currentTranslation,
+            );
+        }
+    }
+
+    /**
+     * Given a product and the value of the detailForm, this method creates an updated copy of the product which
+     * can then be persisted to the API.
+     */
+    private getUpdatedProduct(
+        product: NonNullable<GetProductWithVariantsQuery['product']>,
+        productFormGroup: UntypedFormGroup,
+        languageCode: LanguageCode,
+    ): UpdateProductInput | CreateProductInput {
+        const updatedProduct = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: productFormGroup.value,
+            customFieldConfig: this.customFields,
+            languageCode,
+            defaultTranslation: {
+                languageCode,
+                name: product.name || '',
+                slug: product.slug || '',
+                description: product.description || '',
+            },
+        });
+        return {
+            ...updatedProduct,
+            assetIds: this.assetChanges.assets?.map(a => a.id),
+            featuredAssetId: this.assetChanges.featuredAsset?.id,
+            facetValueIds: productFormGroup.value.facetValueIds,
+        } as UpdateProductInput | CreateProductInput;
+    }
+
+    /**
+     * The server may alter the slug value in order to normalize and ensure uniqueness upon saving.
+     */
+    private updateSlugAfterSave(results: Array<UpdateProductMutation | UpdateProductVariantsMutation>) {
+        const firstResult = results[0];
+        const slugControl = this.detailForm.get(['product', 'slug']);
+
+        function isUpdateMutation(input: any): input is UpdateProductMutation {
+            return input.hasOwnProperty('updateProduct');
+        }
+
+        if (slugControl && isUpdateMutation(firstResult)) {
+            slugControl.setValue(firstResult.updateProduct.slug, { emitEvent: false });
+        }
+    }
+}

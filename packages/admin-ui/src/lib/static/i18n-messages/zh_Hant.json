@@ -58,6 +58,7 @@
     "add-facets": "新增特徵",
     "add-option": "新增規格選項",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "成功將產品新增至渠道\"{ channel }\"",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "",
     "auto-update-product-variant-name": "",
     "channel-price-preview": "渠道價格覽",
+    "collection": "",
     "collection-contents": "系列產品",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "新增{count}個商品規格",
     "add-note": "",
     "apply": "",
+    "assets": "",
     "available-languages": "可用語言",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "",
     "confirm-delete-note": "",
     "confirm-navigation": "導航確認",
+    "contents": "",
     "create": "新增",
     "created-at": "建立時間",
     "custom-fields": "客戶自訂欄位",
@@ -236,7 +241,6 @@
     "guest": "游客",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "每页顯示 { count } 條",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "",
     "unfulfilled": "未配貨",
     "unit-price": "單價"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "新增國家到銷售區域...",

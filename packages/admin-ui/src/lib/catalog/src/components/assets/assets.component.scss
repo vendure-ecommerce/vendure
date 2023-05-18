@@ -1,10 +1,21 @@
 
 :host {
-    width: 340px;
     display: block;
     &.compact {
         width: 162px;
     }
+}
+
+.standard-view-container {
+    display: flex;
+    gap: calc(var(--space-unit) * 2);
+}
+
+.all-assets-container {
+    display: flex;
+    max-width: 50%;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .placeholder {

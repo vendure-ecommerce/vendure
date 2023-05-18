@@ -58,6 +58,7 @@
     "add-facets": "Ajout composant",
     "add-option": "Ajout option",
     "asset-preview-links": "",
+    "assets": "",
     "assign-collections-to-channel-success": "",
     "assign-facets-to-channel-success": "",
     "assign-product-to-channel-success": "produit attribué au canal \"{ channel }\"",
@@ -69,7 +70,9 @@
     "auto-update-option-variant-name": "Mettre à jour automatiquement les noms de variations du produit en utilisant cette option",
     "auto-update-product-variant-name": "Mettre à jour automatiquement les noms de variations du produit ",
     "channel-price-preview": "Prévisualisation du prix du canal",
+    "collection": "",
     "collection-contents": "Contenu de la Collection",
+    "collections": "",
     "confirm-bulk-delete": "",
     "confirm-bulk-delete-collections": "",
     "confirm-bulk-delete-products": "",
@@ -192,6 +195,7 @@
     "add-new-variants": "Ajout {count, plural, one {d'une variation} other {de {count} variations}}",
     "add-note": "Ajouter une note",
     "apply": "",
+    "assets": "",
     "available-languages": "Langues disponibles",
     "boolean-and": "",
     "boolean-false": "",
@@ -211,6 +215,7 @@
     "confirm": "Confirmer",
     "confirm-delete-note": "Supprimer la note ?",
     "confirm-navigation": "Confirmer la navigation",
+    "contents": "",
     "create": "Creer",
     "created-at": "Créé à",
     "custom-fields": "Champs personnalisés",
@@ -236,7 +241,6 @@
     "guest": "Invité",
     "id": "",
     "image": "",
-    "info": "",
     "items-per-page-option": "{ count } par page",
     "items-selected-count": "",
     "keep-editing": "",
@@ -643,6 +647,9 @@
     "unable-to-transition-to-state-try-another": "La commande n'a pas pu être remise à l'état \"{state}\" . Veuillez-sélectionner un autre état.",
     "unfulfilled": "Non préparé",
     "unit-price": "Prix à l'unité"
+  },
+  "orders": {
+    "orders": ""
   },
   "settings": {
     "add-countries-to-zone": "Ajouter des pays à { zoneName }",

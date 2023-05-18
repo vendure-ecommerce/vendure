@@ -4,13 +4,22 @@
 .card-container {
     border: 1px solid var(--color-card-border);
     border-radius: var(--border-radius);
-    padding: calc(var(--space-unit) * 2);
+    padding: calc(var(--space-unit) * 2) 0;
     box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.1);
+
+    &.padding-x {
+        padding-left: calc(var(--space-unit) * 2);
+        padding-right: calc(var(--space-unit) * 2);
+    }
 }
 
 .title {
     font-size: var(--font-size-base);
     margin-bottom: calc(var(--space-unit) * 2);
+    padding: 0 calc(var(--space-unit) * 2);
+}
+.padding-x .title {
+    padding: 0;
 }
 
 ::ng-deep vdr-card + vdr-card {
