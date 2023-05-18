@@ -105,7 +105,7 @@ export class MultivendorService {
             code: shopCode,
             sellerId: seller.id,
             token: `${shopCode}-token`,
-            currencyCode: defaultChannel.currencyCode,
+            currencyCode: defaultChannel.defaultCurrencyCode,
             defaultLanguageCode: defaultChannel.defaultLanguageCode,
             pricesIncludeTax: defaultChannel.pricesIncludeTax,
             defaultShippingZoneId: defaultChannel.defaultShippingZone.id,
