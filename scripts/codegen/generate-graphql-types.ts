@@ -78,7 +78,7 @@ Promise.all([
         const disableEsLintPlugin = { add: { content: '/* eslint-disable */' } };
         const graphQlErrorsPlugin = path.join(__dirname, './plugins/graphql-errors-plugin.js');
         const commonPlugins = [disableEsLintPlugin, 'typescript'];
-        const clientPlugins = [...commonPlugins, 'typescript-operations'];
+        const clientPlugins = [...commonPlugins, 'typescript-operations', 'typed-document-node'];
 
         const codegenConfig: Types.Config = {
             overwrite: true,
