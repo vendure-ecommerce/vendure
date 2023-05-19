@@ -3,6 +3,7 @@ import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    Asset,
     BaseDetailComponent,
     CreateProductInput,
     createUpdatedTranslatable,
@@ -44,7 +45,10 @@ import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dia
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
 
-import { SelectedAssets } from './product-detail.types';
+interface SelectedAssets {
+    assets?: Asset[];
+    featuredAsset?: Asset;
+}
 
 @Component({
     selector: 'vdr-product-detail2',

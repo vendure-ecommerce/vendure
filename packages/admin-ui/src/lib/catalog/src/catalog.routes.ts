@@ -8,10 +8,10 @@ import {
     detailBreadcrumb,
     FacetWithValuesFragment,
     GetProductWithVariantsQuery,
+    PageComponent,
+    PageService,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
-import { PageService } from '../../core/src/providers/page/page.service';
-import { PageComponent } from '../../core/src/shared/components/page/page.component';
 
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';

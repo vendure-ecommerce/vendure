@@ -29,11 +29,16 @@ export * from './components/move-collections-dialog/move-collections-dialog.comp
 export * from './components/option-value-input/option-value-input.component';
 export * from './components/product-detail/product-detail.component';
 export * from './components/product-detail/product-detail.types';
+export * from './components/product-detail2/product-detail.component';
 export * from './components/product-list/product-list-bulk-actions';
 export * from './components/product-list/product-list.component';
+export * from './components/product-list/product-list.graphql';
 export * from './components/product-options-editor/product-options-editor.component';
+export * from './components/product-variant-detail/product-variant-detail.component';
+export * from './components/product-variant-detail/product-variant-detail.graphql';
 export * from './components/product-variant-list/product-list-bulk-actions';
 export * from './components/product-variant-list/product-variant-list.component';
+export * from './components/product-variant-list/product-variant-list.graphql';
 export * from './components/product-variants-editor/product-variants-editor.component';
 export * from './components/product-variants-list/product-variants-list.component';
 export * from './components/product-variants-table/product-variants-table.component';

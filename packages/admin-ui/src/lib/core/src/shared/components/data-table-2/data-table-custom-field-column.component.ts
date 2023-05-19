@@ -1,8 +1,9 @@
 import { Component, ContentChild, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { DataService, DataTableSortCollection, LanguageCode } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CustomFieldConfig } from '../../../common/generated-types';
+import { CustomFieldConfig, LanguageCode } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
+import { DataTableSortCollection } from '../../../providers/data-table/data-table-sort-collection';
 import { DataTable2ColumnComponent } from './data-table-column.component';
 
 @Component({

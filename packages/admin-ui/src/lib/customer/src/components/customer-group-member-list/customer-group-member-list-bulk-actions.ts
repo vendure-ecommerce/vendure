@@ -6,7 +6,10 @@ import {
     NotificationService,
     Permission,
 } from '@vendure/admin-ui/core';
-import { CustomerGroupMember, CustomerGroupMemberListComponent } from '@vendure/admin-ui/customer';
+import {
+    CustomerGroupMember,
+    CustomerGroupMemberListComponent,
+} from './customer-group-member-list.component';
 
 export const removeCustomerGroupMembersBulkAction: BulkAction<
     CustomerGroupMember,

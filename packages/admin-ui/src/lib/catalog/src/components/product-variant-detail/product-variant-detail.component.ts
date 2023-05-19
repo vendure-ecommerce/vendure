@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductDetailService } from '@vendure/admin-ui/catalog';
 import {
+    Asset,
     BaseDetailComponent,
     DataService,
     findTranslation,
@@ -21,9 +21,14 @@ import {
 } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { map, shareReplay, takeUntil } from 'rxjs/operators';
-import { SelectedAssets } from '../product-detail2/product-detail.types';
+import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 
-export interface VariantFormValue {
+interface SelectedAssets {
+    assets?: Asset[];
+    featuredAsset?: Asset;
+}
+
+interface VariantFormValue {
     id: string;
     enabled: boolean;
     sku: string;

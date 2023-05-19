@@ -34,6 +34,7 @@ export * from './components/tax-rate-list/tax-rate-list-bulk-actions';
 export * from './components/tax-rate-list/tax-rate-list.component';
 export * from './components/test-address-form/test-address-form.component';
 export * from './components/test-order-builder/test-order-builder.component';
+export * from './components/test-shipping-methods/test-shipping-methods.component';
 export * from './components/zone-detail-dialog/zone-detail-dialog.component';
 export * from './components/zone-list/zone-list-bulk-actions';
 export * from './components/zone-list/zone-list.component';

@@ -15,17 +15,14 @@ import {
     SimpleChanges,
     TemplateRef,
 } from '@angular/core';
-import {
-    BulkActionMenuComponent,
-    DataService,
-    DataTableConfig,
-    LanguageCode,
-    LocalStorageService,
-} from '@vendure/admin-ui/core';
 import { PaginationService } from 'ngx-pagination';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { LanguageCode } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
+import { DataTableConfig, LocalStorageService } from '../../../providers/local-storage/local-storage.service';
+import { BulkActionMenuComponent } from '../bulk-action-menu/bulk-action-menu.component';
 
 import { DataTable2ColumnComponent } from './data-table-column.component';
 import { DataTableCustomFieldColumnComponent } from './data-table-custom-field-column.component';

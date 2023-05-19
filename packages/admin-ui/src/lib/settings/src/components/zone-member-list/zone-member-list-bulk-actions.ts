@@ -1,6 +1,6 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { BulkAction, DataService, NotificationService, Permission } from '@vendure/admin-ui/core';
-import { ZoneMember, ZoneMemberListComponent } from '@vendure/admin-ui/settings';
+import { ZoneMember, ZoneMemberListComponent } from './zone-member-list.component';
 
 export const removeZoneMembersBulkAction: BulkAction<ZoneMember, ZoneMemberListComponent> = {
     location: 'zone-members-list',

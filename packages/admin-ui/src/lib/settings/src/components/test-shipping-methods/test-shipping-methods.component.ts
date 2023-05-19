@@ -5,9 +5,10 @@ import {
     ShippingMethodQuote,
     TestEligibleShippingMethodsInput,
 } from '@vendure/admin-ui/core';
-import { TestAddress, TestOrderLine } from '@vendure/admin-ui/settings';
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { TestAddress } from '../test-address-form/test-address-form.component';
+import { TestOrderLine } from '../test-order-builder/test-order-builder.component';
 
 @Component({
     selector: 'vdr-test-shipping-methods',

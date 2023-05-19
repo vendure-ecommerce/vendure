@@ -6,9 +6,9 @@ import {
     detailComponentWithResolver,
     GetProductVariantDetailDocument,
     PageService,
+    PageBlockComponent,
     SharedModule,
 } from '@vendure/admin-ui/core';
-import { PageBlockComponent } from '../../core/src/shared/components/page-block/page-block.component';
 
 import { createRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
@@ -206,7 +206,9 @@ export class CatalogModule {
     standalone: true,
     selector: 'vdr-custom-stock-control',
     imports: [SharedModule],
-    template: `<vdr-page-block>Stock control!</vdr-page-block> `,
+    template: `
+        <vdr-page-block>Stock control!</vdr-page-block>
+    `,
 })
 export class StockControlComponent {
     // component logic

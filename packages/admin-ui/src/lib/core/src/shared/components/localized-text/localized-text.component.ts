@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { LanguageCode, LocalizedString } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-localized-text',
