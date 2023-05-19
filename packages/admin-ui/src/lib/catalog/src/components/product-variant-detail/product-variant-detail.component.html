@@ -1,0 +1,123 @@
+<vdr-page-block>
+    <vdr-action-bar>
+        <vdr-ab-left>
+            <div class="flex clr-flex-row"></div>
+            <vdr-language-selector
+                [disabled]="isNew$ | async"
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="languageCode$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
+        </vdr-ab-left>
+
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="product-detail"></vdr-action-bar-items>
+            <button
+                *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
+                class="btn btn-primary"
+                (click)="save()"
+                [disabled]="(detailForm.invalid || detailForm.pristine) && !assetsChanged()"
+            >
+                {{ 'common.update' | translate }}
+            </button>
+        </vdr-ab-right>
+    </vdr-action-bar>
+</vdr-page-block>
+<form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as variant">
+    <vdr-page-detail-layout>
+        <vdr-page-detail-sidebar
+            ><vdr-card>
+                <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
+                    <clr-toggle-wrapper *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']">
+                        <input
+                            type="checkbox"
+                            clrToggle
+                            name="enabled"
+                            [formControl]="detailForm.get(['enabled'])"
+                        />
+                        <label>{{ 'common.enabled' | translate }}</label>
+                    </clr-toggle-wrapper>
+                </vdr-form-field>
+            </vdr-card>
+
+            <vdr-card>
+                <vdr-page-entity-info *ngIf="entity$ | async as entity" [entity]="entity" />
+            </vdr-card>
+        </vdr-page-detail-sidebar>
+
+        <vdr-page-block>
+            <button type="submit" hidden x-data="prevents enter key from triggering other buttons"></button>
+            <vdr-card>
+                <vdr-form-field [label]="'common.name' | translate" for="name">
+                    <input
+                        id="name"
+                        type="text"
+                        formControlName="name"
+                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                    />
+                </vdr-form-field>
+                <vdr-form-field [label]="'catalog.sku' | translate" for="sku">
+                    <input
+                        id="sku"
+                        type="text"
+                        formControlName="sku"
+                        [readonly]="!(updatePermissions | hasPermission)"
+                    />
+                </vdr-form-field>
+            </vdr-card>
+            <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customFields.length">
+                <vdr-tabbed-custom-fields
+                    entityName="ProductVariant"
+                    [customFields]="customFields"
+                    [customFieldsFormGroup]="detailForm.get('customFields')"
+                    [readonly]="!(updatePermissions | hasPermission)"
+                />
+            </vdr-card>
+            <vdr-custom-detail-component-host
+                locationId="product-variant-detail"
+                [entity$]="entity$"
+                [detailForm]="detailForm"
+            />
+            <vdr-card [title]="'catalog.assets' | translate">
+                <vdr-assets
+                    [assets]="assetChanges.assets || variant.assets"
+                    [featuredAsset]="assetChanges.featuredAsset || variant.featuredAsset"
+                    [updatePermissions]="updatePermissions"
+                    (change)="assetChanges = $event"
+                />
+            </vdr-card>
+            <vdr-card [title]="'catalog.price-and-tax' | translate">
+                <vdr-form-field [label]="'catalog.tax-category' | translate" for="taxCategory">
+                    <select name="taxCategory" formControlName="taxCategoryId">
+                        <option *ngFor="let taxCategory of taxCategories$ | async" [value]="taxCategory.id">
+                            {{ taxCategory.name }}
+                        </option>
+                    </select>
+                </vdr-form-field>
+                <vdr-form-field [label]="'catalog.price' | translate" for="sku">
+                    <vdr-currency-input
+                        *ngIf="!(channelPriceIncludesTax$ | async)"
+                        [currencyCode]="variant.currencyCode"
+                        [readonly]="!(updatePermissions | hasPermission)"
+                        formControlName="price"
+                    />
+                    <vdr-currency-input
+                        *ngIf="channelPriceIncludesTax$ | async"
+                        [currencyCode]="variant.currencyCode"
+                        [readonly]="!(updatePermissions | hasPermission)"
+                        formControlName="priceWithTax"
+                    />
+                </vdr-form-field>
+                <vdr-variant-price-detail
+                    [price]="detailForm.get('price')!.value"
+                    [currencyCode]="variant.currencyCode"
+                    [priceIncludesTax]="channelPriceIncludesTax$ | async"
+                    [taxCategoryId]="detailForm.get('taxCategoryId')!.value"
+                />
+            </vdr-card>
+            <vdr-card [title]="'catalog.stock' | translate">
+
+            </vdr-card>
+        </vdr-page-block>
+    </vdr-page-detail-layout>
+</form>

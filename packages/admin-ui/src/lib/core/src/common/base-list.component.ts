@@ -1,11 +1,16 @@
-import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { Directive, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
+import { ResultOf, TypedDocumentNode, VariablesOf } from '@graphql-typed-document-node/core';
 import { BehaviorSubject, combineLatest, merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, shareReplay, takeUntil, tap } from 'rxjs/operators';
+import { DataService } from '../data/providers/data.service';
 
 import { QueryResult } from '../data/query-result';
-import { GetFacetListQuery } from './generated-types';
+import { ServerConfigService } from '../data/server-config';
+import { DataTableFilterCollection } from '../providers/data-table/data-table-filter-collection';
+import { DataTableSortCollection } from '../providers/data-table/data-table-sort-collection';
+import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
 import { SelectionManager } from './utilities/selection-manager';
 
 export type ListQueryFn<R> = (take: number, skip: number, ...args: any[]) => QueryResult<R, any>;
@@ -237,5 +242,66 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
             queryParamsHandling: 'merge',
             ...options,
         });
+    }
+}
+
+@Directive()
+export class TypedBaseListComponent<
+        T extends TypedDocumentNode<any, Vars>,
+        Field extends keyof ResultOf<T>,
+        Vars extends { options: { filter: any; sort: any } } = VariablesOf<T>,
+    >
+    extends BaseListComponent<ResultOf<T>, ItemOf<ResultOf<T>, Field>, VariablesOf<T>>
+    implements OnInit
+{
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
+
+    protected dataService = inject(DataService);
+    protected router = inject(Router);
+    protected serverConfigService = inject(ServerConfigService);
+    private refreshStreams: Array<Observable<any>> = [];
+    constructor() {
+        super(inject(Router), inject(ActivatedRoute));
+    }
+
+    protected configure(config: {
+        document: T;
+        getItems: (data: ResultOf<T>) => { items: Array<ItemOf<ResultOf<T>, Field>>; totalItems: number };
+        setVariables?: (skip: number, take: number) => VariablesOf<T>;
+        refreshListOnChanges?: Array<Observable<any>>;
+    }) {
+        super.setQueryFn(
+            (args: any) => this.dataService.query(config.document).refetchOnChannelChange(),
+            data => config.getItems(data),
+            (skip, take) => config.setVariables?.(skip, take) ?? ({} as any),
+        );
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
+        this.contentLanguage$ = this.dataService.client
+            .uiState()
+            .mapStream(({ uiState }) => uiState.contentLanguage)
+            .pipe(tap(() => this.refresh()));
+        this.refreshStreams = config.refreshListOnChanges ?? [];
+    }
+
+    ngOnInit() {
+        super.ngOnInit();
+        super.refreshListOnChanges(this.contentLanguage$, ...this.refreshStreams);
+    }
+
+    createFilterCollection(): DataTableFilterCollection<NonNullable<NonNullable<Vars['options']>['filter']>> {
+        return new DataTableFilterCollection<NonNullable<Vars['options']['filter']>>(this.router);
+    }
+
+    createSortCollection(): DataTableSortCollection<NonNullable<NonNullable<Vars['options']>['sort']>> {
+        return new DataTableSortCollection<NonNullable<Vars['options']['sort']>>(this.router);
+    }
+
+    setLanguage(code: LanguageCode) {
+        this.dataService.client.setContentLanguage(code).subscribe();
+    }
+
+    getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
+        return this.serverConfigService.getCustomFieldsFor(key);
     }
 }

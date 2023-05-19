@@ -1,22 +1,28 @@
 :host {
     display: block;
+    --card-padding: calc(var(--space-unit) * 3);
+    container-type: inline-size;
 }
+
 .card-container {
+    @container (max-width: 400px) {
+        --card-padding: calc(var(--space-unit) * 2);
+    }
     border: 1px solid var(--color-card-border);
     border-radius: var(--border-radius);
-    padding: calc(var(--space-unit) * 2) 0;
-    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.1);
+    padding: var(--card-padding) 0;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05);
 
     &.padding-x {
-        padding-left: calc(var(--space-unit) * 2);
-        padding-right: calc(var(--space-unit) * 2);
+        padding-left: var(--card-padding);
+        padding-right: var(--card-padding);
     }
 }
 
 .title {
     font-size: var(--font-size-base);
-    margin-bottom: calc(var(--space-unit) * 2);
-    padding: 0 calc(var(--space-unit) * 2);
+    margin-bottom: var(--card-padding);
+    padding: 0 var(--card-padding);
 }
 .padding-x .title {
     padding: 0;

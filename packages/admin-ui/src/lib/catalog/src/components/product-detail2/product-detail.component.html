@@ -22,7 +22,7 @@
             </button>
             <ng-template #updateButton>
                 <button
-                    *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
+                    *vdrIfPermissions="updatePermissions"
                     class="btn btn-primary"
                     (click)="save()"
                     [disabled]="(detailForm.invalid || detailForm.pristine) && !assetsChanged()"
@@ -39,7 +39,7 @@
         <vdr-page-detail-sidebar
             ><vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
-                    <clr-toggle-wrapper *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']">
+                    <clr-toggle-wrapper *vdrIfPermissions="updatePermissions">
                         <input
                             type="checkbox"
                             clrToggle
@@ -77,12 +77,12 @@
                     <vdr-facet-value-chip
                         *ngFor="let facetValue of facetValues$ | async"
                         [facetValue]="facetValue"
-                        [removable]="['UpdateCatalog', 'UpdateProduct'] | hasPermission"
+                        [removable]="updatePermissions | hasPermission"
                         (remove)="removeProductFacetValue(facetValue.id)"
                     ></vdr-facet-value-chip>
                     <button
                         class="btn btn-sm btn-secondary"
-                        *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
+                        *vdrIfPermissions="updatePermissions"
                         (click)="selectProductFacetValue()"
                     >
                         <clr-icon shape="plus"></clr-icon>
@@ -107,7 +107,7 @@
                         id="name"
                         type="text"
                         formControlName="name"
-                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                        [readonly]="!(updatePermissions | hasPermission)"
                         (input)="updateSlug($event.target.value)"
                     />
                 </vdr-form-field>
@@ -132,7 +132,7 @@
                         id="slug"
                         type="text"
                         formControlName="slug"
-                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                        [readonly]="!(updatePermissions | hasPermission)"
                     />
                 </vdr-form-field>
                 <vdr-form-field
@@ -142,25 +142,23 @@
                 >
                     <vdr-rich-text-editor
                         formControlName="description"
-                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                        [readonly]="!(updatePermissions | hasPermission)"
                     ></vdr-rich-text-editor>
                 </vdr-form-field>
             </vdr-card>
             <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customFields.length">
-                <section formGroupName="customFields">
-                    <vdr-tabbed-custom-fields
-                        entityName="Product"
-                        [customFields]="customFields"
-                        [customFieldsFormGroup]="detailForm.get(['customFields'])"
-                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
-                    ></vdr-tabbed-custom-fields>
-                </section>
-                <vdr-custom-detail-component-host
-                    locationId="product-detail"
-                    [entity$]="entity$"
-                    [detailForm]="detailForm"
-                ></vdr-custom-detail-component-host>
+                <vdr-tabbed-custom-fields
+                    entityName="Product"
+                    [customFields]="customFields"
+                    [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                    [readonly]="!(updatePermissions | hasPermission)"
+                ></vdr-tabbed-custom-fields>
             </vdr-card>
+            <vdr-custom-detail-component-host
+                locationId="product-detail"
+                [entity$]="entity$"
+                [detailForm]="detailForm"
+            ></vdr-custom-detail-component-host>
             <vdr-card [title]="'catalog.assets' | translate">
                 <vdr-assets
                     [assets]="assetChanges.assets || product.assets"

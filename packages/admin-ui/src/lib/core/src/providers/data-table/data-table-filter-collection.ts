@@ -103,6 +103,15 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
         return this;
     }
 
+    addFilters<FilterType extends DataTableFilterType>(
+        configs: Array<DataTableFilterOptions<FilterInput, FilterType>>,
+    ): DataTableFilterCollection<FilterInput> {
+        for (const config of configs) {
+            this.addFilter(config);
+        }
+        return this;
+    }
+
     addDateFilters(): FilterInput extends {
         createdAt?: DateOperators | null;
         updatedAt?: DateOperators | null;

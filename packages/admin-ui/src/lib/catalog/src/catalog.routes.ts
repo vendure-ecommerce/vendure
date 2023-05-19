@@ -14,13 +14,7 @@ import { PageService } from '../../core/src/providers/page/page.service';
 import { PageComponent } from '../../core/src/shared/components/page/page.component';
 
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
-import { AssetListComponent } from './components/asset-list/asset-list.component';
-import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
-import { CollectionListComponent } from './components/collection-list/collection-list.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
-import { FacetListComponent } from './components/facet-list/facet-list.component';
-import { ProductDetailComponent } from './components/product-detail/product-detail.component';
-import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { AssetResolver } from './providers/routing/asset-resolver';
@@ -43,12 +37,19 @@ export const createRoutes = (pageService: PageService): Route[] => [
         path: 'products/:id',
         component: PageComponent,
         resolve: createResolveData(ProductResolver),
-        // canDeactivate: [CanDeactivateDetailGuard],
         data: {
             locationId: 'product-detail',
             breadcrumb: productBreadcrumb,
         },
         children: pageService.getPageTabRoutes('product-detail'),
+    },
+    {
+        path: 'products/:productId/variants/:id',
+        component: PageComponent,
+        data: {
+            locationId: 'product-variant-detail',
+        },
+        children: pageService.getPageTabRoutes('product-variant-detail'),
     },
     {
         path: 'products/:id/manage-variants',

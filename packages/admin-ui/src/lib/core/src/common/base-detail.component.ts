@@ -1,10 +1,14 @@
+import { inject, Type } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ActivationStart, ResolveFn, Router } from '@angular/router';
+import { ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { DataService } from '../data/providers/data.service';
 import { ServerConfigService } from '../data/server-config';
+import { BreadcrumbValue } from '../providers/breadcrumb/breadcrumb.service';
 
 import { DeactivateAware } from './deactivate-aware';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
@@ -73,6 +77,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
             tap(entity => (this.id = entity.id)),
             shareReplay(1),
         );
+        this.setUpStreams();
+    }
+
+    protected setUpStreams() {
         this.isNew$ = this.entity$.pipe(
             map(entity => entity.id === ''),
             shareReplay(1),
@@ -154,4 +162,74 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
             },
         );
     }
+}
+
+export abstract class TypedBaseDetailComponent<
+    T extends TypedDocumentNode<any, any>,
+    Field extends keyof ResultOf<T>,
+> extends BaseDetailComponent<NonNullable<ResultOf<T>[Field]>> {
+    protected result$: Observable<ResultOf<T>>;
+    override init() {
+        this.entity$ = this.route.data.pipe(
+            switchMap(data =>
+                (data.detail.entity as Observable<ResultOf<T>[Field]>).pipe(takeUntil(this.destroy$)),
+            ),
+            tap(entity => (this.id = entity.id)),
+            shareReplay(1),
+        );
+        this.result$ = this.route.data.pipe(
+            map(data => data.detail.result),
+            shareReplay(1),
+        );
+        this.setUpStreams();
+    }
+}
+
+export function detailComponentWithResolver<
+    T extends TypedDocumentNode<any, { id: string }>,
+    Field extends keyof ResultOf<T>,
+>(config: {
+    component: Type<TypedBaseDetailComponent<T, Field>>;
+    query: T;
+    getEntity: (result: ResultOf<T>) => ResultOf<T>[Field];
+    getBreadcrumbs?: (entity: ResultOf<T>) => BreadcrumbValue;
+}) {
+    const resolveFn: ResolveFn<{ entity: Observable<ResultOf<T>[Field] | null>; result?: ResultOf<T> }> = (
+        route,
+        state,
+    ) => {
+        const router = inject(Router);
+        const dataService = inject(DataService);
+        const id = route.paramMap.get('id');
+
+        // Complete the entity stream upon navigating away
+        const navigateAway$ = router.events.pipe(filter(event => event instanceof ActivationStart));
+
+        if (id == null) {
+            throw new Error('No id found in route');
+        }
+        if (id === 'create') {
+            return of({ entity: of(null) });
+        } else {
+            const result$ = dataService
+                .query(config.query, { id })
+                .stream$.pipe(takeUntil(navigateAway$), shareReplay(1));
+            const entity$ = result$.pipe(map(result => config.getEntity(result as any)));
+            const entityStream$ = entity$.pipe(
+                switchMap(raw => entity$),
+                filter(notNullOrUndefined),
+            );
+            return result$.pipe(
+                map(result => ({
+                    entity: entityStream$,
+                    result,
+                })),
+            );
+        }
+    };
+    return {
+        resolveFn,
+        breadcrumbFn: (result: any) => config.getBreadcrumbs?.(result) ?? ([] as BreadcrumbValue[]),
+        component: config.component,
+    };
 }

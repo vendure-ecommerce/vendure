@@ -68,7 +68,7 @@ export class ChannelDetailComponent
 
     ngOnInit() {
         this.init();
-        this.zones$ = this.dataService.settings.getZones({ take: 999 }).mapSingle(data => data.zones.items);
+        this.zones$ = this.dataService.settings.getZones({ take: 100 }).mapSingle(data => data.zones.items);
         // TODO: make this lazy-loaded autocomplete
         this.sellers$ = this.dataService.settings.getSellerList().mapSingle(data => data.sellers.items);
         this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();

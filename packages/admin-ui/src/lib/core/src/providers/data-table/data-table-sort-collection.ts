@@ -34,6 +34,15 @@ export class DataTableSortCollection<
         return this as unknown as DataTableSortCollection<SortInput, [...Names, Name]>;
     }
 
+    addSorts<Name extends keyof SortInput>(
+        configs: Array<DataTableSortOptions<SortInput, Name>>,
+    ): DataTableSortCollection<SortInput, [...Names, Name]> {
+        for (const config of configs) {
+            this.addSort(config);
+        }
+        return this as unknown as DataTableSortCollection<SortInput, [...Names, Name]>;
+    }
+
     addCustomFieldSorts(customFields: CustomFieldConfig[]) {
         for (const config of customFields) {
             const type = config.type as CustomFieldType;

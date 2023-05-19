@@ -1,7 +1,7 @@
 import { pick } from '@vendure/common/lib/pick';
 
-import { SortOrder } from '../../common/generated-types';
 import * as Codegen from '../../common/generated-types';
+import { SortOrder } from '../../common/generated-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     ADD_OPTION_TO_GROUP,

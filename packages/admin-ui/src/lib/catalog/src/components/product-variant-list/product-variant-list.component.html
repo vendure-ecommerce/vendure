@@ -65,7 +65,7 @@
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false" [sort]="sorts.get('name')">
         <ng-template let-variant="item">
-            <a class="button-ghost" [routerLink]="['./', variant.id]"
+            <a class="button-ghost" [routerLink]="['/catalog/products', variant.productId, 'variants', variant.id]"
                 ><span>{{ variant.name }}</span
                 ><clr-icon shape="arrow right"
             /></a>

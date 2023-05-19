@@ -1,7 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, ROUTES } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BulkActionRegistryService, PageService, SharedModule } from '@vendure/admin-ui/core';
+import {
+    BulkActionRegistryService,
+    detailComponentWithResolver,
+    GetProductVariantDetailDocument,
+    PageService,
+    SharedModule,
+} from '@vendure/admin-ui/core';
 
 import { createRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
@@ -45,6 +51,7 @@ import {
 } from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
+import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
 import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
@@ -83,6 +90,7 @@ const CATALOG_COMPONENTS = [
     MoveCollectionsDialogComponent,
     ProductVariantListComponent,
     ProductDetail2Component,
+    ProductVariantDetailComponent,
 ];
 
 @NgModule({
@@ -134,6 +142,30 @@ export class CatalogModule {
             tab: _('catalog.product-variants'),
             route: 'variants',
             component: ProductVariantListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'product-variant-detail',
+            tab: _('catalog.product-variants'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: ProductVariantDetailComponent,
+                query: GetProductVariantDetailDocument,
+                getEntity: result => result.productVariant,
+                getBreadcrumbs: result => [
+                    {
+                        label: _('breadcrumb.products'),
+                        link: ['/catalog', 'products'],
+                    },
+                    {
+                        label: `${result.productVariant?.product.name}`,
+                        link: ['/catalog', 'products', result.productVariant?.product.id],
+                    },
+                    {
+                        label: `${result.productVariant?.name}`,
+                        link: ['variants', result.productVariant?.id],
+                    },
+                ],
+            }),
         });
         pageService.registerPageTab({
             location: 'facet-list',

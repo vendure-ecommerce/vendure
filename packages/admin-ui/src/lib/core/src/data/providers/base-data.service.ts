@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MutationUpdaterFn, SingleExecutionResult, WatchQueryFetchPolicy } from '@apollo/client/core';
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { Apollo } from 'apollo-angular';
 import { DocumentNode } from 'graphql/language/ast';
@@ -33,7 +34,7 @@ export class BaseDataService {
      * Performs a GraphQL watch query
      */
     query<T, V extends Record<string, any> = Record<string, any>>(
-        query: DocumentNode,
+        query: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
     ): QueryResult<T, V> {

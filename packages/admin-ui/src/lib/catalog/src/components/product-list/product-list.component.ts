@@ -1,25 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
     DataService,
-    DataTableService,
     FacetValueFormInputComponent,
-    GetProductListQuery,
-    GetProductListQueryVariables,
-    ItemOf,
     JobQueueService,
     JobState,
-    LanguageCode,
     ModalService,
     NotificationService,
-    ProductFilterParameter,
-    ProductSortParameter,
-    ServerConfigService,
+    ProductListQueryDocument,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
-import { EMPTY, lastValueFrom, Observable } from 'rxjs';
-import { delay, switchMap, tap } from 'rxjs/operators';
+import { EMPTY, lastValueFrom } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-products-list',
@@ -27,39 +19,33 @@ import { delay, switchMap, tap } from 'rxjs/operators';
     styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent
-    extends BaseListComponent<
-        GetProductListQuery,
-        ItemOf<GetProductListQuery, 'products'>,
-        GetProductListQueryVariables
-    >
+    extends TypedBaseListComponent<typeof ProductListQueryDocument, 'products'>
     implements OnInit
 {
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Product');
-
-    readonly filters = this.dataTableService
-        .createFilterCollection<ProductFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('Product');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
-        .addFilter({
-            name: 'id',
-            type: { kind: 'text' },
-            label: _('common.id'),
-            filterField: 'id',
-        })
-        .addFilter({
-            name: 'enabled',
-            type: { kind: 'boolean' },
-            label: _('common.enabled'),
-            filterField: 'enabled',
-        })
-        .addFilter({
-            name: 'slug',
-            type: { kind: 'text' },
-            label: _('common.slug'),
-            filterField: 'slug',
-        })
+        .addFilters([
+            {
+                name: 'id',
+                type: { kind: 'text' },
+                label: _('common.id'),
+                filterField: 'id',
+            },
+            {
+                name: 'enabled',
+                type: { kind: 'boolean' },
+                label: _('common.enabled'),
+                filterField: 'enabled',
+            },
+            {
+                name: 'slug',
+                type: { kind: 'text' },
+                label: _('common.slug'),
+                filterField: 'slug',
+            },
+        ])
         .addFilter({
             name: 'facetValues',
             type: {
@@ -94,33 +80,29 @@ export class ProductListComponent
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<ProductSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
-        .addSort({ name: 'id' })
-        .addSort({ name: 'createdAt' })
-        .addSort({ name: 'updatedAt' })
-        .addSort({ name: 'name' })
-        .addSort({ name: 'slug' })
+        .addSorts([
+            { name: 'id' },
+            { name: 'createdAt' },
+            { name: 'updatedAt' },
+            { name: 'name' },
+            { name: 'slug' },
+        ])
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor(
-        private dataService: DataService,
+        protected dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
-        private dataTableService: DataTableService,
-        private serverConfigService: ServerConfigService,
-        router: Router,
-        route: ActivatedRoute,
     ) {
-        super(router, route);
-        super.setQueryFn(
-            (args: any) => this.dataService.product.getProducts(args).refetchOnChannelChange(),
-            data => data.products,
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            (skip, take) => ({
+        super();
+        this.configure({
+            document: ProductListQueryDocument,
+            getItems: data => data.products,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -133,23 +115,16 @@ export class ProductListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
+            refreshListOnChanges: [this.sorts.valueChanges, this.filters.valueChanges],
+        });
     }
 
     ngOnInit() {
         super.ngOnInit();
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage)
-            .pipe(tap(() => this.refresh()));
-
         this.dataService.product
             .getPendingSearchIndexUpdates()
             .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates)
             .subscribe(value => (this.pendingSearchIndexUpdates = value));
-
-        super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     rebuildSearchIndex() {
@@ -207,9 +182,5 @@ export class ProductListComponent
                     });
                 },
             );
-    }
-
-    setLanguage(code: LanguageCode) {
-        this.dataService.client.setContentLanguage(code).subscribe();
     }
 }

@@ -1,6 +1,7 @@
 import { Injectable, Type } from '@angular/core';
 import { Route } from '@angular/router';
-import { BaseDetailComponent } from '../../common/base-detail.component';
+import { map } from 'rxjs/operators';
+import { BaseDetailComponent, detailComponentWithResolver } from '../../common/base-detail.component';
 import { PageLocationId } from '../../common/component-registry-types';
 import { CanDeactivateDetailGuard } from '../../shared/providers/routing/can-deactivate-detail-guard';
 
@@ -9,7 +10,7 @@ export interface PageTabConfig {
     tabIcon?: string;
     route: string;
     tab: string;
-    component: Type<any>;
+    component: Type<any> | ReturnType<typeof detailComponentWithResolver>;
 }
 
 @Injectable({
@@ -33,20 +34,36 @@ export class PageService {
     getPageTabRoutes(location: PageLocationId): Route[] {
         const configs = this.registry.get(location) || [];
         return configs.map(config => {
-            const guards =
-                typeof config.component.prototype.canDeactivate === 'function'
-                    ? [CanDeactivateDetailGuard]
-                    : [];
-            return {
+            const route: Route = {
                 path: config.route || '',
                 pathMatch: config.route ? 'prefix' : 'full',
-                component: config.component,
-                canDeactivate: guards,
             };
+
+            let component: Type<any>;
+            if (isComponentWithResolver(config.component)) {
+                const { component: cmp, breadcrumbFn, resolveFn } = config.component;
+                component = cmp;
+                route.resolve = { detail: config.component.resolveFn };
+                route.data = {
+                    breadcrumb: data => breadcrumbFn(data.detail.result),
+                };
+            } else {
+                component = config.component;
+            }
+            const guards =
+                typeof component.prototype.canDeactivate === 'function' ? [CanDeactivateDetailGuard] : [];
+            route.component = component;
+            route.canDeactivate = guards;
+
+            return route;
         });
     }
 
     getPageTabs(location: PageLocationId): PageTabConfig[] {
         return this.registry.get(location) || [];
     }
+}
+
+function isComponentWithResolver(input: any): input is ReturnType<typeof detailComponentWithResolver> {
+    return input && input.hasOwnProperty('resolveFn');
 }
