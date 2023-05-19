@@ -114,7 +114,8 @@ export class OrderHistoryComponent {
     getFulfillment(entry: GetOrderHistory.Items): OrderDetail.Fulfillments | undefined {
         if (
             (entry.type === HistoryEntryType.ORDER_FULFILLMENT ||
-                entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) &&
+                entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION ||
+                entry.type === HistoryEntryType.ORDER_FULFILLMENT_CODE_UPDATED) &&
             this.order.fulfillments
         ) {
             return this.order.fulfillments.find(f => f.id === entry.data.fulfillmentId);

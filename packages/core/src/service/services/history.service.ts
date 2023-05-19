@@ -84,6 +84,13 @@ export interface OrderHistoryEntryData {
     [HistoryEntryType.ORDER_FULFILLMENT]: {
         fulfillmentId: ID;
     };
+    [HistoryEntryType.ORDER_FULFILLMENT_CODE_UPDATED]: {
+        fulfillmentId: ID;
+        oldTrackingCode: string;
+        oldMethod: string;
+        newTrackingCode: string;
+        newMethod: string;
+    };
     [HistoryEntryType.ORDER_CANCELLATION]: {
         orderItemIds: ID[];
         shippingCancelled: boolean;

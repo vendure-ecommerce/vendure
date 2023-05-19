@@ -9,6 +9,7 @@ type Mutation {
     settlePayment(id: ID!): SettlePaymentResult!
     cancelPayment(id: ID!): CancelPaymentResult!
     addFulfillmentToOrder(input: FulfillOrderInput!): AddFulfillmentToOrderResult!
+    updatePendingFulfillment(input: UpdatePendingFulfillmentInput!): UpdatePendingFulfillmentResult!
     cancelOrder(input: CancelOrderInput!): CancelOrderResult!
     refundOrder(input: RefundOrderInput!): RefundOrderResult!
     settleRefund(input: SettleRefundInput!): SettleRefundResult!
@@ -212,6 +213,12 @@ input AdjustDraftOrderLineInput {
     quantity: Int!
 }
 
+input UpdatePendingFulfillmentInput {
+    fulfillmentId: ID!
+    trackingCode: String 
+    method: String
+}
+
 "Returned if the Payment settlement fails"
 type SettlePaymentError implements ErrorResult {
     errorCode: ErrorCode!
@@ -374,6 +381,14 @@ type ManualPaymentStateError implements ErrorResult {
     message: String!
 }
 
+"""
+Returned when try to update a fulfillment which is NOT in PENDING state
+"""
+type FulfillmentNotInPendingError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
 union SettlePaymentResult =
       Payment
@@ -389,6 +404,9 @@ union AddFulfillmentToOrderResult =
     | InvalidFulfillmentHandlerError
     | FulfillmentStateTransitionError
     | CreateFulfillmentError
+union UpdatePendingFulfillmentResult =
+      Fulfillment
+    | FulfillmentNotInPendingError
 union CancelOrderResult =
       Order
     | EmptyOrderLineSelectionError

@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput, HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { FulfillmentLineSummary } from '@vendure/payments-plugin/e2e/graphql/generated-admin-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { UserInputError } from '../../common';
 import {
     CreateFulfillmentError,
+    FulfillmentNotInPendingError,
     FulfillmentStateTransitionError,
     InvalidFulfillmentHandlerError,
 } from '../../common/error/generated-graphql-admin-errors';
@@ -24,6 +26,8 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fulfillment-state-machine';
 
+import { HistoryService } from './history.service';
+
 /**
  * @description
  * Contains methods relating to {@link Fulfillment} entities.
@@ -38,7 +42,55 @@ export class FulfillmentService {
         private eventBus: EventBus,
         private configService: ConfigService,
         private customFieldRelationService: CustomFieldRelationService,
+        private historyService: HistoryService,
     ) {}
+
+    /**
+     * @description
+     * Update pending fulfillment with new method and tracking code
+     */
+    async updateTrackingCodeAndMethodWhenPending(
+        ctx: RequestContext,
+        id: ID,
+        input: Partial<Pick<Fulfillment, 'trackingCode' | 'method'>>,
+    ) {
+        const fulfillment = await this.findOneOrThrow(ctx, id, [
+            'orderItems',
+            'orderItems.line',
+            'orderItems.line.order',
+        ]);
+        if (fulfillment.state !== 'Pending') {
+            return new FulfillmentNotInPendingError();
+        }
+        if (fulfillment.method === input.method && fulfillment.trackingCode === input.trackingCode) {
+            return fulfillment;
+        }
+
+        const oldMethod = fulfillment.method;
+        const oldTrackingCode = fulfillment.trackingCode;
+
+        const repo = await this.connection.getRepository(ctx, Fulfillment);
+
+        fulfillment.method = input.method ? input.method : fulfillment.method;
+        fulfillment.trackingCode = input.trackingCode ? input.trackingCode : fulfillment.trackingCode;
+
+        await repo.save(fulfillment);
+
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId: fulfillment.orderItems[0].line.order.id,
+            type: HistoryEntryType.ORDER_FULFILLMENT_CODE_UPDATED,
+            data: {
+                fulfillmentId: id,
+                oldMethod,
+                oldTrackingCode,
+                newMethod: fulfillment.method,
+                newTrackingCode: fulfillment.trackingCode,
+            },
+        });
+
+        return fulfillment;
+    }
 
     /**
      * @description

@@ -134,6 +134,26 @@
                             ></vdr-fulfillment-detail>
                         </vdr-history-entry-detail>
                     </ng-container>
+                    <ng-container *ngSwitchCase="type.ORDER_FULFILLMENT_CODE_UPDATED">
+                        <div class="title">
+                            {{ 'order.history-fulfillment-updated' | translate }}
+                            <vdr-history-entry-detail *ngIf="getFulfillment(entry) as fulfillment">
+                                <div *ngIf="fulfillment.trackingCode !== entry.data.oldTrackingCode">
+                                    <div class="label-title">
+                                        {{ 'order.tracking-code' | translate }}
+                                    </div>
+                                    
+                                    <del>{{ entry.data.oldTrackingCode }}</del> → <strong>{{ entry.data.newTrackingCode }}</strong>
+                                </div>
+                                <div *ngIf="fulfillment.method !== entry.data.oldMethod">
+                                    <div class="label-title">
+                                        {{ 'order.fulfillment-method' | translate }}
+                                    </div>
+                                    <del>{{ entry.data.oldMethod }}</del> → <strong>{{ entry.data.newMethod }}</strong>
+                                </div>
+                            </vdr-history-entry-detail>
+                        </div>
+                    </ng-container>
                     <ng-container *ngSwitchCase="type.ORDER_FULFILLMENT_TRANSITION">
                         <ng-container *ngIf="entry.data.to === 'Delivered'">
                             <div class="title">

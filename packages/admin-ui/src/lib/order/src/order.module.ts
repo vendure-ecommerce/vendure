@@ -11,6 +11,7 @@ import { FulfillOrderDialogComponent } from './components/fulfill-order-dialog/f
 import { FulfillmentCardComponent } from './components/fulfillment-card/fulfillment-card.component';
 import { FulfillmentDetailComponent } from './components/fulfillment-detail/fulfillment-detail.component';
 import { FulfillmentStateLabelComponent } from './components/fulfillment-state-label/fulfillment-state-label.component';
+import { FulfillmentUpdateTrackingCodeComponent } from './components/fulfillment-update-tracking-code-dialog/fulfillment-update-tracking-code-dialog.component';
 import { LineFulfillmentComponent } from './components/line-fulfillment/line-fulfillment.component';
 import { LineRefundsComponent } from './components/line-refunds/line-refunds.component';
 import { ModificationDetailComponent } from './components/modification-detail/modification-detail.component';
@@ -77,6 +78,7 @@ import { orderRoutes } from './order.routes';
         CouponCodeSelectorComponent,
         SelectShippingMethodDialogComponent,
         OrderHistoryEntryHostComponent,
+        FulfillmentUpdateTrackingCodeComponent,
     ],
 })
 export class OrderModule {}

@@ -18,12 +18,14 @@ import {
     MutationTransitionOrderToStateArgs,
     MutationTransitionPaymentToStateArgs,
     MutationUpdateOrderNoteArgs,
+    MutationUpdatePendingFulfillmentArgs,
     Permission,
     QueryOrderArgs,
     QueryOrdersArgs,
     RefundOrderResult,
     SettlePaymentResult,
     TransitionPaymentToStateResult,
+    UpdatePendingFulfillmentInput,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -33,6 +35,7 @@ import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
+import { FulfillmentService } from '../../../service';
 import { FulfillmentState } from '../../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
 import { PaymentState } from '../../../service/helpers/payment-state-machine/payment-state';
@@ -45,7 +48,11 @@ import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class OrderResolver {
-    constructor(private orderService: OrderService, private connection: TransactionalConnection) {}
+    constructor(
+        private orderService: OrderService,
+        private connection: TransactionalConnection,
+        private fulfillmentService: FulfillmentService,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadOrder)
@@ -206,5 +213,19 @@ export class OrderResolver {
         @Args() args: MutationAddManualPaymentToOrderArgs,
     ) {
         return this.orderService.addManualPaymentToOrder(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async updatePendingFulfillment(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdatePendingFulfillmentArgs,
+    ) {
+        return this.fulfillmentService.updateTrackingCodeAndMethodWhenPending(
+            ctx,
+            args.input.fulfillmentId,
+            args.input,
+        );
     }
 }

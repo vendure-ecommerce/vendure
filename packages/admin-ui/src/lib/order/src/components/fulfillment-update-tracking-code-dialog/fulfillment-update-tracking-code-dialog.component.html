@@ -1,0 +1,17 @@
+<ng-template vdrDialogTitle>{{'order.fulfillment' | translate}} #{{fulfillment.id}}</ng-template>
+<div class="fulfill-update">
+    <vdr-configurable-input
+        [operationDefinition]="fulfillmentHandlerDef"
+        [operation]="fulfillmentHandler"
+        [formControl]="fulfillmentHandlerControl"
+        [removable]="false"
+    ></vdr-configurable-input>
+</div>
+
+<ng-template vdrDialogButtons>
+    <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button type="submit" (click)="update()" [disabled]="!canSubmit()"  class="btn btn-primary">
+        {{ 'common.update' | translate }}
+    </button>
+</ng-template>
+
