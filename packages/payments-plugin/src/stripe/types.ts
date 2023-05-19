@@ -1,5 +1,7 @@
+import { Injector, Order, RequestContext } from '@vendure/core';
 import '@vendure/core/dist/entity/custom-entity-fields';
 import { Request } from 'express';
+import Stripe from 'stripe';
 
 // Note: deep import is necessary here because CustomCustomerFields is also extended in the Braintree
 // plugin. Reference: https://github.com/microsoft/TypeScript/issues/46617
@@ -27,6 +29,18 @@ export interface StripePluginOptions {
      * @default false
      */
     storeCustomersInStripe?: boolean;
+
+    /**
+     * @description
+     * Attach extra metadata to Stripe payment intent
+     *
+     * @since 1.9.7
+     */
+    metadata?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => Stripe.MetadataParam | Promise<Stripe.MetadataParam>;
 }
 
 export interface RequestWithRawBody extends Request {

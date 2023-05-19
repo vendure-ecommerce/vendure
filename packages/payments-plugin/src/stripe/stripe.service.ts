@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { ConfigArg } from '@vendure/common/lib/generated-types';
 import {
     Ctx,
     Customer,
+    Injector,
     Logger,
     Order,
     Payment,
@@ -14,6 +16,7 @@ import {
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { sanitizeMetadata } from './metadata-sanitize';
 import { VendureStripeClient } from './stripe-client';
 import { getAmountInStripeMinorUnits } from './stripe-utils';
 import { stripePaymentMethodHandler } from './stripe.handler';
@@ -25,6 +28,7 @@ export class StripeService {
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
         @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
+        private moduleRef: ModuleRef,
     ) {}
 
     async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string> {
@@ -35,6 +39,16 @@ export class StripeService {
             customerId = await this.getStripeCustomerId(ctx, order);
         }
         const amountInMinorUnits = getAmountInStripeMinorUnits(order);
+
+        const metadata = sanitizeMetadata({
+            ...(typeof this.options.metadata === 'function'
+                ? await this.options.metadata(new Injector(this.moduleRef), ctx, order)
+                : {}),
+            channelToken: ctx.channel.token,
+            orderId: order.id,
+            orderCode: order.code,
+        });
+
         const { client_secret } = await stripe.paymentIntents.create(
             {
                 amount: amountInMinorUnits,
@@ -43,11 +57,7 @@ export class StripeService {
                 automatic_payment_methods: {
                     enabled: true,
                 },
-                metadata: {
-                    channelToken: ctx.channel.token,
-                    orderId: order.id,
-                    orderCode: order.code,
-                },
+                metadata,
             },
             { idempotencyKey: `${order.code}_${amountInMinorUnits}` },
         );
