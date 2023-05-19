@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { RouterModule, ROUTES } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -8,6 +8,7 @@ import {
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
+import { PageBlockComponent } from '../../core/src/shared/components/page-block/page-block.component';
 
 import { createRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
@@ -191,5 +192,22 @@ export class CatalogModule {
             route: '',
             component: AssetListComponent,
         });
+
+        pageService.registerPageTab({
+            location: 'product-list',
+            tab: 'Stock control',
+            route: 'stock-control',
+            component: StockControlComponent,
+        });
     }
+}
+
+@Component({
+    standalone: true,
+    selector: 'vdr-custom-stock-control',
+    imports: [SharedModule],
+    template: `<vdr-page-block>Stock control!</vdr-page-block> `,
+})
+export class StockControlComponent {
+    // component logic
 }

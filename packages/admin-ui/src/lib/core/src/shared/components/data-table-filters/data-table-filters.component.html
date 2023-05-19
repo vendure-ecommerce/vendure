@@ -48,25 +48,31 @@
                     </div>
                     <div *ngSwitchCase="'text'">
                         <div [formGroup]="formControl">
-                            <select clrSelect name="options" formControlName="operator" class="mb-1">
-                                <option value="contains">{{ 'common.operator-contains' | translate }}</option>
-                                <option value="eq">{{ 'common.operator-eq' | translate }}</option>
-                                <option value="notContains">
-                                    {{ 'common.operator-not-contains' | translate }}
-                                </option>
-                                <option value="notEq">{{ 'common.operator-not-eq' | translate }}</option>
-                                <option value="regex">{{ 'common.operator-regex' | translate }}</option>
-                            </select>
+                            <div>
+                                <select name="options" formControlName="operator" class="mb-1">
+                                    <option value="contains">
+                                        {{ 'common.operator-contains' | translate }}
+                                    </option>
+                                    <option value="eq">{{ 'common.operator-eq' | translate }}</option>
+                                    <option value="notContains">
+                                        {{ 'common.operator-not-contains' | translate }}
+                                    </option>
+                                    <option value="notEq">{{ 'common.operator-not-eq' | translate }}</option>
+                                    <option value="regex">{{ 'common.operator-regex' | translate }}</option>
+                                </select>
+                            </div>
                             <input type="text" formControlName="term" />
                         </div>
                     </div>
                     <div *ngSwitchCase="'number'">
                         <div [formGroup]="formControl">
-                            <select clrSelect name="options" formControlName="operator" class="mb-1">
-                                <option value="eq">{{ 'common.operator-eq' | translate }}</option>
-                                <option value="gt">{{ 'common.operator-gt' | translate }}</option>
-                                <option value="lt">{{ 'common.operator-lt' | translate }}</option>
-                            </select>
+                            <div>
+                                <select name="options" formControlName="operator" class="mb-1">
+                                    <option value="eq">{{ 'common.operator-eq' | translate }}</option>
+                                    <option value="gt">{{ 'common.operator-gt' | translate }}</option>
+                                    <option value="lt">{{ 'common.operator-lt' | translate }}</option>
+                                </select>
+                            </div>
                             <input
                                 *ngIf="$any(selectedFilter.type).inputType !== 'currency'"
                                 type="text"

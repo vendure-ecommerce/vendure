@@ -61,6 +61,30 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
+
+    customFields: {
+        ProductVariant: [
+            {
+                name: 'weight',
+                type: 'int',
+                defaultValue: 0,
+                nullable: false,
+                min: 0,
+                step: 1,
+                public: true,
+                label: [{ languageCode: LanguageCode.en, value: 'Weight' }],
+                ui: { component: 'number-form-input', suffix: 'g' },
+            },
+            {
+                name: 'gtin',
+                type: 'string',
+                nullable: true,
+                public: true,
+                label: [{ languageCode: LanguageCode.en, value: 'GTIN (barcode)' }],
+            },
+        ],
+    },
+
     /* customFields: {
         ProductVariant: [
             {
@@ -426,7 +450,7 @@ function getDbConfig(): DataSourceOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: 3306,

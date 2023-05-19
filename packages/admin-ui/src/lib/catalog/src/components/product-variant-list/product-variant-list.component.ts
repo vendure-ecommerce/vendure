@@ -13,7 +13,7 @@ export class ProductVariantListComponent
 {
     @Input() productId?: string;
     @Input() hideLanguageSelect = false;
-
+    readonly customFields = this.getCustomFieldConfig('ProductVariant');
     readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilters([
@@ -48,6 +48,7 @@ export class ProductVariantListComponent
                 filterField: 'priceWithTax',
             },
         ])
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.createSortCollection()
@@ -60,6 +61,7 @@ export class ProductVariantListComponent
             { name: 'price' },
             { name: 'priceWithTax' },
         ])
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor() {
