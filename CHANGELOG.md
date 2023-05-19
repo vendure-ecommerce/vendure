@@ -1,3 +1,10 @@
+## <small>1.9.7 (2023-05-19)</small>
+
+
+#### Features
+
+* **payments-plugin** Add metadata field to StripePluginOptions (#2157) ([21baa0a](https://github.com/vendure-ecommerce/vendure/commit/21baa0a)), closes [#2157](https://github.com/vendure-ecommerce/vendure/issues/2157) [#1935](https://github.com/vendure-ecommerce/vendure/issues/1935)
+
 ## <small>1.9.6 (2023-04-28)</small>
 
 
