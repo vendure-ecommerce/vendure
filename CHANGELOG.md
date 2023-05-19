@@ -1,5 +1,8 @@
 ## <small>1.9.7 (2023-05-19)</small>
 
+#### Fixes
+
+* **create** Update community link to point to new Discord server
 
 #### Features
 
