@@ -4,7 +4,8 @@ import {
     DeletionResponse,
     MutationAssignPromotionsToChannelArgs,
     MutationCreatePromotionArgs,
-    MutationDeletePromotionArgs, MutationDeletePromotionsArgs,
+    MutationDeletePromotionArgs,
+    MutationDeletePromotionsArgs,
     MutationRemovePromotionsFromChannelArgs,
     MutationUpdatePromotionArgs,
     Permission,
@@ -125,7 +126,7 @@ export class PromotionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeletePromotionsArgs,
     ): Promise<DeletionResponse[]> {
-        return Promise.all(args.ids.map(id => this.promotionService.softDeletePromotion(ctx, id));
+        return Promise.all(args.ids.map(id => this.promotionService.softDeletePromotion(ctx, id)));
     }
 
     @Transaction()
