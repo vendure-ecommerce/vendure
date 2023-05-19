@@ -1,3 +1,27 @@
+## <small>1.9.7 (2023-05-19)</small>
+
+#### Fixes
+
+* **create** Update community link to point to new Discord server
+
+#### Features
+
+* **payments-plugin** Add metadata field to StripePluginOptions (#2157) ([21baa0a](https://github.com/vendure-ecommerce/vendure/commit/21baa0a)), closes [#2157](https://github.com/vendure-ecommerce/vendure/issues/2157) [#1935](https://github.com/vendure-ecommerce/vendure/issues/1935)
+
+## <small>1.9.6 (2023-04-28)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add branding to welcome page (#2115) ([f0f8769](https://github.com/vendure-ecommerce/vendure/commit/f0f8769)), closes [#2115](https://github.com/vendure-ecommerce/vendure/issues/2115) [#2040](https://github.com/vendure-ecommerce/vendure/issues/2040)
+* **asset-server-plugin** Change image format with no other transforms (#2104) ([6cf1608](https://github.com/vendure-ecommerce/vendure/commit/6cf1608)), closes [#2104](https://github.com/vendure-ecommerce/vendure/issues/2104)
+* **core** Fix error messages containing colon char ([2cfc874](https://github.com/vendure-ecommerce/vendure/commit/2cfc874)), closes [#2153](https://github.com/vendure-ecommerce/vendure/issues/2153)
+
+#### Features
+
+* **admin-ui** Implement custom fields updating of ProductOptionGroup and ProductOption entities ([d2a0824](https://github.com/vendure-ecommerce/vendure/commit/d2a0824))
+* **admin-ui** Search field added on administrators list on dashboard -> administrator. (#2130) ([0cc20f2](https://github.com/vendure-ecommerce/vendure/commit/0cc20f2)), closes [#2130](https://github.com/vendure-ecommerce/vendure/issues/2130)
+
 ## <small>1.9.5 (2023-03-24)</small>
 
 #### Fixes 

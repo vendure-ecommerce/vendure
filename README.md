@@ -10,7 +10,7 @@ A headless [GraphQL](https://graphql.org/) ecommerce framework built on [Node.js
 
 * [Getting Started](https://www.vendure.io/docs/getting-started/): Get Vendure up and running locally in a matter of minutes with a single command
 * [Live Demo](https://demo.vendure.io/)
-* [Vendure Slack](https://join.slack.com/t/vendure-ecommerce/shared_invite/zt-1exzio25w-vjL5TYkyJZjK52d6jkOsIA) Join us on Slack for support and answers to your questions
+* [Vendure Discord](https://www.vendure.io/community) Join us on Discord for support and answers to your questions
 
 ## Structure
 
@@ -40,6 +40,9 @@ The root directory has a `package.json` which contains build-related dependencie
 * Building & deploying the docs 
 * Generating TypeScript types from the GraphQL schema
 * Linting, formatting & testing tasks to run on git commit & push
+
+> Note:
+> When you do `yarn` for the first time, you will need to manually create the `package` folder under [/packages/admin-ui](/packages/admin-ui).
 
 ### 2. Bootstrap the packages
 
