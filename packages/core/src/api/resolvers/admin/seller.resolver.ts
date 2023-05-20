@@ -64,6 +64,6 @@ export class SellerResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteSellersArgs,
     ): Promise<DeletionResponse[]> {
-        return Promise.all(args.ids.map(id => this.sellerService.delete(ctx, id));
+        return Promise.all(args.ids.map(id => this.sellerService.delete(ctx, id)));
     }
 }

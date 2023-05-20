@@ -125,7 +125,7 @@ export class PromotionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeletePromotionsArgs,
     ): Promise<DeletionResponse[]> {
-        return Promise.all(args.ids.map(id => this.promotionService.softDeletePromotion(ctx, id));
+        return Promise.all(args.ids.map(id => this.promotionService.softDeletePromotion(ctx, id)));
     }
 
     @Transaction()
