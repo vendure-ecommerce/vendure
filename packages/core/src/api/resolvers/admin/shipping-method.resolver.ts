@@ -108,7 +108,7 @@ export class ShippingMethodResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteShippingMethodsArgs,
     ): Promise<DeletionResponse[]> {
-        return Promise.all(args.ids.map(id => this.shippingMethodService.softDelete(ctx, id)));
+        return Promise.all(args.ids.map(id => this.shippingMethodService.softDelete(ctx, id)) ?? []);
     }
 
     @Query()
