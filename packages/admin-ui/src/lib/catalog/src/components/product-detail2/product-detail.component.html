@@ -123,7 +123,6 @@
                     </clr-checkbox-wrapper>
                 </div>
                 <vdr-form-field
-                    class="mt-2"
                     [label]="'catalog.slug' | translate"
                     for="slug"
                     [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
@@ -139,6 +138,7 @@
                     [label]="'common.description' | translate"
                     for="slug"
                     [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
+                    class="card-span"
                 >
                     <vdr-rich-text-editor
                         formControlName="description"
@@ -161,6 +161,7 @@
             ></vdr-custom-detail-component-host>
             <vdr-card [title]="'catalog.assets' | translate">
                 <vdr-assets
+                    class="card-span"
                     [assets]="assetChanges.assets || product.assets"
                     [featuredAsset]="assetChanges.featuredAsset || product.featuredAsset"
                     [updatePermissions]="updatePermissions"
@@ -169,17 +170,19 @@
             </vdr-card>
 
             <vdr-card [title]="'catalog.product-variants' | translate" [paddingX]="false">
-                <div *ngIf="isNew$ | async; else variantList">
-                    <vdr-generate-product-variants
-                        (variantsChange)="createVariantsConfig = $event"
-                    ></vdr-generate-product-variants>
+                <div class="card-span">
+                    <div *ngIf="isNew$ | async; else variantList">
+                        <vdr-generate-product-variants
+                            (variantsChange)="createVariantsConfig = $event"
+                        ></vdr-generate-product-variants>
+                    </div>
+                    <ng-template #variantList>
+                        <vdr-product-variant-list
+                            [productId]="this.id"
+                            [hideLanguageSelect]="true"
+                        ></vdr-product-variant-list>
+                    </ng-template>
                 </div>
-                <ng-template #variantList>
-                    <vdr-product-variant-list
-                        [productId]="this.id"
-                        [hideLanguageSelect]="true"
-                    ></vdr-product-variant-list>
-                </ng-template>
             </vdr-card>
         </vdr-page-block>
     </vdr-page-detail-layout>

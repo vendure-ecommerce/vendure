@@ -59,6 +59,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     entity$: Observable<Entity>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
+    languageCode: LanguageCode;
     isNew$: Observable<boolean>;
     id: string;
     abstract detailForm: UntypedFormGroup;
@@ -95,6 +96,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
                 }
             }),
             distinctUntilChanged(),
+            tap(val => (this.languageCode = val)),
             shareReplay(1),
         );
 
@@ -169,12 +171,16 @@ export abstract class TypedBaseDetailComponent<
     Field extends keyof ResultOf<T>,
 > extends BaseDetailComponent<NonNullable<ResultOf<T>[Field]>> {
     protected result$: Observable<ResultOf<T>>;
+    protected entity: NonNullable<ResultOf<T>[Field]>;
     override init() {
         this.entity$ = this.route.data.pipe(
             switchMap(data =>
                 (data.detail.entity as Observable<ResultOf<T>[Field]>).pipe(takeUntil(this.destroy$)),
             ),
-            tap(entity => (this.id = entity.id)),
+            tap(entity => {
+                this.id = entity.id;
+                this.entity = entity;
+            }),
             shareReplay(1),
         );
         this.result$ = this.route.data.pipe(

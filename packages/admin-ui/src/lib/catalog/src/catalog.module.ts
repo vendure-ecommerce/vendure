@@ -4,9 +4,8 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BulkActionRegistryService,
     detailComponentWithResolver,
-    GetProductVariantDetailDocument,
     PageService,
-    PageBlockComponent,
+    ProductVariantDetailQueryDocument,
     SharedModule,
 } from '@vendure/admin-ui/core';
 
@@ -150,7 +149,7 @@ export class CatalogModule {
             route: '',
             component: detailComponentWithResolver({
                 component: ProductVariantDetailComponent,
-                query: GetProductVariantDetailDocument,
+                query: ProductVariantDetailQueryDocument,
                 getEntity: result => result.productVariant,
                 getBreadcrumbs: result => [
                     {
