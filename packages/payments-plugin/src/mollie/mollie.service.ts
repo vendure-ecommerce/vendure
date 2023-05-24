@@ -83,9 +83,15 @@ export class MollieService {
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
-        await this.entityHydrator.hydrate(ctx, order,
-            { relations: ['customer', 'surcharges', 'lines.productVariant', 'shippingLines.shippingMethod', 'payments'] }
-        );
+        await this.entityHydrator.hydrate(ctx, order, {
+            relations: [
+                'customer',
+                'surcharges',
+                'lines.productVariant',
+                'shippingLines.shippingMethod',
+                'payments',
+            ],
+        });
         if (!order.lines?.length) {
             return new PaymentIntentError('Cannot create payment intent for empty order');
         }
@@ -93,13 +99,19 @@ export class MollieService {
             return new PaymentIntentError('Cannot create payment intent for order without customer');
         }
         if (!order.customer.firstName.length) {
-            return new PaymentIntentError('Cannot create payment intent for order with customer that has no firstName set');
+            return new PaymentIntentError(
+                'Cannot create payment intent for order with customer that has no firstName set',
+            );
         }
         if (!order.customer.lastName.length) {
-            return new PaymentIntentError('Cannot create payment intent for order with customer that has no lastName set');
+            return new PaymentIntentError(
+                'Cannot create payment intent for order with customer that has no lastName set',
+            );
         }
         if (!order.customer.emailAddress.length) {
-            return new PaymentIntentError('Cannot create payment intent for order with customer that has no emailAddress set');
+            return new PaymentIntentError(
+                'Cannot create payment intent for order with customer that has no emailAddress set',
+            );
         }
         if (!order.shippingLines?.length) {
             return new PaymentIntentError('Cannot create payment intent for order without shippingMethod');
@@ -107,23 +119,28 @@ export class MollieService {
         if (!paymentMethod) {
             return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
         }
-        if (this.options.useDynamicRedirectUrl == true) {
+        if (this.options.useDynamicRedirectUrl === true) {
             if (!input.redirectUrl) {
-                return new InvalidInputError(`Cannot create payment intent without redirectUrl specified`);
+                return new InvalidInputError('Cannot create payment intent without redirectUrl specified');
             }
             redirectUrl = input.redirectUrl;
         } else {
-            let paymentMethodRedirectUrl =  paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
+            const paymentMethodRedirectUrl = paymentMethod.handler.args.find(
+                arg => arg.name === 'redirectUrl',
+            )?.value;
             if (!paymentMethodRedirectUrl) {
-                return new PaymentIntentError(`Cannot create payment intent without redirectUrl specified in paymentMethod`);
+                return new PaymentIntentError(
+                    'Cannot create payment intent without redirectUrl specified in paymentMethod',
+                );
             }
             redirectUrl = paymentMethodRedirectUrl;
-
         }
         const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
         if (variantsWithInsufficientSaleableStock.length) {
             return new PaymentIntentError(
-                `The following variants are out of stock: ${variantsWithInsufficientSaleableStock.map(v => v.name).join(', ')}`
+                `The following variants are out of stock: ${variantsWithInsufficientSaleableStock
+                    .map(v => v.name)
+                    .join(', ')}`,
             );
         }
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
@@ -135,20 +152,29 @@ export class MollieService {
             return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey configured`);
         }
         const mollieClient = createMollieClient({ apiKey });
-        redirectUrl = redirectUrl.endsWith('/') && this.options.useDynamicRedirectUrl != true ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
+        redirectUrl =
+            redirectUrl.endsWith('/') && this.options.useDynamicRedirectUrl !== true
+                ? redirectUrl.slice(0, -1)
+                : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
-        const billingAddress = toMollieAddress(order.billingAddress, order.customer) || toMollieAddress(order.shippingAddress, order.customer);
+        const billingAddress =
+            toMollieAddress(order.billingAddress, order.customer) ||
+            toMollieAddress(order.shippingAddress, order.customer);
         if (!billingAddress) {
-            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, postalCode, streetline1 and country are needed to create a payment intent.`);
+            return new InvalidInputError(
+                "Order doesn't have a complete shipping address or billing address. " +
+                    'At least city, postalCode, streetline1 and country are needed to create a payment intent.',
+            );
         }
         const alreadyPaid = totalCoveredByPayments(order);
         const amountToPay = order.totalWithTax - alreadyPaid;
         const orderInput: CreateParameters = {
             orderNumber: order.code,
             amount: toAmount(amountToPay, order.currencyCode),
-            redirectUrl: this.options.useDynamicRedirectUrl == true ? redirectUrl :`${redirectUrl}/${order.code}`,
+            redirectUrl:
+                this.options.useDynamicRedirectUrl === true ? redirectUrl : `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
             locale: getLocale(billingAddress.country, ctx.languageCode),
@@ -161,7 +187,7 @@ export class MollieService {
         Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`);
         const url = mollieOrder.getCheckoutUrl();
         if (!url) {
-            throw Error(`Unable to getCheckoutUrl() from Mollie order`);
+            throw Error('Unable to getCheckoutUrl() from Mollie order');
         }
         return {
             url,
@@ -171,8 +197,14 @@ export class MollieService {
     /**
      * Update Vendure payments and order status based on the incoming Mollie order
      */
-    async handleMollieStatusUpdate(ctx: RequestContext, { channelToken, paymentMethodId, orderId }: OrderStatusInput): Promise<void> {
-        Logger.info(`Received status update for channel ${channelToken} for Mollie order ${orderId}`, loggerCtx);
+    async handleMollieStatusUpdate(
+        ctx: RequestContext,
+        { channelToken, paymentMethodId, orderId }: OrderStatusInput,
+    ): Promise<void> {
+        Logger.info(
+            `Received status update for channel ${channelToken} for Mollie order ${orderId}`,
+            loggerCtx,
+        );
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
@@ -194,6 +226,10 @@ export class MollieService {
             throw Error(
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
+        }
+        if (mollieOrder.status === OrderStatus.expired) {
+            // Expired is fine, a customer can retry the payment later
+            return;
         }
         if (mollieOrder.status === OrderStatus.paid) {
             // Paid is only used by 1-step payments without Authorized state. This will settle immediately
@@ -308,10 +344,7 @@ export class MollieService {
     async getVariantsWithInsufficientStock(ctx: RequestContext, order: Order): Promise<ProductVariant[]> {
         const variantsWithInsufficientSaleableStock: ProductVariant[] = [];
         for (const line of order.lines) {
-            const availableStock = await this.variantService.getSaleableStockLevel(
-                ctx,
-                line.productVariant,
-            );
+            const availableStock = await this.variantService.getSaleableStockLevel(ctx, line.productVariant);
             if (line.quantity > availableStock) {
                 variantsWithInsufficientSaleableStock.push(line.productVariant);
             }
@@ -319,7 +352,10 @@ export class MollieService {
         return variantsWithInsufficientSaleableStock;
     }
 
-    private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
+    private async getPaymentMethod(
+        ctx: RequestContext,
+        paymentMethodCode: string,
+    ): Promise<PaymentMethod | undefined> {
         const paymentMethods = await this.paymentMethodService.findAll(ctx);
         return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
     }
