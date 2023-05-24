@@ -181,28 +181,12 @@
     "@angular-eslint/bundled-angular-compiler" "15.2.1"
     "@typescript-eslint/utils" "5.48.2"
 
-"@angular/animations@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-15.2.1.tgz#7ee4e058bf1234d1780498af0407851bb591c04f"
-  integrity sha512-oQjTdXLVHzSnsHHPF3CM4bnT4uVQQW1vP4weFTXWhvybQ6vICcq57N9Ri8ZsvB0Sisqug6CPwZoUATCb5a2HXw==
-  dependencies:
-    tslib "^2.3.0"
-
 "@angular/animations@^15.2.1":
   version "15.2.8"
   resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-15.2.8.tgz#11de2b0e7fc50918056bdc6d7545ea1864a8592d"
   integrity sha512-I3xh8EASQ04s3qXQYpIORI0jFiFmvBQERBqS70TieTCIML7banOf9R3K7sAWB9frG5J0CEUwr+wtF47DCs/7eQ==
   dependencies:
     tslib "^2.3.0"
-
-"@angular/cdk@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-15.2.1.tgz#29d3c1d7d85debdfc8de4a802d420f3190c835ea"
-  integrity sha512-kRwG0ujimOPhqDwQYcQ+pk7hpTr0yvaPkxAx5r1ytA6aQIvHJ1XaPzhtthsr5/PhpwzlH8k723xpejrLKcuR+w==
-  dependencies:
-    tslib "^2.3.0"
-  optionalDependencies:
-    parse5 "^7.1.2"
 
 "@angular/cdk@^15.2.1":
   version "15.2.8"
@@ -237,13 +221,6 @@
     symbol-observable "4.0.0"
     yargs "17.6.2"
 
-"@angular/common@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-15.2.1.tgz#2ffa669b4e54e05c5fb97181497446e093c466b0"
-  integrity sha512-nGFrZXrxLMkFyK4VYHHH6+/Hq92BjVls6UWuG1UblkYzGqPpr7dRQZGOXzJc48sEG2WOeVhlhyK+0tHFFaG08g==
-  dependencies:
-    tslib "^2.3.0"
-
 "@angular/common@^15.2.1":
   version "15.2.8"
   resolved "https://registry.yarnpkg.com/@angular/common/-/common-15.2.8.tgz#7d60a4d906b41a852f31c63116ede1b87c84a7ad"
@@ -274,24 +251,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-15.2.1.tgz#c2ec98fac41058d901e5b48ed7ee207d6a10bb95"
-  integrity sha512-CtN/cYDTGlELRcKBHxqnxmUhI9Euz2R+25dvjNtxB2tLzCehI6Fbmsb3NsC++jcAjL3QAmodpzzgULPtNJqs6A==
-  dependencies:
-    tslib "^2.3.0"
-
 "@angular/core@^15.2.1":
   version "15.2.8"
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-15.2.8.tgz#6d7f8afa61be44b91e4b8737b39d7fdcb256a6ae"
   integrity sha512-NDs+g4uM4EhyCvluf8a0YBCFXsDAEfCMHOD5cS00Bl+liTQ7JwtmepkWXMyjLB92irC9JaR79kdy4BoIKOh8WA==
-  dependencies:
-    tslib "^2.3.0"
-
-"@angular/forms@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-15.2.1.tgz#77b070cb8397183eb0bf115cc40179b2e52f57e1"
-  integrity sha512-C3gWbjwcult/RPFJ4RtzwOoIrO2ZYPXF86gQuA1MFpASRsroWl/9HTdvkmLa+UeW8ZoSZt4QNl00dymO+ROUGg==
   dependencies:
     tslib "^2.3.0"
 
@@ -302,22 +265,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/language-service@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-15.2.1.tgz#ad4de7adfbf42faff1a51f4deaddc5b6d1cfe893"
-  integrity sha512-G86FZ0kZTXpHoyR1XJVB17whJ+4pvdJwCVnuZGzJ18lRwBJQcNA0r9neXqH+6StjStgLz0Wre+mI+sQMklFOmw==
-
 "@angular/language-service@^15.2.1":
   version "15.2.8"
   resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-15.2.8.tgz#f37fb8b020c9d0fccf1bb5b46db525b67084cc9c"
   integrity sha512-3wlaJrpxe8ZLe7ZGIOs/Z++kgJMOHZCUvdXLyp/4t1ejULgUgW9yi7nGsemWnSzsUCjf7595BP1Cp1gA/J/1QQ==
-
-"@angular/platform-browser-dynamic@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-15.2.1.tgz#92969fff1a4b1881f3eb67fc8fa34c1fd6e4eb6c"
-  integrity sha512-KeDq7yYmVlYVS3DiNUgI1318eYXxIiZ281Rg9TrLCHSNmzFag821XiDmXs/eug3RsgoYCKZ/j9w+ey8Qqfw6/Q==
-  dependencies:
-    tslib "^2.3.0"
 
 "@angular/platform-browser-dynamic@^15.2.1":
   version "15.2.8"
@@ -326,24 +277,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/platform-browser@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-15.2.1.tgz#cef395ca6de1b1ea4e88ce5547aaac7547d1c6ac"
-  integrity sha512-aUV4XfdeqHTXwMRAjgrmx43F22YwgaCZnU08Ufg4Dx3nfqL9ak3e5NfgUpMlKbj7qX2rGGt6GKhQwoDFR4Dg1g==
-  dependencies:
-    tslib "^2.3.0"
-
 "@angular/platform-browser@^15.2.1":
   version "15.2.8"
   resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-15.2.8.tgz#2400f732a020d59f17b9bf8c6c3f1fb065147328"
   integrity sha512-8sKFUld54inj0FnQ1ydhFxnDgsbbf43W9FALye/5uEtLgwwE/ZvkNYMaQ7hq1JPuQRMDj3gJkFqaLeFjplpHDA==
-  dependencies:
-    tslib "^2.3.0"
-
-"@angular/router@15.2.1":
-  version "15.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/router/-/router-15.2.1.tgz#313d5f2710f7722367f0aea83438d4cf1a6d0eb1"
-  integrity sha512-KyCBpj7HXnGSLz1XRP/b3K2WKVgfdY84uJ1CSVsTjADiduIfvAd3LGDVERzkTo+JxAsL1CD/yg1nTiIbFbcuCA==
   dependencies:
     tslib "^2.3.0"
 
@@ -2496,7 +2433,7 @@
   resolved "https://registry.yarnpkg.com/@cds/city/-/city-1.1.0.tgz#5b7323750d3d64671ce2e3a804bcf260fbea1154"
   integrity sha512-S9K+Q39BGOghyLHmR0Wdcmu1i1noSUk8HcvMj+3IaohZw02WFd99aPTQDHJeseXrXZP3CNovaSlePI0R11NcFg==
 
-"@cds/core@^6.3.1", "@cds/core@^6.3.2":
+"@cds/core@^6.3.2":
   version "6.4.2"
   resolved "https://registry.yarnpkg.com/@cds/core/-/core-6.4.2.tgz#78d3bac6aa91effc991572a79edcaeb75f80e066"
   integrity sha512-m18JDBenj8qL+msOZkYs3tn8Yq3w9FzbaKRN1FFjL/pp5S9w2wUXazuA+Kuin84LN72K/LAy3LyUVYMkZSqM7A==
@@ -2507,13 +2444,6 @@
   optionalDependencies:
     "@cds/city" "^1.1.0"
     modern-normalize "1.1.0"
-
-"@clr/angular@^15.0.1":
-  version "15.4.0"
-  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-15.4.0.tgz#e2f311fcd71153b1c521623f45c654fe6e99717f"
-  integrity sha512-6DaQUUV4cN0gZHVttN/o7Y7mtZmRFVG10NQsD0i8FP/o92BCjL/pO5+AvvSi5E/3ArMmuqlhVaSjpvsMfg9yww==
-  dependencies:
-    tslib "^2.3.0"
 
 "@clr/angular@^15.1.0":
   version "15.3.0"
@@ -3848,7 +3778,7 @@
     semver "^7.3.5"
     tar "^6.1.11"
 
-"@messageformat/core@^3.0.1", "@messageformat/core@^3.1.0":
+"@messageformat/core@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@messageformat/core/-/core-3.1.0.tgz#d4d2f5c3555228a6b5980b122a02b53dfc6458bd"
   integrity sha512-UxAnjecnRG4u2iaggwIyylYPHmk5BTErJcKmWyAKTXqYgSW1bFLp4D7fIzuh6bk17Qfcmf3qtufdrstCB23nBA==
@@ -5616,29 +5546,29 @@
     eslint-visitor-keys "^3.3.0"
 
 "@vendure/admin-ui@./packages/admin-ui/package":
-  version "2.0.0-next.28"
+  version "2.0.0-beta.1"
   dependencies:
-    "@angular/animations" "15.2.1"
-    "@angular/cdk" "15.2.1"
-    "@angular/common" "15.2.1"
-    "@angular/core" "15.2.1"
-    "@angular/forms" "15.2.1"
-    "@angular/language-service" "15.2.1"
-    "@angular/platform-browser" "15.2.1"
-    "@angular/platform-browser-dynamic" "15.2.1"
-    "@angular/router" "15.2.1"
+    "@angular/animations" "^15.2.1"
+    "@angular/cdk" "^15.2.1"
+    "@angular/common" "^15.2.1"
+    "@angular/core" "^15.2.1"
+    "@angular/forms" "^15.2.1"
+    "@angular/language-service" "^15.2.1"
+    "@angular/platform-browser" "^15.2.1"
+    "@angular/platform-browser-dynamic" "^15.2.1"
+    "@angular/router" "^15.2.1"
     "@apollo/client" "^3.7.9"
     "@biesbjerg/ngx-translate-extract-marker" "^1.0.0"
-    "@cds/core" "^6.3.1"
-    "@clr/angular" "^15.0.1"
+    "@cds/core" "^6.3.2"
+    "@clr/angular" "^15.1.0"
     "@clr/core" "^4.0.15"
     "@clr/icons" "^13.0.2"
     "@clr/ui" "^15.0.1"
-    "@messageformat/core" "^3.0.1"
+    "@messageformat/core" "^3.1.0"
     "@ng-select/ng-select" "^10.0.3"
     "@ngx-translate/core" "^14.0.0"
     "@ngx-translate/http-loader" "^7.0.0"
-    "@vendure/common" "^2.0.0-next.28"
+    "@vendure/common" "^2.0.0-beta.1"
     "@webcomponents/custom-elements" "^1.5.1"
     apollo-angular "^4.2.1"
     apollo-upload-client "^17.0.0"
@@ -5663,11 +5593,6 @@
     rxjs "^7.8.0"
     tslib "^2.5.0"
     zone.js "~0.12.0"
-
-"@vendure/common@^2.0.0-next.28":
-  version "2.0.0-next.28"
-  resolved "https://registry.yarnpkg.com/@vendure/common/-/common-2.0.0-next.28.tgz#d66f91dc71866efc432bece84b08c2d3e31d9582"
-  integrity sha512-HDGL6kIOAzvN0AY1MH5gPAyT1bUnsn7qx6x5cUpy3n//NiRedaEj1EfiOxthOkfk6T9bbbBHQagvrvLC25eXsQ==
 
 "@vendure/ngx-translate-extract@^8.1.0":
   version "8.1.0"
