@@ -106,9 +106,81 @@
     --color-error-975: hsl(4 100% 7%);
     --color-error-1000: hsl(4 100% 5%);
 
+
+
+    // Universal semantic colors
+    --color-component-bg-100: var(--color-grey-100);
+    --color-component-bg-200: var(--color-grey-200);
+    --color-component-bg-300: var(--color-grey-300);
+    --color-component-border-100: var(--color-grey-200);
+    --color-component-border-200: var(--color-grey-300);
+    --color-component-border-300: var(--color-grey-400);
+    --color-text-100: var(--clr-global-font-color);
+    --color-text-200: var(--clr-global-font-color-secondary);
+    --color-text-300: var(--color-grey-400);
+    --color-text-inverse: white;
+    --color-text-active: var(--color-primary-800);
+
+    // Component-specific colors
+    --color-scrollbar-bg: var(--color-weight-150);
+    --color-scrollbar-thumb: var(--color-weight-300);
+    --color-scrollbar-thumb-hover: var(--color-weight-400);
+
+    --color-top-bar-bg: white;
+    --color-card-border: var(--color-weight-200);
+    --color-card-bg: hsl(0 0% 99%);
+
     --color-left-nav-bg: var(--color-weight-100);
     --color-left-nav-text: var(--color-text);
     --color-left-nav-text-hover: var(--color-primary-700);
+    --color-surface-bg: white;
+    --color-page-header: hsl(0 0% 98%);
+    --color-page-header-item-bg: var(--color-weight-125);
+
+    --color-button-bg: hsl(0 0% 98%);
+    --color-button-hover-bg: var(--color-weight-100);
+    --color-button-ghost-bg: white;
+    --color-button-ghost-text: var(--color-text-100);
+    --color-button-ghost-hover-text: var(--color-primary-700);
+    --color-button-ghost-hover-bg: var(--color-primary-100);
+    --color-button-small-bg: var(--color-weight-150);
+    --color-button-small-text: var(--color-weight-700);
+
+    --color-channel-switcher-bg: var(--color-weight-150);
+    --color-channel-switcher-hover-bg: var(--color-weight-125);
+
+
+    --color-icon-button: var(--color-grey-600);
+    --color-form-input-bg: white;
+    --color-form-input-focus: var(--color-primary-100);
+    --color-timeline-thread: var(--color-primary-100);
+
+    --color-chip-warning-border: var(--color-warning-300);
+    --color-chip-warning-text: var(--color-warning-800);
+    --color-chip-warning-bg: var(--color-warning-150);
+    --color-chip-success-border: var(--color-success-200);
+    --color-chip-success-text: var(--color-success-800);
+    --color-chip-success-bg: var(--color-success-150);
+    --color-chip-error-border: var(--color-error-200);
+    --color-chip-error-text: var(--color-error-800);
+    --color-chip-error-bg: var(--color-error-150);
+
+    --color-json-editor-background-color: var(--color-grey-200);
+    --color-json-editor-text: var(--color-grey-600);
+    --color-json-editor-string: var(--color-secondary-600);
+    --color-json-editor-number: var(--color-primary-600);
+    --color-json-editor-boolean: var(--color-primary-600);
+    --color-json-editor-null: var(--color-grey-500);
+    --color-json-editor-key: var(--color-success-500);
+    --color-json-editor-error: var(--color-error-500);
+
+    --color-table-row-hover-bg: var(--color-weight-100);
+    --color-table-row-active-bg: var(--color-primary-100);
+    --color-table-row-separator: var(--color-weight-100);
+    --data-table-filter-box-shadow: inset -1px 6px 5px 0px rgb(165 165 165 / 8%);
+
+    --color-split-view-separator-border: var(--color-weight-150);
+    --color-split-view-separator-resize-border: var(--color-primary-400);
 
     // Layout
     --layout-content-max-width: 1400px;
@@ -139,8 +211,6 @@
     --color-login-gradient-top: var(--color-primary-800);
     --color-login-gradient-bottom: black;
 
-    // header
-    --page-header-color: hsl(0 0% 98%);
 
     // Border radius
     --clr-global-borderradius: 4px;
@@ -159,50 +229,4 @@
 
     // spacing
     --space-unit: 8px;
-
-    // Universal semantic colors
-    --color-component-bg-100: var(--color-grey-100);
-    --color-component-bg-200: var(--color-grey-200);
-    --color-component-bg-300: var(--color-grey-300);
-    --color-component-border-100: var(--color-grey-200);
-    --color-component-border-200: var(--color-grey-300);
-    --color-component-border-300: var(--color-grey-400);
-    --color-text-100: var(--clr-global-font-color);
-    --color-text-200: var(--clr-global-font-color-secondary);
-    --color-text-300: var(--color-grey-400);
-    --color-text-inverse: white;
-
-    // Component-specific colors
-    --color-top-bar-bg: white;
-    --color-card-border: var(--color-weight-200);
-
-    --color-icon-button: var(--color-grey-600);
-    --color-form-input-bg: white;
-    --color-timeline-thread: var(--color-primary-100);
-
-    --color-chip-warning-border: var(--color-warning-300);
-    --color-chip-warning-text: var(--color-warning-800);
-    --color-chip-warning-bg: var(--color-warning-150);
-    --color-chip-success-border: var(--color-success-200);
-    --color-chip-success-text: var(--color-success-800);
-    --color-chip-success-bg: var(--color-success-150);
-    --color-chip-error-border: var(--color-error-200);
-    --color-chip-error-text: var(--color-error-800);
-    --color-chip-error-bg: var(--color-error-150);
-
-    --color-json-editor-background-color: var(--color-grey-200);
-    --color-json-editor-text: var(--color-grey-600);
-    --color-json-editor-string: var(--color-secondary-600);
-    --color-json-editor-number: var(--color-primary-600);
-    --color-json-editor-boolean: var(--color-primary-600);
-    --color-json-editor-null: var(--color-grey-500);
-    --color-json-editor-key: var(--color-success-500);
-    --color-json-editor-error: var(--color-error-500);
-
-    --color-table-alternate-row-bg: hsl(0 0% 98% / 1);
-    --color-table-row-hover-bg: var(--color-weight-100);
-    --color-table-row-active-bg: var(--color-primary-100);
-
-    --color-split-view-separator-border: var(--color-weight-150);
-    --color-split-view-separator-resize-border: var(--color-primary-400);
 }

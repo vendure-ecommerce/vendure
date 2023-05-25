@@ -10,11 +10,11 @@
     background-color: var(--color-left-nav-bg);
     color: var(--color-left-nav-text);
     display: flex;
+    display: flex;
     flex-direction: column;
     overflow: hidden;
     height: 100%;
     border-right: 1px solid var(--color-weight-150);
-    //box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
     z-index: 1;
     width: var(--left-nav-width);
     max-width: var(--left-nav-width);
@@ -47,8 +47,22 @@
     button {
         border: none;
         padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2);
-        background-color: var(--color-weight-125);
+        background-color: var(--color-page-header-item-bg);
         border-radius: var(--border-radius-lg);
+        color: var(--color-text-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .bars {
+        width: 24px;
+        height: 24px;
+    }
+}
+.collapse-menu {
+    button {
+        height: 40px;
+        background-color: var(--color-weight-200);
     }
 }
 
@@ -58,7 +72,7 @@
     align-items: center;
     justify-content: space-between;
     padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
-    background-color: var(--page-header-color);
+    background-color: var(--color-page-header);
     @media screen and (min-width: $breakpoint-medium) {
         padding: calc(var(--space-unit) * 4);
         padding-left: var(--surface-margin-left);
@@ -75,8 +89,8 @@
     hr {
         margin: 0 calc(var(--space-unit) * 4);
         margin-bottom: calc(var(--space-unit) * 4);
-        border: 1px solid #d9d9d9;
-        box-shadow: 0px 1px 0px #ffffff;
+        border: 1px solid var(--color-weight-150);
+        box-shadow: 0px 1px 0px var(--color-weight-100);
     }
 }
 
@@ -84,7 +98,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    background-color: var(--color-white);
+    background-color: var(--color-surface-bg);
 }
 
 .content-container {
@@ -97,6 +111,7 @@
     justify-content: space-between;
     min-width: 0;
     padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 4);
+    padding-right: calc(var(--space-unit) * 1.5);
     @media screen and (min-width: $breakpoint-medium) {
         padding: calc(var(--space-unit) * 4);
     }

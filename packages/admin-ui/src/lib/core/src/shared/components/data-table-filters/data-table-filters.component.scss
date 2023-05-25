@@ -11,7 +11,8 @@
     height: calc(var(--space-unit) * 3);
     font-size: var(--font-size-xs);
     border-radius: var(--border-radius-lg);
-    background-color: var(--color-weight-150);
+    background-color: var(--color-button-small-bg);
+    color: var(--color-button-small-text);
     > button {
         border: none;
         gap: 12px;
@@ -21,6 +22,7 @@
         align-items: center;
         height: calc(var(--space-unit) * 2);
         border-radius: var(--border-radius-lg);
+        color: var(--color-button-small-text);
     }
     &.active {
         background-color: var(--color-primary-700);
@@ -35,6 +37,7 @@
 
 label {
     display: flex;
+    align-items: center;
     gap: var(--space-unit);
     margin-bottom: calc(var(--space-unit) * 0.5);
 }

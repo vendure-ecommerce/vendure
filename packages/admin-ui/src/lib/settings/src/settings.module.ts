@@ -355,5 +355,11 @@ export class SettingsModule {
             route: '',
             component: GlobalSettingsComponent,
         });
+        pageService.registerPageTab({
+            location: 'profile',
+            tab: _('breadcrumb.profile'),
+            route: '',
+            component: ProfileComponent,
+        });
     }
 }

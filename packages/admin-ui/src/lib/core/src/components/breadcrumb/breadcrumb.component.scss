@@ -14,12 +14,9 @@
     line-height: 100%;
     height: 40px;
     padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2.5);
-    font-size: var(--font-size-xs);
-    background-color: var(--color-weight-125);
+    font-size: var(--font-size-sm);
+    background-color: var(--color-page-header-item-bg);
     border-radius: var(--border-radius-lg);
-    @media screen and (min-width: $breakpoint-small) {
-        font-size: var(--font-size-sm);
-    }
     li {
         display: inline-block;
         white-space: nowrap;
@@ -30,5 +27,15 @@
         &:last-child {
             font-weight: 600;
         }
+    }
+}
+.breadcrumbs:not(.mobile) {
+    @media screen and (max-width: $breakpoint-medium) {
+        display: none;
+    }
+}
+.breadcrumbs.mobile {
+    @media screen and (min-width: $breakpoint-medium) {
+        display: none;
     }
 }

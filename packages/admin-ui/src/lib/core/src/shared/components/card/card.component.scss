@@ -9,6 +9,7 @@
         --card-padding: calc(var(--space-unit) * 2);
     }
     border: 1px solid var(--color-card-border);
+    background-color: var(--color-card-bg);
     border-radius: var(--border-radius);
     padding: var(--card-padding) 0;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05);

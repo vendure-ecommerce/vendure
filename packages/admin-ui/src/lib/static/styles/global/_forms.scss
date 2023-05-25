@@ -12,10 +12,11 @@ form .form-block {
     margin: 0.5rem 0 1.5rem;
 }
 
-input,
+input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea,
 .clr-input {
+    color: var(--color-text-100);
     background-color: var(--color-form-input-bg);
     &:not([readonly]) {
         background-color: var(--color-form-input-bg);
@@ -37,7 +38,7 @@ textarea,
     }
 }
 
-input,
+input:not([type="checkbox"]):not([type="radio"]),
 textarea,
 select {
     border-radius: var(--border-radius-input) !important;
@@ -47,7 +48,7 @@ select {
     transition: background-color 0.2s, box-shadow 0.2s !important;
     &:focus {
         border-color: var(--color-primary-500);
-        box-shadow: 0 0 1px 1px var(--color-primary-100);
+        box-shadow: 0 0 1px 1px var(--color-form-input-focus);
         outline: none;
     }
     &[readonly]:focus {
@@ -127,6 +128,7 @@ select {
     min-width: 60px;
     .ng-value {
         margin: 0 6px 0 0;
+        background-color: var(--color-form-input-bg) !important;
     }
     .ng-input {
         margin: 0;

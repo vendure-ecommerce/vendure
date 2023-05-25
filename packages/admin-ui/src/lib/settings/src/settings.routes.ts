@@ -6,6 +6,7 @@ import {
     createResolveData,
     DataService,
     GetGlobalSettingsDetailDocument,
+    GetProfileDetailDocument,
     PageComponent,
     PageService,
 } from '@vendure/admin-ui/core';
@@ -16,12 +17,17 @@ import { ProfileResolver } from './providers/routing/profile-resolver';
 export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: 'profile',
-        component: ProfileComponent,
-        resolve: createResolveData(ProfileResolver),
-        canDeactivate: [CanDeactivateDetailGuard],
+        component: PageComponent,
         data: {
             breadcrumb: _('breadcrumb.profile'),
         },
+        resolve: {
+            detail: () =>
+                inject(DataService)
+                    .query(GetProfileDetailDocument)
+                    .mapSingle(data => ({ entity: of(data.activeAdministrator) })),
+        },
+        children: pageService.getPageTabRoutes('profile'),
     },
     {
         path: 'administrators',

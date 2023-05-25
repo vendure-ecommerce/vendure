@@ -80,6 +80,8 @@
                         [removable]="updatePermissions | hasPermission"
                         (remove)="removeProductFacetValue(facetValue.id)"
                     ></vdr-facet-value-chip>
+                </div>
+                <div>
                     <button
                         class="btn btn-sm btn-secondary"
                         *vdrIfPermissions="updatePermissions"

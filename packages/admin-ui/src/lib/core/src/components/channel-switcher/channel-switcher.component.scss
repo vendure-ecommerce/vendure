@@ -12,15 +12,16 @@
     align-items: center;
     font-size: var(--font-size-xs);
     color: var(--color-left-nav-text);
-    background-color: var(--color-weight-150);
+    background-color: var(--color-channel-switcher-bg);
     border: none;
     cursor: pointer;
     width: 100%;
     border-radius: var(--border-radius-lg);
     padding: var(--space-unit) calc(var(--space-unit) * 2);
+    transition: background-color 0.1s, color 0.1s;
 
     &:hover {
-        background-color: var(--color-component-bg-100);
+        background-color: var(--color-channel-switcher-hover-bg);
         color: var(--color-left-nav-text-hover);
     }
 

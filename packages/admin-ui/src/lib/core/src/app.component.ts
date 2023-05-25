@@ -68,6 +68,12 @@ export class AppComponent implements OnInit {
             .mapStream(({ userStatus }) => userStatus.administratorId)
             .subscribe(administratorId => {
                 this.localStorageService.setAdminId(administratorId);
+                const theme = this.localStorageService.get('activeTheme');
+                if (theme) {
+                    this.dataService.client.setUiTheme(theme).subscribe(() => {
+                        this.localStorageService.set('activeTheme', theme);
+                    });
+                }
             });
 
         if (isDevMode()) {

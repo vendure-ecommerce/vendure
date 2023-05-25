@@ -56,7 +56,9 @@
                         <span class="mr-1">{{ optionGroupName(option.groupId) }}:</span>
                         {{ optionName(option) }}
                     </vdr-chip>
-                    <a [routerLink]="['./', 'options']" class="btn btn-link btn-sm"
+                </div>
+                <div>
+                    <a [routerLink]="['./', 'options']" class="btn"
                         >{{ 'catalog.edit-options' | translate }}...</a
                     >
                 </div>
@@ -69,6 +71,8 @@
                         [removable]="updatePermissions | hasPermission"
                         (remove)="removeFacetValue(facetValue.id)"
                     ></vdr-facet-value-chip>
+                </div>
+                <div>
                     <button
                         class="btn btn-sm btn-secondary"
                         *vdrIfPermissions="updatePermissions"

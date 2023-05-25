@@ -24,16 +24,16 @@
         opacity: 0;
 
         &.success {
-            background-color: var(--color-success-500);
+            background-color: var(--color-success-800);
         }
         &.error {
-            background-color: var(--color-error-500);
+            background-color: var(--color-error-800);
         }
         &.warning {
-            background-color: var(--color-warning-500);
+            background-color: var(--color-warning-800);
         }
         &.info {
-            background-color: var(--color-secondary-500);
+            background-color: var(--color-weight-500);
         }
 
         &.visible {

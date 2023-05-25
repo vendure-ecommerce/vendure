@@ -69,6 +69,7 @@ export type PageLocationId =
     | 'product-detail'
     | 'product-list'
     | 'product-variant-detail'
+    | 'profile'
     | 'promotion-detail'
     | 'promotion-list'
     | 'role-detail'

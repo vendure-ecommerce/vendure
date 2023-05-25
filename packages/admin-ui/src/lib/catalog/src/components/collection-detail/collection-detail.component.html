@@ -53,20 +53,17 @@
                     </clr-toggle-wrapper>
                 </vdr-form-field>
             </vdr-card>
-            <vdr-card>
-                <vdr-page-entity-info
-                    *ngIf="entity$ | async as entity"
-                    [entity]="entity"
-                ></vdr-page-entity-info>
+            <vdr-card *ngIf="entity$ | async as entity">
+                <vdr-page-entity-info [entity]="entity"></vdr-page-entity-info>
             </vdr-card>
         </vdr-page-detail-sidebar>
 
-        <vdr-page-block
+        <vdr-page-block *ngIf="entity$ | async as entity"
             ><nav role="navigation">
                 <ul class="collection-breadcrumbs">
                     <li
                         *ngFor="
-                            let breadcrumb of (entity$ | async)?.breadcrumbs;
+                            let breadcrumb of entity.breadcrumbs;
                             let isFirst = first;
                             let isLast = last
                         "

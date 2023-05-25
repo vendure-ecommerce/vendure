@@ -25,6 +25,12 @@ a:link, a:visited {
     height: 100%;
 }
 
+.modal-header .close, .modal-header--accessible .close {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
 a:link, a:visited {
     color: var(--clr-btn-link-color);
 }

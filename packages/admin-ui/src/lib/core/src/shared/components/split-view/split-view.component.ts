@@ -69,7 +69,6 @@ export class SplitViewComponent implements AfterContentInit, AfterViewInit {
             switchMap(() => mouseMove$.pipe(takeUntil(mouseUp$))),
             map(event => {
                 const clientX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
-                console.log(`clientX: ${clientX}`);
                 const width = hostElement.getBoundingClientRect().right - clientX;
                 return Math.max(100, Math.min(width, hostElementWidth - 100));
             }),

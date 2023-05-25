@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BreadcrumbService } from '../../providers/breadcrumb/breadcrumb.service';
 
 /**
@@ -18,9 +19,13 @@ import { BreadcrumbService } from '../../providers/breadcrumb/breadcrumb.service
 })
 export class BreadcrumbComponent {
     breadcrumbs$: Observable<Array<{ link: string | any[]; label: string }>>;
+    parentBreadcrumb$: Observable<{ link: string | any[]; label: string } | undefined>;
     private destroy$ = new Subject<void>();
 
     constructor(private breadcrumbService: BreadcrumbService) {
         this.breadcrumbs$ = this.breadcrumbService.breadcrumbs$;
+        this.parentBreadcrumb$ = this.breadcrumbService.breadcrumbs$.pipe(
+            map(breadcrumbs => (1 < breadcrumbs.length ? breadcrumbs[breadcrumbs.length - 2] : undefined)),
+        );
     }
 }

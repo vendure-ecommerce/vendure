@@ -52,7 +52,7 @@ type Zone = ItemOf<GetZoneSelectorListQuery, 'zones'>;
 export class ZoneSelectorComponent implements ControlValueAccessor {
     @Output() selectedValuesChange = new EventEmitter<Zone>();
     @Input() readonly = false;
-    @Input() transformControlValueAccessorValue: (value: Zone) => any = value => value.id;
+    @Input() transformControlValueAccessorValue: (value: Zone | undefined) => any = value => value?.id;
     selectedId$ = new Subject<string>();
 
     @ViewChild(NgSelectComponent) private ngSelect: NgSelectComponent;

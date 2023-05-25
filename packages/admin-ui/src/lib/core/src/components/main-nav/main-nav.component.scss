@@ -61,7 +61,7 @@ nav.main-nav {
         &.active,
         &.active a:link,
         &.active a:visited {
-            color: var(--color-primary-800);
+            color: var(--color-text-active);
             border-right-color: var(--color-primary-500);
             clr-icon {
                 color: var(--color-primary-500);

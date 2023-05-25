@@ -4,7 +4,7 @@
             <a [routerLink]="['/']"><img src="assets/logo.svg" class="logo" style="max-width: 100px" /></a>
             <div class="collapse-menu">
                 <button class="" (click)="collapseNav()">
-                    <clr-icon shape="window-close" size="16"></clr-icon>
+                    <clr-icon shape="window-close" size="24"></clr-icon>
                 </button>
             </div>
         </div>
@@ -26,7 +26,9 @@
             <div class="top-bar">
                 <div class="expand-menu mr-1">
                     <button class="" (click)="expandNav()">
-                        <clr-icon shape="menu" size="16"></clr-icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="bars">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
                     </button>
                 </div>
                 <div>
