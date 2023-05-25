@@ -73,7 +73,7 @@ export class ZoneService {
 
     async findAll(ctx: RequestContext, options?: ListQueryOptions<Zone>): Promise<PaginatedList<Zone>> {
         return this.listQueryBuilder
-            .build(Zone, options, { relations: ['members'] })
+            .build(Zone, options, { relations: ['members'], ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 const translated = items.map((zone, i) => {

@@ -20,7 +20,7 @@ import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
-@Resolver('Zone')
+@Resolver()
 export class ZoneResolver {
     constructor(private zoneService: ZoneService) {}
 

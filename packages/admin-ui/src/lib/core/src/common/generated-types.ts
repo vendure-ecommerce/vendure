@@ -828,14 +828,9 @@ export type CreateProductOptionInput = {
   translations: Array<ProductOptionGroupTranslationInput>;
 };
 
-export type CreateProductVariantCustomFieldsInput = {
-  gtin?: InputMaybe<Scalars['String']>;
-  weight?: InputMaybe<Scalars['Int']>;
-};
-
 export type CreateProductVariantInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<CreateProductVariantCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
   optionIds?: InputMaybe<Array<Scalars['ID']>>;
@@ -4565,7 +4560,7 @@ export type ProductVariant = Node & {
   channels: Array<Channel>;
   createdAt: Scalars['DateTime'];
   currencyCode: CurrencyCode;
-  customFields?: Maybe<ProductVariantCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
   enabled: Scalars['Boolean'];
   facetValues: Array<FacetValue>;
   featuredAsset?: Maybe<Asset>;
@@ -4599,18 +4594,11 @@ export type ProductVariantStockMovementsArgs = {
   options?: InputMaybe<StockMovementListOptions>;
 };
 
-export type ProductVariantCustomFields = {
-  __typename?: 'ProductVariantCustomFields';
-  gtin?: Maybe<Scalars['String']>;
-  weight?: Maybe<Scalars['Int']>;
-};
-
 export type ProductVariantFilterParameter = {
   createdAt?: InputMaybe<DateOperators>;
   currencyCode?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
   facetValueId?: InputMaybe<IdOperators>;
-  gtin?: InputMaybe<StringOperators>;
   id?: InputMaybe<IdOperators>;
   languageCode?: InputMaybe<StringOperators>;
   name?: InputMaybe<StringOperators>;
@@ -4625,7 +4613,6 @@ export type ProductVariantFilterParameter = {
   trackInventory?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
   useGlobalOutOfStockThreshold?: InputMaybe<BooleanOperators>;
-  weight?: InputMaybe<NumberOperators>;
 };
 
 export type ProductVariantList = PaginatedList & {
@@ -4649,7 +4636,6 @@ export type ProductVariantListOptions = {
 
 export type ProductVariantSortParameter = {
   createdAt?: InputMaybe<SortOrder>;
-  gtin?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
   outOfStockThreshold?: InputMaybe<SortOrder>;
@@ -4661,7 +4647,6 @@ export type ProductVariantSortParameter = {
   stockLevel?: InputMaybe<SortOrder>;
   stockOnHand?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
-  weight?: InputMaybe<SortOrder>;
 };
 
 export type ProductVariantTranslation = {
@@ -6228,14 +6213,9 @@ export type UpdateProductOptionInput = {
   translations?: InputMaybe<Array<ProductOptionGroupTranslationInput>>;
 };
 
-export type UpdateProductVariantCustomFieldsInput = {
-  gtin?: InputMaybe<Scalars['String']>;
-  weight?: InputMaybe<Scalars['Int']>;
-};
-
 export type UpdateProductVariantInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<UpdateProductVariantCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;

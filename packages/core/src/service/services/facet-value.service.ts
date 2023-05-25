@@ -87,6 +87,7 @@ export class FacetValueService {
     ): Promise<PaginatedList<Translated<FacetValue>>> {
         return this.listQueryBuilder
             .build(FacetValue, options, {
+                ctx,
                 relations: relations ?? ['facet'],
                 channelId: ctx.channelId,
             })

@@ -10,7 +10,7 @@ import { downloadIntrospectionSchema } from './download-introspection-schema';
 
 const CLIENT_QUERY_FILES = [
     path.join(__dirname, '../../packages/admin-ui/src/lib/core/src/data/definitions/**/*.ts'),
-    path.join(__dirname, '../../packages/admin-ui/src/lib/**/*.graphql.ts'),
+    path.join(__dirname, '../../packages/admin-ui/src/lib/**/*.ts'),
 ];
 
 const specFileToIgnore = [
