@@ -114,12 +114,12 @@
     --layout-content-max-width: 1400px;
     --left-nav-width: 0px;
     --surface-width: 100vw;
-    --surface-margin-left: 4px;
+    --surface-margin-left: 8px;
 
     @media screen and (min-width: $breakpoint-small) {
-        --left-nav-width: 100px;
-        --surface-width: calc(100vw - 100px);
-        --surface-margin-left: 4px;
+        //--left-nav-width: 100px;
+        //--surface-width: calc(100vw - 100px);
+        //--surface-margin-left: 4px;
     }
 
     @media screen and (min-width: $breakpoint-medium) {

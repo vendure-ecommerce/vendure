@@ -100,6 +100,13 @@ export const clientResolvers: ResolverDefinition = {
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.display;
         },
+        setMainNavExpanded: (_, args: Codegen.SetMainNavExpandedMutationVariables, { cache }): boolean => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<Codegen.GetUiStateQuery>({ query: GET_UI_STATE })!;
+            const data = updateUiState(previous, 'mainNavExpanded', args.expanded);
+            cache.writeQuery({ query: GET_UI_STATE, data });
+            return args.expanded;
+        },
         setActiveChannel: (_, args: Codegen.SetActiveChannelMutationVariables, { cache }): UserStatus => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const previous = cache.readQuery<GetUserStatusQuery>({ query: GET_USER_STATUS })!;

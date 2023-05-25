@@ -26,7 +26,7 @@
                                 [type]="sectionBadge"
                             ></vdr-status-badge>
                         </ng-container>
-                        <label class="nav-group-header md:hidden mx-4" [for]="section.id">{{
+                        <label class="nav-group-header mx-4" [for]="section.id">{{
                             section.label | translate
                         }}</label>
                         <button *ngIf="section.collapsible" class="button-small bg-weight-150" (click)="toggleExpand(section)">
@@ -47,7 +47,7 @@
                                 <a
                                     [attr.data-item-id]="section.id"
                                     [routerLink]="getRouterLink(item)"
-                                    (click)="item.onClick && item.onClick($event)"
+                                    (click)="onItemClick(item, $event)"
                                 >
                                     <ng-container *ngIf="item.statusBadge | async as itemBadge">
                                         <vdr-status-badge
@@ -60,7 +60,7 @@
                                         size="16"
                                         [title]="item.label | translate"
                                     ></clr-icon>
-                                    <span class="md:hidden">{{ item.label | translate }}</span>
+                                    <span class="">{{ item.label | translate }}</span>
                                 </a>
                             </div>
                         </ng-container>

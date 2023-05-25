@@ -1,3 +1,5 @@
+@import "variables";
+
 :host {
     display: block;
 }
@@ -10,6 +12,12 @@
         margin-top: 0;
         color: var(--color-weight-900);
         font-weight: 600;
+        @media screen and (max-width: $breakpoint-small) {
+            font-size: var(--font-size-xl);
+        }
+        @media screen and (max-width: $breakpoint-medium) {
+            font-size: 24px
+        }
     }
 }
 

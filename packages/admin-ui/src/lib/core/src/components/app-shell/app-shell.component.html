@@ -1,19 +1,22 @@
 <div class="app-container">
-    <div class="left-nav">
-        <div class="branding py-4 px-4">
-            <a [routerLink]="['/']"
-                ><img src="assets/logo.svg" class="logo" style="max-width: 100px" /></a
-            >
+    <div class="left-nav" [class.expanded]="mainNavExpanded$ | async">
+        <div class="branding">
+            <a [routerLink]="['/']"><img src="assets/logo.svg" class="logo" style="max-width: 100px" /></a>
+            <div class="collapse-menu">
+                <button class="" (click)="collapseNav()">
+                    <clr-icon shape="window-close" size="16"></clr-icon>
+                </button>
+            </div>
         </div>
         <div class="mx-4">
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
         </div>
         <div class="main-nav-container">
-            <vdr-main-nav></vdr-main-nav>
+            <vdr-main-nav (itemClick)="collapseNav()"></vdr-main-nav>
         </div>
         <div class="settings-nav-container">
             <hr />
-            <vdr-main-nav displayMode="settings"></vdr-main-nav>
+            <vdr-main-nav displayMode="settings" (itemClick)="collapseNav()"></vdr-main-nav>
         </div>
         <div class="mx-2"></div>
     </div>
@@ -21,6 +24,11 @@
     <div class="surface">
         <div class="content-container">
             <div class="top-bar">
+                <div class="expand-menu mr-1">
+                    <button class="" (click)="expandNav()">
+                        <clr-icon shape="menu" size="16"></clr-icon>
+                    </button>
+                </div>
                 <div>
                     <vdr-breadcrumb></vdr-breadcrumb>
                 </div>

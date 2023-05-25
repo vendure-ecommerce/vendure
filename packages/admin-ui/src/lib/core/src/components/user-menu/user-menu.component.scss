@@ -28,10 +28,14 @@
     height: 40px;
     background-color: var(--color-weight-125);
     border-radius: var(--border-radius-lg);
-    padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2.5) calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 1.5) ;
+
     cursor: pointer;
     &:hover {
         color: var(--color-text-300);
+    }
+    @media screen and (min-width: $breakpoint-medium) {
+        padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2) calc(var(--space-unit) * 1.5)
+            calc(var(--space-unit) * 1.5);
     }
 }
 

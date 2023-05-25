@@ -58,24 +58,21 @@ nav.main-nav {
             border-right-color: var(--color-weight-300);
         }
 
-        &.active, &.active a:link, &.active a:visited {
+        &.active,
+        &.active a:link,
+        &.active a:visited {
             color: var(--color-primary-800);
             border-right-color: var(--color-primary-500);
             clr-icon {
                 color: var(--color-primary-500);
             }
         }
-        @media screen and (max-width: $breakpoint-medium) {
-            justify-content: center;
-        }
     }
 }
 
 .nav-list clr-icon {
     flex-shrink: 0;
-    @media screen and (min-width: $breakpoint-medium) {
-        margin-right: var(--space-unit);
-    }
+    margin-right: var(--space-unit);
 }
 
 .nav-group {

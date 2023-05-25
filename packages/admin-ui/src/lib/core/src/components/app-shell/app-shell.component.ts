@@ -24,6 +24,7 @@ export class AppShellComponent implements OnInit {
     availableLanguages: LanguageCode[] = [];
     hideVendureBranding = getAppConfig().hideVendureBranding;
     pageTitle$: Observable<string>;
+    mainNavExpanded$: Observable<boolean>;
 
     constructor(
         private authService: AuthService,
@@ -46,6 +47,9 @@ export class AppShellComponent implements OnInit {
         this.pageTitle$ = this.breadcrumbService.breadcrumbs$.pipe(
             map(breadcrumbs => breadcrumbs[breadcrumbs.length - 1].label),
         );
+        this.mainNavExpanded$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => uiState.mainNavExpanded));
     }
 
     selectUiLanguage() {
@@ -74,6 +78,14 @@ export class AppShellComponent implements OnInit {
                     this.localStorageService.set('uiLocale', result.setUiLocale ?? undefined);
                 }
             });
+    }
+
+    expandNav() {
+        this.dataService.client.setMainNavExpanded(true).subscribe();
+    }
+
+    collapseNav() {
+        this.dataService.client.setMainNavExpanded(false).subscribe();
     }
 
     logOut() {

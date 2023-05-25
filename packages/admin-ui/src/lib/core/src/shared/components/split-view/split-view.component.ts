@@ -51,15 +51,26 @@ export class SplitViewComponent implements AfterContentInit, AfterViewInit {
         const hostElement = this.viewContainerRef.element.nativeElement;
         const hostElementWidth = hostElement.getBoundingClientRect()?.width;
 
-        const mouseDown$ = fromEvent<MouseEvent>(this.resizeHandle.nativeElement, 'mousedown');
-        const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
-        const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
+        const mouseDown$ = merge(
+            fromEvent<MouseEvent>(this.resizeHandle.nativeElement, 'mousedown'),
+            fromEvent<MouseEvent>(this.resizeHandle.nativeElement, 'touchstart'),
+        );
+        const mouseMove$ = merge(
+            fromEvent<MouseEvent>(document, 'mousemove'),
+            fromEvent<TouchEvent>(document, 'touchmove'),
+        );
+        const mouseUp$ = merge(
+            fromEvent<MouseEvent>(document, 'mouseup'),
+            fromEvent<TouchEvent>(document, 'touchend'),
+        );
 
         // update right panel width when resize handle is dragged
         this.rightPanelWidth$ = mouseDown$.pipe(
             switchMap(() => mouseMove$.pipe(takeUntil(mouseUp$))),
             map(event => {
-                const width = hostElement.getBoundingClientRect().right - event.clientX;
+                const clientX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
+                console.log(`clientX: ${clientX}`);
+                const width = hostElement.getBoundingClientRect().right - clientX;
                 return Math.max(100, Math.min(width, hostElementWidth - 100));
             }),
             startWith(hostElementWidth / 2),

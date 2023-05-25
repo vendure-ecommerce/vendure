@@ -11,12 +11,45 @@
     color: var(--color-left-nav-text);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     height: 100%;
     border-right: 1px solid var(--color-weight-150);
     //box-shadow: -3px 1px 10px 0px rgb(0 0 0 / 18%);
     z-index: 1;
     width: var(--left-nav-width);
     max-width: var(--left-nav-width);
+
+    @media screen and (max-width: $breakpoint-medium) {
+        &.expanded {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            max-width: 100%;
+            animation: fade-in 0.2s ease-in-out forwards;
+        }
+    }
+}
+
+// fade in animation
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.expand-menu,
+.collapse-menu {
+    @media screen and (min-width: $breakpoint-medium) {
+        display: none;
+    }
+    button {
+        border: none;
+        padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2);
+        background-color: var(--color-weight-125);
+        border-radius: var(--border-radius-lg);
+    }
 }
 
 .top-bar {
@@ -24,9 +57,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: calc(var(--space-unit) * 4);
-    padding-left: var(--surface-margin-left);
+    padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
     background-color: var(--page-header-color);
+    @media screen and (min-width: $breakpoint-medium) {
+        padding: calc(var(--space-unit) * 4);
+        padding-left: var(--surface-margin-left);
+    }
 }
 
 .main-nav-container {
@@ -39,8 +75,8 @@
     hr {
         margin: 0 calc(var(--space-unit) * 4);
         margin-bottom: calc(var(--space-unit) * 4);
-        border: 1px solid #D9D9D9;
-        box-shadow: 0px 1px 0px #FFFFFF;
+        border: 1px solid #d9d9d9;
+        box-shadow: 0px 1px 0px #ffffff;
     }
 }
 
@@ -58,7 +94,12 @@
 .branding {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     min-width: 0;
+    padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 4);
+    @media screen and (min-width: $breakpoint-medium) {
+        padding: calc(var(--space-unit) * 4);
+    }
 }
 
 .logo {

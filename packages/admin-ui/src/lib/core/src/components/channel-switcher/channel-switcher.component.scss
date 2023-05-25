@@ -27,9 +27,6 @@
     clr-icon {
         color: var(--color-left-nav-text);
     }
-    @media screen and (max-width: $breakpoint-medium) {
-        justify-content: center;
-    }
 }
 
 .channel-label {
@@ -38,7 +35,4 @@
     flex: 1;
     max-width: 100px;
     text-overflow: ellipsis;
-    @media screen and (max-width: $breakpoint-medium) {
-        display: none;
-    }
 }

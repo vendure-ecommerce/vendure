@@ -134,7 +134,11 @@ td {
 
 tr td:first-of-type,
 tr th:first-of-type {
-    padding-left: var(--surface-margin-left);
+    text-align: center;
+    @media screen and (min-width: $breakpoint-medium) {
+        padding-left: var(--surface-margin-left);
+        text-align: left;
+    }
 }
 
 th:last-of-type,

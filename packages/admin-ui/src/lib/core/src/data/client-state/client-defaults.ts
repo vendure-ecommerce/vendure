@@ -29,6 +29,7 @@ export function getClientDefaults(localStorageService: LocalStorageService) {
             contentLanguage: currentContentLanguage,
             theme: activeTheme,
             displayUiExtensionPoints: false,
+            mainNavExpanded: false,
             __typename: 'UiState',
         } as GetUiStateQuery['uiState'],
     };

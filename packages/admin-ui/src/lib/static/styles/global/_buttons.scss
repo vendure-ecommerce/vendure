@@ -5,7 +5,7 @@
     justify-content: flex-end;
     white-space: nowrap;
     align-items: center;
-    padding: var(--space-unit);
+    padding: var(--space-unit) calc(var(--space-unit) * 1.5);
     font-size: var(--font-size-sm);
     gap: var(--space-unit);
     border: none;

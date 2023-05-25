@@ -66,6 +66,12 @@ export const SET_DISPLAY_UI_EXTENSION_POINTS = gql`
     }
 `;
 
+export const SET_MAIN_NAV_EXPANDED = gql`
+    mutation SetMainNavExpanded($expanded: Boolean!) {
+        setMainNavExpanded(expanded: $expanded) @client
+    }
+`;
+
 export const SET_CONTENT_LANGUAGE = gql`
     mutation SetContentLanguage($languageCode: LanguageCode!) {
         setContentLanguage(languageCode: $languageCode) @client
@@ -103,6 +109,7 @@ export const GET_UI_STATE = gql`
             contentLanguage
             theme
             displayUiExtensionPoints
+            mainNavExpanded
         }
     }
 `;
@@ -121,6 +128,7 @@ export const GET_CLIENT_STATE = gql`
             contentLanguage
             theme
             displayUiExtensionPoints
+            mainNavExpanded
         }
     }
     ${USER_STATUS_FRAGMENT}

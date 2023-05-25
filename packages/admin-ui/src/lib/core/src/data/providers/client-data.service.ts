@@ -1,5 +1,5 @@
 import * as Codegen from '../../common/generated-types';
-import { CurrentUserChannel, LanguageCode } from '../../common/generated-types';
+import { CurrentUserChannel, LanguageCode, SetMainNavExpandedDocument } from '../../common/generated-types';
 import {
     GET_NEWTORK_STATUS,
     GET_UI_STATE,
@@ -117,6 +117,12 @@ export class ClientDataService {
             Codegen.SetDisplayUiExtensionPointsMutationVariables
         >(SET_DISPLAY_UI_EXTENSION_POINTS, {
             display,
+        });
+    }
+
+    setMainNavExpanded(expanded: boolean) {
+        return this.baseDataService.mutate(SetMainNavExpandedDocument, {
+            expanded,
         });
     }
 

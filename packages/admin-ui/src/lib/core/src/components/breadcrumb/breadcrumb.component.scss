@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 :host {
     display: block;
@@ -8,23 +8,27 @@
 .breadcrumbs {
     list-style-type: none;
     display: flex;
+    align-items: center;
     overflow-x: auto;
     max-width: 100vw;
     line-height: 100%;
     height: 40px;
     padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2.5);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     background-color: var(--color-weight-125);
     border-radius: var(--border-radius-lg);
+    @media screen and (min-width: $breakpoint-small) {
+        font-size: var(--font-size-sm);
+    }
     li {
         display: inline-block;
         white-space: nowrap;
-        a:link, a:visited {
+        a:link,
+        a:visited {
             color: var(--color-weight-700);
         }
         &:last-child {
             font-weight: 600;
         }
     }
-
 }

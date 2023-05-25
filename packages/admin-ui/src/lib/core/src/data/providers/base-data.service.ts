@@ -52,7 +52,7 @@ export class BaseDataService {
      * Performs a GraphQL mutation
      */
     mutate<T, V extends Record<string, any> = Record<string, any>>(
-        mutation: DocumentNode,
+        mutation: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         update?: MutationUpdaterFn<T>,
     ): Observable<T> {

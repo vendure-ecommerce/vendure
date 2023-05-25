@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { NavMenuSection } from '../../providers/nav-builder/nav-builder-types';
+import { NavMenuItem, NavMenuSection } from '../../providers/nav-builder/nav-builder-types';
 import { BaseNavComponent } from '../base-nav/base-nav.component';
 
 @Component({
@@ -11,6 +11,7 @@ import { BaseNavComponent } from '../base-nav/base-nav.component';
 })
 export class MainNavComponent extends BaseNavComponent implements OnInit {
     @Input() displayMode: string | undefined;
+    @Output() itemClick = new EventEmitter<NavMenuItem>();
     mainMenuConfig$: Observable<NavMenuSection[]>;
     expandedSections: string[] = [];
 
@@ -50,5 +51,10 @@ export class MainNavComponent extends BaseNavComponent implements OnInit {
                 return { maxHeight: '0px', opacity: 0, visibility: 'hidden' };
             }
         }
+    }
+
+    onItemClick(item: NavMenuItem, event: MouseEvent) {
+        item.onClick?.(event);
+        this.itemClick.emit(item);
     }
 }
