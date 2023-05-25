@@ -1,19 +1,27 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BaseListComponent,
-    DataService,
-    DataTableService,
-    GetPaymentMethodListQuery,
-    ItemOf,
-    LanguageCode,
-    NavBuilderService,
-    PaymentMethodFilterParameter,
-    PaymentMethodSortParameter,
-    ServerConfigService,
-} from '@vendure/admin-ui/core';
-import { Observable } from 'rxjs';
+import { GetPaymentMethodListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+export const GET_PAYMENT_METHOD_LIST = gql`
+    query GetPaymentMethodList($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                ...PaymentMethodListItem
+            }
+            totalItems
+        }
+    }
+    fragment PaymentMethodListItem on PaymentMethod {
+        id
+        createdAt
+        updatedAt
+        name
+        description
+        code
+        enabled
+    }
+`;
 
 @Component({
     selector: 'vdr-payment-method-list',
@@ -21,15 +29,12 @@ import { Observable } from 'rxjs';
     styleUrls: ['./payment-method-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PaymentMethodListComponent
-    extends BaseListComponent<GetPaymentMethodListQuery, ItemOf<GetPaymentMethodListQuery, 'paymentMethods'>>
-    implements OnInit
-{
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('PaymentMethod');
-    readonly filters = this.dataTableService
-        .createFilterCollection<PaymentMethodFilterParameter>()
+export class PaymentMethodListComponent extends TypedBaseListComponent<
+    typeof GetPaymentMethodListDocument,
+    'paymentMethods'
+> {
+    readonly customFields = this.getCustomFieldConfig('PaymentMethod');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'name',
@@ -58,9 +63,9 @@ export class PaymentMethodListComponent
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<PaymentMethodSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'id' })
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
@@ -69,27 +74,12 @@ export class PaymentMethodListComponent
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        router: Router,
-        route: ActivatedRoute,
-        navBuilderService: NavBuilderService,
-        private dataService: DataService,
-        private dataTableService: DataTableService,
-        private serverConfigService: ServerConfigService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-payment-method',
-            label: _('settings.create-new-payment-method'),
-            locationId: 'payment-method-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateSettings', 'CreatePaymentMethod'],
-        });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getPaymentMethods(...args).refetchOnChannelChange(),
-            data => data.paymentMethods,
-            (skip, take) => ({
+    constructor() {
+        super();
+        super.configure({
+            document: GetPaymentMethodListDocument,
+            getItems: data => data.paymentMethods,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -102,20 +92,7 @@ export class PaymentMethodListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage);
-
-        super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    setLanguage(code: LanguageCode) {
-        this.dataService.client.setContentLanguage(code).subscribe();
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 }

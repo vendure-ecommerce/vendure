@@ -1,48 +1,53 @@
 <vdr-page-header>
-    <vdr-page-title><vdr-action-bar-items locationId="job-list"></vdr-action-bar-items></vdr-page-title>
+    <vdr-page-title></vdr-page-title>
 </vdr-page-header>
 <vdr-page-body>
-    <div class="flex ml-4 mt-2">
-        <clr-checkbox-container class="mr-4">
-            <clr-checkbox-wrapper>
-                <input type="checkbox" clrCheckbox [formControl]="liveUpdate" name="live-update" />
-                <label>{{ 'common.live-update' | translate }}</label>
-            </clr-checkbox-wrapper>
-            <clr-checkbox-wrapper>
-                <input
-                    type="checkbox"
-                    clrCheckbox
-                    [formControl]="hideSettled"
-                    name="hide-settled"
+    <vdr-page-block>
+        <vdr-action-bar>
+            <vdr-ab-left>
+                <clr-checkbox-wrapper class="mr-2">
+                    <input type="checkbox" clrCheckbox [formControl]="liveUpdate" name="live-update" />
+                    <label>{{ 'common.live-update' | translate }}</label>
+                </clr-checkbox-wrapper>
+                <clr-checkbox-wrapper>
+                    <input
+                        type="checkbox"
+                        clrCheckbox
+                        [formControl]="hideSettled"
+                        name="hide-settled"
+                        (change)="refresh()"
+                    />
+                    <label>{{ 'system.hide-settled-jobs' | translate }}</label>
+                </clr-checkbox-wrapper></vdr-ab-left
+            >
+            <vdr-ab-right>
+                <vdr-action-bar-items locationId="job-list"></vdr-action-bar-items>
+                <ng-select
+                    [addTag]="false"
+                    [items]="queues$ | async"
+                    [hideSelected]="true"
+                    [multiple]="false"
+                    [markFirst]="false"
+                    [clearable]="false"
+                    [searchable]="false"
+                    bindValue="name"
+                    [formControl]="queueFilter"
                     (change)="refresh()"
-                />
-                <label>{{ 'system.hide-settled-jobs' | translate }}</label>
-            </clr-checkbox-wrapper>
-        </clr-checkbox-container>
-        <ng-select
-            [addTag]="false"
-            [items]="queues$ | async"
-            [hideSelected]="true"
-            [multiple]="false"
-            [markFirst]="false"
-            [clearable]="false"
-            [searchable]="false"
-            bindValue="name"
-            [formControl]="queueFilter"
-            (change)="refresh()"
-        >
-            <ng-template ng-label-tmp ng-option-tmp let-item="item">
-                <ng-container *ngIf="item.name === 'all'; else others">
-                    {{ 'system.all-job-queues' | translate }}
-                </ng-container>
-                <ng-template #others>
-                    <vdr-chip [colorFrom]="item.name">{{ item.name }}</vdr-chip>
-                </ng-template>
-            </ng-template>
-        </ng-select>
-    </div>
+                >
+                    <ng-template ng-label-tmp ng-option-tmp let-item="item">
+                        <ng-container *ngIf="item.name === 'all'; else others">
+                            {{ 'system.all-job-queues' | translate }}
+                        </ng-container>
+                        <ng-template #others>
+                            <vdr-chip [colorFrom]="item.name">{{ item.name }}</vdr-chip>
+                        </ng-template>
+                    </ng-template>
+                </ng-select>
+            </vdr-ab-right>
+        </vdr-action-bar>
+    </vdr-page-block>
+
     <vdr-data-table-2
-        class="mt-2"
         id="job-list"
         [items]="items$ | async"
         [itemsPerPage]="itemsPerPage$ | async"

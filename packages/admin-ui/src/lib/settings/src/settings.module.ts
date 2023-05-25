@@ -1,7 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, ROUTES } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BulkActionRegistryService, PageService, SharedModule } from '@vendure/admin-ui/core';
+import {
+    BulkActionRegistryService,
+    detailComponentWithResolver,
+    GetAdministratorDetailDocument,
+    GetChannelDetailDocument,
+    GetCountryDetailDocument,
+    GetGlobalSettingsDetailDocument,
+    GetPaymentMethodDetailDocument,
+    GetRoleDetailDocument,
+    GetSellerDetailDocument,
+    GetShippingMethodDetailDocument,
+    GetTaxCategoryDetailDocument,
+    GetTaxRateDetailDocument,
+    GetZoneDetailDocument,
+    PageService,
+    SharedModule,
+} from '@vendure/admin-ui/core';
 
 import { AddCountryToZoneDialogComponent } from './components/add-country-to-zone-dialog/add-country-to-zone-dialog.component';
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
@@ -37,7 +53,8 @@ import { deleteTaxRatesBulkAction } from './components/tax-rate-list/tax-rate-li
 import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.component';
 import { TestAddressFormComponent } from './components/test-address-form/test-address-form.component';
 import { TestOrderBuilderComponent } from './components/test-order-builder/test-order-builder.component';
-import { ZoneDetailDialogComponent } from './components/zone-detail-dialog/zone-detail-dialog.component';
+import { TestShippingMethodsComponent } from './components/test-shipping-methods/test-shipping-methods.component';
+import { ZoneDetailComponent } from './components/zone-detail/zone-detail.component';
 import { deleteZonesBulkAction } from './components/zone-list/zone-list-bulk-actions';
 import { ZoneListComponent } from './components/zone-list/zone-list.component';
 import { ZoneMemberControlsDirective } from './components/zone-member-list/zone-member-controls.directive';
@@ -45,7 +62,6 @@ import { removeZoneMembersBulkAction } from './components/zone-member-list/zone-
 import { ZoneMemberListHeaderDirective } from './components/zone-member-list/zone-member-list-header.directive';
 import { ZoneMemberListComponent } from './components/zone-member-list/zone-member-list.component';
 import { createRoutes } from './settings.routes';
-import { TestShippingMethodsComponent } from './components/test-shipping-methods/test-shipping-methods.component';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
@@ -87,9 +103,9 @@ import { TestShippingMethodsComponent } from './components/test-shipping-methods
         ZoneMemberListComponent,
         ZoneMemberListHeaderDirective,
         ZoneMemberControlsDirective,
-        ZoneDetailDialogComponent,
         ProfileComponent,
         TestShippingMethodsComponent,
+        ZoneDetailComponent,
     ],
 })
 export class SettingsModule {
@@ -112,10 +128,42 @@ export class SettingsModule {
             component: SellerListComponent,
         });
         pageService.registerPageTab({
+            location: 'seller-detail',
+            tab: _('settings.seller'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: SellerDetailComponent,
+                query: GetSellerDetailDocument,
+                entityKey: 'seller',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('settings.create-new-seller'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
             location: 'channel-list',
             tab: _('breadcrumb.channels'),
             route: '',
             component: ChannelListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'channel-detail',
+            tab: _('settings.channel'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: ChannelDetailComponent,
+                query: GetChannelDetailDocument,
+                entityKey: 'channel',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.code : _('settings.create-new-channel'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
         pageService.registerPageTab({
             location: 'administrator-list',
@@ -124,16 +172,66 @@ export class SettingsModule {
             component: AdministratorListComponent,
         });
         pageService.registerPageTab({
+            location: 'administrator-detail',
+            tab: _('settings.administrator'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: AdminDetailComponent,
+                query: GetAdministratorDetailDocument,
+                entityKey: 'administrator',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity
+                            ? `${entity.firstName} ${entity.lastName}`
+                            : _('admin.create-new-administrator'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
             location: 'role-list',
             tab: _('breadcrumb.roles'),
             route: '',
             component: RoleListComponent,
         });
         pageService.registerPageTab({
+            location: 'role-detail',
+            tab: _('settings.role'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: RoleDetailComponent,
+                query: GetRoleDetailDocument,
+                entityKey: 'role',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.description : _('settings.create-new-role'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
             location: 'shipping-method-list',
             tab: _('breadcrumb.shipping-methods'),
             route: '',
             component: ShippingMethodListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'shipping-method-detail',
+            tab: _('settings.shipping-method'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: ShippingMethodDetailComponent,
+                query: GetShippingMethodDetailDocument,
+                entityKey: 'shippingMethod',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('settings.create-new-shipping-method'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
         pageService.registerPageTab({
             location: 'shipping-method-list',
@@ -148,10 +246,42 @@ export class SettingsModule {
             component: PaymentMethodListComponent,
         });
         pageService.registerPageTab({
+            location: 'payment-method-detail',
+            tab: _('settings.payment-method'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: PaymentMethodDetailComponent,
+                query: GetPaymentMethodDetailDocument,
+                entityKey: 'paymentMethod',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('settings.create-new-payment-method'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
             location: 'tax-category-list',
             tab: _('breadcrumb.tax-categories'),
             route: '',
             component: TaxCategoryListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'tax-category-detail',
+            tab: _('settings.tax-category'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: TaxCategoryDetailComponent,
+                query: GetTaxCategoryDetailDocument,
+                entityKey: 'taxCategory',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('settings.create-new-tax-category'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
         pageService.registerPageTab({
             location: 'tax-rate-list',
@@ -160,16 +290,70 @@ export class SettingsModule {
             component: TaxRateListComponent,
         });
         pageService.registerPageTab({
+            location: 'tax-rate-detail',
+            tab: _('settings.tax-rate'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: TaxRateDetailComponent,
+                query: GetTaxRateDetailDocument,
+                entityKey: 'taxRate',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('settings.create-new-tax-rate'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
             location: 'country-list',
             tab: _('breadcrumb.countries'),
             route: '',
             component: CountryListComponent,
         });
         pageService.registerPageTab({
+            location: 'country-detail',
+            tab: _('settings.country'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: CountryDetailComponent,
+                query: GetCountryDetailDocument,
+                entityKey: 'country',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('settings.create-new-country'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
             location: 'zone-list',
             tab: _('breadcrumb.zones'),
             route: '',
             component: ZoneListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'zone-detail',
+            tab: _('settings.zone'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: ZoneDetailComponent,
+                query: GetZoneDetailDocument,
+                entityKey: 'zone',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('settings.create-new-zone'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
+            location: 'global-setting-detail',
+            tab: _('breadcrumb.global-settings'),
+            route: '',
+            component: GlobalSettingsComponent,
         });
     }
 }

@@ -1,18 +1,27 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
-    DataService,
-    DataTableService,
+    GetRoleListDocument,
     GetRolesQuery,
     ItemOf,
-    NavBuilderService,
     Role,
-    RoleFilterParameter,
-    RoleSortParameter,
+    ROLE_FRAGMENT,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
+import { gql } from 'apollo-angular';
+
+export const GET_ROLE_LIST = gql`
+    query GetRoleList($options: RoleListOptions) {
+        roles(options: $options) {
+            items {
+                ...Role
+            }
+            totalItems
+        }
+    }
+    ${ROLE_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-role-list',
@@ -21,13 +30,12 @@ import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/s
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleListComponent
-    extends BaseListComponent<GetRolesQuery, ItemOf<GetRolesQuery, 'roles'>>
+    extends TypedBaseListComponent<typeof GetRoleListDocument, 'roles'>
     implements OnInit
 {
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    readonly filters = this.dataTableService
-        .createFilterCollection<RoleFilterParameter>()
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'code',
@@ -37,8 +45,7 @@ export class RoleListComponent
         })
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<RoleSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
@@ -46,26 +53,12 @@ export class RoleListComponent
         .addSort({ name: 'description' })
         .connectToRoute(this.route);
 
-    constructor(
-        router: Router,
-        route: ActivatedRoute,
-        navBuilderService: NavBuilderService,
-        private dataService: DataService,
-        private dataTableService: DataTableService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-role',
-            label: _('settings.create-new-role'),
-            locationId: 'role-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateAdministrator'],
-        });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.administrator.getRoles(...args),
-            data => data.roles,
-            (skip, take) => ({
+    constructor() {
+        super();
+        super.configure({
+            document: GetRoleListDocument,
+            getItems: data => data.roles,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -78,12 +71,8 @@ export class RoleListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 
     toggleDisplayLimit(role: ItemOf<GetRolesQuery, 'roles'>) {

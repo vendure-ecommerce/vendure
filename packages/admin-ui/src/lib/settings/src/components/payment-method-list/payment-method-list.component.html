@@ -1,12 +1,25 @@
 <vdr-page-block>
-    <vdr-language-selector
-        [availableLanguageCodes]="availableLanguages$ | async"
-        [currentLanguageCode]="contentLanguage$ | async"
-        (languageCodeChange)="setLanguage($event)"
-    ></vdr-language-selector
-></vdr-page-block>
+    <vdr-action-bar>
+        <vdr-ab-left>
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+        /></vdr-ab-left>
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="payment-method-list"></vdr-action-bar-items>
+            <a
+                class="btn btn-primary"
+                *vdrIfPermissions="['CreateSettings', 'CreatePaymentMethod']"
+                [routerLink]="['./', 'create']"
+            >
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'settings.create-new-payment-method' | translate }}
+            </a>
+        </vdr-ab-right>
+    </vdr-action-bar>
+</vdr-page-block>
 <vdr-data-table-2
-    class="mt-2"
     id="payment-method-list"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
@@ -25,6 +38,11 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     ></vdr-dt2-search>
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+        <ng-template let-paymentMethod="item">
+            {{ paymentMethod.id }}
+        </ng-template>
+    </vdr-dt2-column>
     <vdr-dt2-column
         [heading]="'common.created-at' | translate"
         [hiddenByDefault]="true"
@@ -66,5 +84,9 @@
             }}</vdr-chip>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" [sorts]="sorts" />
+    <vdr-dt2-custom-field-column
+        *ngFor="let customField of customFields"
+        [customField]="customField"
+        [sorts]="sorts"
+    />
 </vdr-data-table-2>

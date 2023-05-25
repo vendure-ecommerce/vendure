@@ -1,19 +1,27 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BaseListComponent,
-    CountryFilterParameter,
-    CountrySortParameter,
-    DataService,
-    DataTableService,
-    GetCountryListQuery,
-    ItemOf,
-    LanguageCode,
-    NavBuilderService,
-    ServerConfigService,
-} from '@vendure/admin-ui/core';
-import { Observable } from 'rxjs';
+import { GetCountryListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+export const GET_COUNTRY_LIST = gql`
+    query GetCountryList($options: CountryListOptions) {
+        countries(options: $options) {
+            items {
+                ...CountryListItem
+            }
+            totalItems
+        }
+    }
+    fragment CountryListItem on Country {
+        id
+        createdAt
+        updatedAt
+        code
+        name
+        type
+        enabled
+    }
+`;
 
 @Component({
     selector: 'vdr-country-list',
@@ -21,22 +29,21 @@ import { Observable } from 'rxjs';
     styleUrls: ['./country-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CountryListComponent
-    extends BaseListComponent<GetCountryListQuery, ItemOf<GetCountryListQuery, 'countries'>>
-    implements OnInit
-{
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
-
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Region');
-    readonly filters = this.dataTableService
-        .createFilterCollection<CountryFilterParameter>()
+export class CountryListComponent extends TypedBaseListComponent<typeof GetCountryListDocument, 'countries'> {
+    readonly customFields = this.getCustomFieldConfig('Region');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'name',
             type: { kind: 'text' },
             label: _('common.name'),
             filterField: 'name',
+        })
+        .addFilter({
+            name: 'cpde',
+            type: { kind: 'text' },
+            label: _('common.code'),
+            filterField: 'code',
         })
         .addFilter({
             name: 'enabled',
@@ -47,36 +54,21 @@ export class CountryListComponent
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<CountrySortParameter>()
-        .defaultSort('createdAt', 'DESC')
+    readonly sorts = this.createSortCollection()
+        .defaultSort('name', 'ASC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
+        .addSort({ name: 'code' })
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        route: ActivatedRoute,
-        router: Router,
-        navBuilderService: NavBuilderService,
-        private dataService: DataService,
-        private serverConfigService: ServerConfigService,
-        private dataTableService: DataTableService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-country',
-            label: _('settings.create-new-country'),
-            locationId: 'country-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateSettings', 'CreateCountry'],
-        });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getCountries(...args).refetchOnChannelChange(),
-            data => data.countries,
-            (skip, take) => ({
+    constructor() {
+        super();
+        super.configure({
+            document: GetCountryListDocument,
+            getItems: data => data.countries,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -89,20 +81,7 @@ export class CountryListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage);
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges, this.contentLanguage$);
-    }
-
-    setLanguage(code: LanguageCode) {
-        this.dataService.client.setContentLanguage(code).subscribe();
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 }

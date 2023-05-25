@@ -28,7 +28,7 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
     const { translatable, updatedFields, languageCode, customFieldConfig, defaultTranslation } = options;
     const currentTranslation =
         findTranslation(translatable, languageCode) || defaultTranslation || ({} as any);
-    const index = translatable.translations.indexOf(currentTranslation);
+    const index = translatable.translations?.indexOf(currentTranslation);
     const newTranslation = patchObject(currentTranslation, updatedFields);
     const newCustomFields: CustomFieldsObject = {};
     const newTranslatedCustomFields: CustomFieldsObject = {};
@@ -46,7 +46,7 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
     }
     const newTranslatable = {
         ...(patchObject(translatable, updatedFields) as any),
-        ...{ translations: translatable.translations.slice() },
+        ...{ translations: translatable.translations?.slice() ?? [] },
     };
     if (customFieldConfig) {
         newTranslatable.customFields = newCustomFields;

@@ -1,17 +1,23 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
-    DataService,
-    DataTableService,
-    GetTaxCategoriesQuery,
-    ItemOf,
-    NavBuilderService,
-    ServerConfigService,
-    TaxCategoryFilterParameter,
-    TaxCategorySortParameter,
+    GetTaxCategoryListDocument,
+    TAX_CATEGORY_FRAGMENT,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+export const GET_TAX_CATEGORY_LIST = gql`
+    query GetTaxCategoryList($options: TaxCategoryListOptions) {
+        taxCategories(options: $options) {
+            items {
+                ...TaxCategory
+            }
+            totalItems
+        }
+    }
+    ${TAX_CATEGORY_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-tax-list',
@@ -19,14 +25,12 @@ import {
     styleUrls: ['./tax-category-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaxCategoryListComponent
-    extends BaseListComponent<GetTaxCategoriesQuery, ItemOf<GetTaxCategoriesQuery, 'taxCategories'>>
-    implements OnInit
-{
+export class TaxCategoryListComponent extends TypedBaseListComponent<
+    typeof GetTaxCategoryListDocument,
+    'taxCategories'
+> {
     readonly customFields = this.serverConfigService.getCustomFieldsFor('TaxCategory');
-    readonly filters = this.dataTableService
-        .createFilterCollection<TaxCategoryFilterParameter>()
-        .addDateFilters()
+    readonly filters = this.createFilterCollection()
         .addFilter({
             name: 'name',
             type: { kind: 'text' },
@@ -36,8 +40,7 @@ export class TaxCategoryListComponent
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<TaxCategorySortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
@@ -45,27 +48,12 @@ export class TaxCategoryListComponent
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        route: ActivatedRoute,
-        router: Router,
-        navBuilderService: NavBuilderService,
-        private dataService: DataService,
-        private dataTableService: DataTableService,
-        private serverConfigService: ServerConfigService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-tax-category',
-            label: _('settings.create-new-tax-category'),
-            locationId: 'tax-category-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateSettings', 'CreateTaxCategory'],
-        });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getTaxCategories(...args),
-            data => data.taxCategories,
-            (skip, take) => ({
+    constructor() {
+        super();
+        super.configure({
+            document: GetTaxCategoryListDocument,
+            getItems: data => data.taxCategories,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -78,11 +66,7 @@ export class TaxCategoryListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 }

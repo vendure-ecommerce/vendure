@@ -1,5 +1,23 @@
+<vdr-page-block>
+    <vdr-action-bar>
+        <vdr-ab-left>
+            <vdr-language-selector
+                   [availableLanguageCodes]="availableLanguages$ | async"
+                   [currentLanguageCode]="contentLanguage$ | async"
+                   (languageCodeChange)="setLanguage($event)"
+               ></vdr-language-selector>
+        </vdr-ab-left>
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="customer-list"></vdr-action-bar-items>
+            <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreatePromotion'">
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'marketing.create-new-promotion' | translate }}
+            </a>
+        </vdr-ab-right>
+    </vdr-action-bar>
+</vdr-page-block>
+
 <vdr-data-table-2
-    class="mt-2"
     id="promotion-list"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"

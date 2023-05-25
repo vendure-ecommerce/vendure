@@ -1,36 +1,32 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import {
-    UntypedFormArray,
-    UntypedFormBuilder,
-    UntypedFormControl,
-    UntypedFormGroup,
-    Validators,
-} from '@angular/forms';
+import { FormBuilder, UntypedFormArray, UntypedFormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     CreateAddressInput,
     CreateCustomerAddressMutation,
     CreateCustomerInput,
     Customer,
-    CustomFieldConfig,
+    CUSTOMER_FRAGMENT,
+    CustomerDetailQueryDocument,
+    CustomerDetailQueryQuery,
     DataService,
     DeleteCustomerAddressMutation,
     EditNoteDialogComponent,
     GetAvailableCountriesQuery,
     GetCustomerHistoryQuery,
-    GetCustomerQuery,
     ModalService,
     NotificationService,
     ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
+    TypedBaseDetailComponent,
     UpdateCustomerAddressMutation,
     UpdateCustomerInput,
     UpdateCustomerMutation,
 } from '@vendure/admin-ui/core';
-import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { gql } from 'apollo-angular';
 import { EMPTY, forkJoin, from, Observable, Subject } from 'rxjs';
 import {
     concatMap,
@@ -46,7 +42,35 @@ import {
 
 import { SelectCustomerGroupDialogComponent } from '../select-customer-group-dialog/select-customer-group-dialog.component';
 
-type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
+type CustomerWithOrders = NonNullable<CustomerDetailQueryQuery['customer']>;
+
+export const CUSTOMER_DETAIL_QUERY = gql`
+    query CustomerDetailQuery($id: ID!, $orderListOptions: OrderListOptions) {
+        customer(id: $id) {
+            ...Customer
+            groups {
+                id
+                name
+            }
+            orders(options: $orderListOptions) {
+                items {
+                    id
+                    code
+                    type
+                    state
+                    total
+                    totalWithTax
+                    currencyCode
+                    createdAt
+                    updatedAt
+                    orderPlacedAt
+                }
+                totalItems
+            }
+        }
+    }
+    ${CUSTOMER_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-customer-detail',
@@ -55,14 +79,27 @@ type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerDetailComponent
-    extends BaseDetailComponent<CustomerWithOrders>
+    extends TypedBaseDetailComponent<typeof CustomerDetailQueryDocument, 'customer'>
     implements OnInit, OnDestroy
 {
-    detailForm: UntypedFormGroup;
-    customFields: CustomFieldConfig[];
-    addressCustomFields: CustomFieldConfig[];
+    customFields = this.getCustomFieldConfig('Customer');
+    addressCustomFields = this.getCustomFieldConfig('Address');
+    detailForm = this.formBuilder.group({
+        customer: this.formBuilder.group({
+            title: '',
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
+            phoneNumber: '',
+            emailAddress: ['', [Validators.required, Validators.email]],
+            password: '',
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
+        }),
+        addresses: new UntypedFormArray([]),
+    });
     availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
-    orders$: Observable<NonNullable<GetCustomerQuery['customer']>['orders']['items']>;
+    orders$: Observable<CustomerWithOrders['orders']['items']>;
     ordersCount$: Observable<number>;
     history$: Observable<NonNullable<GetCustomerHistoryQuery['customer']>['history']['items'] | undefined>;
     fetchHistory = new Subject<void>();
@@ -79,29 +116,12 @@ export class CustomerDetailComponent
         router: Router,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         protected dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
-
-        this.customFields = this.getCustomFieldConfig('Customer');
-        this.addressCustomFields = this.getCustomFieldConfig('Address');
-        this.detailForm = this.formBuilder.group({
-            customer: this.formBuilder.group({
-                title: '',
-                firstName: ['', Validators.required],
-                lastName: ['', Validators.required],
-                phoneNumber: '',
-                emailAddress: ['', [Validators.required, Validators.email]],
-                password: '',
-                customFields: this.formBuilder.group(
-                    this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-                ),
-            }),
-            addresses: new UntypedFormArray([]),
-        });
     }
 
     ngOnInit() {
@@ -170,14 +190,17 @@ export class CustomerDetailComponent
             phoneNumber: '',
             defaultShippingAddress: false,
             defaultBillingAddress: false,
+            customFields: this.formBuilder.group(
+                this.addressCustomFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
-        if (this.addressCustomFields.length) {
-            const customFieldsGroup = this.formBuilder.group({});
-            for (const fieldDef of this.addressCustomFields) {
-                customFieldsGroup.addControl(fieldDef.name, new UntypedFormControl(''));
-            }
-            newAddress.addControl('customFields', customFieldsGroup);
-        }
+        // if (this.addressCustomFields.length) {
+        //     const customFieldsGroup = this.formBuilder.group({});
+        //     for (const fieldDef of this.addressCustomFields) {
+        //         customFieldsGroup.addControl(fieldDef.name, new UntypedFormControl(''));
+        //     }
+        //     newAddress.addControl('customFields', customFieldsGroup);
+        // }
         addressFormArray.push(newAddress);
     }
 
@@ -196,41 +219,42 @@ export class CustomerDetailComponent
         if (!customerForm) {
             return;
         }
-        const formValue = customerForm.value;
+        const { title, emailAddress, firstName, lastName, phoneNumber, password } = customerForm.value;
         const customFields = customerForm.get('customFields')?.value;
+        if (!emailAddress || !firstName || !lastName) {
+            return;
+        }
         const customer: CreateCustomerInput = {
-            title: formValue.title,
-            emailAddress: formValue.emailAddress,
-            firstName: formValue.firstName,
-            lastName: formValue.lastName,
-            phoneNumber: formValue.phoneNumber,
+            title,
+            emailAddress,
+            firstName,
+            lastName,
+            phoneNumber,
             customFields,
         };
-        this.dataService.customer
-            .createCustomer(customer, formValue.password)
-            .subscribe(({ createCustomer }) => {
-                switch (createCustomer.__typename) {
-                    case 'Customer':
-                        this.notificationService.success(_('common.notify-create-success'), {
-                            entity: 'Customer',
+        this.dataService.customer.createCustomer(customer, password).subscribe(({ createCustomer }) => {
+            switch (createCustomer.__typename) {
+                case 'Customer':
+                    this.notificationService.success(_('common.notify-create-success'), {
+                        entity: 'Customer',
+                    });
+                    if (createCustomer.emailAddress && !password) {
+                        this.notificationService.notify({
+                            message: _('customer.email-verification-sent'),
+                            translationVars: { emailAddress },
+                            type: 'info',
+                            duration: 10000,
                         });
-                        if (createCustomer.emailAddress && !formValue.password) {
-                            this.notificationService.notify({
-                                message: _('customer.email-verification-sent'),
-                                translationVars: { emailAddress: formValue.emailAddress },
-                                type: 'info',
-                                duration: 10000,
-                            });
-                        }
-                        this.detailForm.markAsPristine();
-                        this.addressDefaultsUpdated = false;
-                        this.changeDetector.markForCheck();
-                        this.router.navigate(['../', createCustomer.id], { relativeTo: this.route });
-                        break;
-                    case 'EmailAddressConflictError':
-                        this.notificationService.error(createCustomer.message);
-                }
-            });
+                    }
+                    this.detailForm.markAsPristine();
+                    this.addressDefaultsUpdated = false;
+                    this.changeDetector.markForCheck();
+                    this.router.navigate(['../', createCustomer.id], { relativeTo: this.route });
+                    break;
+                case 'EmailAddressConflictError':
+                    this.notificationService.error(createCustomer.message);
+            }
+        });
     }
 
     save() {
@@ -331,7 +355,7 @@ export class CustomerDetailComponent
                                     this.addressDefaultsUpdated = false;
                                     this.changeDetector.markForCheck();
                                     this.fetchHistory.next();
-                                    this.dataService.customer.getCustomer(this.id).single$.subscribe();
+                                    this.refreshCustomer().subscribe();
                                 }
                                 break;
                             case 'EmailAddressConflictError':
@@ -365,13 +389,13 @@ export class CustomerDetailComponent
                     });
                 },
                 complete: () => {
-                    this.dataService.customer.getCustomer(this.id, { take: 0 }).single$.subscribe();
+                    this.refreshCustomer().subscribe();
                     this.fetchHistory.next();
                 },
             });
     }
 
-    removeFromGroup(group: NonNullable<GetCustomerQuery['customer']>['groups'][number]) {
+    removeFromGroup(group: CustomerWithOrders['groups'][number]) {
         this.modalService
             .dialog({
                 title: _('customer.confirm-remove-customer-from-group'),
@@ -386,7 +410,7 @@ export class CustomerDetailComponent
                         ? this.dataService.customer.removeCustomersFromGroup(group.id, [this.id])
                         : EMPTY,
                 ),
-                switchMap(() => this.dataService.customer.getCustomer(this.id, { take: 0 }).single$),
+                switchMap(() => this.refreshCustomer()),
             )
             .subscribe(result => {
                 this.notificationService.success(_(`customer.remove-customers-from-group-success`), {
@@ -458,21 +482,26 @@ export class CustomerDetailComponent
         const customerGroup = this.detailForm.get('customer');
         if (customerGroup) {
             customerGroup.patchValue({
-                title: entity.title,
+                title: entity.title ?? null,
                 firstName: entity.firstName,
                 lastName: entity.lastName,
-                phoneNumber: entity.phoneNumber,
+                phoneNumber: entity.phoneNumber ?? null,
                 emailAddress: entity.emailAddress,
+                password: '',
+                customFields: {},
             });
         }
 
         if (entity.addresses) {
             const addressesArray = new UntypedFormArray([]);
             for (const address of entity.addresses) {
-                const { customFields, ...rest } = address as any;
+                const { customFields, ...rest } = address as typeof address & { customFields: any };
                 const addressGroup = this.formBuilder.group({
                     ...rest,
                     countryCode: address.country.code,
+                    customFields: this.formBuilder.group(
+                        this.addressCustomFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+                    ),
                 });
                 addressesArray.push(addressGroup);
                 if (address.defaultShippingAddress) {
@@ -510,16 +539,26 @@ export class CustomerDetailComponent
      * Refetch the customer with the current order list settings.
      */
     private fetchOrdersList() {
-        this.dataService.customer
-            .getCustomer(this.id, {
-                take: this.ordersPerPage,
-                skip: (this.currentOrdersPage - 1) * this.ordersPerPage,
-                sort: { orderPlacedAt: SortOrder.DESC },
+        this.dataService
+            .query(CustomerDetailQueryDocument, {
+                id: this.id,
+                orderListOptions: {
+                    take: this.ordersPerPage,
+                    skip: (this.currentOrdersPage - 1) * this.ordersPerPage,
+                    sort: { orderPlacedAt: SortOrder.DESC },
+                },
             })
             .single$.pipe(
                 map(data => data.customer),
                 filter(notNullOrUndefined),
             )
             .subscribe(result => this.orderListUpdates$.next(result));
+    }
+
+    private refreshCustomer() {
+        return this.dataService.query(CustomerDetailQueryDocument, {
+            id: this.id,
+            orderListOptions: { take: 0 },
+        }).single$;
     }
 }

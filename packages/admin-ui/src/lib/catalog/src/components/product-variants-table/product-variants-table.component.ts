@@ -7,11 +7,20 @@ import {
     OnInit,
 } from '@angular/core';
 import { UntypedFormArray, UntypedFormGroup } from '@angular/forms';
-import { Permission, ProductDetailFragment, ProductVariantFragment } from '@vendure/admin-ui/core';
+import { Asset, Permission, ProductDetailFragment, ProductVariantFragment } from '@vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
-import { PaginationConfig, SelectedAssets } from '../product-detail/product-detail.types';
+interface SelectedAssets {
+    assets?: Asset[];
+    featuredAsset?: Asset;
+}
+
+interface PaginationConfig {
+    totalItems: number;
+    currentPage: number;
+    itemsPerPage: number;
+}
 
 @Component({
     selector: 'vdr-product-variants-table',

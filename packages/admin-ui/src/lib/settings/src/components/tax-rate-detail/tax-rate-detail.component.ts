@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -8,19 +8,32 @@ import {
     CustomerGroup,
     CustomFieldConfig,
     DataService,
+    GetTaxRateDetailDocument,
     GetZoneListQuery,
     ItemOf,
     LanguageCode,
     NotificationService,
     Permission,
     ServerConfigService,
+    TAX_RATE_FRAGMENT,
     TaxCategoryFragment,
     TaxRate,
     TaxRateFragment,
+    TypedBaseDetailComponent,
     UpdateTaxRateInput,
 } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
+
+export const GET_TAX_RATE_DETAIL = gql`
+    query GetTaxRateDetail($id: ID!) {
+        taxRate(id: $id) {
+            ...TaxRate
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-tax-rate-detail',
@@ -29,46 +42,39 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaxRateDetailComponent
-    extends BaseDetailComponent<TaxRateFragment>
+    extends TypedBaseDetailComponent<typeof GetTaxRateDetailDocument, 'taxRate'>
     implements OnInit, OnDestroy
 {
+    customFields = this.getCustomFieldConfig('TaxRate');
+    detailForm = this.formBuilder.group({
+        name: ['', Validators.required],
+        enabled: [true],
+        value: [0, Validators.required],
+        taxCategoryId: ['', Validators.required],
+        zoneId: ['', Validators.required],
+        customerGroupId: [''],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     taxCategories$: Observable<TaxCategoryFragment[]>;
-    zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
     groups$: Observable<CustomerGroup[]>;
-    detailForm: UntypedFormGroup;
-    customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateTaxRate];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('TaxRate');
-        this.detailForm = this.formBuilder.group({
-            name: ['', Validators.required],
-            enabled: [true],
-            value: [0, Validators.required],
-            taxCategoryId: [''],
-            zoneId: [''],
-            customerGroupId: [''],
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
+        super();
     }
 
     ngOnInit() {
         this.init();
         this.taxCategories$ = this.dataService.settings
-            .getTaxCategories()
+            .getTaxCategories({ take: 100 })
             .mapSingle(data => data.taxCategories.items);
-        this.zones$ = this.dataService.settings.getZones({ take: 999 }).mapSingle(data => data.zones.items);
     }
 
     ngOnDestroy() {
@@ -83,16 +89,21 @@ export class TaxRateDetailComponent
         if (!this.detailForm.dirty) {
             return;
         }
+        const { name, enabled, value, taxCategoryId, zoneId, customerGroupId, customFields } =
+            this.detailForm.value;
+        if (!name || enabled == null || !value || !taxCategoryId || !zoneId) {
+            return;
+        }
         const formValue = this.detailForm.value;
         const input = {
-            name: formValue.name,
-            enabled: formValue.enabled,
-            value: formValue.value,
-            categoryId: formValue.taxCategoryId,
-            zoneId: formValue.zoneId,
+            name,
+            enabled,
+            value,
+            categoryId: taxCategoryId,
+            zoneId,
             customerGroupId: formValue.customerGroupId,
             customFields: formValue.customFields,
-        } as CreateTaxRateInput;
+        } satisfies CreateTaxRateInput;
         this.dataService.settings.createTaxRate(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {
@@ -128,7 +139,7 @@ export class TaxRateDetailComponent
                         zoneId: formValue.zoneId,
                         customerGroupId: formValue.customerGroupId,
                         customFields: formValue.customFields,
-                    } as UpdateTaxRateInput;
+                    } satisfies UpdateTaxRateInput;
                     return this.dataService.settings.updateTaxRate(input);
                 }),
             )

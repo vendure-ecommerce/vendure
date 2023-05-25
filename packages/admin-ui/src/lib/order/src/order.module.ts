@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, ROUTES } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { PageService, SharedModule } from '@vendure/admin-ui/core';
+import {
+    detailComponentWithResolver,
+    OrderDetailQueryDocument,
+    PageService,
+    SharedModule,
+} from '@vendure/admin-ui/core';
 
 import { AddManualPaymentDialogComponent } from './components/add-manual-payment-dialog/add-manual-payment-dialog.component';
 import { CancelOrderDialogComponent } from './components/cancel-order-dialog/cancel-order-dialog.component';
@@ -98,6 +103,22 @@ export class OrderModule {
             tab: _('orders.orders'),
             route: '',
             component: OrderListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'order-detail',
+            tab: _('orders.order'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: OrderDetailComponent,
+                query: OrderDetailQueryDocument,
+                entityKey: 'order',
+                getBreadcrumbs: entity => [
+                    {
+                        label: `${entity?.code}`,
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
     }
 }

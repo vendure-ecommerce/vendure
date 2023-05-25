@@ -16,4 +16,3 @@ export * from './components/customer-status-label/customer-status-label.componen
 export * from './components/select-customer-group-dialog/select-customer-group-dialog.component';
 export * from './customer.module';
 export * from './customer.routes';
-export * from './providers/routing/customer-resolver';

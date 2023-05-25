@@ -1,32 +1,39 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     configurableDefinitionToInstance,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
-    CreateFacetInput,
     CreatePaymentMethodInput,
     createUpdatedTranslatable,
-    CustomFieldConfig,
     DataService,
-    FacetWithValuesFragment,
     findTranslation,
     getConfigArgValue,
+    GetPaymentMethodDetailDocument,
+    GetPaymentMethodDetailQuery,
     LanguageCode,
     NotificationService,
+    PAYMENT_METHOD_FRAGMENT,
     PaymentMethodFragment,
     Permission,
-    ServerConfigService,
     toConfigurableOperationInput,
-    UpdateFacetInput,
+    TypedBaseDetailComponent,
     UpdatePaymentMethodInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { gql } from 'apollo-angular';
 import { combineLatest } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
+
+export const GET_PAYMENT_METHOD_DETAIL = gql`
+    query GetPaymentMethodDetail($id: ID!) {
+        paymentMethod(id: $id) {
+            ...PaymentMethod
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-payment-method-detail',
@@ -35,11 +42,21 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentMethodDetailComponent
-    extends BaseDetailComponent<PaymentMethodFragment>
+    extends TypedBaseDetailComponent<typeof GetPaymentMethodDetailDocument, 'paymentMethod'>
     implements OnInit, OnDestroy
 {
-    detailForm: UntypedFormGroup;
-    customFields: CustomFieldConfig[];
+    customFields = this.getCustomFieldConfig('PaymentMethod');
+    detailForm = this.formBuilder.group({
+        code: ['', Validators.required],
+        name: ['', Validators.required],
+        description: '',
+        enabled: [true, Validators.required],
+        checker: {} as NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>['checker'],
+        handler: {} as NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>['handler'],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     checkers: ConfigurableOperationDefinition[] = [];
     handlers: ConfigurableOperationDefinition[] = [];
     selectedChecker?: ConfigurableOperation | null;
@@ -49,43 +66,25 @@ export class PaymentMethodDetailComponent
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdatePaymentMethod];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('PaymentMethod');
-        this.detailForm = this.formBuilder.group({
-            code: ['', Validators.required],
-            name: ['', Validators.required],
-            description: '',
-            enabled: [true, Validators.required],
-            checker: {},
-            handler: {},
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
+        super();
     }
 
     ngOnInit() {
         this.init();
-        combineLatest([
-            this.dataService.settings.getPaymentMethodOperations().single$,
-            this.entity$.pipe(take(1)),
-        ]).subscribe(([data, entity]) => {
+        this.dataService.settings.getPaymentMethodOperations().single$.subscribe(data => {
             this.checkers = data.paymentMethodEligibilityCheckers;
             this.handlers = data.paymentMethodHandlers;
             this.changeDetector.markForCheck();
             this.selectedCheckerDefinition = data.paymentMethodEligibilityCheckers.find(
-                c => c.code === (entity.checker && entity.checker.code),
+                c => c.code === this.entity?.checker?.code,
             );
             this.selectedHandlerDefinition = data.paymentMethodHandlers.find(
-                c => c.code === (entity.handler && entity.handler.code),
+                c => c.code === this.entity?.handler?.code,
             );
         });
     }
@@ -94,21 +93,13 @@ export class PaymentMethodDetailComponent
         this.destroy();
     }
 
-    updateCode(currentCode: string, nameValue: string) {
+    updateCode(currentCode: string | undefined, nameValue: string) {
         if (!currentCode) {
-            const codeControl = this.detailForm.get(['code']);
+            const codeControl = this.detailForm.get('code');
             if (codeControl && codeControl.pristine) {
                 codeControl.setValue(normalizeString(nameValue, '-'));
             }
         }
-    }
-
-    configArgsIsPopulated(): boolean {
-        const configArgsGroup = this.detailForm.get('configArgs') as UntypedFormGroup | undefined;
-        if (!configArgsGroup) {
-            return false;
-        }
-        return 0 < Object.keys(configArgsGroup.controls).length;
     }
 
     selectChecker(checker: ConfigurableOperationDefinition) {
@@ -151,35 +142,39 @@ export class PaymentMethodDetailComponent
         if (!selectedHandler) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(
-                take(1),
-                mergeMap(([paymentMethod, languageCode]) => {
-                    const input = this.getUpdatedPaymentMethod(
-                        paymentMethod,
-                        this.detailForm,
-                        languageCode,
-                        selectedHandler,
-                        selectedChecker,
-                    ) as CreatePaymentMethodInput;
-                    return this.dataService.settings.createPaymentMethod(input);
-                }),
-            )
-            .subscribe(
-                data => {
-                    this.notificationService.success(_('common.notify-create-success'), {
-                        entity: 'PaymentMethod',
-                    });
-                    this.detailForm.markAsPristine();
-                    this.changeDetector.markForCheck();
-                    this.router.navigate(['../', data.createPaymentMethod.id], { relativeTo: this.route });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-create-error'), {
-                        entity: 'PaymentMethod',
-                    });
-                },
-            );
+        const input = this.getUpdatedPaymentMethod(
+            {
+                id: '',
+                createdAt: '',
+                updatedAt: '',
+                name: '',
+                code: '',
+                description: '',
+                enabled: true,
+                checker: undefined as any,
+                handler: undefined as any,
+                translations: [],
+            },
+            this.detailForm,
+            this.languageCode,
+            selectedHandler,
+            selectedChecker,
+        ) as CreatePaymentMethodInput;
+        this.dataService.settings.createPaymentMethod(input).subscribe(
+            data => {
+                this.notificationService.success(_('common.notify-create-success'), {
+                    entity: 'PaymentMethod',
+                });
+                this.detailForm.markAsPristine();
+                this.changeDetector.markForCheck();
+                this.router.navigate(['../', data.createPaymentMethod.id], { relativeTo: this.route });
+            },
+            err => {
+                this.notificationService.error(_('common.notify-create-error'), {
+                    entity: 'PaymentMethod',
+                });
+            },
+        );
     }
 
     save() {
@@ -249,15 +244,18 @@ export class PaymentMethodDetailComponent
         };
     }
 
-    protected setFormValues(paymentMethod: PaymentMethodFragment, languageCode: LanguageCode): void {
+    protected setFormValues(
+        paymentMethod: NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>,
+        languageCode: LanguageCode,
+    ): void {
         const currentTranslation = findTranslation(paymentMethod, languageCode);
         this.detailForm.patchValue({
             name: currentTranslation?.name,
             code: paymentMethod.code,
             description: currentTranslation?.description,
             enabled: paymentMethod.enabled,
-            checker: paymentMethod.checker || {},
-            handler: paymentMethod.handler || {},
+            checker: paymentMethod.checker || ({} as any),
+            handler: paymentMethod.handler || ({} as any),
         });
         if (!this.selectedChecker) {
             this.selectedChecker = paymentMethod.checker && {

@@ -75,17 +75,18 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     init() {
         this.entity$ = this.route.data.pipe(
             switchMap(data => (data.entity as Observable<Entity>).pipe(takeUntil(this.destroy$))),
+            filter(notNullOrUndefined),
             tap(entity => (this.id = entity.id)),
+            shareReplay(1),
+        );
+        this.isNew$ = this.entity$.pipe(
+            map(entity => !entity?.id),
             shareReplay(1),
         );
         this.setUpStreams();
     }
 
     protected setUpStreams() {
-        this.isNew$ = this.entity$.pipe(
-            map(entity => entity.id === ''),
-            shareReplay(1),
-        );
         this.languageCode$ = this.route.paramMap.pipe(
             map(paramMap => paramMap.get('lang')),
             switchMap(lang => {
@@ -105,7 +106,9 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         combineLatest(this.entity$, this.languageCode$)
             .pipe(takeUntil(this.destroy$))
             .subscribe(([entity, languageCode]) => {
-                this.setFormValues(entity, languageCode);
+                if (entity) {
+                    this.setFormValues(entity, languageCode);
+                }
                 this.detailForm.markAsPristine();
             });
     }
@@ -171,12 +174,23 @@ export abstract class TypedBaseDetailComponent<
     Field extends keyof ResultOf<T>,
 > extends BaseDetailComponent<NonNullable<ResultOf<T>[Field]>> {
     protected result$: Observable<ResultOf<T>>;
-    protected entity: NonNullable<ResultOf<T>[Field]>;
+    protected entity: ResultOf<T>[Field];
+
+    protected constructor(
+        route?: ActivatedRoute,
+        router?: Router,
+        serverConfigService?: ServerConfigService,
+        dataService?: DataService,
+    ) {
+        super(inject(ActivatedRoute), inject(Router), inject(ServerConfigService), inject(DataService));
+    }
+
     override init() {
         this.entity$ = this.route.data.pipe(
             switchMap(data =>
                 (data.detail.entity as Observable<ResultOf<T>[Field]>).pipe(takeUntil(this.destroy$)),
             ),
+            filter(notNullOrUndefined),
             tap(entity => {
                 this.id = entity.id;
                 this.entity = entity;
@@ -187,6 +201,11 @@ export abstract class TypedBaseDetailComponent<
             map(data => data.detail.result),
             shareReplay(1),
         );
+        this.isNew$ = this.route.data.pipe(
+            switchMap(data => data.detail.entity),
+            map(entity => !entity),
+            shareReplay(1),
+        );
         this.setUpStreams();
     }
 }
@@ -194,11 +213,12 @@ export abstract class TypedBaseDetailComponent<
 export function detailComponentWithResolver<
     T extends TypedDocumentNode<any, { id: string }>,
     Field extends keyof ResultOf<T>,
+    R extends Field,
 >(config: {
     component: Type<TypedBaseDetailComponent<T, Field>>;
     query: T;
-    getEntity: (result: ResultOf<T>) => ResultOf<T>[Field];
-    getBreadcrumbs?: (entity: ResultOf<T>) => BreadcrumbValue;
+    entityKey: R;
+    getBreadcrumbs?: (entity: ResultOf<T>[R]) => BreadcrumbValue;
 }) {
     const resolveFn: ResolveFn<{ entity: Observable<ResultOf<T>[Field] | null>; result?: ResultOf<T> }> = (
         route,
@@ -220,7 +240,7 @@ export function detailComponentWithResolver<
             const result$ = dataService
                 .query(config.query, { id })
                 .stream$.pipe(takeUntil(navigateAway$), shareReplay(1));
-            const entity$ = result$.pipe(map(result => config.getEntity(result as any)));
+            const entity$ = result$.pipe(map(result => result[config.entityKey]));
             const entityStream$ = entity$.pipe(
                 switchMap(raw => entity$),
                 filter(notNullOrUndefined),

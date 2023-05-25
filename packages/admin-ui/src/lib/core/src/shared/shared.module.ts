@@ -165,6 +165,7 @@ import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 import { CardComponent } from './components/card/card.component';
+import { ZoneSelectorComponent } from './components/zone-selector/zone-selector.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -301,6 +302,7 @@ const DECLARATIONS = [
     PageDetailLayoutComponent,
     PageDetailSidebarComponent,
     CardComponent,
+    ZoneSelectorComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

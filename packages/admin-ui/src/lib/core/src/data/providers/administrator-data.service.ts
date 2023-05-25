@@ -1,5 +1,3 @@
-import { FetchPolicy } from '@apollo/client';
-
 import * as Codegen from '../../common/generated-types';
 import {
     CREATE_ADMINISTRATOR,
@@ -9,9 +7,6 @@ import {
     DELETE_ROLE,
     DELETE_ROLES,
     GET_ACTIVE_ADMINISTRATOR,
-    GET_ADMINISTRATOR,
-    GET_ADMINISTRATORS,
-    GET_ROLE,
     GET_ROLES,
     UPDATE_ACTIVE_ADMINISTRATOR,
     UPDATE_ADMINISTRATOR,
@@ -23,29 +18,8 @@ import { BaseDataService } from './base-data.service';
 export class AdministratorDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getAdministrators(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<
-            Codegen.GetAdministratorsQuery,
-            Codegen.GetAdministratorsQueryVariables
-        >(GET_ADMINISTRATORS, {
-            options: {
-                take,
-                skip,
-            },
-        });
-    }
-
     getActiveAdministrator() {
         return this.baseDataService.query<Codegen.GetActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR, {});
-    }
-
-    getAdministrator(id: string) {
-        return this.baseDataService.query<
-            Codegen.GetAdministratorQuery,
-            Codegen.GetAdministratorQueryVariables
-        >(GET_ADMINISTRATOR, {
-            id,
-        });
     }
 
     createAdministrator(input: Codegen.CreateAdministratorInput) {
@@ -89,12 +63,6 @@ export class AdministratorDataService {
                 take,
                 skip,
             },
-        });
-    }
-
-    getRole(id: string) {
-        return this.baseDataService.query<Codegen.GetRoleQuery, Codegen.GetRoleQueryVariables>(GET_ROLE, {
-            id,
         });
     }
 

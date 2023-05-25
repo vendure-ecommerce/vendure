@@ -10,7 +10,7 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -39,7 +39,10 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     @Output() assetChange = new EventEmitter<Omit<UpdateAssetInput, 'focalPoint'>>();
     @Output() editClick = new EventEmitter();
 
-    form: UntypedFormGroup;
+    form = this.formBuilder.group({
+        name: '',
+        tags: [[] as string[]],
+    });
 
     size: PreviewPreset = 'medium';
     width = 0;
@@ -53,7 +56,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     private sizePriorToSettingFocalPoint: PreviewPreset;
 
     constructor(
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private dataService: DataService,
         private notificationService: NotificationService,
         private changeDetector: ChangeDetectorRef,
@@ -70,10 +73,8 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         const { focalPoint } = this.asset;
-        this.form = this.formBuilder.group({
-            name: [this.asset.name],
-            tags: [this.asset.tags?.map(t => t.value)],
-        });
+        this.form.get('name')?.setValue(this.asset.name);
+        this.form.get('tags')?.setValue(this.asset.tags?.map(t => t.value));
         this.subscription = this.form.valueChanges.subscribe(value => {
             this.assetChange.emit({
                 id: this.asset.id,

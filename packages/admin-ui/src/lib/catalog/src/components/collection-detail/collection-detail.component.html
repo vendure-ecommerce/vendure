@@ -31,15 +31,9 @@
         >
     </vdr-action-bar>
 </vdr-page-block>
-<form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as collection">
+<form class="form" [formGroup]="detailForm">
     <vdr-page-detail-layout>
         <vdr-page-detail-sidebar>
-            <vdr-card>
-                <vdr-page-entity-info
-                    *ngIf="entity$ | async as entity"
-                    [entity]="entity"
-                ></vdr-page-entity-info>
-            </vdr-card>
             <vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
                     <clr-toggle-wrapper>
@@ -58,6 +52,12 @@
                         </label>
                     </clr-toggle-wrapper>
                 </vdr-form-field>
+            </vdr-card>
+            <vdr-card>
+                <vdr-page-entity-info
+                    *ngIf="entity$ | async as entity"
+                    [entity]="entity"
+                ></vdr-page-entity-info>
             </vdr-card>
         </vdr-page-detail-sidebar>
 
@@ -108,7 +108,7 @@
                         [readonly]="!(updatePermission | hasPermission)"
                     />
                 </vdr-form-field>
-                <vdr-form-field [label]="'common.description' | translate" for="slug">
+                <vdr-form-field class="card-span" [label]="'common.description' | translate" for="slug">
                     <vdr-rich-text-editor
                         formControlName="description"
                         [readonly]="!(updatePermission | hasPermission)"
@@ -132,16 +132,21 @@
                 [entity$]="entity$"
                 [detailForm]="detailForm"
             ></vdr-custom-detail-component-host>
-            <vdr-card [title]="'common.assets' | translate">
+            <vdr-card [title]="'catalog.assets' | translate">
                 <vdr-assets
-                    [assets]="collection.assets"
-                    [featuredAsset]="collection.featuredAsset"
+                    class="card-span"
+                    [assets]="entity?.assets"
+                    [featuredAsset]="entity?.featuredAsset"
                     [updatePermissions]="updatePermission"
                     (change)="assetChanges = $event"
                 ></vdr-assets>
             </vdr-card>
             <vdr-card [title]="'catalog.filters' | translate">
-                <vdr-form-field [label]="'catalog.filter-inheritance' | translate" for="inheritFilters">
+                <vdr-form-field
+                    class="card-span"
+                    [label]="'catalog.filter-inheritance' | translate"
+                    for="inheritFilters"
+                >
                     <clr-toggle-wrapper>
                         <input
                             type="checkbox"
@@ -160,7 +165,7 @@
                         </label>
                     </clr-toggle-wrapper>
                 </vdr-form-field>
-                <div formArrayName="filters" class="mt-4">
+                <div formArrayName="filters" class="card-span">
                     <ng-container *ngFor="let filter of filters; index as i; trackBy: trackByFn">
                         <vdr-configurable-input
                             (remove)="removeFilter(i)"
@@ -193,8 +198,9 @@
                 </div>
             </vdr-card>
 
-            <vdr-card [title]="'common.contents' | translate">
+            <vdr-card [title]="'common.contents' | translate" [paddingX]="false">
                 <vdr-collection-contents
+                    class="card-span"
                     [collectionId]="id"
                     [parentId]="parentId$ | async"
                     [updatedFilters]="updatedFilters$ | async"
@@ -203,22 +209,24 @@
                     #collectionContents
                 >
                     <ng-template let-count>
-                        <div class="contents-title">
-                            {{ 'catalog.collection-contents' | translate }} ({{
-                                'common.results-count' | translate : { count: count }
-                            }})
+                        <div class="ml-3">
+                            <div class="contents-title">
+                                {{ 'catalog.collection-contents' | translate }} ({{
+                                    'common.results-count' | translate : { count: count }
+                                }})
+                            </div>
+                            <clr-checkbox-wrapper [class.disabled]="detailForm.get('filters')?.pristine">
+                                <input
+                                    type="checkbox"
+                                    clrCheckbox
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [disabled]="detailForm.get('filters')?.pristine"
+                                    [ngModel]="livePreview"
+                                    (ngModelChange)="toggleLivePreview()"
+                                />
+                                <label>{{ 'catalog.live-preview-contents' | translate }}</label>
+                            </clr-checkbox-wrapper>
                         </div>
-                        <clr-checkbox-wrapper [class.disabled]="detailForm.get('filters')?.pristine">
-                            <input
-                                type="checkbox"
-                                clrCheckbox
-                                [ngModelOptions]="{ standalone: true }"
-                                [disabled]="detailForm.get('filters')?.pristine"
-                                [ngModel]="livePreview"
-                                (ngModelChange)="toggleLivePreview()"
-                            />
-                            <label>{{ 'catalog.live-preview-contents' | translate }}</label>
-                        </clr-checkbox-wrapper>
                     </ng-template>
                 </vdr-collection-contents>
             </vdr-card>

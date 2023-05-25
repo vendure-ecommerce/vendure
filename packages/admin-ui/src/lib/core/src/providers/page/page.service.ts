@@ -45,7 +45,7 @@ export class PageService {
                 component = cmp;
                 route.resolve = { detail: config.component.resolveFn };
                 route.data = {
-                    breadcrumb: data => breadcrumbFn(data.detail.result),
+                    breadcrumb: data => data.detail.entity.pipe(map(entity => breadcrumbFn(entity))),
                 };
             } else {
                 component = config.component;

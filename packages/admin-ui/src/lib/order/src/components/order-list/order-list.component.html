@@ -18,6 +18,11 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'order.search-by-order-filters' | translate"
     />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+        <ng-template let-order="item">
+            {{ order.id }}
+        </ng-template>
+    </vdr-dt2-column>
     <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
         <ng-template let-order="item">
             {{ order.createdAt | localeDate : 'short' }}

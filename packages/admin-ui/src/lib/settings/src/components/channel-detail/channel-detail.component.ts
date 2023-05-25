@@ -1,14 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
+    CHANNEL_FRAGMENT,
     ChannelFragment,
     CreateChannelInput,
     CurrencyCode,
     CustomFieldConfig,
     DataService,
+    GetChannelDetailDocument,
     GetSellersQuery,
     GetZoneListQuery,
     ItemOf,
@@ -16,11 +18,22 @@ import {
     NotificationService,
     Permission,
     ServerConfigService,
+    TypedBaseDetailComponent,
     UpdateChannelInput,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
+
+export const GET_CHANNEL_DETAIL = gql`
+    query GetChannelDetail($id: ID!) {
+        channel(id: $id) {
+            ...Channel
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-channel-detail',
@@ -29,46 +42,42 @@ import { map, mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelDetailComponent
-    extends BaseDetailComponent<ChannelFragment>
+    extends TypedBaseDetailComponent<typeof GetChannelDetailDocument, 'channel'>
     implements OnInit, OnDestroy
 {
-    customFields: CustomFieldConfig[];
-    zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
+    customFields = this.getCustomFieldConfig('Channel');
+    // zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
     sellers$: Observable<GetSellersQuery['sellers']['items']>;
-    detailForm: UntypedFormGroup;
+    detailForm = this.formBuilder.group({
+        code: ['', Validators.required],
+        token: ['', Validators.required],
+        pricesIncludeTax: [false],
+        currencyCode: ['' as CurrencyCode],
+        defaultShippingZoneId: ['', Validators.required],
+        defaultLanguageCode: [undefined as LanguageCode | undefined],
+        defaultTaxZoneId: ['', Validators.required],
+        sellerId: ['', Validators.required],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     currencyCodes = Object.values(CurrencyCode);
     availableLanguageCodes$: Observable<LanguageCode[]>;
     readonly updatePermission = [Permission.SuperAdmin, Permission.UpdateChannel, Permission.CreateChannel];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
         protected serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Channel');
-        this.detailForm = this.formBuilder.group({
-            code: ['', Validators.required],
-            token: ['', Validators.required],
-            pricesIncludeTax: [false],
-            currencyCode: [''],
-            defaultShippingZoneId: ['', Validators.required],
-            defaultLanguageCode: [],
-            defaultTaxZoneId: ['', Validators.required],
-            sellerId: ['', Validators.required],
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
+        super();
     }
 
     ngOnInit() {
         this.init();
-        this.zones$ = this.dataService.settings.getZones({ take: 100 }).mapSingle(data => data.zones.items);
+        // this.zones$ = this.dataService.settings.getZones({ take: 100 }).mapSingle(data => data.zones.items);
         // TODO: make this lazy-loaded autocomplete
         this.sellers$ = this.dataService.settings.getSellerList().mapSingle(data => data.sellers.items);
         this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();
@@ -86,17 +95,38 @@ export class ChannelDetailComponent
         if (!this.detailForm.dirty) {
             return;
         }
-        const formValue = this.detailForm.value;
+        const {
+            code,
+            token,
+            defaultLanguageCode,
+            pricesIncludeTax,
+            currencyCode,
+            defaultShippingZoneId,
+            defaultTaxZoneId,
+            customFields,
+            sellerId,
+        } = this.detailForm.value;
+        if (
+            !code ||
+            !token ||
+            !defaultLanguageCode ||
+            !pricesIncludeTax ||
+            !currencyCode ||
+            !defaultShippingZoneId ||
+            !defaultTaxZoneId
+        ) {
+            return;
+        }
         const input: CreateChannelInput = {
-            code: formValue.code,
-            token: formValue.token,
-            defaultLanguageCode: formValue.defaultLanguageCode,
-            pricesIncludeTax: formValue.pricesIncludeTax,
-            currencyCode: formValue.currencyCode,
-            defaultShippingZoneId: formValue.defaultShippingZoneId,
-            defaultTaxZoneId: formValue.defaultTaxZoneId,
-            customFields: formValue.customFields,
-            sellerId: formValue.sellerId,
+            code,
+            token,
+            defaultLanguageCode,
+            pricesIncludeTax,
+            currencyCode,
+            defaultShippingZoneId,
+            defaultTaxZoneId,
+            customFields,
+            sellerId,
         };
         this.dataService.settings
             .createChannel(input)

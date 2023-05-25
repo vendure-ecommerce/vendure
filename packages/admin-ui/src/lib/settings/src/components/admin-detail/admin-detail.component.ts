@@ -1,23 +1,24 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { ResultOf } from '@graphql-typed-document-node/core';
 import {
     Administrator,
-    AdministratorFragment,
-    BaseDetailComponent,
+    ADMINISTRATOR_FRAGMENT,
     CreateAdministratorInput,
-    CustomFieldConfig,
     DataService,
+    GetAdministratorDetailDocument,
     LanguageCode,
     NotificationService,
     Permission,
     PermissionDefinition,
     RoleFragment,
-    ServerConfigService,
+    TypedBaseDetailComponent,
     UpdateAdministratorInput,
 } from '@vendure/admin-ui/core';
 import { CUSTOMER_ROLE_CODE } from '@vendure/common/lib/shared-constants';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 
@@ -27,6 +28,15 @@ export interface PermissionsByChannel {
     permissions: { [K in Permission]: boolean };
 }
 
+export const GET_ADMINISTRATOR_DETAIL = gql`
+    query GetAdministratorDetail($id: ID!) {
+        administrator(id: $id) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
 @Component({
     selector: 'vdr-admin-detail',
     templateUrl: './admin-detail.component.html',
@@ -34,15 +44,27 @@ export interface PermissionsByChannel {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDetailComponent
-    extends BaseDetailComponent<AdministratorFragment>
+    extends TypedBaseDetailComponent<typeof GetAdministratorDetailDocument, 'administrator'>
     implements OnInit, OnDestroy
 {
-    customFields: CustomFieldConfig[];
-    administrator$: Observable<AdministratorFragment>;
+    customFields = this.getCustomFieldConfig('Administrator');
+    detailForm = this.formBuilder.group({
+        emailAddress: ['', Validators.required],
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
+        password: [''],
+        roles: [
+            [] as NonNullable<
+                ResultOf<typeof GetAdministratorDetailDocument>['administrator']
+            >['user']['roles'],
+        ],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     permissionDefinitions: PermissionDefinition[];
     allRoles$: Observable<RoleFragment[]>;
     selectedRoles: RoleFragment[] = [];
-    detailForm: UntypedFormGroup;
     selectedRolePermissions: { [channelId: string]: PermissionsByChannel } = {} as any;
     selectedChannelId: string | null = null;
 
@@ -51,31 +73,16 @@ export class AdminDetailComponent
     }
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Administrator');
-        this.detailForm = this.formBuilder.group({
-            emailAddress: ['', Validators.required],
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            password: [''],
-            roles: [[]],
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
+        super();
     }
 
     ngOnInit() {
         this.init();
-        this.administrator$ = this.entity$;
         this.allRoles$ = this.dataService.administrator
             .getRoles(999)
             .mapStream(item => item.roles.items.filter(i => i.code !== CUSTOMER_ROLE_CODE));
@@ -123,14 +130,17 @@ export class AdminDetailComponent
     }
 
     create() {
-        const formValue = this.detailForm.value;
+        const { emailAddress, firstName, lastName, password, customFields, roles } = this.detailForm.value;
+        if (!emailAddress || !firstName || !lastName || !password) {
+            return;
+        }
         const administrator: CreateAdministratorInput = {
-            emailAddress: formValue.emailAddress,
-            firstName: formValue.firstName,
-            lastName: formValue.lastName,
-            password: formValue.password,
-            customFields: formValue.customFields,
-            roleIds: formValue.roles.map(role => role.id),
+            emailAddress,
+            firstName,
+            lastName,
+            password,
+            customFields,
+            roleIds: roles?.map(role => role.id).filter(notNullOrUndefined) ?? [],
         };
         this.dataService.administrator.createAdministrator(administrator).subscribe(
             data => {
@@ -150,7 +160,7 @@ export class AdminDetailComponent
     }
 
     save() {
-        this.administrator$
+        this.entity$
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
@@ -162,7 +172,7 @@ export class AdminDetailComponent
                         lastName: formValue.lastName,
                         password: formValue.password,
                         customFields: formValue.customFields,
-                        roleIds: formValue.roles.map(role => role.id),
+                        roleIds: formValue.roles?.map(role => role.id),
                     };
                     return this.dataService.administrator.updateAdministrator(administrator);
                 }),
@@ -183,23 +193,22 @@ export class AdminDetailComponent
             );
     }
 
-    protected setFormValues(administrator: Administrator, languageCode: LanguageCode): void {
+    protected setFormValues(
+        entity: NonNullable<ResultOf<typeof GetAdministratorDetailDocument>['administrator']>,
+        languageCode: LanguageCode,
+    ) {
         this.detailForm.patchValue({
-            emailAddress: administrator.emailAddress,
-            firstName: administrator.firstName,
-            lastName: administrator.lastName,
-            roles: administrator.user.roles,
+            emailAddress: entity.emailAddress,
+            firstName: entity.firstName,
+            lastName: entity.lastName,
+            roles: entity.user.roles,
         });
         if (this.customFields.length) {
-            this.setCustomFieldFormValues(
-                this.customFields,
-                this.detailForm.get(['customFields']),
-                administrator,
-            );
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get(['customFields']), entity);
         }
         const passwordControl = this.detailForm.get('password');
         if (passwordControl) {
-            if (!administrator.id) {
+            if (!entity.id) {
                 passwordControl.setValidators([Validators.required]);
             } else {
                 passwordControl.setValidators([]);
@@ -211,11 +220,11 @@ export class AdminDetailComponent
     private buildPermissionsMap() {
         const permissionsControl = this.detailForm.get('roles');
         if (permissionsControl) {
-            const roles: RoleFragment[] = permissionsControl.value;
+            const roles = permissionsControl.value;
             const channelIdPermissionsMap = new Map<string, Set<Permission>>();
             const channelIdCodeMap = new Map<string, string>();
 
-            for (const role of roles) {
+            for (const role of roles ?? []) {
                 for (const channel of role.channels) {
                     const channelPermissions = channelIdPermissionsMap.get(channel.id);
                     const permissionSet = channelPermissions || new Set<Permission>();

@@ -1,17 +1,24 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BaseListComponent,
-    DataService,
-    DataTableService,
-    GetSellersQuery,
-    ItemOf,
-    NavBuilderService,
-    SellerFilterParameter,
-    SellerSortParameter,
-    ServerConfigService,
-} from '@vendure/admin-ui/core';
+import { GetSellerListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+const GET_SELLER_LIST = gql`
+    query GetSellerList($options: SellerListOptions) {
+        sellers(options: $options) {
+            items {
+                ...SellerListItem
+            }
+            totalItems
+        }
+    }
+    fragment SellerListItem on Seller {
+        id
+        createdAt
+        updatedAt
+        name
+    }
+`;
 
 @Component({
     selector: 'vdr-seller-list',
@@ -20,18 +27,23 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SellerListComponent
-    extends BaseListComponent<GetSellersQuery, ItemOf<GetSellersQuery, 'sellers'>>
+    extends TypedBaseListComponent<typeof GetSellerListDocument, 'sellers'>
     implements OnInit
 {
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Seller');
-    readonly filters = this.dataTableService
-        .createFilterCollection<SellerFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('Seller');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
+
+        .addFilter({
+            name: 'name',
+            type: { kind: 'text' },
+            label: _('common.name'),
+            filterField: 'name',
+        })
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<SellerSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
@@ -39,27 +51,12 @@ export class SellerListComponent
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        route: ActivatedRoute,
-        router: Router,
-        navBuilderService: NavBuilderService,
-        private dataService: DataService,
-        private dataTableService: DataTableService,
-        private serverConfigService: ServerConfigService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-seller',
-            label: _('settings.create-new-seller'),
-            locationId: 'seller-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['SuperAdmin', 'CreateSeller'],
-        });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getSellerList(...args).refetchOnChannelChange(),
-            data => data.sellers,
-            (skip, take) => ({
+    constructor() {
+        super();
+        super.configure({
+            document: GetSellerListDocument,
+            getItems: data => data.sellers,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -72,11 +69,7 @@ export class SellerListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 }

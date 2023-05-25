@@ -47,6 +47,7 @@ a:focus, button:focus {
 
 .table {
     border-color: var(--color-component-border-100);
+    margin-top: 0;
 
     td.align-middle, th.align-middle {
         vertical-align: middle!important;

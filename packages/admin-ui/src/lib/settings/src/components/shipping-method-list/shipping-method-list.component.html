@@ -1,12 +1,26 @@
 <vdr-page-block>
-    <vdr-language-selector
-        [availableLanguageCodes]="availableLanguages$ | async"
-        [currentLanguageCode]="contentLanguage$ | async"
-        (languageCodeChange)="setLanguage($event)"
-    ></vdr-language-selector>
+    <vdr-action-bar>
+        <vdr-ab-left>
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector
+        ></vdr-ab-left>
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="shipping-method-list"></vdr-action-bar-items>
+            <a
+                class="btn btn-primary"
+                *vdrIfPermissions="['CreateSettings', 'CreateShippingMethod']"
+                [routerLink]="['./', 'create']"
+            >
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'settings.create-new-shipping-method' | translate }}
+            </a>
+        </vdr-ab-right>
+    </vdr-action-bar>
 </vdr-page-block>
 <vdr-data-table-2
-    class="mt-2"
     id="shipping-method-list"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
@@ -70,5 +84,14 @@
             {{ shippingMethod.description }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" [sorts]="sorts" />
+    <vdr-dt2-column [heading]="'settings.fulfillment-handler' | translate" [sort]="sorts.get('fulfillmentHandlerCode')">
+        <ng-template let-shippingMethod="item">
+            {{ shippingMethod.fulfillmentHandlerCode }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-custom-field-column
+        *ngFor="let customField of customFields"
+        [customField]="customField"
+        [sorts]="sorts"
+    />
 </vdr-data-table-2>

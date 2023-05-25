@@ -94,15 +94,6 @@ export const GET_COLLECTION_LIST = gql`
     ${COLLECTION_FOR_LIST_FRAGMENT}
 `;
 
-export const GET_COLLECTION = gql`
-    query GetCollection($id: ID!) {
-        collection(id: $id) {
-            ...Collection
-        }
-    }
-    ${COLLECTION_FRAGMENT}
-`;
-
 export const CREATE_COLLECTION = gql`
     mutation CreateCollection($input: CreateCollectionInput!) {
         createCollection(input: $input) {

@@ -46,6 +46,14 @@ export class CollectionListComponent
             type: { kind: 'text' },
             filterField: 'slug',
         })
+        .addFilter({
+            name: 'visibility',
+            type: { kind: 'boolean' },
+            label: _('common.visibility'),
+            toFilterInput: value => ({
+                isPrivate: { eq: !value },
+            }),
+        })
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
     readonly sorts = this.dataTableService

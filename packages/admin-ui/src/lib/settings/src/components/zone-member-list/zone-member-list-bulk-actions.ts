@@ -21,6 +21,7 @@ export const removeZoneMembersBulkAction: BulkAction<ZoneMember, ZoneMemberListC
                     countryCount: memberIds.length,
                     zoneName: zone.name,
                 });
+                hostComponent.refresh();
                 clearSelection();
             },
         });

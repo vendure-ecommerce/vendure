@@ -56,6 +56,7 @@ export type PageLocationId =
     | 'customer-detail'
     | 'customer-list'
     | 'customer-group-list'
+    | 'customer-group-detail'
     | 'facet-detail'
     | 'facet-list'
     | 'global-setting-detail'
@@ -80,6 +81,7 @@ export type PageLocationId =
     | 'tax-category-list'
     | 'tax-rate-detail'
     | 'tax-rate-list'
+    | 'zone-detail'
     | 'zone-list';
 
 /**
@@ -103,6 +105,7 @@ export type CustomDetailComponentLocationId =
     | 'collection-detail'
     | 'country-detail'
     | 'customer-detail'
+    | 'customer-group-detail'
     | 'facet-detail'
     | 'global-settings-detail'
     | 'order-detail'
@@ -113,6 +116,7 @@ export type CustomDetailComponentLocationId =
     | 'seller-detail'
     | 'shipping-method-detail'
     | 'tax-category-detail'
-    | 'tax-rate-detail';
+    | 'tax-rate-detail'
+    | 'zone-detail';
 
 export type UIExtensionLocationId = ActionBarLocationId | CustomDetailComponentLocationId;

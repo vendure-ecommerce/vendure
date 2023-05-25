@@ -1,32 +1,39 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, UntypedFormArray, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
-    CreatePaymentMethodInput,
     CreatePromotionInput,
     createUpdatedTranslatable,
-    CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
     findTranslation,
     getConfigArgValue,
     getDefaultConfigArgValue,
+    GetPromotionDetailDocument,
     LanguageCode,
     NotificationService,
-    PaymentMethodFragment,
+    PROMOTION_FRAGMENT,
     PromotionFragment,
     ServerConfigService,
-    toConfigurableOperationInput,
-    UpdatePaymentMethodInput,
+    TypedBaseDetailComponent,
     UpdatePromotionInput,
 } from '@vendure/admin-ui/core';
-import { combineLatest, Observable } from 'rxjs';
+import { gql } from 'apollo-angular';
+import { combineLatest } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
+
+export const GET_PROMOTION_DETAIL = gql`
+    query GetPromotionDetail($id: ID!) {
+        promotion(id: $id) {
+            ...Promotion
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-promotion-detail',
@@ -35,12 +42,24 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PromotionDetailComponent
-    extends BaseDetailComponent<PromotionFragment>
+    extends TypedBaseDetailComponent<typeof GetPromotionDetailDocument, 'promotion'>
     implements OnInit, OnDestroy
 {
-    promotion$: Observable<PromotionFragment>;
-    detailForm: UntypedFormGroup;
-    customFields: CustomFieldConfig[];
+    customFields = this.getCustomFieldConfig('Promotion');
+    detailForm = this.formBuilder.group({
+        name: ['', Validators.required],
+        description: '',
+        enabled: true,
+        couponCode: null as string | null,
+        perCustomerUsageLimit: null as number | null,
+        startsAt: null,
+        endsAt: null,
+        conditions: this.formBuilder.array([]),
+        actions: this.formBuilder.array([]),
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];
 
@@ -53,30 +72,15 @@ export class PromotionDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Promotion');
-        this.detailForm = this.formBuilder.group({
-            name: ['', Validators.required],
-            description: '',
-            enabled: true,
-            couponCode: null,
-            perCustomerUsageLimit: null,
-            startsAt: null,
-            endsAt: null,
-            conditions: this.formBuilder.array([]),
-            actions: this.formBuilder.array([]),
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
     }
 
     ngOnInit() {
         this.init();
-        this.promotion$ = this.entity$;
         this.dataService.promotion.getPromotionActionsAndConditions().single$.subscribe(data => {
             this.allActions = data.promotionActions;
             this.allConditions = data.promotionConditions;
@@ -105,7 +109,7 @@ export class PromotionDetailComponent
     }
 
     saveButtonEnabled(): boolean {
-        return (
+        return !!(
             this.detailForm.dirty &&
             this.detailForm.valid &&
             (this.conditions.length !== 0 || this.detailForm.value.couponCode) &&
@@ -141,40 +145,48 @@ export class PromotionDetailComponent
         if (!this.detailForm.dirty) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(
-                take(1),
-                mergeMap(([promotion, languageCode]) => {
-                    const input = this.getUpdatedPromotion(
-                        promotion,
-                        this.detailForm,
-                        languageCode,
-                    ) as CreatePromotionInput;
-                    return this.dataService.promotion.createPromotion(input);
-                }),
-            )
-            .subscribe(
-                ({ createPromotion }) => {
-                    switch (createPromotion.__typename) {
-                        case 'Promotion':
-                            this.notificationService.success(_('common.notify-create-success'), {
-                                entity: 'Promotion',
-                            });
-                            this.detailForm.markAsPristine();
-                            this.changeDetector.markForCheck();
-                            this.router.navigate(['../', createPromotion.id], { relativeTo: this.route });
-                            break;
-                        case 'MissingConditionsError':
-                            this.notificationService.error(createPromotion.message);
-                            break;
-                    }
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-create-error'), {
-                        entity: 'Promotion',
-                    });
-                },
-            );
+
+        const input = this.getUpdatedPromotion(
+            {
+                id: '',
+                createdAt: '',
+                updatedAt: '',
+                startsAt: '',
+                endsAt: '',
+                name: '',
+                description: '',
+                couponCode: null,
+                perCustomerUsageLimit: null,
+                enabled: false,
+                conditions: [],
+                actions: [],
+                translations: [],
+            },
+            this.detailForm,
+            this.languageCode,
+        ) as CreatePromotionInput;
+        this.dataService.promotion.createPromotion(input).subscribe(
+            ({ createPromotion }) => {
+                switch (createPromotion.__typename) {
+                    case 'Promotion':
+                        this.notificationService.success(_('common.notify-create-success'), {
+                            entity: 'Promotion',
+                        });
+                        this.detailForm.markAsPristine();
+                        this.changeDetector.markForCheck();
+                        this.router.navigate(['../', createPromotion.id], { relativeTo: this.route });
+                        break;
+                    case 'MissingConditionsError':
+                        this.notificationService.error(createPromotion.message);
+                        break;
+                }
+            },
+            err => {
+                this.notificationService.error(_('common.notify-create-error'), {
+                    entity: 'Promotion',
+                });
+            },
+        );
     }
 
     save() {

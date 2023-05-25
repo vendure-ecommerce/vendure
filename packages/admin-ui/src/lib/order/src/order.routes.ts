@@ -21,6 +21,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: '',
         component: PageComponent,
+        pathMatch: 'full',
         data: {
             locationId: 'order-list',
             breadcrumb: _('breadcrumb.orders'),
@@ -41,15 +42,13 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: ':id',
-        component: OrderDetailComponent,
-        resolve: {
-            entity: OrderResolver,
-        },
+        component: PageComponent,
         canActivate: [OrderGuard],
-        canDeactivate: [CanDeactivateDetailGuard],
         data: {
-            breadcrumb: orderBreadcrumb,
+            locationId: 'order-detail',
+            breadcrumb: { label: _('breadcrumb.orders'), link: ['../'] },
         },
+        children: pageService.getPageTabRoutes('order-detail'),
     },
     {
         path: ':aggregateOrderId/seller-orders/:id',

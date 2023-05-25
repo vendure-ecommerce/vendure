@@ -11,9 +11,17 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BulkActionLocationId, GetZoneListQuery, ItemOf, SelectionManager } from '@vendure/admin-ui/core';
-import { Observable, Subject, switchMap } from 'rxjs';
-import { map, startWith, takeUntil } from 'rxjs/operators';
+import {
+    BulkActionLocationId,
+    DataService,
+    GetZoneListQuery,
+    GetZoneMembersDocument,
+    GetZoneMembersQuery,
+    ItemOf,
+    SelectionManager,
+} from '@vendure/admin-ui/core';
+import { BehaviorSubject, combineLatest, merge, Observable, of, Subject, switchMap } from 'rxjs';
+import { map, startWith, take, takeUntil } from 'rxjs/operators';
 
 import { ZoneMemberControlsDirective } from './zone-member-controls.directive';
 import { ZoneMemberListHeaderDirective } from './zone-member-list-header.directive';
@@ -28,12 +36,13 @@ export type ZoneMember = { id: string; name: string; code: string };
 })
 export class ZoneMemberListComponent implements OnInit, OnChanges, OnDestroy {
     @Input() locationId: BulkActionLocationId;
-    @Input() members: ZoneMember[] = [];
+    @Input() members?: ZoneMember[];
     @Input() selectedMemberIds: string[] = [];
     @Input() activeZone: ItemOf<GetZoneListQuery, 'zones'>;
     @Output() selectionChange = new EventEmitter<string[]>();
     @ContentChild(ZoneMemberListHeaderDirective) headerTemplate: ZoneMemberListHeaderDirective;
     @ContentChild(ZoneMemberControlsDirective) controlsTemplate: ZoneMemberControlsDirective;
+    members$: Observable<NonNullable<GetZoneMembersQuery['zone']>['members'] | ZoneMember[]>;
     filterTermControl = new FormControl('');
     filteredMembers$: Observable<ZoneMember[]>;
     totalItems$: Observable<number>;
@@ -44,29 +53,47 @@ export class ZoneMemberListComponent implements OnInit, OnChanges, OnDestroy {
         itemsAreEqual: (a, b) => a.id === b.id,
         additiveMode: true,
     });
-    private members$ = new Subject<ZoneMember[]>();
+    private membersInput$ = new Subject<ZoneMember[]>();
+    private activeZoneInput$ = new BehaviorSubject<ItemOf<GetZoneListQuery, 'zones'> | undefined>(undefined);
     private destroy$ = new Subject<void>();
+    private refresh$ = new Subject<void>();
+
+    constructor(private dataService: DataService) {}
 
     ngOnInit() {
-        this.selectionManager.setCurrentItems(
-            this.members?.filter(m => this.selectedMemberIds.includes(m.id)) ?? [],
+        const activeZoneMembers$ = merge(this.activeZoneInput$, this.refresh$).pipe(
+            switchMap(activeZone =>
+                this.activeZone
+                    ? this.dataService
+                          .query(GetZoneMembersDocument, { zoneId: this.activeZone.id })
+                          .mapSingle(({ zone }) => zone?.members ?? [])
+                    : of([]),
+            ),
         );
+        this.members$ = merge(activeZoneMembers$, this.membersInput$);
+
+        this.members$.pipe(take(1)).subscribe(members => {
+            this.selectionManager.setCurrentItems(
+                members?.filter(m => this.selectedMemberIds.includes(m.id)) ?? [],
+            );
+        });
         this.selectionManager.selectionChanges$.pipe(takeUntil(this.destroy$)).subscribe(selection => {
             this.selectionChange.emit(selection.map(s => s.id));
         });
-        this.filteredMembers$ = this.members$.pipe(
-            startWith(this.members),
-            switchMap(() => this.filterTermControl.valueChanges.pipe(startWith(''))),
-            map(filterTerm => {
+        this.filteredMembers$ = combineLatest(
+            this.members$,
+            this.filterTermControl.valueChanges.pipe(startWith('')),
+        ).pipe(
+            map(([members, filterTerm]) => {
                 if (filterTerm) {
                     const term = filterTerm?.toLocaleLowerCase() ?? '';
-                    return this.members.filter(
+                    return members.filter(
                         m =>
                             m.name.toLocaleLowerCase().includes(term) ||
                             m.code.toLocaleLowerCase().includes(term),
                     );
                 } else {
-                    return this.members;
+                    return members;
                 }
             }),
         );
@@ -75,12 +102,19 @@ export class ZoneMemberListComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnChanges(changes: SimpleChanges) {
         if ('members' in changes) {
-            this.members$.next(this.members);
+            this.membersInput$.next(this.members ?? []);
+        }
+        if ('activeZone' in changes) {
+            this.activeZoneInput$.next(this.activeZone);
         }
     }
 
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    refresh() {
+        this.refresh$.next();
     }
 }

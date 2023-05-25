@@ -1,11 +1,26 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { gql } from 'apollo-angular';
 import { Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { GetAssetQuery, UpdateAssetInput } from '../../../common/generated-types';
+import { ASSET_FRAGMENT, TAG_FRAGMENT } from '../../../data/definitions/product-definitions';
 import { DataService } from '../../../data/providers/data.service';
 import { Dialog } from '../../../providers/modal/modal.types';
 import { AssetLike } from '../asset-gallery/asset-gallery.types';
+
+export const ASSET_PREVIEW_QUERY = gql`
+    query AssetPreviewQuery($id: ID!) {
+        asset(id: $id) {
+            ...Asset
+            tags {
+                ...Tag
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-asset-preview-dialog',

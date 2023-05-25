@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormBuilder, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -8,17 +8,35 @@ import {
     CurrencyCode,
     CustomFieldConfig,
     DataService,
+    GetSellerDetailDocument,
     GetZoneListQuery,
     ItemOf,
     LanguageCode,
     NotificationService,
     Permission,
+    SELLER_FRAGMENT,
     SellerFragment,
     ServerConfigService,
+    TypedBaseDetailComponent,
     UpdateSellerInput,
 } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
+
+export const GET_SELLER_DETAIL = gql`
+    query GetSellerDetail($id: ID!) {
+        seller(id: $id) {
+            ...SellerDetail
+        }
+    }
+    fragment SellerDetail on Seller {
+        id
+        createdAt
+        updatedAt
+        name
+    }
+`;
 
 @Component({
     selector: 'vdr-seller-detail',
@@ -26,12 +44,17 @@ import { mergeMap, take } from 'rxjs/operators';
     styleUrls: ['./seller-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SellerDetailComponent extends BaseDetailComponent<SellerFragment> implements OnInit, OnDestroy {
-    customFields: CustomFieldConfig[];
-    zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
-    detailForm: UntypedFormGroup;
-    currencyCodes = Object.values(CurrencyCode);
-    availableLanguageCodes$: Observable<LanguageCode[]>;
+export class SellerDetailComponent
+    extends TypedBaseDetailComponent<typeof GetSellerDetailDocument, 'seller'>
+    implements OnInit, OnDestroy
+{
+    customFields = this.getCustomFieldConfig('Seller');
+    detailForm = this.formBuilder.group({
+        name: ['', Validators.required],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     readonly updatePermission = [Permission.SuperAdmin, Permission.UpdateSeller, Permission.CreateSeller];
 
     constructor(
@@ -40,17 +63,10 @@ export class SellerDetailComponent extends BaseDetailComponent<SellerFragment> i
         protected serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Seller');
-        this.detailForm = this.formBuilder.group({
-            name: ['', Validators.required],
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
     }
 
     ngOnInit() {
@@ -70,6 +86,9 @@ export class SellerDetailComponent extends BaseDetailComponent<SellerFragment> i
             return;
         }
         const formValue = this.detailForm.value;
+        if (!formValue.name) {
+            return;
+        }
         const input: CreateSellerInput = {
             name: formValue.name,
             customFields: formValue.customFields,

@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BaseListComponent,
-    ChannelFilterParameter,
-    ChannelSortParameter,
-    DataService,
-    DataTableService,
-    GetChannelsQuery,
-    ItemOf,
-    ModalService,
-    NavBuilderService,
-    NotificationService,
-    ServerConfigService,
-} from '@vendure/admin-ui/core';
+import { CHANNEL_FRAGMENT, GetChannelListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { gql } from 'apollo-angular';
+
+export const GET_CHANNEL_LIST = gql`
+    query GetChannelList($options: ChannelListOptions) {
+        channels(options: $options) {
+            items {
+                ...Channel
+            }
+            totalItems
+        }
+    }
+    ${CHANNEL_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-channel-list',
@@ -23,12 +23,11 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelListComponent
-    extends BaseListComponent<GetChannelsQuery, ItemOf<GetChannelsQuery, 'channels'>>
+    extends TypedBaseListComponent<typeof GetChannelListDocument, 'channels'>
     implements OnInit
 {
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Channel');
-    readonly filters = this.dataTableService
-        .createFilterCollection<ChannelFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('Channel');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'code',
@@ -45,8 +44,7 @@ export class ChannelListComponent
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<ChannelSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
@@ -55,29 +53,12 @@ export class ChannelListComponent
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        private dataService: DataService,
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-        route: ActivatedRoute,
-        router: Router,
-        navBuilderService: NavBuilderService,
-        private serverConfigService: ServerConfigService,
-        private dataTableService: DataTableService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-channel',
-            label: _('settings.create-new-channel'),
-            locationId: 'channel-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['SuperAdmin', 'CreateChannel'],
-        });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getChannels(...args).refetchOnChannelChange(),
-            data => data.channels,
-            (skip, take) => ({
+    constructor() {
+        super();
+        super.configure({
+            document: GetChannelListDocument,
+            getItems: data => data.channels,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -90,12 +71,8 @@ export class ChannelListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 
     isDefaultChannel(channelCode: string): boolean {

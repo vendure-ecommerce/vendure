@@ -123,6 +123,16 @@
                     {{ collection.slug }}
                 </ng-template>
             </vdr-dt2-column>
+            <vdr-dt2-column [heading]="'common.visibility' | translate">
+                <ng-template let-collection="item">
+                    <vdr-chip *ngIf="collection.isPrivate" colorType="warning">{{
+                        'common.private' | translate
+                        }}</vdr-chip>
+                    <vdr-chip *ngIf="!collection.isPrivate" colorType="success">{{
+                        'common.public' | translate
+                        }}</vdr-chip>
+                </ng-template>
+            </vdr-dt2-column>
             <vdr-dt2-column [heading]="'common.view-contents' | translate" [optional]="false">
                 <ng-template let-collection="item">
                     <a

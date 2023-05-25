@@ -4,7 +4,7 @@
 
 .form,
 form {
-    padding-top: 0.5rem;
+    padding-top: 0;
 }
 
 .form .form-block,
@@ -43,7 +43,7 @@ select {
     border-radius: var(--border-radius-input) !important;
     border: 1px solid var(--color-weight-300);
     padding: 5px !important;
-    height: initial !important;
+    height: 36px !important;
     transition: background-color 0.2s, box-shadow 0.2s !important;
     &:focus {
         border-color: var(--color-primary-500);
@@ -119,9 +119,11 @@ select {
 
 .ng-select .ng-select-container {
     background: var(--color-form-input-bg) !important;
+    line-height: initial;
+    position: initial !important;
 }
 .ng-select .ng-select-container .ng-value-container {
-    padding-top: 0;
+    //padding-top: 0;
     min-width: 60px;
     .ng-value {
         margin: 0 6px 0 0;
@@ -132,10 +134,11 @@ select {
     input {
         border: none !important;
         background: none !important;
+        height: initial !important;
     }
 }
 .ng-select.ng-select-single > .ng-select-container {
-    padding-top: 9px;
+    //padding-top: 9px;
     input {
         padding-left: 0 !important;
     }

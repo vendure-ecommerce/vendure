@@ -36,30 +36,9 @@ export const ADMINISTRATOR_FRAGMENT = gql`
     ${ROLE_FRAGMENT}
 `;
 
-export const GET_ADMINISTRATORS = gql`
-    query GetAdministrators($options: AdministratorListOptions) {
-        administrators(options: $options) {
-            items {
-                ...Administrator
-            }
-            totalItems
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
 export const GET_ACTIVE_ADMINISTRATOR = gql`
     query GetActiveAdministrator {
         activeAdministrator {
-            ...Administrator
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const GET_ADMINISTRATOR = gql`
-    query GetAdministrator($id: ID!) {
-        administrator(id: $id) {
             ...Administrator
         }
     }
@@ -118,15 +97,6 @@ export const GET_ROLES = gql`
                 ...Role
             }
             totalItems
-        }
-    }
-    ${ROLE_FRAGMENT}
-`;
-
-export const GET_ROLE = gql`
-    query GetRole($id: ID!) {
-        role(id: $id) {
-            ...Role
         }
     }
     ${ROLE_FRAGMENT}

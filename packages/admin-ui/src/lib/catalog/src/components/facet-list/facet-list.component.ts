@@ -1,21 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
     DataService,
-    DataTableService,
-    FacetFilterParameter,
-    FacetSortParameter,
+    FACET_WITH_VALUES_FRAGMENT,
+    GetFacetListDocument,
     GetFacetListQuery,
     ItemOf,
     LanguageCode,
-    ModalService,
-    NavBuilderService,
-    NotificationService,
-    ServerConfigService,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
-import { Observable } from 'rxjs';
+import { gql } from 'apollo-angular';
+
+export const FACET_LIST_QUERY = gql`
+    query GetFacetList($options: FacetListOptions) {
+        facets(options: $options) {
+            items {
+                ...FacetWithValues
+            }
+            totalItems
+        }
+    }
+    ${FACET_WITH_VALUES_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-facet-list',
@@ -23,17 +29,14 @@ import { Observable } from 'rxjs';
     styleUrls: ['./facet-list.component.scss'],
 })
 export class FacetListComponent
-    extends BaseListComponent<GetFacetListQuery, ItemOf<GetFacetListQuery, 'facets'>>
+    extends TypedBaseListComponent<typeof GetFacetListDocument, 'facets'>
     implements OnInit
 {
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
 
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Facet');
-    readonly filters = this.dataTableService
-        .createFilterCollection<FacetFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('Facet');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'visibility',
@@ -46,8 +49,7 @@ export class FacetListComponent
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<FacetSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
         .addSort({ name: 'id' })
         .addSort({ name: 'createdAt' })
@@ -57,29 +59,12 @@ export class FacetListComponent
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        private dataService: DataService,
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-        private serverConfigService: ServerConfigService,
-        private dataTableService: DataTableService,
-        navBuilderService: NavBuilderService,
-        router: Router,
-        route: ActivatedRoute,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-facet',
-            label: _('catalog.create-new-facet'),
-            locationId: 'facet-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateCatalog', 'CreateFacet'],
-        });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.facet.getFacets(...args).refetchOnChannelChange(),
-            data => data.facets,
-            (skip, take) => ({
+    constructor(protected dataService: DataService) {
+        super();
+        super.configure({
+            document: GetFacetListDocument,
+            getItems: data => data.facets,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -92,16 +77,8 @@ export class FacetListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage);
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges, this.contentLanguage$);
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 
     toggleDisplayLimit(facet: ItemOf<GetFacetListQuery, 'facets'>) {

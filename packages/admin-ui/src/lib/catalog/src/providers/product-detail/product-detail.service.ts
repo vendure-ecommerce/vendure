@@ -6,6 +6,7 @@ import {
     DeletionResult,
     FacetWithValuesFragment,
     findTranslation,
+    GetProductDetailQuery,
     GetProductWithVariantsQuery,
     LanguageCode,
     UpdateProductInput,
@@ -143,7 +144,7 @@ export class ProductDetailService {
     }
 
     updateProduct(updateOptions: {
-        product: NonNullable<GetProductWithVariantsQuery['product']>;
+        product: NonNullable<GetProductDetailQuery['product']>;
         languageCode: LanguageCode;
         autoUpdate: boolean;
         productInput?: UpdateProductInput;
@@ -212,7 +213,7 @@ export class ProductDetailService {
 
     updateProductOption(
         input: UpdateProductOptionInput & { autoUpdate: boolean },
-        product: NonNullable<GetProductWithVariantsQuery['product']>,
+        product: NonNullable<GetProductDetailQuery['product']>,
         languageCode: LanguageCode,
     ) {
         const variants$ = input.autoUpdate

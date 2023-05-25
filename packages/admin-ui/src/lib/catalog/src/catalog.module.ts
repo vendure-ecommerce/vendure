@@ -1,9 +1,13 @@
-import { Component, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, ROUTES } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    AssetDetailQueryDocument,
     BulkActionRegistryService,
+    CollectionDetailQueryDocument,
     detailComponentWithResolver,
+    GetFacetDetailDocument,
+    GetProductDetailDocument,
     PageService,
     ProductVariantDetailQueryDocument,
     SharedModule,
@@ -42,7 +46,6 @@ import { GenerateProductVariantsComponent } from './components/generate-product-
 import { MoveCollectionsDialogComponent } from './components/move-collections-dialog/move-collections-dialog.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
-import { ProductDetail2Component } from './components/product-detail2/product-detail.component';
 import {
     assignFacetValuesToProductsBulkAction,
     assignProductsToChannelBulkAction,
@@ -54,7 +57,6 @@ import { ProductOptionsEditorComponent } from './components/product-options-edit
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
 import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
-import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
@@ -65,7 +67,6 @@ const CATALOG_COMPONENTS = [
     FacetListComponent,
     FacetDetailComponent,
     GenerateProductVariantsComponent,
-    ProductVariantsListComponent,
     ApplyFacetDialogComponent,
     AssetListComponent,
     AssetsComponent,
@@ -89,7 +90,7 @@ const CATALOG_COMPONENTS = [
     CollectionBreadcrumbPipe,
     MoveCollectionsDialogComponent,
     ProductVariantListComponent,
-    ProductDetail2Component,
+    ProductDetailComponent,
     ProductVariantDetailComponent,
 ];
 
@@ -135,7 +136,17 @@ export class CatalogModule {
             location: 'product-detail',
             tab: _('catalog.products'),
             route: '',
-            component: ProductDetail2Component,
+            component: detailComponentWithResolver({
+                component: ProductDetailComponent,
+                query: GetProductDetailDocument,
+                entityKey: 'product',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('catalog.create-new-product'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
         pageService.registerPageTab({
             location: 'product-list',
@@ -150,19 +161,15 @@ export class CatalogModule {
             component: detailComponentWithResolver({
                 component: ProductVariantDetailComponent,
                 query: ProductVariantDetailQueryDocument,
-                getEntity: result => result.productVariant,
-                getBreadcrumbs: result => [
+                entityKey: 'productVariant',
+                getBreadcrumbs: entity => [
                     {
-                        label: _('breadcrumb.products'),
-                        link: ['/catalog', 'products'],
+                        label: `${entity?.product.name}`,
+                        link: ['/catalog', 'products', entity?.product.id],
                     },
                     {
-                        label: `${result.productVariant?.product.name}`,
-                        link: ['/catalog', 'products', result.productVariant?.product.id],
-                    },
-                    {
-                        label: `${result.productVariant?.name}`,
-                        link: ['variants', result.productVariant?.id],
+                        label: `${entity?.name}`,
+                        link: ['variants', entity?.id],
                     },
                 ],
             }),
@@ -174,6 +181,22 @@ export class CatalogModule {
             component: FacetListComponent,
         });
         pageService.registerPageTab({
+            location: 'facet-detail',
+            tab: _('catalog.facet'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: FacetDetailComponent,
+                query: GetFacetDetailDocument,
+                entityKey: 'facet',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('catalog.create-new-facet'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
             location: 'collection-list',
             tab: _('catalog.collections'),
             route: '',
@@ -183,7 +206,17 @@ export class CatalogModule {
             location: 'collection-detail',
             tab: _('catalog.collection'),
             route: '',
-            component: CollectionDetailComponent,
+            component: detailComponentWithResolver({
+                component: CollectionDetailComponent,
+                query: CollectionDetailQueryDocument,
+                entityKey: 'collection',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('catalog.create-new-collection'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
         pageService.registerPageTab({
             location: 'asset-list',
@@ -191,24 +224,21 @@ export class CatalogModule {
             route: '',
             component: AssetListComponent,
         });
-
         pageService.registerPageTab({
-            location: 'product-list',
-            tab: 'Stock control',
-            route: 'stock-control',
-            component: StockControlComponent,
+            location: 'asset-detail',
+            tab: _('catalog.asset'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: AssetDetailComponent,
+                query: AssetDetailQueryDocument,
+                entityKey: 'asset',
+                getBreadcrumbs: entity => [
+                    {
+                        label: `${entity?.name}`,
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
     }
-}
-
-@Component({
-    standalone: true,
-    selector: 'vdr-custom-stock-control',
-    imports: [SharedModule],
-    template: `
-        <vdr-page-block>Stock control!</vdr-page-block>
-    `,
-})
-export class StockControlComponent {
-    // component logic
 }

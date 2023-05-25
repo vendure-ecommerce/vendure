@@ -34,27 +34,6 @@ export const PROMOTION_FRAGMENT = gql`
     ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
-export const GET_PROMOTION_LIST = gql`
-    query GetPromotionList($options: PromotionListOptions) {
-        promotions(options: $options) {
-            items {
-                ...Promotion
-            }
-            totalItems
-        }
-    }
-    ${PROMOTION_FRAGMENT}
-`;
-
-export const GET_PROMOTION = gql`
-    query GetPromotion($id: ID!) {
-        promotion(id: $id) {
-            ...Promotion
-        }
-    }
-    ${PROMOTION_FRAGMENT}
-`;
-
 export const GET_ADJUSTMENT_OPERATIONS = gql`
     query GetAdjustmentOperations {
         promotionConditions {

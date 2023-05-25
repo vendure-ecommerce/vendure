@@ -5,8 +5,6 @@ import {
     CREATE_SHIPPING_METHOD,
     DELETE_SHIPPING_METHOD,
     DELETE_SHIPPING_METHODS,
-    GET_SHIPPING_METHOD,
-    GET_SHIPPING_METHOD_LIST,
     GET_SHIPPING_METHOD_OPERATIONS,
     TEST_ELIGIBLE_SHIPPING_METHODS,
     TEST_SHIPPING_METHOD,
@@ -17,27 +15,6 @@ import { BaseDataService } from './base-data.service';
 
 export class ShippingMethodDataService {
     constructor(private baseDataService: BaseDataService) {}
-
-    getShippingMethods(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<
-            Codegen.GetShippingMethodListQuery,
-            Codegen.GetShippingMethodListQueryVariables
-        >(GET_SHIPPING_METHOD_LIST, {
-            options: {
-                take,
-                skip,
-            },
-        });
-    }
-
-    getShippingMethod(id: string) {
-        return this.baseDataService.query<
-            Codegen.GetShippingMethodQuery,
-            Codegen.GetShippingMethodQueryVariables
-        >(GET_SHIPPING_METHOD, {
-            id,
-        });
-    }
 
     getShippingMethodOperations() {
         return this.baseDataService.query<Codegen.GetShippingMethodOperationsQuery>(

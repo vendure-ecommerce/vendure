@@ -6,21 +6,13 @@ import {
     CollectionFragment,
     createResolveData,
     detailBreadcrumb,
-    FacetWithValuesFragment,
     GetProductWithVariantsQuery,
     PageComponent,
     PageService,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
-
-import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
-import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
-import { AssetResolver } from './providers/routing/asset-resolver';
-import { CollectionResolver } from './providers/routing/collection-resolver';
-import { FacetResolver } from './providers/routing/facet-resolver';
-import { ProductResolver } from './providers/routing/product-resolver';
 import { ProductVariantsResolver } from './providers/routing/product-variants-resolver';
 
 export const createRoutes = (pageService: PageService): Route[] => [
@@ -36,10 +28,9 @@ export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: 'products/:id',
         component: PageComponent,
-        resolve: createResolveData(ProductResolver),
         data: {
             locationId: 'product-detail',
-            breadcrumb: productBreadcrumb,
+            breadcrumb: { label: _('breadcrumb.products'), link: ['../', 'products'] },
         },
         children: pageService.getPageTabRoutes('product-detail'),
     },
@@ -48,6 +39,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
         component: PageComponent,
         data: {
             locationId: 'product-variant-detail',
+            breadcrumb: { label: _('breadcrumb.products'), link: ['../', 'products'] },
         },
         children: pageService.getPageTabRoutes('product-variant-detail'),
     },
@@ -80,11 +72,10 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'facets/:id',
-        component: FacetDetailComponent,
-        resolve: createResolveData(FacetResolver),
-        canDeactivate: [CanDeactivateDetailGuard],
+        component: PageComponent,
         data: {
-            breadcrumb: facetBreadcrumb,
+            locationId: 'facet-detail',
+            breadcrumb: { label: _('breadcrumb.facets'), link: ['../', 'facets'] },
         },
         children: pageService.getPageTabRoutes('facet-detail'),
     },
@@ -100,11 +91,9 @@ export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: 'collections/:id',
         component: PageComponent,
-        resolve: createResolveData(CollectionResolver),
         data: {
             locationId: 'collection-detail',
-            breadcrumb: collectionBreadcrumb,
-            canDeactivate: [CanDeactivateDetailGuard],
+            breadcrumb: { label: _('breadcrumb.collections'), link: ['../', 'collections'] },
         },
         children: pageService.getPageTabRoutes('collection-detail'),
     },
@@ -119,24 +108,14 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'assets/:id',
-        component: AssetDetailComponent,
-        resolve: createResolveData(AssetResolver),
+        component: PageComponent,
         data: {
-            breadcrumb: assetBreadcrumb,
+            locationId: 'asset-detail',
+            breadcrumb: { label: _('breadcrumb.assets'), link: ['../', 'assets'] },
         },
         children: pageService.getPageTabRoutes('asset-detail'),
     },
 ];
-
-export function productBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<NonNullable<GetProductWithVariantsQuery['product']>>({
-        entity: data.entity,
-        id: params.id,
-        breadcrumbKey: 'breadcrumb.products',
-        getName: product => product.name,
-        route: 'products',
-    });
-}
 
 export function productVariantEditorBreadcrumb(data: any, params: any) {
     return data.entity.pipe(
@@ -174,34 +153,4 @@ export function productOptionsEditorBreadcrumb(data: any, params: any) {
             },
         ]),
     );
-}
-
-export function facetBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<FacetWithValuesFragment>({
-        entity: data.entity,
-        id: params.id,
-        breadcrumbKey: 'breadcrumb.facets',
-        getName: facet => facet.name,
-        route: 'facets',
-    });
-}
-
-export function collectionBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<CollectionFragment>({
-        entity: data.entity,
-        id: params.id,
-        breadcrumbKey: 'breadcrumb.collections',
-        getName: collection => collection.name,
-        route: 'collections',
-    });
-}
-
-export function assetBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<AssetFragment>({
-        entity: data.entity,
-        id: params.id,
-        breadcrumbKey: 'breadcrumb.assets',
-        getName: asset => asset.name,
-        route: 'assets',
-    });
 }

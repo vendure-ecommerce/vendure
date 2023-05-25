@@ -1,8 +1,26 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { DataService } from '@vendure/admin-ui/core';
+import {
+    DataService,
+    GetCouponCodeSelectorPromotionListDocument,
+    PROMOTION_FRAGMENT,
+} from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { concat, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, skip, startWith, switchMap } from 'rxjs/operators';
+
+export const GET_COUPON_CODE_SELECTOR_PROMOTION_LIST = gql`
+    query GetCouponCodeSelectorPromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
+            items {
+                id
+                name
+                couponCode
+            }
+            totalItems
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-coupon-code-selector',
@@ -22,11 +40,18 @@ export class CouponCodeSelectorComponent implements OnInit {
     ngOnInit(): void {
         this.availableCouponCodes$ = concat(
             this.couponCodeInput$.pipe(
+                debounceTime(200),
                 distinctUntilChanged(),
                 switchMap(
                     term =>
-                        this.dataService.promotion.getPromotions(10, 0, {
-                            couponCode: { contains: term },
+                        this.dataService.query(GetCouponCodeSelectorPromotionListDocument, {
+                            options: {
+                                take: 10,
+                                skip: 0,
+                                filter: {
+                                    couponCode: { contains: term },
+                                },
+                            },
                         }).single$,
                 ),
                 map(({ promotions }) =>

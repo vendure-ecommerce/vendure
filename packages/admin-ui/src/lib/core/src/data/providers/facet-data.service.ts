@@ -7,11 +7,9 @@ import {
     CREATE_FACET,
     CREATE_FACET_VALUES,
     DELETE_FACET,
-    DELETE_FACETS,
     DELETE_FACET_VALUES,
-    GET_FACET_LIST,
+    DELETE_FACETS,
     GET_FACET_VALUE_LIST,
-    GET_FACET_WITH_VALUES,
     REMOVE_FACETS_FROM_CHANNEL,
     UPDATE_FACET,
     UPDATE_FACET_VALUES,
@@ -22,40 +20,11 @@ import { BaseDataService } from './base-data.service';
 export class FacetDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getFacets(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<Codegen.GetFacetListQuery, Codegen.GetFacetListQueryVariables>(
-            GET_FACET_LIST,
-            {
-                options: {
-                    take,
-                    skip,
-                },
-            },
-        );
-    }
-
     getFacetValues(options: Codegen.FacetValueListOptions, fetchPolicy?: WatchQueryFetchPolicy) {
-        return this.baseDataService.query<Codegen.GetFacetValueListQuery, Codegen.GetFacetValueListQueryVariables>(
-            GET_FACET_VALUE_LIST,
-            { options },
-            fetchPolicy,
-        );
-    }
-
-    getAllFacets() {
-        return this.baseDataService.query<Codegen.GetFacetListQuery, Codegen.GetFacetListQueryVariables>(
-            GET_FACET_LIST,
-            {},
-        );
-    }
-
-    getFacet(id: string) {
         return this.baseDataService.query<
-            Codegen.GetFacetWithValuesQuery,
-            Codegen.GetFacetWithValuesQueryVariables
-        >(GET_FACET_WITH_VALUES, {
-            id,
-        });
+            Codegen.GetFacetValueListQuery,
+            Codegen.GetFacetValueListQueryVariables
+        >(GET_FACET_VALUE_LIST, { options }, fetchPolicy);
     }
 
     createFacet(facet: Codegen.CreateFacetInput) {
@@ -89,7 +58,10 @@ export class FacetDataService {
     }
 
     deleteFacets(ids: string[], force: boolean) {
-        return this.baseDataService.mutate<Codegen.DeleteFacetsMutation, Codegen.DeleteFacetsMutationVariables>(DELETE_FACETS, {
+        return this.baseDataService.mutate<
+            Codegen.DeleteFacetsMutation,
+            Codegen.DeleteFacetsMutationVariables
+        >(DELETE_FACETS, {
             ids,
             force,
         });
@@ -126,12 +98,12 @@ export class FacetDataService {
     }
 
     assignFacetsToChannel(input: Codegen.AssignFacetsToChannelInput) {
-        return this.baseDataService.mutate<Codegen.AssignFacetsToChannelMutation, Codegen.AssignFacetsToChannelMutationVariables>(
-            ASSIGN_FACETS_TO_CHANNEL,
-            {
-                input,
-            },
-        );
+        return this.baseDataService.mutate<
+            Codegen.AssignFacetsToChannelMutation,
+            Codegen.AssignFacetsToChannelMutationVariables
+        >(ASSIGN_FACETS_TO_CHANNEL, {
+            input,
+        });
     }
 
     removeFacetsFromChannel(input: Codegen.RemoveFacetsFromChannelInput) {

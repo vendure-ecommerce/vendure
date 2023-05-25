@@ -1,17 +1,6 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    CanDeactivateDetailGuard,
-    createResolveData,
-    detailBreadcrumb,
-    PageComponent,
-    PageService,
-    PromotionFragment,
-} from '@vendure/admin-ui/core';
-
-import { PromotionDetailComponent } from './components/promotion-detail/promotion-detail.component';
-import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
-import { PromotionResolver } from './providers/routing/promotion-resolver';
+import { detailBreadcrumb, PageComponent, PageService, PromotionFragment } from '@vendure/admin-ui/core';
 
 export const createRoutes = (pageService: PageService): Route[] => [
     {
@@ -25,12 +14,12 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'promotions/:id',
-        component: PromotionDetailComponent,
-        resolve: createResolveData(PromotionResolver),
-        canDeactivate: [CanDeactivateDetailGuard],
+        component: PageComponent,
         data: {
-            breadcrumb: promotionBreadcrumb,
+            locationId: 'promotion-detail',
+            breadcrumb: { label: _('breadcrumb.promotions'), link: ['../', 'promotions'] },
         },
+        children: pageService.getPageTabRoutes('promotion-detail'),
     },
 ];
 

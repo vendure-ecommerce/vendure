@@ -15,16 +15,20 @@ import {
     ModalService,
     NotificationService,
     Order,
+    ORDER_DETAIL_FRAGMENT,
     OrderDetailFragment,
+    OrderDetailQueryDocument,
     OrderLineFragment,
     Refund,
     RefundOrderMutation,
     ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
+    TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
 import { pick } from '@vendure/common/lib/pick';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
+import { gql } from 'apollo-angular';
 import { EMPTY, merge, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
@@ -38,6 +42,15 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
 
 type Payment = NonNullable<OrderDetailFragment['payments']>[number];
 
+export const ORDER_DETAIL_QUERY = gql`
+    query OrderDetailQuery($id: ID!) {
+        order(id: $id) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
 @Component({
     selector: 'vdr-order-detail',
     templateUrl: './order-detail.component.html',
@@ -45,7 +58,7 @@ type Payment = NonNullable<OrderDetailFragment['payments']>[number];
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderDetailComponent
-    extends BaseDetailComponent<OrderDetailFragment>
+    extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>
     implements OnInit, OnDestroy
 {
     detailForm = new UntypedFormGroup({});

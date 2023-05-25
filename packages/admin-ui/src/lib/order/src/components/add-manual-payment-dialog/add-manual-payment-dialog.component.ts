@@ -4,11 +4,32 @@ import {
     CurrencyCode,
     DataService,
     Dialog,
+    GetAddManualPaymentMethodListDocument,
+    GetAddManualPaymentMethodListQuery,
     GetPaymentMethodListQuery,
     ItemOf,
     ManualPaymentInput,
+    PAYMENT_METHOD_FRAGMENT,
 } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
+
+const GET_PAYMENT_METHODS_FOR_MANUAL_ADD = gql`
+    query GetAddManualPaymentMethodList($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+                code
+                description
+                enabled
+            }
+            totalItems
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-add-manual-payment-dialog',
@@ -26,12 +47,16 @@ export class AddManualPaymentDialogComponent implements OnInit, Dialog<Omit<Manu
         method: new UntypedFormControl('', Validators.required),
         transactionId: new UntypedFormControl('', Validators.required),
     });
-    paymentMethods$: Observable<Array<ItemOf<GetPaymentMethodListQuery, 'paymentMethods'>>>;
+    paymentMethods$: Observable<Array<ItemOf<GetAddManualPaymentMethodListQuery, 'paymentMethods'>>>;
     constructor(private dataService: DataService) {}
 
     ngOnInit(): void {
-        this.paymentMethods$ = this.dataService.settings
-            .getPaymentMethods(999)
+        this.paymentMethods$ = this.dataService
+            .query(GetAddManualPaymentMethodListDocument, {
+                options: {
+                    take: 999,
+                },
+            })
             .mapSingle(data => data.paymentMethods.items);
     }
 

@@ -20,34 +20,32 @@ import {
     CREATE_TAX_RATE,
     CREATE_ZONE,
     DELETE_CHANNEL,
+    DELETE_CHANNELS,
+    DELETE_COUNTRIES,
     DELETE_COUNTRY,
     DELETE_PAYMENT_METHOD,
+    DELETE_PAYMENT_METHODS,
     DELETE_SELLER,
+    DELETE_SELLERS,
+    DELETE_TAX_CATEGORIES,
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
+    DELETE_TAX_RATES,
     DELETE_ZONE,
+    DELETE_ZONES,
     GET_ACTIVE_CHANNEL,
     GET_AVAILABLE_COUNTRIES,
-    GET_CHANNEL,
     GET_CHANNELS,
-    GET_COUNTRY,
-    GET_COUNTRY_LIST,
     GET_GLOBAL_SETTINGS,
-    GET_JOBS_BY_ID,
-    GET_JOBS_LIST,
     GET_JOB_INFO,
     GET_JOB_QUEUE_LIST,
-    GET_PAYMENT_METHOD,
-    GET_PAYMENT_METHOD_LIST,
+    GET_JOBS_BY_ID,
+    GET_JOBS_LIST,
     GET_PAYMENT_METHOD_OPERATIONS,
-    GET_SELLER,
     GET_SELLERS,
     GET_TAX_CATEGORIES,
-    GET_TAX_CATEGORY,
-    GET_TAX_RATE,
-    GET_TAX_RATE_LIST,
     GET_TAX_RATE_LIST_SIMPLE,
-    GET_ZONE_LIST,
+    GET_ZONE,
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
@@ -57,14 +55,6 @@ import {
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
     UPDATE_ZONE,
-    DELETE_SELLERS,
-    DELETE_CHANNELS,
-    DELETE_PAYMENT_METHODS,
-    DELETE_TAX_CATEGORIES,
-    DELETE_TAX_RATES,
-    DELETE_COUNTRIES,
-    GET_ZONE,
-    DELETE_ZONES,
 } from '../definitions/settings-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -72,30 +62,8 @@ import { BaseDataService } from './base-data.service';
 export class SettingsDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getCountries(take: number = 10, skip: number = 0, filterTerm?: string) {
-        return this.baseDataService.query<
-            Codegen.GetCountryListQuery,
-            Codegen.GetCollectionListQueryVariables
-        >(GET_COUNTRY_LIST, {
-            options: {
-                take,
-                skip,
-                filter: {
-                    name: filterTerm ? { contains: filterTerm } : null,
-                },
-            },
-        });
-    }
-
     getAvailableCountries() {
         return this.baseDataService.query<Codegen.GetAvailableCountriesQuery>(GET_AVAILABLE_COUNTRIES);
-    }
-
-    getCountry(id: string) {
-        return this.baseDataService.query<Codegen.GetCountryQuery, Codegen.GetCountryQueryVariables>(
-            GET_COUNTRY,
-            { id },
-        );
     }
 
     createCountry(input: Codegen.CreateCountryInput) {
@@ -132,13 +100,6 @@ export class SettingsDataService {
         >(DELETE_COUNTRIES, {
             ids,
         });
-    }
-
-    getZones(options?: Codegen.ZoneListOptions) {
-        return this.baseDataService.query<Codegen.GetZoneListQuery, Codegen.GetZoneListQueryVariables>(
-            GET_ZONE_LIST,
-            { options },
-        );
     }
 
     getZone(id: string) {
@@ -212,15 +173,6 @@ export class SettingsDataService {
         });
     }
 
-    getTaxCategory(id: string) {
-        return this.baseDataService.query<Codegen.GetTaxCategoryQuery, Codegen.GetTaxCategoryQueryVariables>(
-            GET_TAX_CATEGORY,
-            {
-                id,
-            },
-        );
-    }
-
     createTaxCategory(input: Codegen.CreateTaxCategoryInput) {
         return this.baseDataService.mutate<
             Codegen.CreateTaxCategoryMutation,
@@ -257,19 +209,6 @@ export class SettingsDataService {
         });
     }
 
-    getTaxRates(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
-        return this.baseDataService.query<Codegen.GetTaxRateListQuery, Codegen.GetTaxRateListQueryVariables>(
-            GET_TAX_RATE_LIST,
-            {
-                options: {
-                    take,
-                    skip,
-                },
-            },
-            fetchPolicy,
-        );
-    }
-
     getTaxRatesSimple(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
         return this.baseDataService.query<
             Codegen.GetTaxRateListSimpleQuery,
@@ -283,15 +222,6 @@ export class SettingsDataService {
                 },
             },
             fetchPolicy,
-        );
-    }
-
-    getTaxRate(id: string) {
-        return this.baseDataService.query<Codegen.GetTaxRateQuery, Codegen.GetTaxRateQueryVariables>(
-            GET_TAX_RATE,
-            {
-                id,
-            },
         );
     }
 
@@ -338,28 +268,10 @@ export class SettingsDataService {
         );
     }
 
-    getChannel(id: string) {
-        return this.baseDataService.query<Codegen.GetChannelQuery, Codegen.GetChannelQueryVariables>(
-            GET_CHANNEL,
-            {
-                id,
-            },
-        );
-    }
-
     getSellerList(options?: SellerListOptions) {
         return this.baseDataService.query<Codegen.GetSellersQuery, Codegen.GetSellersQueryVariables>(
             GET_SELLERS,
             { options },
-        );
-    }
-
-    getSeller(id: string) {
-        return this.baseDataService.query<Codegen.GetSellerQuery, Codegen.GetSellerQueryVariables>(
-            GET_SELLER,
-            {
-                id,
-            },
         );
     }
 
@@ -439,27 +351,6 @@ export class SettingsDataService {
             Codegen.DeleteChannelsMutationVariables
         >(DELETE_CHANNELS, {
             ids,
-        });
-    }
-
-    getPaymentMethods(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<
-            Codegen.GetPaymentMethodListQuery,
-            Codegen.GetPaymentMethodListQueryVariables
-        >(GET_PAYMENT_METHOD_LIST, {
-            options: {
-                skip,
-                take,
-            },
-        });
-    }
-
-    getPaymentMethod(id: string) {
-        return this.baseDataService.query<
-            Codegen.GetPaymentMethodQuery,
-            Codegen.GetPaymentMethodQueryVariables
-        >(GET_PAYMENT_METHOD, {
-            id,
         });
     }
 

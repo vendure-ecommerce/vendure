@@ -8,7 +8,6 @@ import {
     CREATE_COLLECTION,
     DELETE_COLLECTION,
     DELETE_COLLECTIONS,
-    GET_COLLECTION,
     GET_COLLECTION_CONTENTS,
     GET_COLLECTION_FILTERS,
     GET_COLLECTION_LIST,
@@ -34,15 +33,6 @@ export class CollectionDataService {
         >(GET_COLLECTION_LIST, {
             options,
         });
-    }
-
-    getCollection(id: string) {
-        return this.baseDataService.query<Codegen.GetCollectionQuery, Codegen.GetCollectionQueryVariables>(
-            GET_COLLECTION,
-            {
-                id,
-            },
-        );
     }
 
     createCollection(input: Codegen.CreateCollectionInput) {

@@ -1,6 +1,14 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { BulkActionRegistryService, SharedModule } from '@vendure/admin-ui/core';
+import { RouterModule, ROUTES } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import {
+    BulkActionRegistryService,
+    CustomerDetailQueryDocument,
+    detailComponentWithResolver,
+    GetCustomerGroupDetailDocument,
+    PageService,
+    SharedModule,
+} from '@vendure/admin-ui/core';
 
 import { AddCustomerToGroupDialogComponent } from './components/add-customer-to-group-dialog/add-customer-to-group-dialog.component';
 import { AddressCardComponent } from './components/address-card/address-card.component';
@@ -17,10 +25,19 @@ import { deleteCustomersBulkAction } from './components/customer-list/customer-l
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerStatusLabelComponent } from './components/customer-status-label/customer-status-label.component';
 import { SelectCustomerGroupDialogComponent } from './components/select-customer-group-dialog/select-customer-group-dialog.component';
-import { customerRoutes } from './customer.routes';
+import { createRoutes } from './customer.routes';
+import { CustomerGroupDetailComponent } from './components/customer-group-detail/customer-group-detail.component';
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(customerRoutes)],
+    imports: [SharedModule, RouterModule.forChild([])],
+    providers: [
+        {
+            provide: ROUTES,
+            useFactory: (pageService: PageService) => createRoutes(pageService),
+            multi: true,
+            deps: [PageService],
+        },
+    ],
     declarations: [
         CustomerListComponent,
         CustomerDetailComponent,
@@ -34,13 +51,64 @@ import { customerRoutes } from './customer.routes';
         CustomerHistoryComponent,
         AddressDetailDialogComponent,
         CustomerHistoryEntryHostComponent,
+        CustomerGroupDetailComponent,
     ],
     exports: [AddressCardComponent],
 })
 export class CustomerModule {
-    constructor(private bulkActionRegistryService: BulkActionRegistryService) {
+    constructor(
+        private bulkActionRegistryService: BulkActionRegistryService,
+        private pageService: PageService,
+    ) {
         bulkActionRegistryService.registerBulkAction(deleteCustomersBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCustomerGroupsBulkAction);
         bulkActionRegistryService.registerBulkAction(removeCustomerGroupMembersBulkAction);
+
+        pageService.registerPageTab({
+            location: 'customer-list',
+            tab: _('customer.customers'),
+            route: '',
+            component: CustomerListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'customer-detail',
+            tab: _('customer.customer'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: CustomerDetailComponent,
+                query: CustomerDetailQueryDocument,
+                entityKey: 'customer',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity
+                            ? `${entity?.firstName} ${entity?.lastName}`
+                            : _('customer.create-new-customer'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
+            location: 'customer-group-list',
+            tab: _('customer.customer-groups'),
+            route: '',
+            component: CustomerGroupListComponent,
+        });
+        pageService.registerPageTab({
+            location: 'customer-group-detail',
+            tab: _('customer.customer-group'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: CustomerGroupDetailComponent,
+                query: GetCustomerGroupDetailDocument,
+                entityKey: 'customerGroup',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('customer.create-new-customer-group'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
     }
 }

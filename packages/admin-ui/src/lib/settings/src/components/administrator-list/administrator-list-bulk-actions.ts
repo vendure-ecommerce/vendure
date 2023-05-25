@@ -1,8 +1,13 @@
-import { createBulkDeleteAction, GetAdministratorsQuery, ItemOf, Permission } from '@vendure/admin-ui/core';
+import {
+    createBulkDeleteAction,
+    GetAdministratorListQuery,
+    ItemOf,
+    Permission,
+} from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 export const deleteAdministratorsBulkAction = createBulkDeleteAction<
-    ItemOf<GetAdministratorsQuery, 'administrators'>
+    ItemOf<GetAdministratorListQuery, 'administrators'>
 >({
     location: 'administrator-list',
     requiresPermission: userPermissions => userPermissions.includes(Permission.DeleteAdministrator),

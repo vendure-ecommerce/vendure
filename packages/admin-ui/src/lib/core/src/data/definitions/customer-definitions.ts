@@ -78,30 +78,6 @@ export const GET_CUSTOMER_LIST = gql`
     }
 `;
 
-export const GET_CUSTOMER = gql`
-    query GetCustomer($id: ID!, $orderListOptions: OrderListOptions) {
-        customer(id: $id) {
-            ...Customer
-            groups {
-                id
-                name
-            }
-            orders(options: $orderListOptions) {
-                items {
-                    id
-                    code
-                    state
-                    totalWithTax
-                    currencyCode
-                    updatedAt
-                }
-                totalItems
-            }
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
 export const CREATE_CUSTOMER = gql`
     mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
         createCustomer(input: $input, password: $password) {
@@ -228,6 +204,9 @@ export const GET_CUSTOMER_GROUP_WITH_CUSTOMERS = gql`
                     emailAddress
                     firstName
                     lastName
+                    user {
+                        id
+                    }
                 }
                 totalItems
             }

@@ -1,9 +1,23 @@
 <vdr-page-block>
-    <vdr-language-selector
-        [availableLanguageCodes]="availableLanguages$ | async"
-        [currentLanguageCode]="contentLanguage$ | async"
-        (languageCodeChange)="setLanguage($event)"
-    ></vdr-language-selector>
+    <vdr-action-bar>
+        <vdr-ab-left>
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector></vdr-ab-left>
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="country-list"></vdr-action-bar-items>
+            <a
+                class="btn btn-primary"
+                *vdrIfPermissions="['CreateSettings', 'CreateCountry']"
+                [routerLink]="['./', 'create']"
+            >
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'settings.create-new-country' | translate }}
+            </a>
+        </vdr-ab-right>
+    </vdr-action-bar>
 </vdr-page-block>
 <vdr-data-table-2
     class="mt-2"
@@ -56,6 +70,11 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.code' | translate" [sort]="sorts.get('code')">
+        <ng-template let-country="item">
+            {{ country.code }}
+        </ng-template>
+    </vdr-dt2-column>
     <vdr-dt2-column [heading]="'common.enabled' | translate">
         <ng-template let-country="item">
             <vdr-chip *ngIf="country.enabled" colorType="success">{{
@@ -66,5 +85,9 @@
             }}</vdr-chip>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" [sorts]="sorts" />
+    <vdr-dt2-custom-field-column
+        *ngFor="let customField of customFields"
+        [customField]="customField"
+        [sorts]="sorts"
+    />
 </vdr-data-table-2>

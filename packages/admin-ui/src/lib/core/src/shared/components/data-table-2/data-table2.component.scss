@@ -25,7 +25,8 @@
 }
 .table-wrapper {
     display: block;
-    overflow: auto;
+    overflow-y: hidden;
+    overflow-x: auto;
     width: 100%;
     max-width: var(--surface-width);
 }

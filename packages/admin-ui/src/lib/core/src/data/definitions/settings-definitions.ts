@@ -22,23 +22,6 @@ export const COUNTRY_FRAGMENT = gql`
     }
 `;
 
-export const GET_COUNTRY_LIST = gql`
-    query GetCountryList($options: CountryListOptions) {
-        countries(options: $options) {
-            items {
-                id
-                createdAt
-                updatedAt
-                code
-                name
-                type
-                enabled
-            }
-            totalItems
-        }
-    }
-`;
-
 export const GET_AVAILABLE_COUNTRIES = gql`
     query GetAvailableCountries {
         countries(options: { filter: { enabled: { eq: true } } }) {
@@ -50,15 +33,6 @@ export const GET_AVAILABLE_COUNTRIES = gql`
             }
         }
     }
-`;
-
-export const GET_COUNTRY = gql`
-    query GetCountry($id: ID!) {
-        country(id: $id) {
-            ...Country
-        }
-    }
-    ${COUNTRY_FRAGMENT}
 `;
 
 export const CREATE_COUNTRY = gql`
@@ -108,26 +82,6 @@ export const ZONE_FRAGMENT = gql`
         }
     }
     ${COUNTRY_FRAGMENT}
-`;
-
-export const GET_ZONE_LIST = gql`
-    query GetZoneList($options: ZoneListOptions) {
-        zones(options: $options) {
-            items {
-                ...Zone
-                members {
-                    createdAt
-                    updatedAt
-                    id
-                    name
-                    code
-                    enabled
-                }
-            }
-            totalItems
-        }
-    }
-    ${ZONE_FRAGMENT}
 `;
 
 export const GET_ZONE = gql`
@@ -215,15 +169,6 @@ export const GET_TAX_CATEGORIES = gql`
     ${TAX_CATEGORY_FRAGMENT}
 `;
 
-export const GET_TAX_CATEGORY = gql`
-    query GetTaxCategory($id: ID!) {
-        taxCategory(id: $id) {
-            ...TaxCategory
-        }
-    }
-    ${TAX_CATEGORY_FRAGMENT}
-`;
-
 export const CREATE_TAX_CATEGORY = gql`
     mutation CreateTaxCategory($input: CreateTaxCategoryInput!) {
         createTaxCategory(input: $input) {
@@ -283,18 +228,6 @@ export const TAX_RATE_FRAGMENT = gql`
     }
 `;
 
-export const GET_TAX_RATE_LIST = gql`
-    query GetTaxRateList($options: TaxRateListOptions) {
-        taxRates(options: $options) {
-            items {
-                ...TaxRate
-            }
-            totalItems
-        }
-    }
-    ${TAX_RATE_FRAGMENT}
-`;
-
 export const GET_TAX_RATE_LIST_SIMPLE = gql`
     query GetTaxRateListSimple($options: TaxRateListOptions) {
         taxRates(options: $options) {
@@ -317,15 +250,6 @@ export const GET_TAX_RATE_LIST_SIMPLE = gql`
             totalItems
         }
     }
-`;
-
-export const GET_TAX_RATE = gql`
-    query GetTaxRate($id: ID!) {
-        taxRate(id: $id) {
-            ...TaxRate
-        }
-    }
-    ${TAX_RATE_FRAGMENT}
 `;
 
 export const CREATE_TAX_RATE = gql`
@@ -410,15 +334,6 @@ export const GET_CHANNELS = gql`
     ${CHANNEL_FRAGMENT}
 `;
 
-export const GET_CHANNEL = gql`
-    query GetChannel($id: ID!) {
-        channel(id: $id) {
-            ...Channel
-        }
-    }
-    ${CHANNEL_FRAGMENT}
-`;
-
 export const GET_SELLERS = gql`
     query GetSellers($options: SellerListOptions) {
         sellers(options: $options) {
@@ -426,15 +341,6 @@ export const GET_SELLERS = gql`
                 ...Seller
             }
             totalItems
-        }
-    }
-    ${SELLER_FRAGMENT}
-`;
-
-export const GET_SELLER = gql`
-    query GetSeller($id: ID!) {
-        seller(id: $id) {
-            ...Seller
         }
     }
     ${SELLER_FRAGMENT}
@@ -550,18 +456,6 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
     ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
-export const GET_PAYMENT_METHOD_LIST = gql`
-    query GetPaymentMethodList($options: PaymentMethodListOptions!) {
-        paymentMethods(options: $options) {
-            items {
-                ...PaymentMethod
-            }
-            totalItems
-        }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
-
 export const GET_PAYMENT_METHOD_OPERATIONS = gql`
     query GetPaymentMethodOperations {
         paymentMethodEligibilityCheckers {
@@ -572,15 +466,6 @@ export const GET_PAYMENT_METHOD_OPERATIONS = gql`
         }
     }
     ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
-`;
-
-export const GET_PAYMENT_METHOD = gql`
-    query GetPaymentMethod($id: ID!) {
-        paymentMethod(id: $id) {
-            ...PaymentMethod
-        }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
 `;
 
 export const CREATE_PAYMENT_METHOD = gql`

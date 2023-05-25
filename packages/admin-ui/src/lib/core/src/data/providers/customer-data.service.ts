@@ -1,5 +1,5 @@
-import { LogicalOperator } from '../../common/generated-types';
 import * as Codegen from '../../common/generated-types';
+import { LogicalOperator } from '../../common/generated-types';
 import {
     ADD_CUSTOMERS_TO_GROUP,
     ADD_NOTE_TO_CUSTOMER,
@@ -9,10 +9,11 @@ import {
     DELETE_CUSTOMER,
     DELETE_CUSTOMER_ADDRESS,
     DELETE_CUSTOMER_GROUP,
+    DELETE_CUSTOMER_GROUPS,
     DELETE_CUSTOMER_NOTE,
-    GET_CUSTOMER,
-    GET_CUSTOMER_GROUPS,
+    DELETE_CUSTOMERS,
     GET_CUSTOMER_GROUP_WITH_CUSTOMERS,
+    GET_CUSTOMER_GROUPS,
     GET_CUSTOMER_HISTORY,
     GET_CUSTOMER_LIST,
     REMOVE_CUSTOMERS_FROM_GROUP,
@@ -20,8 +21,6 @@ import {
     UPDATE_CUSTOMER_ADDRESS,
     UPDATE_CUSTOMER_GROUP,
     UPDATE_CUSTOMER_NOTE,
-    DELETE_CUSTOMERS,
-    DELETE_CUSTOMER_GROUPS,
 } from '../definitions/customer-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -55,17 +54,7 @@ export class CustomerDataService {
         });
     }
 
-    getCustomer(id: string, orderListOptions?: Codegen.OrderListOptions) {
-        return this.baseDataService.query<Codegen.GetCustomerQuery, Codegen.GetCustomerQueryVariables>(
-            GET_CUSTOMER,
-            {
-                id,
-                orderListOptions,
-            },
-        );
-    }
-
-    createCustomer(input: Codegen.CreateCustomerInput, password?: string) {
+    createCustomer(input: Codegen.CreateCustomerInput, password?: string | null) {
         return this.baseDataService.mutate<
             Codegen.CreateCustomerMutation,
             Codegen.CreateCustomerMutationVariables

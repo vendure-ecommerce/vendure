@@ -34,7 +34,7 @@
     <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false">
         <ng-template let-member="item">
             <a class="button-ghost" [routerLink]="['/settings/countries', member.id]"
-                ><span> {{ member.name }} {{ member.firstName }} {{ member.lastName }} </span>
+                ><span> {{ member.name }}</span>
                 <clr-icon shape="arrow right"></clr-icon>
             </a>
         </ng-template>

@@ -80,6 +80,7 @@ export class OrderListComponent
     readonly sorts = this.dataTableService
         .createSortCollection<OrderSortParameter>()
         .defaultSort('updatedAt', 'DESC')
+        .addSort({ name: 'id' })
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'orderPlacedAt' })

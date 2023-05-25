@@ -14,6 +14,8 @@
     label {
         font-size: var(--font-size-sm);
         color: var(--color-weight-800);
+        margin-bottom: 4px;
+        display: inline-block;
     }
 }
 .tooltip-text {
@@ -28,6 +30,8 @@
     input,
     select,
     textarea,
+    vdr-zone-selector,
+    vdr-facet-value-selector,
     vdr-rich-text-editor {
         width: 100%;
     }

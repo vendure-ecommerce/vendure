@@ -1,14 +1,27 @@
 <vdr-page-block>
-    <vdr-language-selector
-        [availableLanguageCodes]="availableLanguages$ | async"
-        [currentLanguageCode]="contentLanguage$ | async"
-        (languageCodeChange)="setLanguage($event)"
-    />
+    <vdr-action-bar>
+        <vdr-ab-left>
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            /></vdr-ab-left>
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="zone-list"></vdr-action-bar-items>
+            <a
+                class="btn btn-primary"
+                *vdrIfPermissions="['CreateSettings', 'CreateZone']"
+                [routerLink]="['./', 'create']"
+            >
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'settings.create-new-zone' | translate }}
+            </a>
+        </vdr-ab-right>
+    </vdr-action-bar>
 </vdr-page-block>
 <vdr-split-view [rightPanelOpen]="activeZone$ | async" (closeClicked)="closeMembers()">
     <ng-template vdrSplitViewLeft>
         <vdr-data-table-2
-            class="mt-2"
             id="zone-list"
             [items]="items$ | async"
             [itemsPerPage]="itemsPerPage$ | async"
@@ -93,7 +106,6 @@
             <vdr-zone-member-list
                 *ngIf="activeZone$ | async as activeZone"
                 locationId="zone-members-list"
-                [members]="activeZone.members"
                 [selectedMemberIds]="selectedMemberIds"
                 [activeZone]="activeZone"
                 (selectionChange)="selectedMemberIds = $event"

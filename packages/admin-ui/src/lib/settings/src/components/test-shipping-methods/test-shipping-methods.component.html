@@ -6,6 +6,7 @@
         <div class="">
             <vdr-test-address-form (addressChange)="setTestAddress($event)"></vdr-test-address-form>
             <vdr-shipping-eligibility-test-result
+                class="mt-1"
                 [currencyCode]="(activeChannel$ | async)?.currencyCode"
                 [okToRun]="allTestDataPresent()"
                 [testDataUpdated]="testDataUpdated"

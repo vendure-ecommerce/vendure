@@ -1,19 +1,27 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BaseListComponent,
-    DataService,
-    DataTableService,
-    GetShippingMethodListQuery,
-    ItemOf,
-    LanguageCode,
-    NavBuilderService,
-    ServerConfigService,
-    ShippingMethodFilterParameter,
-    ShippingMethodSortParameter,
-} from '@vendure/admin-ui/core';
-import { Observable } from 'rxjs';
+import { GetShippingMethodListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+export const GET_SHIPPING_METHOD_LIST = gql`
+    query GetShippingMethodList($options: ShippingMethodListOptions) {
+        shippingMethods(options: $options) {
+            items {
+                ...ShippingMethodListItem
+            }
+            totalItems
+        }
+    }
+    fragment ShippingMethodListItem on ShippingMethod {
+        id
+        createdAt
+        updatedAt
+        code
+        name
+        description
+        fulfillmentHandlerCode
+    }
+`;
 
 @Component({
     selector: 'vdr-shipping-method-list',
@@ -22,17 +30,11 @@ import { Observable } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShippingMethodListComponent
-    extends BaseListComponent<
-        GetShippingMethodListQuery,
-        ItemOf<GetShippingMethodListQuery, 'shippingMethods'>
-    >
+    extends TypedBaseListComponent<typeof GetShippingMethodListDocument, 'shippingMethods'>
     implements OnInit
 {
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('ShippingMethod');
-    readonly filters = this.dataTableService
-        .createFilterCollection<ShippingMethodFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('ShippingMethod');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'name',
@@ -52,42 +54,32 @@ export class ShippingMethodListComponent
             label: _('common.description'),
             filterField: 'description',
         })
+        .addFilter({
+            name: 'fulfillmentHandler',
+            type: { kind: 'text' },
+            label: _('settings.fulfillment-handler'),
+            filterField: 'fulfillmentHandlerCode',
+        })
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<ShippingMethodSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'name' })
         .addSort({ name: 'code' })
         .addSort({ name: 'description' })
+        .addSort({ name: 'fulfillmentHandlerCode' })
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        router: Router,
-        route: ActivatedRoute,
-        navBuilderService: NavBuilderService,
-        private dataService: DataService,
-        private serverConfigService: ServerConfigService,
-        private dataTableService: DataTableService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-shipping-method',
-            label: _('settings.create-new-shipping-method'),
-            locationId: 'shipping-method-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreateSettings', 'CreateShippingMethod'],
-        });
-        super.setQueryFn(
-            (...args: any[]) =>
-                this.dataService.shippingMethod.getShippingMethods(...args).refetchOnChannelChange(),
-            data => data.shippingMethods,
-            (skip, take) => ({
+    constructor() {
+        super();
+        super.configure({
+            document: GetShippingMethodListDocument,
+            getItems: data => data.shippingMethods,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -100,20 +92,7 @@ export class ShippingMethodListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage);
-
-        super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
-    }
-
-    setLanguage(code: LanguageCode) {
-        this.dataService.client.setContentLanguage(code).subscribe();
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 }

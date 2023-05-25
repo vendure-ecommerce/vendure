@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
@@ -70,7 +70,7 @@ type T1 = T['stockLevels'];
 })
 export class ProductVariantDetailComponent
     extends TypedBaseDetailComponent<typeof ProductVariantDetailQueryDocument, 'productVariant'>
-    implements OnInit
+    implements OnInit, OnDestroy
 {
     public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
@@ -155,6 +155,10 @@ export class ProductVariantDetailComponent
         );
     }
 
+    ngOnDestroy() {
+        this.destroy();
+    }
+
     save() {
         combineLatest(this.entity$, this.languageCode$)
             .pipe(
@@ -231,7 +235,7 @@ export class ProductVariantDetailComponent
     }
 
     optionGroupName(optionGroupId: string): string | undefined {
-        const group = this.entity.product.optionGroups.find(g => g.id === optionGroupId);
+        const group = this.entity?.product.optionGroups.find(g => g.id === optionGroupId);
         if (group) {
             const translation =
                 group?.translations.find(t => t.languageCode === this.languageCode) ?? group.translations[0];

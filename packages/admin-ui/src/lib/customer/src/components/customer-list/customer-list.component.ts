@@ -1,16 +1,32 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BaseListComponent,
-    CustomerFilterParameter,
-    CustomerSortParameter,
-    DataService,
-    DataTableService,
-    GetCustomerListQuery,
-    ItemOf,
-    LogicalOperator,
-} from '@vendure/admin-ui/core';
+import { CustomerListQueryDocument, LogicalOperator, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+export const CUSTOMER_LIST_QUERY = gql`
+    query CustomerListQuery($options: CustomerListOptions) {
+        customers(options: $options) {
+            items {
+                ...CustomerListItem
+            }
+            totalItems
+        }
+    }
+
+    fragment CustomerListItem on Customer {
+        id
+        createdAt
+        updatedAt
+        title
+        firstName
+        lastName
+        emailAddress
+        user {
+            id
+            verified
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-customer-list',
@@ -18,11 +34,10 @@ import {
     styleUrls: ['./customer-list.component.scss'],
 })
 export class CustomerListComponent
-    extends BaseListComponent<GetCustomerListQuery, ItemOf<GetCustomerListQuery, 'customers'>>
+    extends TypedBaseListComponent<typeof CustomerListQueryDocument, 'customers'>
     implements OnInit
 {
-    readonly filters = this.dataTableService
-        .createFilterCollection<CustomerFilterParameter>()
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'firstName',
@@ -44,8 +59,7 @@ export class CustomerListComponent
         })
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<CustomerSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
@@ -53,17 +67,12 @@ export class CustomerListComponent
         .addSort({ name: 'emailAddress' })
         .connectToRoute(this.route);
 
-    constructor(
-        router: Router,
-        route: ActivatedRoute,
-        private dataService: DataService,
-        private dataTableService: DataTableService,
-    ) {
-        super(router, route);
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.customer.getCustomerList(...args).refetchOnChannelChange(),
-            data => data.customers,
-            (skip, take) => ({
+    constructor() {
+        super();
+        this.configure({
+            document: CustomerListQueryDocument,
+            getItems: data => data.customers,
+            setVariables: (skip, take) => ({
                 options: {
                     skip,
                     take,
@@ -83,11 +92,7 @@ export class CustomerListComponent
                     sort: this.sorts.createSortInput(),
                 },
             }),
-        );
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
+            refreshListOnChanges: [this.sorts.valueChanges, this.filters.valueChanges],
+        });
     }
 }

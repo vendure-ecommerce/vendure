@@ -1,24 +1,26 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
-    DataService,
-    DataTableService,
-    GetPromotionListQuery,
-    ItemOf,
+    GetPromotionListDocument,
     LogicalOperator,
-    NavBuilderService,
-    PromotionFilterParameter,
+    PROMOTION_FRAGMENT,
     PromotionListOptions,
     PromotionSortParameter,
-    ServerConfigService,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 
-export type PromotionSearchForm = {
-    name: string;
-    couponCode: string;
-};
+export const GET_PROMOTION_LIST = gql`
+    query GetPromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
+            items {
+                ...Promotion
+            }
+            totalItems
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-promotion-list',
@@ -27,98 +29,81 @@ export type PromotionSearchForm = {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PromotionListComponent
-    extends BaseListComponent<GetPromotionListQuery, ItemOf<GetPromotionListQuery, 'promotions'>>
+    extends TypedBaseListComponent<typeof GetPromotionListDocument, 'promotions'>
     implements OnInit
 {
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Promotion');
-    readonly filters = this.dataTableService
-        .createFilterCollection<PromotionFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('Promotion');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
-        .addFilter({
-            name: 'startsAt',
-            type: { kind: 'dateRange' },
-            label: _('marketing.starts-at'),
-            filterField: 'startsAt',
-        })
-        .addFilter({
-            name: 'endsAt',
-            type: { kind: 'dateRange' },
-            label: _('marketing.ends-at'),
-            filterField: 'endsAt',
-        })
-        .addFilter({
-            name: 'enabled',
-            type: { kind: 'boolean' },
-            label: _('common.enabled'),
-            filterField: 'enabled',
-        })
-        .addFilter({
-            name: 'name',
-            type: { kind: 'text' },
-            label: _('common.name'),
-            filterField: 'name',
-        })
-        .addFilter({
-            name: 'couponCode',
-            type: { kind: 'text' },
-            label: _('marketing.coupon-code'),
-            filterField: 'couponCode',
-        })
-        .addFilter({
-            name: 'desc',
-            type: { kind: 'text' },
-            label: _('common.description'),
-            filterField: 'description',
-        })
-        .addFilter({
-            name: 'usageLimit',
-            type: { kind: 'number' },
-            label: _('marketing.per-customer-limit'),
-            filterField: 'perCustomerUsageLimit',
-        })
+        .addFilters([
+            {
+                name: 'startsAt',
+                type: { kind: 'dateRange' },
+                label: _('marketing.starts-at'),
+                filterField: 'startsAt',
+            },
+            {
+                name: 'endsAt',
+                type: { kind: 'dateRange' },
+                label: _('marketing.ends-at'),
+                filterField: 'endsAt',
+            },
+            {
+                name: 'enabled',
+                type: { kind: 'boolean' },
+                label: _('common.enabled'),
+                filterField: 'enabled',
+            },
+            {
+                name: 'name',
+                type: { kind: 'text' },
+                label: _('common.name'),
+                filterField: 'name',
+            },
+            {
+                name: 'couponCode',
+                type: { kind: 'text' },
+                label: _('marketing.coupon-code'),
+                filterField: 'couponCode',
+            },
+            {
+                name: 'desc',
+                type: { kind: 'text' },
+                label: _('common.description'),
+                filterField: 'description',
+            },
+            {
+                name: 'usageLimit',
+                type: { kind: 'number' },
+                label: _('marketing.per-customer-limit'),
+                filterField: 'perCustomerUsageLimit',
+            },
+        ])
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<PromotionSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('createdAt', 'DESC')
-        .addSort({ name: 'createdAt' })
-        .addSort({ name: 'updatedAt' })
-        .addSort({ name: 'startsAt' })
-        .addSort({ name: 'endsAt' })
-        .addSort({ name: 'name' })
-        .addSort({ name: 'couponCode' })
-        .addSort({ name: 'perCustomerUsageLimit' })
+        .addSorts([
+            { name: 'createdAt' },
+            { name: 'updatedAt' },
+            { name: 'startsAt' },
+            { name: 'endsAt' },
+            { name: 'name' },
+            { name: 'couponCode' },
+            { name: 'perCustomerUsageLimit' },
+        ])
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        router: Router,
-        route: ActivatedRoute,
-        navBuilderService: NavBuilderService,
-        private serverConfigService: ServerConfigService,
-        private dataService: DataService,
-        private dataTableService: DataTableService,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-promotion',
-            label: _('marketing.create-new-promotion'),
-            locationId: 'promotion-list',
-            icon: 'plus',
-            routerLink: ['./create'],
-            requiresPermission: ['CreatePromotion'],
+    constructor() {
+        super();
+        super.configure({
+            document: GetPromotionListDocument,
+            getItems: data => data.promotions,
+            setVariables: (skip, take) => this.createQueryOptions(skip, take, this.searchTermControl.value),
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
         });
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.promotion.getPromotions(...args).refetchOnChannelChange(),
-            data => data.promotions,
-            (skip, take) => this.createQueryOptions(skip, take, this.searchTermControl.value),
-        );
-    }
-
-    ngOnInit(): void {
-        super.ngOnInit();
-        super.refreshListOnChanges(this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     private createQueryOptions(
