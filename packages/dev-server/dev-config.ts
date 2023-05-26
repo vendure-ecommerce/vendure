@@ -63,26 +63,26 @@ export const devConfig: VendureConfig = {
     },
 
     customFields: {
-        ProductVariant: [
-            {
-                name: 'weight',
-                type: 'int',
-                defaultValue: 0,
-                nullable: false,
-                min: 0,
-                step: 1,
-                public: true,
-                label: [{ languageCode: LanguageCode.en, value: 'Weight' }],
-                ui: { component: 'number-form-input', suffix: 'g' },
-            },
-            {
-                name: 'gtin',
-                type: 'string',
-                nullable: true,
-                public: true,
-                label: [{ languageCode: LanguageCode.en, value: 'GTIN (barcode)' }],
-            },
-        ],
+        // ProductVariant: [
+        //     {
+        //         name: 'weight',
+        //         type: 'int',
+        //         defaultValue: 0,
+        //         nullable: false,
+        //         min: 0,
+        //         step: 1,
+        //         public: true,
+        //         label: [{ languageCode: LanguageCode.en, value: 'Weight' }],
+        //         ui: { component: 'number-form-input', suffix: 'g' },
+        //     },
+        //     {
+        //         name: 'gtin',
+        //         type: 'string',
+        //         nullable: true,
+        //         public: true,
+        //         label: [{ languageCode: LanguageCode.en, value: 'GTIN (barcode)' }],
+        //     },
+        // ],
     },
 
     /* customFields: {

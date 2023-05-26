@@ -100,13 +100,13 @@ export class OrderModule {
     constructor(private pageService: PageService) {
         pageService.registerPageTab({
             location: 'order-list',
-            tab: _('orders.orders'),
+            tab: _('order.orders'),
             route: '',
             component: OrderListComponent,
         });
         pageService.registerPageTab({
             location: 'order-detail',
-            tab: _('orders.order'),
+            tab: _('order.order'),
             route: '',
             component: detailComponentWithResolver({
                 component: OrderDetailComponent,
