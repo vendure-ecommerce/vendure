@@ -357,8 +357,10 @@ export class ChannelService {
             defaultChannel = new Channel({
                 code: DEFAULT_CHANNEL_CODE,
                 defaultLanguageCode: this.configService.defaultLanguageCode,
+                availableLanguageCodes: [this.configService.defaultLanguageCode],
                 pricesIncludeTax: false,
                 defaultCurrencyCode: CurrencyCode.USD,
+                availableCurrencyCodes: [CurrencyCode.USD],
                 token: defaultChannelToken,
             });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
