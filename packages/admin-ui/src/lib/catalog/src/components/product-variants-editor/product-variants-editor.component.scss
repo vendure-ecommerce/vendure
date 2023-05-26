@@ -1,9 +1,8 @@
 
 .option-groups {
     display: flex;
-    &:first-of-type {
-        margin-top: 24px;
-    }
+    width: 100%;
+    gap: var(--space-unit);
 }
 
 .values {

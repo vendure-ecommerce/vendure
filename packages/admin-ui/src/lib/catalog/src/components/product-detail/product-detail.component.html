@@ -92,12 +92,8 @@
                     </button>
                 </div>
             </vdr-card>
-
-            <vdr-card>
-                <vdr-page-entity-info
-                    *ngIf="entity$ | async as entity"
-                    [entity]="entity"
-                ></vdr-page-entity-info>
+            <vdr-card *ngIf="entity$ | async as entity">
+                <vdr-page-entity-info [entity]="entity"></vdr-page-entity-info>
             </vdr-card>
         </vdr-page-detail-sidebar>
 
@@ -171,7 +167,7 @@
                 ></vdr-assets>
             </vdr-card>
 
-            <vdr-card [title]="'catalog.product-variants' | translate" [paddingX]="false">
+            <vdr-card [title]="'catalog.product-variants' | translate" [paddingX]="isNew$ | async">
                 <div class="card-span">
                     <div *ngIf="isNew$ | async; else variantList">
                         <vdr-generate-product-variants
@@ -184,6 +180,11 @@
                             [hideLanguageSelect]="true"
                         ></vdr-product-variant-list>
                     </ng-template>
+                    <div class="mx-3" *ngIf="(isNew$ | async) === false">
+                        <a class="button" [routerLink]="['manage-variants']">
+                            <clr-icon shape="add-text"></clr-icon>
+                            {{ 'catalog.manage-variants' | translate }}</a>
+                    </div>
                 </div>
             </vdr-card>
         </vdr-page-block>

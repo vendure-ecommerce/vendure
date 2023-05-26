@@ -20,9 +20,11 @@
     transition: border 0.2s;
 }
 
-::ng-deep .has-prefix input {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important
+::ng-deep .has-prefix > {
+    input[type="text"], input[type="number"] {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important
+    }
 }
 
 .prefix {
@@ -31,9 +33,11 @@
     border-right: none;
 }
 
-::ng-deep .has-suffix input {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+::ng-deep .has-suffix > {
+    input[type="text"], input[type="number"] {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
 }
 
 .suffix {

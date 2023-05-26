@@ -1,0 +1,45 @@
+<ng-template vdrDialogTitle>
+    {{ 'catalog.create-product-variant' | translate }}
+</ng-template>
+<form [formGroup]="form">
+    <div formGroupName="options" class="form-grid">
+        <vdr-form-field [label]="optionGroup.name" *ngFor="let optionGroup of product.optionGroups">
+            <ng-select
+                [items]="optionGroup.options"
+                [formControlName]="optionGroup.code"
+                bindLabel="name"
+                bindValue="id"
+                appendTo="body"
+            >
+            </ng-select>
+        </vdr-form-field>
+    </div>
+    <div *ngIf="existingVariant" class="mt-2">
+        <clr-alert clrAlertType="warning" [clrAlertClosable]="false" class="">
+            <clr-alert-item>
+                <span class="alert-text">
+                    {{ 'catalog.product-variant-exists' | translate }}: {{ existingVariant.name }} ({{ existingVariant.sku }})
+                </span>
+            </clr-alert-item>
+        </clr-alert>
+    </div>
+    <div class="form-grid mt-2">
+        <vdr-form-field [label]="'common.name' | translate">
+            <input type="text" formControlName="name" />
+        </vdr-form-field>
+        <vdr-form-field [label]="'catalog.sku' | translate">
+            <input type="text" formControlName="sku" />
+        </vdr-form-field>
+    </div>
+</form>
+<ng-template vdrDialogButtons>
+    <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button
+        type="submit"
+        (click)="confirm()"
+        class="btn btn-primary"
+        [disabled]="form.invalid || existingVariant"
+    >
+        {{ 'common.confirm' | translate }}
+    </button>
+</ng-template>

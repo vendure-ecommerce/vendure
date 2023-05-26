@@ -53,14 +53,9 @@
                         (iconClick)="editOption(option)"
                         [icon]="(updatePermissions | hasPermission) && 'pencil'"
                     >
-                        <span class="mr-1">{{ optionGroupName(option.groupId) }}:</span>
+                        <span>{{ optionGroupName(option.groupId) }}:</span>
                         {{ optionName(option) }}
                     </vdr-chip>
-                </div>
-                <div>
-                    <a [routerLink]="['./', 'options']" class="btn"
-                        >{{ 'catalog.edit-options' | translate }}...</a
-                    >
                 </div>
             </vdr-card>
             <vdr-card [title]="'catalog.facets' | translate">

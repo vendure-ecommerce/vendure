@@ -623,6 +623,7 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
             createdAt
             updatedAt
             name
+            languageCode
             optionGroups {
                 ...ProductOptionGroup
                 options {
@@ -637,6 +638,8 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
                 name
                 sku
                 price
+                priceWithTax
+                currencyCode
                 stockOnHand
                 enabled
                 options {

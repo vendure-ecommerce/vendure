@@ -43,5 +43,3 @@ export * from './components/update-product-option-dialog/update-product-option-d
 export * from './components/variant-price-detail/variant-price-detail.component';
 export * from './providers/product-detail/product-detail.service';
 export * from './providers/product-detail/replace-last';
-export * from './providers/routing/product-resolver';
-export * from './providers/routing/product-variants-resolver';

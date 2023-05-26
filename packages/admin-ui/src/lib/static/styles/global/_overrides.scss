@@ -1,5 +1,5 @@
-@import "variables";
-@import "forms";
+@import 'variables';
+@import 'forms';
 
 .main-container {
     background-color: var(--clr-global-app-background);
@@ -14,28 +14,33 @@ h6:not([cds-text]) {
     font-family: Inter, sans-serif !important;
 }
 
-a:link, a:visited {
+a:link,
+a:visited {
     color: var(--clr-global-link-color);
     text-decoration: none;
 }
 
-.content-area img, .modal-content img {
+.content-area img,
+.modal-content img {
     object-fit: cover;
     width: 100%;
     height: 100%;
 }
 
-.modal-header .close, .modal-header--accessible .close {
+.modal-header .close,
+.modal-header--accessible .close {
     border: none;
     background: none;
     cursor: pointer;
 }
 
-a:link, a:visited {
+a:link,
+a:visited {
     color: var(--clr-btn-link-color);
 }
 
-a:focus, button:focus {
+a:focus,
+button:focus {
     outline-color: var(--color-primary-400);
 }
 
@@ -55,8 +60,9 @@ a:focus, button:focus {
     border-color: var(--color-component-border-100);
     margin-top: 0;
 
-    td.align-middle, th.align-middle {
-        vertical-align: middle!important;
+    td.align-middle,
+    th.align-middle {
+        vertical-align: middle !important;
     }
 
     td.right {
@@ -64,7 +70,8 @@ a:focus, button:focus {
     }
 }
 
-.full-label, .compact-label {
+.full-label,
+.compact-label {
     margin-left: 6px;
 }
 .full-label {
@@ -99,4 +106,27 @@ button.icon-button {
 // clr tabs
 .btn.btn-link.nav-link {
     background-color: transparent;
+}
+
+.alert {
+    border: 1px solid var(--color-primary-150);
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-900);
+    border-radius: var(--border-radius);
+    padding: var(--space-unit);
+    .alert-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    &.alert-danger {
+        border-color: var(--color-chip-error-border);
+        background-color: var(--color-chip-error-bg);
+        color: var(--color-chip-error-text);
+    }
+    &.alert-warning {
+        border-color: var(--color-chip-warning-border);
+        background-color: var(--color-chip-warning-bg);
+        color: var(--color-chip-warning-text);
+    }
 }

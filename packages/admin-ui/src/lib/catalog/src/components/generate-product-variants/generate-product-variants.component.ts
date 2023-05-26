@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { CurrencyCode, DataService } from '@vendure/admin-ui/core';
 import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 
@@ -28,8 +29,16 @@ export class GenerateProductVariantsComponent implements OnInit {
     optionGroups: Array<{ name: string; values: Array<{ name: string; locked: boolean }> }> = [];
     currencyCode: CurrencyCode;
     variants: Array<{ id: string; values: string[] }>;
-    variantFormValues: { [id: string]: CreateVariantValues } = {};
-    constructor(private dataService: DataService) {}
+    variantFormValues: {
+        [id: string]: FormGroup<{
+            optionValues: FormControl<string[]>;
+            enabled: FormControl<boolean>;
+            price: FormControl<number>;
+            sku: FormControl<string>;
+            stock: FormControl<number>;
+        }>;
+    } = {};
+    constructor(private dataService: DataService, private formBuilder: FormBuilder) {}
 
     ngOnInit() {
         this.dataService.settings.getActiveChannel().single$.subscribe(data => {
@@ -60,18 +69,31 @@ export class GenerateProductVariantsComponent implements OnInit {
             : [[DEFAULT_VARIANT_CODE]];
         this.variants = generateAllCombinations(groups).map(values => ({ id: values.join('|'), values }));
 
-        this.variants.forEach(variant => {
+        this.variants.forEach((variant, index) => {
             if (!this.variantFormValues[variant.id]) {
-                this.variantFormValues[variant.id] = {
-                    optionValues: variant.values,
-                    enabled: true,
+                const formGroup = this.formBuilder.nonNullable.group({
+                    optionValues: [variant.values],
+                    enabled: true as boolean,
                     price: this.copyFromDefault(variant.id, 'price', 0),
                     sku: this.copyFromDefault(variant.id, 'sku', ''),
                     stock: this.copyFromDefault(variant.id, 'stock', 0),
-                };
+                });
+                formGroup.valueChanges.subscribe(() => this.onFormChange());
+                if (index === 0) {
+                    console.log(`registering valueChanges for ${variant.id}`);
+                    formGroup.get('price')?.valueChanges.subscribe(value => {
+                        this.copyValuesToPristine('price', formGroup.get('price'));
+                    });
+                    formGroup.get('sku')?.valueChanges.subscribe(value => {
+                        this.copyValuesToPristine('sku', formGroup.get('sku'));
+                    });
+                    formGroup.get('stock')?.valueChanges.subscribe(value => {
+                        this.copyValuesToPristine('stock', formGroup.get('stock'));
+                    });
+                }
+                this.variantFormValues[variant.id] = formGroup;
             }
         });
-        this.onFormChange();
     }
 
     trackByFn(index: number, variant: { name: string; values: string[] }) {
@@ -84,8 +106,22 @@ export class GenerateProductVariantsComponent implements OnInit {
         optionValueInputComponent.focus();
     }
 
+    copyValuesToPristine(field: 'price' | 'sku' | 'stock', formControl: AbstractControl | null) {
+        if (!formControl) {
+            return;
+        }
+        Object.values(this.variantFormValues).forEach(formGroup => {
+            const correspondingFormControl = formGroup.get(field) as FormControl;
+            if (correspondingFormControl && correspondingFormControl.pristine) {
+                correspondingFormControl.setValue(formControl.value, { emitEvent: false });
+            }
+        });
+    }
+
     onFormChange() {
-        const variantsToCreate = this.variants.map(v => this.variantFormValues[v.id]).filter(v => v.enabled);
+        const variantsToCreate = this.variants
+            .map(v => this.variantFormValues[v.id].value as CreateVariantValues)
+            .filter(v => v.enabled);
         this.variantsChange.emit({
             groups: this.optionGroups.map(og => ({ name: og.name, values: og.values.map(v => v.name) })),
             variants: variantsToCreate,
@@ -98,7 +134,7 @@ export class GenerateProductVariantsComponent implements OnInit {
         value: CreateVariantValues[T],
     ): CreateVariantValues[T] {
         return variantId !== DEFAULT_VARIANT_CODE
-            ? this.variantFormValues[DEFAULT_VARIANT_CODE][prop]
+            ? (this.variantFormValues[DEFAULT_VARIANT_CODE].get(prop)?.value as CreateVariantValues[T])
             : value;
     }
 }

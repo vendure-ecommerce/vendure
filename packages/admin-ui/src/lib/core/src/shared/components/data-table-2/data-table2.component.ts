@@ -225,6 +225,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
             this.bulkActionMenuComponent.onClearSelection(() => {
                 this.changeDetectorRef.markForCheck();
             });
+            this.selectionManager.setCurrentItems(this.items);
         }
         this.showSearchFilterRow = dataTableConfig?.[this.id]?.showSearchFilterRow ?? false;
     }

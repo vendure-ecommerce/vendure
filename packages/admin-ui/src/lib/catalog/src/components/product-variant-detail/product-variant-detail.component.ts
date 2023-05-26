@@ -310,7 +310,7 @@ export class ProductVariantDetailComponent
             price: variant.price,
             priceWithTax: variant.priceWithTax,
             taxCategoryId: variant.taxCategory.id,
-            stockOnHand: variant.stockLevels[0].stockOnHand,
+            stockOnHand: variant.stockLevels[0]?.stockOnHand ?? 0,
             useGlobalOutOfStockThreshold: variant.useGlobalOutOfStockThreshold,
             outOfStockThreshold: variant.outOfStockThreshold,
             trackInventory: variant.trackInventory,

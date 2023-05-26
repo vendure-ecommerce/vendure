@@ -60,6 +60,8 @@ import { ProductVariantsEditorComponent } from './components/product-variants-ed
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
+import { CreateProductVariantDialogComponent } from './components/create-product-variant-dialog/create-product-variant-dialog.component';
+import { CreateProductOptionGroupDialogComponent } from './components/create-product-option-group-dialog/create-product-option-group-dialog.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -97,7 +99,11 @@ const CATALOG_COMPONENTS = [
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
     exports: [...CATALOG_COMPONENTS],
-    declarations: [...CATALOG_COMPONENTS],
+    declarations: [
+        ...CATALOG_COMPONENTS,
+        CreateProductVariantDialogComponent,
+        CreateProductOptionGroupDialogComponent,
+    ],
     providers: [
         {
             provide: ROUTES,

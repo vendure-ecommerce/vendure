@@ -20,6 +20,15 @@
     flex: 1;
 }
 
+.form-grid {
+    display: grid;
+    gap: calc(var(--space-unit) * 4);
+    grid-template-columns: 1fr 1fr;
+    @container (max-width: 500px) {
+        grid-template-columns: 1fr;
+    }
+}
+
 .max-w-layout {
     max-width: var(--layout-content-max-width);
 }
@@ -46,7 +55,6 @@
     margin-left: auto;
     margin-right: auto;
 }
-
 
 $spacings: (1, 2, 3, 4, 5, auto);
 
@@ -133,15 +141,8 @@ $breakpoint-glue: '\\:' !default;
 }
 
 // colour classes
-$colors: (
-    'weight',
-    'primary',
-    'secondary',
-    'success',
-    'warning',
-    'error'
-);
-$scale: (100,  125,  150,  200,  300,  400,  500,  600,  700,  800,  900,  950,  975,  1000);
+$colors: ('weight', 'primary', 'secondary', 'success', 'warning', 'error');
+$scale: (100, 125, 150, 200, 300, 400, 500, 600, 700, 800, 900, 950, 975, 1000);
 $properties: (
     'color': 'color',
     'bg': 'background-color',

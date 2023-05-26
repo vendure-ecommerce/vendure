@@ -1,6 +1,6 @@
 
 .input-wrapper {
-    background-color: white;
+    background-color: var(--color-form-input-bg);
     border-radius: 3px !important;
     border: 1px solid var(--color-grey-300) !important;
     cursor: text;
@@ -22,6 +22,7 @@
         padding: 0 6px;
         &:focus {
             outline: none;
+            box-shadow: none;
         }
         &:disabled {
             background-color: var(--color-component-bg-100);

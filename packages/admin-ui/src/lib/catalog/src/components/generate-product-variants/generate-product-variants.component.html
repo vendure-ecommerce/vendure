@@ -50,13 +50,13 @@
         </thead>
         <tr
             *ngFor="let variant of variants; trackBy: trackByFn"
-            [class.disabled]="!variantFormValues[variant.id].enabled"
+            [class.disabled]="!variantFormValues[variant.id].value.enabled === false"
+            [formGroup]="variantFormValues[variant.id]"
         >
             <td *ngIf="1 < variants.length">
                 <input
                     type="checkbox"
-                    (change)="onFormChange()"
-                    [(ngModel)]="variantFormValues[variant.id].enabled"
+                    formControlName="enabled"
                     clrCheckbox
                 />
             </td>
@@ -64,37 +64,31 @@
                 {{ variant.values.join(' ') }}
             </td>
             <td>
-                <clr-input-container>
+                <vdr-form-field>
                     <input
-                        clrInput
                         type="text"
-                        (change)="onFormChange()"
-                        [(ngModel)]="variantFormValues[variant.id].sku"
+                        formControlName="sku"
                         [placeholder]="'catalog.sku' | translate"
                     />
-                </clr-input-container>
+                </vdr-form-field>
             </td>
             <td>
-                <clr-input-container>
+                <vdr-form-field>
                     <vdr-currency-input
-                        clrInput
-                        [(ngModel)]="variantFormValues[variant.id].price"
-                        (ngModelChange)="onFormChange()"
+                        formControlName="price"
                         [currencyCode]="currencyCode"
                     ></vdr-currency-input>
-                </clr-input-container>
+                </vdr-form-field>
             </td>
             <td>
-                <clr-input-container>
+                <vdr-form-field>
                     <input
-                        clrInput
                         type="number"
-                        [(ngModel)]="variantFormValues[variant.id].stock"
-                        (change)="onFormChange()"
+                        formControlName="stock"
                         min="0"
                         step="1"
                     />
-                </clr-input-container>
+                </vdr-form-field>
             </td>
         </tr>
     </table>

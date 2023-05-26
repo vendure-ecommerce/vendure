@@ -1,15 +1,15 @@
-import { Route } from '@angular/router';
+import { inject } from '@angular/core';
+import { ActivatedRouteSnapshot, Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    AssetFragment,
     CanDeactivateDetailGuard,
-    CollectionFragment,
     createResolveData,
-    detailBreadcrumb,
-    GetProductWithVariantsQuery,
+    DataService,
+    GetProfileDetailDocument,
     PageComponent,
     PageService,
 } from '@vendure/admin-ui/core';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
@@ -32,7 +32,32 @@ export const createRoutes = (pageService: PageService): Route[] => [
             locationId: 'product-detail',
             breadcrumb: { label: _('breadcrumb.products'), link: ['../', 'products'] },
         },
-        children: pageService.getPageTabRoutes('product-detail'),
+        children: [
+            {
+                path: 'manage-variants',
+                component: ProductVariantsEditorComponent,
+                canDeactivate: [CanDeactivateDetailGuard],
+                data: {
+                    breadcrumb: ({ product }) => [
+                        {
+                            label: `${product.name}`,
+                            link: ['../'],
+                        },
+                        {
+                            label: _('breadcrumb.manage-variants'),
+                            link: ['manage-variants'],
+                        },
+                    ],
+                },
+                resolve: {
+                    product: (route: ActivatedRouteSnapshot) =>
+                        inject(DataService)
+                            .product.getProductVariantsOptions(route.parent?.params.id)
+                            .mapSingle(data => data.product),
+                },
+            },
+            ...pageService.getPageTabRoutes('product-detail'),
+        ],
     },
     {
         path: 'products/:productId/variants/:id',
@@ -42,15 +67,6 @@ export const createRoutes = (pageService: PageService): Route[] => [
             breadcrumb: { label: _('breadcrumb.products'), link: ['../', 'products'] },
         },
         children: pageService.getPageTabRoutes('product-variant-detail'),
-    },
-    {
-        path: 'products/:id/manage-variants',
-        component: ProductVariantsEditorComponent,
-        resolve: createResolveData(ProductVariantsResolver),
-        canDeactivate: [CanDeactivateDetailGuard],
-        data: {
-            breadcrumb: productVariantEditorBreadcrumb,
-        },
     },
     {
         path: 'products/:id/options',

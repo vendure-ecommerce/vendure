@@ -17,6 +17,7 @@ export class ProductVariantsResolver extends BaseEntityResolver<GetProductVarian
                 createdAt: '',
                 updatedAt: '',
                 name: '',
+                languageCode: '' as any,
                 optionGroups: [],
                 variants: [],
             },
