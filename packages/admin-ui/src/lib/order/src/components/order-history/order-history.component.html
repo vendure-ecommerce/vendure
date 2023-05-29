@@ -177,7 +177,6 @@
                                 </button>
                                 <vdr-dropdown-menu vdrPosition="bottom-right">
                                     <button
-                                        class="button"
                                         vdrDropdownItem
                                         (click)="updateNote.emit(entry)"
                                         [disabled]="!('UpdateOrder' | hasPermission)"
@@ -187,7 +186,6 @@
                                     </button>
                                     <div class="dropdown-divider"></div>
                                     <button
-                                        class="button"
                                         vdrDropdownItem
                                         (click)="deleteNote.emit(entry)"
                                         [disabled]="!('UpdateOrder' | hasPermission)"

@@ -119,14 +119,6 @@ export class ProductListComponent
         });
     }
 
-    ngOnInit() {
-        super.ngOnInit();
-        this.dataService.product
-            .getPendingSearchIndexUpdates()
-            .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates)
-            .subscribe(value => (this.pendingSearchIndexUpdates = value));
-    }
-
     rebuildSearchIndex() {
         this.dataService.product.reindex().subscribe(({ reindex }) => {
             this.notificationService.info(_('catalog.reindexing'));
@@ -142,15 +134,6 @@ export class ProductListComponent
                     this.notificationService.error(_('catalog.reindex-error'));
                 }
             });
-        });
-    }
-
-    runPendingSearchIndexUpdates() {
-        this.dataService.product.runPendingSearchIndexUpdates().subscribe(value => {
-            this.notificationService.info(_('catalog.running-search-index-updates'), {
-                count: this.pendingSearchIndexUpdates,
-            });
-            this.pendingSearchIndexUpdates = 0;
         });
     }
 

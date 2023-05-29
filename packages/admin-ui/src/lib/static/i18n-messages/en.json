@@ -159,6 +159,7 @@
     "reorder-collection": "Re-order collection",
     "root-collection": "Root collection",
     "running-search-index-updates": "Running {count, plural, one {1 update} other {{count} updates}} to search index",
+    "run-pending-search-index-updates": "Search index: run {count, plural, one {1 pending update} other {{count} pending updates}}",
     "search-asset-name-or-tag": "Search by asset name or tags",
     "search-for-term": "Search for term",
     "search-product-name-or-code": "Search by product name or code",
