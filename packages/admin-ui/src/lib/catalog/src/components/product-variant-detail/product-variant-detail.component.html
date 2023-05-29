@@ -48,14 +48,18 @@
                 <div class="options">
                     <vdr-chip
                         *ngFor="let option of variant.options | sort : 'groupId'"
-                        [colorFrom]="optionGroupName(option.groupId)"
+                        [colorFrom]="optionGroupCode(option.groupId)"
                         [invert]="true"
-                        (iconClick)="editOption(option)"
-                        [icon]="(updatePermissions | hasPermission) && 'pencil'"
                     >
-                        <span>{{ optionGroupName(option.groupId) }}:</span>
+                        <span>{{ optionGroupCode(option.groupId) }}:</span>
                         {{ optionName(option) }}
                     </vdr-chip>
+                </div>
+                <div>
+                    <a [routerLink]="['../../', 'options']" class="button" *vdrIfPermissions="updatePermissions">
+                        <clr-icon shape="pencil"></clr-icon>
+                        {{ 'catalog.edit-options' | translate }}
+                    </a>
                 </div>
             </vdr-card>
             <vdr-card [title]="'catalog.facets' | translate">

@@ -310,8 +310,8 @@ export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
 `;
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
-    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
-        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
+    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!, $force: Boolean) {
+        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId, force: $force) {
             ... on Product {
                 id
                 createdAt

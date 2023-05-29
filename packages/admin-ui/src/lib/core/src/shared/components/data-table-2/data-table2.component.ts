@@ -228,6 +228,9 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
             this.selectionManager.setCurrentItems(this.items);
         }
         this.showSearchFilterRow = dataTableConfig?.[this.id]?.showSearchFilterRow ?? false;
+        this.columns.changes.subscribe(() => {
+            this.changeDetectorRef.markForCheck();
+        });
     }
 
     onColumnReorder(event: { column: DataTable2ColumnComponent<any>; newIndex: number }) {

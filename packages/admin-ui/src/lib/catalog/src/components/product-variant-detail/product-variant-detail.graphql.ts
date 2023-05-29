@@ -74,6 +74,7 @@ export const PRODUCT_VARIANT_DETAIL_QUERY_PRODUCT_VARIANT_FRAGMENT = gql`
             optionGroups {
                 id
                 name
+                code
                 translations {
                     id
                     languageCode
@@ -85,7 +86,7 @@ export const PRODUCT_VARIANT_DETAIL_QUERY_PRODUCT_VARIANT_FRAGMENT = gql`
 `;
 
 export const PRODUCT_VARIANT_DETAIL_QUERY = gql`
-    query ProductVariantDetailQuery($id: ID!) {
+    query GetProductVariantDetail($id: ID!) {
         productVariant(id: $id) {
             ...ProductVariantDetailQueryProductVariantFragment
         }

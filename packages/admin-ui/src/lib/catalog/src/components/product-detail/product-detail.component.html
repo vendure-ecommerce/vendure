@@ -37,7 +37,8 @@
 <form class="form" [formGroup]="detailForm">
     <vdr-page-detail-layout>
         <vdr-page-detail-sidebar
-            ><vdr-card>
+        >
+            <vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
                     <clr-toggle-wrapper *vdrIfPermissions="updatePermissions">
                         <input
@@ -72,6 +73,27 @@
                     </vdr-form-item>
                 </vdr-card>
             </ng-container>
+            <vdr-card *ngIf="entity?.optionGroups.length" [title]="'catalog.product-options' | translate">
+                <div class="options">
+                    <vdr-chip
+                        *ngFor="let optionGroup of entity?.optionGroups | sort : 'id'"
+                        [colorFrom]="optionGroup.code"
+                        [invert]="true"
+                    >
+                        {{ optionGroup.name }}
+                    </vdr-chip>
+                </div>
+                <div>
+                    <a
+                        [routerLink]="['options']"
+                        class="button"
+                        *vdrIfPermissions="updatePermissions"
+                    >
+                        <clr-icon shape="pencil"></clr-icon>
+                        {{ 'catalog.edit-options' | translate }}
+                    </a>
+                </div>
+            </vdr-card>
             <vdr-card [title]="'catalog.facets' | translate">
                 <div class="facets">
                     <vdr-facet-value-chip
@@ -183,7 +205,8 @@
                     <div class="mx-3" *ngIf="(isNew$ | async) === false">
                         <a class="button" [routerLink]="['manage-variants']">
                             <clr-icon shape="add-text"></clr-icon>
-                            {{ 'catalog.manage-variants' | translate }}</a>
+                            {{ 'catalog.manage-variants' | translate }}</a
+                        >
                     </div>
                 </div>
             </vdr-card>

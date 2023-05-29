@@ -8,6 +8,8 @@ import {
     createUpdatedTranslatable,
     DataService,
     findTranslation,
+    GetProductVariantDetailDocument,
+    GetProductVariantDetailQuery,
     GlobalFlag,
     ItemOf,
     LanguageCode,
@@ -15,8 +17,6 @@ import {
     NotificationService,
     Permission,
     ProductOptionFragment,
-    ProductVariantDetailQueryDocument,
-    ProductVariantDetailQueryQuery,
     ProductVariantFragment,
     ProductVariantUpdateMutationDocument,
     ServerConfigService,
@@ -25,7 +25,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { pick } from '@vendure/common/lib/pick';
 import { unique } from '@vendure/common/lib/unique';
-import { combineLatest, concat, Observable } from 'rxjs';
+import { combineLatest, concat, EMPTY, Observable } from 'rxjs';
 import {
     distinctUntilChanged,
     map,
@@ -39,6 +39,7 @@ import {
 } from 'rxjs/operators';
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
+import { UpdateProductOptionDialogComponent } from '../update-product-option-dialog/update-product-option-dialog.component';
 
 interface SelectedAssets {
     assets?: Asset[];
@@ -60,7 +61,7 @@ interface VariantFormValue {
     facetValueIds: string[][];
     customFields?: any;
 }
-type T = NonNullable<ProductVariantDetailQueryQuery['productVariant']>;
+type T = NonNullable<GetProductVariantDetailQuery['productVariant']>;
 type T1 = T['stockLevels'];
 @Component({
     selector: 'vdr-product-variant-detail',
@@ -69,12 +70,13 @@ type T1 = T['stockLevels'];
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductVariantDetailComponent
-    extends TypedBaseDetailComponent<typeof ProductVariantDetailQueryDocument, 'productVariant'>
+    extends TypedBaseDetailComponent<typeof GetProductVariantDetailDocument, 'productVariant'>
     implements OnInit, OnDestroy
 {
     public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
-    stockLevels$: Observable<NonNullable<ProductVariantDetailQueryQuery['productVariant']>['stockLevels']>;
+    readonly customOptionFields = this.getCustomFieldConfig('ProductOption');
+    stockLevels$: Observable<NonNullable<GetProductVariantDetailQuery['productVariant']>['stockLevels']>;
     detailForm = this.formBuilder.group<VariantFormValue>({
         id: '',
         enabled: false,
@@ -101,13 +103,13 @@ export class ProductVariantDetailComponent
         }>
     >([]);
     assetChanges: SelectedAssets = {};
-    taxCategories$: Observable<Array<ItemOf<ProductVariantDetailQueryQuery, 'taxCategories'>>>;
-    stockLocations$: Observable<ItemOf<ProductVariantDetailQueryQuery, 'stockLocations'>>;
+    taxCategories$: Observable<Array<ItemOf<GetProductVariantDetailQuery, 'taxCategories'>>>;
+    stockLocations$: Observable<ItemOf<GetProductVariantDetailQuery, 'stockLocations'>>;
     channelPriceIncludesTax$: Observable<boolean>;
     readonly GlobalFlag = GlobalFlag;
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
-    facetValues$: Observable<NonNullable<ProductVariantDetailQueryQuery['productVariant']>['facetValues']>;
+    facetValues$: Observable<NonNullable<GetProductVariantDetailQuery['productVariant']>['facetValues']>;
 
     constructor(
         route: ActivatedRoute,
@@ -234,36 +236,15 @@ export class ProductVariantDetailComponent
         );
     }
 
-    optionGroupName(optionGroupId: string): string | undefined {
+    optionGroupCode(optionGroupId: string): string | undefined {
         const group = this.entity?.product.optionGroups.find(g => g.id === optionGroupId);
-        if (group) {
-            const translation =
-                group?.translations.find(t => t.languageCode === this.languageCode) ?? group.translations[0];
-            return translation.name;
-        }
+        return group?.code;
     }
 
     optionName(option: ProductOptionFragment) {
         const translation =
             option.translations.find(t => t.languageCode === this.languageCode) ?? option.translations[0];
         return translation.name;
-    }
-
-    editOption(option: ProductVariantFragment['options'][number]) {
-        /*     this.modalService
-                .fromComponent(UpdateProductOptionDialogComponent, {
-                    size: 'md',
-                    locals: {
-                        productOption: option,
-                        activeLanguage: this.languageCode,
-                        customFields: this.customOptionFields,
-                    },
-                })
-                .subscribe(result => {
-                    if (result) {
-                        this.updateProductOption.emit(result);
-                    }
-                }); */
     }
 
     removeFacetValue(facetValueId: string) {
@@ -297,7 +278,7 @@ export class ProductVariantDetailComponent
     }
 
     protected setFormValues(
-        variant: NonNullable<ProductVariantDetailQueryQuery['productVariant']>,
+        variant: NonNullable<GetProductVariantDetailQuery['productVariant']>,
         languageCode: LanguageCode,
     ): void {
         const variantTranslation = findTranslation(variant, languageCode);
@@ -342,7 +323,7 @@ export class ProductVariantDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedVariant(
-        variant: NonNullable<ProductVariantDetailQueryQuery['productVariant']>,
+        variant: NonNullable<GetProductVariantDetailQuery['productVariant']>,
         variantFormGroup: typeof this.detailForm,
         languageCode: LanguageCode,
     ): UpdateProductVariantInput | CreateProductVariantInput {

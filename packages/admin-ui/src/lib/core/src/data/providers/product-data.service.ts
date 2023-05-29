@@ -244,6 +244,7 @@ export class ProductDataService {
                     'facetValueIds',
                     'featuredAssetId',
                     'assetIds',
+                    'optionIds',
                     'trackInventory',
                     'outOfStockThreshold',
                     'useGlobalOutOfStockThreshold',

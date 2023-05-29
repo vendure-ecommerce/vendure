@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -244,8 +244,8 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
             groupForm.get('id')?.setValue(group.id);
             groupForm.get('code')?.setValue(group.code);
             groupForm.get('name')?.setValue(group.name);
-            groupForm.get('createdAt')?.setValue(group.name);
-            groupForm.get('updatedAt')?.setValue(group.name);
+            groupForm.get('createdAt')?.setValue(group.createdAt);
+            groupForm.get('updatedAt')?.setValue(group.updatedAt);
         } else {
             groupForm = this.formBuilder.group(group);
             groupsForm.push(groupForm);
@@ -272,8 +272,8 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
             optionForm.get('id')?.setValue(group.id);
             optionForm.get('code')?.setValue(group.code);
             optionForm.get('name')?.setValue(group.name);
-            optionForm.get('createdAt')?.setValue(group.name);
-            optionForm.get('updatedAt')?.setValue(group.name);
+            optionForm.get('createdAt')?.setValue(group.createdAt);
+            optionForm.get('updatedAt')?.setValue(group.updatedAt);
         } else {
             optionForm = this.formBuilder.group(group);
             optionsForm.push(optionForm);

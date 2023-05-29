@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
@@ -74,6 +74,9 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         itemsAreEqual: (a, b) => a.id === b.id,
         additiveMode: true,
     });
+    optionsToAddToVariant: {
+        [variantId: string]: { [groupId: string]: string };
+    } = {};
     private refresh$ = new Subject<void>();
     private languageCode: LanguageCode;
 
@@ -83,6 +86,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         private productDetailService: ProductDetailService,
         private notificationService: NotificationService,
         private modalService: ModalService,
+        private changeDetector: ChangeDetectorRef,
     ) {}
 
     ngOnInit() {
@@ -181,6 +185,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     entity: 'ProductOptionGroup',
                 });
                 this.refresh$.next();
+                this.changeDetector.markForCheck();
             });
     }
 
@@ -188,10 +193,14 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         optionGroup: NonNullable<GetProductVariantOptionsQuery['product']>['optionGroups'][number],
     ) {
         const id = optionGroup.id;
+        const usedByVariantsCount = this.product.variants.filter(v =>
+            v.options.map(o => o.groupId).includes(id),
+        ).length;
         this.modalService
             .dialog({
                 title: _('catalog.confirm-delete-product-option-group'),
-                translationVars: { name: optionGroup.name },
+                body: usedByVariantsCount ? _('catalog.confirm-delete-product-option-group-body') : '',
+                translationVars: { name: optionGroup.name, count: usedByVariantsCount },
                 buttons: [
                     { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },
@@ -203,6 +212,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                         return this.dataService.product.removeOptionGroupFromProduct({
                             optionGroupId: id,
                             productId: this.product.id,
+                            force: true,
                         });
                     } else {
                         return EMPTY;
@@ -272,6 +282,33 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     }
                 });
         }
+    }
+
+    setOptionToAddToVariant(variantId: string, optionGroupId: string, optionId?: string) {
+        if (!this.optionsToAddToVariant[variantId]) {
+            this.optionsToAddToVariant[variantId] = {};
+        }
+        if (optionId) {
+            this.optionsToAddToVariant[variantId][optionGroupId] = optionId;
+        } else {
+            delete this.optionsToAddToVariant[variantId][optionGroupId];
+        }
+    }
+
+    addOptionToVariant(variant: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number]) {
+        this.dataService.product
+            .updateProductVariants([
+                {
+                    id: variant.id,
+                    optionIds: [
+                        ...variant.options.map(o => o.id),
+                        ...Object.values(this.optionsToAddToVariant[variant.id]),
+                    ],
+                },
+            ])
+            .subscribe(({ updateProductVariants }) => {
+                this.refresh$.next();
+            });
     }
 
     deleteVariant(variant: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number]) {

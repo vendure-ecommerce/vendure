@@ -16,7 +16,7 @@
             </vdr-form-field>
             <div>
                 <button
-                    [disabled]="group.locked"
+
                     class="button-small mt-4"
                     (click)="removeOptionGroup(group)"
                 >
@@ -40,7 +40,7 @@
         </div>
         <vdr-data-table-2
             class="card-span"
-            id="product-variant-list"
+            id="manage-product-variant-list"
             [items]="variants$ | async"
             [itemsPerPage]="itemsPerPage"
             [totalItems]="totalItems$ | async"
@@ -48,11 +48,6 @@
             (pageChange)="setPageNumber($event)"
             (itemsPerPageChange)="setItemsPerPage($event)"
         >
-            <vdr-bulk-action-menu
-                locationId="manage-variants-list"
-                [hostComponent]="this"
-                [selectionManager]="selectionManager"
-            />
             <vdr-dt2-search
                 [searchTermControl]="searchTermControl"
                 [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
@@ -85,10 +80,29 @@
             <vdr-dt2-column *ngFor="let optionGroup of optionGroups$ | async" [heading]="optionGroup.name">
                 <ng-template let-variant="item">
                     <vdr-chip
-                        *ngIf="getOption(variant, optionGroup.id) as option"
-                        [colorFrom]="optionGroup.name"
+                        *ngIf="getOption(variant, optionGroup.id) as option; else selectOption"
+                        [colorFrom]="optionGroup.code"
                         >{{ option.name }}</vdr-chip
                     >
+                    <ng-template #selectOption>
+                        <div class="flex center">
+                            <ng-select
+                                [items]="optionGroup.options"
+                                bindLabel="name"
+                                bindValue="id"
+                                appendTo="body"
+                                (change)="setOptionToAddToVariant(variant.id, optionGroup.id, $event?.id)"
+                            ></ng-select>
+                            <button
+                                class="button-small ml-1"
+                                [class.primary]="!!optionsToAddToVariant[variant.id]?.[optionGroup.id]"
+                                (click)="addOptionToVariant(variant)"
+                                [disabled]="!optionsToAddToVariant[variant.id]?.[optionGroup.id]"
+                            >
+                                <clr-icon shape="floppy"></clr-icon>
+                            </button>
+                        </div>
+                    </ng-template>
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column [heading]="'common.price' | translate" [hiddenByDefault]="true">

@@ -8,8 +8,8 @@ import {
     detailComponentWithResolver,
     GetFacetDetailDocument,
     GetProductDetailDocument,
+    GetProductVariantDetailDocument,
     PageService,
-    ProductVariantDetailQueryDocument,
     SharedModule,
 } from '@vendure/admin-ui/core';
 
@@ -35,6 +35,8 @@ import { CollectionListComponent } from './components/collection-list/collection
 import { CollectionTreeNodeComponent } from './components/collection-tree/collection-tree-node.component';
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
 import { ConfirmVariantDeletionDialogComponent } from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
+import { CreateProductOptionGroupDialogComponent } from './components/create-product-option-group-dialog/create-product-option-group-dialog.component';
+import { CreateProductVariantDialogComponent } from './components/create-product-variant-dialog/create-product-variant-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import {
     assignFacetsToChannelBulkAction,
@@ -60,8 +62,6 @@ import { ProductVariantsEditorComponent } from './components/product-variants-ed
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
-import { CreateProductVariantDialogComponent } from './components/create-product-variant-dialog/create-product-variant-dialog.component';
-import { CreateProductOptionGroupDialogComponent } from './components/create-product-option-group-dialog/create-product-option-group-dialog.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -166,7 +166,7 @@ export class CatalogModule {
             route: '',
             component: detailComponentWithResolver({
                 component: ProductVariantDetailComponent,
-                query: ProductVariantDetailQueryDocument,
+                query: GetProductVariantDetailDocument,
                 entityKey: 'productVariant',
                 getBreadcrumbs: entity => [
                     {
