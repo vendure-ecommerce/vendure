@@ -2661,7 +2661,12 @@ export type Mutation = {
     removeFacetsFromChannel: Array<RemoveFacetFromChannelResult>;
     /** Remove members from a Zone */
     removeMembersFromZone: Zone;
-    /** Remove an OptionGroup from a Product */
+    /**
+     * Remove an OptionGroup from a Product. If the OptionGroup is in use by any ProductVariants
+     * the mutation will return a ProductOptionInUseError, and the OptionGroup will not be removed.
+     * Setting the `force` argument to `true` will override this and remove the OptionGroup anyway,
+     * as well as removing any of the group's options from the Product's ProductVariants.
+     */
     removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
     /** Removes ProductVariants from the specified Channel */
     removeProductVariantsFromChannel: Array<ProductVariant>;
@@ -3178,6 +3183,7 @@ export type MutationRemoveMembersFromZoneArgs = {
 };
 
 export type MutationRemoveOptionGroupFromProductArgs = {
+    force?: InputMaybe<Scalars['Boolean']>;
     optionGroupId: Scalars['ID'];
     productId: Scalars['ID'];
 };
@@ -5823,6 +5829,7 @@ export type UpdateProductVariantInput = {
     facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
     featuredAssetId?: InputMaybe<Scalars['ID']>;
     id: Scalars['ID'];
+    optionIds?: InputMaybe<Array<Scalars['ID']>>;
     outOfStockThreshold?: InputMaybe<Scalars['Int']>;
     price?: InputMaybe<Scalars['Money']>;
     sku?: InputMaybe<Scalars['String']>;
@@ -7742,7 +7749,7 @@ export type ProductVariantFragment = {
     sku: string;
     taxRateApplied: { id: string; name: string; value: number };
     taxCategory: { id: string; name: string };
-    options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+    options: Array<{ id: string; code: string; languageCode: LanguageCode; groupId: string; name: string }>;
     facetValues: Array<{ id: string; code: string; name: string; facet: { id: string; name: string } }>;
     featuredAsset?: {
         id: string;
@@ -7808,7 +7815,13 @@ export type ProductWithVariantsFragment = {
         sku: string;
         taxRateApplied: { id: string; name: string; value: number };
         taxCategory: { id: string; name: string };
-        options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+        options: Array<{
+            id: string;
+            code: string;
+            languageCode: LanguageCode;
+            groupId: string;
+            name: string;
+        }>;
         facetValues: Array<{ id: string; code: string; name: string; facet: { id: string; name: string } }>;
         featuredAsset?: {
             id: string;
@@ -8269,7 +8282,13 @@ export type UpdateProductMutation = {
             sku: string;
             taxRateApplied: { id: string; name: string; value: number };
             taxCategory: { id: string; name: string };
-            options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+            options: Array<{
+                id: string;
+                code: string;
+                languageCode: LanguageCode;
+                groupId: string;
+                name: string;
+            }>;
             facetValues: Array<{
                 id: string;
                 code: string;
@@ -8349,7 +8368,13 @@ export type CreateProductMutation = {
             sku: string;
             taxRateApplied: { id: string; name: string; value: number };
             taxCategory: { id: string; name: string };
-            options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+            options: Array<{
+                id: string;
+                code: string;
+                languageCode: LanguageCode;
+                groupId: string;
+                name: string;
+            }>;
             facetValues: Array<{
                 id: string;
                 code: string;
@@ -8430,7 +8455,13 @@ export type GetProductWithVariantsQuery = {
             sku: string;
             taxRateApplied: { id: string; name: string; value: number };
             taxCategory: { id: string; name: string };
-            options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+            options: Array<{
+                id: string;
+                code: string;
+                languageCode: LanguageCode;
+                groupId: string;
+                name: string;
+            }>;
             facetValues: Array<{
                 id: string;
                 code: string;
@@ -8500,7 +8531,13 @@ export type CreateProductVariantsMutation = {
         sku: string;
         taxRateApplied: { id: string; name: string; value: number };
         taxCategory: { id: string; name: string };
-        options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+        options: Array<{
+            id: string;
+            code: string;
+            languageCode: LanguageCode;
+            groupId: string;
+            name: string;
+        }>;
         facetValues: Array<{ id: string; code: string; name: string; facet: { id: string; name: string } }>;
         featuredAsset?: {
             id: string;
@@ -8545,7 +8582,13 @@ export type UpdateProductVariantsMutation = {
         sku: string;
         taxRateApplied: { id: string; name: string; value: number };
         taxCategory: { id: string; name: string };
-        options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+        options: Array<{
+            id: string;
+            code: string;
+            languageCode: LanguageCode;
+            groupId: string;
+            name: string;
+        }>;
         facetValues: Array<{ id: string; code: string; name: string; facet: { id: string; name: string } }>;
         featuredAsset?: {
             id: string;
@@ -9056,7 +9099,13 @@ export type AssignProductsToChannelMutation = {
             sku: string;
             taxRateApplied: { id: string; name: string; value: number };
             taxCategory: { id: string; name: string };
-            options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+            options: Array<{
+                id: string;
+                code: string;
+                languageCode: LanguageCode;
+                groupId: string;
+                name: string;
+            }>;
             facetValues: Array<{
                 id: string;
                 code: string;
@@ -9136,7 +9185,13 @@ export type RemoveProductsFromChannelMutation = {
             sku: string;
             taxRateApplied: { id: string; name: string; value: number };
             taxCategory: { id: string; name: string };
-            options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+            options: Array<{
+                id: string;
+                code: string;
+                languageCode: LanguageCode;
+                groupId: string;
+                name: string;
+            }>;
             facetValues: Array<{
                 id: string;
                 code: string;
@@ -9189,7 +9244,13 @@ export type AssignProductVariantsToChannelMutation = {
         sku: string;
         taxRateApplied: { id: string; name: string; value: number };
         taxCategory: { id: string; name: string };
-        options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+        options: Array<{
+            id: string;
+            code: string;
+            languageCode: LanguageCode;
+            groupId: string;
+            name: string;
+        }>;
         facetValues: Array<{ id: string; code: string; name: string; facet: { id: string; name: string } }>;
         featuredAsset?: {
             id: string;
@@ -9234,7 +9295,13 @@ export type RemoveProductVariantsFromChannelMutation = {
         sku: string;
         taxRateApplied: { id: string; name: string; value: number };
         taxCategory: { id: string; name: string };
-        options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+        options: Array<{
+            id: string;
+            code: string;
+            languageCode: LanguageCode;
+            groupId: string;
+            name: string;
+        }>;
         facetValues: Array<{ id: string; code: string; name: string; facet: { id: string; name: string } }>;
         featuredAsset?: {
             id: string;
@@ -10903,6 +10970,7 @@ export type DeleteProductOptionMutation = {
 export type RemoveOptionGroupFromProductMutationVariables = Exact<{
     productId: Scalars['ID'];
     optionGroupId: Scalars['ID'];
+    force?: InputMaybe<Scalars['Boolean']>;
 }>;
 
 export type RemoveOptionGroupFromProductMutation = {
@@ -10953,7 +11021,13 @@ export type GetProductWithVariantListQuery = {
                 sku: string;
                 taxRateApplied: { id: string; name: string; value: number };
                 taxCategory: { id: string; name: string };
-                options: Array<{ id: string; code: string; languageCode: LanguageCode; name: string }>;
+                options: Array<{
+                    id: string;
+                    code: string;
+                    languageCode: LanguageCode;
+                    groupId: string;
+                    name: string;
+                }>;
                 facetValues: Array<{
                     id: string;
                     code: string;
@@ -11903,6 +11977,7 @@ export const ProductVariantFragmentDoc = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -12164,6 +12239,7 @@ export const ProductWithVariantsFragmentDoc = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -22346,6 +22422,7 @@ export const UpdateProductDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -22630,6 +22707,7 @@ export const CreateProductDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -22921,6 +22999,7 @@ export const GetProductWithVariantsDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -23280,6 +23359,7 @@ export const CreateProductVariantsDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -23468,6 +23548,7 @@ export const UpdateProductVariantsDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -25652,6 +25733,7 @@ export const AssignProductsToChannelDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -25939,6 +26021,7 @@ export const RemoveProductsFromChannelDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -26223,6 +26306,7 @@ export const AssignProductVariantsToChannelDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -26408,6 +26492,7 @@ export const RemoveProductVariantsFromChannelDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },
@@ -33575,6 +33660,11 @@ export const RemoveOptionGroupFromProductDocument = {
                         type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
                     },
                 },
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'force' } },
+                    type: { kind: 'NamedType', name: { kind: 'Name', value: 'Boolean' } },
+                },
             ],
             selectionSet: {
                 kind: 'SelectionSet',
@@ -33592,6 +33682,11 @@ export const RemoveOptionGroupFromProductDocument = {
                                 kind: 'Argument',
                                 name: { kind: 'Name', value: 'optionGroupId' },
                                 value: { kind: 'Variable', name: { kind: 'Name', value: 'optionGroupId' } },
+                            },
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'force' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'force' } },
                             },
                         ],
                         selectionSet: {
@@ -33907,6 +34002,7 @@ export const GetProductWithVariantListDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'code' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'groupId' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             ],
                         },

@@ -384,7 +384,7 @@ export class ProductVariantService {
     }
 
     private async createSingle(ctx: RequestContext, input: CreateProductVariantInput): Promise<ID> {
-        await this.validateVariantOptionIds(ctx, input);
+        await this.validateVariantOptionIds(ctx, input.productId, input.optionIds);
         if (!input.optionIds) {
             input.optionIds = [];
         }
@@ -458,6 +458,9 @@ export class ProductVariantService {
         if (input.stockOnHand && input.stockOnHand < outOfStockThreshold) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
         }
+        if (input.optionIds) {
+            await this.validateVariantOptionIds(ctx, existingVariant.productId, input.optionIds);
+        }
         const inputWithoutPriceAndStockLevels = {
             ...input,
         };
@@ -474,6 +477,12 @@ export class ProductVariantService {
                     if (taxCategory) {
                         v.taxCategory = taxCategory;
                     }
+                }
+                if (input.optionIds && input.optionIds.length) {
+                    const selectedOptions = await this.connection
+                        .getRepository(ctx, ProductOption)
+                        .find({ where: { id: In(input.optionIds) } });
+                    v.options = selectedOptions;
                 }
                 if (input.facetValueIds) {
                     const facetValuesInOtherChannels = existingVariant.facetValues.filter(fv =>
@@ -737,18 +746,17 @@ export class ProductVariantService {
         return result;
     }
 
-    private async validateVariantOptionIds(ctx: RequestContext, input: CreateProductVariantInput) {
-        // this could be done with less queries but depending on the data, node will crash
+    private async validateVariantOptionIds(ctx: RequestContext, productId: ID, optionIds: ID[] = []) {
+        // this could be done with fewer queries but depending on the data, node will crash
         // https://github.com/vendure-ecommerce/vendure/issues/328
         const optionGroups = (
-            await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
+            await this.connection.getEntityOrThrow(ctx, Product, productId, {
                 channelId: ctx.channelId,
                 relations: ['optionGroups', 'optionGroups.options'],
                 loadEagerRelations: false,
             })
         ).optionGroups;
 
-        const optionIds = input.optionIds || [];
         const activeOptions = optionGroups && optionGroups.filter(group => !group.deletedAt);
 
         if (optionIds.length !== activeOptions.length) {
@@ -763,7 +771,7 @@ export class ProductVariantService {
             this.throwIncompatibleOptionsError(optionGroups);
         }
 
-        const product = await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
             channelId: ctx.channelId,
             relations: ['variants', 'variants.options'],
             loadEagerRelations: true,

@@ -2705,7 +2705,12 @@ export type Mutation = {
   removeFacetsFromChannel: Array<RemoveFacetFromChannelResult>;
   /** Remove members from a Zone */
   removeMembersFromZone: Zone;
-  /** Remove an OptionGroup from a Product */
+  /**
+   * Remove an OptionGroup from a Product. If the OptionGroup is in use by any ProductVariants
+   * the mutation will return a ProductOptionInUseError, and the OptionGroup will not be removed.
+   * Setting the `force` argument to `true` will override this and remove the OptionGroup anyway,
+   * as well as removing any of the group's options from the Product's ProductVariants.
+   */
   removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
   /** Removes ProductVariants from the specified Channel */
   removeProductVariantsFromChannel: Array<ProductVariant>;
@@ -3326,6 +3331,7 @@ export type MutationRemoveMembersFromZoneArgs = {
 
 
 export type MutationRemoveOptionGroupFromProductArgs = {
+  force?: InputMaybe<Scalars['Boolean']>;
   optionGroupId: Scalars['ID'];
   productId: Scalars['ID'];
 };
@@ -6139,6 +6145,7 @@ export type UpdateProductVariantInput = {
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
   id: Scalars['ID'];
+  optionIds?: InputMaybe<Array<Scalars['ID']>>;
   outOfStockThreshold?: InputMaybe<Scalars['Int']>;
   price?: InputMaybe<Scalars['Money']>;
   sku?: InputMaybe<Scalars['String']>;

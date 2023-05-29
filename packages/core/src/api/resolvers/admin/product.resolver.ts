@@ -176,8 +176,8 @@ export class ProductResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveOptionGroupFromProductArgs,
     ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
-        const { productId, optionGroupId } = args;
-        return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId);
+        const { productId, optionGroupId, force } = args;
+        return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId, force);
     }
 
     @Transaction()

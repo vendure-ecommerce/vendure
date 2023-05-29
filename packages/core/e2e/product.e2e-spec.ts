@@ -1306,7 +1306,7 @@ describe('Product resolver', () => {
             removeOptionGuard.assertErrorResult(removeOptionGroupFromProduct);
 
             expect(removeOptionGroupFromProduct.message).toBe(
-                'Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants',
+                'Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants. Use the `force` argument to remove it anyway',
             );
             expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
             expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
@@ -1666,6 +1666,144 @@ describe('Product resolver', () => {
                     "No ProductVariant with the id '999' could be found",
                 ),
             );
+
+            describe('adding options to existing variants', () => {
+                let variantToModify: NonNullable<
+                    Codegen.CreateProductVariantsMutation['createProductVariants'][number]
+                >;
+                let initialOptionIds: string[];
+                let newOptionGroup: Codegen.CreateProductOptionGroupMutation['createProductOptionGroup'];
+
+                beforeAll(() => {
+                    variantToModify = variants[0]!;
+                    initialOptionIds = variantToModify.options.map(o => o.id);
+                });
+                it('assert initial state', async () => {
+                    expect(variantToModify.options.map(o => o.code)).toEqual([
+                        'group2-option-2',
+                        'group3-option-1',
+                    ]);
+                });
+
+                it(
+                    'passing optionIds from an invalid OptionGroup throws',
+                    assertThrowsWithMessage(async () => {
+                        await adminClient.query<
+                            Codegen.UpdateProductVariantsMutation,
+                            Codegen.UpdateProductVariantsMutationVariables
+                        >(UPDATE_PRODUCT_VARIANTS, {
+                            input: [
+                                {
+                                    id: variantToModify.id,
+                                    optionIds: [...variantToModify.options.map(o => o.id), 'T_1'],
+                                },
+                            ],
+                        });
+                    }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
+                );
+
+                it(
+                    'passing optionIds that match an existing variant throws',
+                    assertThrowsWithMessage(async () => {
+                        await adminClient.query<
+                            Codegen.UpdateProductVariantsMutation,
+                            Codegen.UpdateProductVariantsMutationVariables
+                        >(UPDATE_PRODUCT_VARIANTS, {
+                            input: [
+                                {
+                                    id: variantToModify.id,
+                                    optionIds: variants[1]!.options.map(o => o.id),
+                                },
+                            ],
+                        });
+                    }, 'A ProductVariant with the selected options already exists: Variant 3'),
+                );
+
+                it('addOptionGroupToProduct and then update existing ProductVariant with a new option', async () => {
+                    const optionGroup4 = await createOptionGroup('group-4', [
+                        'group4-option-1',
+                        'group4-option-2',
+                    ]);
+                    newOptionGroup = optionGroup4;
+                    const result = await adminClient.query<
+                        Codegen.AddOptionGroupToProductMutation,
+                        Codegen.AddOptionGroupToProductMutationVariables
+                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                        optionGroupId: optionGroup4.id,
+                        productId: newProduct.id,
+                    });
+                    expect(result.addOptionGroupToProduct.optionGroups.length).toBe(3);
+                    expect(result.addOptionGroupToProduct.optionGroups[2].id).toBe(optionGroup4.id);
+
+                    const { updateProductVariants } = await adminClient.query<
+                        Codegen.UpdateProductVariantsMutation,
+                        Codegen.UpdateProductVariantsMutationVariables
+                    >(UPDATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                id: variantToModify.id,
+                                optionIds: [
+                                    ...variantToModify.options.map(o => o.id),
+                                    optionGroup4.options[0].id,
+                                ],
+                            },
+                        ],
+                    });
+
+                    expect(updateProductVariants[0]!.options.map(o => o.code)).toEqual([
+                        'group2-option-2',
+                        'group3-option-1',
+                        'group4-option-1',
+                    ]);
+                });
+
+                it('removeOptionGroup fails because option is in use', async () => {
+                    const { removeOptionGroupFromProduct } = await adminClient.query<
+                        Codegen.RemoveOptionGroupFromProductMutation,
+                        Codegen.RemoveOptionGroupFromProductMutationVariables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        optionGroupId: newOptionGroup.id,
+                        productId: newProduct.id,
+                    });
+                    removeOptionGuard.assertErrorResult(removeOptionGroupFromProduct);
+
+                    expect(removeOptionGroupFromProduct.message).toBe(
+                        'Cannot remove ProductOptionGroup "group-4" as it is used by 3 ProductVariants. Use the `force` argument to remove it anyway',
+                    );
+                });
+
+                it('removeOptionGroup with force argument', async () => {
+                    const { removeOptionGroupFromProduct } = await adminClient.query<
+                        Codegen.RemoveOptionGroupFromProductMutation,
+                        Codegen.RemoveOptionGroupFromProductMutationVariables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        optionGroupId: newOptionGroup.id,
+                        productId: newProduct.id,
+                        force: true,
+                    });
+                    removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
+
+                    expect(removeOptionGroupFromProduct.optionGroups.length).toBe(2);
+
+                    const { product } = await adminClient.query<
+                        Codegen.GetProductWithVariantsQuery,
+                        Codegen.GetProductWithVariantsQueryVariables
+                    >(GET_PRODUCT_WITH_VARIANTS, {
+                        id: newProduct.id,
+                    });
+                    function assertNoOptionGroup(
+                        variant: Codegen.ProductVariantFragment,
+                        optionGroupId: string,
+                    ) {
+                        expect(variant.options.map(o => o.groupId).every(id => id !== optionGroupId)).toBe(
+                            true,
+                        );
+                    }
+                    assertNoOptionGroup(product!.variants[0]!, newOptionGroup.id);
+                    assertNoOptionGroup(product!.variants[1]!, newOptionGroup.id);
+                    assertNoOptionGroup(product!.variants[2]!, newOptionGroup.id);
+                });
+            });
 
             let deletedVariant: Codegen.ProductVariantFragment;
 
@@ -2091,8 +2229,8 @@ describe('Product resolver', () => {
 });
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
-    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
-        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
+    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!, $force: Boolean) {
+        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId, force: $force) {
             ...ProductWithOptions
             ... on ProductOptionInUseError {
                 errorCode

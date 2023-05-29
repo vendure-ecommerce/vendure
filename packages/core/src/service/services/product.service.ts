@@ -12,6 +12,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { ProductVariant } from '@vendure/core';
 import { FindOptionsUtils, In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -397,6 +398,7 @@ export class ProductService {
         ctx: RequestContext,
         productId: ID,
         optionGroupId: ID,
+        force?: boolean,
     ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
         const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
@@ -409,10 +411,21 @@ export class ProductService {
                 variant.options.some(option => idsAreEqual(option.groupId, optionGroupId)),
         );
         if (optionIsInUse) {
-            return new ProductOptionInUseError({
-                optionGroupCode: optionGroup.code,
-                productVariantCount: product.variants.length,
-            });
+            if (!force) {
+                return new ProductOptionInUseError({
+                    optionGroupCode: optionGroup.code,
+                    productVariantCount: product.variants.length,
+                });
+            } else {
+                // We will force the removal of this ProductOptionGroup by first
+                // removing all ProductOptions from the ProductVariants
+                for (const variant of product.variants) {
+                    variant.options = variant.options.filter(o => !idsAreEqual(o.groupId, optionGroupId));
+                }
+                await this.connection.getRepository(ctx, ProductVariant).save(product.variants, {
+                    reload: false,
+                });
+            }
         }
         const result = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
             ctx,

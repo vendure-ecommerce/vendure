@@ -59,6 +59,7 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             id
             code
             languageCode
+            groupId
             name
         }
         facetValues {

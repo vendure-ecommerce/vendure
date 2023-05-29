@@ -28,8 +28,13 @@ type Mutation {
     "Add an OptionGroup to a Product"
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
 
-    "Remove an OptionGroup from a Product"
-    removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): RemoveOptionGroupFromProductResult!
+    """
+    Remove an OptionGroup from a Product. If the OptionGroup is in use by any ProductVariants
+    the mutation will return a ProductOptionInUseError, and the OptionGroup will not be removed.
+    Setting the `force` argument to `true` will override this and remove the OptionGroup anyway,
+    as well as removing any of the group's options from the Product's ProductVariants.
+    """
+    removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!, force: Boolean): RemoveOptionGroupFromProductResult!
 
     "Create a set of ProductVariants based on the OptionGroups assigned to the given Product"
     createProductVariants(input: [CreateProductVariantInput!]!): [ProductVariant]!
@@ -146,6 +151,7 @@ input UpdateProductVariantInput {
     enabled: Boolean
     translations: [ProductVariantTranslationInput!]
     facetValueIds: [ID!]
+    optionIds: [ID!]
     sku: String
     taxCategoryId: ID
     price: Money
