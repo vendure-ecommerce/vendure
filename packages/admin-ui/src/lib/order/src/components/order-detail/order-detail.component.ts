@@ -1,35 +1,28 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
-    CancelOrderMutation,
-    CustomFieldConfig,
     DataService,
     EditNoteDialogComponent,
     FulfillmentFragment,
     GetOrderHistoryQuery,
     GetOrderQuery,
-    HistoryEntryType,
     ModalService,
     NotificationService,
     Order,
     ORDER_DETAIL_FRAGMENT,
     OrderDetailFragment,
     OrderDetailQueryDocument,
-    OrderLineFragment,
     Refund,
-    RefundOrderMutation,
     ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
     TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
-import { pick } from '@vendure/common/lib/pick';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
 import { gql } from 'apollo-angular';
-import { EMPTY, merge, Observable, of, Subject } from 'rxjs';
+import { EMPTY, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
@@ -61,12 +54,16 @@ export class OrderDetailComponent
     extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>
     implements OnInit, OnDestroy
 {
-    detailForm = new UntypedFormGroup({});
+    customFields = this.getCustomFieldConfig('Order');
+    orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
+    detailForm = new FormGroup({
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     history$: Observable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'] | undefined>;
     nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();
-    customFields: CustomFieldConfig[];
-    orderLineCustomFields: CustomFieldConfig[];
     private readonly defaultStates = [
         'AddingItems',
         'ArrangingPayment',
@@ -90,6 +87,7 @@ export class OrderDetailComponent
         private notificationService: NotificationService,
         private modalService: ModalService,
         private orderTransitionService: OrderTransitionService,
+        private formBuilder: FormBuilder,
     ) {
         super(route, router, serverConfigService, dataService);
     }
@@ -101,8 +99,6 @@ export class OrderDetailComponent
                 this.router.navigate(['./', 'modify'], { relativeTo: this.route });
             }
         });
-        this.customFields = this.getCustomFieldConfig('Order');
-        this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
             switchMap(() =>
@@ -184,11 +180,11 @@ export class OrderDetailComponent
             });
     }
 
-    updateCustomFields(customFieldsValue: any) {
+    updateCustomFields() {
         this.dataService.order
             .updateOrderCustomFields({
                 id: this.id,
-                customFields: customFieldsValue,
+                customFields: this.detailForm.value.customFields,
             })
             .subscribe(() => {
                 this.notificationService.success(_('common.notify-update-success'), { entity: 'Order' });
@@ -643,6 +639,8 @@ export class OrderDetailComponent
     }
 
     protected setFormValues(entity: OrderDetailFragment): void {
-        // empty
+        if (this.customFields.length) {
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get(['customFields']), entity);
+        }
     }
 }

@@ -17,6 +17,7 @@ export class DataTable2ColumnComponent<T> implements OnInit {
     @Input() sort?: DataTableSort<any>;
     @Input() optional = true;
     @Input() hiddenByDefault = false;
+    @Input() orderable = true;
     #visible = true;
     #onColumnChangeFns: Array<() => void> = [];
     get id(): string {

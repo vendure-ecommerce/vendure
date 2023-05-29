@@ -11,7 +11,7 @@
                 cdkDragLockAxis="y"
                 [cdkDragData]="column"
             >
-                <div cdkDragHandle class="drag-handle">
+                <div cdkDragHandle class="drag-handle" [cdkDragHandleDisabled]="column.orderable === false">
                     <clr-icon shape="drag-handle"></clr-icon>
                 </div>
                 <label class="flex">

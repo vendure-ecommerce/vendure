@@ -21,6 +21,7 @@ import { LineFulfillmentComponent } from './components/line-fulfillment/line-ful
 import { LineRefundsComponent } from './components/line-refunds/line-refunds.component';
 import { ModificationDetailComponent } from './components/modification-detail/modification-detail.component';
 import { OrderCustomFieldsCardComponent } from './components/order-custom-fields-card/order-custom-fields-card.component';
+import { OrderTotalColumnComponent } from './components/order-data-table/order-total-column.component';
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { OrderEditorComponent } from './components/order-editor/order-editor.component';
 import { OrderEditsPreviewDialogComponent } from './components/order-edits-preview-dialog/order-edits-preview-dialog.component';
@@ -45,6 +46,7 @@ import { SellerOrdersCardComponent } from './components/seller-orders-card/selle
 import { SettleRefundDialogComponent } from './components/settle-refund-dialog/settle-refund-dialog.component';
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
 import { createRoutes } from './order.routes';
+import { OrderDataTableComponent } from './components/order-data-table/order-data-table.component';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
@@ -93,6 +95,8 @@ import { createRoutes } from './order.routes';
         SelectShippingMethodDialogComponent,
         OrderHistoryEntryHostComponent,
         SellerOrdersCardComponent,
+        OrderDataTableComponent,
+        OrderTotalColumnComponent,
     ],
     exports: [OrderCustomFieldsCardComponent],
 })

@@ -1,5 +1,6 @@
 @import 'variables';
 @import 'forms';
+@import 'mixins';
 
 .main-container {
     background-color: var(--clr-global-app-background);
@@ -57,35 +58,35 @@ button:focus {
 }
 
 .table {
-    border-color: var(--color-component-border-100);
-    margin-top: 0;
-
-    td.align-middle,
-    th.align-middle {
-        vertical-align: middle !important;
+    border: none;
+    margin: 0;
+    background-color: transparent;
+    td {
+        border: none;
     }
-
-    td.right {
-        text-align: right;
-    }
+    @include table-base-styles;
 }
 
 .full-label,
 .compact-label {
     margin-left: 6px;
 }
+
 .full-label {
     display: none;
 }
+
 .compact-label {
     display: initial;
 }
+
 button.icon-button {
     border: none;
     background: none;
     cursor: pointer;
     color: var(--color-icon-button);
 }
+
 @media screen and (min-width: $breakpoint-small) {
     .full-label {
         display: initial;
@@ -114,16 +115,19 @@ button.icon-button {
     color: var(--color-primary-900);
     border-radius: var(--border-radius);
     padding: var(--space-unit);
+
     .alert-item {
         display: flex;
         align-items: flex-start;
         gap: 4px;
     }
+
     &.alert-danger {
         border-color: var(--color-chip-error-border);
         background-color: var(--color-chip-error-bg);
         color: var(--color-chip-error-text);
     }
+
     &.alert-warning {
         border-color: var(--color-chip-warning-border);
         background-color: var(--color-chip-warning-bg);

@@ -26,7 +26,6 @@
                 <ng-container *ngFor="let nextState of nextOtherStates()">
                     <button
                         type="button"
-                        class="btn"
                         vdrDropdownItem
                         (click)="transitionState.emit(nextState)"
                     >

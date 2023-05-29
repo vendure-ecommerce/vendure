@@ -14,7 +14,7 @@ import { DataTable2ColumnComponent } from './data-table-column.component';
 })
 export class DataTableCustomFieldColumnComponent<T> extends DataTable2ColumnComponent<T> implements OnInit {
     @Input() customField: CustomFieldConfig;
-    @Input() sorts: DataTableSortCollection<any, any[]>;
+    @Input() sorts?: DataTableSortCollection<any, any[]>;
     @ViewChild(TemplateRef, { static: false }) template: TemplateRef<any>;
     protected uiLanguage$: Observable<LanguageCode>;
     constructor(protected dataService: DataService) {
@@ -37,7 +37,7 @@ export class DataTableCustomFieldColumnComponent<T> extends DataTable2ColumnComp
                     : this.customField.name;
         });
         this.hiddenByDefault = true;
-        this.sort = this.sorts.get(this.customField.name);
+        this.sort = this.sorts?.get(this.customField.name);
         super.ngOnInit();
     }
 }

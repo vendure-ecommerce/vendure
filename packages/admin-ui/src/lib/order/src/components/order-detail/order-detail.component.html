@@ -45,7 +45,7 @@
                     <ng-container
                         *ngIf="order.type !== 'Aggregate' && order.nextStates.includes('Modifying')"
                     >
-                        <button type="button" class="btn" vdrDropdownItem (click)="transitionToModifying()">
+                        <button type="button" vdrDropdownItem (click)="transitionToModifying()">
                             <clr-icon shape="pencil"></clr-icon>
                             {{ 'order.modify-order' | translate }}
                         </button>
@@ -53,7 +53,6 @@
                     </ng-container>
                     <button
                         type="button"
-                        class="btn"
                         vdrDropdownItem
                         *ngIf="order.type !== 'Aggregate' && order.nextStates.includes('Cancelled')"
                         (click)="cancelOrRefund(order)"
@@ -72,7 +71,6 @@
                         <button
                             *ngFor="let nextState of nextStates$ | async"
                             type="button"
-                            class="btn"
                             vdrDropdownItem
                             (click)="transitionToState(nextState)"
                         >
@@ -84,12 +82,7 @@
                         </button>
                     </ng-container>
                     <div class="dropdown-divider"></div>
-                    <button
-                        type="button"
-                        class="btn"
-                        vdrDropdownItem
-                        (click)="manuallyTransitionToState(order)"
-                    >
+                    <button type="button" vdrDropdownItem (click)="manuallyTransitionToState(order)">
                         <clr-icon shape="step-forward-2" class="is-warning"></clr-icon>
                         {{ 'order.manually-transition-to-state' | translate }}
                     </button>
@@ -155,14 +148,14 @@
             *ngIf="order.sellerOrders.length"
             [orderId]="order.id"
         ></vdr-seller-orders-card>
-        <vdr-card [paddingX]="true">
+        <vdr-card [paddingX]="false">
             <vdr-order-table
                 class="card-span"
                 [order]="order"
                 [orderLineCustomFields]="orderLineCustomFields"
             ></vdr-order-table>
         </vdr-card>
-        <vdr-card [title]="'order.tax-summary' | translate" [paddingX]="true">
+        <vdr-card [title]="'order.tax-summary' | translate" [paddingX]="false">
             <table class="table card-span">
                 <thead>
                     <tr>
@@ -184,11 +177,22 @@
         </vdr-card>
         <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customFields.length">
             <vdr-tabbed-custom-fields
-                entityName="Facet"
+                entityName="Order"
                 [customFields]="customFields"
-                [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
+                [customFieldsFormGroup]="detailForm.get(['customFields'])"
                 [readonly]="!('UpdateOrder' | hasPermission)"
             />
+            <div class="card-span">
+                <button
+                    class="button primary"
+                    (click)="updateCustomFields()"
+                    [disabled]="
+                        detailForm.get('customFields')?.pristine || detailForm.get('customFields')?.invalid
+                    "
+                >
+                    {{ 'common.update' | translate }}
+                </button>
+            </div>
         </vdr-card>
         <vdr-custom-detail-component-host
             locationId="order-detail"

@@ -274,7 +274,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         this.selectionManager?.toggleSelection(item, event);
     }
 
-    private getDataTableConfig(): DataTableConfig {
+    protected getDataTableConfig(): DataTableConfig {
         const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
         if (!dataTableConfig[this.id]) {
             dataTableConfig[this.id] = { visibility: [], order: {}, showSearchFilterRow: false };
