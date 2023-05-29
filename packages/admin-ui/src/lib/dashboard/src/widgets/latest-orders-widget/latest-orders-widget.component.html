@@ -1,20 +1,30 @@
-<vdr-data-table [items]="latestOrders$ | async">
-    <ng-template let-order="item">
-        <td class="left align-middle">
-            {{ order.code }}
+<vdr-data-table-2 [items]="latestOrders$ | async" id="latest-orders-widget-list">
+    <vdr-dt2-column [heading]="'common.code' | translate">
+        <ng-template let-order="item">
+            <a class="button-ghost" [routerLink]="['/orders/', order.id]"
+                ><span>{{ order.code }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'order.state' | translate" [hiddenByDefault]="true">
+        <ng-template let-order="item">
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
-        </td>
-        <td class="left align-middle">
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'customer.customer' | translate" [hiddenByDefault]="true">
+        <ng-template let-order="item">
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
-        </td>
-        <td class="left align-middle">{{ order.total | localeCurrency: order.currencyCode }}</td>
-        <td class="left align-middle">{{ order.orderPlacedAt | timeAgo }}</td>
-        <td class="right align-middle">
-            <vdr-table-row-action
-                iconShape="shopping-cart"
-                [label]="'common.open' | translate"
-                [linkTo]="['/orders/', order.id]"
-            ></vdr-table-row-action>
-        </td>
-    </ng-template>
-</vdr-data-table>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'order.total' | translate">
+        <ng-template let-order="item">
+            {{ order.totalWithTax | localeCurrency : order.currencyCode }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'order.placed-at' | translate">
+        <ng-template let-order="item">
+            {{ order.orderPlacedAt | timeAgo }}
+        </ng-template>
+    </vdr-dt2-column>
+</vdr-data-table-2>

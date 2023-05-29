@@ -1,4 +1,16 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ContentChild,
+    Directive,
+    Input,
+    TemplateRef,
+} from '@angular/core';
+
+@Directive({
+    selector: '[vdrCardControls]',
+})
+export class CardControlsDirective {}
 
 @Component({
     selector: 'vdr-card',
@@ -9,4 +21,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class CardComponent {
     @Input() title: string;
     @Input() paddingX = true;
+    @ContentChild(CardControlsDirective, { read: TemplateRef }) controlsTemplate: TemplateRef<any>;
 }

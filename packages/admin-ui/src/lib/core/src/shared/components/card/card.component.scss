@@ -20,9 +20,14 @@
     }
 }
 
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--card-padding);
+}
 .title {
     font-size: var(--font-size-base);
-    margin-bottom: var(--card-padding);
     padding: 0 var(--card-padding);
 }
 .padding-x .title {
