@@ -148,6 +148,7 @@
     "product-variants": "Вариант товара",
     "products": "",
     "public": "Публичный",
+    "quick-jump-placeholder": "",
     "reindex-error": "Произошла ошибка при перестройке индекса поиска",
     "reindex-successful": "Проиндексировано {count, plural, one {вариант товара} other {{count} вариантов товара}} за {time}мс",
     "reindexing": "Перестройка поискового индекса",

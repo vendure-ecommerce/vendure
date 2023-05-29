@@ -148,6 +148,7 @@
     "product-variants": "Warianty produktu",
     "products": "",
     "public": "",
+    "quick-jump-placeholder": "",
     "reindex-error": "Wystąpił błąd podczas przebudowania indeksów",
     "reindex-successful": "Zaindeksowano {count, plural, one {wariant produktu} other {{count} wariantów produktu}} w {time}ms",
     "reindexing": "Przebudowuje indeksy wyszukiwania",

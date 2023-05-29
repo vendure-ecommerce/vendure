@@ -62,6 +62,7 @@ import { ProductVariantsEditorComponent } from './components/product-variants-ed
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
+import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -103,6 +104,7 @@ const CATALOG_COMPONENTS = [
         ...CATALOG_COMPONENTS,
         CreateProductVariantDialogComponent,
         CreateProductOptionGroupDialogComponent,
+        ProductVariantQuickJumpComponent,
     ],
     providers: [
         {
@@ -174,7 +176,7 @@ export class CatalogModule {
                         link: ['/catalog', 'products', entity?.product.id],
                     },
                     {
-                        label: `${entity?.name}`,
+                        label: `${entity?.name} (${entity?.sku})`,
                         link: ['variants', entity?.id],
                     },
                 ],

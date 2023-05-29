@@ -1,13 +1,16 @@
 <vdr-page-block>
     <vdr-action-bar>
-        <vdr-ab-left>
-            <div class="flex clr-flex-row"></div>
-            <vdr-language-selector
-                [disabled]="isNew$ | async"
-                [availableLanguageCodes]="availableLanguages$ | async"
-                [currentLanguageCode]="languageCode$ | async"
-                (languageCodeChange)="setLanguage($event)"
-            ></vdr-language-selector>
+        <vdr-ab-left [grow]="true">
+            <div class="flex center">
+                <vdr-language-selector
+                    class="mr-2"
+                    [disabled]="isNew$ | async"
+                    [availableLanguageCodes]="availableLanguages$ | async"
+                    [currentLanguageCode]="languageCode$ | async"
+                    (languageCodeChange)="setLanguage($event)"
+                ></vdr-language-selector>
+                <vdr-product-variant-quick-jump [productId]="entity?.product.id" />
+            </div>
         </vdr-ab-left>
 
         <vdr-ab-right>
@@ -56,7 +59,11 @@
                     </vdr-chip>
                 </div>
                 <div>
-                    <a [routerLink]="['../../', 'options']" class="button" *vdrIfPermissions="updatePermissions">
+                    <a
+                        [routerLink]="['../../', 'options']"
+                        class="button"
+                        *vdrIfPermissions="updatePermissions"
+                    >
                         <clr-icon shape="pencil"></clr-icon>
                         {{ 'catalog.edit-options' | translate }}
                     </a>

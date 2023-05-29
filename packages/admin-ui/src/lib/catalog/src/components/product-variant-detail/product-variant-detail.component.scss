@@ -3,3 +3,8 @@
     flex-wrap: wrap;
     gap: 3px;
 }
+
+vdr-product-variant-quick-jump {
+    flex: 1;
+    margin-right: calc(var(--space-unit) * 2);
+}

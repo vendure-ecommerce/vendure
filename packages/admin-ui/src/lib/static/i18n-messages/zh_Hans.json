@@ -148,6 +148,7 @@
     "product-variants": "商品规格",
     "products": "",
     "public": "公开",
+    "quick-jump-placeholder": "",
     "reindex-error": "重建索引失败",
     "reindex-successful": "已成功重建{count}个产品索引，耗时{time}毫秒",
     "reindexing": "正在重建搜索索引",

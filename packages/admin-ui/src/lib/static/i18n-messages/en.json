@@ -148,6 +148,7 @@
     "product-variants": "Product variants",
     "products": "Products",
     "public": "Public",
+    "quick-jump-placeholder": "Quick jump to variant",
     "reindex-error": "An error occurred while rebuilding search index",
     "reindex-successful": "Indexed {count, plural, one {product variant} other {{count} product variants}} in {time}ms",
     "reindexing": "Rebuilding search index",
