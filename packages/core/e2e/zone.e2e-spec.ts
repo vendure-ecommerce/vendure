@@ -38,8 +38,8 @@ describe('Zone resolver', () => {
 
     it('zones', async () => {
         const result = await adminClient.query<Codegen.GetZonesQuery>(GET_ZONE_LIST);
-        expect(result.zones.length).toBe(5);
-        zones = result.zones;
+        expect(result.zones.items.length).toBe(5);
+        zones = result.zones.items;
         oceania = zones[0];
     });
 
@@ -134,7 +134,7 @@ describe('Zone resolver', () => {
             });
 
             const result2 = await adminClient.query<Codegen.GetZonesQuery>(GET_ZONE_LIST);
-            expect(result2.zones.find(c => c.id === pangaea.id)).toBeUndefined();
+            expect(result2.zones.items.find(c => c.id === pangaea.id)).toBeUndefined();
         });
 
         it('does not delete Zone that is used in one or more TaxRates', async () => {
@@ -153,7 +153,7 @@ describe('Zone resolver', () => {
             });
 
             const result2 = await adminClient.query<Codegen.GetZonesQuery>(GET_ZONE_LIST);
-            expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
+            expect(result2.zones.items.find(c => c.id === oceania.id)).not.toBeUndefined();
         });
 
         it('does not delete Zone that is used as a Channel defaultTaxZone', async () => {
@@ -182,7 +182,7 @@ describe('Zone resolver', () => {
             });
 
             const result2 = await adminClient.query<Codegen.GetZonesQuery>(GET_ZONE_LIST);
-            expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
+            expect(result2.zones.items.find(c => c.id === oceania.id)).not.toBeUndefined();
         });
 
         it('does not delete Zone that is used as a Channel defaultShippingZone', async () => {
@@ -212,7 +212,7 @@ describe('Zone resolver', () => {
             });
 
             const result2 = await adminClient.query<Codegen.GetZonesQuery>(GET_ZONE_LIST);
-            expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
+            expect(result2.zones.items.find(c => c.id === oceania.id)).not.toBeUndefined();
         });
     });
 });

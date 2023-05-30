@@ -31,7 +31,7 @@ describe('TaxCategory resolver', () => {
             GET_TAX_CATEGORY_LIST,
         );
 
-        expect(taxCategories.sort(sortById)).toEqual([
+        expect(taxCategories.items.sort(sortById)).toEqual([
             { id: 'T_1', name: 'Standard Tax', isDefault: false },
             { id: 'T_2', name: 'Reduced Tax', isDefault: false },
             { id: 'T_3', name: 'Zero Tax', isDefault: false },
@@ -108,7 +108,7 @@ describe('TaxCategory resolver', () => {
         const { taxCategories } = await adminClient.query<Codegen.GetTaxCategoryListQuery>(
             GET_TAX_CATEGORY_LIST,
         );
-        expect(taxCategories.sort(sortById)).toEqual([
+        expect(taxCategories.items.sort(sortById)).toEqual([
             { id: 'T_1', name: 'Standard Tax', isDefault: false },
             { id: 'T_2', name: 'Reduced Tax', isDefault: true },
             { id: 'T_3', name: 'Zero Tax', isDefault: false },
@@ -136,7 +136,7 @@ describe('TaxCategory resolver', () => {
         const { taxCategories } = await adminClient.query<Codegen.GetTaxCategoryListQuery>(
             GET_TAX_CATEGORY_LIST,
         );
-        expect(taxCategories.sort(sortById)).toEqual([
+        expect(taxCategories.items.sort(sortById)).toEqual([
             { id: 'T_1', name: 'Standard Tax', isDefault: true },
             { id: 'T_2', name: 'Reduced Tax', isDefault: false },
             { id: 'T_3', name: 'Zero Tax', isDefault: false },

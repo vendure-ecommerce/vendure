@@ -457,8 +457,8 @@ describe('Role resolver', () => {
 
         beforeAll(async () => {
             const { channels } = await adminClient.query<Codegen.GetChannelsQuery>(GET_CHANNELS);
-            defaultChannel = channels.find(c => c.token === E2E_DEFAULT_CHANNEL_TOKEN)!;
-            secondChannel = channels.find(c => c.token !== E2E_DEFAULT_CHANNEL_TOKEN)!;
+            defaultChannel = channels.items.find(c => c.token === E2E_DEFAULT_CHANNEL_TOKEN)!;
+            secondChannel = channels.items.find(c => c.token !== E2E_DEFAULT_CHANNEL_TOKEN)!;
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             await adminClient.asSuperAdmin();
             const { createRole } = await adminClient.query<

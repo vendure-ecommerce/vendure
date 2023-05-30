@@ -237,7 +237,7 @@ export const FACET_WITH_VALUES_FRAGMENT = gql`
 `;
 
 export const COUNTRY_FRAGMENT = gql`
-    fragment Country on Country {
+    fragment Country on Region {
         id
         code
         name

@@ -321,7 +321,7 @@ describe('Channels', () => {
                     defaultLanguageCode: LanguageCode.zh,
                 },
             });
-
+            channelGuard.assertSuccess(updateChannel);
             expect(updateChannel.defaultLanguageCode).toBe(LanguageCode.zh);
         });
     });
@@ -356,7 +356,7 @@ describe('Channels', () => {
         expect(deleteChannel.result).toBe(DeletionResult.DELETED);
 
         const { channels } = await adminClient.query<Codegen.GetChannelsQuery>(GET_CHANNELS);
-        expect(channels.map(c => c.id).sort()).toEqual(['T_1']);
+        expect(channels.items.map(c => c.id).sort()).toEqual(['T_1']);
 
         const { product } = await adminClient.query<
             Codegen.GetProductWithVariantsQuery,

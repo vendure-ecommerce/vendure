@@ -7955,13 +7955,23 @@ export type FacetWithValuesFragment = {
     }>;
 };
 
-export type CountryFragment = {
+type Country_Country_Fragment = {
     id: string;
     code: string;
     name: string;
     enabled: boolean;
     translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
 };
+
+type Country_Province_Fragment = {
+    id: string;
+    code: string;
+    name: string;
+    enabled: boolean;
+    translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+};
+
+export type CountryFragment = Country_Country_Fragment | Country_Province_Fragment;
 
 export type AddressFragment = {
     id: string;
@@ -8140,7 +8150,13 @@ export type ZoneFragment = {
               enabled: boolean;
               translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
           }
-        | {}
+        | {
+              id: string;
+              code: string;
+              name: string;
+              enabled: boolean;
+              translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+          }
     >;
 };
 
@@ -11611,7 +11627,13 @@ export type GetZoneQuery = {
                   enabled: boolean;
                   translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
               }
-            | {}
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
         >;
     } | null;
 };
@@ -11641,7 +11663,13 @@ export type CreateZoneMutation = {
                   enabled: boolean;
                   translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
               }
-            | {}
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
         >;
     };
 };
@@ -11662,7 +11690,13 @@ export type UpdateZoneMutation = {
                   enabled: boolean;
                   translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
               }
-            | {}
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
         >;
     };
 };
@@ -11684,7 +11718,13 @@ export type AddMembersToZoneMutation = {
                   enabled: boolean;
                   translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
               }
-            | {}
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
         >;
     };
 };
@@ -11706,7 +11746,13 @@ export type RemoveMembersFromZoneMutation = {
                   enabled: boolean;
                   translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
               }
-            | {}
+            | {
+                  id: string;
+                  code: string;
+                  name: string;
+                  enabled: boolean;
+                  translations: Array<{ id: string; languageCode: LanguageCode; name: string }>;
+              }
         >;
     };
 };
@@ -13191,7 +13237,7 @@ export const CountryFragmentDoc = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -13244,7 +13290,7 @@ export const ZoneFragmentDoc = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -17079,7 +17125,7 @@ export const GetCountryDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -17147,7 +17193,7 @@ export const CreateCountryDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -24881,7 +24927,7 @@ export const UpdateCountryDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -36991,7 +37037,7 @@ export const GetZoneDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -37130,7 +37176,7 @@ export const CreateZoneDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -37218,7 +37264,7 @@ export const UpdateZoneDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -37325,7 +37371,7 @@ export const AddMembersToZoneDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
@@ -37432,7 +37478,7 @@ export const RemoveMembersFromZoneDocument = {
         {
             kind: 'FragmentDefinition',
             name: { kind: 'Name', value: 'Country' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Country' } },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Region' } },
             selectionSet: {
                 kind: 'SelectionSet',
                 selections: [
