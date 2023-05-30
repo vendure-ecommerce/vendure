@@ -9,9 +9,10 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { GetZoneSelectorListDocument, GetZoneSelectorListQuery, ItemOf } from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { Subject } from 'rxjs';
+import { ItemOf } from '../../../common/base-list.component';
+import { GetZoneSelectorListDocument, GetZoneSelectorListQuery } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 export const GET_ZONE_SELECTOR_LIST = gql`

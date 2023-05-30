@@ -12,6 +12,8 @@ export * from './components/line-fulfillment/line-fulfillment.component';
 export * from './components/line-refunds/line-refunds.component';
 export * from './components/modification-detail/modification-detail.component';
 export * from './components/order-custom-fields-card/order-custom-fields-card.component';
+export * from './components/order-data-table/order-data-table.component';
+export * from './components/order-data-table/order-total-column.component';
 export * from './components/order-detail/order-detail.component';
 export * from './components/order-editor/order-editor.component';
 export * from './components/order-edits-preview-dialog/order-edits-preview-dialog.component';

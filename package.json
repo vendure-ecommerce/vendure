@@ -94,10 +94,10 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
-    "eslint": "^8.35.0",
-    "eslint-config-prettier": "^8.7.0",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^40.0.1",
+    "eslint-plugin-jsdoc": "^45.0.0",
     "eslint-plugin-prefer-arrow": "^1.2.3"
   }
 }

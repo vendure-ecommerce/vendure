@@ -28,7 +28,7 @@ import { BaseDataService } from './base-data.service';
 export class CustomerDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getCustomerList(take: number = 10, skip: number = 0, filterTerm?: string) {
+    getCustomerList(take = 10, skip = 0, filterTerm?: string) {
         const filter = filterTerm
             ? {
                   filter: {

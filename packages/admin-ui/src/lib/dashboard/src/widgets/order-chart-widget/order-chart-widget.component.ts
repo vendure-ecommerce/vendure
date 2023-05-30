@@ -1,10 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { CurrencyCode, DataService, GetOrderChartDataDocument, MetricType } from '@vendure/admin-ui/core';
-import { pick } from '@vendure/common/lib/pick';
+import {
+    ChartEntry,
+    ChartFormatOptions,
+    DataService,
+    GetOrderChartDataDocument,
+    MetricType,
+} from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
-import { combineLatest, BehaviorSubject, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ChartEntry, ChartFormatOptions } from '../../../../core/src/shared/components/chart/chart.component';
 
 export const GET_ORDER_CHART_DATA = gql`
     query GetOrderChartData($refresh: Boolean, $types: [MetricType!]!) {

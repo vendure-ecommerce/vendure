@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver } from '@vendure/admin-ui/core';
-import { GetProductVariantOptionsQuery } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { BaseEntityResolver, GetProductVariantOptionsQuery, DataService } from '@vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',
@@ -12,7 +10,7 @@ export class ProductVariantsResolver extends BaseEntityResolver<GetProductVarian
         super(
             router,
             {
-                __typename: 'Product' as 'Product',
+                __typename: 'Product' as const,
                 id: '',
                 createdAt: '',
                 updatedAt: '',

@@ -58,7 +58,7 @@ export class JobQueueService implements OnDestroy {
     /**
      * After a given delay, checks the server for any active jobs.
      */
-    checkForJobs(delay: number = 1000) {
+    checkForJobs(delay = 1000) {
         timer(delay)
             .pipe(
                 switchMap(() => this.dataService.client.userStatus().mapSingle(data => data.userStatus)),

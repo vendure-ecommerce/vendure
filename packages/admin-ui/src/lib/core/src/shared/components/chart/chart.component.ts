@@ -9,8 +9,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { easings, LineChart } from 'chartist';
-import { LineChartData } from 'chartist/dist/charts/LineChart/LineChart.types';
+import { easings, LineChart, LineChartData } from 'chartist';
 import { tooltipPlugin } from './tooltip-plugin';
 
 export interface ChartFormatOptions {

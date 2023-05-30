@@ -55,7 +55,7 @@ import { BaseDataService } from './base-data.service';
 export class ProductDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    searchProducts(term: string, take: number = 10, skip: number = 0) {
+    searchProducts(term: string, take = 10, skip = 0) {
         return this.baseDataService.query<Codegen.SearchProductsQuery, Codegen.SearchProductsQueryVariables>(
             SEARCH_PRODUCTS,
             {
@@ -333,7 +333,7 @@ export class ProductDataService {
         });
     }
 
-    getAssetList(take: number = 10, skip: number = 0) {
+    getAssetList(take = 10, skip = 0) {
         return this.baseDataService.query<Codegen.GetAssetListQuery, Codegen.GetAssetListQueryVariables>(
             GET_ASSET_LIST,
             {

@@ -110,7 +110,7 @@ export class CollectionDataService {
         >(PREVIEW_COLLECTION_CONTENTS, { input, options });
     }
 
-    getCollectionContents(id: string, take: number = 10, skip: number = 0, filterTerm?: string) {
+    getCollectionContents(id: string, take = 10, skip = 0, filterTerm?: string) {
         const filter = filterTerm
             ? ({ name: { contains: filterTerm } } as Codegen.CollectionFilterParameter)
             : undefined;

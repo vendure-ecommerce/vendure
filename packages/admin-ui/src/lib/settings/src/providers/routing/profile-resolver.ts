@@ -10,7 +10,7 @@ export class ProfileResolver extends BaseEntityResolver<AdministratorFragment> {
         super(
             router,
             {
-                __typename: 'Administrator' as 'Administrator',
+                __typename: 'Administrator' as const,
                 id: '',
                 createdAt: '',
                 updatedAt: '',

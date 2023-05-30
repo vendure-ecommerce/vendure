@@ -57,7 +57,7 @@ export class AdministratorDataService {
         >(DELETE_ADMINISTRATORS, { ids });
     }
 
-    getRoles(take: number = 10, skip: number = 0) {
+    getRoles(take = 10, skip = 0) {
         return this.baseDataService.query<Codegen.GetRolesQuery, Codegen.GetRolesQueryVariables>(GET_ROLES, {
             options: {
                 take,

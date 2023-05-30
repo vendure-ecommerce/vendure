@@ -4,8 +4,7 @@
  */
 /* global Chartist */
 
-import { LineChart, PieChart } from 'chartist';
-import { DrawEvent } from 'chartist/dist/core/types';
+import { LineChart, PieChart, DrawEvent } from 'chartist';
 import { ChartFormatOptions } from './chart.component';
 
 const defaultOptions = {
@@ -72,7 +71,6 @@ export function tooltipPlugin(userOptions?: any) {
                     event: data,
                     x: data.element.getNode().getBoundingClientRect().x,
                 };
-                console.log(`drawpoint`);
             }
         });
 

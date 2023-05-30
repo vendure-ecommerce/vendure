@@ -5,9 +5,10 @@ import {
     LanguageCode,
     ProductVariantFragment,
     UpdateProductOptionInput,
+    createUpdatedTranslatable,
+    Dialog,
 } from '@vendure/admin-ui/core';
-import { createUpdatedTranslatable } from '@vendure/admin-ui/core';
-import { Dialog } from '@vendure/admin-ui/core';
+
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 
 @Component({

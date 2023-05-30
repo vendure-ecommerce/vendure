@@ -13,21 +13,19 @@ import { AffixedInputComponent } from '../affixed-input/affixed-input.component'
 import { CurrencyInputComponent } from './currency-input.component';
 
 describe('CurrencyInputComponent', () => {
-    beforeEach(
-        waitForAsync(() => {
-            TestBed.configureTestingModule({
-                imports: [FormsModule],
-                providers: [{ provide: DataService, useClass: MockDataService }],
-                declarations: [
-                    TestControlValueAccessorComponent,
-                    TestSimpleComponent,
-                    CurrencyInputComponent,
-                    AffixedInputComponent,
-                    LocaleCurrencyNamePipe,
-                ],
-            }).compileComponents();
-        }),
-    );
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [FormsModule],
+            providers: [{ provide: DataService, useClass: MockDataService }],
+            declarations: [
+                TestControlValueAccessorComponent,
+                TestSimpleComponent,
+                CurrencyInputComponent,
+                AffixedInputComponent,
+                LocaleCurrencyNamePipe,
+            ],
+        }).compileComponents();
+    }));
 
     it('should display the price as decimal with a simple binding', fakeAsync(() => {
         const fixture = createAndRunChangeDetection(TestSimpleComponent);
@@ -113,7 +111,7 @@ describe('CurrencyInputComponent', () => {
     function createAndRunChangeDetection<T extends TestControlValueAccessorComponent | TestSimpleComponent>(
         component: Type<T>,
         priceValue = 123,
-        currencyCode: string = '',
+        currencyCode = '',
     ): ComponentFixture<T> {
         const fixture = TestBed.createComponent(component);
         if (fixture.componentInstance instanceof TestSimpleComponent && currencyCode) {

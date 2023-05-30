@@ -3,6 +3,7 @@ export * from './components/add-customer-to-group-dialog/add-customer-to-group-d
 export * from './components/address-card/address-card.component';
 export * from './components/address-detail-dialog/address-detail-dialog.component';
 export * from './components/customer-detail/customer-detail.component';
+export * from './components/customer-group-detail/customer-group-detail.component';
 export * from './components/customer-group-detail-dialog/customer-group-detail-dialog.component';
 export * from './components/customer-group-list/customer-group-list-bulk-actions';
 export * from './components/customer-group-list/customer-group-list.component';

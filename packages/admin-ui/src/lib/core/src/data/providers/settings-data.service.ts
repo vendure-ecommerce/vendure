@@ -209,7 +209,7 @@ export class SettingsDataService {
         });
     }
 
-    getTaxRatesSimple(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
+    getTaxRatesSimple(take = 10, skip = 0, fetchPolicy?: FetchPolicy) {
         return this.baseDataService.query<
             Codegen.GetTaxRateListSimpleQuery,
             Codegen.GetTaxRateListSimpleQueryVariables

@@ -12,7 +12,6 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { ProductVariant } from '@vendure/core';
 import { FindOptionsUtils, In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -29,6 +28,7 @@ import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';

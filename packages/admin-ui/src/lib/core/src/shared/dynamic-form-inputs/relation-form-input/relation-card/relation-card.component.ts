@@ -1,5 +1,5 @@
-import { EventEmitter } from '@angular/core';
 import {
+    EventEmitter,
     ChangeDetectionStrategy,
     Component,
     ContentChild,
