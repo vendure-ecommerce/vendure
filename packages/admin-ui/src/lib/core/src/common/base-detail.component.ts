@@ -138,7 +138,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         for (const fieldDef of customFields) {
             const key = fieldDef.name;
             const value =
-                fieldDef.type === 'localeString'
+                fieldDef.type === 'localeString' || fieldDef.type === 'localeText'
                     ? (currentTranslation as any)?.customFields?.[key]
                     : (entity as any).customFields?.[key];
             const control = formGroup?.get(key);
