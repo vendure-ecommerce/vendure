@@ -22,9 +22,8 @@ export class ProductOptionTranslation
 
     @Column() name: string;
 
-    // TODO: V2 need to add onDelete: CASCADE here
     @Index()
-    @ManyToOne(type => ProductOption, base => base.translations)
+    @ManyToOne(type => ProductOption, base => base.translations, { onDelete: 'CASCADE' })
     base: ProductOption;
 
     @Column(type => CustomProductOptionFieldsTranslation)

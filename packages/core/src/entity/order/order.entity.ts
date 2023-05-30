@@ -52,11 +52,12 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder)
     sellerOrders: Order[];
 
+    @Index()
     @ManyToOne(type => Order, aggregateOrder => aggregateOrder.sellerOrders)
-    aggregateOrder: Order;
+    aggregateOrder?: Order;
 
     @EntityId({ nullable: true })
-    aggregateOrderId: ID;
+    aggregateOrderId?: ID;
 
     /**
      * @description
@@ -92,6 +93,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @Index()
     @ManyToOne(type => Customer)
     customer?: Customer;
+
+    @EntityId({ nullable: true })
+    customerId?: ID;
 
     @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];

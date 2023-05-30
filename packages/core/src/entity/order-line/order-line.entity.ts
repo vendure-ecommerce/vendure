@@ -36,6 +36,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The {@link Channel} of the {@link Seller} for a multivendor setup.
      */
+    @Index()
     @ManyToOne(type => Channel, { nullable: true, onDelete: 'SET NULL' })
     sellerChannel?: Channel;
 

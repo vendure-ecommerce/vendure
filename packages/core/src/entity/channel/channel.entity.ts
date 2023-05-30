@@ -33,6 +33,7 @@ export class Channel extends VendureEntity {
     @Column({ default: '', nullable: true })
     description: string;
 
+    @Index()
     @ManyToOne(type => Seller)
     seller?: Seller;
 

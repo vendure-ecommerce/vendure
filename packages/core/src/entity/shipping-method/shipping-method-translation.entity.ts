@@ -26,7 +26,7 @@ export class ShippingMethodTranslation
     @Column({ default: '' }) description: string;
 
     @Index()
-    @ManyToOne(type => ShippingMethod, base => base.translations)
+    @ManyToOne(type => ShippingMethod, base => base.translations, { onDelete: 'CASCADE' })
     base: ShippingMethod;
 
     @Column(type => CustomShippingMethodFieldsTranslation)

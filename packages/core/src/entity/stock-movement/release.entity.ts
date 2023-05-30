@@ -22,6 +22,7 @@ export class Release extends StockMovement {
         super(input);
     }
 
+    // @Index() omitted as it would conflict with the orderLineId index from the Allocation entity
     @ManyToOne(type => OrderLine)
     orderLine: OrderLine;
 }

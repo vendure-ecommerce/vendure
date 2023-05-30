@@ -25,9 +25,8 @@ export class ShippingLine extends VendureEntity {
     @ManyToOne(type => ShippingMethod)
     shippingMethod: ShippingMethod;
 
-    // TODO: v2 - Add `{ onDelete: 'CASCADE' }` constraint
     @Index()
-    @ManyToOne(type => Order, order => order.shippingLines)
+    @ManyToOne(type => Order, order => order.shippingLines, { onDelete: 'CASCADE' })
     order: Order;
 
     @Money()

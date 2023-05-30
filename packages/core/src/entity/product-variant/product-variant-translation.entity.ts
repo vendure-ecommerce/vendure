@@ -23,7 +23,7 @@ export class ProductVariantTranslation
     @Column() name: string;
 
     @Index()
-    @ManyToOne(type => ProductVariant, base => base.translations)
+    @ManyToOne(type => ProductVariant, base => base.translations, { onDelete: 'CASCADE' })
     base: ProductVariant;
 
     @Column(type => CustomProductVariantFieldsTranslation)

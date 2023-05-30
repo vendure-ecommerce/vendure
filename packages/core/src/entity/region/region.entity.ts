@@ -1,5 +1,5 @@
 import { ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, TableInheritance } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, TableInheritance } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -35,6 +35,7 @@ export abstract class Region extends VendureEntity implements Translatable, HasC
 
     name: LocaleString;
 
+    @Index()
     @ManyToOne(type => Region, { nullable: true, onDelete: 'SET NULL' })
     parent?: Region;
 

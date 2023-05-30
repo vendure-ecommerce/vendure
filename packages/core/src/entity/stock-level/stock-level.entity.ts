@@ -20,12 +20,14 @@ export class StockLevel extends VendureEntity {
         super(input);
     }
 
+    @Index()
     @ManyToOne(type => ProductVariant, productVariant => productVariant.stockLevels, { onDelete: 'CASCADE' })
     productVariant: ProductVariant;
 
     @EntityId()
     productVariantId: ID;
 
+    @Index()
     @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' })
     stockLocation: StockLocation;
 
