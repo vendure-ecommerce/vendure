@@ -2398,6 +2398,34 @@ export type ManualPaymentStateError = ErrorResult & {
     message: Scalars['String'];
 };
 
+export enum MetricInterval {
+    Daily = 'Daily',
+}
+
+export type MetricSummary = {
+    entries: Array<MetricSummaryEntry>;
+    interval: MetricInterval;
+    title: Scalars['String'];
+    type: MetricType;
+};
+
+export type MetricSummaryEntry = {
+    label: Scalars['String'];
+    value: Scalars['Float'];
+};
+
+export type MetricSummaryInput = {
+    interval: MetricInterval;
+    refresh?: InputMaybe<Scalars['Boolean']>;
+    types: Array<MetricType>;
+};
+
+export enum MetricType {
+    AverageOrderValue = 'AverageOrderValue',
+    OrderCount = 'OrderCount',
+    OrderTotal = 'OrderTotal',
+}
+
 export type MimeTypeError = ErrorResult & {
     errorCode: ErrorCode;
     fileName: Scalars['String'];
@@ -4547,6 +4575,8 @@ export type Query = {
     jobs: JobList;
     jobsById: Array<Job>;
     me?: Maybe<CurrentUser>;
+    /** Get metrics for the given interval and metric types. */
+    metricSummary: Array<MetricSummary>;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethod?: Maybe<PaymentMethod>;
@@ -4682,6 +4712,10 @@ export type QueryJobsArgs = {
 
 export type QueryJobsByIdArgs = {
     jobIds: Array<Scalars['ID']>;
+};
+
+export type QueryMetricSummaryArgs = {
+    input?: InputMaybe<MetricSummaryInput>;
 };
 
 export type QueryOrderArgs = {

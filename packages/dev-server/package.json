@@ -30,6 +30,7 @@
         "commander": "^7.1.0",
         "concurrently": "^5.0.0",
         "csv-stringify": "^5.3.3",
-        "progress": "^2.0.3"
+        "progress": "^2.0.3",
+        "dayjs": "^1.11.7"
     }
 }
