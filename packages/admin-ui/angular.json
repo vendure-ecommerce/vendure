@@ -15,7 +15,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser-esbuild",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "baseHref": "/admin/",
             "outputPath": "dist",
@@ -35,7 +35,8 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./src/lib/static/styles"
+                "./src/lib/static/styles",
+                "./src/lib/static/fonts"
               ]
             },
             "allowedCommonJsDependencies": [
