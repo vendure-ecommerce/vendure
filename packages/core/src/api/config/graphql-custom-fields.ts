@@ -57,10 +57,14 @@ export function addGraphQLCustomFields(
             }
         }
 
-        const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
-        const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
-        const writeableLocaleStringFields = localeStringFields.filter(field => !field.readonly);
-        const writeableNonLocaleStringFields = nonLocaleStringFields.filter(field => !field.readonly);
+        const localizedFields = customEntityFields.filter(
+            field => field.type === 'localeString' || field.type === 'localeText',
+        );
+        const nonLocalizedFields = customEntityFields.filter(
+            field => field.type !== 'localeString' && field.type !== 'localeText',
+        );
+        const writeableLocalizedFields = localizedFields.filter(field => !field.readonly);
+        const writeableNonLocalizedFields = nonLocalizedFields.filter(field => !field.readonly);
         const filterableFields = customEntityFields.filter(field => field.type !== 'relation');
 
         if (schema.getType(entityName)) {
@@ -83,10 +87,10 @@ export function addGraphQLCustomFields(
             }
         }
 
-        if (localeStringFields.length && schema.getType(`${entityName}Translation`)) {
+        if (localizedFields.length && schema.getType(`${entityName}Translation`)) {
             customFieldTypeDefs += `
                     type ${entityName}TranslationCustomFields {
-                         ${mapToFields(localeStringFields, wrapListType(getGraphQlType))}
+                         ${mapToFields(localizedFields, wrapListType(getGraphQlType))}
                     }
 
                     extend type ${entityName}Translation {
@@ -96,11 +100,11 @@ export function addGraphQLCustomFields(
         }
 
         if (schema.getType(`Create${entityName}Input`)) {
-            if (writeableNonLocaleStringFields.length) {
+            if (writeableNonLocalizedFields.length) {
                 customFieldTypeDefs += `
                     input Create${entityName}CustomFieldsInput {
                        ${mapToFields(
-                           writeableNonLocaleStringFields,
+                           writeableNonLocalizedFields,
                            wrapListType(getGraphQlInputType),
                            getGraphQlInputName,
                        )}
@@ -120,11 +124,11 @@ export function addGraphQLCustomFields(
         }
 
         if (schema.getType(`Update${entityName}Input`)) {
-            if (writeableNonLocaleStringFields.length) {
+            if (writeableNonLocalizedFields.length) {
                 customFieldTypeDefs += `
                     input Update${entityName}CustomFieldsInput {
                        ${mapToFields(
-                           writeableNonLocaleStringFields,
+                           writeableNonLocalizedFields,
                            wrapListType(getGraphQlInputType),
                            getGraphQlInputName,
                        )}
@@ -162,7 +166,7 @@ export function addGraphQLCustomFields(
                 `;
         }
 
-        if (writeableLocaleStringFields) {
+        if (writeableLocalizedFields) {
             const translationInputs = [
                 `${entityName}TranslationInput`,
                 `Create${entityName}TranslationInput`,
@@ -170,10 +174,10 @@ export function addGraphQLCustomFields(
             ];
             for (const inputName of translationInputs) {
                 if (schema.getType(inputName)) {
-                    if (writeableLocaleStringFields.length) {
+                    if (writeableLocalizedFields.length) {
                         customFieldTypeDefs += `
                             input ${inputName}CustomFields {
-                                ${mapToFields(writeableLocaleStringFields, wrapListType(getGraphQlType))}
+                                ${mapToFields(writeableLocalizedFields, wrapListType(getGraphQlType))}
                             }
 
                             extend input ${inputName} {
