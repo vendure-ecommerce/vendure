@@ -55,14 +55,6 @@ export async function setupScaffold(outputPath: string, extensions: Extension[])
     await mergeExtensionTranslations(outputPath, allTranslationFiles);
 
     copyUiDevkit(outputPath);
-    try {
-        await checkIfNgccWasRun();
-    } catch (e: any) {
-        const cmd = shouldUseYarn() ? 'yarn ngcc' : 'npx ngcc';
-        logger.log(
-            `An error occurred when running ngcc. Try removing node_modules, re-installing, and then manually running "${cmd}" in the project root.`,
-        );
-    }
 }
 
 /**
@@ -280,57 +272,4 @@ function configureModulePathMapping(
     const tsconfig = require(tsconfigFilePath);
     tsconfig.compilerOptions.paths = modulePathMapping;
     fs.writeFileSync(tsconfigFilePath, JSON.stringify(tsconfig, null, 2));
-}
-
-/**
- * Attempts to find out it the ngcc compiler has been run on the Angular packages, and if not,
- * attemps to run it. This is done this way because attempting to run ngcc from a sub-directory
- * where the angular libs are in a higher-level node_modules folder currently results in the error
- * NG6002, see https://github.com/angular/angular/issues/35747.
- *
- * However, when ngcc is run from the root, it works.
- */
-async function checkIfNgccWasRun(): Promise<void> {
-    const coreUmdFile = require.resolve('@vendure/admin-ui/core');
-    if (!coreUmdFile) {
-        logger.error('Could not resolve the "@vendure/admin-ui/core" package!');
-        return;
-    }
-    // ngcc creates a particular folder after it has been run once
-    const ivyDir = path.join(coreUmdFile, '../..', '__ivy_ngcc__');
-    if (fs.existsSync(ivyDir)) {
-        return;
-    }
-    // Looks like ngcc has not been run, so attempt to do so.
-    const rootDir = coreUmdFile.split('node_modules')[0];
-    return new Promise((resolve, reject) => {
-        logger.log(
-            'Running the Angular Ivy compatibility compiler (ngcc) on Vendure Admin UI dependencies ' +
-                '(this is only needed on the first run)...',
-        );
-        const cmd = shouldUseYarn() ? 'yarn' : 'npx';
-        const ngccProcess = spawn(
-            cmd,
-            [
-                'ngcc',
-                '--properties es2015 browser module main',
-                '--first-only',
-                '--create-ivy-entry-points',
-                '-l=error',
-            ],
-            {
-                cwd: rootDir,
-                shell: true,
-                stdio: 'inherit',
-            },
-        );
-
-        ngccProcess.on('close', code => {
-            if (code !== 0) {
-                reject(code);
-            } else {
-                resolve();
-            }
-        });
-    });
 }

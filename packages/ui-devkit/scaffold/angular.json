@@ -46,11 +46,12 @@
               }
             ],
             "styles": [
-              "src/styles/global-styles.scss"
+              "src/global-styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./src/styles"
+                "./src/styles",
+                "./src/fonts"
               ]
             },
             "allowedCommonJsDependencies": [
@@ -114,7 +115,6 @@
       }
     }
   },
-  "defaultProject": "vendure-admin",
   "schematics": {
     "@schematics/angular:component": {
       "skipTests": true,
