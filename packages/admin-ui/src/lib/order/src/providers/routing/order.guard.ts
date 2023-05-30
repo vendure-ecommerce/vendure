@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { DataService } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { map, mergeMapTo, tap } from 'rxjs/operators';
@@ -7,7 +7,7 @@ import { map, mergeMapTo, tap } from 'rxjs/operators';
 @Injectable({
     providedIn: 'root',
 })
-export class OrderGuard implements CanActivate {
+export class OrderGuard  {
     constructor(private dataService: DataService, private router: Router) {}
 
     canActivate(

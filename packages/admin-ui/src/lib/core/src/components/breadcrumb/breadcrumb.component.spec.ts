@@ -1,7 +1,7 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Resolve, Router, Routes } from '@angular/router';
+import { Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
@@ -459,7 +459,7 @@ class TestChildComponent {}
 
 type TestComponent = TestParentComponent | TestChildComponent;
 
-class FooResolver implements Resolve<string> {
+class FooResolver  {
     resolve(): Observable<string> {
         return observableOf('Foo');
     }
