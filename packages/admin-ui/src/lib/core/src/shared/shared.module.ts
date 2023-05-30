@@ -166,6 +166,7 @@ import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 import { CardComponent, CardControlsDirective } from './components/card/card.component';
 import { ZoneSelectorComponent } from './components/zone-selector/zone-selector.component';
+import { ChartComponent } from './components/chart/chart.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -304,6 +305,7 @@ const DECLARATIONS = [
     CardComponent,
     CardControlsDirective,
     ZoneSelectorComponent,
+    ChartComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

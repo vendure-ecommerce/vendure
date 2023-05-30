@@ -1,10 +1,24 @@
 import { ChangeDetectionStrategy, Component, NgModule, OnInit } from '@angular/core';
-import { CoreModule, DataService } from '@vendure/admin-ui/core';
+import { CoreModule, DataService, GetOrderSummaryDocument } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators';
 
 export type Timeframe = 'day' | 'week' | 'month';
+
+export const GET_ORDER_SUMMARY = gql`
+    query GetOrderSummary($start: DateTime!, $end: DateTime!) {
+        orders(options: { filter: { orderPlacedAt: { between: { start: $start, end: $end } } } }) {
+            totalItems
+            items {
+                id
+                totalWithTax
+                currencyCode
+            }
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-order-summary-widget',
@@ -37,8 +51,8 @@ export class OrderSummaryWidgetComponent implements OnInit {
         );
         const orderSummary$ = this.dateRange$.pipe(
             switchMap(({ start, end }) =>
-                this.dataService.order
-                    .getOrderSummary(start, end)
+                this.dataService
+                    .query(GetOrderSummaryDocument, { start: start.toISOString(), end: end.toISOString() })
                     .refetchOnChannelChange()
                     .mapStream(data => data.orders),
             ),
@@ -46,7 +60,7 @@ export class OrderSummaryWidgetComponent implements OnInit {
         );
         this.totalOrderCount$ = orderSummary$.pipe(map(res => res.totalItems));
         this.totalOrderValue$ = orderSummary$.pipe(
-            map(res => res.items.reduce((total, order) => total + order.total, 0) / 100),
+            map(res => res.items.reduce((total, order) => total + order.totalWithTax, 0) / 100),
         );
         this.currencyCode$ = this.dataService.settings
             .getActiveChannel()

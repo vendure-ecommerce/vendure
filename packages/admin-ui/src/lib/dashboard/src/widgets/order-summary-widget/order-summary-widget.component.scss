@@ -23,3 +23,7 @@
     flex-direction: column;
     justify-content: space-between;
 }
+.button-small.active {
+    background-color: var(--color-primary-200);
+    color: var(--color-primary-900);
+}

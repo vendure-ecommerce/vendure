@@ -13,19 +13,18 @@ import {
     DELETE_ORDER_NOTE,
     DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS,
     GET_ORDER,
-    GET_ORDERS_LIST,
     GET_ORDER_HISTORY,
-    GET_ORDER_SUMMARY,
+    GET_ORDERS_LIST,
     MODIFY_ORDER,
     REFUND_ORDER,
     REMOVE_COUPON_CODE_FROM_DRAFT_ORDER,
     REMOVE_DRAFT_ORDER_LINE,
-    SETTLE_PAYMENT,
-    SETTLE_REFUND,
     SET_BILLING_ADDRESS_FOR_DRAFT_ORDER,
     SET_CUSTOMER_FOR_DRAFT_ORDER,
     SET_DRAFT_ORDER_SHIPPING_METHOD,
     SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER,
+    SETTLE_PAYMENT,
+    SETTLE_REFUND,
     TRANSITION_FULFILLMENT_TO_STATE,
     TRANSITION_ORDER_TO_STATE,
     TRANSITION_PAYMENT_TO_STATE,
@@ -183,16 +182,6 @@ export class OrderDataService {
         });
     }
 
-    getOrderSummary(start: Date, end: Date) {
-        return this.baseDataService.query<
-            Codegen.GetOrderSummaryQuery,
-            Codegen.GetOrderSummaryQueryVariables
-        >(GET_ORDER_SUMMARY, {
-            start: start.toISOString(),
-            end: end.toISOString(),
-        });
-    }
-
     modifyOrder(input: Codegen.ModifyOrderInput) {
         return this.baseDataService.mutate<Codegen.ModifyOrderMutation, Codegen.ModifyOrderMutationVariables>(
             MODIFY_ORDER,
@@ -214,17 +203,17 @@ export class OrderDataService {
     }
 
     deleteDraftOrder(orderId: string) {
-        return this.baseDataService.mutate<Codegen.DeleteDraftOrderMutation, Codegen.DeleteDraftOrderMutationVariables>(
-            DELETE_DRAFT_ORDER,
-            { orderId },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteDraftOrderMutation,
+            Codegen.DeleteDraftOrderMutationVariables
+        >(DELETE_DRAFT_ORDER, { orderId });
     }
 
     addItemToDraftOrder(orderId: string, input: Codegen.AddItemToDraftOrderInput) {
-        return this.baseDataService.mutate<Codegen.AddItemToDraftOrderMutation, Codegen.AddItemToDraftOrderMutationVariables>(
-            ADD_ITEM_TO_DRAFT_ORDER,
-            { orderId, input },
-        );
+        return this.baseDataService.mutate<
+            Codegen.AddItemToDraftOrderMutation,
+            Codegen.AddItemToDraftOrderMutationVariables
+        >(ADD_ITEM_TO_DRAFT_ORDER, { orderId, input });
     }
 
     adjustDraftOrderLine(orderId: string, input: Codegen.AdjustDraftOrderLineInput) {

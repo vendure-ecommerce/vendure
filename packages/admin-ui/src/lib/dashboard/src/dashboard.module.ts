@@ -6,10 +6,11 @@ import { DashboardWidgetComponent } from './components/dashboard-widget/dashboar
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { dashboardRoutes } from './dashboard.routes';
 import { DEFAULT_DASHBOARD_WIDGET_LAYOUT, DEFAULT_WIDGETS } from './default-widgets';
+import { OrderChartWidgetComponent } from './widgets/order-chart-widget/order-chart-widget.component';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild(dashboardRoutes)],
-    declarations: [DashboardComponent, DashboardWidgetComponent],
+    declarations: [DashboardComponent, DashboardWidgetComponent, OrderChartWidgetComponent],
 })
 export class DashboardModule {
     constructor(dashboardWidgetService: DashboardWidgetService) {

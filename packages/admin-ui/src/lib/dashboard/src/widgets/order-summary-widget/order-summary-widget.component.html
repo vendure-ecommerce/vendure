@@ -11,17 +11,17 @@
     </div>
 </div>
 <div class="footer">
-    <div class="btn-group btn-outline-primary btn-sm" *ngIf="selection$ | async as selection">
-        <button class="btn" [class.btn-primary]="selection.date === today" (click)="selection$.next({timeframe: 'day', date: today})">
+    <div class="flex" *ngIf="selection$ | async as selection">
+        <button class="button-small" [class.active]="selection.date === today" (click)="selection$.next({timeframe: 'day', date: today})">
             {{ 'dashboard.today' | translate }}
         </button>
-        <button class="btn" [class.btn-primary]="selection.date === yesterday" (click)="selection$.next({timeframe: 'day', date: yesterday})">
+        <button class="ml-1 button-small" [class.active]="selection.date === yesterday" (click)="selection$.next({timeframe: 'day', date: yesterday})">
             {{ 'dashboard.yesterday' | translate }}
         </button>
-        <button class="btn" [class.btn-primary]="selection.timeframe === 'week'" (click)="selection$.next({timeframe: 'week'})">
+        <button class="ml-1 button-small" [class.active]="selection.timeframe === 'week'" (click)="selection$.next({timeframe: 'week'})">
             {{ 'dashboard.thisWeek' | translate }}
         </button>
-        <button class="btn" [class.btn-primary]="selection.timeframe === 'month'" (click)="selection$.next({timeframe: 'month'})">
+        <button class="ml-1 button-small" [class.active]="selection.timeframe === 'month'" (click)="selection$.next({timeframe: 'month'})">
             {{ 'dashboard.thisMonth' | translate }}
         </button>
     </div>

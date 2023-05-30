@@ -480,19 +480,6 @@ export const TRANSITION_FULFILLMENT_TO_STATE = gql`
     ${ERROR_RESULT_FRAGMENT}
 `;
 
-export const GET_ORDER_SUMMARY = gql`
-    query GetOrderSummary($start: DateTime!, $end: DateTime!) {
-        orders(options: { filter: { orderPlacedAt: { between: { start: $start, end: $end } } } }) {
-            totalItems
-            items {
-                id
-                total
-                currencyCode
-            }
-        }
-    }
-`;
-
 export const MODIFY_ORDER = gql`
     mutation ModifyOrder($input: ModifyOrderInput!) {
         modifyOrder(input: $input) {
