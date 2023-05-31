@@ -1,7 +1,7 @@
 @import 'variables';
 
 .login-wrapper {
-    background: #f0f2f5;
+    background: var(--color-login-page-bg);
     background-image: none;
     height: 100vh;
     display: flex;
@@ -17,7 +17,8 @@
         justify-content: flex-start;
         align-items: stretch;
         position: relative;
-        border-radius: 3px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--color-weight-150);
         overflow: hidden;
 
         @media (max-width: $breakpoint-medium) {
@@ -34,7 +35,7 @@
             @media (max-width: $breakpoint-medium) {
                 height: 300px;
             }
-    
+
             img {
                 display: block;
                 width: 100%;
@@ -78,7 +79,7 @@
                         color: white;
                         margin: 0 !important;
                     }
-                    
+
                     a{
                         color: white;
                         text-decoration: underline;
@@ -110,7 +111,7 @@
                 font-weight: bold;
                 font-size: 1.2rem;
                 margin-bottom: 20px;
-                color: #afafaf; 
+                color: var(--color-weight-600);
             }
 
             .login-group {
@@ -144,6 +145,12 @@
             top: 20px;
         }
     }
+}
+
+.login-button {
+    width: 100%;
+    margin-top: var(--space-unit);
+    justify-content: center;
 }
 
 .version {

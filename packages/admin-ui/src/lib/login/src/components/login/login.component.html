@@ -6,15 +6,18 @@
                     {{ 'common.login-image-title' | translate }}
                 </div>
                 <div class="login-wrapper-image-copyright">
-                    <p *ngIf="imageCreator" class="creator">Photo by  <a [href]="imageCreatorUrl" target="_blank">{{ imageCreator }}</a> on <a [href]="imageUnsplashUrl" target="_blank">Unsplash</a></p>
+                    <p *ngIf="imageCreator" class="creator">
+                        Photo by <a [href]="imageCreatorUrl" target="_blank">{{ imageCreator }}</a> on
+                        <a [href]="imageUnsplashUrl" target="_blank">Unsplash</a>
+                    </p>
                     <p *ngIf="imageLocation" class="location">{{ imageLocation }}</p>
                 </div>
             </div>
-            <img *ngIf="imageUrl" [src]="imageUrl" [alt]="imageUrl">
+            <img *ngIf="imageUrl" [src]="imageUrl" [alt]="imageUrl" />
         </div>
         <div class="login-wrapper-form">
             <p class="login-title">
-                {{ 'common.login-title' | translate: { brand: hideVendureBranding ? brand : "Vendure" } }}
+                {{ 'common.login-title' | translate : { brand: hideVendureBranding ? brand : 'Vendure' } }}
             </p>
             <form class="login-form">
                 <div class="login-group">
@@ -34,7 +37,12 @@
                         [(ngModel)]="password"
                         [placeholder]="'common.password' | translate"
                     />
-                    <clr-alert [clrAlertType]="'danger'"  [clrAlertClosable]="false" [class.visible]="errorMessage" class="login-error">
+                    <clr-alert
+                        [clrAlertType]="'danger'"
+                        [clrAlertClosable]="false"
+                        [class.visible]="errorMessage"
+                        class="login-error"
+                    >
                         <clr-alert-item>
                             <span class="alert-text">
                                 {{ errorMessage }}
@@ -51,22 +59,26 @@
                         />
                         <label>{{ 'common.remember-me' | translate }}</label>
                     </clr-checkbox-wrapper>
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        (click)="logIn()"
-                        [disabled]="!username || !password"
-                    >
-                        {{ 'common.login' | translate }}
-                    </button>
+                    <div>
+                        <button
+                            type="submit"
+                            class="button primary login-button"
+                            (click)="logIn()"
+                            [disabled]="!username || !password"
+                        >
+                            {{ 'common.login' | translate }}
+                        </button>
+                    </div>
                 </div>
                 <div class="version">
-                    <span *ngIf="brand">{{ brand }} <span *ngIf="!hideVendureBranding || !hideVersion">-</span></span>
+                    <span *ngIf="brand"
+                        >{{ brand }} <span *ngIf="!hideVendureBranding || !hideVersion">-</span></span
+                    >
                     <span *ngIf="!hideVendureBranding">vendure</span>
                     <span *ngIf="!hideVersion">v{{ version }}</span>
                 </div>
             </form>
         </div>
-        <img class="login-wrapper-logo" src="assets/logo-300px.png" />
+        <img class="login-wrapper-logo" src="assets/logo-300px.png" *ngIf="!hideVendureBranding" />
     </div>
 </div>
