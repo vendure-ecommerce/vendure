@@ -24,6 +24,18 @@ Specify the database as above to populate that database:
 DB=sqlite yarn populate
 ```
 
+## Testing custom ui extension compilation
+
+In order to compile ui extensions within this monorepo, you need to add the following entry to
+this package's `package.json` devDependencies:
+
+```
+ "@vendure/admin-ui": "./packages/admin-ui/package",
+```
+
+and then run `yarn`. Make sure you already built the admin-ui package first.
+
+
 ## Load testing
 
 This package also contains scripts for load testing the Vendure server. The load testing infrastructure and scripts are located in the [`./load-testing`](./load-testing) directory.

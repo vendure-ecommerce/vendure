@@ -395,23 +395,53 @@ export const devConfig: VendureConfig = {
             route: 'admin',
             port: 5001,
             // Un-comment to compile a custom admin ui
-            // app: compileUiExtensions({
-            //     outputPath: path.join(__dirname, './custom-admin-ui'),
-            //     extensions: [
-            //         {
-            //             extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
-            //             ngModules: [
-            //                 {
-            //                     type: 'lazy',
-            //                     route: 'greet',
-            //                     ngModuleFileName: 'greeter.module.ts',
-            //                     ngModuleName: 'GreeterModule',
-            //                 },
-            //             ],
-            //         },
-            //     ],
-            //     devMode: true,
-            // }),
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, './custom-admin-ui'),
+                extensions: [
+                    {
+                        id: 'test-ui-extension',
+                        extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
+                        ngModules: [
+                            {
+                                type: 'lazy',
+                                route: 'greetz',
+                                ngModuleFileName: 'greeter.module.ts',
+                                ngModuleName: 'GreeterModule',
+                            },
+                            {
+                                type: 'shared',
+                                ngModuleFileName: 'greeter-shared.module.ts',
+                                ngModuleName: 'GreeterSharedModule',
+                            },
+                        ],
+                    },
+                    {
+                        globalStyles: path.join(
+                            __dirname,
+                            'test-plugins/with-ui-extension/ui/custom-theme.scss',
+                        ),
+                    },
+                    {
+                        id: 'external-ui-extension',
+                        extensionPath: path.join(__dirname, 'test-plugins/with-external-ui-extension'),
+                        ngModules: [
+                            {
+                                type: 'lazy',
+                                route: 'greet',
+                                ngModuleFileName: 'external-ui-extension.ts',
+                                ngModuleName: 'ExternalUiExtensionModule',
+                            },
+                        ],
+                        staticAssets: [
+                            {
+                                path: path.join(__dirname, 'test-plugins/with-external-ui-extension/app'),
+                                rename: 'external-app',
+                            },
+                        ],
+                    },
+                ],
+                devMode: true,
+            }),
         }),
     ],
 };
