@@ -21,6 +21,7 @@ export const DEFAULT_WIDGETS: { [id: string]: DashboardWidgetConfig } = {
     orderSummary: {
         title: _('dashboard.orders-summary'),
         loadComponent: () => OrderSummaryWidgetComponent,
+        supportedWidths: [4, 6, 8, 12],
         requiresPermissions: [Permission.ReadOrder],
     },
     latestOrders: {
