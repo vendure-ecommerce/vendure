@@ -42,7 +42,7 @@ export class Channel extends VendureEntity {
 
     @Column('varchar') defaultLanguageCode: LanguageCode;
 
-    @Column('simple-array')
+    @Column({ type: 'simple-array', default: '' })
     availableLanguageCodes: LanguageCode[];
 
     @Index()
@@ -56,7 +56,7 @@ export class Channel extends VendureEntity {
     @Column('varchar')
     defaultCurrencyCode: CurrencyCode;
 
-    @Column('simple-array')
+    @Column({ type: 'simple-array', default: '' })
     availableCurrencyCodes: CurrencyCode[];
 
     /**
