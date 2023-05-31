@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
     selector: 'vdr-page-block',
@@ -6,7 +6,4 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     styleUrls: ['./page-block.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageBlockComponent {
-    @Input() title: string | undefined;
-    @Input() description: string | undefined;
-}
+export class PageBlockComponent {}

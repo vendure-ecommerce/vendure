@@ -10,6 +10,7 @@ const result = sass.renderSync({
     importer,
     includePaths: [
         path.join(__dirname, '../src/lib/static/styles'),
+        path.join(__dirname, '../src/lib/static/fonts'),
         path.join(__dirname, '../../../node_modules'),
     ],
     outputStyle: 'compressed',

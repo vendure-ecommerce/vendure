@@ -474,29 +474,6 @@
     --clr-spinner-opacity: 1;
     // END Spinners
 
-    /*********
-    * Stack View
-    */
-    --clr-stack-view-border-color: hsl(208, 14%, 39%);
-    --clr-stack-view-bg-color: var(--clr-global-app-background);
-    --clr-stack-view-stack-block-border-bottom: var(--clr-stack-view-border-color); //border-bottom for stack-view rows) (not last)
-    --clr-stack-view-border-box-color: var(--clr-stack-view-border-color);
-    --clr-stack-block-changed-border-top-color: hsl(205, 100%, 34%); // TODO: Figure out where this shows in the UI.
-    --clr-stack-view-stack-block-label-and-content-bg-color: var(--clr-global-app-background); // stkvw row bg color) when not expanded
-    --clr-stack-view-stack-children-stack-block-border-bottom-color: var(--clr-stack-view-border-color); // children of) an expanded row
-    --clr-stack-view-stack-children-stack-block-label-and-content-bg-color: hsl(
-    198,
-    28%,
-    18%
-    ); // children of an expanded row
-    --clr-stack-view-stack-block-label-text-color: hsl(212, 10%, 61%);
-    --clr-stack-view-stack-block-expanded-bg-color: hsl(203, 32%, 29%);
-    --clr-stack-view-stack-block-expandable-hover: hsl(203, 32%, 29%);
-    --clr-stack-view-stack-block-content-text-color: hsl(203, 16%, 72%);
-    --clr-stack-view-stack-block-expanded-text-color: hsl(0, 0%, 100%);
-    --clr-stack-view-stack-block-caret-color: hsl(0, 0%, 60%);
-    // END: Stack View overrides
-
     /**********
     * Table
     */
@@ -581,34 +558,6 @@
     --clr-p6-color: var(--clr-global-font-color);
     --clr-p7-color: var(--clr-global-font-color);
     --clr-p8-color: var(--clr-global-font-color);
-
-    /**********
-    * Vertical Nav
-    */
-    --clr-vertical-nav-item-color: hsl(203, 16%, 72%);
-    --clr-vertical-nav-item-active-color: hsl(0, 0%, 100%);
-    --clr-vertical-nav-bg-color: hsl(201, 30%, 13%);
-    --clr-vertical-nav-active-bg-color: var(--clr-global-selection-color);
-    --clr-vertical-nav-hover-bg-color: var(--clr-global-hover-bg-color);
-    --clr-vertical-nav-icon-active-color: hsl(0, 0%, 100%);
-    --clr-vertical-nav-toggle-icon-color: hsl(203, 16%, 72%);
-    --clr-vertical-nav-trigger-divider-border-color: hsl(199, 19%, 17%);
-    // END Vertical Nav
-
-    /**********
-    * Wizard
-    */
-    --clr-wizard-sidenav-bg-color: hsl(201, 30%, 15%);
-    --clr-wizard-sidenav-text--active: hsl(0, 0%, 100%);
-    --clr-wizard-stepnav-active-bg-color: hsl(203, 32%, 29%);
-    --clr-wizard-stepnav-border-color: hsl(201, 14%, 27%);
-    --clr-wizard-stepnav-border-color--active: hsl(92, 79%, 40%);
-    --clr-wizard-step-nav-border-color: hsl(200, 30%, 12%);
-    --clr-wizard-sidenav-text: hsl(203, 16%, 72%);
-    --clr-wizard-title-text: hsl(210, 16%, 93%);
-    --clr-wizard-main-textColor: hsl(203, 16%, 72%);
-    --clr-wizard-stepnav-error-color: hsl(3, 90%, 62%);
-    // END: Wizard
 
     // ACCORDION
     --clr-accordion-text-color: var(--clr-color-neutral-0);

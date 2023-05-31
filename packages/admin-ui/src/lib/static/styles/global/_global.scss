@@ -3,6 +3,13 @@ html, body:not([cds-text]) {
     font-family: Inter, sans-serif !important;
 }
 
+.page-block {
+    margin-left: var(--surface-margin-left);
+    margin-right: var(--space-unit);
+    margin-top: var(--space-unit);
+    max-width: var(--layout-content-max-width);
+}
+
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;

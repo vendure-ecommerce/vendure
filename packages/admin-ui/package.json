@@ -19,6 +19,15 @@
         "access": "public",
         "directory": "package"
     },
+    "//": "These exports are just here so that we can do local testing of ui-devkit compilation by allowing the ui-devkit package to find its way to the compiled package",
+    "exports": {
+        ".": {
+            "types": "./package/index.d.ts",
+            "esm2022": "./package/esm2022/vendure-admin-ui.mjs",
+            "esm": "./package/esm2022/vendure-admin-ui.mjs",
+            "default": "./package/fesm2022/vendure-admin-ui.mjs"
+        }
+    },
     "dependencies": {
         "@angular/animations": "^16.0.3",
         "@angular/cdk": "^16.0.2",
