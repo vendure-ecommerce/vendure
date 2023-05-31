@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, UntypedFormArray, UntypedFormControl, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     CreateAddressInput,
@@ -17,7 +16,6 @@ import {
     GetCustomerHistoryQuery,
     ModalService,
     NotificationService,
-    ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
     TypedBaseDetailComponent,
@@ -112,16 +110,13 @@ export class CustomerDetailComponent
     private orderListUpdates$ = new Subject<CustomerWithOrders>();
 
     constructor(
-        route: ActivatedRoute,
-        router: Router,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         private formBuilder: FormBuilder,
         protected dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {

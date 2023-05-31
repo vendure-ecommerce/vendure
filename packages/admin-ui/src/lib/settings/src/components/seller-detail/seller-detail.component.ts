@@ -1,27 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     CreateSellerInput,
-    CurrencyCode,
-    CustomFieldConfig,
     DataService,
     GetSellerDetailDocument,
-    GetZoneListQuery,
-    ItemOf,
     LanguageCode,
     NotificationService,
     Permission,
-    SELLER_FRAGMENT,
     SellerFragment,
-    ServerConfigService,
     TypedBaseDetailComponent,
     UpdateSellerInput,
 } from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
-import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 
 export const GET_SELLER_DETAIL = gql`
@@ -58,15 +49,12 @@ export class SellerDetailComponent
     readonly updatePermission = [Permission.SuperAdmin, Permission.UpdateSeller, Permission.CreateSeller];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        protected serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {

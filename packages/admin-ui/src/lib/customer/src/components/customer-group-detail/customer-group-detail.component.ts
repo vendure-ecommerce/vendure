@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, UntypedFormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { ResultOf } from '@graphql-typed-document-node/core';
 import {
@@ -8,7 +7,6 @@ import {
     GetCustomerGroupDetailDocument,
     ModalService,
     NotificationService,
-    ServerConfigService,
     TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
@@ -46,15 +44,12 @@ export class CustomerGroupDetailComponent
     });
 
     constructor(
-        route: ActivatedRoute,
-        router: Router,
-        serverConfigService: ServerConfigService,
         private formBuilder: FormBuilder,
         protected dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {

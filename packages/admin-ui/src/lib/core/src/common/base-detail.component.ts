@@ -176,12 +176,7 @@ export abstract class TypedBaseDetailComponent<
     protected result$: Observable<ResultOf<T>>;
     protected entity: ResultOf<T>[Field];
 
-    protected constructor(
-        route?: ActivatedRoute,
-        router?: Router,
-        serverConfigService?: ServerConfigService,
-        dataService?: DataService,
-    ) {
+    protected constructor() {
         super(inject(ActivatedRoute), inject(Router), inject(ServerConfigService), inject(DataService));
     }
 
@@ -241,10 +236,7 @@ export function detailComponentWithResolver<
                 .query(config.query, { id })
                 .stream$.pipe(takeUntil(navigateAway$), shareReplay(1));
             const entity$ = result$.pipe(map(result => result[config.entityKey]));
-            const entityStream$ = entity$.pipe(
-                switchMap(raw => entity$),
-                filter(notNullOrUndefined),
-            );
+            const entityStream$ = entity$.pipe(filter(notNullOrUndefined));
             return result$.pipe(
                 map(result => ({
                     entity: entityStream$,

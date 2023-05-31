@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, UntypedFormArray, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     ConfigurableOperation,
@@ -18,7 +17,6 @@ import {
     NotificationService,
     PROMOTION_FRAGMENT,
     PromotionFragment,
-    ServerConfigService,
     TypedBaseDetailComponent,
     UpdatePromotionInput,
 } from '@vendure/admin-ui/core';
@@ -67,15 +65,12 @@ export class PromotionDetailComponent
     private allActions: ConfigurableOperationDefinition[] = [];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
         this.customFields = this.getCustomFieldConfig('Promotion');
     }
 

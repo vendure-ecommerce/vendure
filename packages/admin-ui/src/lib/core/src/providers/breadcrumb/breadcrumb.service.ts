@@ -1,7 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } from '@angular/router';
 import { flatten } from 'lodash';
-import { combineLatest as observableCombineLatest, Observable, of as observableOf, Subject } from 'rxjs';
+import {
+    combineLatest as observableCombineLatest,
+    isObservable,
+    Observable,
+    of as observableOf,
+    Subject,
+} from 'rxjs';
 import { filter, map, shareReplay, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { DataService } from '../../data/providers/data.service';
 
@@ -133,10 +139,6 @@ export class BreadcrumbService implements OnDestroy {
 
 function isBreadcrumbFunction(value: BreadcrumbDefinition): value is BreadcrumbFunction {
     return typeof value === 'function';
-}
-
-function isObservable(value: BreadcrumbDefinition): value is Observable<BreadcrumbValue> {
-    return value instanceof Observable;
 }
 
 function isBreadcrumbLabelLinkPair(value: BreadcrumbValue): value is BreadcrumbLabelLinkPair {

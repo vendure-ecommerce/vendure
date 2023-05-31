@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, UntypedFormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Asset,
@@ -17,15 +16,13 @@ import {
     NotificationService,
     Permission,
     ProductOptionFragment,
-    ProductVariantFragment,
     ProductVariantUpdateMutationDocument,
-    ServerConfigService,
     TypedBaseDetailComponent,
     UpdateProductVariantInput,
 } from '@vendure/admin-ui/core';
 import { pick } from '@vendure/common/lib/pick';
 import { unique } from '@vendure/common/lib/unique';
-import { combineLatest, concat, EMPTY, Observable } from 'rxjs';
+import { combineLatest, concat, Observable } from 'rxjs';
 import {
     distinctUntilChanged,
     map,
@@ -35,11 +32,9 @@ import {
     switchMap,
     switchMapTo,
     take,
-    tap,
 } from 'rxjs/operators';
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
-import { UpdateProductOptionDialogComponent } from '../update-product-option-dialog/update-product-option-dialog.component';
 
 interface SelectedAssets {
     assets?: Asset[];
@@ -112,9 +107,6 @@ export class ProductVariantDetailComponent
     facetValues$: Observable<NonNullable<GetProductVariantDetailQuery['productVariant']>['facetValues']>;
 
     constructor(
-        route: ActivatedRoute,
-        router: Router,
-        serverConfigService: ServerConfigService,
         private productDetailService: ProductDetailService,
         private formBuilder: FormBuilder,
         private modalService: ModalService,
@@ -122,7 +114,7 @@ export class ProductVariantDetailComponent
         protected dataService: DataService,
         private changeDetector: ChangeDetectorRef,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {

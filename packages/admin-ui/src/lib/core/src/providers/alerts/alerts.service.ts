@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { BehaviorSubject, combineLatest, interval, Observable, of, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, isObservable, Observable, Subject, switchMap } from 'rxjs';
 import { map, mapTo, startWith, take } from 'rxjs/operators';
 
 export interface AlertConfig<T = any> {
@@ -57,7 +57,7 @@ export class Alert<T> {
         const result = this.config.check();
         if (result instanceof Promise) {
             result.then(data => this.data$.next(data));
-        } else if (result instanceof Observable) {
+        } else if (isObservable(result)) {
             result.pipe(take(1)).subscribe(data => this.data$.next(data));
         } else {
             this.data$.next(result);

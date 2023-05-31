@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, UntypedFormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
@@ -10,12 +9,10 @@ import {
     GetOrderQuery,
     ModalService,
     NotificationService,
-    Order,
     ORDER_DETAIL_FRAGMENT,
     OrderDetailFragment,
     OrderDetailQueryDocument,
     Refund,
-    ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
     TypedBaseDetailComponent,
@@ -79,9 +76,6 @@ export class OrderDetailComponent
     ];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private notificationService: NotificationService,
@@ -89,7 +83,7 @@ export class OrderDetailComponent
         private orderTransitionService: OrderTransitionService,
         private formBuilder: FormBuilder,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {
