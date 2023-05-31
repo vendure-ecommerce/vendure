@@ -10,7 +10,7 @@
     "./static/assets/*.*",
     "./static/styles/**/*.scss",
     "./static/fonts/*.woff2",
-    "./static/fonts/*.css",
+    "./static/fonts/*.scss",
     "./static/i18n-messages/*.json"
   ],
   "lib": {

@@ -66,19 +66,6 @@
     }
 }
 
-.top-bar {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
-    background-color: var(--color-page-header);
-    @media screen and (min-width: $breakpoint-medium) {
-        padding: calc(var(--space-unit) * 4);
-        padding-left: var(--surface-margin-left);
-    }
-}
-
 .main-nav-container {
     overflow: auto;
     flex: 1;
@@ -91,29 +78,6 @@
         margin-bottom: calc(var(--space-unit) * 4);
         border: 1px solid var(--color-weight-150);
         box-shadow: 0px 1px 0px var(--color-weight-100);
-    }
-}
-
-.surface {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    background-color: var(--color-surface-bg);
-}
-
-.content-container {
-    overflow: auto;
-}
-
-.branding {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-width: 0;
-    padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 4);
-    padding-right: calc(var(--space-unit) * 1.5);
-    @media screen and (min-width: $breakpoint-medium) {
-        padding: calc(var(--space-unit) * 4);
     }
 }
 
@@ -131,6 +95,45 @@
     }
 }
 
+.surface {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: var(--color-surface-bg);
+}
+
+.content-container {
+    overflow: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.branding {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 4);
+    padding-right: calc(var(--space-unit) * 1.5);
+    @media screen and (min-width: $breakpoint-medium) {
+        padding: calc(var(--space-unit) * 4);
+    }
+}
+
+.top-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
+    background-color: var(--color-page-header);
+    @media screen and (min-width: $breakpoint-medium) {
+        padding: calc(var(--space-unit) * 4);
+        padding-left: var(--surface-margin-left);
+    }
+}
+
 .header-actions {
     align-items: center;
 }
@@ -138,4 +141,7 @@
 .content-area {
     position: relative;
     margin-right: auto;
+    flex: 1;
+    display: block;
+    width: 100%;
 }
