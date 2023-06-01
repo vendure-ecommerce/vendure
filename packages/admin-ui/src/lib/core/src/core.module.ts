@@ -99,7 +99,7 @@ export class CoreModule {
     }
 
     private initUiTitle() {
-        const title = getAppConfig().brand || 'Vendure Admin';
+        const title = getAppConfig().brand || 'Vendure';
 
         this.titleService.setTitle(title);
     }

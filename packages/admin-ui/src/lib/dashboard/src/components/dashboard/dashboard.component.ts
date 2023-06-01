@@ -12,6 +12,7 @@ import {
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { titleSetter } from '../../../../core/src/common/title-setter';
 
 @Component({
     selector: 'vdr-dashboard',
@@ -23,7 +24,7 @@ export class DashboardComponent implements OnInit {
     widgetLayout: WidgetLayout | undefined;
     availableWidgetIds$: Observable<string[]>;
     private readonly deletionMarker = '__delete__';
-
+    private setTitle = titleSetter();
     constructor(
         private dashboardWidgetService: DashboardWidgetService,
         private localStorageService: LocalStorageService,
@@ -37,6 +38,7 @@ export class DashboardComponent implements OnInit {
             map(permissions => this.dashboardWidgetService.getAvailableIds(permissions)),
             tap(ids => (this.widgetLayout = this.initLayout(ids))),
         );
+        this.setTitle('breadcrumb.dashboard');
     }
 
     getClassForWidth(width: DashboardWidgetWidth): string {

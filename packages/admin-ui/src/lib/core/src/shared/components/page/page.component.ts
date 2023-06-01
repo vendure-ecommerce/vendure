@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of, switchMap } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { PageLocationId } from '../../../common/component-registry-types';
-import { HeaderTab } from '../page-header-tabs/page-header-tabs.component';
 import { PageService } from '../../../providers/page/page.service';
+import { HeaderTab } from '../page-header-tabs/page-header-tabs.component';
 
 @Component({
     selector: 'vdr-page',

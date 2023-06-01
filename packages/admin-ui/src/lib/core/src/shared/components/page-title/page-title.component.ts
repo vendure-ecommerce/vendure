@@ -1,16 +1,15 @@
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    HostListener,
     Input,
     OnChanges,
     OnInit,
     SimpleChanges,
 } from '@angular/core';
-import { fromEvent, Observable, Subject, combineLatest, BehaviorSubject } from 'rxjs';
-import { debounceTime, map, throttleTime } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { titleSetter } from '../../../common/title-setter';
 import { BreadcrumbService } from '../../../providers/breadcrumb/breadcrumb.service';
 
 @Component({
@@ -23,6 +22,7 @@ export class PageTitleComponent implements OnInit, OnChanges {
     @Input() title = '';
     private titleChange$ = new BehaviorSubject<string | undefined>(undefined);
     protected title$: Observable<string>;
+    readonly setTitle = titleSetter();
 
     constructor(private changeDetector: ChangeDetectorRef, private breadcrumbService: BreadcrumbService) {}
 
@@ -35,6 +35,7 @@ export class PageTitleComponent implements OnInit, OnChanges {
                     return breadcrumbs[breadcrumbs.length - 1].label;
                 }
             }),
+            tap(title => this.setTitle(title)),
         );
     }
 
