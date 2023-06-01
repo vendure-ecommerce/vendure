@@ -14,7 +14,7 @@ import {
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -551,8 +551,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCodeBroken,
-                name: 'Mollie payment test',
-                description: 'This is a Mollie test payment method',
+
                 enabled: true,
                 handler: {
                     code: molliePaymentHandler.code,
@@ -561,6 +560,13 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                         { name: 'autoCapture', value: 'false' },
                     ],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Mollie payment test',
+                        description: 'This is a Mollie test payment method',
+                    },
+                ],
             },
         });
         expect(createPaymentMethod.code).toBe(mockData.methodCodeBroken);
@@ -600,7 +606,9 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                 molliePaymentMethodCode: 'ideal',
             },
         });
-        expect(createMolliePaymentIntent.message).toContain('Cannot create payment intent without redirectUrl specified in paymentMethod');
+        expect(createMolliePaymentIntent.message).toContain(
+            'Cannot create payment intent without redirectUrl specified in paymentMethod',
+        );
     });
 });
 
@@ -674,8 +682,6 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,
-                name: 'Mollie payment test',
-                description: 'This is a Mollie test payment method',
                 enabled: true,
                 handler: {
                     code: molliePaymentHandler.code,
@@ -684,6 +690,13 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                         { name: 'autoCapture', value: 'false' },
                     ],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Mollie payment test',
+                        description: 'This is a Mollie test payment method',
+                    },
+                ],
             },
         });
         expect(createPaymentMethod.code).toBe(mockData.methodCode);
@@ -749,6 +762,8 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                 molliePaymentMethodCode: 'ideal',
             },
         });
-        expect(createMolliePaymentIntent.message).toContain('Cannot create payment intent without redirectUrl specified');
+        expect(createMolliePaymentIntent.message).toContain(
+            'Cannot create payment intent without redirectUrl specified',
+        );
     });
 });
