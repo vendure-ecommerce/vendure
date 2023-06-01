@@ -329,6 +329,7 @@ describe('BeadcrumbsComponent', () => {
         getFixtureForRoute(['', 'pair-function-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
+            console.log(`labels: ${labels}`);
             expect(labels).toEqual(['Root', 'PairA', 'PairB', 'Grandchild']);
             expect(links).toEqual(['/', '/foo/bar', '/baz/quux']);
         }),
@@ -423,11 +424,12 @@ function getBreadcrumbsElement(fixture: ComponentFixture<TestComponent>): DebugE
 }
 
 function getBreadcrumbListItems(fixture: ComponentFixture<TestComponent>): HTMLLIElement[] {
-    return fixture.debugElement.queryAll(By.css('.breadcrumbs li')).map(de => de.nativeElement);
+    return fixture.debugElement.queryAll(By.css('.breadcrumbs:not(.mobile) li')).map(de => de.nativeElement);
 }
 
 function getBreadcrumbLabels(fixture: ComponentFixture<TestComponent>): string[] {
-    return getBreadcrumbListItems(fixture).map(item => item.innerText.trim());
+    const labels = getBreadcrumbListItems(fixture).map(item => item.innerText.trim());
+    return labels;
 }
 
 function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] {
@@ -451,15 +453,13 @@ class TestParentComponent {}
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-child-component',
-    template: `
-        <vdr-breadcrumb></vdr-breadcrumb>
-    `,
+    template: ` <vdr-breadcrumb></vdr-breadcrumb> `,
 })
 class TestChildComponent {}
 
 type TestComponent = TestParentComponent | TestChildComponent;
 
-class FooResolver  {
+class FooResolver {
     resolve(): Observable<string> {
         return observableOf('Foo');
     }

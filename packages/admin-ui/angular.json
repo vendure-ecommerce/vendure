@@ -131,7 +131,8 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./src/lib/static/styles"
+                "./src/lib/static/styles",
+                "./src/lib/static/fonts"
               ]
             }
           }
