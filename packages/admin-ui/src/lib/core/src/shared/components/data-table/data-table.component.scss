@@ -23,10 +23,6 @@ table.no-select {
 }
 
 thead th {
-    position: sticky;
-    top: 24px;
-    z-index: 1;
-
     &.expand {
         width: 100%;
     }
