@@ -1611,7 +1611,7 @@ function createTestModule() {
             { provide: ListQueryBuilder, useValue: {} },
             { provide: ConfigService, useClass: MockConfigService },
             { provide: EventBus, useValue: { publish: () => ({}) } },
-            { provide: ZoneService, useValue: { findAll: () => [] } },
+            { provide: ZoneService, useValue: { getAllWithMembers: () => [] } },
         ],
     }).compile();
 }
