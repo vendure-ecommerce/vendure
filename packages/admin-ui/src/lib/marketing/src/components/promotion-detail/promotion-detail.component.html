@@ -50,47 +50,49 @@
         </vdr-page-detail-sidebar>
         <vdr-page-block>
             <vdr-card>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        id="name"
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            id="name"
+                            [readonly]="!('UpdatePromotion' | hasPermission)"
+                            type="text"
+                            formControlName="name"
+                        />
+                    </vdr-form-field>
+                    <vdr-rich-text-editor
+                        class="form-grid-span"
+                        formControlName="description"
                         [readonly]="!('UpdatePromotion' | hasPermission)"
-                        type="text"
-                        formControlName="name"
-                    />
-                </vdr-form-field>
-                <vdr-rich-text-editor
-                    class="card-span"
-                    formControlName="description"
-                    [readonly]="!('UpdatePromotion' | hasPermission)"
-                    [label]="'common.description' | translate"
-                ></vdr-rich-text-editor>
-                <vdr-form-field [label]="'marketing.starts-at' | translate" for="startsAt">
-                    <vdr-datetime-picker formControlName="startsAt"></vdr-datetime-picker>
-                </vdr-form-field>
-                <vdr-form-field [label]="'marketing.ends-at' | translate" for="endsAt">
-                    <vdr-datetime-picker formControlName="endsAt"></vdr-datetime-picker>
-                </vdr-form-field>
-                <vdr-form-field [label]="'marketing.coupon-code' | translate" for="couponCode">
-                    <input
-                        id="couponCode"
-                        [readonly]="!('UpdatePromotion' | hasPermission)"
-                        type="text"
-                        formControlName="couponCode"
-                    />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'marketing.per-customer-limit' | translate"
-                    for="perCustomerUsageLimit"
-                >
-                    <input
-                        id="perCustomerUsageLimit"
-                        [readonly]="!('UpdatePromotion' | hasPermission)"
-                        type="number"
-                        min="1"
-                        max="999"
-                        formControlName="perCustomerUsageLimit"
-                    />
-                </vdr-form-field>
+                        [label]="'common.description' | translate"
+                    ></vdr-rich-text-editor>
+                    <vdr-form-field [label]="'marketing.starts-at' | translate" for="startsAt">
+                        <vdr-datetime-picker formControlName="startsAt"></vdr-datetime-picker>
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'marketing.ends-at' | translate" for="endsAt">
+                        <vdr-datetime-picker formControlName="endsAt"></vdr-datetime-picker>
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'marketing.coupon-code' | translate" for="couponCode">
+                        <input
+                            id="couponCode"
+                            [readonly]="!('UpdatePromotion' | hasPermission)"
+                            type="text"
+                            formControlName="couponCode"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'marketing.per-customer-limit' | translate"
+                        for="perCustomerUsageLimit"
+                    >
+                        <input
+                            id="perCustomerUsageLimit"
+                            [readonly]="!('UpdatePromotion' | hasPermission)"
+                            type="number"
+                            min="1"
+                            max="999"
+                            formControlName="perCustomerUsageLimit"
+                        />
+                    </vdr-form-field>
+                </div>
             </vdr-card>
             <vdr-card
                 [title]="'common.custom-fields' | translate"
@@ -112,7 +114,7 @@
             ></vdr-custom-detail-component-host>
 
             <vdr-card [title]="'marketing.conditions' | translate" formArrayName="conditions">
-                <div class="card-span" *ngFor="let condition of conditions; index as i">
+                <div *ngFor="let condition of conditions; index as i">
                     <vdr-configurable-input
                         (remove)="removeCondition($event)"
                         [position]="i"
@@ -143,7 +145,7 @@
                 </div>
             </vdr-card>
             <vdr-card [title]="'marketing.actions' | translate" formArrayName="actions">
-                <div class="card-span" *ngFor="let action of actions; index as i">
+                <div *ngFor="let action of actions; index as i">
                     <vdr-configurable-input
                         (remove)="removeAction($event)"
                         [position]="i"

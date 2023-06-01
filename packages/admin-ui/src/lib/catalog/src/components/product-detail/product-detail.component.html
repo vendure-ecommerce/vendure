@@ -36,8 +36,7 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-page-detail-layout>
-        <vdr-page-detail-sidebar
-        >
+        <vdr-page-detail-sidebar>
             <vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
                     <clr-toggle-wrapper *vdrIfPermissions="updatePermissions">
@@ -84,11 +83,7 @@
                     </vdr-chip>
                 </div>
                 <div>
-                    <a
-                        [routerLink]="['options']"
-                        class="button"
-                        *vdrIfPermissions="updatePermissions"
-                    >
+                    <a [routerLink]="['options']" class="button" *vdrIfPermissions="updatePermissions">
                         <clr-icon shape="pencil"></clr-icon>
                         {{ 'catalog.edit-options' | translate }}
                     </a>
@@ -122,55 +117,59 @@
         <vdr-page-block>
             <button type="submit" hidden x-data="prevents enter key from triggering other buttons"></button>
             <vdr-card>
-                <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
-                    <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(updatePermissions | hasPermission)"
-                        (input)="updateSlug($event.target.value)"
-                    />
-                </vdr-form-field>
-                <div *ngIf="(isNew$ | async) === false && detailForm.get(['name'])?.dirty">
-                    <clr-checkbox-wrapper>
+                <div class="form-grid">
+                    <div>
+                        <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
+                            <input
+                                id="name"
+                                type="text"
+                                formControlName="name"
+                                [readonly]="!(updatePermissions | hasPermission)"
+                                (input)="updateSlug($event.target.value)"
+                            />
+                        </vdr-form-field>
+                        <div *ngIf="(isNew$ | async) === false && detailForm.get(['name'])?.dirty">
+                            <clr-checkbox-wrapper>
+                                <input
+                                    clrCheckbox
+                                    type="checkbox"
+                                    id="auto-update"
+                                    formControlName="autoUpdateVariantNames"
+                                />
+                                <label>{{ 'catalog.auto-update-product-variant-name' | translate }}</label>
+                            </clr-checkbox-wrapper>
+                        </div>
+                    </div>
+                    <vdr-form-field
+                        [label]="'catalog.slug' | translate"
+                        for="slug"
+                        [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
+                    >
                         <input
-                            clrCheckbox
-                            type="checkbox"
-                            id="auto-update"
-                            formControlName="autoUpdateVariantNames"
+                            id="slug"
+                            type="text"
+                            formControlName="slug"
+                            [readonly]="!(updatePermissions | hasPermission)"
                         />
-                        <label>{{ 'catalog.auto-update-product-variant-name' | translate }}</label>
-                    </clr-checkbox-wrapper>
+                    </vdr-form-field>
+                    <vdr-form-field
+                        class="form-grid-span"
+                        [label]="'common.description' | translate"
+                        for="slug"
+                        [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
+                    >
+                        <vdr-rich-text-editor
+                            formControlName="description"
+                            [readonly]="!(updatePermissions | hasPermission)"
+                        ></vdr-rich-text-editor>
+                    </vdr-form-field>
                 </div>
-                <vdr-form-field
-                    [label]="'catalog.slug' | translate"
-                    for="slug"
-                    [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
-                >
-                    <input
-                        id="slug"
-                        type="text"
-                        formControlName="slug"
-                        [readonly]="!(updatePermissions | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'common.description' | translate"
-                    for="slug"
-                    [errors]="{ pattern: 'catalog.slug-pattern-error' | translate }"
-                    class="card-span"
-                >
-                    <vdr-rich-text-editor
-                        formControlName="description"
-                        [readonly]="!(updatePermissions | hasPermission)"
-                    ></vdr-rich-text-editor>
-                </vdr-form-field>
             </vdr-card>
             <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customFields.length">
                 <vdr-tabbed-custom-fields
                     entityName="Product"
                     [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                    [customFieldsFormGroup]="detailForm.get('customFields')"
                     [readonly]="!(updatePermissions | hasPermission)"
                 ></vdr-tabbed-custom-fields>
             </vdr-card>
@@ -181,7 +180,6 @@
             ></vdr-custom-detail-component-host>
             <vdr-card [title]="'catalog.assets' | translate">
                 <vdr-assets
-                    class="card-span"
                     [assets]="assetChanges.assets || entity?.assets"
                     [featuredAsset]="assetChanges.featuredAsset || entity?.featuredAsset"
                     [updatePermissions]="updatePermissions"
@@ -190,24 +188,22 @@
             </vdr-card>
 
             <vdr-card [title]="'catalog.product-variants' | translate" [paddingX]="isNew$ | async">
-                <div class="card-span">
-                    <div *ngIf="isNew$ | async; else variantList">
-                        <vdr-generate-product-variants
-                            (variantsChange)="createVariantsConfig = $event"
-                        ></vdr-generate-product-variants>
-                    </div>
-                    <ng-template #variantList>
-                        <vdr-product-variant-list
-                            [productId]="this.id"
-                            [hideLanguageSelect]="true"
-                        ></vdr-product-variant-list>
-                    </ng-template>
-                    <div class="mx-3" *ngIf="(isNew$ | async) === false">
-                        <a class="button" [routerLink]="['manage-variants']">
-                            <clr-icon shape="add-text"></clr-icon>
-                            {{ 'catalog.manage-variants' | translate }}</a
-                        >
-                    </div>
+                <div *ngIf="isNew$ | async; else variantList">
+                    <vdr-generate-product-variants
+                        (variantsChange)="createVariantsConfig = $event"
+                    ></vdr-generate-product-variants>
+                </div>
+                <ng-template #variantList>
+                    <vdr-product-variant-list
+                        [productId]="this.id"
+                        [hideLanguageSelect]="true"
+                    ></vdr-product-variant-list>
+                </ng-template>
+                <div class="mx-3" *ngIf="(isNew$ | async) === false">
+                    <a class="button" [routerLink]="['manage-variants']">
+                        <clr-icon shape="add-text"></clr-icon>
+                        {{ 'catalog.manage-variants' | translate }}</a
+                    >
                 </div>
             </vdr-card>
         </vdr-page-block>

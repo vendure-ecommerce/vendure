@@ -20,15 +20,6 @@
     flex: 1;
 }
 
-.form-grid {
-    display: grid;
-    gap: calc(var(--space-unit) * 4);
-    grid-template-columns: 1fr 1fr;
-    @container (max-width: 500px) {
-        grid-template-columns: 1fr;
-    }
-}
-
 .max-w-layout {
     max-width: var(--layout-content-max-width);
 }

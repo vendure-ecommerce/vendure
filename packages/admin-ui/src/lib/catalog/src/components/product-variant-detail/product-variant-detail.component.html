@@ -98,22 +98,24 @@
         <vdr-page-block>
             <button type="submit" hidden x-data="prevents enter key from triggering other buttons"></button>
             <vdr-card>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'catalog.sku' | translate" for="sku">
-                    <input
-                        id="sku"
-                        type="text"
-                        formControlName="sku"
-                        [readonly]="!(updatePermissions | hasPermission)"
-                    />
-                </vdr-form-field>
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            id="name"
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'catalog.sku' | translate" for="sku">
+                        <input
+                            id="sku"
+                            type="text"
+                            formControlName="sku"
+                            [readonly]="!(updatePermissions | hasPermission)"
+                        />
+                    </vdr-form-field>
+                </div>
             </vdr-card>
             <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customFields.length">
                 <vdr-tabbed-custom-fields
@@ -137,114 +139,124 @@
                 />
             </vdr-card>
             <vdr-card [title]="'catalog.price-and-tax' | translate">
-                <vdr-form-field [label]="'catalog.tax-category' | translate" for="taxCategory">
-                    <select name="taxCategory" formControlName="taxCategoryId">
-                        <option *ngFor="let taxCategory of taxCategories$ | async" [value]="taxCategory.id">
-                            {{ taxCategory.name }}
-                        </option>
-                    </select>
-                </vdr-form-field>
-                <vdr-form-field [label]="'catalog.price' | translate" for="sku">
-                    <vdr-currency-input
-                        *ngIf="!(channelPriceIncludesTax$ | async)"
-                        [currencyCode]="variant.currencyCode"
-                        [readonly]="!(updatePermissions | hasPermission)"
-                        formControlName="price"
-                    />
-                    <vdr-currency-input
-                        *ngIf="channelPriceIncludesTax$ | async"
-                        [currencyCode]="variant.currencyCode"
-                        [readonly]="!(updatePermissions | hasPermission)"
-                        formControlName="priceWithTax"
-                    />
-                </vdr-form-field>
-                <vdr-variant-price-detail
-                    [price]="detailForm.get('price')!.value"
-                    [currencyCode]="variant.currencyCode"
-                    [priceIncludesTax]="channelPriceIncludesTax$ | async"
-                    [taxCategoryId]="detailForm.get('taxCategoryId')!.value"
-                />
-            </vdr-card>
-            <vdr-card [title]="'catalog.stock-levels' | translate">
-                <vdr-form-field
-                    for="track-inventory"
-                    [label]="'catalog.track-inventory' | translate"
-                    [tooltip]="'catalog.track-inventory-tooltip' | translate"
-                >
-                    <select
-                        name="track-inventory"
-                        formControlName="trackInventory"
-                        [disabled]="!(updatePermissions | hasPermission)"
-                    >
-                        <option [value]="GlobalFlag.TRUE">
-                            {{ 'catalog.track-inventory-true' | translate }}
-                        </option>
-                        <option [value]="GlobalFlag.FALSE">
-                            {{ 'catalog.track-inventory-false' | translate }}
-                        </option>
-                        <option [value]="GlobalFlag.INHERIT">
-                            {{ 'catalog.track-inventory-inherit' | translate }}
-                        </option>
-                    </select>
-                </vdr-form-field>
-
-                <vdr-form-item
-                    [label]="'catalog.out-of-stock-threshold' | translate"
-                    [tooltip]="'catalog.out-of-stock-threshold-tooltip' | translate"
-                >
-                    <input
-                        type="number"
-                        formControlName="outOfStockThreshold"
-                        [readonly]="!(updatePermissions | hasPermission)"
-                        [vdrDisabled]="
-                            detailForm.get('useGlobalOutOfStockThreshold')?.value !== false ||
-                            inventoryIsNotTracked(detailForm)
-                        "
-                    />
-                    <clr-toggle-wrapper>
-                        <input
-                            type="checkbox"
-                            clrToggle
-                            name="useGlobalOutOfStockThreshold"
-                            formControlName="useGlobalOutOfStockThreshold"
-                            [vdrDisabled]="
-                                !(updatePermissions | hasPermission) || inventoryIsNotTracked(detailForm)
-                            "
-                        />
-                        <label
-                            >{{ 'catalog.use-global-value' | translate }} ({{
-                                globalOutOfStockThreshold
-                            }})</label
-                        >
-                    </clr-toggle-wrapper>
-                </vdr-form-item>
-
-                <ng-container *ngFor="let stockLevel of stockLevelsForm.controls" [formGroup]="stockLevel">
-                    <vdr-form-field
-                        [label]="
-                            stockLevel.get('stockLocationName')?.value +
-                            ': ' +
-                            ('catalog.stock-on-hand' | translate)
-                        "
-                        [for]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
-                    >
-                        <input
-                            [id]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
-                            type="number"
-                            formControlName="stockOnHand"
+                <div class="form-grid">
+                    <vdr-form-field [label]="'catalog.tax-category' | translate" for="taxCategory">
+                        <select name="taxCategory" formControlName="taxCategoryId">
+                            <option
+                                *ngFor="let taxCategory of taxCategories$ | async"
+                                [value]="taxCategory.id"
+                            >
+                                {{ taxCategory.name }}
+                            </option>
+                        </select>
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'catalog.price' | translate" for="sku">
+                        <vdr-currency-input
+                            *ngIf="!(channelPriceIncludesTax$ | async)"
+                            [currencyCode]="variant.currencyCode"
                             [readonly]="!(updatePermissions | hasPermission)"
+                            formControlName="price"
+                        />
+                        <vdr-currency-input
+                            *ngIf="channelPriceIncludesTax$ | async"
+                            [currencyCode]="variant.currencyCode"
+                            [readonly]="!(updatePermissions | hasPermission)"
+                            formControlName="priceWithTax"
                         />
                     </vdr-form-field>
-                    <vdr-form-item
-                        [label]="
-                            stockLevel.get('stockLocationName')?.value +
-                            ': ' +
-                            ('catalog.stock-allocated' | translate)
-                        "
+                    <vdr-variant-price-detail
+                        [price]="detailForm.get('price')!.value"
+                        [currencyCode]="variant.currencyCode"
+                        [priceIncludesTax]="channelPriceIncludesTax$ | async"
+                        [taxCategoryId]="detailForm.get('taxCategoryId')!.value"
+                    />
+                </div>
+            </vdr-card>
+            <vdr-card [title]="'catalog.stock-levels' | translate">
+                <div class="form-grid">
+                    <vdr-form-field
+                        for="track-inventory"
+                        [label]="'catalog.track-inventory' | translate"
+                        [tooltip]="'catalog.track-inventory-tooltip' | translate"
                     >
-                        {{ stockLevel.get('stockAllocated')?.value }}
+                        <select
+                            name="track-inventory"
+                            formControlName="trackInventory"
+                            [disabled]="!(updatePermissions | hasPermission)"
+                        >
+                            <option [value]="GlobalFlag.TRUE">
+                                {{ 'catalog.track-inventory-true' | translate }}
+                            </option>
+                            <option [value]="GlobalFlag.FALSE">
+                                {{ 'catalog.track-inventory-false' | translate }}
+                            </option>
+                            <option [value]="GlobalFlag.INHERIT">
+                                {{ 'catalog.track-inventory-inherit' | translate }}
+                            </option>
+                        </select>
+                    </vdr-form-field>
+
+                    <vdr-form-item
+                        [label]="'catalog.out-of-stock-threshold' | translate"
+                        [tooltip]="'catalog.out-of-stock-threshold-tooltip' | translate"
+                    >
+                        <input
+                            type="number"
+                            formControlName="outOfStockThreshold"
+                            [readonly]="!(updatePermissions | hasPermission)"
+                            [vdrDisabled]="
+                                detailForm.get('useGlobalOutOfStockThreshold')?.value !== false ||
+                                inventoryIsNotTracked(detailForm)
+                            "
+                        />
+                        <clr-toggle-wrapper>
+                            <input
+                                type="checkbox"
+                                clrToggle
+                                name="useGlobalOutOfStockThreshold"
+                                formControlName="useGlobalOutOfStockThreshold"
+                                [vdrDisabled]="
+                                    !(updatePermissions | hasPermission) || inventoryIsNotTracked(detailForm)
+                                "
+                            />
+                            <label
+                                >{{ 'catalog.use-global-value' | translate }} ({{
+                                    globalOutOfStockThreshold
+                                }})</label
+                            >
+                        </clr-toggle-wrapper>
                     </vdr-form-item>
-                </ng-container>
+
+                    <ng-container
+                        *ngFor="let stockLevel of stockLevelsForm.controls"
+                        [formGroup]="stockLevel"
+                    >
+                        <vdr-form-field
+                            [label]="
+                                stockLevel.get('stockLocationName')?.value +
+                                ': ' +
+                                ('catalog.stock-on-hand' | translate)
+                            "
+                            [for]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
+                        >
+                            <input
+                                [id]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
+                                type="number"
+                                formControlName="stockOnHand"
+                                [readonly]="!(updatePermissions | hasPermission)"
+                            />
+                        </vdr-form-field>
+                        <vdr-form-item
+                            [label]="
+                                stockLevel.get('stockLocationName')?.value +
+                                ': ' +
+                                ('catalog.stock-allocated' | translate)
+                            "
+                        >
+                            {{ stockLevel.get('stockAllocated')?.value }}
+                        </vdr-form-item>
+                    </ng-container>
+                </div>
             </vdr-card>
         </vdr-page-block>
     </vdr-page-detail-layout>

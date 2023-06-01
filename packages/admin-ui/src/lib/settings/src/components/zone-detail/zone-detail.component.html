@@ -34,14 +34,16 @@
         </vdr-page-detail-sidebar>
         <vdr-page-block>
             <vdr-card>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(updatePermission | hasPermission)"
-                    />
-                </vdr-form-field>
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            id="name"
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        />
+                    </vdr-form-field>
+                </div>
             </vdr-card>
             <vdr-card
                 formGroupName="customFields"
@@ -49,9 +51,9 @@
                 [title]="'common.custom-fields' | translate"
             >
                 <vdr-tabbed-custom-fields
-                    entityName="Customer"
+                    entityName="Zone"
                     [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                    [customFieldsFormGroup]="detailForm.get('customFields')"
                 ></vdr-tabbed-custom-fields>
             </vdr-card>
             <vdr-custom-detail-component-host

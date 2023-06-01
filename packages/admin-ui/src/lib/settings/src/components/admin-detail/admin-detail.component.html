@@ -34,51 +34,54 @@
         </vdr-page-detail-sidebar>
         <vdr-page-block>
             <vdr-card>
-                <vdr-form-field
-                    [label]="'settings.email-address-or-identifier' | translate"
-                    for="emailAddress"
-                    class="card-span"
-                >
-                    <input
-                        id="emailAddress"
-                        type="text"
-                        formControlName="emailAddress"
-                        [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.first-name' | translate" for="firstName">
-                    <input
-                        id="firstName"
-                        type="text"
-                        formControlName="firstName"
-                        [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.last-name' | translate" for="lastName">
-                    <input
-                        id="lastName"
-                        type="text"
-                        formControlName="lastName"
-                        [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field
-                    *ngIf="isNew$ | async"
-                    [label]="'settings.password' | translate"
-                    for="password"
-                >
-                    <input id="password" type="password" formControlName="password" />
-                </vdr-form-field>
-                <vdr-form-field
-                    *ngIf="
-                        !(isNew$ | async) && (['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)
-                    "
-                    [label]="'settings.password' | translate"
-                    for="password"
-                    [readOnlyToggle]="true"
-                >
-                    <input id="password" type="password" formControlName="password" />
-                </vdr-form-field>
+                <div class="form-grid">
+                    <vdr-form-field
+                        [label]="'settings.email-address-or-identifier' | translate"
+                        for="emailAddress"
+                        class="form-grid-span"
+                    >
+                        <input
+                            id="emailAddress"
+                            type="text"
+                            formControlName="emailAddress"
+                            [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.first-name' | translate" for="firstName">
+                        <input
+                            id="firstName"
+                            type="text"
+                            formControlName="firstName"
+                            [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.last-name' | translate" for="lastName">
+                        <input
+                            id="lastName"
+                            type="text"
+                            formControlName="lastName"
+                            [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        *ngIf="isNew$ | async"
+                        [label]="'settings.password' | translate"
+                        for="password"
+                    >
+                        <input id="password" type="password" formControlName="password" />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        *ngIf="
+                            !(isNew$ | async) &&
+                            (['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)
+                        "
+                        [label]="'settings.password' | translate"
+                        for="password"
+                        [readOnlyToggle]="true"
+                    >
+                        <input id="password" type="password" formControlName="password" />
+                    </vdr-form-field>
+                </div>
             </vdr-card>
 
             <vdr-card
@@ -87,9 +90,9 @@
                 [title]="'common.custom-fields' | translate"
             >
                 <vdr-tabbed-custom-fields
-                    entityName="Customer"
+                    entityName="Administrator"
                     [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                    [customFieldsFormGroup]="detailForm.get('customFields')"
                 ></vdr-tabbed-custom-fields>
             </vdr-card>
             <vdr-custom-detail-component-host
@@ -102,7 +105,6 @@
     <vdr-page-block>
         <vdr-card [title]="'settings.roles' | translate">
             <ng-select
-                class="card-span"
                 [items]="allRoles$ | async"
                 [multiple]="true"
                 [hideSelected]="true"
@@ -111,7 +113,7 @@
                 bindLabel="description"
             ></ng-select>
 
-            <ul class="nav card-span" role="tablist">
+            <ul class="nav" role="tablist">
                 <li role="presentation" class="nav-item" *ngFor="let channel of getAvailableChannels()">
                     <button
                         [id]="channel.channelId"
@@ -126,7 +128,6 @@
                 </li>
             </ul>
             <vdr-permission-grid
-                class="card-span"
                 [activePermissions]="getPermissionsForSelectedChannel()"
                 [permissionDefinitions]="permissionDefinitions"
                 [readonly]="true"

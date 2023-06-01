@@ -3,7 +3,7 @@
         {{ 'settings.test-address' | translate }}
     </div>
     <div class="card-block">
-        <form [formGroup]="form">
+        <form [formGroup]="form" class="form-grid">
             <vdr-form-field [label]="'customer.city' | translate">
                 <input formControlName="city" type="text"  />
             </vdr-form-field>

@@ -51,11 +51,13 @@
                 >
             </div>
             <ng-template #noGroups>
+                <span class="color-weight-400">
                 {{ 'customer.not-a-member-of-any-groups' | translate }}
+                </span>
             </ng-template>
             <div>
                 <button
-                    class="btn btn-sm btn-secondary"
+                    class="button mt-1"
                     (click)="addToGroup()"
                     *vdrIfPermissions="'UpdateCustomerGroup'"
                 >
@@ -71,49 +73,51 @@
     <vdr-page-block>
         <form class="form" [formGroup]="detailForm.get('customer')">
             <vdr-card>
-                <vdr-form-field
-                    [label]="'customer.title' | translate"
-                    for="title"
-                    [readOnlyToggle]="!(isNew$ | async)"
-                >
-                    <input id="title" type="text" formControlName="title" />
-                </vdr-form-field>
-                <div><!-- spacer --></div>
-                <vdr-form-field
-                    [label]="'customer.first-name' | translate"
-                    for="firstName"
-                    [readOnlyToggle]="!(isNew$ | async)"
-                >
-                    <input id="firstName" type="text" formControlName="firstName" />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'customer.last-name' | translate"
-                    for="lastName"
-                    [readOnlyToggle]="!(isNew$ | async)"
-                >
-                    <input id="lastName" type="text" formControlName="lastName" />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'customer.email-address' | translate"
-                    for="emailAddress"
-                    [readOnlyToggle]="!(isNew$ | async)"
-                >
-                    <input id="emailAddress" type="text" formControlName="emailAddress" />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'customer.phone-number' | translate"
-                    for="phoneNumber"
-                    [readOnlyToggle]="!(isNew$ | async)"
-                >
-                    <input id="phoneNumber" type="text" formControlName="phoneNumber" />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'customer.password' | translate"
-                    for="password"
-                    *ngIf="isNew$ | async"
-                >
-                    <input id="password" type="password" formControlName="password" />
-                </vdr-form-field>
+                <div class="form-grid">
+                    <vdr-form-field
+                        [label]="'customer.title' | translate"
+                        for="title"
+                        [readOnlyToggle]="!(isNew$ | async)"
+                    >
+                        <input id="title" type="text" formControlName="title" />
+                    </vdr-form-field>
+                    <div><!-- spacer --></div>
+                    <vdr-form-field
+                        [label]="'customer.first-name' | translate"
+                        for="firstName"
+                        [readOnlyToggle]="!(isNew$ | async)"
+                    >
+                        <input id="firstName" type="text" formControlName="firstName" />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'customer.last-name' | translate"
+                        for="lastName"
+                        [readOnlyToggle]="!(isNew$ | async)"
+                    >
+                        <input id="lastName" type="text" formControlName="lastName" />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'customer.email-address' | translate"
+                        for="emailAddress"
+                        [readOnlyToggle]="!(isNew$ | async)"
+                    >
+                        <input id="emailAddress" type="text" formControlName="emailAddress" />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'customer.phone-number' | translate"
+                        for="phoneNumber"
+                        [readOnlyToggle]="!(isNew$ | async)"
+                    >
+                        <input id="phoneNumber" type="text" formControlName="phoneNumber" />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'customer.password' | translate"
+                        for="password"
+                        *ngIf="isNew$ | async"
+                    >
+                        <input id="password" type="password" formControlName="password" />
+                    </vdr-form-field>
+                </div>
             </vdr-card>
             <vdr-card
                 formGroupName="customFields"
@@ -123,7 +127,7 @@
                 <vdr-tabbed-custom-fields
                     entityName="Customer"
                     [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get(['customer', 'customFields'])"
+                    [customFieldsFormGroup]="detailForm.get('customer.customFields')"
                 ></vdr-tabbed-custom-fields>
             </vdr-card>
         </form>
@@ -150,20 +154,13 @@
                     (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
                     (deleteAddress)="toggleDeleteAddress($event)"
                 ></vdr-address-card>
-                <div class="card-span">
-                    <button
-                        class="btn btn-secondary"
-                        (click)="addAddress()"
-                        *vdrIfPermissions="'UpdateCustomer'"
-                    >
-                        <clr-icon shape="plus"></clr-icon>
-                        {{ 'customer.create-new-address' | translate }}
-                    </button>
-                </div>
+                <button class="btn btn-secondary" (click)="addAddress()" *vdrIfPermissions="'UpdateCustomer'">
+                    <clr-icon shape="plus"></clr-icon>
+                    {{ 'customer.create-new-address' | translate }}
+                </button>
             </vdr-card>
             <vdr-card [title]="'customer.orders' | translate" [paddingX]="false">
                 <vdr-data-table-2
-                    class="card-span"
                     id="customer-order-list"
                     [items]="orders$ | async"
                     [itemsPerPage]="ordersPerPage"
@@ -216,13 +213,14 @@
                             {{ order.orderPlacedAt | localeDate : 'short' }}
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" />
+                    <vdr-dt2-custom-field-column
+                        *ngFor="let customField of customFields"
+                        [customField]="customField"
+                    />
                 </vdr-data-table-2>
-
             </vdr-card>
             <vdr-card [title]="'customer.customer-history' | translate">
                 <vdr-customer-history
-                    class="card-span"
                     [customer]="entity$ | async"
                     [history]="history$ | async"
                     (addNote)="addNoteToCustomer($event)"

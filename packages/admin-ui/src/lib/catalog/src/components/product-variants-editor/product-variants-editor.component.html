@@ -1,6 +1,6 @@
 <vdr-page-block>
     <vdr-card>
-        <div *ngFor="let group of optionGroups; index as i" class="option-groups card-span">
+        <div *ngFor="let group of optionGroups; index as i" class="option-groups">
             <vdr-form-field [label]="'catalog.option' | translate">
                 <input clrInput [(ngModel)]="group.name" name="name" [readonly]="!group.isNew" />
             </vdr-form-field>
@@ -15,31 +15,24 @@
                 ></vdr-option-value-input>
             </vdr-form-field>
             <div>
-                <button
-
-                    class="button-small mt-4"
-                    (click)="removeOptionGroup(group)"
-                >
+                <button class="button-small mt-4" (click)="removeOptionGroup(group)">
                     <clr-icon shape="trash"></clr-icon>
                 </button>
             </div>
         </div>
-        <div class="card-span">
-            <button class="btn btn-primary-outline btn-sm" (click)="addOptionGroup()">
-                <clr-icon shape="plus"></clr-icon>
-                {{ 'catalog.create-product-option-group' | translate }}
-            </button>
-        </div>
+        <button class="button mt-1" (click)="addOptionGroup()">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'catalog.create-product-option-group' | translate }}
+        </button>
     </vdr-card>
     <vdr-card [paddingX]="false">
-        <div class="card-span mx-3">
+        <div class="mx-3">
             <button class="button" (click)="createNewVariant()">
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-product-variant' | translate }}
             </button>
         </div>
         <vdr-data-table-2
-            class="card-span"
             id="manage-product-variant-list"
             [items]="variants$ | async"
             [itemsPerPage]="itemsPerPage"

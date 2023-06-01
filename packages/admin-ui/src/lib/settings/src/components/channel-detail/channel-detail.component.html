@@ -35,134 +35,122 @@
         </vdr-page-detail-sidebar>
         <vdr-page-block>
             <vdr-card>
-                <vdr-form-field [label]="'common.code' | translate" for="code">
-                    <input
-                        id="code"
-                        type="text"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        formControlName="code"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
-                    <input
-                        id="token"
-                        type="text"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        formControlName="token"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
-                    <select
-                        name="currencyCode"
-                        formControlName="currencyCode"
-                        [vdrDisabled]="!(updatePermission | hasPermission)"
-                    >
-                        <option *ngFor="let code of currencyCodes" [value]="code">
-                            {{ code | localeCurrencyName }}
-                        </option>
-                    </select>
-                </vdr-form-field>
-                <vdr-form-field [label]="'common.default-language' | translate" for="defaultLanguage">
-                    <select
-                        name="defaultLanguageCode"
-                        formControlName="defaultLanguageCode"
-                        [vdrDisabled]="!(updatePermission | hasPermission)"
-                    >
-                        <option
-                            *ngFor="let languageCode of availableLanguageCodes$ | async"
-                            [value]="languageCode"
-                        >
-                            {{ languageCode | localeLanguageName }} ({{ languageCode | uppercase }})
-                        </option>
-                    </select>
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
-                    <clr-toggle-wrapper>
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.code' | translate" for="code">
                         <input
-                            type="checkbox"
-                            clrToggle
-                            id="pricesIncludeTax"
-                            formControlName="pricesIncludeTax"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                            id="code"
+                            type="text"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            formControlName="code"
                         />
-                    </clr-toggle-wrapper>
-                </vdr-form-field>
-                <div>
-                    <vdr-form-field [label]="'settings.default-tax-zone' | translate" for="defaultTaxZoneId">
-                        <!--<select
-                            name="defaultTaxZoneId"
-                            formControlName="defaultTaxZoneId"
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
+                        <input
+                            id="token"
+                            type="text"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            formControlName="token"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
+                        <select
+                            name="currencyCode"
+                            formControlName="currencyCode"
                             [vdrDisabled]="!(updatePermission | hasPermission)"
                         >
-                            <option selected value style="display: none"></option>
-                            <option *ngFor="let zone of zones$ | async" [value]="zone.id">
-                                {{ zone.name }}
+                            <option *ngFor="let code of currencyCodes" [value]="code">
+                                {{ code | localeCurrencyName }}
                             </option>
-                        </select>-->
-                        <vdr-zone-selector
-                            formControlName="defaultTaxZoneId"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
-                        ></vdr-zone-selector>
+                        </select>
                     </vdr-form-field>
-                    <clr-alert
-                        *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId"
-                        clrAlertType="danger"
-                        [clrAlertClosable]="false"
-                    >
-                        <clr-alert-item>
-                            <span class="alert-text">
-                                {{ 'error.no-default-tax-zone-set' | translate }}
-                            </span>
-                        </clr-alert-item>
-                    </clr-alert>
-                </div>
-
-                <div>
+                    <vdr-form-field [label]="'common.default-language' | translate" for="defaultLanguage">
+                        <select
+                            name="defaultLanguageCode"
+                            formControlName="defaultLanguageCode"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        >
+                            <option
+                                *ngFor="let languageCode of availableLanguageCodes$ | async"
+                                [value]="languageCode"
+                            >
+                                {{ languageCode | localeLanguageName }} ({{ languageCode | uppercase }})
+                            </option>
+                        </select>
+                    </vdr-form-field>
                     <vdr-form-field
-                        [label]="'settings.default-shipping-zone' | translate"
-                        for="defaultShippingZoneId"
+                        [label]="'settings.prices-include-tax' | translate"
+                        for="pricesIncludeTax"
                     >
-                        <!--<select
-                            name="defaultShippingZoneId"
-                            formControlName="defaultShippingZoneId"
+                        <clr-toggle-wrapper>
+                            <input
+                                type="checkbox"
+                                clrToggle
+                                id="pricesIncludeTax"
+                                formControlName="pricesIncludeTax"
+                                [vdrDisabled]="!(updatePermission | hasPermission)"
+                            />
+                        </clr-toggle-wrapper>
+                    </vdr-form-field>
+                    <div>
+                        <vdr-form-field
+                            [label]="'settings.default-tax-zone' | translate"
+                            for="defaultTaxZoneId"
+                        >
+                            <vdr-zone-selector
+                                formControlName="defaultTaxZoneId"
+                                [vdrDisabled]="!(updatePermission | hasPermission)"
+                            ></vdr-zone-selector>
+                        </vdr-form-field>
+                        <clr-alert
+                            *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId"
+                            clrAlertType="danger"
+                            [clrAlertClosable]="false"
+                        >
+                            <clr-alert-item>
+                                <span class="alert-text">
+                                    {{ 'error.no-default-tax-zone-set' | translate }}
+                                </span>
+                            </clr-alert-item>
+                        </clr-alert>
+                    </div>
+
+                    <div>
+                        <vdr-form-field
+                            [label]="'settings.default-shipping-zone' | translate"
+                            for="defaultShippingZoneId"
+                        >
+                            <vdr-zone-selector
+                                name="defaultShippingZoneId"
+                                formControlName="defaultShippingZoneId"
+                                [vdrDisabled]="!(updatePermission | hasPermission)"
+                            ></vdr-zone-selector>
+                        </vdr-form-field>
+                        <clr-alert
+                            *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId"
+                            clrAlertType="warning"
+                            [clrAlertClosable]="false"
+                        >
+                            <clr-alert-item>
+                                <span class="alert-text">
+                                    {{ 'error.no-default-shipping-zone-set' | translate }}
+                                </span>
+                            </clr-alert-item>
+                        </clr-alert>
+                    </div>
+
+                    <vdr-form-field [label]="'common.seller' | translate" for="sellerId">
+                        <select
+                            name="sellerId"
+                            formControlName="sellerId"
                             [vdrDisabled]="!(updatePermission | hasPermission)"
                         >
                             <option selected value style="display: none"></option>
-                            <option *ngFor="let zone of zones$ | async" [value]="zone.id">
-                                {{ zone.name }}
+                            <option *ngFor="let seller of sellers$ | async" [value]="seller.id">
+                                {{ seller.name }}
                             </option>
-                        </select>-->
-                        <vdr-zone-selector
-                            name="defaultShippingZoneId"
-                            formControlName="defaultShippingZoneId"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
-                        ></vdr-zone-selector>
+                        </select>
                     </vdr-form-field>
-                    <clr-alert
-                        *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId"
-                        clrAlertType="warning"
-                        [clrAlertClosable]="false"
-                    >
-                        <clr-alert-item>
-                            <span class="alert-text">
-                                {{ 'error.no-default-shipping-zone-set' | translate }}
-                            </span>
-                        </clr-alert-item>
-                    </clr-alert>
                 </div>
-
-                <vdr-form-field [label]="'common.seller' | translate" for="sellerId">
-                    <select
-                        name="sellerId"
-                        formControlName="sellerId"
-                        [vdrDisabled]="!(updatePermission | hasPermission)"
-                    >
-                        <option selected value style="display: none"></option>
-                        <option *ngFor="let seller of sellers$ | async" [value]="seller.id">
-                            {{ seller.name }}
-                        </option>
-                    </select>
-                </vdr-form-field>
             </vdr-card>
             <vdr-card
                 formGroupName="customFields"
@@ -170,9 +158,9 @@
                 [title]="'common.custom-fields' | translate"
             >
                 <vdr-tabbed-custom-fields
-                    entityName="Customer"
+                    entityName="Channel"
                     [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                    [customFieldsFormGroup]="detailForm.get('customFields')"
                 ></vdr-tabbed-custom-fields>
             </vdr-card>
             <vdr-custom-detail-component-host

@@ -12,7 +12,30 @@ form .form-block {
     margin: 0.5rem 0 1.5rem;
 }
 
-input:not([type="checkbox"]):not([type="radio"]),
+.form-grid {
+    display: grid;
+    gap: calc(var(--space-unit) * 4);
+    grid-template-columns: 1fr 1fr;
+    .form-grid-span {
+        grid-column: span 2;
+    }
+
+    @container (max-width: 500px) {
+        grid-template-columns: 1fr;
+    }
+    @container (max-width: 700px) {
+        gap: calc(var(--space-unit) * 2);
+    }
+    @container (max-width: 500px) {
+        grid-template-columns: 1fr;
+
+        .form-grid-span {
+            grid-column: initial;
+        }
+    }
+}
+
+input:not([type='checkbox']):not([type='radio']),
 select,
 textarea,
 .clr-input {
@@ -38,7 +61,7 @@ textarea,
     }
 }
 
-input:not([type="checkbox"]):not([type="radio"]),
+input:not([type='checkbox']):not([type='radio']),
 textarea,
 select {
     border-radius: var(--border-radius-input) !important;

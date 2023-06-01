@@ -55,32 +55,35 @@
         </vdr-page-detail-sidebar>
         <vdr-page-block>
             <vdr-card>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            id="name"
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            (input)="updateCode(entity?.code, $event.target.value)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'common.code' | translate"
+                        for="code"
+                        [readOnlyToggle]="updatePermission | hasPermission"
+                    >
+                        <input
+                            id="code"
+                            type="text"
+                            formControlName="code"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-rich-text-editor
+                        class="form-grid-span"
+                        formControlName="description"
                         [readonly]="!(updatePermission | hasPermission)"
-                        (input)="updateCode(entity?.code, $event.target.value)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'common.code' | translate"
-                    for="code"
-                    [readOnlyToggle]="updatePermission | hasPermission"
-                >
-                    <input
-                        id="code"
-                        type="text"
-                        formControlName="code"
-                        [readonly]="!(updatePermission | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-rich-text-editor
-                    formControlName="description"
-                    [readonly]="!(updatePermission | hasPermission)"
-                    [label]="'common.description' | translate"
-                ></vdr-rich-text-editor>
+                        [label]="'common.description' | translate"
+                    ></vdr-rich-text-editor>
+                </div>
             </vdr-card>
 
             <vdr-card
@@ -89,7 +92,7 @@
                 [title]="'common.custom-fields' | translate"
             >
                 <vdr-tabbed-custom-fields
-                    entityName="Customer"
+                    entityName="PaymentMethod"
                     [customFields]="customFields"
                     [customFieldsFormGroup]="detailForm.get('customFields')"
                 ></vdr-tabbed-custom-fields>
@@ -103,7 +106,6 @@
 
             <vdr-card [title]="'settings.payment-eligibility-checker' | translate">
                 <vdr-configurable-input
-                    class="card-span"
                     *ngIf="selectedChecker && selectedCheckerDefinition"
                     [operation]="selectedChecker"
                     [operationDefinition]="selectedCheckerDefinition"
@@ -132,7 +134,6 @@
             </vdr-card>
             <vdr-card [title]="'settings.payment-handler' | translate">
                 <vdr-configurable-input
-                    class="card-span"
                     *ngIf="selectedHandler && selectedHandlerDefinition"
                     [operation]="selectedHandler"
                     [operationDefinition]="selectedHandlerDefinition"

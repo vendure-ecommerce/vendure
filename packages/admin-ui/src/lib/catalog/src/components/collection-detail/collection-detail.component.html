@@ -61,13 +61,7 @@
         <vdr-page-block *ngIf="entity$ | async as entity"
             ><nav role="navigation">
                 <ul class="collection-breadcrumbs">
-                    <li
-                        *ngFor="
-                            let breadcrumb of entity.breadcrumbs;
-                            let isFirst = first;
-                            let isLast = last
-                        "
-                    >
+                    <li *ngFor="let breadcrumb of entity.breadcrumbs; let isFirst = first; let isLast = last">
                         <a [routerLink]="['/catalog/collections']" *ngIf="isFirst">{{
                             'catalog.root-collection' | translate
                         }}</a>
@@ -84,33 +78,39 @@
 
         <vdr-page-block>
             <vdr-card>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        (input)="updateSlug($event.target.value)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field
-                    [label]="'catalog.slug' | translate"
-                    for="slug"
-                    [errors]="{ pattern: ('catalog.slug-pattern-error' | translate) }"
-                >
-                    <input
-                        id="slug"
-                        type="text"
-                        formControlName="slug"
-                        [readonly]="!(updatePermission | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field class="card-span" [label]="'common.description' | translate" for="slug">
-                    <vdr-rich-text-editor
-                        formControlName="description"
-                        [readonly]="!(updatePermission | hasPermission)"
-                    ></vdr-rich-text-editor>
-                </vdr-form-field>
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            id="name"
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            (input)="updateSlug($event.target.value)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'catalog.slug' | translate"
+                        for="slug"
+                        [errors]="{ pattern: ('catalog.slug-pattern-error' | translate) }"
+                    >
+                        <input
+                            id="slug"
+                            type="text"
+                            formControlName="slug"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        class="form-grid-span"
+                        [label]="'common.description' | translate"
+                        for="slug"
+                    >
+                        <vdr-rich-text-editor
+                            formControlName="description"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        ></vdr-rich-text-editor>
+                    </vdr-form-field>
+                </div>
             </vdr-card>
             <vdr-card
                 formGroupName="customFields"
@@ -120,7 +120,7 @@
                 <vdr-tabbed-custom-fields
                     entityName="Collection"
                     [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                    [customFieldsFormGroup]="detailForm.get('customFields')"
                     [readonly]="!(updatePermission | hasPermission)"
                 ></vdr-tabbed-custom-fields>
             </vdr-card>
@@ -131,7 +131,6 @@
             ></vdr-custom-detail-component-host>
             <vdr-card [title]="'catalog.assets' | translate">
                 <vdr-assets
-                    class="card-span"
                     [assets]="entity?.assets"
                     [featuredAsset]="entity?.featuredAsset"
                     [updatePermissions]="updatePermission"
@@ -140,7 +139,6 @@
             </vdr-card>
             <vdr-card [title]="'catalog.filters' | translate">
                 <vdr-form-field
-                    class="card-span"
                     [label]="'catalog.filter-inheritance' | translate"
                     for="inheritFilters"
                 >
@@ -162,7 +160,7 @@
                         </label>
                     </clr-toggle-wrapper>
                 </vdr-form-field>
-                <div formArrayName="filters" class="card-span">
+                <div formArrayName="filters">
                     <ng-container *ngFor="let filter of filters; index as i; trackBy: trackByFn">
                         <vdr-configurable-input
                             (remove)="removeFilter(i)"
@@ -197,7 +195,6 @@
 
             <vdr-card [title]="'common.contents' | translate" [paddingX]="false">
                 <vdr-collection-contents
-                    class="card-span"
                     [collectionId]="id"
                     [parentId]="parentId$ | async"
                     [updatedFilters]="updatedFilters$ | async"

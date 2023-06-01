@@ -38,28 +38,9 @@
     margin-top: calc(var(--space-unit) * 2);
 }
 
-.contents {
+/*.contents {
     display: grid;
     gap: calc(var(--space-unit) * 4);
     grid-template-columns: 1fr 1fr;
+}*/
 
-    ::ng-deep .card-span {
-        grid-column: span 2;
-    }
-}
-
-
-@container (max-width: 700px) {
-    .contents {
-        gap: calc(var(--space-unit) * 2);
-    }
-}
-@container (max-width: 500px) {
-    .contents {
-        grid-template-columns: 1fr;
-
-        ::ng-deep .card-span {
-               grid-column: initial;
-           }
-    }
-}

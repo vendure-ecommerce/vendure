@@ -17,67 +17,77 @@
 <form class="form" [formGroup]="detailForm">
     <vdr-page-block>
         <vdr-card>
-            <vdr-form-field [label]="'common.available-languages' | translate" for="availableLanguages">
-                <ng-select
-                    [items]="languageCodes"
-                    [addTag]="false"
-                    [hideSelected]="true"
-                    multiple="true"
-                    appendTo="body"
-                    formControlName="availableLanguages"
+            <div class="form-grid">
+                <vdr-form-field [label]="'common.available-languages' | translate" for="availableLanguages">
+                    <ng-select
+                        [items]="languageCodes"
+                        [addTag]="false"
+                        [hideSelected]="true"
+                        multiple="true"
+                        appendTo="body"
+                        formControlName="availableLanguages"
+                    >
+                        <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                            <span
+                                class="ng-value-icon left"
+                                (click)="clear.call(null, item)"
+                                aria-hidden="true"
+                            >
+                                ×
+                            </span>
+                            <span class="ng-value-label">{{ item | localeLanguageName }} ({{ item }})</span>
+                        </ng-template>
+                        <ng-template ng-option-tmp let-item="item">
+                            {{ item | localeLanguageName }} ({{ item }})
+                        </ng-template>
+                    </ng-select>
+                </vdr-form-field>
+                <vdr-form-field
+                    [label]="'settings.global-out-of-stock-threshold' | translate"
+                    for="outOfStockThreshold"
+                    [tooltip]="'settings.global-out-of-stock-threshold-tooltip' | translate"
                 >
-                    <ng-template ng-label-tmp let-item="item" let-clear="clear">
-                        <span class="ng-value-icon left" (click)="clear.call(null, item)" aria-hidden="true">
-                            ×
-                        </span>
-                        <span class="ng-value-label">{{ item | localeLanguageName }} ({{ item }})</span>
-                    </ng-template>
-                    <ng-template ng-option-tmp let-item="item">
-                        {{ item | localeLanguageName }} ({{ item }})
-                    </ng-template>
-                </ng-select>
-            </vdr-form-field>
-            <vdr-form-field
-                [label]="'settings.global-out-of-stock-threshold' | translate"
-                for="outOfStockThreshold"
-                [tooltip]="'settings.global-out-of-stock-threshold-tooltip' | translate"
-            >
-                <input
-                    id="outOfStockThreshold"
-                    type="number"
-                    formControlName="outOfStockThreshold"
-                    [readonly]="!(updatePermission | hasPermission)"
-                />
-            </vdr-form-field>
-            <vdr-form-field
-                [label]="'settings.track-inventory-default' | translate"
-                for="enabled"
-                [tooltip]="'catalog.track-inventory-tooltip' | translate"
-            >
-                <clr-toggle-wrapper>
                     <input
-                        type="checkbox"
-                        clrToggle
-                        name="enabled"
-                        formControlName="trackInventory"
-                        [vdrDisabled]="!(updatePermission | hasPermission)"
+                        id="outOfStockThreshold"
+                        type="number"
+                        formControlName="outOfStockThreshold"
+                        [readonly]="!(updatePermission | hasPermission)"
                     />
-                </clr-toggle-wrapper>
-            </vdr-form-field>
-            <section formGroupName="customFields" *ngIf="customFields.length">
-                <label>{{ 'common.custom-fields' | translate }}</label>
-                <vdr-tabbed-custom-fields
-                    entityName="GlobalSettings"
-                    [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get('customFields')"
-                    [readonly]="!(updatePermission | hasPermission)"
-                ></vdr-tabbed-custom-fields>
-            </section>
-            <vdr-custom-detail-component-host
-                locationId="global-settings-detail"
-                [entity$]="entity$"
-                [detailForm]="detailForm"
-            ></vdr-custom-detail-component-host>
+                </vdr-form-field>
+                <vdr-form-field
+                    [label]="'settings.track-inventory-default' | translate"
+                    for="enabled"
+                    [tooltip]="'catalog.track-inventory-tooltip' | translate"
+                >
+                    <clr-toggle-wrapper>
+                        <input
+                            type="checkbox"
+                            clrToggle
+                            name="enabled"
+                            formControlName="trackInventory"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        />
+                    </clr-toggle-wrapper>
+                </vdr-form-field>
+            </div>
         </vdr-card>
+        <vdr-card
+            formGroupName="customFields"
+            *ngIf="customFields.length"
+            [title]="'common.custom-fields' | translate"
+        >
+            <vdr-tabbed-custom-fields
+                entityName="GlobalSettings"
+                [customFields]="customFields"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [readonly]="!(updatePermission | hasPermission)"
+            ></vdr-tabbed-custom-fields>
+        </vdr-card>
+
+        <vdr-custom-detail-component-host
+            locationId="global-settings-detail"
+            [entity$]="entity$"
+            [detailForm]="detailForm"
+        ></vdr-custom-detail-component-host>
     </vdr-page-block>
 </form>

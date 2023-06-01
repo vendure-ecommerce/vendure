@@ -60,29 +60,31 @@
         </vdr-page-detail-sidebar>
         <vdr-page-block>
             <vdr-card formGroupName="facet">
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        (input)="updateCode(entity?.code, $event.target.value)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'common.code' | translate" for="code">
-                    <input
-                        id="code"
-                        type="text"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        formControlName="code"
-                    />
-                </vdr-form-field>
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            id="name"
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            (input)="updateCode(entity?.code, $event.target.value)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'common.code' | translate" for="code">
+                        <input
+                            id="code"
+                            type="text"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            formControlName="code"
+                        />
+                    </vdr-form-field>
+                </div>
             </vdr-card>
             <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customFields.length">
                 <vdr-tabbed-custom-fields
                     entityName="Facet"
                     [customFields]="customFields"
-                    [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
+                    [customFieldsFormGroup]="detailForm.get('facet.customFields')"
                     [readonly]="!(updatePermission | hasPermission)"
                 />
             </vdr-card>
@@ -99,7 +101,7 @@
                 [paddingX]="false"
             >
                 <table
-                    class="facet-values-list table card-span"
+                    class="facet-values-list table"
                     formArrayName="values"
                     *ngIf="0 < getValuesFormArray().length"
                 >
@@ -170,7 +172,7 @@
                 <div>
                     <button
                         type="button"
-                        class="btn btn-secondary"
+                        class="button m-3"
                         *vdrIfPermissions="['CreateCatalog', 'CreateFacet']"
                         (click)="addFacetValue()"
                     >

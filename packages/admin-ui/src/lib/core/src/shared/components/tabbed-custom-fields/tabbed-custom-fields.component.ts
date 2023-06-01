@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
+import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { CustomFieldConfig } from '../../../common/generated-types';
 import { CustomFieldEntityName } from '../../../providers/custom-field-component/custom-field-component.service';
@@ -28,6 +29,23 @@ export class TabbedCustomFieldsComponent implements OnInit {
 
     customFieldIsSet(name: string): boolean {
         return !!this.customFieldsFormGroup?.get(name);
+    }
+
+    componentShouldSpanGrid(customField: CustomFieldConfig): boolean {
+        const smallComponents: DefaultFormComponentId[] = [
+            'boolean-form-input',
+            'currency-form-input',
+            'date-form-input',
+            'number-form-input',
+            'password-form-input',
+            'select-form-input',
+            'text-form-input',
+        ];
+        return (
+            customField.type === 'text' ||
+            customField.type === 'localeText' ||
+            (customField.ui?.component && !smallComponents.includes(customField.ui?.component))
+        );
     }
 
     private groupByTabs(customFieldConfigs: CustomFieldConfig[]): GroupedCustomFields {

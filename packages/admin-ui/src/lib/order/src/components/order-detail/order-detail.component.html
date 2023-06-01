@@ -150,13 +150,12 @@
         ></vdr-seller-orders-card>
         <vdr-card [paddingX]="false">
             <vdr-order-table
-                class="card-span"
                 [order]="order"
                 [orderLineCustomFields]="orderLineCustomFields"
             ></vdr-order-table>
         </vdr-card>
         <vdr-card [title]="'order.tax-summary' | translate" [paddingX]="false">
-            <table class="table card-span">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>{{ 'common.description' | translate }}</th>
@@ -179,20 +178,18 @@
             <vdr-tabbed-custom-fields
                 entityName="Order"
                 [customFields]="customFields"
-                [customFieldsFormGroup]="detailForm.get(['customFields'])"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
                 [readonly]="!('UpdateOrder' | hasPermission)"
             />
-            <div class="card-span">
-                <button
-                    class="button primary"
-                    (click)="updateCustomFields()"
-                    [disabled]="
-                        detailForm.get('customFields')?.pristine || detailForm.get('customFields')?.invalid
-                    "
-                >
-                    {{ 'common.update' | translate }}
-                </button>
-            </div>
+            <button
+                class="button primary"
+                (click)="updateCustomFields()"
+                [disabled]="
+                    detailForm.get('customFields')?.pristine || detailForm.get('customFields')?.invalid
+                "
+            >
+                {{ 'common.update' | translate }}
+            </button>
         </vdr-card>
         <vdr-custom-detail-component-host
             locationId="order-detail"
@@ -202,7 +199,6 @@
 
         <vdr-card [title]="'order.order-history' | translate">
             <vdr-order-history
-                class="card-span"
                 [order]="order"
                 [history]="history$ | async"
                 (addNote)="addNote($event)"

@@ -112,6 +112,13 @@
                 </td>
                 <td [class.active]="activeIndex === i"><!-- column select --></td>
             </tr>
+            <ng-container>
+                <tr *ngIf="!items?.length">
+                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)">
+                        <vdr-empty-placeholder [emptyStateLabel]="'order.order-is-empty' | translate"></vdr-empty-placeholder>
+                    </td>
+                </tr>
+            </ng-container>
             <tr class="surcharge" *ngFor="let surcharge of order.surcharges">
                 <td class="align-middle name left" colspan="2">{{ surcharge.description }}</td>
                 <td class="align-middle sku">{{ surcharge.sku }}</td>
@@ -125,7 +132,7 @@
             </tr>
             <ng-container *ngFor="let discount of order.discounts">
                 <tr class="order-adjustment" *ngIf="discount.type !== 'OTHER'">
-                    <td  [attr.colspan]="visibleSortedColumns.length" class="">
+                    <td [attr.colspan]="visibleSortedColumns.length" class="">
                         <a [routerLink]="getPromotionLink(discount)">{{ discount.description }}</a>
                         <vdr-chip *ngIf="getCouponCodeForAdjustment(order, discount) as couponCode">{{
                             couponCode
@@ -173,13 +180,6 @@
                 </td>
                 <td><!-- column select --></td>
             </tr>
-            <ng-container>
-                <tr *ngIf="!items?.length">
-                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)">
-                        <vdr-empty-placeholder [emptyStateLabel]="emptyStateLabel"></vdr-empty-placeholder>
-                    </td>
-                </tr>
-            </ng-container>
         </tbody>
     </table>
 </div>

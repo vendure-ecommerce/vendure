@@ -41,23 +41,25 @@
                 [formArrayName]="i"
                 [title]="optionGroup.value.code"
             >
-                <vdr-page-entity-info class="card-span" [entity]="optionGroup.value"></vdr-page-entity-info>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        [id]="'name-' + i"
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(updatePermission | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'common.code' | translate" for="code">
-                    <input
-                        [id]="'code-' + i"
-                        type="text"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        formControlName="code"
-                    />
-                </vdr-form-field>
+                <vdr-page-entity-info [entity]="optionGroup.value"></vdr-page-entity-info>
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            [id]="'name-' + i"
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'common.code' | translate" for="code">
+                        <input
+                            [id]="'code-' + i"
+                            type="text"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            formControlName="code"
+                        />
+                    </vdr-form-field>
+                </div>
                 <ng-container formGroupName="customFields" *ngIf="optionGroupCustomFields.length">
                     <vdr-tabbed-custom-fields
                         entityName="ProductOptionGroup"
@@ -68,7 +70,6 @@
                 </ng-container>
 
                 <vdr-data-table-2
-                    class="card-span"
                     id="edit-options-list"
                     *ngIf="getOptions(optionGroup) as options"
                     [items]="options"

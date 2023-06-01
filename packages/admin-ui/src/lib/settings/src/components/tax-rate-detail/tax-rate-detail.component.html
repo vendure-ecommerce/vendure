@@ -48,44 +48,49 @@
         </vdr-page-detail-sidebar>
         <vdr-page-block>
             <vdr-card>
-                <vdr-form-field [label]="'common.name' | translate" for="name">
-                    <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(updatePermission | hasPermission)"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.rate' | translate" for="value">
-                    <vdr-affixed-input suffix="%">
+                <div class="form-grid">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
                         <input
-                            id="value"
-                            type="number"
-                            step="0.1"
-                            formControlName="value"
+                            id="name"
+                            type="text"
+                            formControlName="name"
                             [readonly]="!(updatePermission | hasPermission)"
                         />
-                    </vdr-affixed-input>
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.tax-category' | translate" for="taxCategoryId">
-                    <select
-                        name="taxCategoryId"
-                        formControlName="taxCategoryId"
-                        [vdrDisabled]="!(updatePermission | hasPermission)"
-                    >
-                        <option *ngFor="let taxCategory of taxCategories$ | async" [value]="taxCategory.id">
-                            {{ taxCategory.name }}
-                        </option>
-                    </select>
-                </vdr-form-field>
-                <vdr-form-field [label]="'settings.zone' | translate" for="zoneId">
-                    <vdr-zone-selector
-                        name="zoneId"
-                        formControlName="zoneId"
-                        [vdrDisabled]="!(updatePermission | hasPermission)"
-                    >
-                    </vdr-zone-selector>
-                </vdr-form-field>
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.rate' | translate" for="value">
+                        <vdr-affixed-input suffix="%">
+                            <input
+                                id="value"
+                                type="number"
+                                step="0.1"
+                                formControlName="value"
+                                [readonly]="!(updatePermission | hasPermission)"
+                            />
+                        </vdr-affixed-input>
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.tax-category' | translate" for="taxCategoryId">
+                        <select
+                            name="taxCategoryId"
+                            formControlName="taxCategoryId"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        >
+                            <option
+                                *ngFor="let taxCategory of taxCategories$ | async"
+                                [value]="taxCategory.id"
+                            >
+                                {{ taxCategory.name }}
+                            </option>
+                        </select>
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.zone' | translate" for="zoneId">
+                        <vdr-zone-selector
+                            name="zoneId"
+                            formControlName="zoneId"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        >
+                        </vdr-zone-selector>
+                    </vdr-form-field>
+                </div>
             </vdr-card>
             <vdr-card
                 formGroupName="customFields"
@@ -93,7 +98,7 @@
                 [title]="'common.custom-fields' | translate"
             >
                 <vdr-tabbed-custom-fields
-                    entityName="Customer"
+                    entityName="TaxRate"
                     [customFields]="customFields"
                     [customFieldsFormGroup]="detailForm.get('customFields')"
                 ></vdr-tabbed-custom-fields>
