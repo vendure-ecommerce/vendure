@@ -1,3 +1,4 @@
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { VendureConfig } from '@vendure/core';
 import FormData from 'form-data';
@@ -76,7 +77,7 @@ export class SimpleGraphQLClient {
      * Performs both query and mutation operations.
      */
     async query<T = any, V extends Record<string, any> = Record<string, any>>(
-        query: DocumentNode,
+        query: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         queryParams?: QueryParams,
     ): Promise<T> {

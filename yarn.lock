@@ -5698,57 +5698,6 @@
     "@typescript-eslint/types" "5.59.8"
     eslint-visitor-keys "^3.3.0"
 
-"@vendure/admin-ui@./packages/admin-ui/package":
-  version "2.0.0-beta.2"
-  dependencies:
-    "@angular/animations" "^16.0.3"
-    "@angular/cdk" "^16.0.2"
-    "@angular/common" "^16.0.3"
-    "@angular/core" "^16.0.3"
-    "@angular/forms" "^16.0.3"
-    "@angular/language-service" "^16.0.3"
-    "@angular/platform-browser" "^16.0.3"
-    "@angular/platform-browser-dynamic" "^16.0.3"
-    "@angular/router" "^16.0.3"
-    "@apollo/client" "^3.7.9"
-    "@biesbjerg/ngx-translate-extract-marker" "^1.0.0"
-    "@cds/core" "^6.4.2"
-    "@clr/angular" "^15.4.0"
-    "@clr/core" "^4.0.15"
-    "@clr/icons" "^13.0.2"
-    "@clr/ui" "^15.4.0"
-    "@messageformat/core" "^3.1.0"
-    "@ng-select/ng-select" "^10.0.3"
-    "@ngx-translate/core" "^14.0.0"
-    "@ngx-translate/http-loader" "^7.0.0"
-    "@vendure/common" "2.0.0-beta.2"
-    "@webcomponents/custom-elements" "^1.5.1"
-    apollo-angular "^5.0.0"
-    apollo-upload-client "^17.0.0"
-    chartist "^1.3.0"
-    codejar "^3.7.0"
-    core-js "^3.29.0"
-    dayjs "^1.10.4"
-    graphql "16.6.0"
-    just-extend "^6.2.0"
-    messageformat "2.3.0"
-    ngx-pagination "^6.0.3"
-    ngx-translate-messageformat-compiler "^6.2.0"
-    prosemirror-commands "^1.5.1"
-    prosemirror-dropcursor "^1.7.1"
-    prosemirror-gapcursor "^1.3.1"
-    prosemirror-history "^1.3.0"
-    prosemirror-inputrules "^1.2.0"
-    prosemirror-keymap "^1.2.1"
-    prosemirror-menu "^1.2.1"
-    prosemirror-schema-basic "^1.2.1"
-    prosemirror-schema-list "^1.2.2"
-    prosemirror-state "^1.4.2"
-    prosemirror-tables "^1.3.2"
-    rxjs "^7.8.0"
-    tslib "^2.5.0"
-    zone.js "~0.13.0"
-
 "@vendure/ngx-translate-extract@^8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@vendure/ngx-translate-extract/-/ngx-translate-extract-8.1.0.tgz#6244342e84acde99efa97014bc55ecd8808d5ff1"
@@ -11237,12 +11186,19 @@ ieee754@^1.1.13, ieee754@^1.1.4, ieee754@^1.2.1:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
 
-ignore-walk@^3.0.1:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-3.0.4.tgz#c9a09f69b7c7b479a5d74ac1a3c0d4236d2a6335"
-  integrity sha512-PY6Ii8o1jMRA1z4F2hRkH/xN59ox43DavKvD3oDpfurRlOJyAHpifIwpbdv1n4jt4ov0jSpw3kQ4GhJnpBL6WQ==
+ignore-walk@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-5.0.1.tgz#5f199e23e1288f518d90358d461387788a154776"
+  integrity sha512-yemi4pMf51WKT7khInJqAvsIGzoqYXblnsz0ql8tM+yi1EKYTY1evX4NAbJrLL/Aanr2HyZeluqU+Oi7MGHokw==
   dependencies:
-    minimatch "^3.0.4"
+    minimatch "^5.0.1"
+
+ignore-walk@^6.0.0:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-6.0.3.tgz#0fcdb6decaccda35e308a7b0948645dd9523b7bb"
+  integrity sha512-C7FfFoTA+bI10qfeydT8aZbvr91vAEU+2W5BZUlzPec47oNb07SsOfwYrtxuvOYdUApPP/Qlh4DtAO51Ekk2QA==
+  dependencies:
+    minimatch "^9.0.0"
 
 ignore@5.2.4, ignore@^5.0.4, ignore@^5.2.0:
   version "5.2.4"
@@ -14428,12 +14384,19 @@ now-and-later@^2.0.0:
   dependencies:
     once "^1.3.2"
 
-npm-bundled@^1.0.1, npm-bundled@^1.1.1:
+npm-bundled@^1.1.1, npm-bundled@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-1.1.2.tgz#944c78789bd739035b70baa2ca5cc32b8d860bc1"
   integrity sha512-x5DHup0SuyQcmL3s7Rx/YQ8sbw/Hzg0rj48eN0dV7hf5cmQq5PXIeioroH3raV1QC1yh3uTYuMThvEQF3iKgGQ==
   dependencies:
     npm-normalize-package-bin "^1.0.1"
+
+npm-bundled@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/npm-bundled/-/npm-bundled-2.0.1.tgz#94113f7eb342cd7a67de1e789f896b04d2c600f4"
+  integrity sha512-gZLxXdjEzE/+mOstGDqR6b0EkhJ+kM6fxM6vUuckuctuVPh80Q6pw/rSZj9s4Gex9GxWtIicO1pc8DB9KZWudw==
+  dependencies:
+    npm-normalize-package-bin "^2.0.0"
 
 npm-bundled@^3.0.0:
   version "3.0.0"
@@ -14500,13 +14463,32 @@ npm-package-arg@^9.0.0, npm-package-arg@^9.0.1:
     semver "^7.3.5"
     validate-npm-package-name "^4.0.0"
 
-npm-packlist@1.1.12, npm-packlist@5.1.1, npm-packlist@^5.1.0, npm-packlist@^7.0.0:
-  version "1.1.12"
-  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.12.tgz#22bde2ebc12e72ca482abd67afc51eb49377243a"
-  integrity sha512-WJKFOVMeAlsU/pjXuqVdzU0WfgtIBCupkEVwn+1Y0ERAbUfWw8R4GjgVbaKnUjRoD2FoQbHOCbOyT5Mbs9Lw4g==
+npm-packlist@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-5.1.1.tgz#79bcaf22a26b6c30aa4dd66b976d69cc286800e0"
+  integrity sha512-UfpSvQ5YKwctmodvPPkK6Fwk603aoVsf8AEbmVKAEECrfvL8SSe1A2YIwrJ6xmTHAITKPwwZsWo7WwEbNk0kxw==
   dependencies:
-    ignore-walk "^3.0.1"
-    npm-bundled "^1.0.1"
+    glob "^8.0.1"
+    ignore-walk "^5.0.1"
+    npm-bundled "^1.1.2"
+    npm-normalize-package-bin "^1.0.1"
+
+npm-packlist@^5.1.0:
+  version "5.1.3"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-5.1.3.tgz#69d253e6fd664b9058b85005905012e00e69274b"
+  integrity sha512-263/0NGrn32YFYi4J533qzrQ/krmmrWwhKkzwTuM4f/07ug51odoaNjUexxO4vxlzURHcmYMH1QjvHjsNDKLVg==
+  dependencies:
+    glob "^8.0.1"
+    ignore-walk "^5.0.1"
+    npm-bundled "^2.0.0"
+    npm-normalize-package-bin "^2.0.0"
+
+npm-packlist@^7.0.0:
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-7.0.4.tgz#033bf74110eb74daf2910dc75144411999c5ff32"
+  integrity sha512-d6RGEuRrNS5/N84iglPivjaJPxhDbZmlbTwTDX2IbcRHG5bZCdtysYMhwiPvcF4GisXHGn7xsxv+GQ7T/02M5Q==
+  dependencies:
+    ignore-walk "^6.0.0"
 
 npm-pick-manifest@8.0.1, npm-pick-manifest@^8.0.0, npm-pick-manifest@^8.0.1:
   version "8.0.1"
