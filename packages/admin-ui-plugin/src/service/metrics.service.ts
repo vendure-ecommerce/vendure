@@ -135,7 +135,7 @@ export class MetricsService {
                 .take(take);
             const [items, nrOfOrders] = await query.getManyAndCount();
             orders.push(...items);
-            Logger.info(
+            Logger.verbose(
                 `Fetched orders ${skip}-${skip + take} for channel ${
                     ctx.channel.token
                 } for ${interval} metrics`,
