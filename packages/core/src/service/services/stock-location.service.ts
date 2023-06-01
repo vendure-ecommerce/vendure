@@ -35,8 +35,7 @@ export class StockLocationService {
 
     findOne(ctx: RequestContext, stockLocationId: ID): Promise<StockLocation | undefined> {
         return this.connection
-            .getRepository(ctx, StockLocation)
-            .findOne({ where: { id: stockLocationId } })
+            .findOneInChannel(ctx, StockLocation, stockLocationId, ctx.channelId)
             .then(result => result ?? undefined);
     }
 
@@ -47,6 +46,7 @@ export class StockLocationService {
     ): Promise<PaginatedList<StockLocation>> {
         return this.listQueryBuilder
             .build(StockLocation, options, {
+                channelId: ctx.channelId,
                 relations,
                 ctx,
             })
@@ -57,13 +57,16 @@ export class StockLocationService {
             }));
     }
 
-    create(ctx: RequestContext, input: CreateStockLocationInput): Promise<StockLocation> {
-        return this.connection.getRepository(ctx, StockLocation).save(
+    async create(ctx: RequestContext, input: CreateStockLocationInput): Promise<StockLocation> {
+        const stockLocation = await this.connection.getRepository(ctx, StockLocation).save(
             new StockLocation({
                 name: input.name,
                 description: input.description,
             }),
         );
+        await this.channelService.assignToCurrentChannel(stockLocation, ctx);
+        await this.connection.getRepository(ctx, StockLocation).save(stockLocation);
+        return stockLocation;
     }
 
     async update(ctx: RequestContext, input: UpdateStockLocationInput): Promise<StockLocation> {
@@ -143,7 +146,11 @@ export class StockLocationService {
         const ctx = await this.requestContextService.create({
             apiType: 'admin',
         });
-        const stockLocations = await this.connection.getRepository(ctx, StockLocation).find();
+        const stockLocations = await this.connection.getRepository(ctx, StockLocation).find({
+            relations: {
+                channels: true,
+            },
+        });
         if (stockLocations.length === 0) {
             const defaultStockLocation = await this.connection.getRepository(ctx, StockLocation).save(
                 new StockLocation({
@@ -151,7 +158,16 @@ export class StockLocationService {
                     description: 'The default stock location',
                 }),
             );
-            await this.channelService.assignToCurrentChannel(defaultStockLocation, ctx);
+            stockLocations.push(defaultStockLocation);
+            await this.connection.getRepository(ctx, StockLocation).save(defaultStockLocation);
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel();
+        for (const stockLocation of stockLocations) {
+            if (!stockLocation.channels.find(c => c.id === defaultChannel.id)) {
+                await this.channelService.assignToChannels(ctx, StockLocation, stockLocation.id, [
+                    defaultChannel.id,
+                ]);
+            }
         }
     }
 }
