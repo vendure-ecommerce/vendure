@@ -20,34 +20,34 @@ export class StockLocationResolver {
     constructor(private stockLocationService: StockLocationService) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    @Allow(Permission.ReadCatalog, Permission.ReadStockLocation)
     stockLocation(@Ctx() ctx: RequestContext, @Args() args: QueryStockLocationArgs) {
         return this.stockLocationService.findOne(ctx, args.id);
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    @Allow(Permission.ReadCatalog, Permission.ReadStockLocation)
     stockLocations(@Ctx() ctx: RequestContext, @Args() args: QueryStockLocationsArgs) {
         return this.stockLocationService.findAll(ctx, args.options);
     }
 
     @Mutation()
     @Transaction()
-    @Allow(Permission.CreateCatalog, Permission.CreateProduct)
+    @Allow(Permission.CreateStockLocation)
     createStockLocation(@Ctx() ctx: RequestContext, @Args() args: MutationCreateStockLocationArgs) {
         return this.stockLocationService.create(ctx, args.input);
     }
 
     @Mutation()
     @Transaction()
-    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    @Allow(Permission.UpdateStockLocation)
     updateStockLocation(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateStockLocationArgs) {
         return this.stockLocationService.update(ctx, args.input);
     }
 
     @Mutation()
     @Transaction()
-    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    @Allow(Permission.DeleteStockLocation)
     deleteStockLocation(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteStockLocationArgs) {
         return this.stockLocationService.delete(ctx, args.input);
     }

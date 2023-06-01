@@ -17,20 +17,20 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
 
 export const createRoutes = (pageService: PageService): Route[] => [
     {
-        path: 'products',
+        path: 'inventory',
         component: PageComponent,
         data: {
             locationId: 'product-list',
-            breadcrumb: _('breadcrumb.products'),
+            breadcrumb: _('breadcrumb.inventory'),
         },
         children: pageService.getPageTabRoutes('product-list'),
     },
     {
-        path: 'products/:id',
+        path: 'inventory/:id',
         component: PageComponent,
         data: {
             locationId: 'product-detail',
-            breadcrumb: { label: _('breadcrumb.products'), link: ['../', 'products'] },
+            breadcrumb: { label: _('breadcrumb.inventory'), link: ['../', 'inventory'] },
         },
         children: [
             {
@@ -60,22 +60,37 @@ export const createRoutes = (pageService: PageService): Route[] => [
         ],
     },
     {
-        path: 'products/:productId/variants/:id',
+        path: 'inventory/:productId/variants/:id',
         component: PageComponent,
         data: {
             locationId: 'product-variant-detail',
-            breadcrumb: { label: _('breadcrumb.products'), link: ['../', 'products'] },
+            breadcrumb: { label: _('breadcrumb.inventory'), link: ['../', 'inventory'] },
         },
         children: pageService.getPageTabRoutes('product-variant-detail'),
     },
     {
-        path: 'products/:id/options',
+        path: 'inventory/:id/options',
         component: ProductOptionsEditorComponent,
         resolve: createResolveData(ProductVariantsResolver),
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: productOptionsEditorBreadcrumb,
         },
+    },
+    {
+        path: 'inventory/stock-locations/:id',
+        component: PageComponent,
+        data: {
+            locationId: 'stock-location-detail',
+            breadcrumb: [
+                { label: _('breadcrumb.inventory'), link: ['../', 'inventory'] },
+                {
+                    label: _('breadcrumb.stock-locations'),
+                    link: ['../', 'inventory', 'stock-locations'],
+                },
+            ],
+        },
+        children: pageService.getPageTabRoutes('stock-location-detail'),
     },
     {
         path: 'facets',
@@ -133,35 +148,16 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
 ];
 
-export function productVariantEditorBreadcrumb(data: any, params: any) {
-    return data.entity.pipe(
-        map((entity: any) => [
-            {
-                label: _('breadcrumb.products'),
-                link: ['../', 'products'],
-            },
-            {
-                label: `${entity.name}`,
-                link: ['../', 'products', params.id, { tab: 'variants' }],
-            },
-            {
-                label: _('breadcrumb.manage-variants'),
-                link: ['manage-variants'],
-            },
-        ]),
-    );
-}
-
 export function productOptionsEditorBreadcrumb(data: any, params: any) {
     return data.entity.pipe(
         map((entity: any) => [
             {
-                label: _('breadcrumb.products'),
-                link: ['../', 'products'],
+                label: _('breadcrumb.inventory'),
+                link: ['../', 'inventory'],
             },
             {
                 label: `${entity.name}`,
-                link: ['../', 'products', params.id, { tab: 'variants' }],
+                link: ['../', 'inventory', params.id, { tab: 'variants' }],
             },
             {
                 label: _('breadcrumb.product-options'),

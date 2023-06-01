@@ -172,7 +172,8 @@
   "schematics": {
     "@schematics/angular:component": {
       "skipTests": true,
-      "changeDetection": "OnPush"
+      "changeDetection": "OnPush",
+      "project": "vendure-admin-lib"
     }
   },
   "cli": {

@@ -19,7 +19,7 @@
         </ng-template>
     </ng-template>
     <ng-template vdrRelationCardDetail let-variant="entity">
-        <a [routerLink]="['/catalog/products', variant.product.id, { tab: 'variants' }]">{{ variant.name }}</a>
+        <a [routerLink]="['/catalog/inventory', variant.product.id, { tab: 'variants' }]">{{ variant.name }}</a>
         <div class="">{{ variant.sku }}</div>
     </ng-template>
 </vdr-relation-card>

@@ -23,6 +23,7 @@ export type BulkActionLocationId =
     | 'administrator-list'
     | 'role-list'
     | 'shipping-method-list'
+    | 'stock-location-list'
     | 'payment-method-list'
     | 'tax-category-list'
     | 'tax-rate-list'

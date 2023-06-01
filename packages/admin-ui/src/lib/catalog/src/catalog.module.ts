@@ -9,6 +9,7 @@ import {
     GetFacetDetailDocument,
     GetProductDetailDocument,
     GetProductVariantDetailDocument,
+    GetStockLocationDetailDocument,
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
@@ -63,6 +64,8 @@ import { ProductVariantsTableComponent } from './components/product-variants-tab
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
 import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
+import { StockLocationListComponent } from './components/stock-location-list/stock-location-list.component';
+import { StockLocationDetailComponent } from './components/stock-location-detail/stock-location-detail.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -95,17 +98,16 @@ const CATALOG_COMPONENTS = [
     ProductVariantListComponent,
     ProductDetailComponent,
     ProductVariantDetailComponent,
+    CreateProductVariantDialogComponent,
+    CreateProductOptionGroupDialogComponent,
+    ProductVariantQuickJumpComponent,
+    StockLocationListComponent,
 ];
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
     exports: [...CATALOG_COMPONENTS],
-    declarations: [
-        ...CATALOG_COMPONENTS,
-        CreateProductVariantDialogComponent,
-        CreateProductOptionGroupDialogComponent,
-        ProductVariantQuickJumpComponent,
-    ],
+    declarations: [...CATALOG_COMPONENTS, StockLocationDetailComponent],
     providers: [
         {
             provide: ROUTES,
@@ -163,6 +165,28 @@ export class CatalogModule {
             component: ProductVariantListComponent,
         });
         pageService.registerPageTab({
+            location: 'stock-location-detail',
+            tab: _('catalog.stock-location'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: StockLocationDetailComponent,
+                query: GetStockLocationDetailDocument,
+                entityKey: 'stockLocation',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('catalog.create-new-stock-location'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        pageService.registerPageTab({
+            location: 'product-list',
+            tab: _('catalog.stock-locations'),
+            route: 'stock-locations',
+            component: StockLocationListComponent,
+        });
+        pageService.registerPageTab({
             location: 'product-variant-detail',
             tab: _('catalog.product-variants'),
             route: '',
@@ -173,7 +197,7 @@ export class CatalogModule {
                 getBreadcrumbs: entity => [
                     {
                         label: `${entity?.product.name}`,
-                        link: ['/catalog', 'products', entity?.product.id],
+                        link: ['/catalog', 'inventory', entity?.product.id],
                     },
                     {
                         label: `${entity?.name} (${entity?.sku})`,

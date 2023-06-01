@@ -89,10 +89,10 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                 items: [
                     {
                         requiresPermission: allow(Permission.ReadCatalog, Permission.ReadProduct),
-                        id: 'products',
-                        label: _('nav.products'),
+                        id: 'inventory',
+                        label: _('nav.inventory'),
                         icon: 'library',
-                        routerLink: ['/catalog', 'products'],
+                        routerLink: ['/catalog', 'inventory'],
                     },
                     {
                         requiresPermission: allow(Permission.ReadCatalog, Permission.ReadFacet),

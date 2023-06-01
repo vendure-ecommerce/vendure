@@ -78,6 +78,8 @@ export type PageLocationId =
     | 'seller-list'
     | 'shipping-method-detail'
     | 'shipping-method-list'
+    | 'stock-location-detail'
+    | 'stock-location-list'
     | 'tax-category-detail'
     | 'tax-category-list'
     | 'tax-rate-detail'
@@ -116,6 +118,7 @@ export type CustomDetailComponentLocationId =
     | 'promotion-detail'
     | 'seller-detail'
     | 'shipping-method-detail'
+    | 'stock-location-detail'
     | 'tax-category-detail'
     | 'tax-rate-detail'
     | 'zone-detail';
