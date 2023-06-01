@@ -102,6 +102,12 @@ button.icon-button {
 
 .card {
     margin-top: 0;
+    box-shadow: none;
+
+    .card-header, .card-title {
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+    }
 }
 
 // clr tabs

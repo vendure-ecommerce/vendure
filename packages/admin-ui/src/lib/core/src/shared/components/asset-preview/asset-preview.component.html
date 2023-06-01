@@ -1,14 +1,15 @@
 <vdr-page-detail-layout>
     <vdr-page-detail-sidebar>
         <vdr-card>
-            <div *ngIf="!editable" class="edit-button-wrapper">
+            <div *ngIf="!editable" class="mb-2">
                 <a
-                    class="btn btn-link btn-sm"
+                    class="button-ghost"
                     [routerLink]="['/catalog', 'assets', asset.id]"
                     (click)="editClick.emit()"
                 >
                     <clr-icon shape="edit"></clr-icon>
                     {{ 'common.edit' | translate }}
+                    <clr-icon shape="arrow right"></clr-icon>
                 </a>
             </div>
             <vdr-form-field *ngIf="editable" [label]="'common.name' | translate">
