@@ -14,6 +14,7 @@ import {
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../api/common/request-context';
+import { TransactionIsolationLevel } from '../api/decorators/transaction.decorator';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 import { EntityNotFoundError } from '../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../common/types/common-types';
@@ -21,7 +22,6 @@ import { VendureEntity } from '../entity/base/base.entity';
 
 import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
-import { TransactionIsolationLevel } from '../api/decorators/transaction.decorator';
 
 /**
  * @description
@@ -40,7 +40,7 @@ export class TransactionalConnection {
     constructor(
         @InjectConnection() private connection: Connection,
         private transactionWrapper: TransactionWrapper,
-    ) { }
+    ) {}
 
     /**
      * @description
@@ -159,7 +159,7 @@ export class TransactionalConnection {
      */
     async startTransaction(ctx: RequestContext, isolationLevel?: TransactionIsolationLevel) {
         const transactionManager = this.getTransactionManager(ctx);
-        if (transactionManager ?.queryRunner ?.isTransactionActive === false) {
+        if (transactionManager?.queryRunner?.isTransactionActive === false) {
             await transactionManager.queryRunner.startTransaction(isolationLevel);
         }
     }
@@ -173,7 +173,7 @@ export class TransactionalConnection {
      */
     async commitOpenTransaction(ctx: RequestContext) {
         const transactionManager = this.getTransactionManager(ctx);
-        if (transactionManager ?.queryRunner ?.isTransactionActive) {
+        if (transactionManager?.queryRunner?.isTransactionActive) {
             await transactionManager.queryRunner.commitTransaction();
         }
     }
@@ -186,7 +186,7 @@ export class TransactionalConnection {
      */
     async rollBackTransaction(ctx: RequestContext) {
         const transactionManager = this.getTransactionManager(ctx);
-        if (transactionManager ?.queryRunner ?.isTransactionActive) {
+        if (transactionManager?.queryRunner?.isTransactionActive) {
             await transactionManager.queryRunner.rollbackTransaction();
         }
     }
