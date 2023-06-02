@@ -30,6 +30,6 @@ export class CurrencyFormInputComponent implements FormInputComponent {
     constructor(private dataService: DataService) {
         this.currencyCode$ = this.dataService.settings
             .getActiveChannel()
-            .mapStream(data => data.activeChannel.currencyCode);
+            .mapStream(data => data.activeChannel.defaultCurrencyCode);
     }
 }

@@ -42,7 +42,7 @@ export class GenerateProductVariantsComponent implements OnInit {
 
     ngOnInit() {
         this.dataService.settings.getActiveChannel().single$.subscribe(data => {
-            this.currencyCode = data.activeChannel.currencyCode;
+            this.currencyCode = data.activeChannel.defaultCurrencyCode;
         });
 
         this.generateVariants();

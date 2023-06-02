@@ -93,7 +93,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         this.languageCode =
             (this.route.snapshot.paramMap.get('lang') as LanguageCode) || getDefaultUiLanguage();
         this.dataService.settings.getActiveChannel().single$.subscribe(data => {
-            this.currencyCode = data.activeChannel.currencyCode;
+            this.currencyCode = data.activeChannel.defaultCurrencyCode;
         });
 
         const product$ = this.refresh$.pipe(

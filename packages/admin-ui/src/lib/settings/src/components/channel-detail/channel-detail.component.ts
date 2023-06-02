@@ -45,6 +45,7 @@ export class ChannelDetailComponent
     extends TypedBaseDetailComponent<typeof GetChannelDetailDocument, 'channel'>
     implements OnInit, OnDestroy
 {
+    DEFAULT_CHANNEL_CODE = DEFAULT_CHANNEL_CODE;
     customFields = this.getCustomFieldConfig('Channel');
     // zones$: Observable<Array<ItemOf<GetZoneListQuery, 'zones'>>>;
     sellers$: Observable<GetSellersQuery['sellers']['items']>;
@@ -52,7 +53,9 @@ export class ChannelDetailComponent
         code: ['', Validators.required],
         token: ['', Validators.required],
         pricesIncludeTax: [false],
-        currencyCode: ['' as CurrencyCode],
+        availableLanguageCodes: [[] as string[]],
+        availableCurrencyCodes: [[] as string[]],
+        defaultCurrencyCode: ['' as CurrencyCode],
         defaultShippingZoneId: ['', Validators.required],
         defaultLanguageCode: [undefined as LanguageCode | undefined],
         defaultTaxZoneId: ['', Validators.required],
@@ -61,7 +64,7 @@ export class ChannelDetailComponent
             this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
         ),
     });
-    currencyCodes = Object.values(CurrencyCode);
+
     availableLanguageCodes$: Observable<LanguageCode[]>;
     readonly updatePermission = [Permission.SuperAdmin, Permission.UpdateChannel, Permission.CreateChannel];
 
@@ -100,7 +103,7 @@ export class ChannelDetailComponent
             token,
             defaultLanguageCode,
             pricesIncludeTax,
-            currencyCode,
+            defaultCurrencyCode,
             defaultShippingZoneId,
             defaultTaxZoneId,
             customFields,
@@ -111,7 +114,7 @@ export class ChannelDetailComponent
             !token ||
             !defaultLanguageCode ||
             !pricesIncludeTax ||
-            !currencyCode ||
+            !defaultCurrencyCode ||
             !defaultShippingZoneId ||
             !defaultTaxZoneId
         ) {
@@ -122,7 +125,7 @@ export class ChannelDetailComponent
             token,
             defaultLanguageCode,
             pricesIncludeTax,
-            currencyCode,
+            defaultCurrencyCode,
             defaultShippingZoneId,
             defaultTaxZoneId,
             customFields,
@@ -175,7 +178,9 @@ export class ChannelDetailComponent
                         code: formValue.code,
                         token: formValue.token,
                         pricesIncludeTax: formValue.pricesIncludeTax,
-                        currencyCode: formValue.currencyCode,
+                        availableLanguageCodes: formValue.availableLanguageCodes,
+                        availableCurrencyCodes: formValue.availableCurrencyCodes,
+                        defaultCurrencyCode: formValue.defaultCurrencyCode,
                         defaultShippingZoneId: formValue.defaultShippingZoneId,
                         defaultLanguageCode: formValue.defaultLanguageCode,
                         defaultTaxZoneId: formValue.defaultTaxZoneId,
@@ -208,7 +213,9 @@ export class ChannelDetailComponent
             code: entity.code,
             token: entity.token || this.generateToken(),
             pricesIncludeTax: entity.pricesIncludeTax,
-            currencyCode: entity.currencyCode,
+            availableLanguageCodes: entity.availableLanguageCodes,
+            availableCurrencyCodes: entity.availableCurrencyCodes,
+            defaultCurrencyCode: entity.defaultCurrencyCode,
             defaultShippingZoneId: entity.defaultShippingZone?.id ?? '',
             defaultLanguageCode: entity.defaultLanguageCode,
             defaultTaxZoneId: entity.defaultTaxZone?.id ?? '',

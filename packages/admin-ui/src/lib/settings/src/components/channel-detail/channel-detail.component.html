@@ -36,7 +36,12 @@
         <vdr-page-block>
             <vdr-card>
                 <div class="form-grid">
-                    <vdr-form-field [label]="'common.code' | translate" for="code">
+                    <vdr-form-field
+                        class="form-grid-span"
+                        *ngIf="entity?.code !== DEFAULT_CHANNEL_CODE"
+                        [label]="'common.code' | translate"
+                        for="code"
+                    >
                         <input
                             id="code"
                             type="text"
@@ -44,6 +49,13 @@
                             formControlName="code"
                         />
                     </vdr-form-field>
+                    <vdr-form-item
+                        class="form-grid-span"
+                        *ngIf="entity?.code === DEFAULT_CHANNEL_CODE"
+                        [label]="'common.code' | translate"
+                    >
+                        {{ entity?.code | channelCodeToLabel | translate }}
+                    </vdr-form-item>
                     <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
                         <input
                             id="token"
@@ -52,13 +64,50 @@
                             formControlName="token"
                         />
                     </vdr-form-field>
-                    <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
+
+                    <vdr-form-field [label]="'common.seller' | translate" for="sellerId">
                         <select
-                            name="currencyCode"
-                            formControlName="currencyCode"
+                            name="sellerId"
+                            formControlName="sellerId"
                             [vdrDisabled]="!(updatePermission | hasPermission)"
                         >
-                            <option *ngFor="let code of currencyCodes" [value]="code">
+                            <option selected value style="display: none"></option>
+                            <option *ngFor="let seller of sellers$ | async" [value]="seller.id">
+                                {{ seller.name }}
+                            </option>
+                        </select>
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'common.available-languages' | translate"
+                        for="availableLanguageCodes"
+                    >
+                        <vdr-language-code-selector
+                            formControlName="availableLanguageCodes"
+                            [languageCodes]="availableLanguageCodes$ | async"
+                        ></vdr-language-code-selector>
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'common.available-currencies' | translate"
+                        for="availableCurrencyCodes"
+                    >
+                        <vdr-currency-code-selector
+                            formControlName="availableCurrencyCodes"
+                        ></vdr-currency-code-selector>
+                    </vdr-form-field>
+                </div>
+            </vdr-card>
+            <vdr-card [title]="'settings.defaults' | translate">
+                <div class="form-grid">
+                    <vdr-form-field [label]="'settings.default-currency' | translate" for="defaultTaxZoneId">
+                        <select
+                            name="defaultCurrencyCode"
+                            formControlName="defaultCurrencyCode"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        >
+                            <option
+                                *ngFor="let code of detailForm.value.availableCurrencyCodes"
+                                [value]="code"
+                            >
                                 {{ code | localeCurrencyName }}
                             </option>
                         </select>
@@ -70,26 +119,12 @@
                             [vdrDisabled]="!(updatePermission | hasPermission)"
                         >
                             <option
-                                *ngFor="let languageCode of availableLanguageCodes$ | async"
+                                *ngFor="let languageCode of detailForm.value.availableLanguageCodes"
                                 [value]="languageCode"
                             >
                                 {{ languageCode | localeLanguageName }} ({{ languageCode | uppercase }})
                             </option>
                         </select>
-                    </vdr-form-field>
-                    <vdr-form-field
-                        [label]="'settings.prices-include-tax' | translate"
-                        for="pricesIncludeTax"
-                    >
-                        <clr-toggle-wrapper>
-                            <input
-                                type="checkbox"
-                                clrToggle
-                                id="pricesIncludeTax"
-                                formControlName="pricesIncludeTax"
-                                [vdrDisabled]="!(updatePermission | hasPermission)"
-                            />
-                        </clr-toggle-wrapper>
                     </vdr-form-field>
                     <div>
                         <vdr-form-field
@@ -137,18 +172,19 @@
                             </clr-alert-item>
                         </clr-alert>
                     </div>
-
-                    <vdr-form-field [label]="'common.seller' | translate" for="sellerId">
-                        <select
-                            name="sellerId"
-                            formControlName="sellerId"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
-                        >
-                            <option selected value style="display: none"></option>
-                            <option *ngFor="let seller of sellers$ | async" [value]="seller.id">
-                                {{ seller.name }}
-                            </option>
-                        </select>
+                    <vdr-form-field
+                        [label]="'settings.prices-include-tax' | translate"
+                        for="pricesIncludeTax"
+                    >
+                        <clr-toggle-wrapper>
+                            <input
+                                type="checkbox"
+                                clrToggle
+                                id="pricesIncludeTax"
+                                formControlName="pricesIncludeTax"
+                                [vdrDisabled]="!(updatePermission | hasPermission)"
+                            />
+                        </clr-toggle-wrapper>
                     </vdr-form-field>
                 </div>
             </vdr-card>

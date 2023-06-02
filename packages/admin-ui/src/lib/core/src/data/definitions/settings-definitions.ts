@@ -296,7 +296,9 @@ export const CHANNEL_FRAGMENT = gql`
         code
         token
         pricesIncludeTax
-        currencyCode
+        availableCurrencyCodes
+        availableLanguageCodes
+        defaultCurrencyCode
         defaultLanguageCode
         defaultShippingZone {
             id

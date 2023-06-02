@@ -39,7 +39,7 @@ export class TestOrderBuilderComponent implements OnInit {
             this.orderLinesChange.emit(this.lines);
         }
         this.dataService.settings.getActiveChannel('cache-first').single$.subscribe(result => {
-            this.currencyCode = result.activeChannel.currencyCode;
+            this.currencyCode = result.activeChannel.defaultCurrencyCode;
         });
     }
 

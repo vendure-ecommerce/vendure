@@ -65,7 +65,7 @@ export class OrderSummaryWidgetComponent implements OnInit {
         this.currencyCode$ = this.dataService.settings
             .getActiveChannel()
             .refetchOnChannelChange()
-            .mapStream(data => data.activeChannel.currencyCode || undefined);
+            .mapStream(data => data.activeChannel.defaultCurrencyCode || undefined);
     }
 }
 

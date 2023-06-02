@@ -168,6 +168,8 @@ import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-det
 import { CardComponent, CardControlsDirective } from './components/card/card.component';
 import { ZoneSelectorComponent } from './components/zone-selector/zone-selector.component';
 import { ChartComponent } from './components/chart/chart.component';
+import { CurrencyCodeSelectorComponent } from './components/currency-code-selector/currency-code-selector.component';
+import { LanguageCodeSelectorComponent } from './components/language-code-selector/language-code-selector.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -308,6 +310,8 @@ const DECLARATIONS = [
     ZoneSelectorComponent,
     ChartComponent,
     AssignToChannelDialogComponent,
+    CurrencyCodeSelectorComponent,
+    LanguageCodeSelectorComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

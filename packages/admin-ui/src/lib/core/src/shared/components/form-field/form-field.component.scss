@@ -2,14 +2,6 @@
     display: block;
 }
 
-//::ng-deep vdr-form-field + vdr-form-field {
-//    margin-top: calc(var(--space-unit) * 2);
-//}
-//
-//::ng-deep vdr-form-field + vdr-form-item {
-//    margin-top: calc(var(--space-unit) * 2);
-//}
-
 .form-group {
     label {
         font-size: var(--font-size-sm);
@@ -21,6 +13,7 @@
 .tooltip-text {
     font-size: var(--font-size-xs);
     line-height: var(--font-size-sm);
+    margin-bottom: 4px;
 }
 .input-row {
     display: flex;

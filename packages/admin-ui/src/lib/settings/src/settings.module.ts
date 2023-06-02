@@ -18,6 +18,7 @@ import {
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 
 import { AddCountryToZoneDialogComponent } from './components/add-country-to-zone-dialog/add-country-to-zone-dialog.component';
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
@@ -183,7 +184,11 @@ export class SettingsModule {
                 entityKey: 'channel',
                 getBreadcrumbs: entity => [
                     {
-                        label: entity ? entity.code : _('settings.create-new-channel'),
+                        label: entity
+                            ? entity.code === DEFAULT_CHANNEL_CODE
+                                ? 'common.default-channel'
+                                : entity.code
+                            : _('settings.create-new-channel'),
                         link: [entity?.id],
                     },
                 ],

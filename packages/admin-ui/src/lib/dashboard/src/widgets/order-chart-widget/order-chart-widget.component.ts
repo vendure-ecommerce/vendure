@@ -40,7 +40,7 @@ export class OrderChartWidgetComponent implements OnInit {
         const currencyCode$ = this.dataService.settings
             .getActiveChannel()
             .refetchOnChannelChange()
-            .mapStream(data => data.activeChannel.currencyCode || undefined);
+            .mapStream(data => data.activeChannel.defaultCurrencyCode || undefined);
         const uiState$ = this.dataService.client.uiState().mapStream(data => data.uiState);
 
         this.metrics$ = combineLatest(this.refresh$, this.metricType$, currencyCode$, uiState$).pipe(
