@@ -20,7 +20,6 @@ import { AssetDetailComponent } from './components/asset-detail/asset-detail.com
 import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { AssetsComponent } from './components/assets/assets.component';
 import { AssignProductsToChannelDialogComponent } from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
-import { AssignToChannelDialogComponent } from './components/assign-to-channel-dialog/assign-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDataTableComponent } from './components/collection-data-table/collection-data-table.component';
@@ -59,13 +58,13 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
 import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
+import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
+import { StockLocationDetailComponent } from './components/stock-location-detail/stock-location-detail.component';
+import { StockLocationListComponent } from './components/stock-location-list/stock-location-list.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
-import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
-import { StockLocationListComponent } from './components/stock-location-list/stock-location-list.component';
-import { StockLocationDetailComponent } from './components/stock-location-detail/stock-location-detail.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -91,7 +90,6 @@ const CATALOG_COMPONENTS = [
     ConfirmVariantDeletionDialogComponent,
     ProductOptionsEditorComponent,
     BulkAddFacetValuesDialogComponent,
-    AssignToChannelDialogComponent,
     CollectionDataTableComponent,
     CollectionBreadcrumbPipe,
     MoveCollectionsDialogComponent,
@@ -131,10 +129,10 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteFacetsBulkAction);
 
+        bulkActionRegistryService.registerBulkAction(moveCollectionsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignCollectionsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
-        bulkActionRegistryService.registerBulkAction(moveCollectionsBulkAction);
 
         pageService.registerPageTab({
             location: 'product-list',

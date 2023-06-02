@@ -6,7 +6,7 @@ export * from './components/asset-detail/asset-detail.component';
 export * from './components/asset-list/asset-list.component';
 export * from './components/assets/assets.component';
 export * from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
-export * from './components/assign-to-channel-dialog/assign-to-channel-dialog.component';
+export * from '../../core/src/shared/components/assign-to-channel-dialog/assign-to-channel-dialog.component';
 export * from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 export * from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.graphql';
 export * from './components/collection-contents/collection-contents.component';

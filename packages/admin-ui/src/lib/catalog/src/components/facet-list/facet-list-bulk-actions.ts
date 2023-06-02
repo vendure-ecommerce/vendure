@@ -1,22 +1,23 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BulkAction,
+    createBulkAssignToChannelAction,
     createBulkDeleteAction,
+    createBulkRemoveFromChannelAction,
     currentChannelIsNotDefault,
     DataService,
     getChannelCodeFromUserStatus,
     GetFacetListQuery,
-    isMultiChannel,
     ItemOf,
     ModalService,
     NotificationService,
     Permission,
+    RemoveFacetFromChannelResult,
+    RemoveFacetsFromChannelMutation,
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, of } from 'rxjs';
-import { map, mapTo, switchMap } from 'rxjs/operators';
-
-import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
+import { map, switchMap } from 'rxjs/operators';
 
 import { FacetListComponent } from './facet-list.component';
 
@@ -31,51 +32,44 @@ export const deleteFacetsBulkAction = createBulkDeleteAction<ItemOf<GetFacetList
         dataService.facet.deleteFacets(ids, retrying).pipe(map(res => res.deleteFacets)),
 });
 
-export const assignFacetsToChannelBulkAction: BulkAction<
-    ItemOf<GetFacetListQuery, 'facets'>,
-    FacetListComponent
-> = {
+export const assignFacetsToChannelBulkAction = createBulkAssignToChannelAction<
+    ItemOf<GetFacetListQuery, 'facets'>
+>({
     location: 'facet-list',
-    label: _('catalog.assign-to-channel'),
-    icon: 'layers',
     requiresPermission: userPermissions =>
-        userPermissions.includes(Permission.UpdateFacet) ||
-        userPermissions.includes(Permission.UpdateCatalog),
-    isVisible: ({ injector }) => isMultiChannel(injector.get(DataService)),
-    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
-        const modalService = injector.get(ModalService);
-        const dataService = injector.get(DataService);
-        const notificationService = injector.get(NotificationService);
-        modalService
-            .fromComponent(AssignToChannelDialogComponent, {
-                size: 'md',
-                locals: {},
+        userPermissions.includes(Permission.UpdateCatalog) ||
+        userPermissions.includes(Permission.UpdateFacet),
+    getItemName: item => item.name,
+    bulkAssignToChannel: (dataService, facetIds, channelId) =>
+        dataService.facet
+            .assignFacetsToChannel({
+                facetIds,
+                channelId,
             })
-            .pipe(
-                switchMap(result => {
-                    if (result) {
-                        return dataService.facet
-                            .assignFacetsToChannel({
-                                facetIds: selection.map(f => f.id),
-                                channelId: result.id,
-                            })
-                            .pipe(mapTo(result));
-                    } else {
-                        return EMPTY;
-                    }
-                }),
-            )
-            .subscribe(result => {
-                notificationService.success(_('catalog.assign-facets-to-channel-success'), {
-                    count: selection.length,
-                    channelCode: result.code,
-                });
-                clearSelection();
-            });
-    },
-};
+            .pipe(map(res => res.assignFacetsToChannel)),
+});
 
-export const removeFacetsFromChannelBulkAction: BulkAction<
+export const removeFacetsFromChannelBulkAction = createBulkRemoveFromChannelAction<
+    ItemOf<GetFacetListQuery, 'facets'>,
+    RemoveFacetsFromChannelMutation['removeFacetsFromChannel'][number]
+>({
+    location: 'facet-list',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.DeleteCatalog) ||
+        userPermissions.includes(Permission.DeleteFacet),
+    getItemName: item => item.name,
+    bulkRemoveFromChannel: (dataService, facetIds, channelId, retrying) =>
+        dataService.facet
+            .removeFacetsFromChannel({
+                channelId: channelId,
+                facetIds,
+                force: retrying,
+            })
+            .pipe(map(res => res.removeFacetsFromChannel)),
+    isErrorResult: result => (result.__typename === 'FacetInUseError' ? result.message : undefined),
+});
+
+export const removeFacetsFromChannelBulkAction2: BulkAction<
     ItemOf<GetFacetListQuery, 'facets'>,
     FacetListComponent
 > = {

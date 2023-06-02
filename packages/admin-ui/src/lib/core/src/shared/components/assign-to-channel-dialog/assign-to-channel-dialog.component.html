@@ -1,0 +1,40 @@
+<ng-template vdrDialogTitle>
+    {{ 'common.confirm-bulk-assign-to-channel' | translate }}
+</ng-template>
+<div class="form-grid">
+    <vdr-form-item>
+        <div *ngIf="0 < nMore">
+            {{
+                'common.list-items-and-n-more'
+                    | translate
+                        : {
+                              items: itemNames,
+                              nMore: nMore
+                          }
+            }}
+        </div>
+        <div *ngIf="nMore === 0">
+            {{ itemNames }}
+        </div>
+    </vdr-form-item>
+    <vdr-form-field [label]="'common.channel' | translate" class="mb-4">
+        <vdr-channel-assignment-control
+            clrInput
+            [multiple]="false"
+            [includeDefaultChannel]="false"
+            [formControl]="selectedChannelIdControl"
+        ></vdr-channel-assignment-control>
+    </vdr-form-field>
+</div>
+
+<ng-template vdrDialogButtons>
+    <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button type="submit" (click)="assign()" [disabled]="!selectedChannel" class="btn btn-primary">
+        <ng-template [ngIf]="selectedChannel" [ngIfElse]="noSelection">
+            {{ 'catalog.assign-to-named-channel' | translate : { channelCode: selectedChannel?.code } }}
+        </ng-template>
+        <ng-template #noSelection>
+            {{ 'catalog.no-channel-selected' | translate }}
+        </ng-template>
+    </button>
+</ng-template>

@@ -39,6 +39,18 @@
             }
         }
     }
+
+    &.danger,
+    &.btn-danger {
+        &:not(:disabled) {
+            background-color: var(--color-error-700);
+            color: white;
+            &:hover {
+                background-color: var(--color-error-800);
+                color: white;
+            }
+        }
+    }
 }
 
 .button-ghost {

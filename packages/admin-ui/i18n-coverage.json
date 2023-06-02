@@ -1,69 +1,69 @@
 {
-  "generatedOn": "2023-06-01T14:33:50.530Z",
-  "lastCommit": "20d205bfb09cc05f848ae71358e45c16eeda665b",
+  "generatedOn": "2023-06-02T10:15:42.053Z",
+  "lastCommit": "7e5e5d5db56a57946f8ba699311680cb3defc85c",
   "translationStatus": {
     "cs": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 547,
-      "percentage": 76
+      "percentage": 75
     },
     "de": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 530,
       "percentage": 73
     },
     "en": {
-      "tokenCount": 724,
-      "translatedCount": 724,
+      "tokenCount": 725,
+      "translatedCount": 723,
       "percentage": 100
     },
     "es": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 572,
       "percentage": 79
     },
     "fr": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 567,
       "percentage": 78
     },
     "it": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 571,
       "percentage": 79
     },
     "pl": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 381,
       "percentage": 53
     },
     "pt_BR": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 545,
       "percentage": 75
     },
     "pt_PT": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 580,
       "percentage": 80
     },
     "ru": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 570,
       "percentage": 79
     },
     "uk": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 570,
       "percentage": 79
     },
     "zh_Hans": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 516,
       "percentage": 71
     },
     "zh_Hant": {
-      "tokenCount": 724,
+      "tokenCount": 725,
       "translatedCount": 361,
       "percentage": 50
     }

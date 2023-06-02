@@ -18,7 +18,8 @@ export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel> {
     resolveWith: (result?: Channel) => void;
     selectedChannelIdControl = new UntypedFormControl();
 
-    // assigned by ModalService.fromComponent() call
+    itemNames: string;
+    nMore: number;
 
     constructor(private dataService: DataService, private notificationService: NotificationService) {}
 

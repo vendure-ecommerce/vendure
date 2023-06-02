@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    Asset,
     ASSET_FRAGMENT,
     AssetDetailQueryDocument,
     AssetDetailQueryQuery,
