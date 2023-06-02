@@ -19,7 +19,7 @@ import { AvailableStock, LocationWithQuantity, StockLocationStrategy } from './s
  * @since 2.0.0
  */
 export class DefaultStockLocationStrategy implements StockLocationStrategy {
-    private connection: TransactionalConnection;
+    protected connection: TransactionalConnection;
 
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);

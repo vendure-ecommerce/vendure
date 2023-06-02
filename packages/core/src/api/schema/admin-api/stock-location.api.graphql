@@ -7,6 +7,13 @@ type Mutation {
     createStockLocation(input: CreateStockLocationInput!): StockLocation!
     updateStockLocation(input: UpdateStockLocationInput!): StockLocation!
     deleteStockLocation(input: DeleteStockLocationInput!): DeletionResponse!
+    deleteStockLocations(input: [DeleteStockLocationInput!]!): DeletionResponse!
+
+    "Assigns StockLocations to the specified Channel"
+    assignStockLocationsToChannel(input: AssignStockLocationsToChannelInput!): [StockLocation!]!
+
+    "Removes StockLocations from the specified Channel"
+    removeStockLocationsFromChannel(input: RemoveStockLocationsFromChannelInput!): [StockLocation!]!
 }
 
 # Generated at runtime
@@ -31,4 +38,14 @@ input UpdateStockLocationInput {
 input DeleteStockLocationInput {
     id: ID!
     transferToLocationId: ID
+}
+
+input AssignStockLocationsToChannelInput {
+    stockLocationIds: [ID!]!
+    channelId: ID!
+}
+
+input RemoveStockLocationsFromChannelInput {
+    stockLocationIds: [ID!]!
+    channelId: ID!
 }

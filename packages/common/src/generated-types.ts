@@ -266,6 +266,11 @@ export type AssignPromotionsToChannelInput = {
   promotionIds: Array<Scalars['ID']>;
 };
 
+export type AssignStockLocationsToChannelInput = {
+  channelId: Scalars['ID'];
+  stockLocationIds: Array<Scalars['ID']>;
+};
+
 export type AuthenticationInput = {
   native?: InputMaybe<NativeAuthInput>;
 };
@@ -2569,6 +2574,8 @@ export type Mutation = {
   assignPromotionsToChannel: Array<Promotion>;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
+  /** Assigns StockLocations to the specified Channel */
+  assignStockLocationsToChannel: Array<StockLocation>;
   /** Authenticates the user using a named authentication strategy */
   authenticate: AuthenticationResult;
   cancelJob: Job;
@@ -2695,6 +2702,7 @@ export type Mutation = {
   /** Delete multiple ShippingMethods */
   deleteShippingMethods: Array<DeletionResponse>;
   deleteStockLocation: DeletionResponse;
+  deleteStockLocations: DeletionResponse;
   /** Delete an existing Tag */
   deleteTag: DeletionResponse;
   /** Deletes multiple TaxCategories */
@@ -2750,6 +2758,8 @@ export type Mutation = {
   removePromotionsFromChannel: Array<Promotion>;
   /** Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted. */
   removeSettledJobs: Scalars['Int'];
+  /** Removes StockLocations from the specified Channel */
+  removeStockLocationsFromChannel: Array<StockLocation>;
   runPendingSearchIndexUpdates: Success;
   setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
   /** Sets the billing address for a draft Order */
@@ -2913,6 +2923,11 @@ export type MutationAssignPromotionsToChannelArgs = {
 export type MutationAssignRoleToAdministratorArgs = {
   administratorId: Scalars['ID'];
   roleId: Scalars['ID'];
+};
+
+
+export type MutationAssignStockLocationsToChannelArgs = {
+  input: AssignStockLocationsToChannelInput;
 };
 
 
@@ -3259,6 +3274,11 @@ export type MutationDeleteStockLocationArgs = {
 };
 
 
+export type MutationDeleteStockLocationsArgs = {
+  input: Array<DeleteStockLocationInput>;
+};
+
+
 export type MutationDeleteTagArgs = {
   id: Scalars['ID'];
 };
@@ -3385,6 +3405,11 @@ export type MutationRemovePromotionsFromChannelArgs = {
 export type MutationRemoveSettledJobsArgs = {
   olderThan?: InputMaybe<Scalars['DateTime']>;
   queueNames?: InputMaybe<Array<Scalars['String']>>;
+};
+
+
+export type MutationRemoveStockLocationsFromChannelArgs = {
+  input: RemoveStockLocationsFromChannelInput;
 };
 
 
@@ -5309,6 +5334,11 @@ export type RemoveProductsFromChannelInput = {
 export type RemovePromotionsFromChannelInput = {
   channelId: Scalars['ID'];
   promotionIds: Array<Scalars['ID']>;
+};
+
+export type RemoveStockLocationsFromChannelInput = {
+  channelId: Scalars['ID'];
+  stockLocationIds: Array<Scalars['ID']>;
 };
 
 export type Return = Node & StockMovement & {

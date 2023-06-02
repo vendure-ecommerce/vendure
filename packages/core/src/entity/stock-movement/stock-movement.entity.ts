@@ -27,7 +27,7 @@ export abstract class StockMovement extends VendureEntity {
     productVariant: ProductVariant;
 
     @Index()
-    @ManyToOne(type => StockLocation)
+    @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' })
     stockLocation: StockLocation;
 
     @EntityId()

@@ -23,12 +23,6 @@ declare module '@vendure/core/dist/entity/custom-entity-fields' {
 }
 
 export class TestStockLocationStrategy extends DefaultStockLocationStrategy {
-    private connection: TransactionalConnection;
-
-    init(injector: Injector) {
-        this.connection = injector.get(TransactionalConnection);
-    }
-
     forAllocation(
         ctx: RequestContext,
         stockLocations: StockLocation[],
@@ -41,11 +35,7 @@ export class TestStockLocationStrategy extends DefaultStockLocationStrategy {
         return [{ location: selectedLocation ?? stockLocations[0], quantity }];
     }
 
-    getAvailableStock(
-        ctx: RequestContext,
-        productVariantId: ID,
-        stockLevels: StockLevel[],
-    ): AvailableStock | Promise<AvailableStock> {
+    getAvailableStock(ctx: RequestContext, productVariantId: ID, stockLevels: StockLevel[]): AvailableStock {
         const locationId = ctx.req?.query.fromLocation;
         const locationStock =
             locationId &&

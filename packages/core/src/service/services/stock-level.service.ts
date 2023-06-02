@@ -50,14 +50,14 @@ export class StockLevelService {
     }
 
     async getStockLevelsForVariant(ctx: RequestContext, productVariantId: ID): Promise<StockLevel[]> {
-        return this.connection.getRepository(ctx, StockLevel).find({
-            where: {
-                productVariantId,
-            },
-            relations: {
-                stockLocation: true,
-            },
-        });
+        return this.connection
+            .getRepository(ctx, StockLevel)
+            .createQueryBuilder('stockLevel')
+            .leftJoinAndSelect('stockLevel.stockLocation', 'stockLocation')
+            .leftJoin('stockLocation.channels', 'channel')
+            .where('stockLevel.productVariantId = :productVariantId', { productVariantId })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .getMany();
     }
 
     /**

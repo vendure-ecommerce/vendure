@@ -1,12 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    MutationAssignStockLocationsToChannelArgs,
     MutationCreateStockLocationArgs,
     MutationDeleteStockLocationArgs,
+    MutationRemoveStockLocationsFromChannelArgs,
     MutationUpdateStockLocationArgs,
     Permission,
     QueryStockLocationArgs,
     QueryStockLocationsArgs,
-    StockLocationList,
 } from '@vendure/common/lib/generated-types';
 
 import { StockLocationService } from '../../../service/services/stock-location.service';
@@ -50,5 +51,25 @@ export class StockLocationResolver {
     @Allow(Permission.DeleteStockLocation)
     deleteStockLocation(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteStockLocationArgs) {
         return this.stockLocationService.delete(ctx, args.input);
+    }
+
+    @Mutation()
+    @Transaction()
+    @Allow(Permission.CreateStockLocation)
+    assignStockLocationsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignStockLocationsToChannelArgs,
+    ) {
+        return this.stockLocationService.assignStockLocationsToChannel(ctx, args.input);
+    }
+
+    @Mutation()
+    @Transaction()
+    @Allow(Permission.DeleteStockLocation)
+    removeStockLocationsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveStockLocationsFromChannelArgs,
+    ) {
+        return this.stockLocationService.removeStockLocationsFromChannel(ctx, args.input);
     }
 }
