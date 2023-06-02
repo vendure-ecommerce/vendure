@@ -3,6 +3,7 @@ import {
     MutationAssignStockLocationsToChannelArgs,
     MutationCreateStockLocationArgs,
     MutationDeleteStockLocationArgs,
+    MutationDeleteStockLocationsArgs,
     MutationRemoveStockLocationsFromChannelArgs,
     MutationUpdateStockLocationArgs,
     Permission,
@@ -51,6 +52,13 @@ export class StockLocationResolver {
     @Allow(Permission.DeleteStockLocation)
     deleteStockLocation(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteStockLocationArgs) {
         return this.stockLocationService.delete(ctx, args.input);
+    }
+
+    @Mutation()
+    @Transaction()
+    @Allow(Permission.DeleteStockLocation)
+    deleteStockLocations(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteStockLocationsArgs) {
+        return Promise.all(args.input.map(input => this.stockLocationService.delete(ctx, input)));
     }
 
     @Mutation()

@@ -151,6 +151,21 @@ describe('Stock location', () => {
         });
     });
 
+    it('cannot delete last remaining stock location', async () => {
+        const { deleteStockLocation } = await adminClient.query(TestDeleteStockLocationDocument, {
+            input: {
+                id: defaultStockLocationId,
+            },
+        });
+
+        expect(deleteStockLocation.result).toBe(DeletionResult.NOT_DELETED);
+        expect(deleteStockLocation.message).toBe('The last remaining StockLocation cannot be deleted');
+
+        const { stockLocations } = await adminClient.query(TestGetStockLocationsListDocument);
+
+        expect(stockLocations.items.length).toBe(1);
+    });
+
     describe('multi channel', () => {
         const SECOND_CHANNEL_TOKEN = 'second_channel_token';
         let channelStockLocationId: string;

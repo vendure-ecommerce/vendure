@@ -13,7 +13,13 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RelationPaths, RequestContext } from '../../api/index';
 import { RequestContextCacheService } from '../../cache/index';
-import { ForbiddenError, idsAreEqual, ListQueryOptions, UserInputError } from '../../common/index';
+import {
+    EntityNotFoundError,
+    ForbiddenError,
+    idsAreEqual,
+    ListQueryOptions,
+    UserInputError,
+} from '../../common/index';
 import { ConfigService } from '../../config/index';
 import { TransactionalConnection } from '../../connection/index';
 import { OrderLine, StockLevel } from '../../entity/index';
@@ -88,7 +94,23 @@ export class StockLocationService {
     }
 
     async delete(ctx: RequestContext, input: DeleteStockLocationInput): Promise<DeletionResponse> {
-        const stockLocation = await this.connection.getEntityOrThrow(ctx, StockLocation, input.id);
+        const stockLocation = await this.connection.findOneInChannel(
+            ctx,
+            StockLocation,
+            input.id,
+            ctx.channelId,
+        );
+        if (!stockLocation) {
+            throw new EntityNotFoundError('StockLocation', input.id);
+        }
+        // Do not allow the last StockLocation to be deleted
+        const allStockLocations = await this.connection.getRepository(ctx, StockLocation).find();
+        if (allStockLocations.length === 1) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.cannot-delete-last-stock-location'),
+            };
+        }
         if (input.transferToLocationId) {
             // This is inefficient, and it would be nice to be able to do this as a single
             // SQL `update` statement with a nested `select` subquery, but TypeORM doesn't

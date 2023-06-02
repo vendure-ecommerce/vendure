@@ -146,10 +146,12 @@ export type Channel = Node & {
   defaultShippingZone?: Maybe<Zone>;
   defaultTaxZone?: Maybe<Zone>;
   id: Scalars['ID'];
+  /** Not yet used - will be implemented in a future release. */
   outOfStockThreshold?: Maybe<Scalars['Int']>;
   pricesIncludeTax: Scalars['Boolean'];
   seller?: Maybe<Seller>;
   token: Scalars['String'];
+  /** Not yet used - will be implemented in a future release. */
   trackInventory?: Maybe<Scalars['Boolean']>;
   updatedAt: Scalars['DateTime'];
 };
