@@ -686,8 +686,10 @@ export type CreateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
   availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
   code: Scalars['String'];
-  currencyCode: CurrencyCode;
+  /** @deprecated Use defaultCurrencyCode instead */
+  currencyCode?: InputMaybe<CurrencyCode>;
   customFields?: InputMaybe<Scalars['JSON']>;
+  defaultCurrencyCode?: InputMaybe<CurrencyCode>;
   defaultLanguageCode: LanguageCode;
   defaultShippingZoneId: Scalars['ID'];
   defaultTaxZoneId: Scalars['ID'];
@@ -5938,8 +5940,10 @@ export type UpdateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
   availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
   code?: InputMaybe<Scalars['String']>;
+  /** @deprecated Use defaultCurrencyCode instead */
   currencyCode?: InputMaybe<CurrencyCode>;
   customFields?: InputMaybe<Scalars['JSON']>;
+  defaultCurrencyCode?: InputMaybe<CurrencyCode>;
   defaultLanguageCode?: InputMaybe<LanguageCode>;
   defaultShippingZoneId?: InputMaybe<Scalars['ID']>;
   defaultTaxZoneId?: InputMaybe<Scalars['ID']>;

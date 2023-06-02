@@ -16,7 +16,12 @@ import { FindOneOptions } from 'typeorm';
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import {
+    ChannelNotFoundError,
+    EntityNotFoundError,
+    InternalServerError,
+    UserInputError,
+} from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
@@ -225,6 +230,10 @@ export class ChannelService {
         ctx: RequestContext,
         input: CreateChannelInput,
     ): Promise<ErrorResultUnion<CreateChannelResult, Channel>> {
+        const defaultCurrencyCode = input.defaultCurrencyCode || input.currencyCode;
+        if (!defaultCurrencyCode) {
+            throw new UserInputError('Either a defaultCurrencyCode or currencyCode must be provided');
+        }
         const channel = new Channel({
             ...input,
             defaultCurrencyCode: input.currencyCode,
