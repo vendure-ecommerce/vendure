@@ -4613,6 +4613,7 @@ export type ProductVariant = Node & {
   outOfStockThreshold: Scalars['Int'];
   price: Scalars['Money'];
   priceWithTax: Scalars['Money'];
+  prices: Array<ProductVariantPrice>;
   product: Product;
   productId: Scalars['ID'];
   sku: Scalars['String'];
@@ -4674,6 +4675,22 @@ export type ProductVariantListOptions = {
   sort?: InputMaybe<ProductVariantSortParameter>;
   /** Takes n results, for use in pagination */
   take?: InputMaybe<Scalars['Int']>;
+};
+
+export type ProductVariantPrice = {
+  __typename?: 'ProductVariantPrice';
+  currencyCode: CurrencyCode;
+  price: Scalars['Int'];
+};
+
+/**
+ * Used to set up update the price of a ProductVariant in a particular Channel.
+ * If the `delete` flag is `true`, the price will be deleted for the given Channel.
+ */
+export type ProductVariantPriceInput = {
+  currencyCode: CurrencyCode;
+  delete?: InputMaybe<Scalars['Boolean']>;
+  price: Scalars['Money'];
 };
 
 export type ProductVariantSortParameter = {
@@ -6276,7 +6293,10 @@ export type UpdateProductVariantInput = {
   id: Scalars['ID'];
   optionIds?: InputMaybe<Array<Scalars['ID']>>;
   outOfStockThreshold?: InputMaybe<Scalars['Int']>;
+  /** Sets the price for the ProductVariant in the Channel's default currency */
   price?: InputMaybe<Scalars['Money']>;
+  /** Allows multiple prices to be set for the ProductVariant in different currencies. */
+  prices?: InputMaybe<Array<ProductVariantPriceInput>>;
   sku?: InputMaybe<Scalars['String']>;
   stockLevels?: InputMaybe<Array<StockLevelInput>>;
   stockOnHand?: InputMaybe<Scalars['Int']>;

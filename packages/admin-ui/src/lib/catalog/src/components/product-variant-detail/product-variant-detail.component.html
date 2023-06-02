@@ -22,7 +22,8 @@
                 [disabled]="
                     (detailForm.invalid ||
                         stockLevelsForm.invalid ||
-                        (detailForm.pristine && stockLevelsForm.pristine)) &&
+                        pricesForm.invalid ||
+                        (detailForm.pristine && stockLevelsForm.pristine && pricesForm.pristine)) &&
                     !assetsChanged()
                 "
             >
@@ -150,27 +151,65 @@
                             </option>
                         </select>
                     </vdr-form-field>
-                    <vdr-form-field [label]="'catalog.price' | translate" for="sku">
-                        <vdr-currency-input
-                            *ngIf="!(channelPriceIncludesTax$ | async)"
-                            [currencyCode]="variant.currencyCode"
-                            [readonly]="!(updatePermissions | hasPermission)"
-                            formControlName="price"
-                        />
-                        <vdr-currency-input
-                            *ngIf="channelPriceIncludesTax$ | async"
-                            [currencyCode]="variant.currencyCode"
-                            [readonly]="!(updatePermissions | hasPermission)"
-                            formControlName="priceWithTax"
-                        />
+                </div>
+                <div class="form-grid prices" *ngFor="let price of pricesForm.controls" [formGroup]="price">
+                    <vdr-form-field
+                        [label]="
+                            ('catalog.price' | translate) +
+                            (1 < pricesForm.length ? ' (' + price.value.currencyCode + ')' : '')
+                        "
+                        [tooltip]="
+                            1 < pricesForm.length && price.value.currencyCode === channelDefaultCurrencyCode
+                                ? ('catalog.default-currency' | translate)
+                                : undefined
+                        "
+                        for="price"
+                    >
+                        <div class="price-wrapper" [class.pending-deletion]="price.value.delete === true">
+                            <vdr-currency-input
+                                name="price"
+                                [currencyCode]="price.value.currencyCode"
+                                [readonly]="!(updatePermissions | hasPermission) || price.value.delete === true"
+                                formControlName="price"
+                            />
+                            <div *ngIf="1 < pricesForm.controls.length">
+                                <button
+                                    class="button-small delete-button"
+                                    [disabled]="price.value.currencyCode === channelDefaultCurrencyCode"
+                                    (click)="toggleDeletePrice(price.get('delete'))"
+                                >
+                                    <clr-icon shape="trash"></clr-icon>
+                                </button>
+                            </div>
+                        </div>
                     </vdr-form-field>
                     <vdr-variant-price-detail
-                        [price]="detailForm.get('price')!.value"
-                        [currencyCode]="variant.currencyCode"
+                        [price]="price.value.price"
+                        [currencyCode]="price.value.currencyCode"
                         [priceIncludesTax]="channelPriceIncludesTax$ | async"
                         [taxCategoryId]="detailForm.get('taxCategoryId')!.value"
                     />
                 </div>
+                <ng-container *ngIf="unusedCurrencyCodes$ | async as unusedCurrencyCodes">
+                    <div *ngIf="unusedCurrencyCodes.length">
+                        <vdr-dropdown>
+                            <button class="button mt-2" vdrDropdownTrigger>
+                                <clr-icon shape="plus"></clr-icon>
+                                {{ 'catalog.add-price-in-another-currency' | translate }}
+                                <clr-icon shape="ellipsis-vertical"></clr-icon>
+                            </button>
+                            <vdr-dropdown-menu>
+                                <button
+                                    vdrDropdownItem
+                                    *ngFor="let currencyCode of unusedCurrencyCodes"
+                                    (click)="addPriceInCurrency(currencyCode)"
+                                >
+                                    {{ currencyCode | localeCurrencyName }}
+                                </button>
+                            </vdr-dropdown-menu>
+                        </vdr-dropdown>
+                    </div>
+                </ng-container>
             </vdr-card>
             <vdr-card [title]="'catalog.stock-levels' | translate">
                 <div class="form-grid">

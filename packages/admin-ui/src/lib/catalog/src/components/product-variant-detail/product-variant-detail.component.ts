@@ -5,6 +5,7 @@ import {
     Asset,
     CreateProductVariantInput,
     createUpdatedTranslatable,
+    CurrencyCode,
     DataService,
     findTranslation,
     GetProductVariantDetailDocument,
@@ -32,6 +33,7 @@ import {
     switchMap,
     switchMapTo,
     take,
+    tap,
 } from 'rxjs/operators';
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
@@ -46,8 +48,6 @@ interface VariantFormValue {
     enabled: boolean;
     sku: string;
     name: string;
-    price: number;
-    priceWithTax: number;
     taxCategoryId: string;
     stockOnHand: number;
     useGlobalOutOfStockThreshold: boolean;
@@ -77,8 +77,6 @@ export class ProductVariantDetailComponent
         enabled: false,
         sku: '',
         name: '',
-        price: 0,
-        priceWithTax: 0,
         taxCategoryId: '',
         stockOnHand: 0,
         useGlobalOutOfStockThreshold: true,
@@ -97,14 +95,23 @@ export class ProductVariantDetailComponent
             stockAllocated: FormControl<number | null>;
         }>
     >([]);
+    pricesForm = this.formBuilder.array<
+        FormGroup<{
+            price: FormControl<number | null>;
+            currencyCode: FormControl<CurrencyCode | null>;
+            delete: FormControl<boolean | null>;
+        }>
+    >([]);
     assetChanges: SelectedAssets = {};
     taxCategories$: Observable<Array<ItemOf<GetProductVariantDetailQuery, 'taxCategories'>>>;
     unusedStockLocation$: Observable<Array<ItemOf<GetProductVariantDetailQuery, 'stockLocations'>>>;
+    unusedCurrencyCodes$: Observable<string[]>;
     channelPriceIncludesTax$: Observable<boolean>;
     readonly GlobalFlag = GlobalFlag;
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
     facetValues$: Observable<NonNullable<GetProductVariantDetailQuery['productVariant']>['facetValues']>;
+    channelDefaultCurrencyCode: CurrencyCode;
 
     constructor(
         private productDetailService: ProductDetailService,
@@ -125,6 +132,15 @@ export class ProductVariantDetailComponent
             this.changeDetector.markForCheck();
         });
         this.taxCategories$ = this.result$.pipe(map(data => data.taxCategories.items));
+        const availableCurrencyCodes$ = this.result$.pipe(
+            tap(data => (this.channelDefaultCurrencyCode = data.activeChannel.defaultCurrencyCode)),
+            map(data => data.activeChannel.availableCurrencyCodes),
+        );
+        this.unusedCurrencyCodes$ = combineLatest(this.pricesForm.valueChanges, availableCurrencyCodes$).pipe(
+            map(([prices, currencyCodes]) =>
+                currencyCodes.filter(code => !prices.map(p => p.currencyCode).includes(code)),
+            ),
+        );
         const stockLocations$ = this.result$.pipe(map(data => data.stockLocations.items));
         this.unusedStockLocation$ = combineLatest(this.entity$, stockLocations$).pipe(
             map(([entity, stockLocations]) => {
@@ -160,6 +176,21 @@ export class ProductVariantDetailComponent
         this.destroy();
     }
 
+    addPriceInCurrency(currencyCode: CurrencyCode) {
+        this.pricesForm.push(
+            this.formBuilder.group({
+                currencyCode,
+                price: 0,
+                delete: false as boolean,
+            }),
+        );
+    }
+
+    toggleDeletePrice(deleteFormControl: FormControl) {
+        deleteFormControl.setValue(!deleteFormControl.value);
+        deleteFormControl.markAsDirty();
+    }
+
     addStockLocation(stockLocation: ItemOf<GetProductVariantDetailQuery, 'stockLocations'>) {
         this.stockLevelsForm.push(
             this.formBuilder.group({
@@ -188,7 +219,6 @@ export class ProductVariantDetailComponent
                             'enabled',
                             'translations',
                             'sku',
-                            'price',
                             'taxCategoryId',
                             'facetValueIds',
                             'featuredAssetId',
@@ -201,7 +231,6 @@ export class ProductVariantDetailComponent
                         ],
                     ) as UpdateProductVariantInput;
                     if (this.stockLevelsForm.dirty) {
-                        const stockLevelsFormValue = this.stockLevelsForm.value;
                         input.stockLevels = this.stockLevelsForm.controls
                             .filter(control => control.dirty)
                             .map(control => ({
@@ -209,6 +238,17 @@ export class ProductVariantDetailComponent
                                 stockLocationId: control.value.stockLocationId!,
                                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                 stockOnHand: control.value.stockOnHand!,
+                            }));
+                    }
+                    if (this.pricesForm.dirty) {
+                        input.prices = this.pricesForm.controls
+                            .filter(control => control.dirty)
+                            .map(control => ({
+                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                price: control.value.price!,
+                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                currencyCode: control.value.currencyCode!,
+                                delete: control.value.delete === true,
                             }));
                     }
                     return this.dataService.mutate(ProductVariantUpdateMutationDocument, {
@@ -220,6 +260,7 @@ export class ProductVariantDetailComponent
                 result => {
                     this.detailForm.markAsPristine();
                     this.stockLevelsForm.markAsPristine();
+                    this.pricesForm.markAsPristine();
                     this.assetChanges = {};
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'ProductVariant',
@@ -298,8 +339,6 @@ export class ProductVariantDetailComponent
             enabled: variant.enabled,
             sku: variant.sku,
             name: variantTranslation ? variantTranslation.name : '',
-            price: variant.price,
-            priceWithTax: variant.priceWithTax,
             taxCategoryId: variant.taxCategory.id,
             stockOnHand: variant.stockLevels[0]?.stockOnHand ?? 0,
             useGlobalOutOfStockThreshold: variant.useGlobalOutOfStockThreshold,
@@ -315,6 +354,16 @@ export class ProductVariantDetailComponent
                     stockLocationName: stockLevel.stockLocation.name,
                     stockOnHand: stockLevel.stockOnHand,
                     stockAllocated: stockLevel.stockAllocated,
+                }),
+            );
+        }
+        this.pricesForm.clear();
+        for (const price of variant.prices) {
+            this.pricesForm.push(
+                this.formBuilder.group({
+                    price: price.price,
+                    currencyCode: price.currencyCode,
+                    delete: false as boolean,
                 }),
             );
         }

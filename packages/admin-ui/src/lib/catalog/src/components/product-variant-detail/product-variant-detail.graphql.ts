@@ -11,6 +11,10 @@ export const PRODUCT_VARIANT_DETAIL_QUERY_PRODUCT_VARIANT_FRAGMENT = gql`
         name
         price
         currencyCode
+        prices {
+            price
+            currencyCode
+        }
         priceWithTax
         stockOnHand
         stockAllocated
@@ -108,6 +112,11 @@ export const PRODUCT_VARIANT_DETAIL_QUERY = gql`
                 isDefault
             }
             totalItems
+        }
+        activeChannel {
+            id
+            availableCurrencyCodes
+            defaultCurrencyCode
         }
     }
     ${PRODUCT_VARIANT_DETAIL_QUERY_PRODUCT_VARIANT_FRAGMENT}
