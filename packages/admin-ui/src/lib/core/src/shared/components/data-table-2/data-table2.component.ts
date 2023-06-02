@@ -9,7 +9,6 @@ import {
     Input,
     OnChanges,
     OnDestroy,
-    OnInit,
     Output,
     QueryList,
     SimpleChanges,
@@ -17,7 +16,7 @@ import {
 } from '@angular/core';
 import { PaginationService } from 'ngx-pagination';
 import { Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { LanguageCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
@@ -94,7 +93,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService],
 })
-export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnInit, OnDestroy {
+export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     @Input() id: string;
     @Input() items: T[];
     @Input() itemsPerPage: number;
@@ -173,12 +172,6 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         }
     };
 
-    ngOnInit() {
-        this.subscription = this.selectionManager?.selectionChanges$.subscribe(() =>
-            this.changeDetectorRef.markForCheck(),
-        );
-    }
-
     ngOnChanges(changes: SimpleChanges) {
         if (changes.items) {
             this.currentStart = this.itemsPerPage * (this.currentPage - 1);
@@ -231,6 +224,21 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnIn
         this.columns.changes.subscribe(() => {
             this.changeDetectorRef.markForCheck();
         });
+
+        this.subscription = this.selectionManager?.selectionChanges$.subscribe(() =>
+            this.changeDetectorRef.markForCheck(),
+        );
+
+        if (this.selectionManager && this.subscription) {
+            const channelSub = this.dataService.client
+                .userStatus()
+                .mapStream(({ userStatus }) => userStatus.activeChannelId)
+                .pipe(distinctUntilChanged())
+                .subscribe(activeChannelId => {
+                    this.selectionManager?.clearSelection();
+                });
+            this.subscription?.add(channelSub);
+        }
     }
 
     onColumnReorder(event: { column: DataTable2ColumnComponent<any>; newIndex: number }) {

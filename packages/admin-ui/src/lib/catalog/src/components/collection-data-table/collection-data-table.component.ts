@@ -39,7 +39,7 @@ export type CollectionOrderEvent = {
 })
 export class CollectionDataTableComponent
     extends DataTable2Component<CollectionTableItem>
-    implements OnInit, OnChanges, AfterViewInit
+    implements OnChanges, AfterViewInit
 {
     @Input() subCollections: CollectionTableItem[];
     @Output() changeOrder = new EventEmitter<CollectionOrderEvent>();
@@ -57,10 +57,6 @@ export class CollectionDataTableComponent
         private dragDrop: DragDrop,
     ) {
         super(changeDetectorRef, localStorageService, dataService);
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
     }
 
     ngOnChanges(changes: SimpleChanges) {
