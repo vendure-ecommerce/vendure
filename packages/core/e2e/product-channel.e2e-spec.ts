@@ -226,7 +226,7 @@ describe('ChannelAware Products and ProductVariants', () => {
                         channelId: 'T_1',
                     },
                 });
-            }, 'Products cannot be removed from the default Channel'),
+            }, 'Items cannot be removed from the default Channel'),
         );
 
         it('removes Product from Channel', async () => {
@@ -348,7 +348,7 @@ describe('ChannelAware Products and ProductVariants', () => {
                         channelId: 'T_1',
                     },
                 });
-            }, 'Products cannot be removed from the default Channel'),
+            }, 'Items cannot be removed from the default Channel'),
         );
 
         it('removes ProductVariant but not Product from Channel', async () => {
