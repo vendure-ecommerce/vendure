@@ -839,7 +839,7 @@ export class CollectionService implements OnModuleInit {
         }
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         if (idsAreEqual(input.channelId, defaultChannel.id)) {
-            throw new UserInputError('error.collections-cannot-be-removed-from-default-channel');
+            throw new UserInputError('error.items-cannot-be-removed-from-default-channel');
         }
         const collectionsToRemove = await this.connection
             .getRepository(ctx, Collection)

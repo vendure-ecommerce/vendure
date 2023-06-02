@@ -175,7 +175,7 @@ export class StockLocationService {
         }
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         if (idsAreEqual(input.channelId, defaultChannel.id)) {
-            throw new UserInputError('error.stock-locations-cannot-be-removed-from-default-channel');
+            throw new UserInputError('error.items-cannot-be-removed-from-default-channel');
         }
         for (const stockLocationId of input.stockLocationIds) {
             const stockLocation = await this.connection.getEntityOrThrow(ctx, StockLocation, stockLocationId);

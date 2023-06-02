@@ -208,10 +208,6 @@ export class PromotionService {
         ctx: RequestContext,
         input: AssignPromotionsToChannelInput,
     ): Promise<Promotion[]> {
-        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
-            throw new IllegalOperationError('promotion-channels-can-only-be-changed-from-default-channel');
-        }
         const promotions = await this.connection.findByIdsInChannel(
             ctx,
             Promotion,
@@ -226,10 +222,6 @@ export class PromotionService {
     }
 
     async removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) {
-        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
-            throw new IllegalOperationError('promotion-channels-can-only-be-changed-from-default-channel');
-        }
         const promotions = await this.connection.findByIdsInChannel(
             ctx,
             Promotion,

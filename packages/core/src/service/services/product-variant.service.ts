@@ -706,7 +706,7 @@ export class ProductVariantService {
         }
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         if (idsAreEqual(input.channelId, defaultChannel.id)) {
-            throw new UserInputError('error.products-cannot-be-removed-from-default-channel');
+            throw new UserInputError('error.items-cannot-be-removed-from-default-channel');
         }
         const variants = await this.connection
             .getRepository(ctx, ProductVariant)

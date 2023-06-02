@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentMethodQuote } from '@vendure/common/lib/generated-shop-types';
 import {
+    AssignPaymentMethodsToChannelInput,
     ConfigurableOperationDefinition,
     CreatePaymentMethodInput,
     DeletionResponse,
     DeletionResult,
+    Permission,
+    RemovePaymentMethodsFromChannelInput,
     UpdatePaymentMethodInput,
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
@@ -13,7 +16,8 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
-import { UserInputError } from '../../common/error/errors';
+import { ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Translated } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -33,6 +37,7 @@ import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
+import { RoleService } from './role.service';
 
 /**
  * @description
@@ -45,6 +50,7 @@ export class PaymentMethodService {
     constructor(
         private connection: TransactionalConnection,
         private configService: ConfigService,
+        private roleService: RoleService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
         private configArgService: ConfigArgService,
@@ -186,6 +192,59 @@ export class PaymentMethodService {
                 result: DeletionResult.DELETED,
             };
         }
+    }
+
+    async assignPaymentMethodsToChannel(
+        ctx: RequestContext,
+        input: AssignPaymentMethodsToChannelInput,
+    ): Promise<Array<Translated<PaymentMethod>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.UpdatePaymentMethod,
+            Permission.UpdateSettings,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        for (const paymentMethodId of input.paymentMethodIds) {
+            const paymentMethod = await this.connection.findOneInChannel(
+                ctx,
+                PaymentMethod,
+                paymentMethodId,
+                ctx.channelId,
+            );
+            await this.channelService.assignToChannels(ctx, PaymentMethod, paymentMethodId, [
+                input.channelId,
+            ]);
+        }
+        return this.connection
+            .findByIdsInChannel(ctx, PaymentMethod, input.paymentMethodIds, ctx.channelId, {})
+            .then(methods => methods.map(method => this.translator.translate(method, ctx)));
+    }
+
+    async removePaymentMethodsFromChannel(
+        ctx: RequestContext,
+        input: RemovePaymentMethodsFromChannelInput,
+    ): Promise<Array<Translated<PaymentMethod>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.DeletePaymentMethod,
+            Permission.DeleteSettings,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
+            throw new UserInputError('error.items-cannot-be-removed-from-default-channel');
+        }
+        for (const paymentMethodId of input.paymentMethodIds) {
+            const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, paymentMethodId);
+            await this.channelService.removeFromChannels(ctx, PaymentMethod, paymentMethodId, [
+                input.channelId,
+            ]);
+        }
+        return this.connection
+            .findByIdsInChannel(ctx, PaymentMethod, input.paymentMethodIds, ctx.channelId, {})
+            .then(methods => methods.map(method => this.translator.translate(method, ctx)));
     }
 
     getPaymentMethodEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {

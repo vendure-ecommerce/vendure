@@ -249,6 +249,11 @@ export type AssignFacetsToChannelInput = {
   facetIds: Array<Scalars['ID']>;
 };
 
+export type AssignPaymentMethodsToChannelInput = {
+  channelId: Scalars['ID'];
+  paymentMethodIds: Array<Scalars['ID']>;
+};
+
 export type AssignProductVariantsToChannelInput = {
   channelId: Scalars['ID'];
   priceFactor?: InputMaybe<Scalars['Float']>;
@@ -264,6 +269,11 @@ export type AssignProductsToChannelInput = {
 export type AssignPromotionsToChannelInput = {
   channelId: Scalars['ID'];
   promotionIds: Array<Scalars['ID']>;
+};
+
+export type AssignShippingMethodsToChannelInput = {
+  channelId: Scalars['ID'];
+  shippingMethodIds: Array<Scalars['ID']>;
 };
 
 export type AssignStockLocationsToChannelInput = {
@@ -2566,6 +2576,8 @@ export type Mutation = {
   assignCollectionsToChannel: Array<Collection>;
   /** Assigns Facets to the specified Channel */
   assignFacetsToChannel: Array<Facet>;
+  /** Assigns PaymentMethods to the specified Channel */
+  assignPaymentMethodsToChannel: Array<PaymentMethod>;
   /** Assigns ProductVariants to the specified Channel */
   assignProductVariantsToChannel: Array<ProductVariant>;
   /** Assigns all ProductVariants of Product to the specified Channel */
@@ -2574,6 +2586,8 @@ export type Mutation = {
   assignPromotionsToChannel: Array<Promotion>;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
+  /** Assigns ShippingMethods to the specified Channel */
+  assignShippingMethodsToChannel: Array<ShippingMethod>;
   /** Assigns StockLocations to the specified Channel */
   assignStockLocationsToChannel: Array<StockLocation>;
   /** Authenticates the user using a named authentication strategy */
@@ -2750,6 +2764,8 @@ export type Mutation = {
    * as well as removing any of the group's options from the Product's ProductVariants.
    */
   removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
+  /** Removes PaymentMethods from the specified Channel */
+  removePaymentMethodsFromChannel: Array<PaymentMethod>;
   /** Removes ProductVariants from the specified Channel */
   removeProductVariantsFromChannel: Array<ProductVariant>;
   /** Removes all ProductVariants of Product from the specified Channel */
@@ -2758,6 +2774,8 @@ export type Mutation = {
   removePromotionsFromChannel: Array<Promotion>;
   /** Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted. */
   removeSettledJobs: Scalars['Int'];
+  /** Removes ShippingMethods from the specified Channel */
+  removeShippingMethodsFromChannel: Array<ShippingMethod>;
   /** Removes StockLocations from the specified Channel */
   removeStockLocationsFromChannel: Array<StockLocation>;
   runPendingSearchIndexUpdates: Success;
@@ -2905,6 +2923,11 @@ export type MutationAssignFacetsToChannelArgs = {
 };
 
 
+export type MutationAssignPaymentMethodsToChannelArgs = {
+  input: AssignPaymentMethodsToChannelInput;
+};
+
+
 export type MutationAssignProductVariantsToChannelArgs = {
   input: AssignProductVariantsToChannelInput;
 };
@@ -2923,6 +2946,11 @@ export type MutationAssignPromotionsToChannelArgs = {
 export type MutationAssignRoleToAdministratorArgs = {
   administratorId: Scalars['ID'];
   roleId: Scalars['ID'];
+};
+
+
+export type MutationAssignShippingMethodsToChannelArgs = {
+  input: AssignShippingMethodsToChannelInput;
 };
 
 
@@ -3387,6 +3415,11 @@ export type MutationRemoveOptionGroupFromProductArgs = {
 };
 
 
+export type MutationRemovePaymentMethodsFromChannelArgs = {
+  input: RemovePaymentMethodsFromChannelInput;
+};
+
+
 export type MutationRemoveProductVariantsFromChannelArgs = {
   input: RemoveProductVariantsFromChannelInput;
 };
@@ -3405,6 +3438,11 @@ export type MutationRemovePromotionsFromChannelArgs = {
 export type MutationRemoveSettledJobsArgs = {
   olderThan?: InputMaybe<Scalars['DateTime']>;
   queueNames?: InputMaybe<Array<Scalars['String']>>;
+};
+
+
+export type MutationRemoveShippingMethodsFromChannelArgs = {
+  input: RemoveShippingMethodsFromChannelInput;
 };
 
 
@@ -5321,6 +5359,11 @@ export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseErr
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
 
+export type RemovePaymentMethodsFromChannelInput = {
+  channelId: Scalars['ID'];
+  paymentMethodIds: Array<Scalars['ID']>;
+};
+
 export type RemoveProductVariantsFromChannelInput = {
   channelId: Scalars['ID'];
   productVariantIds: Array<Scalars['ID']>;
@@ -5334,6 +5377,11 @@ export type RemoveProductsFromChannelInput = {
 export type RemovePromotionsFromChannelInput = {
   channelId: Scalars['ID'];
   promotionIds: Array<Scalars['ID']>;
+};
+
+export type RemoveShippingMethodsFromChannelInput = {
+  channelId: Scalars['ID'];
+  shippingMethodIds: Array<Scalars['ID']>;
 };
 
 export type RemoveStockLocationsFromChannelInput = {

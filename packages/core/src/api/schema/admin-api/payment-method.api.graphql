@@ -14,6 +14,12 @@ type Mutation {
     deletePaymentMethod(id: ID!, force: Boolean): DeletionResponse!
     "Delete multiple PaymentMethods"
     deletePaymentMethods(ids: [ID!]!, force: Boolean): [DeletionResponse!]!
+
+    "Assigns PaymentMethods to the specified Channel"
+    assignPaymentMethodsToChannel(input: AssignPaymentMethodsToChannelInput!): [PaymentMethod!]!
+
+    "Removes PaymentMethods from the specified Channel"
+    removePaymentMethodsFromChannel(input: RemovePaymentMethodsFromChannelInput!): [PaymentMethod!]!
 }
 
 type PaymentMethodList implements PaginatedList {
@@ -46,4 +52,14 @@ input UpdatePaymentMethodInput {
     checker: ConfigurableOperationInput
     handler: ConfigurableOperationInput
     translations: [PaymentMethodTranslationInput!]
+}
+
+input AssignPaymentMethodsToChannelInput {
+    paymentMethodIds: [ID!]!
+    channelId: ID!
+}
+
+input RemovePaymentMethodsFromChannelInput {
+    paymentMethodIds: [ID!]!
+    channelId: ID!
 }
