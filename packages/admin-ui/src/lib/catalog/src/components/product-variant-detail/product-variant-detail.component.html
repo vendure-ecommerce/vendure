@@ -61,7 +61,7 @@
                 <div>
                     <a
                         [routerLink]="['../../', 'options']"
-                        class="button"
+                        class="button mt-2"
                         *vdrIfPermissions="updatePermissions"
                     >
                         <clr-icon shape="pencil"></clr-icon>
@@ -80,7 +80,7 @@
                 </div>
                 <div>
                     <button
-                        class="btn btn-sm btn-secondary"
+                        class="button mt-2"
                         *vdrIfPermissions="updatePermissions"
                         (click)="selectFacetValue()"
                     >
@@ -226,37 +226,57 @@
                             >
                         </clr-toggle-wrapper>
                     </vdr-form-item>
-
-                    <ng-container
-                        *ngFor="let stockLevel of stockLevelsForm.controls"
-                        [formGroup]="stockLevel"
-                    >
-                        <vdr-form-field
-                            [label]="
-                                stockLevel.get('stockLocationName')?.value +
-                                ': ' +
-                                ('catalog.stock-on-hand' | translate)
-                            "
-                            [for]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
-                        >
-                            <input
-                                [id]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
-                                type="number"
-                                formControlName="stockOnHand"
-                                [readonly]="!(updatePermissions | hasPermission)"
-                            />
-                        </vdr-form-field>
-                        <vdr-form-item
-                            [label]="
-                                stockLevel.get('stockLocationName')?.value +
-                                ': ' +
-                                ('catalog.stock-allocated' | translate)
-                            "
-                        >
-                            {{ stockLevel.get('stockAllocated')?.value }}
-                        </vdr-form-item>
-                    </ng-container>
                 </div>
+                <div
+                    class="form-grid stock-levels"
+                    *ngFor="let stockLevel of stockLevelsForm.controls"
+                    [formGroup]="stockLevel"
+                >
+                    <vdr-form-field
+                        [label]="
+                            stockLevel.get('stockLocationName')?.value +
+                            ': ' +
+                            ('catalog.stock-on-hand' | translate)
+                        "
+                        [for]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
+                    >
+                        <input
+                            [id]="'stockOnHand_' + stockLevel.get('stockLocationId')?.value"
+                            type="number"
+                            formControlName="stockOnHand"
+                            [readonly]="!(updatePermissions | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-item
+                        [label]="
+                            stockLevel.get('stockLocationName')?.value +
+                            ': ' +
+                            ('catalog.stock-allocated' | translate)
+                        "
+                    >
+                        {{ stockLevel.get('stockAllocated')?.value }}
+                    </vdr-form-item>
+                </div>
+                <ng-container *ngIf="unusedStockLocation$ | async as unusedStockLocations">
+                    <div *ngIf="unusedStockLocations.length">
+                        <vdr-dropdown>
+                            <button class="button mt-2" vdrDropdownTrigger>
+                                <clr-icon shape="plus"></clr-icon>
+                                {{ 'catalog.add-stock-location' | translate }}
+                                <clr-icon shape="ellipsis-vertical"></clr-icon>
+                            </button>
+                            <vdr-dropdown-menu>
+                                <button
+                                    vdrDropdownItem
+                                    *ngFor="let stockLocation of unusedStockLocations"
+                                    (click)="addStockLocation(stockLocation)"
+                                >
+                                    <clr-icon shape="map-marker"></clr-icon> {{ stockLocation.name }}
+                                </button>
+                            </vdr-dropdown-menu>
+                        </vdr-dropdown>
+                    </div>
+                </ng-container>
             </vdr-card>
         </vdr-page-block>
     </vdr-page-detail-layout>

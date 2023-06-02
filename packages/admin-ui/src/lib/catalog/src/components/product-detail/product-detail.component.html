@@ -54,17 +54,19 @@
                 <vdr-card *vdrIfMultichannel [title]="'common.channels' | translate">
                     <vdr-form-item *vdrIfDefaultChannelActive>
                         <div class="flex channel-assignment">
-                            <ng-container *ngFor="let channel of productChannels$ | async">
-                                <vdr-chip
-                                    *ngIf="!isDefaultChannel(channel.code)"
-                                    icon="times-circle"
-                                    (iconClick)="removeFromChannel(channel.id)"
-                                >
-                                    <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
-                                    {{ channel.code | channelCodeToLabel }}
-                                </vdr-chip>
-                            </ng-container>
-                            <button class="btn btn-sm" (click)="assignToChannel()">
+                            <div class="mb-2">
+                                <ng-container *ngFor="let channel of productChannels$ | async">
+                                    <vdr-chip
+                                        *ngIf="!isDefaultChannel(channel.code)"
+                                        icon="times-circle"
+                                        (iconClick)="removeFromChannel(channel.id)"
+                                    >
+                                        <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+                                        {{ channel.code | channelCodeToLabel }}
+                                    </vdr-chip>
+                                </ng-container>
+                            </div>
+                            <button class="button" (click)="assignToChannel()">
                                 <clr-icon shape="layers"></clr-icon>
                                 {{ 'catalog.assign-to-channel' | translate }}
                             </button>
@@ -83,7 +85,7 @@
                     </vdr-chip>
                 </div>
                 <div>
-                    <a [routerLink]="['options']" class="button" *vdrIfPermissions="updatePermissions">
+                    <a [routerLink]="['options']" class="button mt-2" *vdrIfPermissions="updatePermissions">
                         <clr-icon shape="pencil"></clr-icon>
                         {{ 'catalog.edit-options' | translate }}
                     </a>
@@ -100,7 +102,7 @@
                 </div>
                 <div>
                     <button
-                        class="btn btn-sm btn-secondary"
+                        class="button mt-2"
                         *vdrIfPermissions="updatePermissions"
                         (click)="selectProductFacetValue()"
                     >

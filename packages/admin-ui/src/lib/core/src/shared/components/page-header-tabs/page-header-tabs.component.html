@@ -6,6 +6,7 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="routerLinkActiveOptions"
     >
+        <clr-icon *ngIf="tab.icon" [attr.shape]="tab.icon"></clr-icon>
         {{ tab.label | translate }}
     </a>
 </div>

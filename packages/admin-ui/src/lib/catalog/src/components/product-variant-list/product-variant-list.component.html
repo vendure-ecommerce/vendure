@@ -65,7 +65,9 @@
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false" [sort]="sorts.get('name')">
         <ng-template let-variant="item">
-            <a class="button-ghost" [routerLink]="['/catalog/inventory', variant.productId, 'variants', variant.id]"
+            <a
+                class="button-ghost"
+                [routerLink]="['/catalog/inventory', variant.productId, 'variants', variant.id]"
                 ><span>{{ variant.name }}</span
                 ><clr-icon shape="arrow right"
             /></a>
@@ -103,9 +105,8 @@
 
     <vdr-dt2-column [heading]="'catalog.stock-on-hand' | translate" [hiddenByDefault]="false">
         <ng-template let-variant="item">
-            <vdr-chip *ngFor="let stockLevel of variant.stockLevels">
+            <vdr-chip *ngFor="let stockLevel of variant.stockLevels" [title]="stockLevel.stockLocation?.name">
                 <div class="flex center">
-                  <!--  <clr-icon shape="map-marker" [title]="stockLevel.stockLocation.name"></clr-icon>-->
                     <div>
                         {{ stockLevel.stockOnHand
                         }}<span class="ml-1" *ngIf="stockLevel.stockAllocated"
@@ -116,8 +117,5 @@
             </vdr-chip>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-custom-field-column
-        *ngFor="let field of customFields"
-        [customField]="field"
-        [sorts]="sorts" />
+    <vdr-dt2-custom-field-column *ngFor="let field of customFields" [customField]="field" [sorts]="sorts" />
 </vdr-data-table-2>

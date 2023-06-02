@@ -99,7 +99,7 @@ export class ProductVariantDetailComponent
     >([]);
     assetChanges: SelectedAssets = {};
     taxCategories$: Observable<Array<ItemOf<GetProductVariantDetailQuery, 'taxCategories'>>>;
-    stockLocations$: Observable<ItemOf<GetProductVariantDetailQuery, 'stockLocations'>>;
+    unusedStockLocation$: Observable<Array<ItemOf<GetProductVariantDetailQuery, 'stockLocations'>>>;
     channelPriceIncludesTax$: Observable<boolean>;
     readonly GlobalFlag = GlobalFlag;
     globalTrackInventory: boolean;
@@ -125,6 +125,13 @@ export class ProductVariantDetailComponent
             this.changeDetector.markForCheck();
         });
         this.taxCategories$ = this.result$.pipe(map(data => data.taxCategories.items));
+        const stockLocations$ = this.result$.pipe(map(data => data.stockLocations.items));
+        this.unusedStockLocation$ = combineLatest(this.entity$, stockLocations$).pipe(
+            map(([entity, stockLocations]) => {
+                const usedIds = entity.stockLevels.map(l => l.stockLocation.id);
+                return stockLocations.filter(l => !usedIds.includes(l.id));
+            }),
+        );
         this.channelPriceIncludesTax$ = this.dataService.settings
             .getActiveChannel('cache-first')
             .refetchOnChannelChange()
@@ -151,6 +158,17 @@ export class ProductVariantDetailComponent
 
     ngOnDestroy() {
         this.destroy();
+    }
+
+    addStockLocation(stockLocation: ItemOf<GetProductVariantDetailQuery, 'stockLocations'>) {
+        this.stockLevelsForm.push(
+            this.formBuilder.group({
+                stockLocationId: stockLocation.id,
+                stockLocationName: stockLocation.name,
+                stockOnHand: 0,
+                stockAllocated: 0,
+            }),
+        );
     }
 
     save() {

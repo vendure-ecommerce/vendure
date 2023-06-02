@@ -132,7 +132,7 @@
             </tr>
             <ng-container *ngFor="let discount of order.discounts">
                 <tr class="order-adjustment" *ngIf="discount.type !== 'OTHER'">
-                    <td [attr.colspan]="visibleSortedColumns.length" class="">
+                    <td [attr.colspan]="visibleSortedColumns.length - 1" class="">
                         <a [routerLink]="getPromotionLink(discount)">{{ discount.description }}</a>
                         <vdr-chip *ngIf="getCouponCodeForAdjustment(order, discount) as couponCode">{{
                             couponCode

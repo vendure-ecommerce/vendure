@@ -8,3 +8,8 @@ vdr-product-variant-quick-jump {
     flex: 1;
     margin-right: calc(var(--space-unit) * 2);
 }
+.stock-levels {
+    margin-top: calc(var(--space-unit) * 2);
+    padding-top: calc(var(--space-unit) * 2);
+    border-top: 1px solid var(--color-weight-150);
+}
