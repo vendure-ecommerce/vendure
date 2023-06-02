@@ -63,18 +63,25 @@ export class AppComponent implements OnInit {
                 },
             });
 
-        this.dataService.client
-            .userStatus()
-            .mapStream(({ userStatus }) => userStatus.administratorId)
-            .subscribe(administratorId => {
-                this.localStorageService.setAdminId(administratorId);
+        this.dataService.client.userStatus().stream$.subscribe(({ userStatus }) => {
+            this.localStorageService.setAdminId(userStatus.administratorId);
+
+            if (userStatus.administratorId) {
                 const theme = this.localStorageService.get('activeTheme');
                 if (theme) {
                     this.dataService.client.setUiTheme(theme).subscribe(() => {
                         this.localStorageService.set('activeTheme', theme);
                     });
                 }
-            });
+                const activeChannelToken = this.localStorageService.get('activeChannelToken');
+                if (activeChannelToken) {
+                    const activeChannel = userStatus.channels.find(c => c.token === activeChannelToken);
+                    if (activeChannel) {
+                        this.dataService.client.setActiveChannel(activeChannel.id).subscribe();
+                    }
+                }
+            }
+        });
 
         if (isDevMode()) {
             // eslint-disable-next-line no-console
