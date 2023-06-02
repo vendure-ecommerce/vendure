@@ -144,20 +144,27 @@ export function createBulkDeleteAction<ItemType>(config: CreateBulkDeleteActionC
                         }
                     }),
                 )
-                .subscribe(deletedCount => {
-                    if (deletedCount) {
+                .subscribe({
+                    next: deletedCount => {
+                        if (deletedCount) {
+                            hostComponent.refresh();
+                            clearSelection();
+                            notificationService.success(_('common.notify-delete-success-with-count'), {
+                                count: deletedCount,
+                            });
+                        }
+                        const notDeletedCount = selection.length - deletedCount;
+                        if (0 < notDeletedCount && notDeletedCount < selection.length) {
+                            notificationService.error(_('common.notify-delete-error-with-count'), {
+                                count: notDeletedCount,
+                            });
+                        }
                         hostComponent.refresh();
                         clearSelection();
-                        notificationService.success(_('common.notify-delete-success-with-count'), {
-                            count: deletedCount,
-                        });
-                    }
-                    const notDeletedCount = selection.length - deletedCount;
-                    if (0 < notDeletedCount && notDeletedCount < selection.length) {
-                        notificationService.error(_('common.notify-delete-error-with-count'), {
-                            count: notDeletedCount,
-                        });
-                    }
+                    },
+                    error: err => {
+                        notificationService.error(_('common.notify-delete-error'));
+                    },
                 });
         },
     };

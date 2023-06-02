@@ -90,6 +90,9 @@ export function tooltipPlugin(userOptions?: any) {
 
         on('mousemove', undefined, (event: MouseEvent) => {
             const closestPoint = getClosestPoint(event.clientX);
+            if (!closestPoint) {
+                return;
+            }
             points.forEach(point => point.event.element.removeClass('ct-tooltip-hover'));
             closestPoint.element.addClass('ct-tooltip-hover');
 

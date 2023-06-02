@@ -62,6 +62,11 @@ import { ProductVariantQuickJumpComponent } from './components/product-variant-q
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { StockLocationDetailComponent } from './components/stock-location-detail/stock-location-detail.component';
+import {
+    assignStockLocationsToChannelBulkAction,
+    deleteStockLocationsBulkAction,
+    removeStockLocationsFromChannelBulkAction,
+} from './components/stock-location-list/stock-location-list-bulk-actions';
 import { StockLocationListComponent } from './components/stock-location-list/stock-location-list.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
@@ -133,6 +138,10 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(assignCollectionsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
+
+        bulkActionRegistryService.registerBulkAction(assignStockLocationsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeStockLocationsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteStockLocationsBulkAction);
 
         pageService.registerPageTab({
             location: 'product-list',
