@@ -11,7 +11,11 @@ import {
 } from '@vendure/admin-ui/core';
 
 import { PromotionDetailComponent } from './components/promotion-detail/promotion-detail.component';
-import { deletePromotionsBulkAction } from './components/promotion-list/promotion-list-bulk-actions';
+import {
+    assignPromotionsToChannelBulkAction,
+    deletePromotionsBulkAction,
+    removePromotionsFromChannelBulkAction,
+} from './components/promotion-list/promotion-list-bulk-actions';
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
 import { createRoutes } from './marketing.routes';
 
@@ -29,6 +33,8 @@ import { createRoutes } from './marketing.routes';
 })
 export class MarketingModule {
     constructor(private bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        bulkActionRegistryService.registerBulkAction(assignPromotionsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removePromotionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deletePromotionsBulkAction);
 
         pageService.registerPageTab({

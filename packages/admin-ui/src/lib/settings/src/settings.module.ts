@@ -31,6 +31,11 @@ import { deleteCountriesBulkAction } from './components/country-list/country-lis
 import { CountryListComponent } from './components/country-list/country-list.component';
 import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
+import {
+    assignPaymentMethodsToChannelBulkAction,
+    deletePaymentMethodsBulkAction,
+    removePaymentMethodsFromChannelBulkAction,
+} from './components/payment-method-list/payment-method-list-bulk-actions';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { PermissionGridComponent } from './components/permission-grid/permission-grid.component';
 import { ProfileComponent } from './components/profile/profile.component';
@@ -42,7 +47,11 @@ import { deleteSellersBulkAction } from './components/seller-list/seller-list-bu
 import { SellerListComponent } from './components/seller-list/seller-list.component';
 import { ShippingEligibilityTestResultComponent } from './components/shipping-eligibility-test-result/shipping-eligibility-test-result.component';
 import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
-import { deleteShippingMethodsBulkAction } from './components/shipping-method-list/shipping-method-list-bulk-actions';
+import {
+    assignShippingMethodsToChannelBulkAction,
+    deleteShippingMethodsBulkAction,
+    removeShippingMethodsFromChannelBulkAction,
+} from './components/shipping-method-list/shipping-method-list-bulk-actions';
 import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
 import { ShippingMethodTestResultComponent } from './components/shipping-method-test-result/shipping-method-test-result.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
@@ -111,14 +120,29 @@ import { createRoutes } from './settings.routes';
 export class SettingsModule {
     constructor(private bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
         bulkActionRegistryService.registerBulkAction(deleteSellersBulkAction);
+
         bulkActionRegistryService.registerBulkAction(deleteChannelsBulkAction);
+
         bulkActionRegistryService.registerBulkAction(deleteAdministratorsBulkAction);
+
         bulkActionRegistryService.registerBulkAction(deleteRolesBulkAction);
+
+        bulkActionRegistryService.registerBulkAction(assignShippingMethodsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeShippingMethodsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteShippingMethodsBulkAction);
+
+        bulkActionRegistryService.registerBulkAction(assignPaymentMethodsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removePaymentMethodsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(deletePaymentMethodsBulkAction);
+
         bulkActionRegistryService.registerBulkAction(deleteTaxCategoriesBulkAction);
+
         bulkActionRegistryService.registerBulkAction(deleteTaxRatesBulkAction);
+
         bulkActionRegistryService.registerBulkAction(deleteCountriesBulkAction);
+
         bulkActionRegistryService.registerBulkAction(deleteZonesBulkAction);
+
         bulkActionRegistryService.registerBulkAction(removeZoneMembersBulkAction);
 
         pageService.registerPageTab({

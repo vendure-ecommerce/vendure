@@ -14,7 +14,7 @@
             <button
                 class="btn btn-primary"
                 *ngIf="isNew$ | async; else updateButton"
-                [disabled]="detailForm.pristine || detailForm.invalid"
+                [disabled]="detailForm.pristine || detailForm.invalid || !selectedHandler"
                 (click)="create()"
             >
                 {{ 'common.create' | translate }}
