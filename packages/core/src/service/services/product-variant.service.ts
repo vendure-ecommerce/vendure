@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
     AssignProductVariantsToChannelInput,
     CreateProductVariantInput,
+    CurrencyCode,
     DeletionResponse,
     DeletionResult,
     GlobalFlag,
@@ -238,6 +239,15 @@ export class ProductVariantService {
             channelId: ctx.channelId,
         });
         return variant.channels;
+    }
+
+    async getProductVariantPrices(ctx: RequestContext, productVariantId: ID): Promise<ProductVariantPrice[]> {
+        return this.connection
+            .getRepository(ctx, ProductVariantPrice)
+            .createQueryBuilder('pvp')
+            .where('pvp.productVariant = :productVariantId', { productVariantId })
+            .andWhere('pvp.channelId = :channelId', { channelId: ctx.channelId })
+            .getMany();
     }
 
     /**
@@ -513,30 +523,67 @@ export class ProductVariantService {
         if (input.price != null) {
             await this.createOrUpdateProductVariantPrice(ctx, input.id, input.price, ctx.channelId);
         }
+        if (input.prices) {
+            for (const priceInput of input.prices) {
+                if (priceInput.delete === true) {
+                    const variantPrice = await this.connection
+                        .getRepository(ctx, ProductVariantPrice)
+                        .findOne({
+                            where: {
+                                variant: { id: input.id },
+                                channelId: ctx.channelId,
+                                currencyCode: priceInput.currencyCode,
+                            },
+                        });
+                    if (variantPrice) {
+                        await this.connection.getRepository(ctx, ProductVariantPrice).remove(variantPrice);
+                    }
+                } else {
+                    await this.createOrUpdateProductVariantPrice(
+                        ctx,
+                        input.id,
+                        priceInput.price,
+                        ctx.channelId,
+                        priceInput.currencyCode,
+                    );
+                }
+            }
+        }
         return updatedVariant.id;
     }
 
     /**
      * @description
      * Creates a {@link ProductVariantPrice} for the given ProductVariant/Channel combination.
+     * If the `currencyCode` is not specified, the default currency of the Channel will be used.
      */
     async createOrUpdateProductVariantPrice(
         ctx: RequestContext,
         productVariantId: ID,
         price: number,
         channelId: ID,
+        currencyCode?: CurrencyCode,
     ): Promise<ProductVariantPrice> {
         let variantPrice = await this.connection.getRepository(ctx, ProductVariantPrice).findOne({
             where: {
                 variant: { id: productVariantId },
                 channelId,
+                currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
             },
         });
+        if (currencyCode) {
+            const channel = await this.channelService.findOne(ctx, channelId);
+            if (!channel?.availableCurrencyCodes.includes(currencyCode)) {
+                throw new UserInputError('error.currency-not-available-in-channel', {
+                    currencyCode,
+                });
+            }
+        }
         if (!variantPrice) {
             variantPrice = new ProductVariantPrice({
                 channelId,
                 variant: new ProductVariant({ id: productVariantId }),
-                currencyCode: ctx.currencyCode,
+                currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
             });
         }
         variantPrice.price = price;

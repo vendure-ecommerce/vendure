@@ -7,11 +7,17 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { PRODUCT_VARIANT_FRAGMENT, PRODUCT_WITH_OPTIONS_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { DeletionResult, ErrorCode, LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
+import {
+    DeletionResult,
+    ErrorCode,
+    LanguageCode,
+    SortOrder,
+    UpdateChannelDocument,
+} from './graphql/generated-e2e-admin-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
@@ -24,7 +30,6 @@ import {
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_VARIANT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
-    UPDATE_CHANNEL,
     UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -36,7 +41,6 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
-        // logger: new DefaultLogger(),
     });
 
     const removeOptionGuard: ErrorResultGuard<Codegen.ProductWithOptionsFragment> = createErrorResultGuard(
@@ -1966,10 +1970,7 @@ describe('Product resolver', () => {
 
                 afterAll(async () => {
                     // Restore the default language to English for the subsequent tests
-                    await adminClient.query<
-                        Codegen.UpdateChannelMutation,
-                        Codegen.UpdateChannelMutationVariables
-                    >(UPDATE_CHANNEL, {
+                    await adminClient.query(UpdateChannelDocument, {
                         input: {
                             id: 'T_1',
                             defaultLanguageCode: LanguageCode.en,
@@ -1991,10 +1992,7 @@ describe('Product resolver', () => {
                     expect(product1?.variants.length).toBe(1);
 
                     // Change the default language of the channel to "de"
-                    const { updateChannel } = await adminClient.query<
-                        Codegen.UpdateChannelMutation,
-                        Codegen.UpdateChannelMutationVariables
-                    >(UPDATE_CHANNEL, {
+                    const { updateChannel } = await adminClient.query(UpdateChannelDocument, {
                         input: {
                             id: 'T_1',
                             defaultLanguageCode: LanguageCode.de,

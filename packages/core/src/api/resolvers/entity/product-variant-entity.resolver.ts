@@ -1,5 +1,9 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { CurrencyCode, StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import {
+    CurrencyCode,
+    ProductVariantPrice,
+    StockMovementListOptions,
+} from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -202,5 +206,18 @@ export class ProductVariantAdminEntityResolver {
         @Parent() productVariant: ProductVariant,
     ): Promise<StockLevel[]> {
         return this.stockLevelService.getStockLevelsForVariant(ctx, productVariant.id);
+    }
+
+    @ResolveField()
+    async prices(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<ProductVariantPrice[]> {
+        if (productVariant.productVariantPrices) {
+            return productVariant.productVariantPrices.filter(pvp =>
+                idsAreEqual(pvp.channelId, ctx.channelId),
+            );
+        }
+        return this.productVariantService.getProductVariantPrices(ctx, productVariant.id);
     }
 }

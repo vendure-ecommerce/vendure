@@ -3,6 +3,11 @@ type Product implements Node {
     channels: [Channel!]!
 }
 
+type ProductVariantPrice {
+    currencyCode: CurrencyCode!
+    price: Int!
+}
+
 type ProductVariant implements Node {
     enabled: Boolean!
     trackInventory: GlobalFlag!
@@ -10,6 +15,7 @@ type ProductVariant implements Node {
     stockAllocated: Int! @deprecated(reason: "use stockLevels")
     outOfStockThreshold: Int!
     useGlobalOutOfStockThreshold: Boolean!
+    prices: [ProductVariantPrice!]!
     stockLevels: [StockLevel!]!
     stockMovements(options: StockMovementListOptions): StockMovementList!
     channels: [Channel!]!

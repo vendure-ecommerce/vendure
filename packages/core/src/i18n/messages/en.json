@@ -16,6 +16,7 @@
     "conditions-required-for-action": "The PromotionAction '{ action }' requires the following conditions: { conditions }",
     "configurable-argument-is-required": "The argument '{ name }' is required",
     "country-code-not-valid": "The countryCode \"{ countryCode }\" was not recognized",
+    "currency-not-available-in-channel": "The currency \"{ currencyCode }\" is not available in the current Channel",
     "customer-does-not-belong-to-customer-group": "Customer does not belong to this CustomerGroup",
     "default-channel-not-found": "Default channel not found",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",

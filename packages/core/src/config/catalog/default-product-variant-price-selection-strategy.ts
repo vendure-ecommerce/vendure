@@ -6,10 +6,18 @@ import { ProductVariantPriceSelectionStrategy } from './product-variant-price-se
 
 /**
  * @description
- * The default strategy for selecting the price for a ProductVariant in a given Channel.
+ * The default strategy for selecting the price for a ProductVariant in a given Channel. It
+ * first filters all available prices to those which are in the current Channel, and then
+ * selects the first price which matches the current currency.
+ *
+ * @docsCategory configuration
+ * @docsPage ProductVariantPriceSelectionStrategy
+ * @since 2.0.0
  */
 export class DefaultProductVariantPriceSelectionStrategy implements ProductVariantPriceSelectionStrategy {
     selectPrice(ctx: RequestContext, prices: ProductVariantPrice[]) {
-        return prices.find(p => idsAreEqual(p.channelId, ctx.channelId));
+        const pricesInChannel = prices.filter(p => idsAreEqual(p.channelId, ctx.channelId));
+        const priceInCurrency = pricesInChannel.find(p => p.currencyCode === ctx.currencyCode);
+        return priceInCurrency || pricesInChannel[0];
     }
 }

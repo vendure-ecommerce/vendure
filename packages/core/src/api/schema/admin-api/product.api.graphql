@@ -129,6 +129,16 @@ input StockLevelInput {
     stockOnHand: Int!
 }
 
+"""
+Used to set up update the price of a ProductVariant in a particular Channel.
+If the `delete` flag is `true`, the price will be deleted for the given Channel.
+"""
+input ProductVariantPriceInput {
+    currencyCode: CurrencyCode!
+    price: Money!
+    delete: Boolean
+}
+
 input CreateProductVariantInput {
     productId: ID!
     translations: [ProductVariantTranslationInput!]!
@@ -154,7 +164,14 @@ input UpdateProductVariantInput {
     optionIds: [ID!]
     sku: String
     taxCategoryId: ID
+    """
+    Sets the price for the ProductVariant in the Channel's default currency
+    """
     price: Money
+    """
+    Allows multiple prices to be set for the ProductVariant in different currencies.
+    """
+    prices: [ProductVariantPriceInput!]
     featuredAssetId: ID
     assetIds: [ID!]
     stockOnHand: Int
