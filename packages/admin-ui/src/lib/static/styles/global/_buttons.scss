@@ -15,7 +15,8 @@
         0px 2px 6px rgba(0, 0, 0, 0.03), 0px 2px 11px rgba(0, 0, 0, 0.04);
     background-color: var(--color-button-bg);
     color: var(--color-weight-700);
-    &:link, &:visited {
+    &:link,
+    &:visited {
         color: var(--color-weight-700);
     }
     &:disabled {
@@ -83,7 +84,7 @@ a.button-ghost:hover {
 }
 
 .button-small {
-    display: flex;
+    display: inline-flex;
     white-space: nowrap;
     flex-direction: row;
     justify-content: flex-end;
@@ -97,15 +98,8 @@ a.button-ghost:hover {
     border: none;
     border-radius: var(--border-radius-lg);
     cursor: pointer;
-    &.primary {
-        &:not(:disabled) {
-            background-color: var(--color-primary-700);
-            color: white;
-            &:hover {
-                background-color: var(--color-primary-800);
-                color: white;
-            }
-        }
+    &:not(:disabled):hover {
+        background-color: var(--color-button-small-hover-bg);
     }
 }
 a.button-small:link,

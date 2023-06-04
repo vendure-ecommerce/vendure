@@ -12,7 +12,7 @@
                     <clr-icon shape="arrow right"></clr-icon>
                 </a>
             </div>
-            <vdr-form-field *ngIf="editable" [label]="'common.name' | translate">
+            <vdr-form-field *ngIf="editable" [label]="'common.name' | translate" class="mb-2">
                 <input
                     type="text"
                     [formControl]="form.get('name')"
@@ -44,9 +44,9 @@
                     {{ fpy | number : '1.2-2' }}</span
                 >
                 <span *ngIf="!fpx">{{ 'common.not-set' | translate }}</span>
-                <div class="flex">
+                <div class="flex mt-1">
                     <button
-                        class="button-small"
+                        class="button-small mr-1"
                         [disabled]="settingFocalPoint"
                         (click)="setFocalPointStart()"
                     >
@@ -66,7 +66,7 @@
             <vdr-labeled-data [label]="'common.tags' | translate">
                 <ng-container *ngIf="editable">
                     <vdr-tag-selector [formControl]="form.get('tags')"></vdr-tag-selector>
-                    <button class="button-ghost" (click)="manageTags()">
+                    <button class="button-small mt-1" (click)="manageTags()">
                         <clr-icon shape="tags"></clr-icon>
                         {{ 'common.manage-tags' | translate }}
                     </button>

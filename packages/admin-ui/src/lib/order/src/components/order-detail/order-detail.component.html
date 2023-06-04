@@ -5,7 +5,7 @@
         <vdr-ab-right>
             <vdr-action-bar-items locationId="order-detail"></vdr-action-bar-items>
             <button
-                class="btn btn-primary"
+                class="button primary mr-1"
                 *ngIf="
                     order.type !== 'Aggregate' &&
                     (order.state === 'ArrangingPayment' || order.state === 'ArrangingAdditionalPayment') &&
@@ -17,7 +17,7 @@
                 ({{ outstandingPaymentAmount(order) | localeCurrency : order.currencyCode }})
             </button>
             <button
-                class="btn btn-primary"
+                class="button primary mr-1"
                 *ngIf="
                     order.type !== 'Aggregate' &&
                     order.active === false &&
@@ -31,7 +31,7 @@
             </button>
             <button
                 *ngIf="order.type !== 'Aggregate'"
-                class="btn btn-primary"
+                class="button primary mr-1"
                 (click)="fulfillOrder()"
                 [disabled]="!canAddFulfillment(order)"
             >
@@ -108,6 +108,7 @@
         <vdr-card [title]="'order.customer' | translate">
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
             <vdr-labeled-data
+                class="mt-2"
                 [label]="'order.shipping-address' | translate"
                 *ngIf="getOrderAddressLines(order.shippingAddress).length"
             >

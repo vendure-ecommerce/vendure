@@ -5,11 +5,9 @@ import {
     CanDeactivateDetailGuard,
     createResolveData,
     DataService,
-    GetProfileDetailDocument,
     PageComponent,
     PageService,
 } from '@vendure/admin-ui/core';
-import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
@@ -157,7 +155,7 @@ export function productOptionsEditorBreadcrumb(data: any, params: any) {
             },
             {
                 label: `${entity.name}`,
-                link: ['../', 'inventory', params.id, { tab: 'variants' }],
+                link: ['../', 'inventory', params.id],
             },
             {
                 label: _('breadcrumb.product-options'),

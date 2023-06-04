@@ -33,6 +33,7 @@ label.rich-text-label {
     background: var(--color-form-input-bg);
     color: var(--color-text-100);
     min-height: 128px;
+    max-height: 600px;
     min-width: 200px;
     border: 1px solid var(--color-component-border-200);
     border-radius: 0 0 var(--border-radius-input) var(--border-radius-input);

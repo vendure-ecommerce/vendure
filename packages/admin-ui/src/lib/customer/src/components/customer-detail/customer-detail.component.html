@@ -57,7 +57,7 @@
             </ng-template>
             <div>
                 <button
-                    class="button mt-1"
+                    class="button-small mt-1"
                     (click)="addToGroup()"
                     *vdrIfPermissions="'UpdateCustomerGroup'"
                 >
@@ -154,7 +154,7 @@
                     (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
                     (deleteAddress)="toggleDeleteAddress($event)"
                 ></vdr-address-card>
-                <button class="btn btn-secondary" (click)="addAddress()" *vdrIfPermissions="'UpdateCustomer'">
+                <button class="btn btn-secondary mt-2" (click)="addAddress()" *vdrIfPermissions="'UpdateCustomer'">
                     <clr-icon shape="plus"></clr-icon>
                     {{ 'customer.create-new-address' | translate }}
                 </button>
