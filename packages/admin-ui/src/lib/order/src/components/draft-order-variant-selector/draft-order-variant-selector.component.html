@@ -7,12 +7,12 @@
     </div>
     <div class="card-block" *ngIf="selectedVariant$ | async as selectedVariant">
         <div class="variant-details">
-            <img class="mr2" [src]="selectedVariant.featuredAsset || selectedVariant.product.featuredAsset | assetPreview: 32">
+            <img class="mr-2" [src]="selectedVariant.featuredAsset || selectedVariant.product.featuredAsset | assetPreview: 32">
             <div class="details">
                 <div>{{ selectedVariant?.name }}</div>
                 <div class="small">{{ selectedVariant?.sku }}</div>
             </div>
-            <div class="details ml4">
+            <div class="details ml-4">
                 <div class="small">
                     {{ 'catalog.stock-on-hand' | translate }}: {{ selectedVariant.stockOnHand }}
                 </div>

@@ -57,6 +57,7 @@ export type PageLocationId =
     | 'customer-list'
     | 'customer-group-list'
     | 'customer-group-detail'
+    | 'draft-order-detail'
     | 'facet-detail'
     | 'facet-list'
     | 'global-setting-detail'

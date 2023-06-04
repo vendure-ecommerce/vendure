@@ -30,15 +30,13 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: 'draft/:id',
-        component: DraftOrderDetailComponent,
-        resolve: {
-            entity: OrderResolver,
-        },
+        component: PageComponent,
         canActivate: [OrderGuard],
-        canDeactivate: [CanDeactivateDetailGuard],
         data: {
-            breadcrumb: orderBreadcrumb,
+            locationId: 'draft-order-detail',
+            breadcrumb: { label: _('breadcrumb.orders'), link: ['../'] },
         },
+        children: pageService.getPageTabRoutes('draft-order-detail'),
     },
     {
         path: ':id',
@@ -68,7 +66,6 @@ export const createRoutes = (pageService: PageService): Route[] => [
         resolve: {
             entity: OrderResolver,
         },
-        // canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: modifyingOrderBreadcrumb,
         },

@@ -517,6 +517,7 @@
     "amount": "Amount",
     "arrange-additional-payment": "Arrange additional payment",
     "billing-address": "Billing address",
+    "draft-order": "Draft order",
     "cancel": "Cancel",
     "cancel-entire-order": "Cancel entire order",
     "cancel-fulfillment": "Cancel fulfillment",

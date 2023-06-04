@@ -124,5 +124,21 @@ export class OrderModule {
                 ],
             }),
         });
+        pageService.registerPageTab({
+            location: 'draft-order-detail',
+            tab: _('order.order'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: DraftOrderDetailComponent,
+                query: OrderDetailQueryDocument,
+                entityKey: 'order',
+                getBreadcrumbs: entity => [
+                    {
+                        label: _('order.draft-order'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
     }
 }

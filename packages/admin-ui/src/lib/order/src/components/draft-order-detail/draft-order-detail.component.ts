@@ -1,10 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
-    CustomFieldConfig,
     DataService,
     DeletionResult,
     DraftOrderEligibleShippingMethodsQuery,
@@ -12,7 +9,8 @@ import {
     NotificationService,
     Order,
     OrderDetailFragment,
-    ServerConfigService,
+    OrderDetailQueryDocument,
+    TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
@@ -29,30 +27,27 @@ import { SelectShippingMethodDialogComponent } from '../select-shipping-method-d
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DraftOrderDetailComponent
-    extends BaseDetailComponent<OrderDetailFragment>
+    extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>
     implements OnInit, OnDestroy
 {
+    customFields = this.getCustomFieldConfig('Order');
+    orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
     detailForm = new UntypedFormGroup({});
     eligibleShippingMethods$: Observable<
         DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder']
     >;
     nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();
-    customFields: CustomFieldConfig[];
-    orderLineCustomFields: CustomFieldConfig[];
     displayCouponCodeInput = false;
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
         private orderTransitionService: OrderTransitionService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {
@@ -67,8 +62,6 @@ export class DraftOrderDetailComponent
                     ),
             ),
         );
-        this.customFields = this.getCustomFieldConfig('Order');
-        this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
     }
 
     ngOnDestroy() {
