@@ -1,21 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
     ChannelService,
-    DataService,
-    DataTableService,
-    GetOrderListQuery,
+    GetOrderListDocument,
     getOrderStateTranslationToken,
-    ItemOf,
-    LocalStorageService,
-    NavBuilderService,
-    OrderFilterParameter,
     OrderListOptions,
-    OrderSortParameter,
     OrderType,
     ServerConfigService,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
 import { tap } from 'rxjs/operators';
@@ -27,13 +19,12 @@ import { tap } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderListComponent
-    extends BaseListComponent<GetOrderListQuery, ItemOf<GetOrderListQuery, 'orders'>>
+    extends TypedBaseListComponent<typeof GetOrderListDocument, 'orders'>
     implements OnInit
 {
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Order');
-    readonly filters = this.dataTableService
-        .createFilterCollection<OrderFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('Order');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'active',
@@ -77,8 +68,7 @@ export class OrderListComponent
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
-    readonly sorts = this.dataTableService
-        .createSortCollection<OrderSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('updatedAt', 'DESC')
         .addSort({ name: 'id' })
         .addSort({ name: 'createdAt' })
@@ -93,32 +83,15 @@ export class OrderListComponent
     canCreateDraftOrder = false;
     private activeChannelIsDefaultChannel = false;
 
-    constructor(
-        private serverConfigService: ServerConfigService,
-        private dataService: DataService,
-        private localStorageService: LocalStorageService,
-        private channelService: ChannelService,
-        private dataTableService: DataTableService,
-        navBuilderService: NavBuilderService,
-        router: Router,
-        route: ActivatedRoute,
-    ) {
-        super(router, route);
-        navBuilderService.addActionBarItem({
-            id: 'create-draft-order',
-            label: _('catalog.create-draft-order'),
-            locationId: 'order-list',
-            icon: 'plus',
-            routerLink: ['./draft/create'],
-            requiresPermission: ['CreateOrder'],
+    constructor(protected serverConfigService: ServerConfigService, private channelService: ChannelService) {
+        super();
+        super.configure({
+            document: GetOrderListDocument,
+            getItems: result => result.orders,
+            setVariables: (skip, take) => this.createQueryOptions(skip, take, this.searchTermControl.value),
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
         });
-        super.setQueryFn(
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),
-            data => data.orders,
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            (skip, take) => this.createQueryOptions(skip, take, this.searchTermControl.value),
-        );
+
         this.canCreateDraftOrder = !!this.serverConfigService
             .getOrderProcessStates()
             .find(state => state.name === 'Created')

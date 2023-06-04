@@ -92,7 +92,6 @@ export * from './providers/data-table/data-table-filter-collection';
 export * from './providers/data-table/data-table-filter';
 export * from './providers/data-table/data-table-sort-collection';
 export * from './providers/data-table/data-table-sort';
-export * from './providers/data-table/data-table.service';
 export * from './providers/guard/auth.guard';
 export * from './providers/health-check/health-check.service';
 export * from './providers/i18n/custom-http-loader';

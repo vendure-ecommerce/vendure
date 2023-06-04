@@ -1,22 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
-    CollectionFilterParameter,
-    CollectionSortParameter,
     DataService,
-    DataTableService,
+    GetCollectionListDocument,
     GetCollectionListQuery,
     ItemOf,
     LanguageCode,
-    ModalService,
-    NavBuilderService,
     NotificationService,
-    ServerConfigService,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
-import { combineLatest, EMPTY, Observable, of } from 'rxjs';
-import { distinctUntilChanged, map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs/operators';
 import { CollectionOrderEvent } from '../collection-data-table/collection-data-table.component';
 
 @Component({
@@ -26,19 +20,16 @@ import { CollectionOrderEvent } from '../collection-data-table/collection-data-t
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionListComponent
-    extends BaseListComponent<GetCollectionListQuery, ItemOf<GetCollectionListQuery, 'collections'>>
+    extends TypedBaseListComponent<typeof GetCollectionListDocument, 'collections'>
     implements OnInit
 {
     activeCollectionId$: Observable<string | null>;
     activeCollectionIndex$: Observable<number>;
     activeCollectionTitle$: Observable<string>;
     subCollections$: Observable<Array<ItemOf<GetCollectionListQuery, 'collections'>>>;
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
     expandedIds: string[] = [];
-    readonly customFields = this.serverConfigService.getCustomFieldsFor('Collection');
-    readonly filters = this.dataTableService
-        .createFilterCollection<CollectionFilterParameter>()
+    readonly customFields = this.getCustomFieldConfig('Collection');
+    readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilter({
             name: 'slug',
@@ -56,8 +47,7 @@ export class CollectionListComponent
         })
         .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
-    readonly sorts = this.dataTableService
-        .createSortCollection<CollectionSortParameter>()
+    readonly sorts = this.createSortCollection()
         .defaultSort('position', 'ASC')
         .addSort({ name: 'createdAt' })
         .addSort({ name: 'updatedAt' })
@@ -67,21 +57,12 @@ export class CollectionListComponent
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(
-        private dataService: DataService,
-        private notificationService: NotificationService,
-        private modalService: ModalService,
-        router: Router,
-        route: ActivatedRoute,
-        private serverConfigService: ServerConfigService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private dataTableService: DataTableService,
-    ) {
-        super(router, route);
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.collection.getCollections().refetchOnChannelChange(),
-            data => data.collections,
-            (skip, _take) => {
+    constructor(protected dataService: DataService, private notificationService: NotificationService) {
+        super();
+        super.configure({
+            document: GetCollectionListDocument,
+            getItems: data => data.collections,
+            setVariables: (skip, _take) => {
                 const topLevelOnly =
                     this.searchTermControl.value === '' && this.filters.activeFilters.length === 0
                         ? true
@@ -99,7 +80,8 @@ export class CollectionListComponent
                     },
                 };
             },
-        );
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 
     ngOnInit() {
@@ -166,13 +148,6 @@ export class CollectionListComponent
                 return -1;
             }),
         );
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage)
-            .pipe(tap(() => this.refresh()));
-
-        super.refreshListOnChanges(this.contentLanguage$, this.filters.valueChanges, this.sorts.valueChanges);
     }
 
     onRearrange(event: CollectionOrderEvent) {
@@ -185,40 +160,6 @@ export class CollectionListComponent
                 this.notificationService.error(_('common.notify-save-changes-error'));
             },
         });
-    }
-
-    deleteCollection(id: string) {
-        this.items$
-            .pipe(
-                take(1),
-                map(items => -1 < items.findIndex(i => i.parentId === id)),
-                switchMap(hasChildren =>
-                    this.modalService.dialog({
-                        title: _('catalog.confirm-delete-collection'),
-                        body: hasChildren
-                            ? _('catalog.confirm-delete-collection-and-children-body')
-                            : undefined,
-                        buttons: [
-                            { type: 'secondary', label: _('common.cancel') },
-                            { type: 'danger', label: _('common.delete'), returnValue: true },
-                        ],
-                    }),
-                ),
-                switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Collection',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Collection',
-                    });
-                },
-            );
     }
 
     closeContents() {
