@@ -63,7 +63,7 @@ For example, switching to the `ace-parts` Channel, and then creating a new Produ
 {{< alert "warning" >}}
 **Note:** Care must be taken if you log in with the superadmin account in the default Channel, especially with regard to prices and currencies.
 
-See more details see the Channels guide on [Channels, currencies & prices]({{< relref "/docs/developer-guide/channels" >}}#channels-currencies--prices), and in particular the [multiple shops use-cases]({{< relref "/docs/developer-guide/channels" >}}#use-case-multiple-separate-shops)
+See more details see the Channels guide on [Channels, currencies & prices]({{< relref "/developer-guide/channels" >}}#channels-currencies--prices), and in particular the [multiple shops use-cases]({{< relref "/developer-guide/channels" >}}#use-case-multiple-separate-shops)
 {{< /alert >}}
 
 ## The Storefront
@@ -76,7 +76,7 @@ https://my-vendure-server.com/shop-api?vendure-token=best-choice
 
 ## Determining the Active Channel
 
-When developing plugins and writing custom server code in general, you'll often want to know the Channel that the current request is using. This can be determined from the [RequestContext.channel]({{< relref "/docs/typescript-api/request/request-context" >}}#channel) property.
+When developing plugins and writing custom server code in general, you'll often want to know the Channel that the current request is using. This can be determined from the [RequestContext.channel]({{< relref "/typescript-api/request/request-context" >}}#channel) property.
 
 ```TypeScript
 createPayment: async (ctx, order, amount, args) => {

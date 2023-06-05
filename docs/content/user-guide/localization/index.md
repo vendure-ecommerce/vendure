@@ -29,7 +29,7 @@ Vendure supports **admin-facing** (Admin API and Admin UI) localization by allow
 
 ## How to enable languages
 
-To select the set of languages you wish to create translations for, set them in the [global settings]({{< relref "/docs/user-guide/settings/global-settings" >}}).
+To select the set of languages you wish to create translations for, set them in the [global settings]({{< relref "/user-guide/settings/global-settings" >}}).
 
 Once more than one language is enabled, you will see a language switcher appear when editing the object types listed above.
 

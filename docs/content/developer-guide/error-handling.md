@@ -125,4 +125,4 @@ mutation ApplyCoupon($code: String!) {
 
 This ensures that your client code is aware of and handles all the usual error cases.
 
-You can see all the ErrorResult types returned by the Shop API mutations in the [Shop API Mutations docs]({{< relref "/docs/graphql-api/shop/mutations" >}}). 
+You can see all the ErrorResult types returned by the Shop API mutations in the [Shop API Mutations docs]({{< relref "/graphql-api/shop/mutations" >}}). 

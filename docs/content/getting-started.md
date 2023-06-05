@@ -73,6 +73,6 @@ Log in with the superadmin credentials:
 
 ## Next Steps
 
-* Learn more about [Configuration]({{< relref "/docs/developer-guide/configuration" >}}) of your Vendure server.
-* Get a better understanding of how Vendure works by reading the [Architecture Overview]({{< relref "/docs/developer-guide/overview" >}})
-* Learn how to implement a storefront with the [GraphQL API Guide]({{< relref "/docs/storefront/shop-api-guide" >}})
+* Learn more about [Configuration]({{< relref "/developer-guide/configuration" >}}) of your Vendure server.
+* Get a better understanding of how Vendure works by reading the [Architecture Overview]({{< relref "/developer-guide/overview" >}})
+* Learn how to implement a storefront with the [GraphQL API Guide]({{< relref "/storefront/shop-api-guide" >}})

@@ -1,0 +1,10 @@
+[[redirects]]
+  from = "/slack"
+  to = "https://join.slack.com/t/vendure-ecommerce/shared_invite/zt-1sk0pstzq-14fPu8d3CkySui5i~21_2g"
+  status = 200
+  force = true
+[[redirects]]
+  from = "/community"
+  to = "https://discord.gg/4u2aSCzDDX"
+  status = 200
+  force = true

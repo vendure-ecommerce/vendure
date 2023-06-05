@@ -119,7 +119,7 @@ Once the PaymentMethodHandler is defined as above, you can use it to create a ne
 
 ## Payment flow
 
-1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.
+1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.
     ```GraphQL
     mutation {
         addPaymentToOrder(input: {
@@ -130,7 +130,7 @@ Once the PaymentMethodHandler is defined as above, you can use it to create a ne
     }
     ```
     The `metadata` field is used to store the specific data required by the payment provider. E.g. some providers have a client-side part which begins the transaction and returns a token which must then be verified on the server side.
-2. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function]({{< relref "payment-method-config-options" >}}#createpayment). This function returns a [CreatePaymentResult object]({{< relref "payment-method-types" >}}#payment-method-types) which is used to create a new [Payment]({{< relref "/docs/typescript-api/entities/payment" >}}). If the Payment amount equals the order total, then the Order is transitioned to either the "PaymentAuthorized" or "PaymentSettled" state and the customer checkout flow is complete.
+2. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function]({{< relref "payment-method-config-options" >}}#createpayment). This function returns a [CreatePaymentResult object]({{< relref "payment-method-types" >}}#payment-method-types) which is used to create a new [Payment]({{< relref "/typescript-api/entities/payment" >}}). If the Payment amount equals the order total, then the Order is transitioned to either the "PaymentAuthorized" or "PaymentSettled" state and the customer checkout flow is complete.
 
 ### Single-step
 

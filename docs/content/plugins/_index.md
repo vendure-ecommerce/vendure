@@ -7,7 +7,7 @@ weight: 1
 
 Plugins are the method by which the built-in functionality of Vendure can be extended. Plugins in Vendure allow one to:
 
-* Modify the [VendureConfig]({{< ref "/docs/typescript-api/configuration" >}}#vendureconfig) object.
+* Modify the [VendureConfig]({{< ref "/typescript-api/configuration" >}}#vendureconfig) object.
 * Extend the GraphQL API, including modifying existing types and adding completely new queries and mutations.
 * Define new database entities and interact directly with the database.
 * Run code before the server bootstraps, such as starting web servers.

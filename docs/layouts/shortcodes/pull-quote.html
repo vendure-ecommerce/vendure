@@ -1,0 +1,21 @@
+<div class="relative mx-2 sm:mx-12 mt-16 mb-10">
+    <svg class="absolute top-0 left-0 transform -translate-y-6 -translate-x-12 sm:-translate-y-6 h-16 w-16 sm:h-16 sm:w-16 text-blue-800 opacity-10"
+         stroke="currentColor" fill="none" viewBox="0 0 144 144" aria-hidden="true">
+        <path stroke-width="2"
+              d="M41.485 15C17.753 31.753 1 59.208 1 89.455c0 24.664 14.891 39.09 32.109 39.09 16.287 0 28.386-13.03 28.386-28.387 0-15.356-10.703-26.524-24.663-26.524-2.792 0-6.515.465-7.446.93 2.327-15.821 17.218-34.435 32.11-43.742L41.485 15zm80.04 0c-23.268 16.753-40.02 44.208-40.02 74.455 0 24.664 14.891 39.09 32.109 39.09 15.822 0 28.386-13.03 28.386-28.387 0-15.356-11.168-26.524-25.129-26.524-2.792 0-6.049.465-6.98.93 2.327-15.821 16.753-34.435 31.644-43.742L121.525 15z"/>
+    </svg>
+    <div class="text-lg      sm:leading-9  text-blue-800">
+        {{ .Get "text" }}
+    </div>
+    <div class="flex mt-2">
+        {{ if .Get "avatar" }}
+        <div class="mr-4">
+            <img class="w-12 h-12 rounded-full" src='{{ .Get "avatar" }}'>
+        </div>
+        {{ end }}
+        <div>
+            {{ if .Get "name" }}<div class="text-gray-600">{{ .Get "name" }}</div>{{ end }}
+            {{ if .Get "position" }}<div class="mt-1 text-gray-500">{{ .Get "position" }}</div>{{ end }}
+        </div>
+    </div>
+</div>

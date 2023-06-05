@@ -17,7 +17,7 @@ Promotions are a means of offering discounts on an order based on various criter
 All Promotions can have the following constraints applied to them:
 
 -   **Date range** Using the "starts at" and "ends at" fields, the Promotion can be scheduled to only be active during the given date range.
--   **Coupon code** A Promotion can require a coupon code first be activated using the [`applyCouponCode` mutation]({{< relref "/docs/graphql-api/shop/mutations" >}}#applycouponcode) in the Shop API.
+-   **Coupon code** A Promotion can require a coupon code first be activated using the [`applyCouponCode` mutation]({{< relref "/graphql-api/shop/mutations" >}}#applycouponcode) in the Shop API.
 -   **Per-customer limit** A Promotion coupon may be limited to a given number of uses per Customer.
 
 ### Conditions

@@ -70,7 +70,7 @@ bootstrap(config)
 
 ## Running custom code on the worker
 
-If you are authoring a [Vendure plugin]({{< relref "/docs/plugins" >}}) to implement custom functionality, you can also make use of the worker process in order to handle long-running or computationally-demanding tasks. See the [Plugin Examples]({{< relref "plugin-examples" >}}#running-processes-on-the-worker) page for an example of this.
+If you are authoring a [Vendure plugin]({{< relref "/plugins" >}}) to implement custom functionality, you can also make use of the worker process in order to handle long-running or computationally-demanding tasks. See the [Plugin Examples]({{< relref "plugin-examples" >}}#running-processes-on-the-worker) page for an example of this.
 
 ## ProcessContext
 

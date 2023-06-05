@@ -27,6 +27,7 @@ module.exports = {
         '**/*.d.ts',
         '/packages/ui-devkit/scaffold/**/*',
         '/packages/dev-server/load-testing/**/*',
+        '/docs/layouts/**/*',
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {

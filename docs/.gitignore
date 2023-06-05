@@ -1,0 +1,6 @@
+.idea
+node_modules
+public
+static/*.js*
+static/*.css*
+resources/_gen

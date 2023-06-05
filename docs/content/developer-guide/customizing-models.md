@@ -5,7 +5,7 @@ showtoc: true
  
 # Customizing Models with custom fields
 
-Custom fields allow you to add your own custom data properties to many of the Vendure entities. The entities which may have custom fields defined are listed in the [CustomFields documentation]({{< relref "/docs/typescript-api/custom-fields" >}})
+Custom fields allow you to add your own custom data properties to many of the Vendure entities. The entities which may have custom fields defined are listed in the [CustomFields documentation]({{< relref "/typescript-api/custom-fields" >}})
 
 They are specified in the VendureConfig:
 
@@ -29,7 +29,7 @@ With the example config above, the following will occur:
 
 1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide]({{< relref "migrations" >}}).
 2. The GraphQL APIs will be modified to add the custom fields to the `Product` and `User` types respectively.
-3. If you are using the [admin-ui-plugin]({{< relref "/docs/typescript-api/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited.
+3. If you are using the [admin-ui-plugin]({{< relref "/typescript-api/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited.
 
 The values of the custom fields can then be set and queried via the GraphQL APIs:
 
@@ -71,8 +71,7 @@ The following types are available for custom fields:
 | `datetime`     | A datetime                   | date that variant is back in stock        |
 | `relation`     | A relation to another entity | Asset used as a customer avatar           |
 
-To see the underlying DB data type and GraphQL type used for each, see the [CustomFieldType doc]({{< relref "
-custom-field-type" >}}).
+To see the underlying DB data type and GraphQL type used for each, see the [CustomFieldType doc]({{< relref "custom-field-type" >}}).
 
 ## CustomField UI Form Inputs
 
@@ -139,7 +138,7 @@ OrderLine: [
 ]
 ```
 
-Once defined, the [addItemToOrder mutation]({{< relref "/docs/graphql-api/shop/mutations" >}}#additemtoorder) will have a third argument available, which accepts values for the custom field defined above:
+Once defined, the [addItemToOrder mutation]({{< relref "/graphql-api/shop/mutations" >}}#additemtoorder) will have a third argument available, which accepts values for the custom field defined above:
 
 ```GraphQL
 mutation {
@@ -194,7 +193,7 @@ export class EngravingPriceStrategy implements OrderItemPriceCalculationStrategy
 ## TypeScript Typings
 
 Because custom fields are generated at run-time, TypeScript has no way of knowing about them based on your
-VendureConfig. Consider the example above - let's say we have a [plugin]({{< relref "/docs/plugins" >}}) which needs to
+VendureConfig. Consider the example above - let's say we have a [plugin]({{< relref "/plugins" >}}) which needs to
 access the custom field values on a Product entity.
 
 Attempting to access the custom field will result in a TS compiler error:

@@ -1,0 +1,213 @@
+{{ define "partials/social-link" }}
+  <a href="{{ .url }}" title="{{ .name }}" class="text-gray-400 hover:text-gray-500">
+    <span class="sr-only">{{ .name }}</span>
+    <img class="w-6 h-6" alt="{{ .name }} logo" src="{{ .icon }}"/>
+  </a>
+{{ end }}
+
+
+<footer class="relative bg-gradient-to-br from-gray-700 to-gray-900 relative" aria-labelledby="footerHeading">
+  <h2 id="footerHeading" class="sr-only">Footer</h2>
+  <div class="absolute w-full h-full texture-bg mix-blend-difference"></div>
+  <div class="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+    <div class="xl:grid xl:grid-cols-3 xl:gap-8">
+      <div class="grid grid-cols-2 gap-8 xl:col-span-2">
+        <div class="md:grid md:grid-cols-2 md:gap-8">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+              Product
+            </h3>
+            <ul class="mt-4 space-y-4">
+              <li>
+                <a href="/features" class="text-base text-gray-300 hover:text-white">
+                  Features
+                </a>
+              </li>
+
+              <li>
+                <a href="/case-study" class="text-base text-gray-300 hover:text-white">
+                  Case studies
+                </a>
+              </li>
+
+              <li>
+                <a href="/plugins" class="text-base text-gray-300 hover:text-white">
+                  Plugins
+                </a>
+              </li>
+
+
+              <li>
+                <a href="/integration" class="text-base text-gray-300 hover:text-white">
+                  Integrations
+                </a>
+              </li>
+
+              <li>
+                <a href="https://demo.vendure.io" class="text-base text-gray-300 hover:text-white">
+                  Demo
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-12 md:mt-0">
+            <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+              Services
+            </h3>
+            <ul class="mt-4 space-y-4">
+              <li>
+                <a href="/support" class="text-base text-gray-300 hover:text-white">
+                  Support
+                </a>
+              </li>
+              <li>
+                <a href="/partners" class="text-base text-gray-300 hover:text-white">
+                  Become a Partner
+                </a>
+              </li>
+              <li>
+                <a href="/cert-check" class="text-base text-gray-300 hover:text-white">
+                  Partner Certification Check
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="md:grid md:grid-cols-2 md:gap-8">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+              Documentation
+            </h3>
+            <ul class="mt-4 space-y-4">
+              <li>
+                <a href="/docs/getting-started/" class="text-base text-gray-300 hover:text-white">
+                  Getting Started
+                </a>
+              </li>
+
+              <li>
+                <a href="/docs/developer-guide/" class="text-base text-gray-300 hover:text-white">
+                  Developer Guide
+                </a>
+              </li>
+
+              <li>
+                <a href="/docs/graphql-api/" class="text-base text-gray-300 hover:text-white">
+                  GraphQL API
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-12 md:mt-0">
+            <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+              Community
+            </h3>
+            <ul class="mt-4 space-y-4">
+              <li>
+                <a href="https://github.com/vendure-ecommerce/vendure" class="text-base text-gray-300 hover:text-white">
+                  GitHub
+                </a>
+              </li>
+
+              <li>
+                <a href="https://github.com/vendure-ecommerce/vendure/discussions" class="text-base text-gray-300 hover:text-white">
+                  Support Forum
+                </a>
+              </li>
+
+              <li>
+                <a href="https://www.vendure.io/community" class="text-base text-gray-300 hover:text-white">
+                  Discord Community
+                </a>
+              </li>
+
+              <li>
+                <a href="/contributors" class="text-base text-gray-300 hover:text-white">
+                  Sponsors & Contributors
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 xl:mt-0">
+        <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
+          Subscribe to our newsletter
+        </h3>
+        <p class="mt-4 text-base text-gray-300">
+          Get important Vendure news and announcements direct to your inbox.
+        </p>
+        <!-- Begin Mailchimp Signup Form -->
+        <div id="mc_embed_signup">
+          <form class="mt-4 validate"
+                action="https://vendure.us1.list-manage.com/subscribe/post?u=967048b8dcdf53aea61cf1a28&amp;id=6802bb1d9d"
+                method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form"
+                target="_blank"
+                novalidate>
+            <div id="mc_embed_signup_scroll" class="sm:flex sm:max-w-md space-x-1">
+
+              <input type="email" value="" name="EMAIL" id="mce-EMAIL" placeholder="email address" required
+                     class="appearance-none min-w-0 w-full bg-white border border-transparent rounded-md py-2 px-4 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white focus:border-white focus:placeholder-gray-400">
+              <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+              <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text"
+                                                                                        name="b_967048b8dcdf53aea61cf1a28_6802bb1d9d"
+                                                                                        tabindex="-1" value=""></div>
+              <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe"
+                     class="w-32 btn-primary">
+            </div>
+          </form>
+        </div>
+        <!--End mc_embed_signup-->
+      </div>
+    </div>
+    <div class="mt-8 border-t border-gray-700 pt-8 md:flex md:items-center md:justify-between">
+      <div class="md:order-2">
+        <div class="flex space-x-6">
+            {{ partial "social-link" (dict
+            "url" "https://github.com/vendure-ecommerce/vendure"
+            "name" "GitHub"
+            "icon" "/svg/icon-github-inverse.svg"
+            ) }}
+            {{ partial "social-link" (dict
+            "url" "https://www.npmjs.com/~vendure"
+            "name" "npm"
+            "icon" "/svg/icon-npm.svg"
+            ) }}
+            {{ partial "social-link" (dict
+            "url" "https://twitter.com/vendure_io"
+            "name" "Twitter"
+            "icon" "/svg/icon-twitter.svg"
+            ) }}
+            {{ partial "social-link" (dict
+            "url" "https://www.vendure.io/discord"
+            "name" "Discord"
+            "icon" "/logo/discord-logo.png"
+            ) }}
+            {{ partial "social-link" (dict
+            "url" "https://www.youtube.com/channel/UCZuBR2NrUKOq8M9_mDYP8PA"
+            "name" "YouTube"
+            "icon" "/svg/icon-youtube.svg"
+            ) }}
+            {{ partial "social-link" (dict
+            "url" "mailto:contact@vendure.io"
+            "name" "Email"
+            "icon" "/svg/clr-icon-email-light.svg"
+            ) }}
+        </div>
+        <div class="flex mt-4 space-x-4 opacity-90">
+          <a href="https://github.com/vendure-ecommerce/vendure"><img class="" alt="GitHub star counter"
+                                                                      src="https://img.shields.io/github/stars/vendure-ecommerce/vendure.svg?style=social"></a>
+          <a href="https://www.npmjs.com/package/@vendure/core"><img class="" alt="npm version"
+                                                                     src="https://img.shields.io/npm/v/@vendure/core"></a>
+        </div>
+      </div>
+      <div class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+        <p>&copy; {{ now.Format "2006" }} Vendure GmbH. All rights reserved.
+        </p>
+        <p class="text-gray-500">Wiedner Gürtel 12/1/2, 1040 Vienna, Austria</p>
+        <a class="text-gray-400 hover:underline mr-8" href="/impressum">Impressum</a>
+        <a class="text-gray-400 hover:underline" href="/branding">Logo resources & trademark</a>
+        </p>
+      </div>
+    </div>
+</footer>

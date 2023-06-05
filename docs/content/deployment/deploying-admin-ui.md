@@ -5,7 +5,7 @@ showtoc: true
 
 ## Deploying the Admin UI
 
-If you have customized the Admin UI with extensions, you should [compile your extensions ahead of time as part of the deployment process]({{< relref "/docs/plugins/extending-the-admin-ui" >}}#compiling-as-a-deployment-step).
+If you have customized the Admin UI with extensions, you should [compile your extensions ahead of time as part of the deployment process]({{< relref "/plugins/extending-the-admin-ui" >}}#compiling-as-a-deployment-step).
 
 ### Deploying a stand-alone Admin UI
 

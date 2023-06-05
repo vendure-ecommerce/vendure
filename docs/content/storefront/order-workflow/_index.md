@@ -5,7 +5,7 @@ showtoc: true
 
 # Order Workflow
 
-An Order is a collection of one or more ProductVariants which can be purchased by a Customer. Orders are represented internally by the [Order entity]({{< relref "order" >}}) and in the GraphQL API by the [Order type]({{< relref "/docs/graphql-api/shop/object-types#order" >}}).
+An Order is a collection of one or more ProductVariants which can be purchased by a Customer. Orders are represented internally by the [Order entity]({{< relref "order" >}}) and in the GraphQL API by the [Order type]({{< relref "/graphql-api/shop/object-types#order" >}}).
 
 ## Order State
 
@@ -29,7 +29,7 @@ So if the customer adds 2 *Widgets* to the Order, there will be **one OrderLine*
 
 ## Shop client order workflow
 
-The [GraphQL Shop API Guide]({{< relref "/docs/storefront/shop-api-guide" >}}#order-flow) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
+The [GraphQL Shop API Guide]({{< relref "/storefront/shop-api-guide" >}}#order-flow) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
 
 In this section, we'll cover some examples of how these operations would look in your storefront.
 

@@ -5,7 +5,7 @@ weight: 5
 
 # Custom Form Inputs
 
-Another way to extend the Admin UI app is to define custom form input components for manipulating any [Custom Fields]({{< ref "/docs/typescript-api/custom-fields" >}}) you have defined on your entities as well as [configurable args]({{< relref "config-args" >}}) used by custom [ConfigurableOperationDefs]({{< relref "configurable-operation-def" >}}).
+Another way to extend the Admin UI app is to define custom form input components for manipulating any [Custom Fields]({{< ref "/typescript-api/custom-fields" >}}) you have defined on your entities as well as [configurable args]({{< relref "config-args" >}}) used by custom [ConfigurableOperationDefs]({{< relref "configurable-operation-def" >}}).
 
 ## For Custom Fields
 
