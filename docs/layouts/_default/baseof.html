@@ -11,11 +11,11 @@
 <body>
 
 {{ partial "top-bar" (dict "ctx" . "isDocsPage" true "isLandingPage" false) }}
-<main class="mx-auto lg:max-w-screen-xl lg:grid lg:grid-cols-12 lg:gap-8">
+<main class="mx-auto lg:max-w-screen-2xl lg:grid lg:grid-cols-12 lg:gap-8">
 
     <aside class="lg:relative lg:col-span-3" x-data="Components.popover(true)" x-init="open = window.innerWidth > 1024">
-        <div class="sticky top-0 lg:w-72 flex flex-col lg:h-screen">
-            <div class="flex justify-center items-center px-1 py-2 bg-gray-100">
+        <div class="sticky top-0 flex flex-col lg:h-screen">
+            <div class="flex justify-center items-center px-6 py-4 bg-gray-100">
                 <label for="search" class="sr-only">Search docs (ctrl + k)</label>
                 <input type="text" name="search" id="searchInputTrigger"
                        class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"

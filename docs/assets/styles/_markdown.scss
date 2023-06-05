@@ -28,7 +28,6 @@ $block-border-radius: 4px;
 
     h1:first-of-type {
         text-transform: capitalize;
-        font-weight: 500;
         margin-top: 0;
         margin-bottom: 0;
         font-size: 2.8em;
@@ -48,6 +47,7 @@ $block-border-radius: 4px;
         margin-top: 60px;
         margin-bottom: 6px;
         font-size: 1.8em;
+        font-weight: 400;
     }
 
     h3 {
@@ -69,7 +69,6 @@ $block-border-radius: 4px;
     h1, h2, h3, h4, h5 {
         font-family: $brand-font-face;
         letter-spacing: -0.025em;
-        font-weight: bold;
         line-height: 1.25;
 
         &[id]:target {
@@ -90,8 +89,8 @@ $block-border-radius: 4px;
         text-decoration: none;
         color: $color-link;
 
-        &:hover {
-            text-decoration: underline;
+        &:hover, &:visited:hover {
+            color: lighten($color-link, 10%);
         }
 
         &:visited {

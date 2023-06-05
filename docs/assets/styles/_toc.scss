@@ -1,6 +1,8 @@
 @import "variables";
+@import "mixins";
 
 aside.book-toc nav {
+    @include custom-scrollbar;
     ul {
         padding: 0;
         margin: 0;
