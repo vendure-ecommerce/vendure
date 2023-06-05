@@ -34,7 +34,7 @@ import { MetricsService } from './service/metrics.service';
  * @description
  * Configuration options for the {@link AdminUiPlugin}.
  *
- * @docsCategory AdminUiPlugin
+ * @docsCategory core plugins/AdminUiPlugin
  */
 export interface AdminUiPluginOptions {
     /**
@@ -101,7 +101,7 @@ export interface AdminUiPluginOptions {
  * };
  * ```
  *
- * @docsCategory AdminUiPlugin
+ * @docsCategory core plugins/AdminUiPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],

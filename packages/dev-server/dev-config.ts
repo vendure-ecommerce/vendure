@@ -63,26 +63,43 @@ export const devConfig: VendureConfig = {
     },
 
     customFields: {
-        // ProductVariant: [
-        //     {
-        //         name: 'weight',
-        //         type: 'int',
-        //         defaultValue: 0,
-        //         nullable: false,
-        //         min: 0,
-        //         step: 1,
-        //         public: true,
-        //         label: [{ languageCode: LanguageCode.en, value: 'Weight' }],
-        //         ui: { component: 'number-form-input', suffix: 'g' },
-        //     },
-        //     {
-        //         name: 'gtin',
-        //         type: 'string',
-        //         nullable: true,
-        //         public: true,
-        //         label: [{ languageCode: LanguageCode.en, value: 'GTIN (barcode)' }],
-        //     },
-        // ],
+        Product: [
+            {
+                name: 'searchKeywords',
+                label: [{ languageCode: LanguageCode.en, value: 'Search keywords' }],
+                type: 'string',
+                defaultValue: '',
+                public: false,
+            },
+            {
+                name: 'noIndex',
+                label: [{ languageCode: LanguageCode.en, value: 'Do not allow crawlers to index' }],
+                type: 'boolean',
+                defaultValue: false,
+                public: true,
+                ui: { tab: 'SEO' },
+            },
+        ],
+        ProductVariant: [
+            {
+                name: 'weight',
+                type: 'int',
+                defaultValue: 0,
+                nullable: false,
+                min: 0,
+                step: 1,
+                public: true,
+                label: [{ languageCode: LanguageCode.en, value: 'Weight' }],
+                ui: { component: 'number-form-input', suffix: 'g' },
+            },
+            {
+                name: 'gtin',
+                type: 'string',
+                nullable: true,
+                public: true,
+                label: [{ languageCode: LanguageCode.en, value: 'GTIN (barcode)' }],
+            },
+        ],
     },
 
     /* customFields: {
@@ -395,53 +412,53 @@ export const devConfig: VendureConfig = {
             route: 'admin',
             port: 5001,
             // Un-comment to compile a custom admin ui
-            app: compileUiExtensions({
-                outputPath: path.join(__dirname, './custom-admin-ui'),
-                extensions: [
-                    {
-                        id: 'test-ui-extension',
-                        extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
-                        ngModules: [
-                            {
-                                type: 'lazy',
-                                route: 'greetz',
-                                ngModuleFileName: 'greeter.module.ts',
-                                ngModuleName: 'GreeterModule',
-                            },
-                            {
-                                type: 'shared',
-                                ngModuleFileName: 'greeter-shared.module.ts',
-                                ngModuleName: 'GreeterSharedModule',
-                            },
-                        ],
-                    },
-                    {
-                        globalStyles: path.join(
-                            __dirname,
-                            'test-plugins/with-ui-extension/ui/custom-theme.scss',
-                        ),
-                    },
-                    {
-                        id: 'external-ui-extension',
-                        extensionPath: path.join(__dirname, 'test-plugins/with-external-ui-extension'),
-                        ngModules: [
-                            {
-                                type: 'lazy',
-                                route: 'greet',
-                                ngModuleFileName: 'external-ui-extension.ts',
-                                ngModuleName: 'ExternalUiExtensionModule',
-                            },
-                        ],
-                        staticAssets: [
-                            {
-                                path: path.join(__dirname, 'test-plugins/with-external-ui-extension/app'),
-                                rename: 'external-app',
-                            },
-                        ],
-                    },
-                ],
-                devMode: true,
-            }),
+            // app: compileUiExtensions({
+            //     outputPath: path.join(__dirname, './custom-admin-ui'),
+            //     extensions: [
+            //         {
+            //             id: 'test-ui-extension',
+            //             extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
+            //             ngModules: [
+            //                 {
+            //                     type: 'lazy',
+            //                     route: 'greetz',
+            //                     ngModuleFileName: 'greeter.module.ts',
+            //                     ngModuleName: 'GreeterModule',
+            //                 },
+            //                 {
+            //                     type: 'shared',
+            //                     ngModuleFileName: 'greeter-shared.module.ts',
+            //                     ngModuleName: 'GreeterSharedModule',
+            //                 },
+            //             ],
+            //         },
+            //         {
+            //             globalStyles: path.join(
+            //                 __dirname,
+            //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
+            //             ),
+            //         },
+            //         {
+            //             id: 'external-ui-extension',
+            //             extensionPath: path.join(__dirname, 'test-plugins/with-external-ui-extension'),
+            //             ngModules: [
+            //                 {
+            //                     type: 'lazy',
+            //                     route: 'greet',
+            //                     ngModuleFileName: 'external-ui-extension.ts',
+            //                     ngModuleName: 'ExternalUiExtensionModule',
+            //                 },
+            //             ],
+            //             staticAssets: [
+            //                 {
+            //                     path: path.join(__dirname, 'test-plugins/with-external-ui-extension/app'),
+            //                     rename: 'external-app',
+            //                 },
+            //             ],
+            //         },
+            //     ],
+            //     devMode: true,
+            // }),
         }),
     ],
 };
@@ -480,7 +497,7 @@ function getDbConfig(): DataSourceOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: false,
+                synchronize: true,
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: 3306,

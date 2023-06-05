@@ -16,7 +16,7 @@ import {
  * @description
  * Configuration options for the {@link ElasticsearchPlugin}.
  *
- * @docsCategory ElasticsearchPlugin
+ * @docsCategory core plugins/ElasticsearchPlugin
  * @docsPage ElasticsearchOptions
  */
 export interface ElasticsearchOptions {
@@ -371,7 +371,7 @@ export interface ElasticsearchOptions {
  * @description
  * Configuration options for the internal Elasticsearch query which is generated when performing a search.
  *
- * @docsCategory ElasticsearchPlugin
+ * @docsCategory core plugins/ElasticsearchPlugin
  * @docsPage ElasticsearchOptions
  */
 export interface SearchConfig {
@@ -656,7 +656,7 @@ export interface SearchConfig {
  *
  * Boosting a field acts as a score multiplier for matches against that field.
  *
- * @docsCategory ElasticsearchPlugin
+ * @docsCategory core plugins/ElasticsearchPlugin
  * @docsPage ElasticsearchOptions
  */
 export interface BoostFieldsConfig {

@@ -272,7 +272,7 @@ import {
  * };
  * ```
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],

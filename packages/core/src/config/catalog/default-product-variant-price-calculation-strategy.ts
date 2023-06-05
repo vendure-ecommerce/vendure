@@ -13,7 +13,7 @@ import {
  * @description
  * A default ProductVariant price calculation function.
  *
- * @docsCategory tax
+ * @docsCategory products & stock
  */
 export class DefaultProductVariantPriceCalculationStrategy implements ProductVariantPriceCalculationStrategy {
     private taxRateService: TaxRateService;

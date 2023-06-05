@@ -15,7 +15,7 @@ declare module '@vendure/core/dist/entity/custom-entity-fields' {
  * @description
  * Configuration options for the Stripe payments plugin.
  *
- * @docsCategory payments-plugin
+ * @docsCategory core plugins/PaymentsPlugin
  * @docsPage StripePlugin
  */
 export interface StripePluginOptions {

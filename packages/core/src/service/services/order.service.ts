@@ -167,7 +167,7 @@ export class OrderService {
     /**
      * @description
      * Returns an array of all the configured states and transitions of the order process. This is
-     * based on the default order process plus all configured {@link CustomOrderProcess} objects
+     * based on the default order process plus all configured {@link OrderProcess} objects
      * defined in the {@link OrderOptions} `process` array.
      */
     getOrderProcessStates(): OrderProcessState[] {

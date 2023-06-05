@@ -128,7 +128,7 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * ```
  *
  * @docsCategory request
- * @docsPage Api Decorator
+ * @docsPage Relations Decorator
  * @since 1.6.0
  */
 export const Relations: <T extends VendureEntity>(data: FieldsDecoratorConfig<T>) => ParameterDecorator =

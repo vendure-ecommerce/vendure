@@ -11,7 +11,7 @@ import { StockLocation } from '../../entity/stock-location/stock-location.entity
  * The overall available stock for a ProductVariant as determined by the logic of the
  * {@link StockLocationStrategy}'s `getAvailableStock` method.
  *
- * @docsCategory catalog
+ * @docsCategory products & stock
  * @since 2.0.0
  * @docsPage StockLocationStrategy
  */
@@ -25,7 +25,7 @@ export interface AvailableStock {
  * Returned by the `StockLocationStrategy` methods to indicate how much stock from each
  * location should be used in the allocation/sale/release/cancellation of an OrderLine.
  *
- * @docsCategory catalog
+ * @docsCategory products & stock
  * @since 2.0.0
  * @docsPage StockLocationStrategy
  */
@@ -41,7 +41,8 @@ export interface LocationWithQuantity {
  * from each location. It is also used to determine the available stock for a given
  * {@link ProductVariant}.
  *
- * @docsCategory catalog
+ * @docsCategory products & stock
+ * @docsWeight 0
  * @since 2.0.0
  */
 export interface StockLocationStrategy extends InjectableStrategy {

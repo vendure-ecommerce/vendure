@@ -11,7 +11,7 @@ import { MollieService } from './mollie.service';
  * @description
  * Configuration options for the Mollie payments plugin.
  *
- * @docsCategory payments-plugin
+ * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin
  */
 export interface MolliePluginOptions {
@@ -26,9 +26,9 @@ export interface MolliePluginOptions {
      * @description
      * For backwards compatibility, by default set to false.
      * This option will be deprecated in a future version.
-     * When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation 
+     * When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation
      * instead of being configured in the Payment Method.
-     * 
+     *
      * @default false
      * @since 2.0.0
      */
@@ -67,15 +67,15 @@ export interface MolliePluginOptions {
  * 3. Set your Mollie apiKey in the `API Key` field.
  *
  * ## Specifying the redirectUrl
- * 
+ *
  * Currently, there are two ways to specify the `redirectUrl` to which the customer is redirected after completing the payment:
- * 1. Configure the `redirectUrl` in the PaymentMethod. 
+ * 1. Configure the `redirectUrl` in the PaymentMethod.
  * 2. Pass the `redirectUrl` as an argument to the `createPaymentIntent` mutation.
- * 
+ *
  * Which method is used depends on the value of the `useDynamicRedirectUrl` option while initializing the plugin.
  * By default, this option is set to `false` for backwards compatibility. In a future version, this option will be deprecated.
  * Upon deprecation, the `redirectUrl` will always be passed as an argument to the `createPaymentIntent` mutation.
- * 
+ *
  * TODO toevoegen van /code weggehaald..!
  * ## Storefront usage
  *
@@ -144,7 +144,7 @@ export interface MolliePluginOptions {
  * If you don't want this behaviour (Authorized first), you can set 'autoCapture=true' on the payment method. This option will immediately
  * capture the payment after a customer authorizes the payment.
  *
- * @docsCategory payments-plugin
+ * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin
  * @docsWeight 0
  */

@@ -18,7 +18,8 @@ import { I18nError } from './i18n-error';
  * @description
  * I18n resources used for translations
  *
- * @docsCategory Translation
+ * @docsCategory common
+ * @docsPage I18nService
  */
 export interface VendureTranslationResources {
     error: any;
@@ -35,7 +36,10 @@ export interface I18nRequest extends Request {
  * The `i18next-express-middleware` middleware detects the client's preferred language based on
  * the `Accept-Language` header or "lang" query param and adds language-specific translation
  * functions to the Express request / response objects.
- * @docsCategory Translation
+ *
+ * @docsCategory common
+ * @docsPage I18nService
+ * @docsWeight 0
  */
 @Injectable()
 export class I18nService implements OnModuleInit {

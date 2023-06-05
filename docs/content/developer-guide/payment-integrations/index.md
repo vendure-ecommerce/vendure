@@ -146,9 +146,9 @@ If the `createPayment()` function returns a result with the state set to `'Autho
 
 ## Custom Payment Flows
 
-If you need to support an entirely different payment flow than the above, it is also possible to do so by configuring a [CustomPaymentProcess]({{< relref "custom-payment-process" >}}). This allows new Payment states and transitions to be defined, as well as allowing custom logic to run on Payment state transitions.
+If you need to support an entirely different payment flow than the above, it is also possible to do so by configuring a [PaymentProcess]({{< relref "payment-process" >}}). This allows new Payment states and transitions to be defined, as well as allowing custom logic to run on Payment state transitions.
 
-Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [CustomOrderProcess]({{< relref "custom-order-process" >}}), [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and [OrderPlacedStrategy]({{< relref "order-placed-strategy" >}}).
+Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [OrderProcess]({{< relref "order-process" >}}), [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and [OrderPlacedStrategy]({{< relref "order-placed-strategy" >}}).
 
 ```TypeScript
 // types.ts
@@ -158,7 +158,7 @@ import { CustomOrderStates } from '@vendure/core';
  * Declare your custom state in special interface to make it type-safe
  */
 declare module '@vendure/core' {
-  interface CustomPaymentStates {
+  interface PaymentStates {
     Validating: never;
   }
 }
@@ -167,7 +167,7 @@ declare module '@vendure/core' {
  * Define a new "Validating" Payment state, and set up the
  * permitted transitions to/from it.
  */
-const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
+const customPaymentProcess: PaymentProcess<'Validating'> = {
   transitions: {
     Created: {
       to: ['Validating'],
@@ -183,7 +183,7 @@ const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
  * Define a new "ValidatingPayment" Order state, and set up the
  * permitted transitions to/from it.
  */
-const customOrderProcess: CustomOrderProcess<'ValidatingPayment'> = {
+const customOrderProcess: OrderProcess<'ValidatingPayment'> = {
   transitions: {
     ArrangingPayment: {
       to: ['ValidatingPayment'],
@@ -236,7 +236,7 @@ export const config: VendureConfig = {
     orderPlacedStrategy: new MyOrderPlacedStrategy(),
   },
   paymentOptions: {
-    customPaymentProcess: [customPaymentProcess],
+    process: [customPaymentProcess],
     paymentMethodHandlers: [myPaymentHandler],
   },
 };

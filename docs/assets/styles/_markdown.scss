@@ -22,8 +22,8 @@ $block-border-radius: 4px;
     }
 
     h1 {
-       font-size: 1.875rem;
-       line-height: 2.25rem;
+        font-size: 1.875rem;
+        line-height: 2.25rem;
     }
 
     h1:first-of-type {
@@ -32,8 +32,22 @@ $block-border-radius: 4px;
         margin-bottom: 0;
         font-size: 2.8em;
 
-        @media all and (max-width: $sm-breakpoint){
+        @media all and (max-width: $sm-breakpoint) {
             font-size: 2em;
+        }
+    }
+
+    .symbol {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 24px;
+        margin: 24px 0 48px 0;
+        background-color: #fafafa;
+
+        > h1:first-of-type {
+            text-transform: none;
+            font-size: 1.875rem;
+            line-height: 2.25rem;
         }
     }
 
@@ -66,7 +80,11 @@ $block-border-radius: 4px;
         margin-top: 32px;
     }
 
-    h1, h2, h3, h4, h5 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
         font-family: $brand-font-face;
         letter-spacing: -0.025em;
         line-height: 1.25;
@@ -81,7 +99,9 @@ $block-border-radius: 4px;
         margin: 16px 0;
     }
 
-    b, optgroup, strong {
+    b,
+    optgroup,
+    strong {
         font-weight: 700;
     }
 
@@ -89,7 +109,8 @@ $block-border-radius: 4px;
         text-decoration: none;
         color: $color-link;
 
-        &:hover, &:visited:hover {
+        &:hover,
+        &:visited:hover {
             color: lighten($color-link, 10%);
         }
 
@@ -98,7 +119,8 @@ $block-border-radius: 4px;
         }
     }
 
-    ul, ol:not(.breadcrumbs) {
+    ul,
+    ol:not(.breadcrumbs) {
         list-style-type: initial;
         padding-left: 40px;
     }
@@ -151,8 +173,12 @@ $block-border-radius: 4px;
         color: $gray-700;
         border-left: 2px solid $gray-300;
 
-        :first-child { margin-top: 0; }
-        :last-child { margin-bottom: 0; }
+        :first-child {
+            margin-top: 0;
+        }
+        :last-child {
+            margin-bottom: 0;
+        }
 
         &::before {
             content: '“';
@@ -170,7 +196,8 @@ $block-border-radius: 4px;
         th {
             text-align: left;
         }
-        td, th {
+        td,
+        th {
             padding: $padding-4;
         }
         tr:nth-child(odd) td {
@@ -193,7 +220,8 @@ $block-border-radius: 4px;
                 box-shadow: none;
             }
         }
-        figcaption p, figcaption h4 {
+        figcaption p,
+        figcaption h4 {
             text-align: center;
             font-size: $font-size-base;
             margin-top: $padding-4;

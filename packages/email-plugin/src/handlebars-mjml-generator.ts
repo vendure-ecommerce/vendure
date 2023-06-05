@@ -17,7 +17,7 @@ import {
  * Uses Handlebars (https://handlebarsjs.com/) to output MJML (https://mjml.io) which is then
  * compiled down to responsive email HTML.
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailGenerator
  */
 export class HandlebarsMjmlGenerator implements EmailGenerator {

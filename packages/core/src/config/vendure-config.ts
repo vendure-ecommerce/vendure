@@ -647,7 +647,7 @@ export interface AssetOptions {
  * @description
  * Options related to products and collections.
  *
- * @docsCategory configuration
+ * @docsCategory products & stock
  */
 export interface CatalogOptions {
     /**

@@ -9,7 +9,7 @@ import { StockDisplayStrategy } from './stock-display-strategy';
  * Low stock is defined as a saleable stock level less than or equal to the `lowStockLevel` as passed in
  * to the constructor (defaults to `2`).
  *
- * @docsCategory configuration
+ * @docsCategory products & stock
  */
 export class DefaultStockDisplayStrategy implements StockDisplayStrategy {
     constructor(private lowStockLevel: number = 2) {}

@@ -5,13 +5,13 @@ showtoc: true
 
 # Customizing the Order Process
 
-Vendure defines an order process which is based on a [finite state machine]({{< relref "fsm" >}}). This means that the [`Order.state` property]({{< relref "order" >}}#state) will be one of a set of [pre-defined states]({{< relref "order-state" >}}). From the current state, the Order can then transition (change) to another state, and the available next states depend on what the current state is.
+Vendure defines an order process which is based on a [finite state machine]({{< relref "fsm" >}}). This means that the [`Order.state` property]({{< relref "order" >}}#state) will be one of a set of [pre-defined states]({{< relref "order-process" >}}#orderstate). From the current state, the Order can then transition (change) to another state, and the available next states depend on what the current state is.
 
 So, as an example, all orders begin in the `AddingItems` state. This means that the Customer is adding items to his or her shopping cart. From there, the Order can transition to the `ArrangingPayment` state. A diagram of the default states and transitions can be found in the [Order Workflow guide]({{< relref "order-workflow" >}}).
 
 ## Defining custom states and transitions
 
-Sometimes you might need to modify the default Order process to better match your business needs. This is done by defining one or more [`CustomOrderProcess`]({{< relref "custom-order-process" >}}) objects and passing them to the [`OrderOptions.process`]({{< relref "order-options" >}}#process) config property.
+Sometimes you might need to modify the default Order process to better match your business needs. This is done by defining one or more [`OrderProcess`]({{< relref "order-process" >}}) objects and passing them to the [`OrderOptions.process`]({{< relref "order-options" >}}#process) config property.
 
 ### Example: Adding a new state
 
@@ -35,9 +35,9 @@ Here's how we would define the new state:
 
 ```TypeScript
 // customer-validation-process.ts
-import { CustomOrderProcess } from '@vendure/core';
+import { OrderProcess } from '@vendure/core';
 
-export const customerValidationProcess: CustomOrderProcess<'ValidatingCustomer'> = {
+export const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
   transitions: {
     AddingItems: {
       to: ['ValidatingCustomer'],
@@ -72,9 +72,9 @@ export const config: VendureConfig = {
 
  To add multiple new States you need to extend the generic type like this:
  ```TypeScript
-import { CustomOrderProcess } from '@vendure/core';
+import { OrderProcess } from '@vendure/core';
 
-export const customerValidationProcess: CustomOrderProcess<'ValidatingCustomer'|'AnotherState'> = {...}
+export const customerValidationProcess: OrderProcess<'ValidatingCustomer'|'AnotherState'> = {...}
  ```
 This way multiple custom states gets defined.
 
@@ -91,7 +91,7 @@ This allows us to perform our custom logic and potentially prevent the transitio
 // in our onTransitionStart function.
 let taxIdService: TaxIdService;
 
-const customerValidationProcess: CustomOrderProcess<'ValidatingCustomer'> = {
+const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
   transitions: {
     AddingItems: {
       to: ['ValidatingCustomer'],

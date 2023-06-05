@@ -7,7 +7,7 @@ import { QueueOptions } from 'bullmq';
  * Configuration options for the {@link BullMQJobQueuePlugin}.
  *
  * @since 1.2.0
- * @docsCategory job-queue-plugin
+ * @docsCategory core plugins/JobQueuePlugin
  * @docsPage BullMQPluginOptions
  * @docsWeight 0
  */
@@ -84,7 +84,7 @@ export interface BullMQPluginOptions {
  * Configuration for the backoff function when retrying failed jobs.
  *
  * @since 1.3.0
- * @docsCategory job-queue-plugin
+ * @docsCategory core plugins/JobQueuePlugin
  * @docsPage BullMQPluginOptions
  * @docsWeight 1
  */

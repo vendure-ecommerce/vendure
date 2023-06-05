@@ -17,7 +17,7 @@ import {
     SendmailTransportOptions,
     SESTransportOptions,
     SMTPTransportOptions,
-} from './types'
+} from './types';
 
 export type StreamTransportInfo = {
     envelope: {
@@ -32,13 +32,13 @@ export type StreamTransportInfo = {
  * @description
  * Uses the configured transport to send the generated email.
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailSender
  */
 export class NodemailerEmailSender implements EmailSender {
     private _smtpTransport: Mail | undefined;
     private _sendMailTransport: Mail | undefined;
-    private _sesTransport: Mail |undefined
+    private _sesTransport: Mail | undefined;
 
     async send(email: EmailDetails, options: EmailTransportOptions) {
         switch (options.type) {

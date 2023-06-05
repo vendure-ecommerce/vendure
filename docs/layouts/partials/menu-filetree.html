@@ -1,4 +1,9 @@
 <ul>
+    <li>
+    <ul><li><a href="/getting-started" {{- if eq .Page.Title "Getting Started" }} class="text-blue-700 active"{{ end }}>
+      Getting Started
+    </a></li></ul>
+    </li>
     <li>{{ template "book-section" (dict "Section" .Site.Sections "CurrentPage" $.Permalink) }}</li>
 </ul>
 

@@ -15,7 +15,7 @@ import path from 'path';
  * With this strategy, even with 200,000 total assets stored, each directory would
  * only contain less than 800 files.
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  */
 export class HashedAssetNamingStrategy extends DefaultAssetNamingStrategy {
     generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string): string {

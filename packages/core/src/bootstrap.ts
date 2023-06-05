@@ -39,7 +39,7 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  *     console.log(err);
  * });
  * ```
- * @docsCategory
+ * @docsCategory common
  * */
 export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);

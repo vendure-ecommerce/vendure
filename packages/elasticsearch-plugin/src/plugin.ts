@@ -217,7 +217,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *}
  * ```
  *
- * @docsCategory ElasticsearchPlugin
+ * @docsCategory core plugins/ElasticsearchPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],

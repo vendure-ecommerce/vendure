@@ -137,7 +137,7 @@ import { HardenPluginOptions } from './types';
  * verbose 16/12/22, 14:12 - [HardenPlugin] Query complexity [ProductList]: 35
  * ```
  *
- * @docsCategory HardenPlugin
+ * @docsCategory core plugins/HardenPlugin
  */
 @VendurePlugin({
     providers: [

@@ -134,7 +134,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * By default, the AssetServerPlugin will cache every transformed image, so that the transformation only needs to be performed a single time for
  * a given configuration. Caching can be disabled per-request by setting the `?cache=false` query parameter.
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],

@@ -26,13 +26,7 @@ class OrderLine {
     items: OrderItem[]
 }
 
-class OrderItem {
-    unitPrice: number
-    taxRate: number
-}
-
 Order -- OrderState
 Order *-- "0..*" OrderLine
-OrderLine *-- "0..*" OrderItem
 
 @enduml

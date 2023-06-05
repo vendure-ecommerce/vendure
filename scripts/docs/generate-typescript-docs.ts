@@ -84,7 +84,7 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
                 globalTypeMap.set(declaration.title, pathToTypeDoc);
             }
         }
-        const docsUrl = `/docs`;
+        const docsUrl = ``;
         const generatedCount = new TypescriptDocsRenderer().render(
             docsPages,
             docsUrl,

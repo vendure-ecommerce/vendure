@@ -29,7 +29,7 @@ With the example config above, the following will occur:
 
 1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide]({{< relref "migrations" >}}).
 2. The GraphQL APIs will be modified to add the custom fields to the `Product` and `User` types respectively.
-3. If you are using the [admin-ui-plugin]({{< relref "/typescript-api/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited.
+3. If you are using the [admin-ui-plugin]({{< relref "/typescript-api/core-plugins/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited.
 
 The values of the custom fields can then be set and queried via the GraphQL APIs:
 

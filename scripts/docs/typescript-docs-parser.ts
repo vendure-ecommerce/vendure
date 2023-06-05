@@ -20,7 +20,7 @@ import {
  */
 export class TypescriptDocsParser {
     private readonly atTokenPlaceholder = '__EscapedAtToken__';
-    private readonly commentBlockEndTokenPlaceholder = '__EscapedCommentBlockEndToken__'
+    private readonly commentBlockEndTokenPlaceholder = '__EscapedCommentBlockEndToken__';
 
     /**
      * Parses the TypeScript files given by the filePaths array and returns the
@@ -58,7 +58,7 @@ export class TypescriptDocsParser {
                     const fileName = normalizedTitle === declaration.category ? '_index' : normalizedTitle;
                     pages.set(pageTitle, {
                         title: pageTitle,
-                        category: declaration.category,
+                        category: declaration.category.split('/'),
                         declarations: [declaration],
                         fileName,
                     });
@@ -156,7 +156,7 @@ export class TypescriptDocsParser {
         } else if (ts.isEnumDeclaration(statement)) {
             return {
                 ...info,
-                kind: 'enum' as 'enum',
+                kind: 'enum' as const,
                 members: this.parseMembers(statement.members) as PropertyInfo[],
             };
         } else if (ts.isFunctionDeclaration(statement)) {
@@ -457,13 +457,17 @@ export class TypescriptDocsParser {
      * pattern in descriptions and therefore it is supported as long as the leading '/' is escaped ("\/").
      */
     private replaceEscapedTokens(content: string): string {
-        return content.replace(/\\@/g, this.atTokenPlaceholder).replace(/\\\/\*/g, this.commentBlockEndTokenPlaceholder);
+        return content
+            .replace(/\\@/g, this.atTokenPlaceholder)
+            .replace(/\\\/\*/g, this.commentBlockEndTokenPlaceholder);
     }
 
     /**
      * Restores "@" and "/*" tokens which were replaced by the replaceEscapedTokens() method.
      */
     private restoreTokens(content: string): string {
-        return content.replace(new RegExp(this.atTokenPlaceholder, 'g'), '@').replace(new RegExp(this.commentBlockEndTokenPlaceholder, 'g'), '/*');
+        return content
+            .replace(new RegExp(this.atTokenPlaceholder, 'g'), '@')
+            .replace(new RegExp(this.commentBlockEndTokenPlaceholder, 'g'), '/*');
     }
 }

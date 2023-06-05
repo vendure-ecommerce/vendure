@@ -19,3 +19,8 @@ Plugins are the method by which the built-in functionality of Vendure can be ext
 These abilities make plugins a very versatile and powerful means of implementing custom business requirements.
 
 This section details the official Vendure plugins included in the main Vendure repo, as well as a guide on writing your own plugins for Vendure.
+
+{{< alert "primary" >}}
+  Vendure provides a set of **core plugins** covering common functionality such as assets handling, email sending, and search. For 
+documentation on these, see the [Core Plugins section]({{< relref "core-plugins" >}}).
+{{< /alert >}}

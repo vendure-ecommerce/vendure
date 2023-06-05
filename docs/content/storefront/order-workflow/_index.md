@@ -9,7 +9,7 @@ An Order is a collection of one or more ProductVariants which can be purchased b
 
 ## Order State
 
-Every Order has a `state` property of type [`OrderState`]({{< relref "order-state" >}}). The following diagram shows the default states and how an Order transitions from one to the next.
+Every Order has a `state` property of type [`OrderState`]({{< relref "order-process" >}}#orderstate). The following diagram shows the default states and how an Order transitions from one to the next.
 
 {{% alert %}}
 Note that this default workflow can be modified to better fit your business processes. See the [Customizing the Order Process guide]({{< relref "customizing-the-order-process" >}}).
@@ -19,13 +19,11 @@ Note that this default workflow can be modified to better fit your business proc
 
 ## Structure of an Order
 
-In Vendure an [Order]({{< relref "order" >}}) consists of one or more [OrderLines]({{< relref "order-line" >}}) (representing a given quantity of a particular SKU), which in turn contain one or more [OrderItems]({{< relref "order-item" >}}) (which represent the individual physical units). 
+In Vendure an [Order]({{< relref "order" >}}) consists of one or more [OrderLines]({{< relref "order-line" >}}) (representing a given quantity of a particular SKU).
 
 Here is a simplified diagram illustrating this relationship:
 
 {{< figure src="./order_class_diagram.png" >}}
-
-So if the customer adds 2 *Widgets* to the Order, there will be **one OrderLine** containing **two OrderItems**, one for each of the added *Widgets*.
 
 ## Shop client order workflow
 

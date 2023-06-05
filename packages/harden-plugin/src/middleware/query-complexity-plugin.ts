@@ -90,7 +90,7 @@ function isAdminApi(schema: GraphQLSchema): boolean {
  * When selecting PaginatedList types, the "take" argument is used to estimate a complexity
  * factor. If the "take" argument is omitted, a default factor of 1000 is applied.
  *
- * @docsCategory HardenPlugin
+ * @docsCategory core plugins/HardenPlugin
  */
 export function defaultVendureComplexityEstimator(
     customComplexityFactors: { [path: string]: number },

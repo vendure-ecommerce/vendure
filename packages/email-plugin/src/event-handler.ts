@@ -126,7 +126,7 @@ import {
  * };
  * ```
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  */
 export class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
@@ -144,7 +144,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
 
-    constructor(public listener: EmailEventListener<T>, public event: Type<Event>) { }
+    constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
 
     /** @internal */
     get type(): T {
@@ -268,7 +268,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * @description
      * Add configuration for another template other than the default `"body.hbs"`. Use this method to define specific
      * templates for channels or languageCodes other than the default.
-     * 
+     *
      * @deprecated Define a custom TemplateLoader on plugin initalization to define templates based on the RequestContext.
      * E.g. `EmailPlugin.init({ templateLoader: new CustomTemplateLoader() })`
      */
@@ -350,13 +350,13 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         if (!this.setRecipientFn) {
             throw new Error(
                 `No setRecipientFn has been defined. ` +
-                `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`,
+                    `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         if (this.from === undefined) {
             throw new Error(
                 `No from field has been defined. ` +
-                `Remember to call ".setFrom()" when setting up the EmailEventHandler for ${this.type}`,
+                    `Remember to call ".setFrom()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         const { ctx } = event;
@@ -366,7 +366,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         if (subject == null) {
             throw new Error(
                 `No subject field has been defined. ` +
-                `Remember to call ".setSubject()" when setting up the EmailEventHandler for ${this.type}`,
+                    `Remember to call ".setSubject()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         const recipient = this.setRecipientFn(event);
@@ -433,7 +433,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
  * Identical to the {@link EmailEventHandler} but with a `data` property added to the `event` based on the result
  * of the `.loadData()` function.
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  */
 export class EmailEventHandlerWithAsyncData<
     Data,

@@ -15,7 +15,7 @@ import { AvailableStock, LocationWithQuantity, StockLocationStrategy } from './s
  * The DefaultStockLocationStrategy is the default implementation of the {@link StockLocationStrategy}.
  * It assumes only a single StockLocation and that all stock is allocated from that location.
  *
- * @docsCategory catalog
+ * @docsCategory products & stock
  * @since 2.0.0
  */
 export class DefaultStockLocationStrategy implements StockLocationStrategy {

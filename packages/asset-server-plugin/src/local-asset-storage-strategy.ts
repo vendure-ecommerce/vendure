@@ -10,7 +10,7 @@ import { Stream } from 'stream';
  * @description
  * A persistence strategy which saves files to the local file system.
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  */
 export class LocalAssetStorageStrategy implements AssetStorageStrategy {
     toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;

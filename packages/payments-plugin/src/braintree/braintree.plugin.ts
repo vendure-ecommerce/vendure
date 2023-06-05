@@ -235,7 +235,7 @@ import { BraintreePluginOptions } from './types';
  *   );
  * ```
  *
- * @docsCategory payments-plugin
+ * @docsCategory core plugins/PaymentsPlugin
  * @docsPage BraintreePlugin
  */
 @VendurePlugin({

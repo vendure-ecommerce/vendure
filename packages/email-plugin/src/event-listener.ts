@@ -8,7 +8,7 @@ import { EventWithContext } from './types';
  * An EmailEventListener is used to listen for events and set up a {@link EmailEventHandler} which
  * defines how an email will be generated from this event.
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  */
 export class EmailEventListener<T extends string> {
     public type: T;

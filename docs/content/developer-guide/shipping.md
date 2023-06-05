@@ -151,7 +151,7 @@ Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "f
 * `Delivered` The Fulfillment has arrived with the customer
 * `Cancelled` The Fulfillment has been cancelled 
 
-These states cover the typical workflow for fulfilling orders. However, it is possible to customize the fulfillment workflow by defining a [CustomFulfillmentProcess]({{< relref "custom-fulfillment-process" >}}) and passing it to your VendureConfig:
+These states cover the typical workflow for fulfilling orders. However, it is possible to customize the fulfillment workflow by defining a [FulfillmentProcess]({{< relref "fulfillment-process" >}}) and passing it to your VendureConfig:
 
 ```TypeScript
 export const config: VendureConfig = {

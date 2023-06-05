@@ -26,7 +26,7 @@ const DEFAULT_CONCURRENCY = 3;
  * This JobQueueStrategy uses [BullMQ](https://docs.bullmq.io/) to implement a push-based job queue
  * on top of Redis. It should not be used alone, but as part of the {@link BullMQJobQueuePlugin}.
  *
- * @docsCategory job-queue-plugin
+ * @docsCategory core plugins/JobQueuePlugin
  */
 export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private redisConnection: Redis | Cluster;

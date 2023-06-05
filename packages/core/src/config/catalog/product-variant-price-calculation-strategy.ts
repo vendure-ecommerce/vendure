@@ -8,7 +8,7 @@ import { Zone } from '../../entity/zone/zone.entity';
  * @description
  * Defines how ProductVariant are calculated based on the input price, tax zone and current request context.
  *
- * @docsCategory configuration
+ * @docsCategory  products & stock
  * @docsPage ProductVariantPriceCalculationStrategy
  */
 export interface ProductVariantPriceCalculationStrategy extends InjectableStrategy {
@@ -19,7 +19,7 @@ export interface ProductVariantPriceCalculationStrategy extends InjectableStrate
  * @description
  * The arguments passed the `calculate` method of the configured {@link ProductVariantPriceCalculationStrategy}.
  *
- * @docsCategory configuration
+ * @docsCategory products & stock
  * @docsPage ProductVariantPriceCalculationStrategy
  */
 export interface ProductVariantPriceCalculationArgs {

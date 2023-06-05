@@ -27,7 +27,7 @@ nav.book-menu {
     }
 
     ul:not(.expanded) > .section {
-        &:nth-of-type(7) {
+        &:nth-of-type(6) {
             &::before {
                 position: absolute;
                 top: 0;
@@ -40,7 +40,7 @@ nav.book-menu {
             padding-top: 1em;
         }
 
-        &:nth-of-type(n + 7) {
+        &:nth-of-type(n + 6) {
             color: $gray-700;
         }
     }

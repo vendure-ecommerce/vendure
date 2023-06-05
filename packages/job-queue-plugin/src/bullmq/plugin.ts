@@ -97,7 +97,7 @@ import { BullMQPluginOptions } from './types';
  * };
  * ```
  *
- * @docsCategory job-queue-plugin
+ * @docsCategory core plugins/JobQueuePlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
