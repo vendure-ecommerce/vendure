@@ -1,7 +1,15 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { CurrencyCode, DataService } from '@vendure/admin-ui/core';
+import {
+    CurrencyCode,
+    DataService,
+    GetStockLocationListDocument,
+    GetStockLocationListQuery,
+    ItemOf,
+} from '@vendure/admin-ui/core';
 import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { OptionValueInputComponent } from '../option-value-input/option-value-input.component';
 
@@ -16,6 +24,7 @@ export type CreateVariantValues = {
 export type CreateProductVariantsConfig = {
     groups: Array<{ name: string; values: string[] }>;
     variants: CreateVariantValues[];
+    stockLocationId: string;
 };
 
 @Component({
@@ -38,12 +47,29 @@ export class GenerateProductVariantsComponent implements OnInit {
             stock: FormControl<number>;
         }>;
     } = {};
+    stockLocations$: Observable<Array<ItemOf<GetStockLocationListQuery, 'stockLocations'>>>;
+    selectedStockLocationId: string | null = null;
     constructor(private dataService: DataService, private formBuilder: FormBuilder) {}
 
     ngOnInit() {
         this.dataService.settings.getActiveChannel().single$.subscribe(data => {
             this.currencyCode = data.activeChannel.defaultCurrencyCode;
         });
+        this.stockLocations$ = this.dataService
+            .query(GetStockLocationListDocument, {
+                options: {
+                    take: 999,
+                },
+            })
+            .refetchOnChannelChange()
+            .mapStream(({ stockLocations }) => stockLocations.items)
+            .pipe(
+                tap(items => {
+                    if (items.length) {
+                        this.selectedStockLocationId = items[0].id;
+                    }
+                }),
+            );
 
         this.generateVariants();
     }
@@ -80,7 +106,6 @@ export class GenerateProductVariantsComponent implements OnInit {
                 });
                 formGroup.valueChanges.subscribe(() => this.onFormChange());
                 if (index === 0) {
-                    console.log(`registering valueChanges for ${variant.id}`);
                     formGroup.get('price')?.valueChanges.subscribe(value => {
                         this.copyValuesToPristine('price', formGroup.get('price'));
                     });
@@ -125,6 +150,8 @@ export class GenerateProductVariantsComponent implements OnInit {
         this.variantsChange.emit({
             groups: this.optionGroups.map(og => ({ name: og.name, values: og.values.map(v => v.name) })),
             variants: variantsToCreate,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            stockLocationId: this.selectedStockLocationId!,
         });
     }
 

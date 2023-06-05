@@ -118,6 +118,7 @@
     "no-channel-selected": "No channel selected",
     "no-featured-asset": "No featured asset",
     "no-selection": "No selection",
+    "no-stock-locations-available-on-current-channel": "No stock locations are available on the current channel. Set up at least one stock location before adding products.",
     "notify-bulk-delete-products-success": "Successfully deleted {count, plural, one {1 product} other {{count} products}}",
     "notify-remove-facets-from-channel-success": "Successfully removed {count, plural, one {1 facet} other {{count} facets}} from { channelCode }",
     "notify-remove-product-from-channel-error": "Could not remove product from channel",

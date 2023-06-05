@@ -91,7 +91,7 @@ export class ProductDetailComponent
     assetChanges: SelectedAssets = {};
     productChannels$: Observable<ProductDetailFragment['channels']>;
     facetValues$: Observable<ProductDetailFragment['facetValues']>;
-    createVariantsConfig: CreateProductVariantsConfig = { groups: [], variants: [] };
+    createVariantsConfig: CreateProductVariantsConfig = { groups: [], variants: [], stockLocationId: '' };
     public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
 
     constructor(

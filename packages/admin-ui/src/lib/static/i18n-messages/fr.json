@@ -118,6 +118,7 @@
     "no-channel-selected": "Pas de canal sélectionné",
     "no-featured-asset": "Pas de fichier vedette",
     "no-selection": "Pas de sélection",
+    "no-stock-locations-available-on-current-channel": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-facets-from-channel-success": "",
     "notify-remove-product-from-channel-error": "Retrait du produit du canal échoué",

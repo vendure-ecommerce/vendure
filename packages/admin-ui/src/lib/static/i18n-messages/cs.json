@@ -118,6 +118,7 @@
     "no-channel-selected": "Žádný kanál nevybrán",
     "no-featured-asset": "Žádné zvýrazněné médium",
     "no-selection": "Žádný výběr",
+    "no-stock-locations-available-on-current-channel": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-facets-from-channel-success": "",
     "notify-remove-product-from-channel-error": "Produkt se nepovedlo odebrat z kanálu",

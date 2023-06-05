@@ -118,6 +118,7 @@
     "no-channel-selected": "Brak zaznaczonego kanału",
     "no-featured-asset": "Brak polecanego zasobu",
     "no-selection": "Brak zaznaczenia",
+    "no-stock-locations-available-on-current-channel": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-facets-from-channel-success": "",
     "notify-remove-product-from-channel-error": "Błąd usuwania produktu z kanału",

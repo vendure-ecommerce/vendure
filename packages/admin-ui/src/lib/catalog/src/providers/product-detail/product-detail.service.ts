@@ -83,7 +83,13 @@ export class ProductDetailService {
                     };
                 });
                 const options = optionGroups.map(og => og.options).reduce((flat, o) => [...flat, ...o], []);
-                return this.createProductVariants(createProduct, variants, options, languageCode);
+                return this.createProductVariants(
+                    createProduct,
+                    variants,
+                    options,
+                    languageCode,
+                    createVariantsConfig.stockLocationId,
+                );
             }),
         );
     }
@@ -112,6 +118,7 @@ export class ProductDetailService {
         variantData: Array<{ price: number; sku: string; stock: number; optionIds: string[] }>,
         options: Array<{ id: string; name: string }>,
         languageCode: LanguageCode,
+        stockLocationId: string,
     ) {
         const variants: CreateProductVariantInput[] = variantData.map(v => {
             const name = options.length
@@ -125,11 +132,16 @@ export class ProductDetailService {
                 productId: product.id,
                 price: v.price,
                 sku: v.sku,
-                stockOnHand: v.stock,
                 translations: [
                     {
                         languageCode,
                         name,
+                    },
+                ],
+                stockLevels: [
+                    {
+                        stockLocationId,
+                        stockOnHand: v.stock,
                     },
                 ],
                 optionIds: v.optionIds,

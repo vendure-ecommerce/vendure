@@ -234,6 +234,7 @@ export function detailComponentWithResolver<
         } else {
             const result$ = dataService
                 .query(config.query, { id })
+                .refetchOnChannelChange()
                 .stream$.pipe(takeUntil(navigateAway$), shareReplay(1));
             const entity$ = result$.pipe(map(result => result[config.entityKey]));
             const entityStream$ = entity$.pipe(filter(notNullOrUndefined));

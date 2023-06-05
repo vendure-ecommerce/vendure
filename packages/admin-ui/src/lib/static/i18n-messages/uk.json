@@ -118,6 +118,7 @@
     "no-channel-selected": "Канал не вибрано",
     "no-featured-asset": "Немає обраного медіа-об'єкта",
     "no-selection": "Не вибрано",
+    "no-stock-locations-available-on-current-channel": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-facets-from-channel-success": "",
     "notify-remove-product-from-channel-error": "Не вдалося видалити товар з каналу",

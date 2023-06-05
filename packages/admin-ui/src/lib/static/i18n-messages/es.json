@@ -118,6 +118,7 @@
     "no-channel-selected": "Ninún canal seleccionado",
     "no-featured-asset": "Sin recurso destacado",
     "no-selection": "Sin selección",
+    "no-stock-locations-available-on-current-channel": "",
     "notify-bulk-delete-products-success": "",
     "notify-remove-facets-from-channel-success": "",
     "notify-remove-product-from-channel-error": "No fue posible eliminar el producto del canal",
