@@ -68,10 +68,10 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
-        MultivendorPlugin.init({
-            platformFeePercent: 10,
-            platformFeeSKU: 'FEE',
-        }),
+        // MultivendorPlugin.init({
+        //     platformFeePercent: 10,
+        //     platformFeeSKU: 'FEE',
+        // }),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
