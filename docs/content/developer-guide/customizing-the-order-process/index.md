@@ -59,16 +59,18 @@ And then add this configuration to our main VendureConfig:
 
 ```TypeScript
 // vendure-config.ts
-import { VendureConfig } from '@vendure/core';
+import { defaultOrderProcess, VendureConfig } from '@vendure/core';
 import { customerValidationProcess } from './customer-validation-process';
 
 export const config: VendureConfig = {
   // ...
   orderOptions: {
-    process: [customerValidationProcess],
+    process: [defaultOrderProcess, customerValidationProcess],
   },
 };
 ```
+
+Note that we also include the `defaultOrderProcess` in the array, otherwise we will lose all the default states and transitions.
 
  To add multiple new States you need to extend the generic type like this:
  ```TypeScript
@@ -145,4 +147,4 @@ This technique uses advanced TypeScript features - [declaration merging](https:/
 If you have defined custom order states, the Admin UI will allow you to manually transition an 
 order from one state to another:
 
-{{< figure src="./custom_order_ui.jpg" >}}
+{{< figure src="./custom-order-ui.webp" >}}

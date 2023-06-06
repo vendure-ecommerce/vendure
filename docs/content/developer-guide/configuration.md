@@ -110,7 +110,7 @@ export const config: VendureConfig = {
 
 ### Connecting to the database
 
-The database connection is configured with the `VendureConfig.dbConnectionOptions` object. This object is actually the [TypeORM configuration object](https://typeorm.io/#/connection-options) and is passed directly to TypeORM.
+The database connection is configured with the `VendureConfig.dbConnectionOptions` object. This object is actually the [TypeORM DataSourceOptions object](https://typeorm.io/data-source-options) and is passed directly to TypeORM.
 
 Example:
 

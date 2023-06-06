@@ -1,8 +1,8 @@
 ---
-title: "Customizing Models"
+title: 'Customizing Models'
 showtoc: true
 ---
- 
+
 # Customizing Models with custom fields
 
 Custom fields allow you to add your own custom data properties to many of the Vendure entities. The entities which may have custom fields defined are listed in the [CustomFields documentation]({{< relref "/typescript-api/custom-fields" >}})
@@ -29,7 +29,10 @@ With the example config above, the following will occur:
 
 1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide]({{< relref "migrations" >}}).
 2. The GraphQL APIs will be modified to add the custom fields to the `Product` and `User` types respectively.
-3. If you are using the [admin-ui-plugin]({{< relref "/typescript-api/core-plugins/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited.
+3. If you are using the [admin-ui-plugin]({{< relref "/typescript-api/core-plugins/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited, and the list view data tables will allow custom field columns to be added, sorted and filtered. 
+
+
+{{< figure src="custom-fields-data-table.webp" >}}
 
 The values of the custom fields can then be set and queried via the GraphQL APIs:
 
@@ -42,7 +45,7 @@ mutation {
       downloadable: true,
     }
     translations: [
-      { languageCode: en, customFields: { shortName: "foo" } }  
+      { languageCode: en, customFields: { shortName: "foo" } }
     ]
   }) {
     id
@@ -60,7 +63,7 @@ mutation {
 The following types are available for custom fields:
 
 | Type           | Description                  | Example                                   |
-|----------------|------------------------------|-------------------------------------------|
+| -------------- | ---------------------------- | ----------------------------------------- |
 | `string`       | Short string data            | url, label                                |
 | `localeString` | Localized short strings      | localized url                             |
 | `text`         | Long text data               | extended product info, json config object |
@@ -85,9 +88,9 @@ const config = {
   // ...
   customFields: {
     ProductVariant: [
-      { 
+      {
         name: 'rrp',
-        type: 'int', 
+        type: 'int',
         ui: { component: 'currency-form-input' },
       },
     ]
@@ -97,7 +100,62 @@ const config = {
 
 The built-in form inputs are listed in the [DefaultFormConfigHash docs]({{< relref "default-form-config-hash" >}}).
 
-If you want to use a completely custom form input component which is not provided by the Admin UI, you'll need to create a plugin which [extends the Admin UI]({{< relref "extending-the-admin-ui" >}}) with [custom form inputs]({{< relref "custom-form-inputs" >}}). 
+If you want to use a completely custom form input component which is not provided by the Admin UI, you'll need to create a plugin which [extends the Admin UI]({{< relref "extending-the-admin-ui" >}}) with [custom form inputs]({{< relref "custom-form-inputs" >}}).
+
+Here's an example config demonstrating several ways to customize the UI controls for custom fields:
+
+```TypeScript
+import { LanguageCode, VendureConfig } from '@vendure/core';
+
+const config: VendureConfig = {
+  // ...
+  customFields: {
+    Product: [
+      // Rich text editor
+      {name: 'additionalInfo', type: 'text', ui: {component: 'rich-text-form-input'}},
+      // JSON editor
+      {name: 'specs', type: 'text', ui: {component: 'json-editor-form-input'}},
+      // Numeric with suffix
+      {
+        name: 'weight',
+        type: 'int',
+        ui: {component: 'number-form-input', suffix: 'g'},
+      },
+      // Currency input
+      {
+        name: 'RRP',
+        type: 'int',
+        ui: {component: 'currency-form-input'},
+      },
+      // Select with options
+      {
+        name: 'pageType',
+        type: 'string',
+        ui: {
+          component: 'select-form-input',
+          options: [
+            {value: 'static', label: [{languageCode: LanguageCode.en, value: 'Static'}]},
+            {value: 'dynamic', label: [{languageCode: LanguageCode.en, value: 'Dynamic'}]},
+          ],
+        },
+      },
+      // Text with prefix
+      {
+        name: 'link',
+        type: 'string',
+        ui: {
+          component: 'text-form-input',
+          prefix: 'https://',
+        },
+      },
+    ],
+  },
+};
+```
+
+and the resulting UI:
+
+{{< figure src="custom-fields-ui.webp" >}}
 
 ## Tabbed custom fields
 
@@ -131,7 +189,7 @@ OrderLine: [
     label: [
       {
         languageCode: LanguageCode.en,
-        value: 'The text to engrave on the product' 
+        value: 'The text to engrave on the product'
       },
     ],
   },
@@ -166,11 +224,11 @@ mutation {
 Furthermore, the values of these OrderLine custom fields can even be used to modify the price. This is done by defining a custom [OrderItemPriceCalculationStrategy]({{< relref "order-item-price-calculation-strategy" >}}):
 
 ```TypeScript
-import { RequestContext, PriceCalculationResult, 
+import { RequestContext, PriceCalculationResult,
   ProductVariant, OrderItemPriceCalculationStrategy } from '@vendure/core';
 
 export class EngravingPriceStrategy implements OrderItemPriceCalculationStrategy {
-  
+
   calculateUnitPrice(
     ctx: RequestContext,
     productVariant: ProductVariant,
@@ -189,7 +247,6 @@ export class EngravingPriceStrategy implements OrderItemPriceCalculationStrategy
 }
 ```
 
-
 ## TypeScript Typings
 
 Because custom fields are generated at run-time, TypeScript has no way of knowing about them based on your
@@ -197,20 +254,20 @@ VendureConfig. Consider the example above - let's say we have a [plugin]({{< rel
 access the custom field values on a Product entity.
 
 Attempting to access the custom field will result in a TS compiler error:
- 
+
 ```TypeScript {hl_lines=[12,13]}
 import { RequestContext, TransactionalConnection, ID, Product } from '@vendure/core';
 
 export class MyService {
-  constructor(private connection: TransactionalConnection) {} 
+  constructor(private connection: TransactionalConnection) {}
 
   async getInfoUrl(ctx: RequestContext, productId: ID) {
     const product = await this.connection
       .getRepository(ctx, Product)
       .findOne(productId);
-    
-    return product.customFields.infoUrl; 
-  }                           // ^ TS2339: Property 'infoUrl' 
+
+    return product.customFields.infoUrl;
+  }                           // ^ TS2339: Property 'infoUrl'
 }                             // does not exist on type 'CustomProductFields'.
 ```
 
@@ -219,7 +276,8 @@ The "easy" way to solve this is to assert the `customFields` object as `any`:
 ```TypeScript
 return (product.customFields as any).infoUrl;
 ```
-However, this sacrifices type safety. To make our custom fields type-safe we can take advantage of a couple of more advanced TypeScript features - [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces) and  [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules). This allows us to extend the built-in `CustomProductFields` interface to add our custom fields to it:
+
+However, this sacrifices type safety. To make our custom fields type-safe we can take advantage of a couple of more advanced TypeScript features - [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces) and [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules). This allows us to extend the built-in `CustomProductFields` interface to add our custom fields to it:
 
 ```TypeScript
 // types.ts
@@ -279,7 +337,7 @@ Labels and descriptions can be specified to supply more information about the pu
 ```TypeScript
 Product: [
   {
-    name: 'extendedDescription', 
+    name: 'extendedDescription',
     type: 'localeString',
     label: [
       { languageCode: LanguageCode.en, value: 'Extended description' },
@@ -301,7 +359,7 @@ A custom field may hold an array of values by setting the `list` property to `tr
 ```TypeScript
 Product: [
   {
-    name: 'keywords', 
+    name: 'keywords',
     type: 'localeString',
     list: true,
   },
@@ -315,13 +373,13 @@ Certain custom field types may be configured with validation parameters:
 ```TypeScript
 Product: [
   {
-    name: 'partCode', 
+    name: 'partCode',
     type: 'string',
     pattern: '^[0-9]{4}\-[A-Z]{3-4}$'
   },
   {
-    name: 'location', 
-    type: 'string', 
+    name: 'location',
+    type: 'string',
     options: [
       { value: 'warehouse1' },
       { value: 'warehouse2' },
@@ -329,11 +387,11 @@ Product: [
     ]
   },
   {
-    name: 'weight', 
-    type: 'int', 
+    name: 'weight',
+    type: 'int',
     min: 0,
     max: 9999,
-    step: 1,  
+    step: 1,
   },
 ]
 ```
@@ -345,7 +403,7 @@ For even more control over validation, a `validate` function may be provided to 
 ```TypeScript
 Product: [
   {
-    name: 'partCode', 
+    name: 'partCode',
     type: 'string',
     validate: async(value, injector) => {
       const partCodeService = injector.get(PartCodeService);
@@ -360,11 +418,11 @@ Product: [
 
 ### public, readonly & internal
 
-Some custom fields may be used internally in your business logic, or for integration with external systems. In this case the can restrict access to the information they contain. In this example, the Customer entity has an externalId relating to an external integration. 
+Some custom fields may be used internally in your business logic, or for integration with external systems. In this case the can restrict access to the information they contain. In this example, the Customer entity has an externalId relating to an external integration.
 
-* `public: false` means that it will not be exposed via the Shop API.
-* `readonly: true` means it will be exposed, but cannot be updated via the Admin API. It can only be changed programmatically in plugin code.
-* `internal: false` - means the field _will_ be exposed via the GraphQL APIs (in this case on the Admin API due to the `public: false` setting). If it was set to `internal: true`, then the field would not be exposed _at all_ in either of the GraphQL APIs, and will not be visible in the Admin UI. Internal custom fields are useful for purely internal implementation details.
+-   `public: false` means that it will not be exposed via the Shop API.
+-   `readonly: true` means it will be exposed, but cannot be updated via the Admin API. It can only be changed programmatically in plugin code.
+-   `internal: false` - means the field _will_ be exposed via the GraphQL APIs (in this case on the Admin API due to the `public: false` setting). If it was set to `internal: true`, then the field would not be exposed _at all_ in either of the GraphQL APIs, and will not be visible in the Admin UI. Internal custom fields are useful for purely internal implementation details.
 
 ```TypeScript
 Customer: [
@@ -390,7 +448,7 @@ Customer: [
     entity: Asset,
     // may be omitted if the entity name matches the GraphQL type name,
     // which is true for all built-in entities.
-    graphQLType: 'Asset', 
+    graphQLType: 'Asset',
     // Whether to "eagerly" load the relation
     // See https://typeorm.io/#/eager-and-lazy-relations
     eager: false,

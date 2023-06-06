@@ -152,6 +152,10 @@ export interface DefaultOrderProcessOptions {
  *   },
  * };
  * ```
+ * The {@link DefaultOrderProcessOptions} type defines all available options. If you require even
+ * more customization, you can create your own implementation of the {@link OrderProcess} interface.
+ *
+ *
  * @docsCategory Orders
  * @docsPage OrderProcess
  * @since 2.0.0
@@ -454,7 +458,9 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
 
 /**
  * @description
- * This is the built-in {@link OrderProcess} that ships with Vendure.
+ * This is the built-in {@link OrderProcess} that ships with Vendure. A customized version of this process
+ * can be created using the {@link configureDefaultOrderProcess} function, which allows you to pass in an object
+ * to enable/disable certain checks.
  *
  * @docsCategory Orders
  * @docsPage OrderProcess
