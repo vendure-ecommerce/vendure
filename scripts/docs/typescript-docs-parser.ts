@@ -55,7 +55,8 @@ export class TypescriptDocsParser {
                     existingPage.declarations.push(declaration);
                 } else {
                     const normalizedTitle = this.kebabCase(pageTitle);
-                    const fileName = normalizedTitle === declaration.category ? '_index' : normalizedTitle;
+                    const categoryLastPart = declaration.category.split('/').pop();
+                    const fileName = normalizedTitle === categoryLastPart ? '_index' : normalizedTitle;
                     pages.set(pageTitle, {
                         title: pageTitle,
                         category: declaration.category.split('/'),
