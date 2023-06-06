@@ -1,35 +1,34 @@
 <ng-template vdrDialogTitle>{{ 'common.select-display-language' | translate }}</ng-template>
 <div class="clr-row">
-    <div class="clr-col-md-6">
-        <label for="options">{{ 'common.language' | translate }}</label>
-        <select name="options" [(ngModel)]="currentLanguage" (ngModelChange)="updatePreviewLocale()">
-            <option *ngFor="let code of availableLanguages | sort" [value]="code">
-                {{ code | uppercase }} ({{ code | localeLanguageName }})
-            </option>
-        </select>
-    </div>
-    <div class="clr-col-md-6">
-        <clr-datalist-container>
-            <label>{{ 'common.locale' | translate }}</label>
-            <input
-                clrDatalistInput
+    <div class="flex pl-2 mb-2">
+        <vdr-form-field [label]="'common.language' | translate" class="mr-2">
+            <select name="options" [(ngModel)]="currentLanguage" (ngModelChange)="updatePreviewLocale()">
+                <option *ngFor="let code of availableLanguages | sort" [value]="code">
+                    {{ code | uppercase }} ({{ code | localeLanguageName }})
+                </option>
+            </select>
+        </vdr-form-field>
+        <vdr-form-field [label]="'common.locale' | translate">
+            <ng-select
+                appendTo="body"
+                [items]="availableLocales"
                 [(ngModel)]="currentLocale"
                 (ngModelChange)="updatePreviewLocale()"
                 [placeholder]="'common.browser-default' | translate"
-                class="locale"
-                name="Locale"
-            />
-            <datalist>
-                <option *ngFor="let locale of availableLocales" [value]="locale">
-                    {{ locale }} ({{ locale | localeRegionName }})
-                </option>
-            </datalist>
-        </clr-datalist-container>
+            >
+                <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                    {{ item }} ({{ item | localeRegionName }})
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item">
+                    {{ item }} ({{ item | localeRegionName }})
+                </ng-template>
+            </ng-select>
+        </vdr-form-field>
     </div>
 </div>
 <div class="card">
     <div class="card-header">
-        <span class="p-2">{{ 'common.sample-formatting' | translate }}:</span
+        <span class="pr-1">{{ 'common.sample-formatting' | translate }}:</span
         ><strong>{{ previewLocale | localeLanguageName : previewLocale }}</strong>
     </div>
     <div class="card-block">
