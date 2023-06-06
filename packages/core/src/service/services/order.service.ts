@@ -1505,11 +1505,6 @@ export class OrderService {
                 .getRepository(ctx, Session)
                 .update(sessions.map(s => s.id) as string[], { activeOrder: null });
         }
-
-        // TODO: v2 - Will not be needed after adding `{ onDelete: 'CASCADE' }` constraint to ShippingLine.order
-        for (const shippingLine of orderToDelete.shippingLines) {
-            await this.connection.getRepository(ctx, ShippingLine).delete(shippingLine.id);
-        }
         await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
     }
 

@@ -126,12 +126,6 @@ export class ProductOptionService {
         } else {
             // hard delete
             try {
-                // TODO: V2 rely on onDelete: CASCADE rather than this manual loop
-                for (const translation of productOption.translations) {
-                    await this.connection
-                        .getRepository(ctx, ProductOptionTranslation)
-                        .remove(translation as ProductOptionTranslation);
-                }
                 await this.connection.getRepository(ctx, ProductOption).remove(productOption);
             } catch (e: any) {
                 Logger.error(e.message, undefined, e.stack);

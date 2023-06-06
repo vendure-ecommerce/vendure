@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
 import { EventBus } from '../../../event-bus/event-bus';
-import { CustomerGroupEvent } from '../../../event-bus/events/customer-group-event';
+import { CustomerGroupEvent } from '../../../event-bus/events/customer-group-change-event';
 import { PromotionCondition } from '../promotion-condition';
 
 let customerService: import('../../../service/services/customer.service').CustomerService;

@@ -173,13 +173,6 @@ export class ProductOptionGroupService {
                 await this.connection.getRepository(ctx, Product).save(product, { reload: false });
             }
 
-            // TODO: V2 rely on onDelete: CASCADE rather than this manual loop
-            for (const translation of optionGroup.translations) {
-                await this.connection
-                    .getRepository(ctx, ProductOptionGroupTranslation)
-                    .remove(translation as ProductOptionGroupTranslation);
-            }
-
             try {
                 await this.connection.getRepository(ctx, ProductOptionGroup).remove(optionGroup);
             } catch (e: any) {
