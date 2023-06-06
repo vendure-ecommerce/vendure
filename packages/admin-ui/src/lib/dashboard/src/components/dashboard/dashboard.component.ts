@@ -6,13 +6,13 @@ import {
     DashboardWidgetWidth,
     DataService,
     LocalStorageService,
+    titleSetter,
     WidgetLayout,
     WidgetLayoutDefinition,
 } from '@vendure/admin-ui/core';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { titleSetter } from '../../../../core/src/common/title-setter';
 
 @Component({
     selector: 'vdr-dashboard',

@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { getAppConfig, I18nService } from '@vendure/admin-ui/core';
+import { getAppConfig } from '../app.config';
+import { I18nService } from '../providers/i18n/i18n.service';
 
 /**
  * Creates a function that can be used to set the meta title of the current page.

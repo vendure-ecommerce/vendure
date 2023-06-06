@@ -6,9 +6,9 @@ import {
     Input,
     OnDestroy,
 } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { CurrencyCode, DataService } from '@vendure/admin-ui/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-language-code-selector',
