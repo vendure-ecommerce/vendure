@@ -1,69 +1,69 @@
 {
-  "generatedOn": "2023-06-05T19:19:39.286Z",
-  "lastCommit": "f90b244160d4bfe8f4c00c69f2ec6d69de5861df",
+  "generatedOn": "2023-06-06T07:37:21.339Z",
+  "lastCommit": "4baaa39cfb2747b23b2382e48b00b6f5248421dc",
   "translationStatus": {
     "cs": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 544,
       "percentage": 74
     },
     "de": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 527,
       "percentage": 72
     },
     "en": {
-      "tokenCount": 731,
-      "translatedCount": 730,
+      "tokenCount": 734,
+      "translatedCount": 731,
       "percentage": 100
     },
     "es": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 569,
       "percentage": 78
     },
     "fr": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 564,
       "percentage": 77
     },
     "it": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 568,
-      "percentage": 78
+      "percentage": 77
     },
     "pl": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 378,
-      "percentage": 52
+      "percentage": 51
     },
     "pt_BR": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 542,
       "percentage": 74
     },
     "pt_PT": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 577,
       "percentage": 79
     },
     "ru": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 567,
-      "percentage": 78
+      "percentage": 77
     },
     "uk": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 567,
-      "percentage": 78
+      "percentage": 77
     },
     "zh_Hans": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 513,
       "percentage": 70
     },
     "zh_Hant": {
-      "tokenCount": 731,
+      "tokenCount": 734,
       "translatedCount": 358,
       "percentage": 49
     }

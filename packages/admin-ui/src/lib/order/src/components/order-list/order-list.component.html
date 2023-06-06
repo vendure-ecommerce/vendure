@@ -59,7 +59,9 @@
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'order.order-type' | translate" [hiddenByDefault]="true">
         <ng-template let-order="item">
-            <vdr-chip>{{ order.type }}</vdr-chip>
+            <vdr-chip *ngIf="order.type === OrderType.Regular">{{ 'order.order-type-regular' | translate }}</vdr-chip>
+            <vdr-chip *ngIf="order.type === OrderType.Aggregate">{{ 'order.order-type-aggregate' | translate }}</vdr-chip>
+            <vdr-chip *ngIf="order.type === OrderType.Seller">{{ 'order.order-type-seller' | translate }}</vdr-chip>
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'order.state' | translate" [sort]="sorts.get('state')">

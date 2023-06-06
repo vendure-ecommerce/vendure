@@ -23,6 +23,7 @@ export class OrderListComponent
     implements OnInit
 {
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
+    readonly OrderType = OrderType;
     readonly customFields = this.getCustomFieldConfig('Order');
     readonly filters = this.createFilterCollection()
         .addDateFilters()
@@ -46,6 +47,19 @@ export class OrderListComponent
             },
             label: _('order.state'),
             filterField: 'state',
+        })
+        .addFilter({
+            name: 'type',
+            type: {
+                kind: 'select',
+                options: [
+                    { value: OrderType.Regular, label: _('order.order-type-regular') },
+                    { value: OrderType.Aggregate, label: _('order.order-type-aggregate') },
+                    { value: OrderType.Seller, label: _('order.order-type-seller') },
+                ],
+            },
+            label: _('order.order-type'),
+            filterField: 'type',
         })
         .addFilter({
             name: 'orderPlacedAt',
@@ -116,9 +130,6 @@ export class OrderListComponent
         if (this.activeChannelIsDefaultChannel) {
             filterInput = {
                 ...(filterInput ?? {}),
-                type: {
-                    notEq: OrderType.Seller,
-                },
             };
         }
         if (searchTerm) {
