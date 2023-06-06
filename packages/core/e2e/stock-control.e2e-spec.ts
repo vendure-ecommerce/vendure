@@ -359,7 +359,7 @@ describe('Stock control', () => {
             expect(variant3.stockAllocated).toBe(0); // inherited untracked inventory
         });
 
-        it('creates a Release on cancelling an allocated OrderItem and updates stockAllocated', async () => {
+        it('creates a Release on cancelling an allocated order item and updates stockAllocated', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
                 {

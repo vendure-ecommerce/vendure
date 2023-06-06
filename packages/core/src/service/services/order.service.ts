@@ -485,7 +485,7 @@ export class OrderService {
 
     /**
      * @description
-     * Adds an OrderItem to the Order, either creating a new OrderLine or
+     * Adds an item to the Order, either creating a new OrderLine or
      * incrementing an existing one.
      */
     async addItemToOrder(

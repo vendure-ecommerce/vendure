@@ -137,8 +137,8 @@ export class OrderModifier {
 
     /**
      * @description
-     * Returns the OrderLine to which a new OrderItem belongs, creating a new OrderLine
-     * if no existing line is found.
+     * Returns the OrderLine containing the given {@link ProductVariant}, taking into account any custom field values. If no existing
+     * OrderLine is found, a new OrderLine will be created.
      */
     async getOrCreateOrderLine(
         ctx: RequestContext,

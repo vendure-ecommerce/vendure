@@ -107,7 +107,7 @@ export class OrderCalculator {
 
     /**
      * @description
-     * Applies the correct TaxRate to each OrderItem in the order.
+     * Applies the correct TaxRate to each OrderLine in the order.
      */
     private async applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
         const getTaxRate = this.createTaxRateGetter(ctx, activeZone);
@@ -162,8 +162,7 @@ export class OrderCalculator {
 
     /**
      * @description
-     * Applies any eligible promotions to each OrderItem in the order. Returns an array of
-     * any OrderItems which had their Adjustments modified.
+     * Applies any eligible promotions to each OrderLine in the order.
      */
     private async applyPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]): Promise<void> {
         await this.applyOrderItemPromotions(ctx, order, promotions);

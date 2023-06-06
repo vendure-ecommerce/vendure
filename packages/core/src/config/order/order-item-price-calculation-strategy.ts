@@ -6,7 +6,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 
 /**
  * @description
- * The OrderItemPriceCalculationStrategy defines the price of an OrderItem. By default the
+ * The OrderItemPriceCalculationStrategy defines the listPrice of an OrderLine when adding an item to an Order. By default the
  * {@link DefaultOrderItemPriceCalculationStrategy} is used.
  *
  * ### When is the strategy invoked ?

@@ -3777,7 +3777,7 @@ export type Order = Node & {
   state: Scalars['String'];
   /**
    * The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
-   * discounts which have been prorated (proportionally distributed) amongst the OrderItems.
+   * discounts which have been prorated (proportionally distributed) amongst the items of each OrderLine.
    * To get a total of all OrderLines which does not account for prorated discounts, use the
    * sum of `OrderLine.discountedLinePrice` values.
    */
@@ -3842,43 +3842,6 @@ export type OrderFilterParameter = {
   transactionId?: InputMaybe<StringOperators>;
   type?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
-};
-
-export type OrderItem = Node & {
-  __typename?: 'OrderItem';
-  adjustments: Array<Adjustment>;
-  cancelled: Scalars['Boolean'];
-  createdAt: Scalars['DateTime'];
-  /**
-   * The price of a single unit including discounts, excluding tax.
-   *
-   * If Order-level discounts have been applied, this will not be the
-   * actual taxable unit price (see `proratedUnitPrice`), but is generally the
-   * correct price to display to customers to avoid confusion
-   * about the internal handling of distributed Order-level discounts.
-   */
-  discountedUnitPrice: Scalars['Money'];
-  /** The price of a single unit including discounts and tax */
-  discountedUnitPriceWithTax: Scalars['Money'];
-  fulfillment?: Maybe<Fulfillment>;
-  id: Scalars['ID'];
-  /**
-   * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
-   * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
-   * and refund calculations.
-   */
-  proratedUnitPrice: Scalars['Money'];
-  /** The proratedUnitPrice including tax */
-  proratedUnitPriceWithTax: Scalars['Money'];
-  refundId?: Maybe<Scalars['ID']>;
-  taxLines: Array<TaxLine>;
-  taxRate: Scalars['Float'];
-  /** The price of a single unit, excluding tax and discounts */
-  unitPrice: Scalars['Money'];
-  /** The price of a single unit, including tax but excluding discounts */
-  unitPriceWithTax: Scalars['Money'];
-  unitTax: Scalars['Money'];
-  updatedAt: Scalars['DateTime'];
 };
 
 /** Returned when the maximum order size limit has been reached. */
@@ -4056,7 +4019,7 @@ export type OrderTaxSummary = {
   __typename?: 'OrderTaxSummary';
   /** A description of this tax */
   description: Scalars['String'];
-  /** The total net price or OrderItems to which this taxRate applies */
+  /** The total net price of OrderLines to which this taxRate applies */
   taxBase: Scalars['Money'];
   /** The taxRate as a percentage */
   taxRate: Scalars['Float'];
@@ -5356,7 +5319,6 @@ export type Release = Node & StockMovement & {
   __typename?: 'Release';
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
-  orderItem: OrderItem;
   productVariant: ProductVariant;
   quantity: Scalars['Int'];
   type: StockMovementType;
@@ -5414,7 +5376,6 @@ export type Return = Node & StockMovement & {
   __typename?: 'Return';
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
-  orderItem: OrderItem;
   productVariant: ProductVariant;
   quantity: Scalars['Int'];
   type: StockMovementType;
@@ -5471,7 +5432,6 @@ export type Sale = Node & StockMovement & {
   __typename?: 'Sale';
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
-  orderItem: OrderItem;
   productVariant: ProductVariant;
   quantity: Scalars['Int'];
   type: StockMovementType;

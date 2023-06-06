@@ -161,7 +161,6 @@
       "HistoryEntry",
       "Job",
       "Order",
-      "OrderItem",
       "OrderLine",
       "OrderModification",
       "Payment",

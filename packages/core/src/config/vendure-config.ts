@@ -485,7 +485,7 @@ export interface OrderOptions {
     orderLineItemsLimit?: number;
     /**
      * @description
-     * Defines the logic used to calculate the unit price of an OrderItem when adding an
+     * Defines the logic used to calculate the unit price of an OrderLine when adding an
      * item to an Order.
      *
      * @default DefaultPriceCalculationStrategy
@@ -548,8 +548,8 @@ export interface OrderOptions {
     orderByCodeAccessStrategy?: OrderByCodeAccessStrategy;
     /**
      * @description
-     * Defines how we handle the situation where an OrderItem exists in an Order, and
-     * then later on another is added but in the mean time the price of the ProductVariant has changed.
+     * Defines how we handle the situation where an item exists in an Order, and
+     * then later on another is added but in the meantime the price of the ProductVariant has changed.
      *
      * By default, the latest price will be used. Any price changes resulting from using a newer price
      * will be reflected in the GraphQL `OrderLine.unitPrice[WithTax]ChangeSinceAdded` field.

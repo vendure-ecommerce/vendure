@@ -64,7 +64,7 @@ export type ConditionState<
 /**
  * @description
  * The function which is used by a PromotionItemAction to calculate the
- * discount on the OrderItem.
+ * discount on the OrderLine.
  *
  * @docsCategory promotions
  * @docsPage promotion-action
@@ -196,7 +196,7 @@ export interface PromotionItemActionConfig<T extends ConfigArgs, U extends Promo
      * @description
      * The function which contains the promotion calculation logic.
      * Should resolve to a number which represents the amount by which to discount
-     * the OrderItem, i.e. the number should be negative.
+     * the OrderLine, i.e. the number should be negative.
      */
     execute: ExecutePromotionItemActionFn<T, U>;
 }
@@ -298,11 +298,11 @@ export abstract class PromotionAction<
 
 /**
  * @description
- * Represents a PromotionAction which applies to individual {@link OrderItem}s.
+ * Represents a PromotionAction which applies to individual {@link OrderLine}s.
  *
  * @example
  * ```ts
- * // Applies a percentage discount to each OrderItem
+ * // Applies a percentage discount to each OrderLine
  * const itemPercentageDiscount = new PromotionItemAction({
  *     code: 'item_percentage_discount',
  *     args: { discount: 'percentage' },

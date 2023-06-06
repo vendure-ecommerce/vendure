@@ -42,7 +42,6 @@ type Sale implements Node & StockMovement {
     productVariant: ProductVariant!
     type: StockMovementType!
     quantity: Int!
-    orderItem: OrderItem!
 }
 
 type Cancellation implements Node & StockMovement {
@@ -62,7 +61,6 @@ type Return implements Node & StockMovement {
     productVariant: ProductVariant!
     type: StockMovementType!
     quantity: Int!
-    orderItem: OrderItem!
 }
 
 type Release implements Node & StockMovement {
@@ -72,7 +70,6 @@ type Release implements Node & StockMovement {
     productVariant: ProductVariant!
     type: StockMovementType!
     quantity: Int!
-    orderItem: OrderItem!
 }
 
 union StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release

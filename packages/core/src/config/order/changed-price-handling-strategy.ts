@@ -6,7 +6,7 @@ import { OrderLine } from '../../entity/order-line/order-line.entity';
 
 /**
  * @description
- * This strategy defines how we handle the situation where an OrderItem exists in an Order, and
+ * This strategy defines how we handle the situation where an item exists in an Order, and
  * then later on another is added but in the meantime the price of the ProductVariant has changed.
  *
  * By default, the latest price will be used. Any price changes resulting from using a newer price

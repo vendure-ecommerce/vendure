@@ -204,7 +204,7 @@ describe('Order taxes', () => {
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/1216
-        it('re-calculates OrderItem prices when shippingAddress causes activeTaxZone change', async () => {
+        it('re-calculates OrderLine prices when shippingAddress causes activeTaxZone change', async () => {
             const { taxRates } = await adminClient.query<Codegen.GetTaxRateListQuery>(GET_TAX_RATE_LIST);
             // Set the TaxRates to Asia to 0%
             const taxRatesAsia = taxRates.items.filter(tr => tr.name.includes('Asia'));
@@ -253,7 +253,7 @@ describe('Order taxes', () => {
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/1216
-        it('re-calculates OrderItem prices when billingAddress causes activeTaxZone change', async () => {
+        it('re-calculates OrderLine prices when billingAddress causes activeTaxZone change', async () => {
             await shopClient.query<
                 CodegenShop.SetBillingAddressMutation,
                 CodegenShop.SetBillingAddressMutationVariables

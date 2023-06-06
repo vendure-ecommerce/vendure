@@ -101,7 +101,7 @@ export interface S3Config {
  *       },
  *       nativeS3Configuration: {
  *         endpoint: process.env.MINIO_ENDPOINT ?? 'http://localhost:9000',
- *         s3ForcePathStyle: true,
+ *         forcePathStyle: true,
  *         signatureVersion: 'v4',
  *       },
  *     }),
