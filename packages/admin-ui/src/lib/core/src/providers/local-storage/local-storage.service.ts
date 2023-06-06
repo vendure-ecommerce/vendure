@@ -30,6 +30,21 @@ export type LocalStorageLocationBasedTypeMap = {
     shippingTestAddress: any;
 };
 
+/**
+ * These keys are stored specific to a particular AdminId, so that multiple
+ * admins can use the same browser without interfering with each other's data.
+ */
+const ADMIN_SPECIFIC_KEYS: Array<keyof LocalStorageTypeMap> = [
+    'activeTheme',
+    'uiLanguageCode',
+    'uiLocale',
+    'contentLanguageCode',
+    'dashboardWidgetLayout',
+    'activeTheme',
+    'livePreviewCollectionContents',
+    'dataTableConfig',
+];
+
 const PREFIX = 'vnd_';
 
 /**
@@ -111,6 +126,10 @@ export class LocalStorageService {
     }
 
     private keyName(key: keyof LocalStorageTypeMap): string {
-        return `${PREFIX}_${this.adminId}_${key}`;
+        if (ADMIN_SPECIFIC_KEYS.includes(key)) {
+            return `${PREFIX}_${this.adminId}_${key}`;
+        } else {
+            return `${PREFIX}_${key}`;
+        }
     }
 }
