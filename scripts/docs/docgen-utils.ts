@@ -25,6 +25,17 @@ export function titleCase(input: string): string {
         .join(' ');
 }
 
+export function normalizeForUrlPart<T extends string | undefined>(input: T): T {
+    if (input == null) {
+        return input;
+    }
+    return input
+        .replace(/([a-z])([A-Z])/g, '$1-$2')
+        .replace(/[^a-zA-Z0-9-_/]/g, ' ')
+        .replace(/\s+/g, '-')
+        .toLowerCase() as T;
+}
+
 /**
  * Delete all generated docs found in the outputPath.
  */

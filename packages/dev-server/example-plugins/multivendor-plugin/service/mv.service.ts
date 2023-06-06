@@ -15,10 +15,13 @@ import {
     SellerService,
     ShippingMethod,
     ShippingMethodService,
+    StockLocation,
+    StockLocationService,
     TaxSetting,
 } from '@vendure/core';
 
 import { multivendorShippingEligibilityChecker } from '../config/mv-shipping-eligibility-checker';
+import { CreateSellerInput } from '../types';
 
 @Injectable()
 export class MultivendorService {
@@ -29,14 +32,13 @@ export class MultivendorService {
         private channelService: ChannelService,
         private shippingMethodService: ShippingMethodService,
         private configService: ConfigService,
+        private stockLocationService: StockLocationService,
     ) {}
 
-    async registerNewSeller(
-        ctx: RequestContext,
-        input: { shopName: string; administrator: CreateAdministratorInput },
-    ) {
+    async registerNewSeller(ctx: RequestContext, input: { shopName: string; seller: CreateSellerInput }) {
         const channel = await this.createSellerChannelRoleAdmin(ctx, input);
         await this.createSellerShippingMethod(ctx, input.shopName, channel);
+        await this.createSellerStockLocation(ctx, input.shopName, channel);
         return channel;
     }
 
@@ -89,9 +91,16 @@ export class MultivendorService {
         ]);
     }
 
+    private async createSellerStockLocation(ctx: RequestContext, shopName: string, sellerChannel: Channel) {
+        const stockLocation = await this.stockLocationService.create(ctx, {
+            name: `${shopName} Warehouse`,
+        });
+        await this.channelService.assignToChannels(ctx, StockLocation, stockLocation.id, [sellerChannel.id]);
+    }
+
     private async createSellerChannelRoleAdmin(
         ctx: RequestContext,
-        input: { shopName: string; administrator: CreateAdministratorInput },
+        input: { shopName: string; seller: CreateSellerInput },
     ) {
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         const shopCode = normalizeString(input.shopName, '-');
@@ -146,10 +155,10 @@ export class MultivendorService {
             ],
         });
         const administrator = await this.administratorService.create(ctx, {
-            firstName: input.administrator.firstName,
-            lastName: input.administrator.lastName,
-            emailAddress: input.administrator.emailAddress,
-            password: input.administrator.password,
+            firstName: input.seller.firstName,
+            lastName: input.seller.lastName,
+            emailAddress: input.seller.emailAddress,
+            password: input.seller.password,
             roleIds: [role.id],
         });
         return channel;

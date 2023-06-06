@@ -12,6 +12,14 @@ import { Money } from '../money.decorator';
 import { Order } from '../order/order.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
+/**
+ * @description
+ * A ShippingLine is created when a {@link ShippingMethod} is applied to an {@link Order}.
+ * It contains information about the price of the shipping method, any discounts that were
+ * applied, and the resulting tax on the shipping method.
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class ShippingLine extends VendureEntity {
     constructor(input?: DeepPartial<ShippingLine>) {

@@ -12,7 +12,7 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 
-import { adminApiExtensions } from './api/api-extensions';
+import { shopApiExtensions } from './api/api-extensions';
 import { MultivendorResolver } from './api/mv.resolver';
 import { multivendorOrderProcess } from './config/mv-order-process';
 import { MultivendorSellerStrategy } from './config/mv-order-seller-strategy';
@@ -49,12 +49,11 @@ import { MultivendorPluginOptions } from './types';
  * mutation RegisterSeller {
  *   registerNewSeller(input: {
  *     shopName: "Bob's Parts",
- *     administrator: {
+ *     seller {
  *       firstName: "Bob"
  *       lastName: "Dobalina"
  *       emailAddress: "bob@bobs-parts.com"
  *       password: "test",
- *       roleIds: []
  *     }
  *   }) {
  *     id
@@ -70,6 +69,7 @@ import { MultivendorPluginOptions } from './types';
  * - Create a new Channel and associate it with the new Seller
  * - Create a Role & Administrator for Bob to access his shop admin account
  * - Create a ShippingMethod for Bob's shop
+ * - Create a StockLocation for Bob's shop
  *
  * Bob can then go and sign in to the Admin UI using the provided emailAddress & password credentials, and start
  * creating some products.
@@ -146,8 +146,8 @@ import { MultivendorPluginOptions } from './types';
             new MultivendorShippingLineAssignmentStrategy();
         return config;
     },
-    adminApiExtensions: {
-        schema: adminApiExtensions,
+    shopApiExtensions: {
+        schema: shopApiExtensions,
         resolvers: [MultivendorResolver],
     },
     providers: [

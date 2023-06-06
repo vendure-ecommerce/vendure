@@ -8,7 +8,8 @@ import { CustomSellerFields } from '../custom-entity-fields';
 
 /**
  * @description
- * An administrative user who has access to the admin ui.
+ * A Seller represents the person or organization who is selling the goods on a given {@link Channel}.
+ * By default, a single-channel Vendure installation will have a single default Seller.
  *
  * @docsCategory entities
  */

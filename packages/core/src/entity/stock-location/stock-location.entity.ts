@@ -11,6 +11,11 @@ import { CustomStockLocationFields } from '../custom-entity-fields';
  * @description
  * A StockLocation represents a physical location where stock is held. For example, a warehouse or a shop.
  *
+ * When the stock of a {@link ProductVariant} is adjusted, the adjustment is applied to a specific StockLocation,
+ * and the stockOnHand of that ProductVariant is updated accordingly. When there are multiple StockLocations
+ * configured, the {@link StockLocationStrategy} is used to determine which StockLocation should be used for
+ * a given operation.
+ *
  * @docsCategory entities
  */
 @Entity()

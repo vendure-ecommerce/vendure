@@ -1,8 +1,8 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { CreateAdministratorInput } from '@vendure/common/lib/generated-types';
 import { Allow, Ctx, Permission, RequestContext, Transaction } from '@vendure/core';
 
 import { MultivendorService } from '../service/mv.service';
+import { CreateSellerInput } from '../types';
 
 @Resolver()
 export class MultivendorResolver {
@@ -10,10 +10,10 @@ export class MultivendorResolver {
 
     @Mutation()
     @Transaction()
-    @Allow(Permission.SuperAdmin)
+    @Allow(Permission.Public)
     registerNewSeller(
         @Ctx() ctx: RequestContext,
-        @Args() args: { input: { shopName: string; administrator: CreateAdministratorInput } },
+        @Args() args: { input: { shopName: string; seller: CreateSellerInput } },
     ) {
         return this.multivendorService.registerNewSeller(ctx, args.input);
     }

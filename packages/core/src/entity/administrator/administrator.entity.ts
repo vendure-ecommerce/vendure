@@ -9,7 +9,9 @@ import { User } from '../user/user.entity';
 
 /**
  * @description
- * An administrative user who has access to the admin ui.
+ * An administrative user who has access to the Admin UI and Admin API. The
+ * specific permissions of the Administrator are determined by the assigned
+ * {@link Role}s.
  *
  * @docsCategory entities
  */

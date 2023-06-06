@@ -916,13 +916,12 @@ export class OrderService {
             await this.connection
                 .getRepository(ctx, OrderLine)
                 .createQueryBuilder('line')
-                .update({ shippingLine })
+                .update({ shippingLineId: shippingLine.id })
                 .whereInIds(orderLinesForShippingLine.map(l => l.id))
                 .execute();
         }
-
-        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        await this.applyPriceAdjustments(ctx, order);
+        const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
+        await this.applyPriceAdjustments(ctx, updatedOrder);
         return this.connection.getRepository(ctx, Order).save(order);
     }
 

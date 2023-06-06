@@ -50,6 +50,9 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
     async setOrderLineSellerChannel(ctx: RequestContext, orderLine: OrderLine) {
         await this.entityHydrator.hydrate(ctx, orderLine.productVariant, { relations: ['channels'] });
         const defaultChannel = await this.channelService.getDefaultChannel();
+
+        // If a ProductVariant is assigned to exactly 2 Channels, then one is the default Channel
+        // and the other is the seller's Channel.
         if (orderLine.productVariant.channels.length === 2) {
             const sellerChannel = orderLine.productVariant.channels.find(
                 c => !idsAreEqual(c.id, defaultChannel.id),

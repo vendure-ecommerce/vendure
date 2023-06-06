@@ -4,6 +4,7 @@ import ts, { HeritageClause, JSDocTag, SyntaxKind } from 'typescript';
 
 import { notNullOrUndefined } from '../../packages/common/src/shared-utils';
 
+import { normalizeForUrlPart } from './docgen-utils';
 import {
     DocsPage,
     MemberInfo,
@@ -54,7 +55,7 @@ export class TypescriptDocsParser {
                 if (existingPage) {
                     existingPage.declarations.push(declaration);
                 } else {
-                    const normalizedTitle = this.kebabCase(pageTitle);
+                    const normalizedTitle = normalizeForUrlPart(pageTitle);
                     const categoryLastPart = declaration.category.split('/').pop();
                     const fileName = normalizedTitle === categoryLastPart ? '_index' : normalizedTitle;
                     pages.set(pageTitle, {
@@ -396,7 +397,7 @@ export class TypescriptDocsParser {
         this.parseTags(statement, {
             docsCategory: comment => (category = comment || ''),
         });
-        return this.kebabCase(category);
+        return normalizeForUrlPart(category);
     }
 
     /**
@@ -434,16 +435,6 @@ export class TypescriptDocsParser {
      */
     private formatExampleCode(example: string = ''): string {
         return '\n\n*Example*\n\n' + example.replace(/\r/g, '');
-    }
-
-    private kebabCase<T extends string | undefined>(input: T): T {
-        if (input == null) {
-            return input;
-        }
-        return input
-            .replace(/([a-z])([A-Z])/g, '$1-$2')
-            .replace(/\s+/g, '-')
-            .toLowerCase() as T;
     }
 
     /**
