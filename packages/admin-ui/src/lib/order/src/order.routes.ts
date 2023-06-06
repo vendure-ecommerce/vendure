@@ -112,8 +112,7 @@ export function modifyingOrderBreadcrumb(data: any, params: any) {
     return orderBreadcrumb(data, params).pipe(
         map((breadcrumbs: BreadcrumbLabelLinkPair[]) => {
             const modifiedBreadcrumbs = breadcrumbs.slice();
-            modifiedBreadcrumbs[0].link[0] = '../';
-            modifiedBreadcrumbs[1].link[0] = '../orders';
+            modifiedBreadcrumbs[1].link = ['../', breadcrumbs[1].link[0]];
             return modifiedBreadcrumbs.concat({ label: _('breadcrumb.modifying'), link: [''] });
         }) as any,
     );

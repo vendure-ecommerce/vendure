@@ -1,12 +1,12 @@
 <ng-template vdrDialogTitle>{{ 'order.select-state' | translate }}</ng-template>
 <p>{{ message | translate }}</p>
-<clr-select-container>
-    <select clrSelect name="state" [(ngModel)]="selectedState">
+<vdr-form-field>
+    <select name="state" [(ngModel)]="selectedState">
         <option *ngFor="let state of nextStates" [value]="state">
             {{ state | stateI18nToken | translate }}
         </option>
     </select>
-</clr-select-container>
+</vdr-form-field>
 <ng-template vdrDialogButtons>
     <button type="submit" *ngIf="cancellable" (click)="cancel()" class="btn btn-secondary">
         {{ 'common.cancel' | translate }}
