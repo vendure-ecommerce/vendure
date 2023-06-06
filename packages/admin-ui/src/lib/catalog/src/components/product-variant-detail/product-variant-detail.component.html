@@ -2,13 +2,16 @@
     <vdr-action-bar>
         <vdr-ab-left [grow]="true">
             <div class="flex center">
-                <vdr-language-selector
-                    class="mr-2"
-                    [disabled]="isNew$ | async"
-                    [availableLanguageCodes]="availableLanguages$ | async"
-                    [currentLanguageCode]="languageCode$ | async"
-                    (languageCodeChange)="setLanguage($event)"
-                ></vdr-language-selector>
+                <ng-container *ngIf="availableLanguages$ | async as availableLanguages">
+                    <vdr-language-selector
+                        *ngIf="availableLanguages.length > 1"
+                        class="mr-2"
+                        [disabled]="isNew$ | async"
+                        [availableLanguageCodes]="availableLanguages"
+                        [currentLanguageCode]="languageCode$ | async"
+                        (languageCodeChange)="setLanguage($event)"
+                    ></vdr-language-selector>
+                </ng-container>
                 <vdr-product-variant-quick-jump [productId]="entity?.product.id" />
             </div>
         </vdr-ab-left>
@@ -169,7 +172,9 @@
                             <vdr-currency-input
                                 name="price"
                                 [currencyCode]="price.value.currencyCode"
-                                [readonly]="!(updatePermissions | hasPermission) || price.value.delete === true"
+                                [readonly]="
+                                    !(updatePermissions | hasPermission) || price.value.delete === true
+                                "
                                 formControlName="price"
                             />
                             <div *ngIf="1 < pricesForm.controls.length">
