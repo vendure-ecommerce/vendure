@@ -122,13 +122,14 @@
             <tr class="surcharge" *ngFor="let surcharge of order.surcharges">
                 <td class="align-middle name left" colspan="2">{{ surcharge.description }}</td>
                 <td class="align-middle sku">{{ surcharge.sku }}</td>
-                <td class="align-middle" colspan="2"></td>
+                <td class="align-middle" [attr.colspan]="visibleSortedColumns.length - 4"></td>
                 <td class="align-middle total">
                     {{ surcharge.priceWithTax | localeCurrency : order.currencyCode }}
                     <div class="net-price" [title]="'order.net-price' | translate">
                         {{ surcharge.price | localeCurrency : order.currencyCode }}
                     </div>
                 </td>
+                <td><!-- column select --></td>
             </tr>
             <ng-container *ngFor="let discount of order.discounts">
                 <tr class="order-adjustment" *ngIf="discount.type !== 'OTHER'">
@@ -160,7 +161,11 @@
             </tr>
             <tr class="shipping">
                 <td class="">{{ 'order.shipping' | translate }}</td>
-                <td [attr.colspan]="visibleSortedColumns.length - 2">{{ getShippingNames(order) }}</td>
+                <td [attr.colspan]="visibleSortedColumns.length - 2">
+                    <vdr-chip *ngFor="let shippingLine of order.shippingLines" class="shipping-method-name">
+                        {{ shippingLine.shippingMethod.name }}
+                    </vdr-chip>
+                </td>
                 <td class="clr-align-middle">
                     {{ order.shippingWithTax | localeCurrency : order.currencyCode }}
                     <div class="net-price" [title]="'order.net-price' | translate">

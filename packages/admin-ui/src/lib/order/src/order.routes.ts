@@ -50,15 +50,13 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: ':aggregateOrderId/seller-orders/:id',
-        component: OrderDetailComponent,
-        resolve: {
-            entity: OrderResolver,
-        },
+        component: PageComponent,
         canActivate: [OrderGuard],
-        canDeactivate: [CanDeactivateDetailGuard],
         data: {
-            breadcrumb: orderBreadcrumb,
+            locationId: 'order-detail',
+            breadcrumb: { label: _('breadcrumb.orders'), link: ['../'] },
         },
+        children: pageService.getPageTabRoutes('order-detail'),
     },
     {
         path: ':id/modify',

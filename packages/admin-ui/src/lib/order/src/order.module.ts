@@ -4,6 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     detailComponentWithResolver,
     OrderDetailQueryDocument,
+    OrderType,
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
@@ -116,12 +117,28 @@ export class OrderModule {
                 component: OrderDetailComponent,
                 query: OrderDetailQueryDocument,
                 entityKey: 'order',
-                getBreadcrumbs: entity => [
-                    {
-                        label: `${entity?.code}`,
-                        link: [entity?.id],
-                    },
-                ],
+                getBreadcrumbs: entity =>
+                    entity?.type !== OrderType.Seller || !entity?.aggregateOrder
+                        ? [
+                              {
+                                  label: `${entity?.code}`,
+                                  link: [entity?.id],
+                              },
+                          ]
+                        : [
+                              {
+                                  label: `${entity?.aggregateOrder?.code}`,
+                                  link: ['/orders/', entity?.aggregateOrder?.id],
+                              },
+                              {
+                                  label: _('breadcrumb.seller-orders'),
+                                  link: ['/orders/', entity?.aggregateOrder?.id],
+                              },
+                              {
+                                  label: `${entity?.code}`,
+                                  link: [entity?.id],
+                              },
+                          ],
             }),
         });
         pageService.registerPageTab({
