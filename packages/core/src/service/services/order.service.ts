@@ -919,9 +919,12 @@ export class OrderService {
                 .update({ shippingLineId: shippingLine.id })
                 .whereInIds(orderLinesForShippingLine.map(l => l.id))
                 .execute();
+            orderLinesForShippingLine.forEach(line => {
+                line.shippingLine = shippingLine;
+            });
         }
         const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
-        await this.applyPriceAdjustments(ctx, updatedOrder);
+        await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
