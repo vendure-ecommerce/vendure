@@ -11,6 +11,7 @@ import {
     isGraphQlErrorResult,
     manualFulfillmentHandler,
     RequestContext,
+    RequestContextService,
     RoleService,
     SellerService,
     ShippingMethod,
@@ -18,6 +19,8 @@ import {
     StockLocation,
     StockLocationService,
     TaxSetting,
+    TransactionalConnection,
+    User,
 } from '@vendure/core';
 
 import { multivendorShippingEligibilityChecker } from '../config/mv-shipping-eligibility-checker';
@@ -33,12 +36,15 @@ export class MultivendorService {
         private shippingMethodService: ShippingMethodService,
         private configService: ConfigService,
         private stockLocationService: StockLocationService,
+        private requestContextService: RequestContextService,
+        private connection: TransactionalConnection,
     ) {}
 
     async registerNewSeller(ctx: RequestContext, input: { shopName: string; seller: CreateSellerInput }) {
-        const channel = await this.createSellerChannelRoleAdmin(ctx, input);
-        await this.createSellerShippingMethod(ctx, input.shopName, channel);
-        await this.createSellerStockLocation(ctx, input.shopName, channel);
+        const superAdminCtx = await this.getSuperAdminContext(ctx);
+        const channel = await this.createSellerChannelRoleAdmin(superAdminCtx, input);
+        await this.createSellerShippingMethod(superAdminCtx, input.shopName, channel);
+        await this.createSellerStockLocation(superAdminCtx, input.shopName, channel);
         return channel;
     }
 
@@ -162,5 +168,19 @@ export class MultivendorService {
             roleIds: [role.id],
         });
         return channel;
+    }
+
+    private async getSuperAdminContext(ctx: RequestContext): Promise<RequestContext> {
+        const { superadminCredentials } = this.configService.authOptions;
+        const superAdminUser = await this.connection.getRepository(ctx, User).findOne({
+            where: {
+                identifier: superadminCredentials.identifier,
+            },
+        });
+        return this.requestContextService.create({
+            apiType: 'shop',
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            user: superAdminUser!,
+        });
     }
 }
