@@ -19,6 +19,8 @@ All the concepts presented here have been implemented in our [example multi-vend
 **Note:** the [example multi-vendor plugin](https://github.com/vendure-ecommerce/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin) is for educational purposes only, and for the sake of clarity leaves out several parts that would be required in a production-ready solution, such as email verification and setup of a real payment solution.
 {{< /alert >}}
 
+{{< figure src="./aggregate-order.webp" title="The Admin UI Aggregate Order screen" >}}
+
 ## Sellers, Channels & Roles
 
 The core of Vendure's multi-vendor support is Channels. Read the [Channels guide]({{< relref "/developer-guide/channels" >}}) to get a more detailed understanding of how they work.
