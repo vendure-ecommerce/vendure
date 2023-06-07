@@ -1,35 +1,6 @@
 ## 2.0.0 (2023-06-07)
 
-
-#### Fixes
-
-* **admin-ui** Clear data table selection on channel change ([34c69ba](https://github.com/vendure-ecommerce/vendure/commit/34c69ba))
-* **admin-ui** Correctly init channel switcher ([7e5e5d5](https://github.com/vendure-ecommerce/vendure/commit/7e5e5d5))
-* **admin-ui** Fix import paths ([6c33f3f](https://github.com/vendure-ecommerce/vendure/commit/6c33f3f))
-* **admin-ui** Fix issue with failed login caused by localstorage change ([c96417f](https://github.com/vendure-ecommerce/vendure/commit/c96417f)), closes [#2207](https://github.com/vendure-ecommerce/vendure/issues/2207)
-* **admin-ui** Fix routing & display of aggregate orders ([4baaa39](https://github.com/vendure-ecommerce/vendure/commit/4baaa39))
-* **admin-ui** Improve display of stock location description ([f90b244](https://github.com/vendure-ecommerce/vendure/commit/f90b244))
-* **admin-ui** Small fixes ([9f3763f](https://github.com/vendure-ecommerce/vendure/commit/9f3763f))
-* **core** Correctly assign StockLocations to channels ([4b8fe04](https://github.com/vendure-ecommerce/vendure/commit/4b8fe04))
-* **core** Correctly save OrderLine shippingLineId ([f703e06](https://github.com/vendure-ecommerce/vendure/commit/f703e06))
-
-#### Features
-
-* **admin-ui** Add channel operations for ShippingMethod & PaymentMethod ([12749d2](https://github.com/vendure-ecommerce/vendure/commit/12749d2))
-* **admin-ui** Add default language/currency to Channel detail ([8ba910e](https://github.com/vendure-ecommerce/vendure/commit/8ba910e))
-* **admin-ui** Add ui for multiple prices per variant ([58765a8](https://github.com/vendure-ecommerce/vendure/commit/58765a8))
-* **admin-ui** Allow filtering order list by type ([a291be0](https://github.com/vendure-ecommerce/vendure/commit/a291be0))
-* **admin-ui** Create list/detail components for StockLocation ([dce73e4](https://github.com/vendure-ecommerce/vendure/commit/dce73e4))
-* **admin-ui** Enable stock location selection when creating new Product ([bb74140](https://github.com/vendure-ecommerce/vendure/commit/bb74140))
-* **admin-ui** Expose provider for defining page tabs ([f97dd9d](https://github.com/vendure-ecommerce/vendure/commit/f97dd9d))
-* **admin-ui** Implement bulk actions for StockLocations ([650aff3](https://github.com/vendure-ecommerce/vendure/commit/650aff3))
-* **admin-ui** Implement refresh for metrics chart widget ([fa79590](https://github.com/vendure-ecommerce/vendure/commit/fa79590))
-* **admin-ui** Set page titles in browser tab ([fc40eb8](https://github.com/vendure-ecommerce/vendure/commit/fc40eb8))
-* **core** Add channel mutations for ShippingMethod & PaymentMethod ([5878880](https://github.com/vendure-ecommerce/vendure/commit/5878880))
-* **core** Implement channel mutations on StockLocation ([a1f6018](https://github.com/vendure-ecommerce/vendure/commit/a1f6018))
-* **core** Implement multi-deletion of StockLocations ([3ca76b1](https://github.com/vendure-ecommerce/vendure/commit/3ca76b1))
-* **core** Resolve & update product variant prices ([c15dd23](https://github.com/vendure-ecommerce/vendure/commit/c15dd23))
-* **create** Improve prompts for creating new app ([d4d84fa](https://github.com/vendure-ecommerce/vendure/commit/d4d84fa))
+(full changelog curation in progress for v2)
 
 ## <small>1.9.7 (2023-05-19)</small>
 
