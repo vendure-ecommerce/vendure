@@ -1,7 +1,7 @@
 <div class="app-container">
     <div class="left-nav" [class.expanded]="mainNavExpanded$ | async">
         <div class="branding">
-            <a [routerLink]="['/']"><img src="assets/logo.svg" class="logo" style="max-width: 100px" /></a>
+            <a [routerLink]="['/']" *ngIf="!hideVendureBranding"><img src="assets/logo.svg" class="logo" style="max-width: 100px" /></a>
             <div class="collapse-menu">
                 <button class="" (click)="collapseNav()">
                     <clr-icon shape="window-close" size="24"></clr-icon>
