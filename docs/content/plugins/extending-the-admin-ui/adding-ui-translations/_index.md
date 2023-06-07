@@ -10,7 +10,7 @@ The Vendure Admin UI is fully localizable, allowing you to:
 * override existing translations
 * add complete translations for whole new languages
 
-{{< figure src="./ui-translations-01.jpg" caption="The UI language is set from the User menu" >}}
+{{< figure src="./ui-translations-01.webp" caption="The UI language is set from the User menu" >}}
 
 ## Translation format
 

@@ -1,7 +1,7 @@
 ---
 title: "BulkAction"
 weight: 10
-date: 2023-06-06T14:49:35.379Z
+date: 2023-06-07T09:42:25.397Z
 showtoc: true
 generated: true
 ---
@@ -51,7 +51,7 @@ interface BulkAction<ItemType = any, ComponentType = any> {
 
 ### getTranslationVars
 
-{{< member-info kind="property" type="(         context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"  >}}
+{{< member-info kind="property" type="(         context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"  >}}
 
 {{< member-description >}}An optional function that should resolve to a map of translation variables which can be
 used when translating the `label` string.{{< /member-description >}}
@@ -60,7 +60,7 @@ used when translating the `label` string.{{< /member-description >}}
 
 {{< member-info kind="property" type="string"  >}}
 
-{{< member-description >}}A valid [Clarity Icons](https://clarity.design/icons) icon shape, e.g.
+{{< member-description >}}A valid [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/) icon shape, e.g.
 "cog", "user", "info-standard".{{< /member-description >}}
 
 ### iconClass

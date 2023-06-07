@@ -1,7 +1,7 @@
 ---
 title: "CustomDetailComponentLocationId"
 weight: 10
-date: 2023-06-06T14:49:35.360Z
+date: 2023-06-07T09:42:25.377Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # CustomDetailComponentLocationId
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="105" packageName="@vendure/admin-ui">}}
+{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="111" packageName="@vendure/admin-ui">}}
 
 The valid locations for embedding a <a href='/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a>.
 

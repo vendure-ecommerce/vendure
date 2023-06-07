@@ -1,7 +1,7 @@
 ---
 title: "ActionBarLocationId"
 weight: 10
-date: 2023-06-06T14:49:35.358Z
+date: 2023-06-07T09:42:25.376Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # ActionBarLocationId
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="97" packageName="@vendure/admin-ui">}}
+{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="103" packageName="@vendure/admin-ui">}}
 
 The valid locationIds for registering action bar items.
 

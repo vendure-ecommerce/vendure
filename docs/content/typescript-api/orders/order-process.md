@@ -1,7 +1,7 @@
 ---
 title: "OrderProcess"
 weight: 10
-date: 2023-06-06T14:49:31.941Z
+date: 2023-06-07T09:42:21.162Z
 showtoc: true
 generated: true
 ---
@@ -172,7 +172,7 @@ the Order are part of a Fulfillment which itself is in the `Shipped` state.{{< /
 
 # configureDefaultOrderProcess
 
-{{< generation-info sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="159" packageName="@vendure/core" since="2.0.0">}}
+{{< generation-info sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="163" packageName="@vendure/core" since="2.0.0">}}
 
 Used to configure a customized instance of the default <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure.
 Using this function allows you to turn off certain checks and constraints that are enabled by default.
@@ -193,6 +193,8 @@ export const config: VendureConfig = {
   },
 };
 ```
+The <a href='/typescript-api/orders/order-process#defaultorderprocessoptions'>DefaultOrderProcessOptions</a> type defines all available options. If you require even
+more customization, you can create your own implementation of the <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> interface.
 
 ## Signature
 
@@ -211,9 +213,11 @@ function configureDefaultOrderProcess(options: DefaultOrderProcessOptions): void
 
 # defaultOrderProcess
 
-{{< generation-info sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="463" packageName="@vendure/core" since="2.0.0">}}
+{{< generation-info sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="469" packageName="@vendure/core" since="2.0.0">}}
 
-This is the built-in <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure.
+This is the built-in <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure. A customized version of this process
+can be created using the <a href='/typescript-api/orders/order-process#configuredefaultorderprocess'>configureDefaultOrderProcess</a> function, which allows you to pass in an object
+to enable/disable certain checks.
 
 </div>
 <div class="symbol">

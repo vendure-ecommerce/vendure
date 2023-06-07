@@ -1,7 +1,7 @@
 ---
 title: "DataTableComponent"
 weight: 10
-date: 2023-06-06T14:49:35.582Z
+date: 2023-06-07T09:42:25.631Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,12 @@ generated: true
 
 # DataTableComponent
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table/data-table.component.ts" sourceLine="83" packageName="@vendure/admin-ui">}}
+{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table/data-table.component.ts" sourceLine="86" packageName="@vendure/admin-ui">}}
 
 A table for displaying PaginatedList results. It is designed to be used inside components which
 extend the <a href='/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> class.
+
+**Deprecated** This component is deprecated. Use the <a href='/admin-ui-api/components/data-table2component#datatable2component'>DataTable2Component</a> instead.
 
 *Example*
 

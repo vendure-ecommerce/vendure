@@ -1,7 +1,7 @@
 ---
 title: "ShippingMethodService"
 weight: 10
-date: 2023-06-06T14:49:33.972Z
+date: 2023-06-07T09:42:23.699Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # ShippingMethodService
 
-{{< generation-info sourceFile="packages/core/src/service/services/shipping-method.service.ts" sourceLine="45" packageName="@vendure/core">}}
+{{< generation-info sourceFile="packages/core/src/service/services/shipping-method.service.ts" sourceLine="44" packageName="@vendure/core">}}
 
 Contains methods relating to <a href='/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> entities.
 

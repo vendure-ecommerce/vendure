@@ -1,7 +1,7 @@
 ---
 title: "VendureEvent"
 weight: 10
-date: 2023-06-06T14:49:33.245Z
+date: 2023-06-07T09:42:22.552Z
 showtoc: true
 generated: true
 ---

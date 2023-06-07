@@ -1,7 +1,7 @@
 ---
 title: "Entities"
 weight: 10
-date: 2023-06-06T14:49:31.587Z
+date: 2023-06-07T09:42:20.818Z
 showtoc: false
 generated: true
 ---

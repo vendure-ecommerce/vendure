@@ -1,7 +1,7 @@
 ---
 title: "StockAllocationStrategy"
 weight: 10
-date: 2023-06-06T14:49:32.075Z
+date: 2023-06-07T09:42:21.296Z
 showtoc: true
 generated: true
 ---

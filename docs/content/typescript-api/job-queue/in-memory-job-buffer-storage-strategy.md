@@ -1,7 +1,7 @@
 ---
 title: "InMemoryJobBufferStorageStrategy"
 weight: 10
-date: 2023-06-06T14:49:33.275Z
+date: 2023-06-07T09:42:22.597Z
 showtoc: true
 generated: true
 ---

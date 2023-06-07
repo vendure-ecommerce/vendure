@@ -1,7 +1,7 @@
 ---
 title: "TransactionalConnection"
 weight: 10
-date: 2023-06-06T14:49:32.432Z
+date: 2023-06-07T09:42:21.681Z
 showtoc: true
 generated: true
 ---

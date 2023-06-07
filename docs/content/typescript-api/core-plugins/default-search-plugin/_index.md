@@ -1,7 +1,7 @@
 ---
 title: "DefaultSearchPlugin"
 weight: 10
-date: 2023-06-06T14:49:33.376Z
+date: 2023-06-07T09:42:22.743Z
 showtoc: true
 generated: true
 ---

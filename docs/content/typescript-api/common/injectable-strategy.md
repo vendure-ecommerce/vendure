@@ -1,7 +1,7 @@
 ---
 title: "InjectableStrategy"
 weight: 10
-date: 2023-06-06T14:49:31.599Z
+date: 2023-06-07T09:42:20.829Z
 showtoc: true
 generated: true
 ---

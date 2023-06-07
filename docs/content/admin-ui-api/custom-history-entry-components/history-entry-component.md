@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntryComponent"
 weight: 10
-date: 2023-06-06T14:49:35.410Z
+date: 2023-06-07T09:42:25.442Z
 showtoc: true
 generated: true
 ---

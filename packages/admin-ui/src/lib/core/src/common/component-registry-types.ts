@@ -42,6 +42,12 @@ export type InputComponentConfig = {
     [prop: string]: any;
 };
 
+/**
+ * @description
+ * The valid locationIds for registering action bar items or tabs.
+ *
+ * @docsCategory action-bar
+ */
 export type PageLocationId =
     | 'administrator-detail'
     | 'administrator-list'

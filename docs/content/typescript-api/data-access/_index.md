@@ -1,7 +1,7 @@
 ---
 title: "Data Access"
 weight: 10
-date: 2023-06-06T14:49:31.496Z
+date: 2023-06-07T09:42:20.731Z
 showtoc: false
 generated: true
 ---

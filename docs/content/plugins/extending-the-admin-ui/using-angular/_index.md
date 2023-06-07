@@ -33,12 +33,14 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'greeter',
-  template: `<h1>{{ greeting }}</h1>`,
+  template: `<vdr-page-block><h1>{{ greeting }}</h1></vdr-page-block>`,
 })
 export class GreeterComponent {
   greeting = 'Hello!';
 }
 ```
+
+The `<vdr-page-block>` is just a wrapper that sets the layout and max width of your component to match the rest of the Admin UI.
 
 ## 3. Create the Angular module
 
@@ -116,7 +118,7 @@ Next, these source files will be run through the Angular compiler, the output of
 
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greet` and you should see the component with the "Hello!" header:
 
-{{< figure src="./ui-extensions-greeter.jpg" >}}
+{{< figure src="./ui-extensions-greeter.webp" >}}
 
 {{< alert warning >}}
 **Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`. You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array:

@@ -1,7 +1,7 @@
 ---
 title: "Queries"
 weight: 1
-date: 2023-06-06T14:49:26.419Z
+date: 2023-06-07T09:42:13.591Z
 showtoc: true
 generated: true
 ---

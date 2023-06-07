@@ -1,7 +1,7 @@
 ---
 title: "VendureWorker"
 weight: 10
-date: 2023-06-06T14:49:34.073Z
+date: 2023-06-07T09:42:23.870Z
 showtoc: true
 generated: true
 ---

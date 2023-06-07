@@ -1,7 +1,7 @@
 ---
 title: "SlugValidator"
 weight: 10
-date: 2023-06-06T14:49:33.480Z
+date: 2023-06-07T09:42:22.908Z
 showtoc: true
 generated: true
 ---

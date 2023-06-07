@@ -109,7 +109,7 @@ export interface BulkAction<ItemType = any, ComponentType = any> {
     ) => Record<string, string | number> | Promise<Record<string, string | number>>;
     /**
      * @description
-     * A valid [Clarity Icons](https://clarity.design/icons) icon shape, e.g.
+     * A valid [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/) icon shape, e.g.
      * "cog", "user", "info-standard".
      */
     icon?: string;

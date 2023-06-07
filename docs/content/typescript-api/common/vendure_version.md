@@ -1,7 +1,7 @@
 ---
 title: "VENDURE_VERSION"
 weight: 10
-date: 2023-06-06T14:49:34.072Z
+date: 2023-06-07T09:42:23.868Z
 showtoc: true
 generated: true
 ---

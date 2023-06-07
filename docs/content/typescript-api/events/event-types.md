@@ -1,7 +1,7 @@
 ---
 title: "Event Types"
 weight: 10
-date: 2023-06-06T14:49:33.115Z
+date: 2023-06-07T09:42:22.375Z
 showtoc: true
 generated: true
 ---

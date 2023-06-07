@@ -105,44 +105,6 @@ export function registerFormInputComponent(id: string, component: Type<FormInput
 }
 
 /**
- * @description
- * **Deprecated** use `registerFormInputComponent()` in combination with the customField `ui` config instead.
- *
- * Registers a custom component to act as the form input control for the given custom field.
- * This should be used in the NgModule `providers` array of your ui extension module.
- *
- * @example
- * ```TypeScript
- * \@NgModule({
- *   imports: [SharedModule],
- *   declarations: [MyCustomFieldControl],
- *   providers: [
- *       registerCustomFieldComponent('Product', 'someCustomField', MyCustomFieldControl),
- *   ],
- * })
- * export class MyUiExtensionModule {}
- * ```
- *
- * @deprecated use `registerFormInputComponent()` in combination with the customField `ui` config instead.
- *
- * @docsCategory custom-input-components
- */
-export function registerCustomFieldComponent(
-    entity: CustomFieldEntityName,
-    fieldName: string,
-    component: Type<CustomFieldControl>,
-): FactoryProvider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (customFieldComponentService: CustomFieldComponentService) => () => {
-            customFieldComponentService.registerCustomFieldComponent(entity, fieldName, component);
-        },
-        deps: [CustomFieldComponentService],
-    };
-}
-
-/**
  * Registers the default form input components.
  */
 export function registerDefaultFormInputs(): FactoryProvider[] {

@@ -26,6 +26,8 @@ import { DataTableColumnComponent } from './data-table-column.component';
  * A table for displaying PaginatedList results. It is designed to be used inside components which
  * extend the {@link BaseListComponent} class.
  *
+ * **Deprecated** This component is deprecated. Use the {@link DataTable2Component} instead.
+ *
  * @example
  * ```HTML
  * <vdr-data-table
@@ -79,6 +81,7 @@ import { DataTableColumnComponent } from './data-table-column.component';
  * ```
  *
  * @docsCategory components
+ * @deprecated Use the DataTable2 component instead.
  */
 @Component({
     selector: 'vdr-data-table',

@@ -1,7 +1,7 @@
 ---
 title: "BaseListComponent"
 weight: 10
-date: 2023-06-06T14:49:35.324Z
+date: 2023-06-07T09:42:25.320Z
 showtoc: true
 generated: true
 ---
@@ -13,71 +13,12 @@ generated: true
 
 # BaseListComponent
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="96" packageName="@vendure/admin-ui">}}
+{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="39" packageName="@vendure/admin-ui">}}
 
 This is a base class which implements the logic required to fetch and manipulate
 a list of data from a query which returns a PaginatedList type.
 
-*Example*
-
-```TypeScript
-@Component({
-  selector: 'my-entity-list',
-  templateUrl: './my-entity-list.component.html',
-  styleUrls: ['./my-entity-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MyEntityListComponent extends BaseListComponent<GetMyEntityList.Query, GetMyEntityList.Items> {
-  constructor(
-    private dataService: DataService,
-    router: Router,
-    route: ActivatedRoute,
-  ) {
-    super(router, route);
-    super.setQueryFn(
-      (...args: any[]) => this.dataService.query<GetMyEntityList.Query>(GET_MY_ENTITY_LIST),
-      data => data.myEntities,
-    );
-  }
-}
-```
-
-The template for the component will typically use the <a href='/admin-ui-api/components/data-table-component#datatablecomponent'>DataTableComponent</a> to display the results.
-
-*Example*
-
-```HTML
-<vdr-action-bar>
-  <vdr-ab-right>
-    <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateTaxRate']">
-      <clr-icon shape="plus"></clr-icon>
-      Create new my entity
-    </a>
-  </vdr-ab-right>
-</vdr-action-bar>
-
-<vdr-data-table
-  [items]="items$ | async"
-  [itemsPerPage]="itemsPerPage$ | async"
-  [totalItems]="totalItems$ | async"
-  [currentPage]="currentPage$ | async"
-  (pageChange)="setPageNumber($event)"
-  (itemsPerPageChange)="setItemsPerPage($event)"
->
-  <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
-  <vdr-dt-column></vdr-dt-column>
-  <ng-template let-myEntity="item">
-    <td class="left align-middle">{{ myEntity.name }}</td>
-    <td class="right align-middle">
-      <vdr-table-row-action
-        iconShape="edit"
-        [label]="'common.edit' | translate"
-        [linkTo]="['./', myEntity.id]"
-      ></vdr-table-row-action>
-    </td>
-  </ng-template>
-</vdr-data-table>
-```
+It is normally used in combination with the <a href='/admin-ui-api/components/data-table2component#datatable2component'>DataTable2Component</a>.
 
 ## Signature
 

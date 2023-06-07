@@ -1,7 +1,7 @@
 ---
 title: "SimpleGraphQLClient"
 weight: 10
-date: 2023-06-06T14:49:34.480Z
+date: 2023-06-07T09:42:24.290Z
 showtoc: true
 generated: true
 ---

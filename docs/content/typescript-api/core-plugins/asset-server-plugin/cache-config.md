@@ -1,7 +1,7 @@
 ---
 title: "CacheConfig"
 weight: 10
-date: 2023-06-06T14:49:34.192Z
+date: 2023-06-07T09:42:24.026Z
 showtoc: true
 generated: true
 ---

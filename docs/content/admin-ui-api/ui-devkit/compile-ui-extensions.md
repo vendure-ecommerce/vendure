@@ -1,7 +1,7 @@
 ---
 title: "CompileUiExtensions"
 weight: 10
-date: 2023-06-06T14:49:36.030Z
+date: 2023-06-07T09:42:26.074Z
 showtoc: true
 generated: true
 ---

@@ -209,3 +209,5 @@ If you are using the `@vendure/ui-devkit` package to generate custom ui extensio
   2. Start the server and login as administrator. For each channel that you'd like to use Stripe payments, you need to create a payment method with payment handler Stripe payment and the apiKey and webhookSigningSecret belonging to that channel's Stripe account.
 - If you are using the **BullMQJobQueuePlugin**, the minimum Redis recommended version is 6.2.0.
 - The `WorkerHealthIndicator` which was deprecated in v1.3.0 has been removed, as well as the `jobQueueOptions.enableWorkerHealthCheck` config option.
+- The `CustomerGroupEntityEvent` (fired on creation, update or deletion of a CustomerGroup) has been renamed to `CustomerGroupEvent`, and the former `CustomerGroupEvent` (fired when Customers are added to or removed from a group) has been renamed to `CustomerGroupChangeEvent`.
+- We introduced the [plugin compatibility API]({{< relref "vendure-plugin-metadata" >}}#compatibility) to allow plugins to indicate what version of Vendure they are compatible with. To avoid bootstrap messages you should add this property to your plugins.

@@ -169,6 +169,13 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     }
 }
 
+/**
+ * @description
+ * A version of the {@link BaseDetailComponent} which is designed to be used with a
+ * [TypedDocumentNode](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
+ *
+ * @docsCategory list-detail-views
+ */
 export abstract class TypedBaseDetailComponent<
     T extends TypedDocumentNode<any, any>,
     Field extends keyof ResultOf<T>,

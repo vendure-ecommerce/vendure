@@ -1,7 +1,7 @@
 ---
 title: "LocaleDatePipe"
 weight: 10
-date: 2023-06-06T14:49:35.999Z
+date: 2023-06-07T09:42:26.039Z
 showtoc: true
 generated: true
 ---

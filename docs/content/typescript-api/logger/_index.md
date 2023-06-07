@@ -1,7 +1,7 @@
 ---
 title: "Logger"
 weight: 10
-date: 2023-06-06T14:49:31.881Z
+date: 2023-06-07T09:42:21.108Z
 showtoc: true
 generated: true
 ---

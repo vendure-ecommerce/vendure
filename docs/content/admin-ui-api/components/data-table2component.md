@@ -1,7 +1,7 @@
 ---
 title: "DataTable2Component"
 weight: 10
-date: 2023-06-06T14:49:35.615Z
+date: 2023-06-07T09:42:25.663Z
 showtoc: true
 generated: true
 ---
@@ -13,62 +13,65 @@ generated: true
 
 # DataTable2Component
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table-2/data-table2.component.ts" sourceLine="89" packageName="@vendure/admin-ui">}}
+{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table-2/data-table2.component.ts" sourceLine="92" packageName="@vendure/admin-ui">}}
 
 A table for displaying PaginatedList results. It is designed to be used inside components which
-extend the <a href='/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> class.
+extend the <a href='/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> or <a href='/admin-ui-api/list-detail-views/typed-base-list-component#typedbaselistcomponent'>TypedBaseListComponent</a> class.
 
 *Example*
 
 ```HTML
-<vdr-data-table
-  [items]="items$ | async"
-  [itemsPerPage]="itemsPerPage$ | async"
-  [totalItems]="totalItems$ | async"
-  [currentPage]="currentPage$ | async"
-  (pageChange)="setPageNumber($event)"
-  (itemsPerPageChange)="setItemsPerPage($event)"
+<vdr-data-table-2
+    id="product-review-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
 >
-  <!-- The header columns are defined first -->
-  <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
-  <vdr-dt-column></vdr-dt-column>
-  <vdr-dt-column></vdr-dt-column>
-
-  <!-- Then we define how a row is rendered -->
-  <ng-template let-taxRate="item">
-    <td class="left align-middle">{{ taxRate.name }}</td>
-    <td class="left align-middle">{{ taxRate.category.name }}</td>
-    <td class="left align-middle">{{ taxRate.zone.name }}</td>
-    <td class="left align-middle">{{ taxRate.value }}%</td>
-    <td class="right align-middle">
-      <vdr-table-row-action
-        iconShape="edit"
-        [label]="'common.edit' | translate"
-        [linkTo]="['./', taxRate.id]"
-      ></vdr-table-row-action>
-    </td>
-    <td class="right align-middle">
-      <vdr-dropdown>
-        <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
-          {{ 'common.actions' | translate }}
-          <clr-icon shape="caret down"></clr-icon>
-        </button>
-        <vdr-dropdown-menu vdrPosition="bottom-right">
-          <button
-              type="button"
-              class="delete-button"
-              (click)="deleteTaxRate(taxRate)"
-              [disabled]="!(['DeleteSettings', 'DeleteTaxRate'] | hasPermission)"
-              vdrDropdownItem
-          >
-              <clr-icon shape="trash" class="is-danger"></clr-icon>
-              {{ 'common.delete' | translate }}
-          </button>
-        </vdr-dropdown-menu>
-      </vdr-dropdown>
-    </td>
-  </ng-template>
-</vdr-data-table>
+    <vdr-bulk-action-menu
+        locationId="product-review-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    />
+    <vdr-dt2-search
+        [searchTermControl]="searchTermControl"
+        searchTermPlaceholder="Filter by title"
+    />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-review="item">
+            {{ review.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.created-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('createdAt')"
+    >
+        <ng-template let-review="item">
+            {{ review.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.updated-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('updatedAt')"
+    >
+        <ng-template let-review="item">
+            {{ review.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+        <ng-template let-review="item">
+            <a class="button-ghost" [routerLink]="['./', review.id]"
+                ><span>{{ review.name }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+</vdr-data-table-2>
 ```
 
 ## Signature

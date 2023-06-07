@@ -1,7 +1,7 @@
 ---
 title: "Products Stock"
 weight: 10
-date: 2023-06-06T14:49:31.689Z
+date: 2023-06-07T09:42:20.919Z
 showtoc: false
 generated: true
 ---

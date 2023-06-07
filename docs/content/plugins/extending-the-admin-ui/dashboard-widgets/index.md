@@ -8,7 +8,7 @@ Dashboard widgets are components which can be added to the Admin UI dashboard. T
 
 The Admin UI comes with a handful of widgets, and you can also create your own widgets.
 
-{{< figure src="./dashboard-widgets.jpg" caption="Dashboard widgets" >}}
+{{< figure src="./dashboard-widgets.webp" caption="Dashboard widgets" >}}
 
 ## Example: Reviews Widget
 

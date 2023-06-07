@@ -1,7 +1,7 @@
 ---
 title: "AssetPreviewPipe"
 weight: 10
-date: 2023-06-06T14:49:35.967Z
+date: 2023-06-07T09:42:26.004Z
 showtoc: true
 generated: true
 ---
