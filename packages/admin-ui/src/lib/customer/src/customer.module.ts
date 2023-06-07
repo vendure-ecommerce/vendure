@@ -65,12 +65,14 @@ export class CustomerModule {
         bulkActionRegistryService.registerBulkAction(removeCustomerGroupMembersBulkAction);
 
         pageService.registerPageTab({
+            priority: 0,
             location: 'customer-list',
             tab: _('customer.customers'),
             route: '',
             component: CustomerListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'customer-detail',
             tab: _('customer.customer'),
             route: '',
@@ -89,12 +91,14 @@ export class CustomerModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'customer-group-list',
             tab: _('customer.customer-groups'),
             route: '',
             component: CustomerGroupListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'customer-group-detail',
             tab: _('customer.customer-group'),
             route: '',

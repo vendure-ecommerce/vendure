@@ -38,12 +38,14 @@ export class MarketingModule {
         bulkActionRegistryService.registerBulkAction(deletePromotionsBulkAction);
 
         pageService.registerPageTab({
+            priority: 0,
             location: 'promotion-list',
             tab: _('breadcrumb.promotions'),
             route: '',
             component: PromotionListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'promotion-detail',
             tab: _('marketing.promotion'),
             route: '',

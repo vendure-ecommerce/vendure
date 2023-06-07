@@ -147,12 +147,14 @@ export class SettingsModule {
         bulkActionRegistryService.registerBulkAction(removeZoneMembersBulkAction);
 
         pageService.registerPageTab({
+            priority: 0,
             location: 'seller-list',
             tab: _('breadcrumb.sellers'),
             route: '',
             component: SellerListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'seller-detail',
             tab: _('settings.seller'),
             route: '',
@@ -169,12 +171,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'channel-list',
             tab: _('breadcrumb.channels'),
             route: '',
             component: ChannelListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'channel-detail',
             tab: _('settings.channel'),
             route: '',
@@ -195,12 +199,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'administrator-list',
             tab: _('breadcrumb.administrators'),
             route: '',
             component: AdministratorListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'administrator-detail',
             tab: _('settings.administrator'),
             route: '',
@@ -219,12 +225,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'role-list',
             tab: _('breadcrumb.roles'),
             route: '',
             component: RoleListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'role-detail',
             tab: _('settings.role'),
             route: '',
@@ -241,12 +249,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'shipping-method-list',
             tab: _('breadcrumb.shipping-methods'),
             route: '',
             component: ShippingMethodListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'shipping-method-detail',
             tab: _('settings.shipping-method'),
             route: '',
@@ -263,18 +273,21 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'shipping-method-list',
             tab: _('settings.test-shipping-methods'),
             route: 'test',
             component: TestShippingMethodsComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'payment-method-list',
             tab: _('breadcrumb.payment-methods'),
             route: '',
             component: PaymentMethodListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'payment-method-detail',
             tab: _('settings.payment-method'),
             route: '',
@@ -291,12 +304,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'tax-category-list',
             tab: _('breadcrumb.tax-categories'),
             route: '',
             component: TaxCategoryListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'tax-category-detail',
             tab: _('settings.tax-category'),
             route: '',
@@ -313,12 +328,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'tax-rate-list',
             tab: _('breadcrumb.tax-rates'),
             route: '',
             component: TaxRateListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'tax-rate-detail',
             tab: _('settings.tax-rate'),
             route: '',
@@ -335,12 +352,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'country-list',
             tab: _('breadcrumb.countries'),
             route: '',
             component: CountryListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'country-detail',
             tab: _('settings.country'),
             route: '',
@@ -357,12 +376,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'zone-list',
             tab: _('breadcrumb.zones'),
             route: '',
             component: ZoneListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'zone-detail',
             tab: _('settings.zone'),
             route: '',
@@ -379,12 +400,14 @@ export class SettingsModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'global-setting-detail',
             tab: _('breadcrumb.global-settings'),
             route: '',
             component: GlobalSettingsComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'profile',
             tab: _('breadcrumb.profile'),
             route: '',

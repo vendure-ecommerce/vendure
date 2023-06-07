@@ -144,12 +144,14 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(deleteStockLocationsBulkAction);
 
         pageService.registerPageTab({
+            priority: 0,
             location: 'product-list',
             tab: _('catalog.products'),
             route: '',
             component: ProductListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'product-detail',
             tab: _('catalog.products'),
             route: '',
@@ -166,12 +168,14 @@ export class CatalogModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'product-list',
             tab: _('catalog.product-variants'),
             route: 'variants',
             component: ProductVariantListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'stock-location-detail',
             tab: _('catalog.stock-location'),
             route: '',
@@ -188,12 +192,14 @@ export class CatalogModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'product-list',
             tab: _('catalog.stock-locations'),
             route: 'stock-locations',
             component: StockLocationListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'product-variant-detail',
             tab: _('catalog.product-variants'),
             route: '',
@@ -214,12 +220,14 @@ export class CatalogModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'facet-list',
             tab: _('catalog.facets'),
             route: '',
             component: FacetListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'facet-detail',
             tab: _('catalog.facet'),
             route: '',
@@ -236,12 +244,14 @@ export class CatalogModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'collection-list',
             tab: _('catalog.collections'),
             route: '',
             component: CollectionListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'collection-detail',
             tab: _('catalog.collection'),
             route: '',
@@ -258,12 +268,14 @@ export class CatalogModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'asset-list',
             tab: _('catalog.assets'),
             route: '',
             component: AssetListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'asset-detail',
             tab: _('catalog.asset'),
             route: '',

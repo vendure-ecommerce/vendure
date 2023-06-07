@@ -1,16 +1,85 @@
-import { Injectable, Type } from '@angular/core';
+import { APP_INITIALIZER, Injectable, Provider, Type } from '@angular/core';
 import { Route } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { BaseDetailComponent, detailComponentWithResolver } from '../../common/base-detail.component';
+import { detailComponentWithResolver } from '../../common/base-detail.component';
 import { PageLocationId } from '../../common/component-registry-types';
 import { CanDeactivateDetailGuard } from '../../shared/providers/routing/can-deactivate-detail-guard';
 
+/**
+ * @description
+ * The object used to configure a new page tab.
+ *
+ * @docsCategory tabs
+ */
 export interface PageTabConfig {
+    /**
+     * @description
+     * A valid location representing a list or detail page.
+     */
     location: PageLocationId;
+    /**
+     * @description
+     * An optional icon to display in the tab. The icon
+     * should be a valid shape name from the [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/)
+     * set.
+     */
     tabIcon?: string;
+    /**
+     * @description
+     * The route path to the tab. This will be appended to the
+     * route of the parent page.
+     */
     route: string;
+    /**
+     * @description
+     * The name of the tab to display in the UI.
+     */
     tab: string;
+    /**
+     * @description
+     * The priority of the tab. Tabs with a lower priority will be displayed first.
+     */
+    priority?: number;
+    /**
+     * @description
+     * The component to render at the route of the tab.
+     */
     component: Type<any> | ReturnType<typeof detailComponentWithResolver>;
+}
+
+/**
+ * @description
+ * Add a tab to an existing list or detail page.
+ *
+ * @example
+ * ```TypeScript
+ * \@NgModule({
+ *   imports: [SharedModule],
+ *   providers: [
+ *     registerPageTab({
+ *       location: 'product-list',
+ *       tab: 'Deleted Products',
+ *       route: 'deleted',
+ *       component: DeletedProductListComponent,
+ *     }),
+ *   ],
+ * })
+ * export class MyUiExtensionModule {}
+ * ```
+ * @docsCategory tabs
+ */
+export function registerPageTab(config: PageTabConfig): Provider {
+    return {
+        provide: APP_INITIALIZER,
+        multi: true,
+        useFactory: (pageService: PageService) => () => {
+            pageService.registerPageTab({
+                ...config,
+                priority: config.priority || 1,
+            });
+        },
+        deps: [PageService],
+    };
 }
 
 @Injectable({
@@ -60,7 +129,7 @@ export class PageService {
     }
 
     getPageTabs(location: PageLocationId): PageTabConfig[] {
-        return this.registry.get(location) || [];
+        return this.registry.get(location)?.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0)) || [];
     }
 }
 
