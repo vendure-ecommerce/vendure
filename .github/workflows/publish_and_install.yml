@@ -20,7 +20,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [16.x, 18.x]
+        # Temporarily disabled Node v18 because of this issue:
+        # https://github.com/vendure-ecommerce/vendure/actions/runs/5200017548/jobs/9378196658#step:4:48
+        # which is related to our Verdaccio setup. Will need some investigation.
+        #node-version: [16.x, 18.x]
+        node-version: [16.x]
       fail-fast: false
     steps:
     - uses: actions/checkout@v3
