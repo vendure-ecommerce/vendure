@@ -1,7 +1,7 @@
 ---
 title: "LocaleCurrencyPipe"
 weight: 10
-date: 2023-06-07T09:42:26.033Z
+date: 2023-06-08T15:03:35.378Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "RegisterCustomDetailComponent"
 weight: 10
-date: 2023-06-07T09:42:25.439Z
+date: 2023-06-08T15:03:34.659Z
 showtoc: true
 generated: true
 ---

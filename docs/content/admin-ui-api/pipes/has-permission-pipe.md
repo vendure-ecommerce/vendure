@@ -1,7 +1,7 @@
 ---
 title: "HasPermissionPipe"
 weight: 10
-date: 2023-06-07T09:42:26.018Z
+date: 2023-06-08T15:03:35.365Z
 showtoc: true
 generated: true
 ---

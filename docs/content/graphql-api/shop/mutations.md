@@ -1,7 +1,7 @@
 ---
 title: "Mutations"
 weight: 2
-date: 2023-06-07T09:42:13.591Z
+date: 2023-06-08T15:03:26.113Z
 showtoc: true
 generated: true
 ---
@@ -14,7 +14,7 @@ generated: true
 Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available.
 
 {{% gql-fields %}}
- * addItemToOrder(productVariantId: [ID](/docs/graphql-api/shop/object-types#id)!, quantity: [Int](/docs/graphql-api/shop/object-types#int)!): [UpdateOrderItemsResult](/docs/graphql-api/shop/object-types#updateorderitemsresult)!
+ * addItemToOrder(productVariantId: [ID](/graphql-api/shop/object-types#id)!, quantity: [Int](/graphql-api/shop/object-types#int)!): [UpdateOrderItemsResult](/graphql-api/shop/object-types#updateorderitemsresult)!
 {{% /gql-fields %}}
 
 
@@ -23,7 +23,7 @@ Adds an item to the order. If custom fields are defined on the OrderLine entity,
 Add a Payment to the Order
 
 {{% gql-fields %}}
- * addPaymentToOrder(input: [PaymentInput](/docs/graphql-api/shop/input-types#paymentinput)!): [AddPaymentToOrderResult](/docs/graphql-api/shop/object-types#addpaymenttoorderresult)!
+ * addPaymentToOrder(input: [PaymentInput](/graphql-api/shop/input-types#paymentinput)!): [AddPaymentToOrderResult](/graphql-api/shop/object-types#addpaymenttoorderresult)!
 {{% /gql-fields %}}
 
 
@@ -32,7 +32,7 @@ Add a Payment to the Order
 Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.
 
 {{% gql-fields %}}
- * adjustOrderLine(orderLineId: [ID](/docs/graphql-api/shop/object-types#id)!, quantity: [Int](/docs/graphql-api/shop/object-types#int)!): [UpdateOrderItemsResult](/docs/graphql-api/shop/object-types#updateorderitemsresult)!
+ * adjustOrderLine(orderLineId: [ID](/graphql-api/shop/object-types#id)!, quantity: [Int](/graphql-api/shop/object-types#int)!): [UpdateOrderItemsResult](/graphql-api/shop/object-types#updateorderitemsresult)!
 {{% /gql-fields %}}
 
 
@@ -41,7 +41,7 @@ Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a th
 Applies the given coupon code to the active Order
 
 {{% gql-fields %}}
- * applyCouponCode(couponCode: [String](/docs/graphql-api/shop/object-types#string)!): [ApplyCouponCodeResult](/docs/graphql-api/shop/object-types#applycouponcoderesult)!
+ * applyCouponCode(couponCode: [String](/graphql-api/shop/object-types#string)!): [ApplyCouponCodeResult](/graphql-api/shop/object-types#applycouponcoderesult)!
 {{% /gql-fields %}}
 
 
@@ -50,7 +50,7 @@ Applies the given coupon code to the active Order
 Authenticates the user using a named authentication strategy
 
 {{% gql-fields %}}
- * authenticate(input: [AuthenticationInput](/docs/graphql-api/shop/input-types#authenticationinput)!, rememberMe: [Boolean](/docs/graphql-api/shop/object-types#boolean)): [AuthenticationResult](/docs/graphql-api/shop/object-types#authenticationresult)!
+ * authenticate(input: [AuthenticationInput](/graphql-api/shop/input-types#authenticationinput)!, rememberMe: [Boolean](/graphql-api/shop/object-types#boolean)): [AuthenticationResult](/graphql-api/shop/object-types#authenticationresult)!
 {{% /gql-fields %}}
 
 
@@ -59,7 +59,7 @@ Authenticates the user using a named authentication strategy
 Create a new Customer Address
 
 {{% gql-fields %}}
- * createCustomerAddress(input: [CreateAddressInput](/docs/graphql-api/shop/input-types#createaddressinput)!): [Address](/docs/graphql-api/shop/object-types#address)!
+ * createCustomerAddress(input: [CreateAddressInput](/graphql-api/shop/input-types#createaddressinput)!): [Address](/graphql-api/shop/object-types#address)!
 {{% /gql-fields %}}
 
 
@@ -68,7 +68,7 @@ Create a new Customer Address
 Delete an existing Address
 
 {{% gql-fields %}}
- * deleteCustomerAddress(id: [ID](/docs/graphql-api/shop/object-types#id)!): [Success](/docs/graphql-api/shop/object-types#success)!
+ * deleteCustomerAddress(id: [ID](/graphql-api/shop/object-types#id)!): [Success](/graphql-api/shop/object-types#success)!
 {{% /gql-fields %}}
 
 
@@ -77,7 +77,7 @@ Delete an existing Address
 Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`
 
 {{% gql-fields %}}
- * login(username: [String](/docs/graphql-api/shop/object-types#string)!, password: [String](/docs/graphql-api/shop/object-types#string)!, rememberMe: [Boolean](/docs/graphql-api/shop/object-types#boolean)): [NativeAuthenticationResult](/docs/graphql-api/shop/object-types#nativeauthenticationresult)!
+ * login(username: [String](/graphql-api/shop/object-types#string)!, password: [String](/graphql-api/shop/object-types#string)!, rememberMe: [Boolean](/graphql-api/shop/object-types#boolean)): [NativeAuthenticationResult](/graphql-api/shop/object-types#nativeauthenticationresult)!
 {{% /gql-fields %}}
 
 
@@ -86,7 +86,7 @@ Authenticates the user using the native authentication strategy. This mutation i
 End the current authenticated session
 
 {{% gql-fields %}}
- * logout: [Success](/docs/graphql-api/shop/object-types#success)!
+ * logout: [Success](/graphql-api/shop/object-types#success)!
 {{% /gql-fields %}}
 
 
@@ -95,7 +95,7 @@ End the current authenticated session
 Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true.
 
 {{% gql-fields %}}
- * refreshCustomerVerification(emailAddress: [String](/docs/graphql-api/shop/object-types#string)!): [RefreshCustomerVerificationResult](/docs/graphql-api/shop/object-types#refreshcustomerverificationresult)!
+ * refreshCustomerVerification(emailAddress: [String](/graphql-api/shop/object-types#string)!): [RefreshCustomerVerificationResult](/graphql-api/shop/object-types#refreshcustomerverificationresult)!
 {{% /gql-fields %}}
 
 
@@ -117,7 +117,7 @@ _If `authOptions.requireVerification` is set to `false`:_
 3. The Customer _must_ be registered _with_ a password. No further action is needed - the Customer is able to authenticate immediately.
 
 {{% gql-fields %}}
- * registerCustomerAccount(input: [RegisterCustomerInput](/docs/graphql-api/shop/input-types#registercustomerinput)!): [RegisterCustomerAccountResult](/docs/graphql-api/shop/object-types#registercustomeraccountresult)!
+ * registerCustomerAccount(input: [RegisterCustomerInput](/graphql-api/shop/input-types#registercustomerinput)!): [RegisterCustomerAccountResult](/graphql-api/shop/object-types#registercustomeraccountresult)!
 {{% /gql-fields %}}
 
 
@@ -126,7 +126,7 @@ _If `authOptions.requireVerification` is set to `false`:_
 Remove all OrderLine from the Order
 
 {{% gql-fields %}}
- * removeAllOrderLines: [RemoveOrderItemsResult](/docs/graphql-api/shop/object-types#removeorderitemsresult)!
+ * removeAllOrderLines: [RemoveOrderItemsResult](/graphql-api/shop/object-types#removeorderitemsresult)!
 {{% /gql-fields %}}
 
 
@@ -135,7 +135,7 @@ Remove all OrderLine from the Order
 Removes the given coupon code from the active Order
 
 {{% gql-fields %}}
- * removeCouponCode(couponCode: [String](/docs/graphql-api/shop/object-types#string)!): [Order](/docs/graphql-api/shop/object-types#order)
+ * removeCouponCode(couponCode: [String](/graphql-api/shop/object-types#string)!): [Order](/graphql-api/shop/object-types#order)
 {{% /gql-fields %}}
 
 
@@ -144,7 +144,7 @@ Removes the given coupon code from the active Order
 Remove an OrderLine from the Order
 
 {{% gql-fields %}}
- * removeOrderLine(orderLineId: [ID](/docs/graphql-api/shop/object-types#id)!): [RemoveOrderItemsResult](/docs/graphql-api/shop/object-types#removeorderitemsresult)!
+ * removeOrderLine(orderLineId: [ID](/graphql-api/shop/object-types#id)!): [RemoveOrderItemsResult](/graphql-api/shop/object-types#removeorderitemsresult)!
 {{% /gql-fields %}}
 
 
@@ -153,7 +153,7 @@ Remove an OrderLine from the Order
 Requests a password reset email to be sent
 
 {{% gql-fields %}}
- * requestPasswordReset(emailAddress: [String](/docs/graphql-api/shop/object-types#string)!): [RequestPasswordResetResult](/docs/graphql-api/shop/object-types#requestpasswordresetresult)
+ * requestPasswordReset(emailAddress: [String](/graphql-api/shop/object-types#string)!): [RequestPasswordResetResult](/graphql-api/shop/object-types#requestpasswordresetresult)
 {{% /gql-fields %}}
 
 
@@ -165,7 +165,7 @@ a IdentifierChangeRequestEvent will be raised. This can then be used e.g. by the
 that verification token to the Customer, which is then used to verify the change of email address.
 
 {{% gql-fields %}}
- * requestUpdateCustomerEmailAddress(password: [String](/docs/graphql-api/shop/object-types#string)!, newEmailAddress: [String](/docs/graphql-api/shop/object-types#string)!): [RequestUpdateCustomerEmailAddressResult](/docs/graphql-api/shop/object-types#requestupdatecustomeremailaddressresult)!
+ * requestUpdateCustomerEmailAddress(password: [String](/graphql-api/shop/object-types#string)!, newEmailAddress: [String](/graphql-api/shop/object-types#string)!): [RequestUpdateCustomerEmailAddressResult](/graphql-api/shop/object-types#requestupdatecustomeremailaddressresult)!
 {{% /gql-fields %}}
 
 
@@ -174,7 +174,7 @@ that verification token to the Customer, which is then used to verify the change
 Resets a Customer's password based on the provided token
 
 {{% gql-fields %}}
- * resetPassword(token: [String](/docs/graphql-api/shop/object-types#string)!, password: [String](/docs/graphql-api/shop/object-types#string)!): [ResetPasswordResult](/docs/graphql-api/shop/object-types#resetpasswordresult)!
+ * resetPassword(token: [String](/graphql-api/shop/object-types#string)!, password: [String](/graphql-api/shop/object-types#string)!): [ResetPasswordResult](/graphql-api/shop/object-types#resetpasswordresult)!
 {{% /gql-fields %}}
 
 
@@ -183,7 +183,7 @@ Resets a Customer's password based on the provided token
 Set the Customer for the Order. Required only if the Customer is not currently logged in
 
 {{% gql-fields %}}
- * setCustomerForOrder(input: [CreateCustomerInput](/docs/graphql-api/shop/input-types#createcustomerinput)!): [SetCustomerForOrderResult](/docs/graphql-api/shop/object-types#setcustomerfororderresult)!
+ * setCustomerForOrder(input: [CreateCustomerInput](/graphql-api/shop/input-types#createcustomerinput)!): [SetCustomerForOrderResult](/graphql-api/shop/object-types#setcustomerfororderresult)!
 {{% /gql-fields %}}
 
 
@@ -192,7 +192,7 @@ Set the Customer for the Order. Required only if the Customer is not currently l
 Sets the billing address for this order
 
 {{% gql-fields %}}
- * setOrderBillingAddress(input: [CreateAddressInput](/docs/graphql-api/shop/input-types#createaddressinput)!): [ActiveOrderResult](/docs/graphql-api/shop/object-types#activeorderresult)!
+ * setOrderBillingAddress(input: [CreateAddressInput](/graphql-api/shop/input-types#createaddressinput)!): [ActiveOrderResult](/graphql-api/shop/object-types#activeorderresult)!
 {{% /gql-fields %}}
 
 
@@ -201,7 +201,7 @@ Sets the billing address for this order
 Allows any custom fields to be set for the active order
 
 {{% gql-fields %}}
- * setOrderCustomFields(input: [UpdateOrderInput](/docs/graphql-api/shop/input-types#updateorderinput)!): [ActiveOrderResult](/docs/graphql-api/shop/object-types#activeorderresult)!
+ * setOrderCustomFields(input: [UpdateOrderInput](/graphql-api/shop/input-types#updateorderinput)!): [ActiveOrderResult](/graphql-api/shop/object-types#activeorderresult)!
 {{% /gql-fields %}}
 
 
@@ -210,7 +210,7 @@ Allows any custom fields to be set for the active order
 Sets the shipping address for this order
 
 {{% gql-fields %}}
- * setOrderShippingAddress(input: [CreateAddressInput](/docs/graphql-api/shop/input-types#createaddressinput)!): [ActiveOrderResult](/docs/graphql-api/shop/object-types#activeorderresult)!
+ * setOrderShippingAddress(input: [CreateAddressInput](/graphql-api/shop/input-types#createaddressinput)!): [ActiveOrderResult](/graphql-api/shop/object-types#activeorderresult)!
 {{% /gql-fields %}}
 
 
@@ -222,7 +222,7 @@ you should configure a custom ShippingLineAssignmentStrategy in order to know wh
 shipping method will apply to.
 
 {{% gql-fields %}}
- * setOrderShippingMethod(shippingMethodId: [[ID](/docs/graphql-api/shop/object-types#id)!]!): [SetOrderShippingMethodResult](/docs/graphql-api/shop/object-types#setordershippingmethodresult)!
+ * setOrderShippingMethod(shippingMethodId: [[ID](/graphql-api/shop/object-types#id)!]!): [SetOrderShippingMethodResult](/graphql-api/shop/object-types#setordershippingmethodresult)!
 {{% /gql-fields %}}
 
 
@@ -231,7 +231,7 @@ shipping method will apply to.
 Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`
 
 {{% gql-fields %}}
- * transitionOrderToState(state: [String](/docs/graphql-api/shop/object-types#string)!): [TransitionOrderToStateResult](/docs/graphql-api/shop/object-types#transitionordertostateresult)
+ * transitionOrderToState(state: [String](/graphql-api/shop/object-types#string)!): [TransitionOrderToStateResult](/graphql-api/shop/object-types#transitionordertostateresult)
 {{% /gql-fields %}}
 
 
@@ -240,7 +240,7 @@ Transitions an Order to a new state. Valid next states can be found by querying 
 Update an existing Customer
 
 {{% gql-fields %}}
- * updateCustomer(input: [UpdateCustomerInput](/docs/graphql-api/shop/input-types#updatecustomerinput)!): [Customer](/docs/graphql-api/shop/object-types#customer)!
+ * updateCustomer(input: [UpdateCustomerInput](/graphql-api/shop/input-types#updatecustomerinput)!): [Customer](/graphql-api/shop/object-types#customer)!
 {{% /gql-fields %}}
 
 
@@ -249,7 +249,7 @@ Update an existing Customer
 Update an existing Address
 
 {{% gql-fields %}}
- * updateCustomerAddress(input: [UpdateAddressInput](/docs/graphql-api/shop/input-types#updateaddressinput)!): [Address](/docs/graphql-api/shop/object-types#address)!
+ * updateCustomerAddress(input: [UpdateAddressInput](/graphql-api/shop/input-types#updateaddressinput)!): [Address](/graphql-api/shop/object-types#address)!
 {{% /gql-fields %}}
 
 
@@ -259,7 +259,7 @@ Confirm the update of the emailAddress with the provided token, which has been g
 `requestUpdateCustomerEmailAddress` mutation.
 
 {{% gql-fields %}}
- * updateCustomerEmailAddress(token: [String](/docs/graphql-api/shop/object-types#string)!): [UpdateCustomerEmailAddressResult](/docs/graphql-api/shop/object-types#updatecustomeremailaddressresult)!
+ * updateCustomerEmailAddress(token: [String](/graphql-api/shop/object-types#string)!): [UpdateCustomerEmailAddressResult](/graphql-api/shop/object-types#updatecustomeremailaddressresult)!
 {{% /gql-fields %}}
 
 
@@ -268,7 +268,7 @@ Confirm the update of the emailAddress with the provided token, which has been g
 Update the password of the active Customer
 
 {{% gql-fields %}}
- * updateCustomerPassword(currentPassword: [String](/docs/graphql-api/shop/object-types#string)!, newPassword: [String](/docs/graphql-api/shop/object-types#string)!): [UpdateCustomerPasswordResult](/docs/graphql-api/shop/object-types#updatecustomerpasswordresult)!
+ * updateCustomerPassword(currentPassword: [String](/graphql-api/shop/object-types#string)!, newPassword: [String](/graphql-api/shop/object-types#string)!): [UpdateCustomerPasswordResult](/graphql-api/shop/object-types#updatecustomerpasswordresult)!
 {{% /gql-fields %}}
 
 
@@ -280,7 +280,7 @@ If the Customer was not registered with a password in the `registerCustomerAccou
 provided here.
 
 {{% gql-fields %}}
- * verifyCustomerAccount(token: [String](/docs/graphql-api/shop/object-types#string)!, password: [String](/docs/graphql-api/shop/object-types#string)): [VerifyCustomerAccountResult](/docs/graphql-api/shop/object-types#verifycustomeraccountresult)!
+ * verifyCustomerAccount(token: [String](/graphql-api/shop/object-types#string)!, password: [String](/graphql-api/shop/object-types#string)): [VerifyCustomerAccountResult](/graphql-api/shop/object-types#verifycustomeraccountresult)!
 {{% /gql-fields %}}
 
 

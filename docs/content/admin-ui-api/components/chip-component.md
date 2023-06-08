@@ -1,7 +1,7 @@
 ---
 title: "ChipComponent"
 weight: 10
-date: 2023-06-07T09:42:25.596Z
+date: 2023-06-08T15:03:34.854Z
 showtoc: true
 generated: true
 ---

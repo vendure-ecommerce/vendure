@@ -1,7 +1,7 @@
 ---
 title: "IfPermissionsDirective"
 weight: 10
-date: 2023-06-07T09:42:25.872Z
+date: 2023-06-08T15:03:35.192Z
 showtoc: true
 generated: true
 ---

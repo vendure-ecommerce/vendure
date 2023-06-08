@@ -1,7 +1,7 @@
 ---
 title: "Bulk Actions"
 weight: 10
-date: 2023-06-07T09:42:25.423Z
+date: 2023-06-08T15:03:34.648Z
 showtoc: false
 generated: true
 ---

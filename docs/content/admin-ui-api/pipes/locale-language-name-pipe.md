@@ -1,7 +1,7 @@
 ---
 title: "LocaleLanguageNamePipe"
 weight: 10
-date: 2023-06-07T09:42:26.047Z
+date: 2023-06-08T15:03:35.391Z
 showtoc: true
 generated: true
 ---

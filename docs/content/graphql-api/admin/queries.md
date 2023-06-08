@@ -1,7 +1,7 @@
 ---
 title: "Queries"
 weight: 1
-date: 2023-06-07T09:42:15.213Z
+date: 2023-06-08T15:03:27.617Z
 showtoc: true
 generated: true
 ---
@@ -12,28 +12,28 @@ generated: true
 
 ## activeAdministrator
 {{% gql-fields %}}
- * activeAdministrator: [Administrator](/docs/graphql-api/admin/object-types#administrator)
+ * activeAdministrator: [Administrator](/graphql-api/admin/object-types#administrator)
 {{% /gql-fields %}}
 
 
 
 ## activeChannel
 {{% gql-fields %}}
- * activeChannel: [Channel](/docs/graphql-api/admin/object-types#channel)!
+ * activeChannel: [Channel](/graphql-api/admin/object-types#channel)!
 {{% /gql-fields %}}
 
 
 
 ## administrator
 {{% gql-fields %}}
- * administrator(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Administrator](/docs/graphql-api/admin/object-types#administrator)
+ * administrator(id: [ID](/graphql-api/admin/object-types#id)!): [Administrator](/graphql-api/admin/object-types#administrator)
 {{% /gql-fields %}}
 
 
 
 ## administrators
 {{% gql-fields %}}
- * administrators(options: [AdministratorListOptions](/docs/graphql-api/admin/input-types#administratorlistoptions)): [AdministratorList](/docs/graphql-api/admin/object-types#administratorlist)!
+ * administrators(options: [AdministratorListOptions](/graphql-api/admin/input-types#administratorlistoptions)): [AdministratorList](/graphql-api/admin/object-types#administratorlist)!
 {{% /gql-fields %}}
 
 
@@ -42,7 +42,7 @@ generated: true
 Get a single Asset by id
 
 {{% gql-fields %}}
- * asset(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Asset](/docs/graphql-api/admin/object-types#asset)
+ * asset(id: [ID](/graphql-api/admin/object-types#id)!): [Asset](/graphql-api/admin/object-types#asset)
 {{% /gql-fields %}}
 
 
@@ -51,21 +51,21 @@ Get a single Asset by id
 Get a list of Assets
 
 {{% gql-fields %}}
- * assets(options: [AssetListOptions](/docs/graphql-api/admin/input-types#assetlistoptions)): [AssetList](/docs/graphql-api/admin/object-types#assetlist)!
+ * assets(options: [AssetListOptions](/graphql-api/admin/input-types#assetlistoptions)): [AssetList](/graphql-api/admin/object-types#assetlist)!
 {{% /gql-fields %}}
 
 
 
 ## channel
 {{% gql-fields %}}
- * channel(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Channel](/docs/graphql-api/admin/object-types#channel)
+ * channel(id: [ID](/graphql-api/admin/object-types#id)!): [Channel](/graphql-api/admin/object-types#channel)
 {{% /gql-fields %}}
 
 
 
 ## channels
 {{% gql-fields %}}
- * channels(options: [ChannelListOptions](/docs/graphql-api/admin/input-types#channellistoptions)): [ChannelList](/docs/graphql-api/admin/object-types#channellist)!
+ * channels(options: [ChannelListOptions](/graphql-api/admin/input-types#channellistoptions)): [ChannelList](/graphql-api/admin/object-types#channellist)!
 {{% /gql-fields %}}
 
 
@@ -74,63 +74,63 @@ Get a list of Assets
 Get a Collection either by id or slug. If neither id nor slug is specified, an error will result.
 
 {{% gql-fields %}}
- * collection(id: [ID](/docs/graphql-api/admin/object-types#id), slug: [String](/docs/graphql-api/admin/object-types#string)): [Collection](/docs/graphql-api/admin/object-types#collection)
+ * collection(id: [ID](/graphql-api/admin/object-types#id), slug: [String](/graphql-api/admin/object-types#string)): [Collection](/graphql-api/admin/object-types#collection)
 {{% /gql-fields %}}
 
 
 
 ## collectionFilters
 {{% gql-fields %}}
- * collectionFilters: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * collectionFilters: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## collections
 {{% gql-fields %}}
- * collections(options: [CollectionListOptions](/docs/graphql-api/admin/input-types#collectionlistoptions)): [CollectionList](/docs/graphql-api/admin/object-types#collectionlist)!
+ * collections(options: [CollectionListOptions](/graphql-api/admin/input-types#collectionlistoptions)): [CollectionList](/graphql-api/admin/object-types#collectionlist)!
 {{% /gql-fields %}}
 
 
 
 ## countries
 {{% gql-fields %}}
- * countries(options: [CountryListOptions](/docs/graphql-api/admin/input-types#countrylistoptions)): [CountryList](/docs/graphql-api/admin/object-types#countrylist)!
+ * countries(options: [CountryListOptions](/graphql-api/admin/input-types#countrylistoptions)): [CountryList](/graphql-api/admin/object-types#countrylist)!
 {{% /gql-fields %}}
 
 
 
 ## country
 {{% gql-fields %}}
- * country(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Country](/docs/graphql-api/admin/object-types#country)
+ * country(id: [ID](/graphql-api/admin/object-types#id)!): [Country](/graphql-api/admin/object-types#country)
 {{% /gql-fields %}}
 
 
 
 ## customer
 {{% gql-fields %}}
- * customer(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Customer](/docs/graphql-api/admin/object-types#customer)
+ * customer(id: [ID](/graphql-api/admin/object-types#id)!): [Customer](/graphql-api/admin/object-types#customer)
 {{% /gql-fields %}}
 
 
 
 ## customerGroup
 {{% gql-fields %}}
- * customerGroup(id: [ID](/docs/graphql-api/admin/object-types#id)!): [CustomerGroup](/docs/graphql-api/admin/object-types#customergroup)
+ * customerGroup(id: [ID](/graphql-api/admin/object-types#id)!): [CustomerGroup](/graphql-api/admin/object-types#customergroup)
 {{% /gql-fields %}}
 
 
 
 ## customerGroups
 {{% gql-fields %}}
- * customerGroups(options: [CustomerGroupListOptions](/docs/graphql-api/admin/input-types#customergrouplistoptions)): [CustomerGroupList](/docs/graphql-api/admin/object-types#customergrouplist)!
+ * customerGroups(options: [CustomerGroupListOptions](/graphql-api/admin/input-types#customergrouplistoptions)): [CustomerGroupList](/graphql-api/admin/object-types#customergrouplist)!
 {{% /gql-fields %}}
 
 
 
 ## customers
 {{% gql-fields %}}
- * customers(options: [CustomerListOptions](/docs/graphql-api/admin/input-types#customerlistoptions)): [CustomerList](/docs/graphql-api/admin/object-types#customerlist)!
+ * customers(options: [CustomerListOptions](/graphql-api/admin/input-types#customerlistoptions)): [CustomerList](/graphql-api/admin/object-types#customerlist)!
 {{% /gql-fields %}}
 
 
@@ -139,84 +139,84 @@ Get a Collection either by id or slug. If neither id nor slug is specified, an e
 Returns a list of eligible shipping methods for the draft Order
 
 {{% gql-fields %}}
- * eligibleShippingMethodsForDraftOrder(orderId: [ID](/docs/graphql-api/admin/object-types#id)!): [[ShippingMethodQuote](/docs/graphql-api/admin/object-types#shippingmethodquote)!]!
+ * eligibleShippingMethodsForDraftOrder(orderId: [ID](/graphql-api/admin/object-types#id)!): [[ShippingMethodQuote](/graphql-api/admin/object-types#shippingmethodquote)!]!
 {{% /gql-fields %}}
 
 
 
 ## facet
 {{% gql-fields %}}
- * facet(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Facet](/docs/graphql-api/admin/object-types#facet)
+ * facet(id: [ID](/graphql-api/admin/object-types#id)!): [Facet](/graphql-api/admin/object-types#facet)
 {{% /gql-fields %}}
 
 
 
 ## facetValues
 {{% gql-fields %}}
- * facetValues(options: [FacetValueListOptions](/docs/graphql-api/admin/input-types#facetvaluelistoptions)): [FacetValueList](/docs/graphql-api/admin/object-types#facetvaluelist)!
+ * facetValues(options: [FacetValueListOptions](/graphql-api/admin/input-types#facetvaluelistoptions)): [FacetValueList](/graphql-api/admin/object-types#facetvaluelist)!
 {{% /gql-fields %}}
 
 
 
 ## facets
 {{% gql-fields %}}
- * facets(options: [FacetListOptions](/docs/graphql-api/admin/input-types#facetlistoptions)): [FacetList](/docs/graphql-api/admin/object-types#facetlist)!
+ * facets(options: [FacetListOptions](/graphql-api/admin/input-types#facetlistoptions)): [FacetList](/graphql-api/admin/object-types#facetlist)!
 {{% /gql-fields %}}
 
 
 
 ## fulfillmentHandlers
 {{% gql-fields %}}
- * fulfillmentHandlers: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * fulfillmentHandlers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## globalSettings
 {{% gql-fields %}}
- * globalSettings: [GlobalSettings](/docs/graphql-api/admin/object-types#globalsettings)!
+ * globalSettings: [GlobalSettings](/graphql-api/admin/object-types#globalsettings)!
 {{% /gql-fields %}}
 
 
 
 ## job
 {{% gql-fields %}}
- * job(jobId: [ID](/docs/graphql-api/admin/object-types#id)!): [Job](/docs/graphql-api/admin/object-types#job)
+ * job(jobId: [ID](/graphql-api/admin/object-types#id)!): [Job](/graphql-api/admin/object-types#job)
 {{% /gql-fields %}}
 
 
 
 ## jobBufferSize
 {{% gql-fields %}}
- * jobBufferSize(bufferIds: [[String](/docs/graphql-api/admin/object-types#string)!]): [[JobBufferSize](/docs/graphql-api/admin/object-types#jobbuffersize)!]!
+ * jobBufferSize(bufferIds: [[String](/graphql-api/admin/object-types#string)!]): [[JobBufferSize](/graphql-api/admin/object-types#jobbuffersize)!]!
 {{% /gql-fields %}}
 
 
 
 ## jobQueues
 {{% gql-fields %}}
- * jobQueues: [[JobQueue](/docs/graphql-api/admin/object-types#jobqueue)!]!
+ * jobQueues: [[JobQueue](/graphql-api/admin/object-types#jobqueue)!]!
 {{% /gql-fields %}}
 
 
 
 ## jobs
 {{% gql-fields %}}
- * jobs(options: [JobListOptions](/docs/graphql-api/admin/input-types#joblistoptions)): [JobList](/docs/graphql-api/admin/object-types#joblist)!
+ * jobs(options: [JobListOptions](/graphql-api/admin/input-types#joblistoptions)): [JobList](/graphql-api/admin/object-types#joblist)!
 {{% /gql-fields %}}
 
 
 
 ## jobsById
 {{% gql-fields %}}
- * jobsById(jobIds: [[ID](/docs/graphql-api/admin/object-types#id)!]!): [[Job](/docs/graphql-api/admin/object-types#job)!]!
+ * jobsById(jobIds: [[ID](/graphql-api/admin/object-types#id)!]!): [[Job](/graphql-api/admin/object-types#job)!]!
 {{% /gql-fields %}}
 
 
 
 ## me
 {{% gql-fields %}}
- * me: [CurrentUser](/docs/graphql-api/admin/object-types#currentuser)
+ * me: [CurrentUser](/graphql-api/admin/object-types#currentuser)
 {{% /gql-fields %}}
 
 
@@ -225,56 +225,56 @@ Returns a list of eligible shipping methods for the draft Order
 Get metrics for the given interval and metric types.
 
 {{% gql-fields %}}
- * metricSummary(input: [MetricSummaryInput](/docs/graphql-api/admin/input-types#metricsummaryinput)): [[MetricSummary](/docs/graphql-api/admin/object-types#metricsummary)!]!
+ * metricSummary(input: [MetricSummaryInput](/graphql-api/admin/input-types#metricsummaryinput)): [[MetricSummary](/graphql-api/admin/object-types#metricsummary)!]!
 {{% /gql-fields %}}
 
 
 
 ## order
 {{% gql-fields %}}
- * order(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Order](/docs/graphql-api/admin/object-types#order)
+ * order(id: [ID](/graphql-api/admin/object-types#id)!): [Order](/graphql-api/admin/object-types#order)
 {{% /gql-fields %}}
 
 
 
 ## orders
 {{% gql-fields %}}
- * orders(options: [OrderListOptions](/docs/graphql-api/admin/input-types#orderlistoptions)): [OrderList](/docs/graphql-api/admin/object-types#orderlist)!
+ * orders(options: [OrderListOptions](/graphql-api/admin/input-types#orderlistoptions)): [OrderList](/graphql-api/admin/object-types#orderlist)!
 {{% /gql-fields %}}
 
 
 
 ## paymentMethod
 {{% gql-fields %}}
- * paymentMethod(id: [ID](/docs/graphql-api/admin/object-types#id)!): [PaymentMethod](/docs/graphql-api/admin/object-types#paymentmethod)
+ * paymentMethod(id: [ID](/graphql-api/admin/object-types#id)!): [PaymentMethod](/graphql-api/admin/object-types#paymentmethod)
 {{% /gql-fields %}}
 
 
 
 ## paymentMethodEligibilityCheckers
 {{% gql-fields %}}
- * paymentMethodEligibilityCheckers: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * paymentMethodEligibilityCheckers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## paymentMethodHandlers
 {{% gql-fields %}}
- * paymentMethodHandlers: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * paymentMethodHandlers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## paymentMethods
 {{% gql-fields %}}
- * paymentMethods(options: [PaymentMethodListOptions](/docs/graphql-api/admin/input-types#paymentmethodlistoptions)): [PaymentMethodList](/docs/graphql-api/admin/object-types#paymentmethodlist)!
+ * paymentMethods(options: [PaymentMethodListOptions](/graphql-api/admin/input-types#paymentmethodlistoptions)): [PaymentMethodList](/graphql-api/admin/object-types#paymentmethodlist)!
 {{% /gql-fields %}}
 
 
 
 ## pendingSearchIndexUpdates
 {{% gql-fields %}}
- * pendingSearchIndexUpdates: [Int](/docs/graphql-api/admin/object-types#int)!
+ * pendingSearchIndexUpdates: [Int](/graphql-api/admin/object-types#int)!
 {{% /gql-fields %}}
 
 
@@ -283,7 +283,7 @@ Get metrics for the given interval and metric types.
 Used for real-time previews of the contents of a Collection
 
 {{% gql-fields %}}
- * previewCollectionVariants(input: [PreviewCollectionVariantsInput](/docs/graphql-api/admin/input-types#previewcollectionvariantsinput)!, options: [ProductVariantListOptions](/docs/graphql-api/admin/input-types#productvariantlistoptions)): [ProductVariantList](/docs/graphql-api/admin/object-types#productvariantlist)!
+ * previewCollectionVariants(input: [PreviewCollectionVariantsInput](/graphql-api/admin/input-types#previewcollectionvariantsinput)!, options: [ProductVariantListOptions](/graphql-api/admin/input-types#productvariantlistoptions)): [ProductVariantList](/graphql-api/admin/object-types#productvariantlist)!
 {{% /gql-fields %}}
 
 
@@ -292,21 +292,21 @@ Used for real-time previews of the contents of a Collection
 Get a Product either by id or slug. If neither id nor slug is specified, an error will result.
 
 {{% gql-fields %}}
- * product(id: [ID](/docs/graphql-api/admin/object-types#id), slug: [String](/docs/graphql-api/admin/object-types#string)): [Product](/docs/graphql-api/admin/object-types#product)
+ * product(id: [ID](/graphql-api/admin/object-types#id), slug: [String](/graphql-api/admin/object-types#string)): [Product](/graphql-api/admin/object-types#product)
 {{% /gql-fields %}}
 
 
 
 ## productOptionGroup
 {{% gql-fields %}}
- * productOptionGroup(id: [ID](/docs/graphql-api/admin/object-types#id)!): [ProductOptionGroup](/docs/graphql-api/admin/object-types#productoptiongroup)
+ * productOptionGroup(id: [ID](/graphql-api/admin/object-types#id)!): [ProductOptionGroup](/graphql-api/admin/object-types#productoptiongroup)
 {{% /gql-fields %}}
 
 
 
 ## productOptionGroups
 {{% gql-fields %}}
- * productOptionGroups(filterTerm: [String](/docs/graphql-api/admin/object-types#string)): [[ProductOptionGroup](/docs/graphql-api/admin/object-types#productoptiongroup)!]!
+ * productOptionGroups(filterTerm: [String](/graphql-api/admin/object-types#string)): [[ProductOptionGroup](/graphql-api/admin/object-types#productoptiongroup)!]!
 {{% /gql-fields %}}
 
 
@@ -315,7 +315,7 @@ Get a Product either by id or slug. If neither id nor slug is specified, an erro
 Get a ProductVariant by id
 
 {{% gql-fields %}}
- * productVariant(id: [ID](/docs/graphql-api/admin/object-types#id)!): [ProductVariant](/docs/graphql-api/admin/object-types#productvariant)
+ * productVariant(id: [ID](/graphql-api/admin/object-types#id)!): [ProductVariant](/graphql-api/admin/object-types#productvariant)
 {{% /gql-fields %}}
 
 
@@ -324,7 +324,7 @@ Get a ProductVariant by id
 List ProductVariants either all or for the specific product.
 
 {{% gql-fields %}}
- * productVariants(options: [ProductVariantListOptions](/docs/graphql-api/admin/input-types#productvariantlistoptions), productId: [ID](/docs/graphql-api/admin/object-types#id)): [ProductVariantList](/docs/graphql-api/admin/object-types#productvariantlist)!
+ * productVariants(options: [ProductVariantListOptions](/graphql-api/admin/input-types#productvariantlistoptions), productId: [ID](/graphql-api/admin/object-types#id)): [ProductVariantList](/graphql-api/admin/object-types#productvariantlist)!
 {{% /gql-fields %}}
 
 
@@ -333,196 +333,196 @@ List ProductVariants either all or for the specific product.
 List Products
 
 {{% gql-fields %}}
- * products(options: [ProductListOptions](/docs/graphql-api/admin/input-types#productlistoptions)): [ProductList](/docs/graphql-api/admin/object-types#productlist)!
+ * products(options: [ProductListOptions](/graphql-api/admin/input-types#productlistoptions)): [ProductList](/graphql-api/admin/object-types#productlist)!
 {{% /gql-fields %}}
 
 
 
 ## promotion
 {{% gql-fields %}}
- * promotion(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Promotion](/docs/graphql-api/admin/object-types#promotion)
+ * promotion(id: [ID](/graphql-api/admin/object-types#id)!): [Promotion](/graphql-api/admin/object-types#promotion)
 {{% /gql-fields %}}
 
 
 
 ## promotionActions
 {{% gql-fields %}}
- * promotionActions: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * promotionActions: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## promotionConditions
 {{% gql-fields %}}
- * promotionConditions: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * promotionConditions: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## promotions
 {{% gql-fields %}}
- * promotions(options: [PromotionListOptions](/docs/graphql-api/admin/input-types#promotionlistoptions)): [PromotionList](/docs/graphql-api/admin/object-types#promotionlist)!
+ * promotions(options: [PromotionListOptions](/graphql-api/admin/input-types#promotionlistoptions)): [PromotionList](/graphql-api/admin/object-types#promotionlist)!
 {{% /gql-fields %}}
 
 
 
 ## province
 {{% gql-fields %}}
- * province(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Province](/docs/graphql-api/admin/object-types#province)
+ * province(id: [ID](/graphql-api/admin/object-types#id)!): [Province](/graphql-api/admin/object-types#province)
 {{% /gql-fields %}}
 
 
 
 ## provinces
 {{% gql-fields %}}
- * provinces(options: [ProvinceListOptions](/docs/graphql-api/admin/input-types#provincelistoptions)): [ProvinceList](/docs/graphql-api/admin/object-types#provincelist)!
+ * provinces(options: [ProvinceListOptions](/graphql-api/admin/input-types#provincelistoptions)): [ProvinceList](/graphql-api/admin/object-types#provincelist)!
 {{% /gql-fields %}}
 
 
 
 ## role
 {{% gql-fields %}}
- * role(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Role](/docs/graphql-api/admin/object-types#role)
+ * role(id: [ID](/graphql-api/admin/object-types#id)!): [Role](/graphql-api/admin/object-types#role)
 {{% /gql-fields %}}
 
 
 
 ## roles
 {{% gql-fields %}}
- * roles(options: [RoleListOptions](/docs/graphql-api/admin/input-types#rolelistoptions)): [RoleList](/docs/graphql-api/admin/object-types#rolelist)!
+ * roles(options: [RoleListOptions](/graphql-api/admin/input-types#rolelistoptions)): [RoleList](/graphql-api/admin/object-types#rolelist)!
 {{% /gql-fields %}}
 
 
 
 ## search
 {{% gql-fields %}}
- * search(input: [SearchInput](/docs/graphql-api/admin/input-types#searchinput)!): [SearchResponse](/docs/graphql-api/admin/object-types#searchresponse)!
+ * search(input: [SearchInput](/graphql-api/admin/input-types#searchinput)!): [SearchResponse](/graphql-api/admin/object-types#searchresponse)!
 {{% /gql-fields %}}
 
 
 
 ## seller
 {{% gql-fields %}}
- * seller(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Seller](/docs/graphql-api/admin/object-types#seller)
+ * seller(id: [ID](/graphql-api/admin/object-types#id)!): [Seller](/graphql-api/admin/object-types#seller)
 {{% /gql-fields %}}
 
 
 
 ## sellers
 {{% gql-fields %}}
- * sellers(options: [SellerListOptions](/docs/graphql-api/admin/input-types#sellerlistoptions)): [SellerList](/docs/graphql-api/admin/object-types#sellerlist)!
+ * sellers(options: [SellerListOptions](/graphql-api/admin/input-types#sellerlistoptions)): [SellerList](/graphql-api/admin/object-types#sellerlist)!
 {{% /gql-fields %}}
 
 
 
 ## shippingCalculators
 {{% gql-fields %}}
- * shippingCalculators: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * shippingCalculators: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## shippingEligibilityCheckers
 {{% gql-fields %}}
- * shippingEligibilityCheckers: [[ConfigurableOperationDefinition](/docs/graphql-api/admin/object-types#configurableoperationdefinition)!]!
+ * shippingEligibilityCheckers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
 {{% /gql-fields %}}
 
 
 
 ## shippingMethod
 {{% gql-fields %}}
- * shippingMethod(id: [ID](/docs/graphql-api/admin/object-types#id)!): [ShippingMethod](/docs/graphql-api/admin/object-types#shippingmethod)
+ * shippingMethod(id: [ID](/graphql-api/admin/object-types#id)!): [ShippingMethod](/graphql-api/admin/object-types#shippingmethod)
 {{% /gql-fields %}}
 
 
 
 ## shippingMethods
 {{% gql-fields %}}
- * shippingMethods(options: [ShippingMethodListOptions](/docs/graphql-api/admin/input-types#shippingmethodlistoptions)): [ShippingMethodList](/docs/graphql-api/admin/object-types#shippingmethodlist)!
+ * shippingMethods(options: [ShippingMethodListOptions](/graphql-api/admin/input-types#shippingmethodlistoptions)): [ShippingMethodList](/graphql-api/admin/object-types#shippingmethodlist)!
 {{% /gql-fields %}}
 
 
 
 ## stockLocation
 {{% gql-fields %}}
- * stockLocation(id: [ID](/docs/graphql-api/admin/object-types#id)!): [StockLocation](/docs/graphql-api/admin/object-types#stocklocation)
+ * stockLocation(id: [ID](/graphql-api/admin/object-types#id)!): [StockLocation](/graphql-api/admin/object-types#stocklocation)
 {{% /gql-fields %}}
 
 
 
 ## stockLocations
 {{% gql-fields %}}
- * stockLocations(options: [StockLocationListOptions](/docs/graphql-api/admin/input-types#stocklocationlistoptions)): [StockLocationList](/docs/graphql-api/admin/object-types#stocklocationlist)!
+ * stockLocations(options: [StockLocationListOptions](/graphql-api/admin/input-types#stocklocationlistoptions)): [StockLocationList](/graphql-api/admin/object-types#stocklocationlist)!
 {{% /gql-fields %}}
 
 
 
 ## tag
 {{% gql-fields %}}
- * tag(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Tag](/docs/graphql-api/admin/object-types#tag)!
+ * tag(id: [ID](/graphql-api/admin/object-types#id)!): [Tag](/graphql-api/admin/object-types#tag)!
 {{% /gql-fields %}}
 
 
 
 ## tags
 {{% gql-fields %}}
- * tags(options: [TagListOptions](/docs/graphql-api/admin/input-types#taglistoptions)): [TagList](/docs/graphql-api/admin/object-types#taglist)!
+ * tags(options: [TagListOptions](/graphql-api/admin/input-types#taglistoptions)): [TagList](/graphql-api/admin/object-types#taglist)!
 {{% /gql-fields %}}
 
 
 
 ## taxCategories
 {{% gql-fields %}}
- * taxCategories(options: [TaxCategoryListOptions](/docs/graphql-api/admin/input-types#taxcategorylistoptions)): [TaxCategoryList](/docs/graphql-api/admin/object-types#taxcategorylist)!
+ * taxCategories(options: [TaxCategoryListOptions](/graphql-api/admin/input-types#taxcategorylistoptions)): [TaxCategoryList](/graphql-api/admin/object-types#taxcategorylist)!
 {{% /gql-fields %}}
 
 
 
 ## taxCategory
 {{% gql-fields %}}
- * taxCategory(id: [ID](/docs/graphql-api/admin/object-types#id)!): [TaxCategory](/docs/graphql-api/admin/object-types#taxcategory)
+ * taxCategory(id: [ID](/graphql-api/admin/object-types#id)!): [TaxCategory](/graphql-api/admin/object-types#taxcategory)
 {{% /gql-fields %}}
 
 
 
 ## taxRate
 {{% gql-fields %}}
- * taxRate(id: [ID](/docs/graphql-api/admin/object-types#id)!): [TaxRate](/docs/graphql-api/admin/object-types#taxrate)
+ * taxRate(id: [ID](/graphql-api/admin/object-types#id)!): [TaxRate](/graphql-api/admin/object-types#taxrate)
 {{% /gql-fields %}}
 
 
 
 ## taxRates
 {{% gql-fields %}}
- * taxRates(options: [TaxRateListOptions](/docs/graphql-api/admin/input-types#taxratelistoptions)): [TaxRateList](/docs/graphql-api/admin/object-types#taxratelist)!
+ * taxRates(options: [TaxRateListOptions](/graphql-api/admin/input-types#taxratelistoptions)): [TaxRateList](/graphql-api/admin/object-types#taxratelist)!
 {{% /gql-fields %}}
 
 
 
 ## testEligibleShippingMethods
 {{% gql-fields %}}
- * testEligibleShippingMethods(input: [TestEligibleShippingMethodsInput](/docs/graphql-api/admin/input-types#testeligibleshippingmethodsinput)!): [[ShippingMethodQuote](/docs/graphql-api/admin/object-types#shippingmethodquote)!]!
+ * testEligibleShippingMethods(input: [TestEligibleShippingMethodsInput](/graphql-api/admin/input-types#testeligibleshippingmethodsinput)!): [[ShippingMethodQuote](/graphql-api/admin/object-types#shippingmethodquote)!]!
 {{% /gql-fields %}}
 
 
 
 ## testShippingMethod
 {{% gql-fields %}}
- * testShippingMethod(input: [TestShippingMethodInput](/docs/graphql-api/admin/input-types#testshippingmethodinput)!): [TestShippingMethodResult](/docs/graphql-api/admin/object-types#testshippingmethodresult)!
+ * testShippingMethod(input: [TestShippingMethodInput](/graphql-api/admin/input-types#testshippingmethodinput)!): [TestShippingMethodResult](/graphql-api/admin/object-types#testshippingmethodresult)!
 {{% /gql-fields %}}
 
 
 
 ## zone
 {{% gql-fields %}}
- * zone(id: [ID](/docs/graphql-api/admin/object-types#id)!): [Zone](/docs/graphql-api/admin/object-types#zone)
+ * zone(id: [ID](/graphql-api/admin/object-types#id)!): [Zone](/graphql-api/admin/object-types#zone)
 {{% /gql-fields %}}
 
 
 
 ## zones
 {{% gql-fields %}}
- * zones(options: [ZoneListOptions](/docs/graphql-api/admin/input-types#zonelistoptions)): [ZoneList](/docs/graphql-api/admin/object-types#zonelist)!
+ * zones(options: [ZoneListOptions](/graphql-api/admin/input-types#zonelistoptions)): [ZoneList](/graphql-api/admin/object-types#zonelist)!
 {{% /gql-fields %}}
 
 

@@ -1,7 +1,7 @@
 ---
 title: "Queries"
 weight: 1
-date: 2023-06-07T09:42:13.591Z
+date: 2023-06-08T15:03:26.113Z
 showtoc: true
 generated: true
 ---
@@ -14,7 +14,7 @@ generated: true
 The active Channel
 
 {{% gql-fields %}}
- * activeChannel: [Channel](/docs/graphql-api/shop/object-types#channel)!
+ * activeChannel: [Channel](/graphql-api/shop/object-types#channel)!
 {{% /gql-fields %}}
 
 
@@ -23,7 +23,7 @@ The active Channel
 The active Customer
 
 {{% gql-fields %}}
- * activeCustomer: [Customer](/docs/graphql-api/shop/object-types#customer)
+ * activeCustomer: [Customer](/graphql-api/shop/object-types#customer)
 {{% /gql-fields %}}
 
 
@@ -34,7 +34,7 @@ state of `PaymentAuthorized` or `PaymentSettled`, then that Order is no longer c
 query will once again return `null`.
 
 {{% gql-fields %}}
- * activeOrder: [Order](/docs/graphql-api/shop/object-types#order)
+ * activeOrder: [Order](/graphql-api/shop/object-types#order)
 {{% /gql-fields %}}
 
 
@@ -43,7 +43,7 @@ query will once again return `null`.
 An array of supported Countries
 
 {{% gql-fields %}}
- * availableCountries: [[Country](/docs/graphql-api/shop/object-types#country)!]!
+ * availableCountries: [[Country](/graphql-api/shop/object-types#country)!]!
 {{% /gql-fields %}}
 
 
@@ -52,7 +52,7 @@ An array of supported Countries
 Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result.
 
 {{% gql-fields %}}
- * collection(id: [ID](/docs/graphql-api/shop/object-types#id), slug: [String](/docs/graphql-api/shop/object-types#string)): [Collection](/docs/graphql-api/shop/object-types#collection)
+ * collection(id: [ID](/graphql-api/shop/object-types#id), slug: [String](/graphql-api/shop/object-types#string)): [Collection](/graphql-api/shop/object-types#collection)
 {{% /gql-fields %}}
 
 
@@ -61,7 +61,7 @@ Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is spe
 A list of Collections available to the shop
 
 {{% gql-fields %}}
- * collections(options: [CollectionListOptions](/docs/graphql-api/shop/input-types#collectionlistoptions)): [CollectionList](/docs/graphql-api/shop/object-types#collectionlist)!
+ * collections(options: [CollectionListOptions](/graphql-api/shop/input-types#collectionlistoptions)): [CollectionList](/graphql-api/shop/object-types#collectionlist)!
 {{% /gql-fields %}}
 
 
@@ -70,7 +70,7 @@ A list of Collections available to the shop
 Returns a list of payment methods and their eligibility based on the current active Order
 
 {{% gql-fields %}}
- * eligiblePaymentMethods: [[PaymentMethodQuote](/docs/graphql-api/shop/object-types#paymentmethodquote)!]!
+ * eligiblePaymentMethods: [[PaymentMethodQuote](/graphql-api/shop/object-types#paymentmethodquote)!]!
 {{% /gql-fields %}}
 
 
@@ -79,7 +79,7 @@ Returns a list of payment methods and their eligibility based on the current act
 Returns a list of eligible shipping methods based on the current active Order
 
 {{% gql-fields %}}
- * eligibleShippingMethods: [[ShippingMethodQuote](/docs/graphql-api/shop/object-types#shippingmethodquote)!]!
+ * eligibleShippingMethods: [[ShippingMethodQuote](/graphql-api/shop/object-types#shippingmethodquote)!]!
 {{% /gql-fields %}}
 
 
@@ -88,7 +88,7 @@ Returns a list of eligible shipping methods based on the current active Order
 Returns a Facet by its id
 
 {{% gql-fields %}}
- * facet(id: [ID](/docs/graphql-api/shop/object-types#id)!): [Facet](/docs/graphql-api/shop/object-types#facet)
+ * facet(id: [ID](/graphql-api/shop/object-types#id)!): [Facet](/graphql-api/shop/object-types#facet)
 {{% /gql-fields %}}
 
 
@@ -97,7 +97,7 @@ Returns a Facet by its id
 A list of Facets available to the shop
 
 {{% gql-fields %}}
- * facets(options: [FacetListOptions](/docs/graphql-api/shop/input-types#facetlistoptions)): [FacetList](/docs/graphql-api/shop/object-types#facetlist)!
+ * facets(options: [FacetListOptions](/graphql-api/shop/input-types#facetlistoptions)): [FacetList](/graphql-api/shop/object-types#facetlist)!
 {{% /gql-fields %}}
 
 
@@ -106,7 +106,7 @@ A list of Facets available to the shop
 Returns information about the current authenticated User
 
 {{% gql-fields %}}
- * me: [CurrentUser](/docs/graphql-api/shop/object-types#currentuser)
+ * me: [CurrentUser](/graphql-api/shop/object-types#currentuser)
 {{% /gql-fields %}}
 
 
@@ -115,7 +115,7 @@ Returns information about the current authenticated User
 Returns the possible next states that the activeOrder can transition to
 
 {{% gql-fields %}}
- * nextOrderStates: [[String](/docs/graphql-api/shop/object-types#string)!]!
+ * nextOrderStates: [[String](/graphql-api/shop/object-types#string)!]!
 {{% /gql-fields %}}
 
 
@@ -125,7 +125,7 @@ Returns an Order based on the id. Note that in the Shop API, only orders belongi
 currently-authenticated User may be queried.
 
 {{% gql-fields %}}
- * order(id: [ID](/docs/graphql-api/shop/object-types#id)!): [Order](/docs/graphql-api/shop/object-types#order)
+ * order(id: [ID](/graphql-api/shop/object-types#id)!): [Order](/graphql-api/shop/object-types#order)
 {{% /gql-fields %}}
 
 
@@ -137,7 +137,7 @@ screen to be shown immediately after completion of a guest checkout, yet prevent
 general anonymous access to Order data.
 
 {{% gql-fields %}}
- * orderByCode(code: [String](/docs/graphql-api/shop/object-types#string)!): [Order](/docs/graphql-api/shop/object-types#order)
+ * orderByCode(code: [String](/graphql-api/shop/object-types#string)!): [Order](/graphql-api/shop/object-types#order)
 {{% /gql-fields %}}
 
 
@@ -146,7 +146,7 @@ general anonymous access to Order data.
 Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an error will result.
 
 {{% gql-fields %}}
- * product(id: [ID](/docs/graphql-api/shop/object-types#id), slug: [String](/docs/graphql-api/shop/object-types#string)): [Product](/docs/graphql-api/shop/object-types#product)
+ * product(id: [ID](/graphql-api/shop/object-types#id), slug: [String](/graphql-api/shop/object-types#string)): [Product](/graphql-api/shop/object-types#product)
 {{% /gql-fields %}}
 
 
@@ -155,7 +155,7 @@ Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an 
 Get a list of Products
 
 {{% gql-fields %}}
- * products(options: [ProductListOptions](/docs/graphql-api/shop/input-types#productlistoptions)): [ProductList](/docs/graphql-api/shop/object-types#productlist)!
+ * products(options: [ProductListOptions](/graphql-api/shop/input-types#productlistoptions)): [ProductList](/graphql-api/shop/object-types#productlist)!
 {{% /gql-fields %}}
 
 
@@ -164,7 +164,7 @@ Get a list of Products
 Search Products based on the criteria set by the `SearchInput`
 
 {{% gql-fields %}}
- * search(input: [SearchInput](/docs/graphql-api/shop/input-types#searchinput)!): [SearchResponse](/docs/graphql-api/shop/object-types#searchresponse)!
+ * search(input: [SearchInput](/graphql-api/shop/input-types#searchinput)!): [SearchResponse](/graphql-api/shop/object-types#searchresponse)!
 {{% /gql-fields %}}
 
 

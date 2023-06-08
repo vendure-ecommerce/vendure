@@ -1,7 +1,7 @@
 ---
 title: "Enums"
 weight: 5
-date: 2023-06-07T09:42:15.213Z
+date: 2023-06-08T15:03:27.617Z
 showtoc: true
 generated: true
 ---
