@@ -184,7 +184,7 @@ This is the standard layout for any list view. The main functionality is provide
     <!-- Adds a search bar -->
     <vdr-dt2-search
         [searchTermControl]="searchTermControl"
-        [searchTermPlaceholder]="Filter by title"
+        searchTermPlaceholder="Filter by title"
     />
     
     <!-- Here we define all the available columns -->
