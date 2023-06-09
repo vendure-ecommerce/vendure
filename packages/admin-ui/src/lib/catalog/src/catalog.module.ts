@@ -153,7 +153,7 @@ export class CatalogModule {
         pageService.registerPageTab({
             priority: 0,
             location: 'product-detail',
-            tab: _('catalog.products'),
+            tab: _('catalog.product'),
             route: '',
             component: detailComponentWithResolver({
                 component: ProductDetailComponent,

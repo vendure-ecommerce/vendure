@@ -140,6 +140,7 @@
     "price-includes-tax-at": "Include tasse al { rate }%",
     "price-with-tax-in-default-zone": "Inc. { rate }% di tasse: { price }",
     "private": "Privato",
+    "product": "",
     "product-name": "Nome del Prodotto",
     "product-options": "",
     "product-variant-exists": "",

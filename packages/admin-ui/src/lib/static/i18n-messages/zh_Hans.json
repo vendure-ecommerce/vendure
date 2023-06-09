@@ -140,6 +140,7 @@
     "price-includes-tax-at": "含税{ rate }%",
     "price-with-tax-in-default-zone": "含税{ rate }% 价格{ price }",
     "private": "隐藏",
+    "product": "",
     "product-name": "商品名称",
     "product-options": "",
     "product-variant-exists": "",

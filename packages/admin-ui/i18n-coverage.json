@@ -1,69 +1,69 @@
 {
-  "generatedOn": "2023-06-07T10:58:56.560Z",
-  "lastCommit": "2206a5b863a454e9fc88412a5feb5a1c7509bcba",
+  "generatedOn": "2023-06-09T09:28:06.112Z",
+  "lastCommit": "dae3e93af527fd2696214700896ba577566ae12a",
   "translationStatus": {
     "cs": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 544,
       "percentage": 74
     },
     "de": {
-      "tokenCount": 735,
-      "translatedCount": 527,
-      "percentage": 72
+      "tokenCount": 736,
+      "translatedCount": 538,
+      "percentage": 73
     },
     "en": {
-      "tokenCount": 735,
-      "translatedCount": 734,
+      "tokenCount": 736,
+      "translatedCount": 735,
       "percentage": 100
     },
     "es": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 569,
       "percentage": 77
     },
     "fr": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 564,
       "percentage": 77
     },
     "it": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 568,
       "percentage": 77
     },
     "pl": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 378,
       "percentage": 51
     },
     "pt_BR": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 542,
       "percentage": 74
     },
     "pt_PT": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 577,
-      "percentage": 79
+      "percentage": 78
     },
     "ru": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 567,
       "percentage": 77
     },
     "uk": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 567,
       "percentage": 77
     },
     "zh_Hans": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 513,
       "percentage": 70
     },
     "zh_Hant": {
-      "tokenCount": 735,
+      "tokenCount": 736,
       "translatedCount": 358,
       "percentage": 49
     }

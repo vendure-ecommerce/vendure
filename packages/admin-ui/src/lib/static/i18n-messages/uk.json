@@ -140,6 +140,7 @@
     "price-includes-tax-at": "Включає податок в { rate }%",
     "price-with-tax-in-default-zone": "Вкл. { rate }% податок: { price }",
     "private": "Приватний",
+    "product": "",
     "product-name": "Ім'я товару",
     "product-options": "",
     "product-variant-exists": "",

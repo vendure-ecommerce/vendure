@@ -140,6 +140,7 @@
     "price-includes-tax-at": "Includes tax at { rate }%",
     "price-with-tax-in-default-zone": "Inc. { rate }% tax: { price }",
     "private": "Private",
+    "product": "Product",
     "product-name": "Product name",
     "product-options": "Product options",
     "product-variant-exists": "A product variant with these options already exists",

@@ -140,6 +140,7 @@
     "price-includes-tax-at": "連税{ rate }%",
     "price-with-tax-in-default-zone": "連税{ rate }% 價格{ price }",
     "private": "隱藏",
+    "product": "",
     "product-name": "商品名稱",
     "product-options": "",
     "product-variant-exists": "",

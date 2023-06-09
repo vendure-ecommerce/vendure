@@ -140,6 +140,7 @@
     "price-includes-tax-at": "Včetně daně { rate }%",
     "price-with-tax-in-default-zone": "Včetně { rate }% daně: { price }",
     "private": "Soukromý",
+    "product": "",
     "product-name": "Jméno produktu",
     "product-options": "",
     "product-variant-exists": "",
