@@ -42,10 +42,14 @@ function UploadFile() {
 
   function onChange(event) {
     const { target } = event;  
+    const files = [];
+    for (let i = 0; i < target.files.length; i++) {
+      files.push({ file: target.files.item(i) })
+    }
     if (target.validity.valid) {
       mutate({ 
         variables: {
-          input: target.files.map(file => ({ file }))
+          input: files
         }  
       });
     }
