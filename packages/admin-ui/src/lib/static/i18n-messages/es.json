@@ -72,6 +72,7 @@
     "assign-variants-to-channel": "Asignar variantes de producto a canal de ventas",
     "auto-update-option-variant-name": "Actualiza los nombres de las variantes de producto automáticamente usando esta opción",
     "auto-update-product-variant-name": "Actualiza los nombres de las variantes de producto automáticamente",
+    "cannot-create-variants-without-options": "",
     "channel-price-preview": "Vista previa de precio para el canal de ventas",
     "collection": "",
     "collection-contents": "Contenidos de la colección",

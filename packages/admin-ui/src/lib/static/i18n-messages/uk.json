@@ -72,6 +72,7 @@
     "assign-variants-to-channel": "Додати варіанти товару в канал",
     "auto-update-option-variant-name": "Автоматично оновлювати назви варіантів товару, використовуючи цю опцію",
     "auto-update-product-variant-name": "Автоматично оновлювати назви варіантів товару",
+    "cannot-create-variants-without-options": "",
     "channel-price-preview": "Попередній перегляд цін каналу",
     "collection": "",
     "collection-contents": "Зміст колекції",
