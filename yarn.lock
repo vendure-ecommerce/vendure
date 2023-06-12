@@ -7105,10 +7105,10 @@ builtins@^5.0.0:
   dependencies:
     semver "^7.0.0"
 
-bullmq@^3.6.1:
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-3.12.0.tgz#5a3e9ac40e4d623c27f7cdd214a69fd4122270da"
-  integrity sha512-h5SMgKXfHe6wKzEEdKTO4zUkOV1TkyQagw3WVOaz+6XWuaWv4EhCAOIkzPAajI7ZNF9c+YwSRY3bQjXmxI0f9Q==
+bullmq@^3.15.5:
+  version "3.15.5"
+  resolved "https://registry.yarnpkg.com/bullmq/-/bullmq-3.15.5.tgz#b8e80f47cd167a0ce77e34e47404adcb98447813"
+  integrity sha512-NotMUfU5wBAjZQgcl/F5UMUIs1DiXDRmZBN5BPuSQ841w7mYlaghTMGSy0H+kAwFa7388e7/5COTiX8EUxFo5w==
   dependencies:
     cron-parser "^4.6.0"
     glob "^8.0.3"
