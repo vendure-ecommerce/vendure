@@ -212,6 +212,34 @@ export abstract class TypedBaseDetailComponent<
     }
 }
 
+/**
+ * @description
+ * A helper function for creating tabs that point to a {@link TypedBaseDetailComponent}. This takes
+ * care of the route resolver parts so that the detail component automatically has access to the
+ * correct resolved detail data.
+ *
+ * @example
+ * ```TypeScript
+ * \@NgModule({
+ *   imports: [ReviewsSharedModule],
+ *   declarations: [/* ... *\/],
+ *   providers: [
+ *     registerPageTab({
+ *       location: 'product-detail',
+ *       tab: 'Specs',
+ *       route: 'specs',
+ *       component: detailComponentWithResolver({
+ *         component: ProductSpecDetailComponent,
+ *         query: GetProductSpecsDocument,
+ *         entityKey: 'spec',
+ *       }),
+ *     }),
+ *   ],
+ * })
+ * export class ProductSpecsUiExtensionModule {}
+ * ```
+ * @docsCategory list-detail-views
+ */
 export function detailComponentWithResolver<
     T extends TypedDocumentNode<any, { id: string }>,
     Field extends keyof ResultOf<T>,
