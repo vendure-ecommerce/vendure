@@ -27,7 +27,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
         component: PageComponent,
         data: {
             locationId: 'customer-detail',
-            breadcrumb: _('breadcrumb.customers'),
+            breadcrumb: { label: _('breadcrumb.customers'), link: ['../', 'customer'] },
         },
         children: pageService.getPageTabRoutes('customer-detail'),
     },
