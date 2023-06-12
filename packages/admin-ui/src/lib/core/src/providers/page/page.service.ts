@@ -45,6 +45,13 @@ export interface PageTabConfig {
      * The component to render at the route of the tab.
      */
     component: Type<any> | ReturnType<typeof detailComponentWithResolver>;
+    /**
+     * @description
+     * You can optionally provide any native Angular route configuration options here.
+     * Any values provided here will take precedence over the values generated
+     * by the `route` and `component` properties.
+     */
+    routeConfig?: Route;
 }
 
 /**
@@ -112,7 +119,7 @@ export class PageService {
             if (isComponentWithResolver(config.component)) {
                 const { component: cmp, breadcrumbFn, resolveFn } = config.component;
                 component = cmp;
-                route.resolve = { detail: config.component.resolveFn };
+                route.resolve = { detail: resolveFn };
                 route.data = {
                     breadcrumb: data => data.detail.entity.pipe(map(entity => breadcrumbFn(entity))),
                 };
@@ -123,6 +130,9 @@ export class PageService {
                 typeof component.prototype.canDeactivate === 'function' ? [CanDeactivateDetailGuard] : [];
             route.component = component;
             route.canDeactivate = guards;
+            if (config.routeConfig) {
+                Object.assign(route, config.routeConfig);
+            }
 
             return route;
         });
