@@ -337,9 +337,7 @@ export class OrderDetailComponent
                                     order.nextStates,
                                 );
                             } else {
-                                return this.dataService.order
-                                    .transitionToState(this.id, 'PaymentSettled')
-                                    .pipe(mapTo('PaymentSettled'));
+                                return of('PaymentSettled');
                             }
                         case 'ManualPaymentStateError':
                             this.notificationService.error(addManualPaymentToOrder.message);
