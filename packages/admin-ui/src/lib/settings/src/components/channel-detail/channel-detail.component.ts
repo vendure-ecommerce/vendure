@@ -233,7 +233,6 @@ export class ChannelDetailComponent
     }
 
     private generateToken(): string {
-        const randomString = () => Math.random().toString(36).substr(3, 10);
-        return `${randomString()}${randomString()}`;
+        return Array.from(crypto.getRandomValues(new Uint8Array(10))).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 }
