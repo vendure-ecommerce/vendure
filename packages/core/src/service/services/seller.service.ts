@@ -15,6 +15,7 @@ import { Seller } from '../../entity/seller/seller.entity';
 import { EventBus, SellerEvent } from '../../event-bus/index';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 /**
  * @description
@@ -66,10 +67,8 @@ export class SellerService {
 
     async update(ctx: RequestContext, input: UpdateSellerInput) {
         const seller = await this.connection.getEntityOrThrow(ctx, Seller, input.id);
-        if (input.name) {
-            seller.name = input.name;
-            await this.connection.getRepository(ctx, Seller).save(seller);
-        }
+        const updatedSeller = patchEntity(seller, input);
+        await this.connection.getRepository(ctx, Seller).save(updatedSeller);
         const sellerWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
             Seller,
