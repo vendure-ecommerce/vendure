@@ -36,9 +36,6 @@ export type LocalStorageLocationBasedTypeMap = {
  */
 const ADMIN_SPECIFIC_KEYS: Array<keyof LocalStorageTypeMap> = [
     'activeTheme',
-    'uiLanguageCode',
-    'uiLocale',
-    'contentLanguageCode',
     'dashboardWidgetLayout',
     'activeTheme',
     'livePreviewCollectionContents',
