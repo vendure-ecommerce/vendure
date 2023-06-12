@@ -236,9 +236,9 @@ export class ChannelService {
         }
         const channel = new Channel({
             ...input,
-            defaultCurrencyCode: input.currencyCode,
+            defaultCurrencyCode,
             availableCurrencyCodes:
-                input.availableCurrencyCodes ?? (input.currencyCode ? [input.currencyCode] : []),
+                input.availableCurrencyCodes ?? (defaultCurrencyCode ? [defaultCurrencyCode] : []),
             availableLanguageCodes: input.availableLanguageCodes ?? [input.defaultLanguageCode],
         });
         const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
