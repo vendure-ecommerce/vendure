@@ -369,9 +369,34 @@ describe('Payment process', () => {
             });
 
             orderGuard.assertSuccess(addManualPaymentToOrder);
-            expect(addManualPaymentToOrder.state).toBe('PaymentSettled');
+            expect(addManualPaymentToOrder.state).toBe('ArrangingAdditionalPayment');
             expect(addManualPaymentToOrder.payments![1].state).toBe('Settled');
             expect(addManualPaymentToOrder.payments![1].amount).toBe(addManualPaymentToOrder.totalWithTax);
+        });
+
+        it('transitions Order to PaymentSettled', async () => {
+            const { transitionOrderToState } = await adminClient.query<
+                Codegen.AdminTransitionMutation,
+                Codegen.AdminTransitionMutationVariables
+            >(ADMIN_TRANSITION_TO_STATE, {
+                id: order2Id,
+                state: 'PaymentSettled',
+            });
+
+            orderGuard.assertSuccess(transitionOrderToState);
+            expect(transitionOrderToState.state).toBe('PaymentSettled');
+
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order2Id,
+                },
+            );
+            const settledPaymentAmount = order?.payments
+                ?.filter(p => p.state === 'Settled')
+                .reduce((sum, p) => sum + p.amount, 0);
+
+            expect(settledPaymentAmount).toBe(order?.totalWithTax);
         });
     });
 });

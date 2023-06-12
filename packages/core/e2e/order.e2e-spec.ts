@@ -16,11 +16,9 @@ import {
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ad } from 'vitest/dist/types-94cfe4b4';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
-import { OrderHistoryEntry } from '../src/entity/history-entry/order-history-entry.entity';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     failsToCancelPaymentMethod,
@@ -33,7 +31,9 @@ import {
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
 import { FULFILLMENT_FRAGMENT, PAYMENT_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
+    AddManualPaymentDocument,
     CanceledOrderFragment,
     ErrorCode,
     FulfillmentFragment,
@@ -48,13 +48,12 @@ import {
     SortOrder,
     StockMovementType,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     DeletionResult,
     TestOrderFragmentFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
@@ -63,13 +62,12 @@ import {
     DELETE_SHIPPING_METHOD,
     GET_CUSTOMER_LIST,
     GET_ORDER,
-    GET_ORDERS_LIST,
     GET_ORDER_FULFILLMENTS,
     GET_ORDER_HISTORY,
+    GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
-    TRANSITION_PAYMENT_TO_STATE,
     TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -80,12 +78,10 @@ import {
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
     GET_ACTIVE_ORDER,
-    GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
-import { ADD_MANUAL_PAYMENT } from './payment-process.e2e-spec';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
@@ -2534,10 +2530,7 @@ describe('Orders resolver', () => {
             await proceedToArrangingPayment(shopClient);
             orderGuard.assertSuccess(addItemToOrder);
 
-            const { addManualPaymentToOrder } = await adminClient.query<
-                Codegen.AddManualPayment2Mutation,
-                Codegen.AddManualPayment2MutationVariables
-            >(ADD_MANUAL_PAYMENT, {
+            const { addManualPaymentToOrder } = await adminClient.query(AddManualPaymentDocument, {
                 input: {
                     orderId: addItemToOrder.id,
                     metadata: {},
