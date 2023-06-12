@@ -89,6 +89,6 @@ export const multivendorOrderProcess: CustomOrderProcess<any> = {
 
 async function findOrderWithFulfillments(ctx: RequestContext, id: ID): Promise<Order> {
     return await connection.getEntityOrThrow(ctx, Order, id, {
-        relations: ['lines', 'fulfillments', 'fulfillments.lines'],
+        relations: ['lines', 'fulfillments', 'fulfillments.lines', 'fulfillments.lines.fulfillment'],
     });
 }
