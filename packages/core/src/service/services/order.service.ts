@@ -1129,8 +1129,12 @@ export class OrderService {
         }
 
         const payment = await this.paymentService.createManualPayment(ctx, order, amount, input);
-        order.payments.push(payment);
-        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .relation('payments')
+            .of(order)
+            .add(payment);
         for (const modification of unsettledModifications) {
             modification.payment = payment;
             await this.connection.getRepository(ctx, OrderModification).save(modification);

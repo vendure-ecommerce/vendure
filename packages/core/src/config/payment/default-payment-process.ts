@@ -74,10 +74,17 @@ export const defaultPaymentProcess: PaymentProcess<PaymentState> = {
             },
         });
 
-        if (orderTotalIsCovered(order, 'Settled') && order.state !== 'PaymentSettled') {
+        if (
+            orderTotalIsCovered(order, 'Settled') &&
+            order.state !== 'PaymentSettled' &&
+            order.state !== 'ArrangingAdditionalPayment'
+        ) {
             await orderService.transitionToState(ctx, order.id, 'PaymentSettled');
-        }
-        if (orderTotalIsCovered(order, ['Authorized', 'Settled']) && order.state !== 'PaymentAuthorized') {
+        } else if (
+            orderTotalIsCovered(order, ['Authorized', 'Settled']) &&
+            order.state !== 'PaymentAuthorized' &&
+            order.state !== 'ArrangingAdditionalPayment'
+        ) {
             await orderService.transitionToState(ctx, order.id, 'PaymentAuthorized');
         }
     },

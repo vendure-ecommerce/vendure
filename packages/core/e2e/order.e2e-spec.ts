@@ -16,9 +16,11 @@ import {
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { ad } from 'vitest/dist/types-94cfe4b4';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { OrderHistoryEntry } from '../src/entity/history-entry/order-history-entry.entity';
 
 import {
     failsToCancelPaymentMethod,
@@ -35,6 +37,8 @@ import {
     CanceledOrderFragment,
     ErrorCode,
     FulfillmentFragment,
+    GetOrderDocument,
+    GetOrderHistoryDocument,
     GlobalFlag,
     HistoryEntryType,
     LanguageCode,
@@ -81,6 +85,7 @@ import {
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
+import { ADD_MANUAL_PAYMENT } from './payment-process.e2e-spec';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
@@ -2514,6 +2519,54 @@ describe('Orders resolver', () => {
                 activeCustomer!.orders.items[activeCustomer!.orders.items.length - 1].lines[0].productVariant
                     .price,
             ).toBe(108720);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2204
+        it('creates correct history entries and results in correct state when manually adding payment to order', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            await proceedToArrangingPayment(shopClient);
+            orderGuard.assertSuccess(addItemToOrder);
+
+            const { addManualPaymentToOrder } = await adminClient.query<
+                Codegen.AddManualPayment2Mutation,
+                Codegen.AddManualPayment2MutationVariables
+            >(ADD_MANUAL_PAYMENT, {
+                input: {
+                    orderId: addItemToOrder.id,
+                    metadata: {},
+                    method: twoStagePaymentMethod.code,
+                    transactionId: '12345',
+                },
+            });
+
+            orderGuard.assertSuccess(addManualPaymentToOrder);
+
+            const { order: orderWithHistory } = await adminClient.query(GetOrderHistoryDocument, {
+                id: addManualPaymentToOrder.id,
+            });
+
+            const stateTransitionHistory = orderWithHistory!.history.items
+                .filter(i => i.type === HistoryEntryType.ORDER_STATE_TRANSITION)
+                .map(i => i.data);
+
+            expect(stateTransitionHistory).toEqual([
+                { from: 'Created', to: 'AddingItems' },
+                { from: 'AddingItems', to: 'ArrangingPayment' },
+                { from: 'ArrangingPayment', to: 'PaymentSettled' },
+            ]);
+
+            const { order } = await adminClient.query(GetOrderDocument, {
+                id: addManualPaymentToOrder.id,
+            });
+
+            expect(order!.state).toBe('PaymentSettled');
         });
     });
 });
