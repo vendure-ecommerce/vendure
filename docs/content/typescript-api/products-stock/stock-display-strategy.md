@@ -1,7 +1,7 @@
 ---
 title: "StockDisplayStrategy"
 weight: 10
-date: 2023-06-07T09:42:20.957Z
+date: 2023-06-13T12:31:08.246Z
 showtoc: true
 generated: true
 ---

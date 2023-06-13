@@ -1,7 +1,7 @@
 ---
 title: "HardenPlugin"
 weight: 10
-date: 2023-06-07T09:42:24.345Z
+date: 2023-06-13T12:31:12.185Z
 showtoc: true
 generated: true
 ---

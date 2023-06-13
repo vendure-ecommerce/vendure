@@ -1,7 +1,7 @@
 ---
 title: "RegisterInitializer"
 weight: 10
-date: 2023-06-07T09:42:24.280Z
+date: 2023-06-13T12:31:12.137Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "MolliePlugin"
 weight: 10
-date: 2023-06-07T09:42:24.246Z
+date: 2023-06-13T12:31:12.099Z
 showtoc: true
 generated: true
 ---

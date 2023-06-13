@@ -1,7 +1,7 @@
 ---
 title: "ConfigurableOperationDef"
 weight: 10
-date: 2023-06-07T09:42:20.742Z
+date: 2023-06-13T12:31:08.040Z
 showtoc: true
 generated: true
 ---

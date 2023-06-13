@@ -1,7 +1,7 @@
 ---
 title: "BullMQJobQueueStrategy"
 weight: 10
-date: 2023-06-07T09:42:24.205Z
+date: 2023-06-13T12:31:12.061Z
 showtoc: true
 generated: true
 ---

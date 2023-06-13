@@ -1,7 +1,7 @@
 ---
 title: "PageTabConfig"
 weight: 10
-date: 2023-06-08T15:03:34.808Z
+date: 2023-06-13T12:31:12.899Z
 showtoc: true
 generated: true
 ---
@@ -27,6 +27,7 @@ interface PageTabConfig {
   tab: string;
   priority?: number;
   component: Type<any> | ReturnType<typeof detailComponentWithResolver>;
+  routeConfig?: Route;
 }
 ```
 ## Members
@@ -66,9 +67,17 @@ route of the parent page.{{< /member-description >}}
 
 ### component
 
-{{< member-info kind="property" type="Type&#60;any&#62; | ReturnType&#60;typeof detailComponentWithResolver&#62;"  >}}
+{{< member-info kind="property" type="Type&#60;any&#62; | ReturnType&#60;typeof <a href='/admin-ui-api/list-detail-views/detail-component-with-resolver#detailcomponentwithresolver'>detailComponentWithResolver</a>&#62;"  >}}
 
 {{< member-description >}}The component to render at the route of the tab.{{< /member-description >}}
+
+### routeConfig
+
+{{< member-info kind="property" type="Route"  >}}
+
+{{< member-description >}}You can optionally provide any native Angular route configuration options here.
+Any values provided here will take precedence over the values generated
+by the `route` and `component` properties.{{< /member-description >}}
 
 
 </div>

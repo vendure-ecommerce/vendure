@@ -1,7 +1,7 @@
 ---
 title: "Promotion Action"
 weight: 10
-date: 2023-06-07T09:42:21.354Z
+date: 2023-06-13T12:31:08.699Z
 showtoc: true
 generated: true
 ---

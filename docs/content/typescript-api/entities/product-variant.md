@@ -1,7 +1,7 @@
 ---
 title: "ProductVariant"
 weight: 10
-date: 2023-06-07T09:42:22.130Z
+date: 2023-06-13T12:31:09.482Z
 showtoc: true
 generated: true
 ---

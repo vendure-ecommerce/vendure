@@ -1,7 +1,7 @@
 ---
 title: "EmailEventHandlerWithAsyncData"
 weight: 10
-date: 2023-06-07T09:42:24.084Z
+date: 2023-06-13T12:31:11.897Z
 showtoc: true
 generated: true
 ---

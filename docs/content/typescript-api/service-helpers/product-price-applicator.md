@@ -1,7 +1,7 @@
 ---
 title: "ProductPriceApplicator"
 weight: 10
-date: 2023-06-07T09:42:22.890Z
+date: 2023-06-13T12:31:10.304Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "StockLocation"
 weight: 10
-date: 2023-06-07T09:42:22.278Z
+date: 2023-06-13T12:31:09.615Z
 showtoc: true
 generated: true
 ---

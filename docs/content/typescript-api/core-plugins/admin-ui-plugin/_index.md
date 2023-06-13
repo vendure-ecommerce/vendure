@@ -1,7 +1,7 @@
 ---
 title: "AdminUiPlugin"
 weight: 10
-date: 2023-06-07T09:42:23.949Z
+date: 2023-06-13T12:31:11.751Z
 showtoc: true
 generated: true
 ---

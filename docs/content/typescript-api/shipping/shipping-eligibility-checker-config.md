@@ -1,7 +1,7 @@
 ---
 title: "ShippingEligibilityCheckerConfig"
 weight: 10
-date: 2023-06-07T09:42:21.449Z
+date: 2023-06-13T12:31:08.816Z
 showtoc: true
 generated: true
 ---

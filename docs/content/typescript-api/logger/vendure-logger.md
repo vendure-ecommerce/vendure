@@ -1,7 +1,7 @@
 ---
 title: "VendureLogger"
 weight: 10
-date: 2023-06-07T09:42:21.097Z
+date: 2023-06-13T12:31:08.380Z
 showtoc: true
 generated: true
 ---

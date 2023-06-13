@@ -1,7 +1,7 @@
 ---
 title: "Promotion Condition"
 weight: 10
-date: 2023-06-07T09:42:21.383Z
+date: 2023-06-13T12:31:08.742Z
 showtoc: true
 generated: true
 ---

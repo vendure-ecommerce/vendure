@@ -1,7 +1,7 @@
 ---
 title: "SubscribableJob"
 weight: 10
-date: 2023-06-07T09:42:22.702Z
+date: 2023-06-13T12:31:10.088Z
 showtoc: true
 generated: true
 ---

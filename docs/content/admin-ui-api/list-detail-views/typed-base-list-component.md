@@ -1,7 +1,7 @@
 ---
 title: "TypedBaseListComponent"
 weight: 10
-date: 2023-06-08T15:03:34.562Z
+date: 2023-06-13T12:31:12.780Z
 showtoc: true
 generated: true
 ---
@@ -91,7 +91,7 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 
 ### configure
 
-{{< member-info kind="method" type="(config: {         document: T;         getItems: (data: ResultOf&#60;T&#62;) =&#62; { items: Array&#60;ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;&#62;; totalItems: number };         setVariables?: (skip: number, take: number) =&#62; VariablesOf&#60;T&#62;;         refreshListOnChanges?: Array&#60;Observable&#60;any&#62;&#62;;     }) => "  >}}
+{{< member-info kind="method" type="(config: {         document: T;         getItems: (data: ResultOf&#60;T&#62;) =&#62; { items: Array&#60;ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;&#62;; totalItems: number };         setVariables?: (skip: number, take: number) =&#62; VariablesOf&#60;T&#62;;         refreshListOnChanges?: Array&#60;Observable&#60;any&#62;&#62;;     }) => "  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

@@ -1,7 +1,7 @@
 ---
 title: "StockMovementService"
 weight: 10
-date: 2023-06-07T09:42:23.739Z
+date: 2023-06-13T12:31:11.496Z
 showtoc: true
 generated: true
 ---

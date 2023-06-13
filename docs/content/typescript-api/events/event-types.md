@@ -1,7 +1,7 @@
 ---
 title: "Event Types"
 weight: 10
-date: 2023-06-07T09:42:22.375Z
+date: 2023-06-13T12:31:09.716Z
 showtoc: true
 generated: true
 ---
@@ -1566,6 +1566,37 @@ class SearchEvent extends VendureEvent {
 ### constructor
 
 {{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: ExtendedSearchInput) => SearchEvent"  >}}
+
+{{< member-description >}}{{< /member-description >}}
+
+
+</div>
+<div class="symbol">
+
+
+# SellerEvent
+
+{{< generation-info sourceFile="packages/core/src/event-bus/events/seller-event.ts" sourceLine="19" packageName="@vendure/core" since="2.0.1">}}
+
+This event is fired whenever one <a href='/typescript-api/entities/seller#seller'>Seller</a> is added, updated or deleted.
+
+## Signature
+
+```TypeScript
+class SellerEvent extends VendureEntityEvent<Seller, SellerInputTypes> {
+  constructor(ctx: RequestContext, entity: Seller, type: 'created' | 'updated' | 'deleted', input?: SellerInputTypes)
+}
+```
+## Extends
+
+ * <a href='/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;<a href='/typescript-api/entities/seller#seller'>Seller</a>, SellerInputTypes&#62;
+
+
+## Members
+
+### constructor
+
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/typescript-api/entities/seller#seller'>Seller</a>, type: 'created' | 'updated' | 'deleted', input?: SellerInputTypes) => SellerEvent"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

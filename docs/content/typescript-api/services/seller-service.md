@@ -1,7 +1,7 @@
 ---
 title: "SellerService"
 weight: 10
-date: 2023-06-07T09:42:23.664Z
+date: 2023-06-13T12:31:11.419Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # SellerService
 
-{{< generation-info sourceFile="packages/core/src/service/services/seller.service.ts" sourceLine="22" packageName="@vendure/core">}}
+{{< generation-info sourceFile="packages/core/src/service/services/seller.service.ts" sourceLine="26" packageName="@vendure/core">}}
 
 Contains methods relating to <a href='/typescript-api/entities/seller#seller'>Seller</a> entities.
 
@@ -21,11 +21,11 @@ Contains methods relating to <a href='/typescript-api/entities/seller#seller'>Se
 
 ```TypeScript
 class SellerService {
-  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder)
+  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, customFieldRelationService: CustomFieldRelationService)
   async initSellers() => ;
   findAll(ctx: RequestContext, options?: ListQueryOptions<Seller>) => Promise<PaginatedList<Seller>>;
   findOne(ctx: RequestContext, sellerId: ID) => Promise<Seller | undefined>;
-  create(ctx: RequestContext, input: CreateSellerInput) => ;
+  async create(ctx: RequestContext, input: CreateSellerInput) => ;
   async update(ctx: RequestContext, input: UpdateSellerInput) => ;
   async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
@@ -34,7 +34,7 @@ class SellerService {
 
 ### constructor
 
-{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => SellerService"  >}}
+{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, customFieldRelationService: CustomFieldRelationService) => SellerService"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

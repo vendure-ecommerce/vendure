@@ -1,7 +1,7 @@
 ---
 title: "Input Objects"
 weight: 4
-date: 2023-06-08T15:03:26.113Z
+date: 2023-06-13T12:30:59.547Z
 showtoc: true
 generated: true
 ---
@@ -54,6 +54,7 @@ Operators for filtering on a Boolean field
 ## CollectionListOptions
 
 {{% gql-fields %}}
+ * topLevelOnly: [Boolean](/graphql-api/shop/object-types#boolean)
 * *// Skips the first n results, for use in pagination*
  * skip: [Int](/graphql-api/shop/object-types#int)
 * *// Takes n results, for use in pagination*

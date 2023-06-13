@@ -1,7 +1,7 @@
 ---
 title: "RoleService"
 weight: 10
-date: 2023-06-07T09:42:23.629Z
+date: 2023-06-13T12:31:11.383Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "Ctx Decorator"
 weight: 10
-date: 2023-06-07T09:42:20.708Z
+date: 2023-06-13T12:31:08.007Z
 showtoc: true
 generated: true
 ---
