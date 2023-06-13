@@ -1,6 +1,6 @@
 <nav role="navigation">
     <ul class="breadcrumbs">
-        <li *ngFor="let breadcrumb of breadcrumbs$ | async; let isLast = last">
+        <li *ngFor="let breadcrumb of breadcrumbs$ | async; let isLast = last" [title]="breadcrumb.label">
             <a [routerLink]="breadcrumb.link" *ngIf="!isLast">{{ breadcrumb.label | translate }}</a>
             <ng-container *ngIf="!isLast"
                 ><clr-icon shape="caret right" class="color-weight-400 mx-1"></clr-icon
