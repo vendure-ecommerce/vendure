@@ -1,3 +1,29 @@
+## <small>2.0.1 (2023-06-13)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add missing primary button states ([93d2285](https://github.com/vendure-ecommerce/vendure/commit/93d2285))
+* **admin-ui** Allow setting tab route config ([3fb170e](https://github.com/vendure-ecommerce/vendure/commit/3fb170e))
+* **admin-ui** Fix customers breadcrumb link (#2218) ([edaa867](https://github.com/vendure-ecommerce/vendure/commit/edaa867)), closes [#2218](https://github.com/vendure-ecommerce/vendure/issues/2218)
+* **admin-ui** Fix pagination on options editor view ([dda5e67](https://github.com/vendure-ecommerce/vendure/commit/dda5e67))
+* **admin-ui** Fix styling of address card component ([ea92bd1](https://github.com/vendure-ecommerce/vendure/commit/ea92bd1))
+* **admin-ui** Fix tab label for product detail component ([cb81848](https://github.com/vendure-ecommerce/vendure/commit/cb81848))
+* **admin-ui** Improve feedback on attempting to create variant ([e50b271](https://github.com/vendure-ecommerce/vendure/commit/e50b271)), closes [#2210](https://github.com/vendure-ecommerce/vendure/issues/2210)
+* **admin-ui** Improve readability of role permissions table ([95dabdc](https://github.com/vendure-ecommerce/vendure/commit/95dabdc)), closes [#2224](https://github.com/vendure-ecommerce/vendure/issues/2224)
+* **admin-ui** List newly-created customers ([6483aad](https://github.com/vendure-ecommerce/vendure/commit/6483aad)), closes [#2213](https://github.com/vendure-ecommerce/vendure/issues/2213)
+* **admin-ui** Preserve ui language settings after refresh ([dcae0d9](https://github.com/vendure-ecommerce/vendure/commit/dcae0d9)), closes [#2211](https://github.com/vendure-ecommerce/vendure/issues/2211)
+* **admin-ui** Prevent duplicate order state change on manual payment ([eadc479](https://github.com/vendure-ecommerce/vendure/commit/eadc479)), closes [#2204](https://github.com/vendure-ecommerce/vendure/issues/2204)
+* **admin-ui** Redirect to the right page on forbidden errors if an internal `loginUrl` is provided (#2175) ([c0630fb](https://github.com/vendure-ecommerce/vendure/commit/c0630fb)), closes [#2175](https://github.com/vendure-ecommerce/vendure/issues/2175)
+* **admin-ui** Small style fixes ([33eee17](https://github.com/vendure-ecommerce/vendure/commit/33eee17))
+* **asset-server-plugin** Update Sharp to fix macOS 10.13+ support ([043c7ff](https://github.com/vendure-ecommerce/vendure/commit/043c7ff))
+* **core** Add missing SellerEvent and correctly update relations ([4f421d3](https://github.com/vendure-ecommerce/vendure/commit/4f421d3)), closes [#2216](https://github.com/vendure-ecommerce/vendure/issues/2216)
+* **core** Correctly update Seller custom fields ([4a4691d](https://github.com/vendure-ecommerce/vendure/commit/4a4691d))
+* **core** Expose the `topLevelOnly` collections option in Shop API ([ed28743](https://github.com/vendure-ecommerce/vendure/commit/ed28743))
+* **core** Fix channel creation with defaultCurrencyCode field ([3aa72ab](https://github.com/vendure-ecommerce/vendure/commit/3aa72ab)), closes [#2217](https://github.com/vendure-ecommerce/vendure/issues/2217)
+* **core** Fix order state change from default payment process ([0e5129e](https://github.com/vendure-ecommerce/vendure/commit/0e5129e)), closes [#2204](https://github.com/vendure-ecommerce/vendure/issues/2204)
+* **job-queue-plugin** Fix graceful shutdown for BullMQJobQueueStrategy ([7c51eab](https://github.com/vendure-ecommerce/vendure/commit/7c51eab)), closes [#2222](https://github.com/vendure-ecommerce/vendure/issues/2222)
+
 ## <small>2.0.0 (2023-06-07)</small>
 
 
