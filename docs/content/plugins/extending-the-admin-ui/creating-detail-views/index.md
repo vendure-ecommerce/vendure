@@ -206,7 +206,7 @@ import { GetReviewDocument, GetReviewDetailQuery } from './generated-types';
             // TypedDocumentNode.  
             return inject(DataService)
               .query(GetReviewDocument, { id: route.paramMap.get('id') })
-              .mapStream(data => ({ entity: of(data.colorChart) }));
+              .mapStream(data => ({ entity: of(data.productReview) }));
           },
         },
         data: {
