@@ -150,3 +150,85 @@ Here is the standard layout for detail views:
   </form>
 </vdr-page-body>
 ```
+
+### Route config
+
+The `TypedBaseDetailComponent` expects that the entity detail data is resolved as part of loading the route. The data needs to be loaded in a very specific object shape:
+
+```TypeScript
+interface DetailResolveData {
+    detail: {
+        entity: Observable<Entity>;
+    };
+}
+```
+
+Here's how the routing would look for a typical list & detail view:
+
+```TypeScript
+import { inject, NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { DataService, SharedModule } from '@vendure/admin-ui/core';
+import { Observable, of } from "rxjs";
+import { map } from 'rxjs/operators';
+
+import { ReviewDetailComponent } from './components/review-detail/review-detail.component';
+import { ReviewListComponent } from './components/review-list/review-list.component';
+import { GetReviewDocument, GetReviewDetailQuery } from './generated-types';
+
+@NgModule({
+  imports: [
+    SharedModule,
+    RouterModule.forChild([
+      // This defines the route for the list view  
+      {
+        path: '',
+        pathMatch: 'full',
+        component: ReviewListComponent,
+        data: {
+          breadcrumb: [
+            {
+              label: 'Reviews',
+              link: [],
+            },
+          ],
+        },
+      },
+        
+      // This defines the route for the detail view  
+      {
+        path: ':id',
+        component: ReviewDetailComponent,
+        resolve: {
+          detail: route => {
+            // Here we are using the DataService to load the detail data
+            // from the API. The `GetReviewDocument` is a generated GraphQL
+            // TypedDocumentNode.  
+            return inject(DataService)
+              .query(GetReviewDocument, { id: route.paramMap.get('id') })
+              .mapStream(data => ({ entity: of(data.colorChart) }));
+          },
+        },
+        data: {
+          breadcrumb: (
+            data: { detail: { entity: Observable<NonNullable<GetReviewDetailQuery['review']>> } },
+          ) => data.detail.entity.pipe(
+            map((entity) => [
+              {
+                label: 'Reviews',
+                link: ['/extensions', 'reviews'],
+              },
+              {
+                label: `${entity.title}`,
+                link: [],
+              },
+            ]),
+          ),
+        },
+      },
+    ]),
+  ],
+  declarations: [ReviewListComponent, ReviewDetailComponent],
+})
+export class ReviewsUiLazyModule {}
+```

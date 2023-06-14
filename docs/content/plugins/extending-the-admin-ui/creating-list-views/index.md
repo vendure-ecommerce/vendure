@@ -229,3 +229,7 @@ This is the standard layout for any list view. The main functionality is provide
 
 </vdr-page-body>
 ```
+
+## Route config
+
+For an example of how the route config would look for this list view component, see the full example in the [Creating detail views guide]({{< relref "creating-detail-views" >}}#route-config).
