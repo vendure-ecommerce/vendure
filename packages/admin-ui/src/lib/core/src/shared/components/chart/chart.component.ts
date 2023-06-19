@@ -9,7 +9,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { easings, LineChart, LineChartData } from 'chartist';
+import { easings, LineChart, LineChartData, LineChartOptions } from 'chartist';
 import { tooltipPlugin } from './tooltip-plugin';
 
 export interface ChartFormatOptions {
@@ -32,6 +32,7 @@ export interface ChartEntry {
 })
 export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() entries: ChartEntry[] = [];
+    @Input() options?: LineChartOptions = {};
     @ViewChild('chartDiv', { static: true }) private chartDivRef: ElementRef<HTMLDivElement>;
     private chart: LineChart;
 
@@ -55,6 +56,7 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
                     offset: 1,
                 },
                 plugins: [tooltipPlugin()],
+                ...this.options,
             },
         );
 
