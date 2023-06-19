@@ -28,7 +28,7 @@
                 class="child-arrow"
                 [class.transparent]="depth === 0"
                 shape="child-arrow"
-                *ngIf="!collection.children?.length"
+                *ngIf="!collection.children?.length && collection.parentId !== '__'"
             ></clr-icon>
             <button
                 class="icon-button folder-button"
@@ -38,8 +38,11 @@
                 <clr-icon shape="folder" *ngIf="!expandedIds.includes(collection.id)"></clr-icon>
                 <clr-icon shape="folder-open" *ngIf="expandedIds.includes(collection.id)"></clr-icon>
             </button>
+            <button class="icon-button folder-button" *ngIf="collection.parentId === '__'" disabled>
+                <clr-icon shape="folder" class="is-solid"></clr-icon>
+            </button>
             <button class="button-ghost" (click)="resolveWith(collection)">
-                <span>{{ 'catalog.move-collection-to' | translate : { name: collection.name } }}</span>
+                <span>{{ 'catalog.move-collection-to' | translate : {name: collection.name} }}</span>
             </button>
         </ng-template>
     </vdr-dt2-column>
