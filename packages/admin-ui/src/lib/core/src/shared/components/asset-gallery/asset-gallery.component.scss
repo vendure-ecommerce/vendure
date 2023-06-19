@@ -2,6 +2,10 @@
 
 :host {
     display: flex;
+    flex-direction: column-reverse;
+    @media screen and (min-width: $breakpoint-medium) {
+        flex-direction: row;
+    }
 }
 
 .gallery {
@@ -61,7 +65,9 @@ vdr-select-toggle {
 }
 
 .info-bar {
-    width: 25%;
+    @media screen and (min-width: $breakpoint-medium) {
+        width: 25%;
+    }
     padding: 0 6px;
     overflow-y: auto;
 

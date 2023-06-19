@@ -1,8 +1,16 @@
 @import "mixins";
+@import "variables";
 
 :host {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
     width: 100%;
+    @media screen and (min-width: $breakpoint-medium) {
+        flex-direction: row;
+        min-width: 300px;
+    }
 
     ::ng-deep {
         @include ng-select-facet-values;
@@ -11,8 +19,9 @@
 
 ng-select {
     width: 100%;
-    min-width: 300px;
-    margin-right: 12px;
+    @media screen and (min-width: $breakpoint-medium) {
+        min-width: 300px;
+    }
 }
 
 .search-header {
