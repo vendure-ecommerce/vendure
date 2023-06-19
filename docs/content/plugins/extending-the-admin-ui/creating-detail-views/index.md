@@ -204,9 +204,10 @@ import { GetReviewDocument, GetReviewDetailQuery } from './generated-types';
             // Here we are using the DataService to load the detail data
             // from the API. The `GetReviewDocument` is a generated GraphQL
             // TypedDocumentNode.  
-            return inject(DataService)
+            const review$ = inject(DataService)
               .query(GetReviewDocument, { id: route.paramMap.get('id') })
-              .mapStream(data => ({ entity: of(data.productReview) }));
+              .mapStream(data => data.review);
+            return of({ detail: { entity: review$ } });
           },
         },
         data: {
