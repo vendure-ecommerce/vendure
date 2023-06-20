@@ -11,10 +11,11 @@ import { unique } from '@vendure/common/lib/unique';
 import { EMPTY } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
+import { ProductVariant } from 'package/core';
 import { ProductVariantListComponent } from './product-variant-list.component';
 
-export const deleteProductVariantsBulkAction: BulkAction<any, ProductVariantListComponent> = {
-    location: 'product-list',
+export const deleteProductVariantsBulkAction: BulkAction<ProductVariant, ProductVariantListComponent> = {
+    location: 'product-variant-list',
     label: _('common.delete'),
     icon: 'trash',
     iconClass: 'is-danger',
@@ -27,7 +28,7 @@ export const deleteProductVariantsBulkAction: BulkAction<any, ProductVariantList
         const notificationService = injector.get(NotificationService);
         modalService
             .dialog({
-                title: _('catalog.confirm-bulk-delete-products'),
+                title: _('common.confirm-bulk-delete'),
                 translationVars: {
                     count: selection.length,
                 },
@@ -39,14 +40,14 @@ export const deleteProductVariantsBulkAction: BulkAction<any, ProductVariantList
             .pipe(
                 switchMap(response =>
                     response
-                        ? dataService.product.deleteProducts(unique(selection.map(p => p.productId)))
+                        ? dataService.product.deleteProductVariants(unique(selection.map(p => p.id)))
                         : EMPTY,
                 ),
             )
             .subscribe(result => {
                 let deleted = 0;
                 const errors: string[] = [];
-                for (const item of result.deleteProducts) {
+                for (const item of result.deleteProductVariants) {
                     if (item.result === DeletionResult.DELETED) {
                         deleted++;
                     } else if (item.message) {
