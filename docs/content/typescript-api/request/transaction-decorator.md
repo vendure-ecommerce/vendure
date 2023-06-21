@@ -1,7 +1,7 @@
 ---
 title: "Transaction Decorator"
 weight: 10
-date: 2023-06-13T12:31:08.008Z
+date: 2023-06-21T06:23:36.960Z
 showtoc: true
 generated: true
 ---

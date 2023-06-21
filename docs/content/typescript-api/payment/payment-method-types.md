@@ -1,7 +1,7 @@
 ---
 title: "Payment Method Types"
 weight: 10
-date: 2023-06-13T12:31:08.634Z
+date: 2023-06-21T06:23:37.595Z
 showtoc: true
 generated: true
 ---

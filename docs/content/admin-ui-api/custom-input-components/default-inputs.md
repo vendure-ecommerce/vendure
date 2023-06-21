@@ -1,7 +1,7 @@
 ---
 title: "Default Inputs"
 weight: 10
-date: 2023-06-13T12:31:13.114Z
+date: 2023-06-21T06:23:42.639Z
 showtoc: true
 generated: true
 ---

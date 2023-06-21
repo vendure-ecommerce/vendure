@@ -1,7 +1,7 @@
 ---
 title: "EmailPlugin"
 weight: 10
-date: 2023-06-13T12:31:11.909Z
+date: 2023-06-21T06:23:40.572Z
 showtoc: true
 generated: true
 ---

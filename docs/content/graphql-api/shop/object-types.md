@@ -1,7 +1,7 @@
 ---
 title: "Types"
 weight: 3
-date: 2023-06-13T12:30:59.547Z
+date: 2023-06-21T06:23:30.799Z
 showtoc: true
 generated: true
 ---

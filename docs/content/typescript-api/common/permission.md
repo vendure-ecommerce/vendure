@@ -1,7 +1,7 @@
 ---
 title: "Permission"
 weight: 10
-date: 2023-06-13T12:31:11.663Z
+date: 2023-06-21T06:23:40.345Z
 showtoc: true
 generated: true
 ---

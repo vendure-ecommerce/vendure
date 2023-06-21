@@ -1,7 +1,7 @@
 ---
 title: "Interfaces"
 weight: 10
-date: 2023-06-13T12:31:08.106Z
+date: 2023-06-21T06:23:37.063Z
 showtoc: true
 generated: true
 ---

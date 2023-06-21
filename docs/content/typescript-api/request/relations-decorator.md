@@ -1,7 +1,7 @@
 ---
 title: "Relations Decorator"
 weight: 10
-date: 2023-06-13T12:31:08.005Z
+date: 2023-06-21T06:23:36.956Z
 showtoc: true
 generated: true
 ---

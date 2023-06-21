@@ -1,7 +1,7 @@
 ---
 title: "BullMQPluginOptions"
 weight: 10
-date: 2023-06-13T12:31:12.080Z
+date: 2023-06-21T06:23:40.705Z
 showtoc: true
 generated: true
 ---

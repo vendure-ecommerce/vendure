@@ -1,7 +1,7 @@
 ---
 title: "ImageTransformPreset"
 weight: 10
-date: 2023-06-13T12:31:11.832Z
+date: 2023-06-21T06:23:40.484Z
 showtoc: true
 generated: true
 ---

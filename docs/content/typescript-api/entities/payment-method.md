@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethod"
 weight: 10
-date: 2023-06-13T12:31:09.429Z
+date: 2023-06-21T06:23:38.397Z
 showtoc: true
 generated: true
 ---

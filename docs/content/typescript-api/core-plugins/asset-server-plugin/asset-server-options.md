@@ -1,7 +1,7 @@
 ---
 title: "AssetServerOptions"
 weight: 10
-date: 2023-06-13T12:31:11.841Z
+date: 2023-06-21T06:23:40.494Z
 showtoc: true
 generated: true
 ---
