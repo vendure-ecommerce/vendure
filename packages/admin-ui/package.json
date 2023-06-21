@@ -46,7 +46,7 @@
         "@clr/icons": "^13.0.2",
         "@clr/ui": "^15.4.0",
         "@messageformat/core": "^3.1.0",
-        "@ng-select/ng-select": "^10.0.3",
+        "@ng-select/ng-select": "^11.0.0",
         "@ngx-translate/core": "^14.0.0",
         "@ngx-translate/http-loader": "^7.0.0",
         "@vendure/common": "^2.0.2",
