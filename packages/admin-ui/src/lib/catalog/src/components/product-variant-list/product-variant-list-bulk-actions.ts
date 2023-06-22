@@ -3,16 +3,37 @@ import {
     BulkAction,
     DataService,
     DeletionResult,
+    GetProductVariantListQuery,
+    ItemOf,
     ModalService,
     NotificationService,
     Permission,
+    createBulkRemoveFromChannelAction,
+    isMultiChannel,
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 import { ProductVariant } from 'package/core';
 import { ProductVariantListComponent } from './product-variant-list.component';
+
+export const removeProductVariantsFromChannelBulkAction = createBulkRemoveFromChannelAction<
+    ItemOf<GetProductVariantListQuery, 'productVariants'>
+>({
+    location: 'product-variant-list',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateCatalog) ||
+        userPermissions.includes(Permission.UpdateProduct),
+    getItemName: item => item.name,
+    bulkRemoveFromChannel: (dataService, ids, channelId) =>
+        dataService.product
+            .removeVariantsFromChannel({
+                channelId: channelId,
+                productVariantIds: ids,
+            })
+            .pipe(map(res => res.removeProductVariantsFromChannel)),
+});
 
 export const deleteProductVariantsBulkAction: BulkAction<ProductVariant, ProductVariantListComponent> = {
     location: 'product-variant-list',
