@@ -13,7 +13,7 @@ Since a VendurePlugin is built on top of the Nestjs module system, any plugin (a
 * beforeApplicationShutdown
 * onApplicationShutdown
 
-Note that lifecycle hooks are run in _both_ the server and worker contexts.
+Note that lifecycle hooks are run in _both_ the server and worker contexts. If you have code that should only run either in the server context or worker context, you can inject the [ProcessContext]({{< relref "process-context" >}}) provider.
 
 ## Configure
 

@@ -18,7 +18,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     failsToCancelPaymentMethod,
@@ -31,10 +31,14 @@ import {
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
 import { FULFILLMENT_FRAGMENT, PAYMENT_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
+    AddManualPaymentDocument,
     CanceledOrderFragment,
     ErrorCode,
     FulfillmentFragment,
+    GetOrderDocument,
+    GetOrderHistoryDocument,
     GlobalFlag,
     HistoryEntryType,
     LanguageCode,
@@ -44,13 +48,12 @@ import {
     SortOrder,
     StockMovementType,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     DeletionResult,
     TestOrderFragmentFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
@@ -59,13 +62,12 @@ import {
     DELETE_SHIPPING_METHOD,
     GET_CUSTOMER_LIST,
     GET_ORDER,
-    GET_ORDERS_LIST,
     GET_ORDER_FULFILLMENTS,
     GET_ORDER_HISTORY,
+    GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
-    TRANSITION_PAYMENT_TO_STATE,
     TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -76,7 +78,6 @@ import {
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
     GET_ACTIVE_ORDER,
-    GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
@@ -2514,6 +2515,51 @@ describe('Orders resolver', () => {
                 activeCustomer!.orders.items[activeCustomer!.orders.items.length - 1].lines[0].productVariant
                     .price,
             ).toBe(108720);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2204
+        it('creates correct history entries and results in correct state when manually adding payment to order', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            await proceedToArrangingPayment(shopClient);
+            orderGuard.assertSuccess(addItemToOrder);
+
+            const { addManualPaymentToOrder } = await adminClient.query(AddManualPaymentDocument, {
+                input: {
+                    orderId: addItemToOrder.id,
+                    metadata: {},
+                    method: twoStagePaymentMethod.code,
+                    transactionId: '12345',
+                },
+            });
+
+            orderGuard.assertSuccess(addManualPaymentToOrder);
+
+            const { order: orderWithHistory } = await adminClient.query(GetOrderHistoryDocument, {
+                id: addManualPaymentToOrder.id,
+            });
+
+            const stateTransitionHistory = orderWithHistory!.history.items
+                .filter(i => i.type === HistoryEntryType.ORDER_STATE_TRANSITION)
+                .map(i => i.data);
+
+            expect(stateTransitionHistory).toEqual([
+                { from: 'Created', to: 'AddingItems' },
+                { from: 'AddingItems', to: 'ArrangingPayment' },
+                { from: 'ArrangingPayment', to: 'PaymentSettled' },
+            ]);
+
+            const { order } = await adminClient.query(GetOrderDocument, {
+                id: addManualPaymentToOrder.id,
+            });
+
+            expect(order!.state).toBe('PaymentSettled');
         });
     });
 });

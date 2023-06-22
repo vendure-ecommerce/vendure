@@ -18,7 +18,8 @@ import { getAppConfig } from '../../app.config';
 import { AuthService } from '../../providers/auth/auth.service';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 import { NotificationService } from '../../providers/notification/notification.service';
-import { DataService } from '../providers/data.service';
+
+import { DataService } from './data.service';
 
 export const AUTH_REDIRECT_PARAM = 'redirectTo';
 
@@ -88,33 +89,40 @@ export class DefaultInterceptor implements HttpInterceptor {
         } else {
             // GraphQL errors still return 200 OK responses, but have the actual error message
             // inside the body of the response.
-            const graqhQLErrors = response.body.errors;
-            if (graqhQLErrors && Array.isArray(graqhQLErrors)) {
-                const firstCode: string = graqhQLErrors[0]?.extensions?.code;
+            const graphQLErrors = response.body.errors;
+            if (graphQLErrors && Array.isArray(graphQLErrors)) {
+                const firstCode: string = graphQLErrors[0]?.extensions?.code;
+
                 if (firstCode === 'FORBIDDEN') {
                     this.authService.logOut().subscribe(() => {
                         const { loginUrl } = getAppConfig();
-                        if (loginUrl) {
+                        // If there is a `loginUrl` which is external to the AdminUI, redirect to it (with no query parameters)
+                        if (loginUrl && !this.areUrlsOnSameOrigin(loginUrl, window.location.origin)) {
                             window.location.href = loginUrl;
                             return;
                         }
 
-                        if (!window.location.pathname.includes('login')) {
-                            const path = graqhQLErrors[0].path.join(' > ');
+                        // Else, we build the login path from the login url if one is provided or fallback to `/login`
+                        const loginPath = loginUrl ? this.getPathFromLoginUrl(loginUrl) : '/login';
+
+                        if (!window.location.pathname.includes(loginPath)) {
+                            const path = graphQLErrors[0].path.join(' > ');
                             this.displayErrorNotification(_(`error.403-forbidden`), { path });
                         }
-                        this.router.navigate(['/login'], {
+
+                        // Navigate to the `loginPath` route by ensuring the query param in charge of the redirection is provided
+                        this.router.navigate([loginPath], {
                             queryParams: {
                                 [AUTH_REDIRECT_PARAM]: btoa(this.router.url),
                             },
                         });
                     });
                 } else if (firstCode === 'CHANNEL_NOT_FOUND') {
-                    const message = graqhQLErrors.map(err => err.message).join('\n');
+                    const message = graphQLErrors.map(err => err.message).join('\n');
                     this.displayErrorNotification(message);
                     this.localStorageService.remove('activeChannelToken');
                 } else {
-                    const message = graqhQLErrors.map(err => err.message).join('\n');
+                    const message = graphQLErrors.map(err => err.message).join('\n');
                     this.displayErrorNotification(message);
                 }
             }
@@ -151,5 +159,24 @@ export class DefaultInterceptor implements HttpInterceptor {
                 this.localStorageService.set('authToken', authToken);
             }
         }
+    }
+
+    /**
+     * Determine if two urls are on the same origin.
+     */
+    private areUrlsOnSameOrigin(urlA: string, urlB: string): boolean {
+        return new URL(urlA).origin === new URL(urlB).origin;
+    }
+
+    /**
+     * If the provided `loginUrl` is on the same origin than the AdminUI, return the path
+     * after the `/admin`.
+     * Else, return the whole login url.
+     */
+    private getPathFromLoginUrl(loginUrl: string): string {
+        if (!this.areUrlsOnSameOrigin(loginUrl, window.location.origin)) {
+            return loginUrl;
+        }
+        return loginUrl.split('/admin')[1];
     }
 }

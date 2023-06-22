@@ -8,10 +8,14 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { assertFound } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Seller } from '../../entity/seller/seller.entity';
+import { EventBus, SellerEvent } from '../../event-bus/index';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 /**
  * @description
@@ -21,7 +25,12 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
  */
 @Injectable()
 export class SellerService {
-    constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private listQueryBuilder: ListQueryBuilder,
+        private eventBus: EventBus,
+        private customFieldRelationService: CustomFieldRelationService,
+    ) {}
 
     async initSellers() {
         await this.ensureDefaultSellerExists();
@@ -44,22 +53,37 @@ export class SellerService {
             .then(result => result ?? undefined);
     }
 
-    create(ctx: RequestContext, input: CreateSellerInput) {
-        return this.connection.getRepository(ctx, Seller).save(new Seller(input));
+    async create(ctx: RequestContext, input: CreateSellerInput) {
+        const seller = await this.connection.getRepository(ctx, Seller).save(new Seller(input));
+        const sellerWithRelations = await this.customFieldRelationService.updateRelations(
+            ctx,
+            Seller,
+            input,
+            seller,
+        );
+        this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'created', input));
+        return assertFound(this.findOne(ctx, seller.id));
     }
 
     async update(ctx: RequestContext, input: UpdateSellerInput) {
         const seller = await this.connection.getEntityOrThrow(ctx, Seller, input.id);
-        if (input.name) {
-            seller.name = input.name;
-            await this.connection.getRepository(ctx, Seller).save(seller);
-        }
+        const updatedSeller = patchEntity(seller, input);
+        await this.connection.getRepository(ctx, Seller).save(updatedSeller);
+        const sellerWithRelations = await this.customFieldRelationService.updateRelations(
+            ctx,
+            Seller,
+            input,
+            seller,
+        );
+        this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'updated', input));
         return seller;
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const seller = await this.connection.getEntityOrThrow(ctx, Seller, id);
         await this.connection.getRepository(ctx, Seller).remove(seller);
+        const deletedSeller = new Seller(seller);
+        this.eventBus.publish(new SellerEvent(ctx, deletedSeller, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

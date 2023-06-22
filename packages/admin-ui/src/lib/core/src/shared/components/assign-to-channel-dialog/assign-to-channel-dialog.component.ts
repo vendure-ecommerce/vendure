@@ -1,7 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { DataService, Dialog, GetChannelsQuery, ItemOf, NotificationService } from '@vendure/admin-ui/core';
 import { combineLatest } from 'rxjs';
+import { ItemOf } from '../../../common/base-list.component';
+import { GetChannelsQuery } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
+import { Dialog } from '../../../providers/modal/modal.types';
+import { NotificationService } from '../../../providers/notification/notification.service';
 
 type Channel = ItemOf<GetChannelsQuery, 'channels'>;
 

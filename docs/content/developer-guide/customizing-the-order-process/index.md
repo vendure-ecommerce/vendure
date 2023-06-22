@@ -9,9 +9,32 @@ Vendure defines an order process which is based on a [finite state machine]({{< 
 
 So, as an example, all orders begin in the `AddingItems` state. This means that the Customer is adding items to his or her shopping cart. From there, the Order can transition to the `ArrangingPayment` state. A diagram of the default states and transitions can be found in the [Order Workflow guide]({{< relref "order-workflow" >}}).
 
+## Customizing the Default Order Process
+
+Vendure ships with a [defaultOrderProcess]({{< relref "order-process" >}}#defaultorderprocess) which is suitable for most use-cases. However, it is possible to customize the process to better match your business needs. For example, you might want to disable some of the constraints that are imposed by the default process, such as the requirement that a Customer must have a shipping address before the Order can be completed.
+
+This can be done by creating a custom version of the default process using the [configureDefaultOrderProcess]({{< relref "order-process" >}}#configuredefaultorderprocess) function, and then passing it to the [`OrderOptions.process`]({{< relref "order-options" >}}#process) config property.
+
+```TypeScript
+import { configureDefaultOrderProcess, VendureConfig } from '\@vendure/core';
+
+const myCustomOrderProcess = configureDefaultOrderProcess({
+  // Disable the constraint that requires
+  // Orders to have a shipping method assigned
+  // before payment.
+  arrangingPaymentRequiresShipping: false,
+});
+
+export const config: VendureConfig = {
+  orderOptions: {
+    process: [myCustomOrderProcess],
+  },
+};
+```
+
 ## Defining custom states and transitions
 
-Sometimes you might need to modify the default Order process to better match your business needs. This is done by defining one or more [`OrderProcess`]({{< relref "order-process" >}}) objects and passing them to the [`OrderOptions.process`]({{< relref "order-options" >}}#process) config property.
+Sometimes you might need to extend things beyond what is provided by the default Order process to better match your business needs. This is done by defining one or more [`OrderProcess`]({{< relref "order-process" >}}) objects and passing them to the [`OrderOptions.process`]({{< relref "order-options" >}}#process) config property.
 
 ### Example: Adding a new state
 
@@ -59,16 +82,18 @@ And then add this configuration to our main VendureConfig:
 
 ```TypeScript
 // vendure-config.ts
-import { VendureConfig } from '@vendure/core';
+import { defaultOrderProcess, VendureConfig } from '@vendure/core';
 import { customerValidationProcess } from './customer-validation-process';
 
 export const config: VendureConfig = {
   // ...
   orderOptions: {
-    process: [customerValidationProcess],
+    process: [defaultOrderProcess, customerValidationProcess],
   },
 };
 ```
+
+Note that we also include the `defaultOrderProcess` in the array, otherwise we will lose all the default states and transitions.
 
  To add multiple new States you need to extend the generic type like this:
  ```TypeScript
@@ -145,4 +170,4 @@ This technique uses advanced TypeScript features - [declaration merging](https:/
 If you have defined custom order states, the Admin UI will allow you to manually transition an 
 order from one state to another:
 
-{{< figure src="./custom_order_ui.jpg" >}}
+{{< figure src="./custom-order-ui.webp" >}}

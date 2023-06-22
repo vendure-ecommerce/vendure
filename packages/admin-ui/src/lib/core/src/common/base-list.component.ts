@@ -32,64 +32,7 @@ export type ItemOf<T, K extends keyof T> = T[K] extends { items: infer R }
  * This is a base class which implements the logic required to fetch and manipulate
  * a list of data from a query which returns a PaginatedList type.
  *
- * @example
- * ```TypeScript
- * \@Component({
- *   selector: 'my-entity-list',
- *   templateUrl: './my-entity-list.component.html',
- *   styleUrls: ['./my-entity-list.component.scss'],
- *   changeDetection: ChangeDetectionStrategy.OnPush,
- * })
- * export class MyEntityListComponent extends BaseListComponent<GetMyEntityList.Query, GetMyEntityList.Items> {
- *   constructor(
- *     private dataService: DataService,
- *     router: Router,
- *     route: ActivatedRoute,
- *   ) {
- *     super(router, route);
- *     super.setQueryFn(
- *       (...args: any[]) => this.dataService.query<GetMyEntityList.Query>(GET_MY_ENTITY_LIST),
- *       data => data.myEntities,
- *     );
- *   }
- * }
- * ```
- *
- * The template for the component will typically use the {@link DataTableComponent} to display the results.
- *
- * @example
- * ```HTML
- * <vdr-action-bar>
- *   <vdr-ab-right>
- *     <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateTaxRate']">
- *       <clr-icon shape="plus"></clr-icon>
- *       Create new my entity
- *     </a>
- *   </vdr-ab-right>
- * </vdr-action-bar>
- *
- * <vdr-data-table
- *   [items]="items$ | async"
- *   [itemsPerPage]="itemsPerPage$ | async"
- *   [totalItems]="totalItems$ | async"
- *   [currentPage]="currentPage$ | async"
- *   (pageChange)="setPageNumber($event)"
- *   (itemsPerPageChange)="setItemsPerPage($event)"
- * >
- *   <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
- *   <vdr-dt-column></vdr-dt-column>
- *   <ng-template let-myEntity="item">
- *     <td class="left align-middle">{{ myEntity.name }}</td>
- *     <td class="right align-middle">
- *       <vdr-table-row-action
- *         iconShape="edit"
- *         [label]="'common.edit' | translate"
- *         [linkTo]="['./', myEntity.id]"
- *       ></vdr-table-row-action>
- *     </td>
- *   </ng-template>
- * </vdr-data-table>
- * ```
+ * It is normally used in combination with the {@link DataTable2Component}.
  *
  * @docsCategory list-detail-views
  */
@@ -245,6 +188,13 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
     }
 }
 
+/**
+ * @description
+ * A version of the {@link BaseListComponent} which is designed to be used with a
+ * [TypedDocumentNode](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
+ *
+ * @docsCategory list-detail-views
+ */
 @Directive()
 export class TypedBaseListComponent<
         T extends TypedDocumentNode<any, Vars>,

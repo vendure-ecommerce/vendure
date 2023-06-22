@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, OnDestroy } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { CurrencyCode, DataService } from '@vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
+import { CurrencyCode } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-currency-code-selector',

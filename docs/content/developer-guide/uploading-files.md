@@ -45,7 +45,7 @@ function UploadFile() {
     if (target.validity.valid) {
       mutate({ 
         variables: {
-          input: target.files.map(file => ({ file }))
+          input: Array.from(target.files).map((file) => ({ file }));
         }  
       });
     }

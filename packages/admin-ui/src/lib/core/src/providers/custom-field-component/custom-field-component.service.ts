@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Type } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent } from '../../common/component-registry-types';
 import { CustomFields, CustomFieldsFragment } from '../../common/generated-types';
@@ -21,18 +20,6 @@ export type CustomFieldEntityName = Exclude<keyof CustomFields, '__typename'>;
 })
 export class CustomFieldComponentService {
     constructor(private componentRegistryService: ComponentRegistryService) {}
-
-    /**
-     * Register a CustomFieldControl component to be used with the specified customField and entity.
-     */
-    registerCustomFieldComponent(
-        entity: CustomFieldEntityName,
-        fieldName: string,
-        component: Type<CustomFieldControl>,
-    ) {
-        const id = this.generateId(entity, fieldName, true);
-        this.componentRegistryService.registerInputComponent(id, component);
-    }
 
     /**
      * Checks whether a custom component is registered for the given entity custom field,

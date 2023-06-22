@@ -85,8 +85,22 @@ export class ChannelService {
             ttl: this.configService.entityOptions.channelCacheTtl,
             refresh: {
                 fn: async ctx => {
-                    const { items } = await this.findAll(ctx);
-                    return items;
+                    const result = await this.listQueryBuilder
+                        .build(
+                            Channel,
+                            {},
+                            {
+                                ctx,
+                                relations: ['defaultShippingZone', 'defaultTaxZone'],
+                                ignoreQueryLimits: true,
+                            },
+                        )
+                        .getManyAndCount()
+                        .then(([items, totalItems]) => ({
+                            items,
+                            totalItems,
+                        }));
+                    return result.items;
                 },
                 defaultArgs: [RequestContext.empty()],
             },
@@ -236,8 +250,9 @@ export class ChannelService {
         }
         const channel = new Channel({
             ...input,
-            defaultCurrencyCode: input.currencyCode,
-            availableCurrencyCodes: input.availableCurrencyCodes ?? [input.currencyCode],
+            defaultCurrencyCode,
+            availableCurrencyCodes:
+                input.availableCurrencyCodes ?? (defaultCurrencyCode ? [defaultCurrencyCode] : []),
             availableLanguageCodes: input.availableLanguageCodes ?? [input.defaultLanguageCode],
         });
         const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);

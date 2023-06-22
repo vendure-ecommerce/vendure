@@ -160,6 +160,7 @@ export interface MolliePluginOptions {
         schema: shopSchema,
         resolvers: [MollieResolver],
     },
+    compatibility: '^2.0.0',
 })
 export class MolliePlugin {
     static options: MolliePluginOptions;

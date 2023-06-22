@@ -27,7 +27,7 @@ const targetApi: TargetApi = getTargetApiFromArgs();
 // The path to the introspection schema json file
 const SCHEMA_FILE = path.join(__dirname, `../../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
-const docsUrl = `/docs/graphql-api/${targetApi}/`;
+const docsUrl = `/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
 const outputPath = path.join(__dirname, `../../docs/content/graphql-api/${targetApi}`);
 

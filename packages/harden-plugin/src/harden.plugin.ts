@@ -160,7 +160,7 @@ import { HardenPluginOptions } from './types';
 
         return config;
     },
-    compatibility: '^2.0.0-beta.0',
+    compatibility: '^2.0.0',
 })
 export class HardenPlugin {
     static options: HardenPluginOptions;

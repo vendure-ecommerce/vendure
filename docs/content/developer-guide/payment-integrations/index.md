@@ -27,7 +27,16 @@ This two-step workflow can also be applied to other non-card forms of payment: e
 Payment integrations are created by defining a new [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and passing that handler into the [`paymentOptions.paymentMethodHandlers`]({{< relref "payment-options" >}}) array in the VendureConfig.
 
 ```TypeScript
-import { PaymentMethodHandler, VendureConfig, CreatePaymentResult, SettlePaymentResult, SettlePaymentErrorResult } from '@vendure/core';
+import {
+  CancelPaymentResult,
+  CancelPaymentErrorResult,
+  PaymentMethodHandler,
+  VendureConfig,
+  CreatePaymentResult,
+  SettlePaymentResult,
+  SettlePaymentErrorResult
+} from '@vendure/core';
+import { CancelPaymentErrorResult } from '@vendure/core/src/index';
 import { sdk } from 'payment-provider-sdk';
 
 /**
@@ -94,16 +103,32 @@ const myPaymentIntegration = new PaymentMethodHandler({
       }
     }
   },
+  
+  /** This is called when a payment is cancelled. */  
+  cancelPayment: async (ctx, order, payment, args): Promise<CancelPaymentResult | CancelPaymentErrorResult> => {
+    try {
+      const result = await sdk.charges.cancel({
+        apiKey: args.apiKey,
+        id: payment.transactionId,
+      });
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        errorMessage: err.message,
+      }
+    }
+  },
 });
 
 /**
  * We now add this handler to our config
  */
 export const config: VendureConfig = {
-  // ...
-  paymentOptions: {
-    paymentMethodHandlers: [myPaymentIntegration],
-  },
+    // ...
+    paymentOptions: {
+        paymentMethodHandlers: [myPaymentIntegration],
+    },
 };
 ```
 
@@ -152,7 +177,17 @@ Here's an example which adds a new "Validating" state to the Payment state machi
 
 ```TypeScript
 // types.ts
-import { CustomOrderStates } from '@vendure/core';
+import {
+  defaultPaymentProcess,
+  defaultOrderprocess,
+  CustomOrderStates,
+  OrderProcess,
+  PaymentProcess,
+  PaymentMethodHandler,
+  LanguageCode,
+  OrderPlacedStrategy,
+  RequestContext
+} from '@vendure/core';
 
 /**
  * Declare your custom state in special interface to make it type-safe
@@ -230,15 +265,15 @@ class MyOrderPlacedStrategy implements OrderPlacedStrategy {
 
 // Combine the above in the VendureConfig
 export const config: VendureConfig = {
-  // ...
-  orderOptions: {
-    process: [customOrderProcess],
-    orderPlacedStrategy: new MyOrderPlacedStrategy(),
-  },
-  paymentOptions: {
-    process: [customPaymentProcess],
-    paymentMethodHandlers: [myPaymentHandler],
-  },
+    // ...
+    orderOptions: {
+        process: [defaultOrderProcess, customOrderProcess],
+        orderPlacedStrategy: new MyOrderPlacedStrategy(),
+    },
+    paymentOptions: {
+        process: [defaultPaymentProcess, customPaymentProcess],
+        paymentMethodHandlers: [myPaymentHandler],
+    },
 };
 ```
 

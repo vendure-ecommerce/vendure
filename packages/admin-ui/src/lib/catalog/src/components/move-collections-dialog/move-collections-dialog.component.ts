@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DataService, Dialog, GetCollectionListQuery, ItemOf } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetCollectionListQuery, I18nService, ItemOf } from '@vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-move-collections-dialog',
@@ -23,7 +23,7 @@ export class MoveCollectionsDialogComponent
     expandedIds: string[] = [];
     subCollections$: Observable<Array<ItemOf<GetCollectionListQuery, 'collections'>>>;
 
-    constructor(private dataService: DataService) {}
+    constructor(private dataService: DataService, private i18nService: I18nService) {}
 
     ngOnInit() {
         const getCollectionsResult = this.dataService.collection.getCollections();
@@ -51,7 +51,38 @@ export class MoveCollectionsDialogComponent
             },
         );
 
-        this.items$ = getCollectionsResult.mapStream(data => data.collections.items);
+        const rootCollectionId$ = this.dataService.collection
+            .getCollections({
+                take: 1,
+                topLevelOnly: true,
+            })
+            .mapSingle(data => data.collections.items[0].parentId);
+
+        this.items$ = combineLatest(
+            getCollectionsResult.mapStream(({ collections }) => collections),
+            rootCollectionId$,
+        ).pipe(
+            map(([collections, rootCollectionId]) => [
+                ...(rootCollectionId
+                    ? [
+                          {
+                              id: rootCollectionId,
+                              name: this.i18nService.translate('catalog.root-collection'),
+                              slug: '',
+                              parentId: '__',
+                              position: 0,
+                              featuredAsset: null,
+                              children: [],
+                              breadcrumbs: [],
+                              isPrivate: false,
+                              createdAt: '',
+                              updatedAt: '',
+                          } satisfies ItemOf<GetCollectionListQuery, 'collections'>,
+                      ]
+                    : []),
+                ...collections.items,
+            ]),
+        );
         this.totalItems$ = getCollectionsResult.mapStream(data => data.collections.totalItems);
 
         this.subCollections$ = this.expandedIds$.pipe(

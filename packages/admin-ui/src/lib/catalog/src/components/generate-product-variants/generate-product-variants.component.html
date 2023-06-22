@@ -47,7 +47,7 @@
     </clr-alert>
 
     <div class="form-grid mb-2">
-        <vdr-form-field *ngIf="stockLocations.length" [label]="'catalog.add-stock-to-location'">
+        <vdr-form-field *ngIf="stockLocations.length" [label]="'catalog.add-stock-to-location' | translate">
             <select [(ngModel)]="selectedStockLocationId">
                 <option *ngFor="let location of stockLocations" [value]="location.id">
                     {{ location.name }}

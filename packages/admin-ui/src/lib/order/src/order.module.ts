@@ -104,12 +104,14 @@ import { OrderDataTableComponent } from './components/order-data-table/order-dat
 export class OrderModule {
     constructor(private pageService: PageService) {
         pageService.registerPageTab({
+            priority: 0,
             location: 'order-list',
             tab: _('order.orders'),
             route: '',
             component: OrderListComponent,
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'order-detail',
             tab: _('order.order'),
             route: '',
@@ -142,6 +144,7 @@ export class OrderModule {
             }),
         });
         pageService.registerPageTab({
+            priority: 0,
             location: 'draft-order-detail',
             tab: _('order.order'),
             route: '',

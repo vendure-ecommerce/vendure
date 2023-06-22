@@ -23,7 +23,7 @@ export const multivendorShippingEligibilityChecker = new ShippingEligibilityChec
             return false;
         }
         for (const line of order.lines) {
-            if (idsAreEqual(line.sellerChannelId, sellerChannel.id)) {
+            if (line.sellerChannelId && idsAreEqual(line.sellerChannelId, sellerChannel.id)) {
                 return true;
             }
         }

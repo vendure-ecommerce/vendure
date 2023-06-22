@@ -1251,7 +1251,9 @@ describe('Updating email address without email verification', () => {
             newEmailAddress: NEW_EMAIL_ADDRESS,
         });
         successErrorGuard.assertSuccess(requestUpdateCustomerEmailAddress);
-
+        // Attempting to fix flakiness possibly caused by race condition on the event
+        // subscriber
+        await new Promise(resolve => setTimeout(resolve, 100));
         expect(requestUpdateCustomerEmailAddress.success).toBe(true);
         expect(sendEmailFn).toHaveBeenCalledTimes(1);
         expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);

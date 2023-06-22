@@ -165,8 +165,8 @@ If you are using the `@vendure/ui-devkit` package to generate custom ui extensio
    ```
 - The Admin UI component `vdr-product-selector` has been renamed to `vdr-product-variant-selector` to more accurately represent what it does. If you are using `vdr-product-selector` if any ui extensions code, update it to use the new selector.
 
-
 ### Other breaking API changes
+- **End-to-end tests using Jest** will likely run into issues due to our move towards using some dependencies that make use of ES modules. We have found the best solution to be to migrate tests over to [Vitest](https://vitest.dev), which can handle this and is also significantly faster than Jest. See the updated [Testing guide]({{< relref "/developer-guide/testing" >}}) for instructions on getting started with Vitest.
 - Internal `ErrorResult` classes now take a single object argument rather than multiple args.
 - All monetary values are now represented in the GraphQL APIs with a new `Money` scalar type. If you use [graphql-code-generator](https://the-guild.dev/graphql/codegen), you'll want to tell it to treat this scalar as a number:
     ```ts
@@ -209,3 +209,5 @@ If you are using the `@vendure/ui-devkit` package to generate custom ui extensio
   2. Start the server and login as administrator. For each channel that you'd like to use Stripe payments, you need to create a payment method with payment handler Stripe payment and the apiKey and webhookSigningSecret belonging to that channel's Stripe account.
 - If you are using the **BullMQJobQueuePlugin**, the minimum Redis recommended version is 6.2.0.
 - The `WorkerHealthIndicator` which was deprecated in v1.3.0 has been removed, as well as the `jobQueueOptions.enableWorkerHealthCheck` config option.
+- The `CustomerGroupEntityEvent` (fired on creation, update or deletion of a CustomerGroup) has been renamed to `CustomerGroupEvent`, and the former `CustomerGroupEvent` (fired when Customers are added to or removed from a group) has been renamed to `CustomerGroupChangeEvent`.
+- We introduced the [plugin compatibility API]({{< relref "vendure-plugin-metadata" >}}#compatibility) to allow plugins to indicate what version of Vendure they are compatible with. To avoid bootstrap messages you should add this property to your plugins.

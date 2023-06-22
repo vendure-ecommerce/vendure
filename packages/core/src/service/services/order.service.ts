@@ -919,9 +919,12 @@ export class OrderService {
                 .update({ shippingLineId: shippingLine.id })
                 .whereInIds(orderLinesForShippingLine.map(l => l.id))
                 .execute();
+            orderLinesForShippingLine.forEach(line => {
+                line.shippingLine = shippingLine;
+            });
         }
         const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
-        await this.applyPriceAdjustments(ctx, updatedOrder);
+        await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
@@ -1126,8 +1129,12 @@ export class OrderService {
         }
 
         const payment = await this.paymentService.createManualPayment(ctx, order, amount, input);
-        order.payments.push(payment);
-        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .relation('payments')
+            .of(order)
+            .add(payment);
         for (const modification of unsettledModifications) {
             modification.payment = payment;
             await this.connection.getRepository(ctx, OrderModification).save(modification);

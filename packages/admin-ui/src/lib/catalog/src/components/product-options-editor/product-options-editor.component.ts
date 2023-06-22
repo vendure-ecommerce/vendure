@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -13,7 +13,6 @@ import {
     NotificationService,
     Permission,
     ProductOptionFragment,
-    ProductOptionGroup,
     ProductOptionGroupFragment,
     ServerConfigService,
     TranslationOf,
@@ -21,7 +20,7 @@ import {
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
 import { combineLatest, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { map, mergeMap, take, tap } from 'rxjs/operators';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 
@@ -41,6 +40,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
     optionGroupCustomFields: CustomFieldConfig[];
     optionCustomFields: CustomFieldConfig[];
     autoUpdateVariantNames = true;
+    paginationSettings: { [groupId: string]: { currentPage: number; itemsPerPage: number } } = {};
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
 
     constructor(
@@ -61,6 +61,14 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
     ngOnInit(): void {
         this.optionGroups$ = this.route.snapshot.data.entity.pipe(
             map((product: ProductWithOptions) => product.optionGroups),
+            tap((optionGroups: ProductWithOptions['optionGroups']) => {
+                for (const group of optionGroups) {
+                    this.paginationSettings[group.id] = {
+                        currentPage: 1,
+                        itemsPerPage: 10,
+                    };
+                }
+            }),
         );
         this.detailForm = new UntypedFormGroup({
             optionGroups: new UntypedFormArray([]),

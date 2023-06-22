@@ -77,15 +77,19 @@ export class CustomerListComponent
                     skip,
                     take,
                     filter: {
-                        emailAddress: {
-                            contains: this.searchTermControl.value,
-                        },
-                        lastName: {
-                            contains: this.searchTermControl.value,
-                        },
-                        postalCode: {
-                            contains: this.searchTermControl.value,
-                        },
+                        ...(this.searchTermControl.value
+                            ? {
+                                  emailAddress: {
+                                      contains: this.searchTermControl.value,
+                                  },
+                                  lastName: {
+                                      contains: this.searchTermControl.value,
+                                  },
+                                  postalCode: {
+                                      contains: this.searchTermControl.value,
+                                  },
+                              }
+                            : {}),
                         ...this.filters.createFilterInput(),
                     },
                     filterOperator: this.searchTermControl.value ? LogicalOperator.OR : LogicalOperator.AND,

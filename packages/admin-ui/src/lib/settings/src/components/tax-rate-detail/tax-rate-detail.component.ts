@@ -1,20 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     CreateTaxRateInput,
     CustomerGroup,
-    CustomFieldConfig,
     DataService,
     GetTaxRateDetailDocument,
-    GetZoneListQuery,
-    ItemOf,
     LanguageCode,
     NotificationService,
     Permission,
-    ServerConfigService,
     TAX_RATE_FRAGMENT,
     TaxCategoryFragment,
     TaxRate,

@@ -259,7 +259,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         if (!this.stopped) {
             this.stopped = true;
             try {
-                await Promise.all([this.queue.disconnect(), this.worker.disconnect()]);
+                await Promise.all([this.queue.close(), this.worker.close()]);
             } catch (e: any) {
                 Logger.error(e, loggerCtx, e.stack);
             }
