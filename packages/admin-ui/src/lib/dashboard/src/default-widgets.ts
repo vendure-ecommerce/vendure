@@ -16,6 +16,7 @@ export const DEFAULT_WIDGETS: { [id: string]: DashboardWidgetConfig } = {
         title: _('dashboard.metrics'),
         supportedWidths: [6, 8, 12],
         loadComponent: () => OrderChartWidgetComponent,
+        requiresPermissions: [Permission.ReadOrder],
     },
     orderSummary: {
         title: _('dashboard.orders-summary'),
