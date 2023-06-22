@@ -354,6 +354,7 @@ export interface EmailTemplateConfig {
 export interface LoadTemplateInput {
     type: string;
     templateName: string;
+    templateVars: any;
 }
 
 export interface Partial {

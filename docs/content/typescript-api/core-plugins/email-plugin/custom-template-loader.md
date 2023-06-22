@@ -24,7 +24,7 @@ and return the template as a string.
 import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
 
 class MyTemplateLoader implements TemplateLoader {
-     loadTemplate(injector, ctx, { type, templateName }){
+     loadTemplate(injector, ctx, { type, templateName, templateVars }){
          return myCustomTemplateFunction(ctx);
      }
 }
