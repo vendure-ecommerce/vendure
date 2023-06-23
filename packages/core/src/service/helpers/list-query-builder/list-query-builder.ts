@@ -40,7 +40,7 @@ import { parseSortParams } from './parse-sort-params';
 export type ExtendedListQueryOptions<T extends VendureEntity> = {
     relations?: string[];
     channelId?: ID;
-    where?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
+    where?: FindOptionsWhere<T> | FindOptionsWhere<T>[] | undefined;
     orderBy?: FindOneOptions<T>['order'];
     /**
      * @description
