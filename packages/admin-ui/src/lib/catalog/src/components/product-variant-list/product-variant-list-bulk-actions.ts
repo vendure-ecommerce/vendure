@@ -16,7 +16,37 @@ import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { ProductVariant } from 'package/core';
+import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { ProductVariantListComponent } from './product-variant-list.component';
+
+export const assignProductVariantsToChannelBulkAction: BulkAction<
+    ItemOf<GetProductVariantListQuery, 'productVariants'>,
+    ProductVariantListComponent
+> = {
+    location: 'product-variant-list',
+    label: _('catalog.assign-to-channel'),
+    icon: 'layers',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateCatalog) ||
+        userPermissions.includes(Permission.UpdateProduct),
+    isVisible: ({ injector }) => isMultiChannel(injector.get(DataService)),
+    onClick: ({ injector, selection, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        modalService
+            .fromComponent(AssignProductsToChannelDialogComponent, {
+                size: 'lg',
+                locals: {
+                    productVariantIds: unique(selection.map(p => p.id)),
+                    currentChannelIds: [],
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    clearSelection();
+                }
+            });
+    },
+};
 
 export const removeProductVariantsFromChannelBulkAction = createBulkRemoveFromChannelAction<
     ItemOf<GetProductVariantListQuery, 'productVariants'>
