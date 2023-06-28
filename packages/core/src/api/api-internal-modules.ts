@@ -126,6 +126,7 @@ const shopResolvers = [
 ];
 
 export const entityResolvers = [
+    AssetEntityResolver,
     ChannelEntityResolver,
     CollectionEntityResolver,
     CountryEntityResolver,
@@ -154,7 +155,6 @@ export const entityResolvers = [
 
 export const adminEntityResolvers = [
     AdministratorEntityResolver,
-    AssetEntityResolver,
     CustomerAdminEntityResolver,
     OrderAdminEntityResolver,
     PaymentMethodEntityResolver,
