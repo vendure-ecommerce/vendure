@@ -37,7 +37,9 @@ export class ProductMultiSelectorFormInputComponent implements OnInit, FormInput
                 size: 'xl',
                 locals: {
                     mode: this.mode,
-                    initialSelectionIds: this.formControl.value,
+                    initialSelectionIds: this.formControl.value.map(item =>
+                        typeof item === 'string' ? item : item.id,
+                    ),
                 },
             })
             .subscribe(selection => {
@@ -47,6 +49,7 @@ export class ProductMultiSelectorFormInputComponent implements OnInit, FormInput
                             this.mode === 'product' ? item.productId : item.productVariantId,
                         ),
                     );
+                    this.formControl.markAsDirty();
                     this.changeDetector.markForCheck();
                 }
             });
