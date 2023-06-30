@@ -307,7 +307,7 @@ export class UserService {
      * Changes the User identifier without an email verification step, so this should be only used when
      * an Administrator is setting a new email address.
      */
-    async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
+    async changeUserAndNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
         const user = await this.getUserById(ctx, userId);
         if (!user) {
             return;
@@ -315,18 +315,15 @@ export class UserService {
         const nativeAuthMethod = user.authenticationMethods.find(
             (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
         );
-        if (!nativeAuthMethod) {
-            // If the NativeAuthenticationMethod is not configured, then
-            // there is nothing to do.
-            return;
+        if (nativeAuthMethod) {
+            nativeAuthMethod.identifier = newIdentifier;
+            nativeAuthMethod.identifierChangeToken = null;
+            nativeAuthMethod.pendingIdentifier = null;
+            await this.connection
+                .getRepository(ctx, NativeAuthenticationMethod)
+                .save(nativeAuthMethod, { reload: false });
         }
         user.identifier = newIdentifier;
-        nativeAuthMethod.identifier = newIdentifier;
-        nativeAuthMethod.identifierChangeToken = null;
-        nativeAuthMethod.pendingIdentifier = null;
-        await this.connection
-            .getRepository(ctx, NativeAuthenticationMethod)
-            .save(nativeAuthMethod, { reload: false });
         await this.connection.getRepository(ctx, User).save(user, { reload: false });
     }
 
