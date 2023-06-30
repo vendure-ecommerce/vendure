@@ -1,5 +1,13 @@
 import { ClientOptions } from '@elastic/elasticsearch';
-import { DeepRequired, EntityRelationPaths, ID, LanguageCode, Product, ProductVariant } from '@vendure/core';
+import {
+    DeepRequired,
+    EntityRelationPaths,
+    ID,
+    Injector,
+    LanguageCode,
+    Product,
+    ProductVariant,
+} from '@vendure/core';
 import deepmerge from 'deepmerge';
 
 import {
@@ -222,7 +230,7 @@ export interface ElasticsearchOptions {
      * ```
      */
     customProductMappings?: {
-        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode]>;
+        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector]>;
     };
     /**
      * @description
@@ -252,7 +260,7 @@ export interface ElasticsearchOptions {
      * ```
      */
     customProductVariantMappings?: {
-        [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode]>;
+        [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode, Injector]>;
     };
     /**
      * @description
