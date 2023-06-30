@@ -21,13 +21,15 @@ import {
 } from '@angular/core';
 import {
     ControlValueAccessor,
+    FormArray,
+    FormControl,
     NG_VALUE_ACCESSOR,
     UntypedFormArray,
     UntypedFormControl,
 } from '@angular/forms';
 import { StringCustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { ConfigArgType, CustomFieldType, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { Subject, Subscription } from 'rxjs';
 import { switchMap, take, takeUntil } from 'rxjs/operators';
@@ -71,7 +73,7 @@ export class DynamicFormInputComponent
     listItems: InputListItem[] = [];
     private singleComponentRef: ComponentRef<FormInputComponent>;
     private listId = 1;
-    private listFormArray = new UntypedFormArray([]);
+    private listFormArray = new FormArray([] as Array<FormControl<any>>);
     private componentType: Type<FormInputComponent>;
     private onChange: (val: any) => void;
     private onTouch: () => void;
@@ -151,8 +153,9 @@ export class DynamicFormInputComponent
                             .subscribe(val => {
                                 this.control.markAsTouched();
                                 this.control.markAsDirty();
-                                this.onChange(val);
-                                this.control.patchValue(val, { emitEvent: false });
+                                const truthyValues = val.filter(notNullOrUndefined);
+                                this.onChange(truthyValues);
+                                this.control.patchValue(truthyValues, { emitEvent: false });
                             });
                         setTimeout(() => this.changeDetectorRef.markForCheck());
                     }

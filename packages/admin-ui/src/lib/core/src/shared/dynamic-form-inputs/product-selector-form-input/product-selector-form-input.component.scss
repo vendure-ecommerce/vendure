@@ -10,6 +10,9 @@
 }
 .thumb {
     margin-right: 6px;
+    img {
+        border-radius: var(--border-radius);
+    }
 }
 .sku {
     color: var(--color-grey-400);

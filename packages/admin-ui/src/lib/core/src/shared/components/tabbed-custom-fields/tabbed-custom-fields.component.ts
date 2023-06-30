@@ -40,10 +40,12 @@ export class TabbedCustomFieldsComponent implements OnInit {
             'password-form-input',
             'select-form-input',
             'text-form-input',
+            'relation-form-input',
         ];
         return (
             customField.type === 'text' ||
             customField.type === 'localeText' ||
+            customField.type === 'relation' ||
             (customField.ui?.component && !smallComponents.includes(customField.ui?.component))
         );
     }
