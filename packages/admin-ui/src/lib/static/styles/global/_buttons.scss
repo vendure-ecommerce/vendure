@@ -12,69 +12,24 @@
     border-radius: var(--border-radius-sm);
     cursor: pointer;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 4px rgba(0, 0, 0, 0.03),
-        0px 2px 6px rgba(0, 0, 0, 0.03), 0px 2px 11px rgba(0, 0, 0, 0.04);
+    0px 2px 6px rgba(0, 0, 0, 0.03), 0px 2px 11px rgba(0, 0, 0, 0.04);
     background-color: var(--color-button-bg);
     color: var(--color-weight-700);
+
     &:link,
     &:visited {
         color: var(--color-weight-700);
     }
+
     &:disabled {
         background-color: var(--color-weight-100);
         color: var(--color-weight-500);
         cursor: not-allowed;
     }
+
     &:not(:disabled):hover {
         background-color: var(--color-button-hover-bg);
         color: var(--color-weight-800);
-    }
-
-    &.primary,
-    &.btn-primary {
-        &:not(:disabled) {
-            background-color: var(--color-primary-700);
-            color: white;
-            &:hover {
-                background-color: var(--color-primary-800);
-                color: white;
-            }
-        }
-    }
-
-    &.success,
-    &.btn-success {
-        &:not(:disabled) {
-            background-color: var(--color-success-700);
-            color: white;
-            &:hover {
-                background-color: var(--color-success-800);
-                color: white;
-            }
-        }
-    }
-
-    &.warning,
-    &.btn-warning {
-        &:not(:disabled) {
-            background-color: var(--color-warning-700);
-            color: white;
-            &:hover {
-                background-color: var(--color-warning-800);
-                color: white;
-            }
-        }
-    }
-
-    &.danger,
-    &.btn-danger {
-        &:not(:disabled) {
-            background-color: var(--color-error-700);
-            color: white;
-            &:hover {
-                background-color: var(--color-error-800);
-                color: white;
-            }
-        }
     }
 }
 
@@ -94,15 +49,18 @@
     white-space: nowrap;
     color: var(--color-button-ghost-text);
     background-color: var(--color-button-ghost-bg);
+
     &:hover {
         background-color: var(--color-button-ghost-hover-bg);
         color: var(--color-button-ghost-hover-text);
     }
 }
+
 a.button-ghost:link,
 a.button-ghost:visited {
     color: var(--color-button-ghost-text);
 }
+
 a.button-ghost:hover {
     color: var(--color-button-ghost-hover-text);
 }
@@ -122,10 +80,66 @@ a.button-ghost:hover {
     border: none;
     border-radius: var(--border-radius-lg);
     cursor: pointer;
+
     &:not(:disabled):hover {
         background-color: var(--color-button-small-hover-bg);
     }
 }
+
+.button, .btn, .button-small {
+    &.primary,
+    &.btn-primary {
+        &:not(:disabled) {
+            background-color: var(--color-primary-700);
+            color: white;
+
+            &:hover {
+                background-color: var(--color-primary-800);
+                color: white;
+            }
+        }
+    }
+
+    &.success,
+    &.btn-success {
+        &:not(:disabled) {
+            background-color: var(--color-success-700);
+            color: white;
+
+            &:hover {
+                background-color: var(--color-success-800);
+                color: white;
+            }
+        }
+    }
+
+    &.warning,
+    &.btn-warning {
+        &:not(:disabled) {
+            background-color: var(--color-warning-700);
+            color: white;
+
+            &:hover {
+                background-color: var(--color-warning-800);
+                color: white;
+            }
+        }
+    }
+
+    &.danger,
+    &.btn-danger {
+        &:not(:disabled) {
+            background-color: var(--color-error-700);
+            color: white;
+
+            &:hover {
+                background-color: var(--color-error-800);
+                color: white;
+            }
+        }
+    }
+}
+
 a.button-small:link,
 a.button-small:visited {
     color: var(--color-button-small-text);
