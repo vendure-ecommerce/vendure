@@ -172,7 +172,7 @@ export class ProductService {
             .getRepository(ctx, Product)
             .findOne({
                 where: { id: productId },
-                relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
+                relations: ['facetValues'],
             })
             .then(variant =>
                 !variant ? [] : variant.facetValues.map(o => this.translator.translate(o, ctx, ['facet'])),

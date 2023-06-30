@@ -35,7 +35,7 @@ export * from './components/product-list/product-list.graphql';
 export * from './components/product-options-editor/product-options-editor.component';
 export * from './components/product-variant-detail/product-variant-detail.component';
 export * from './components/product-variant-detail/product-variant-detail.graphql';
-export * from './components/product-variant-list/product-list-bulk-actions';
+export * from './components/product-variant-list/product-variant-list-bulk-actions';
 export * from './components/product-variant-list/product-variant-list.component';
 export * from './components/product-variant-list/product-variant-list.graphql';
 export * from './components/product-variant-quick-jump/product-variant-quick-jump.component';
