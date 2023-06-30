@@ -10,6 +10,7 @@ import {
     TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
+import { LogicalOperator } from 'package/core';
 import { tap } from 'rxjs/operators';
 
 @Component({
@@ -137,6 +138,12 @@ export class OrderListComponent
                 code: {
                     contains: searchTerm,
                 },
+                customerLastName: {
+                    contains: searchTerm,
+                },
+                id: {
+                    eq: searchTerm,
+                },
             };
         }
         return {
@@ -146,6 +153,7 @@ export class OrderListComponent
                 filter: {
                     ...(filterInput ?? {}),
                 },
+                filterOperator: LogicalOperator.OR,
                 sort: this.sorts.createSortInput(),
             },
         };
