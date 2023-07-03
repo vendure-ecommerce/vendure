@@ -4,13 +4,13 @@ import {
     ChannelService,
     GetOrderListDocument,
     getOrderStateTranslationToken,
+    LogicalOperator,
     OrderListOptions,
     OrderType,
     ServerConfigService,
     TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
-import { LogicalOperator } from 'package/core';
 import { tap } from 'rxjs/operators';
 
 @Component({
@@ -141,8 +141,8 @@ export class OrderListComponent
                 customerLastName: {
                     contains: searchTerm,
                 },
-                id: {
-                    eq: searchTerm,
+                transactionId: {
+                    contains: searchTerm,
                 },
             };
         }
