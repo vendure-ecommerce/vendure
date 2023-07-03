@@ -149,6 +149,7 @@
     "products": "",
     "public": "公開",
     "quick-jump-placeholder": "",
+    "rebuild-search-index": "重建搜尋索引",
     "reindex-error": "重建索引失敗",
     "reindex-successful": "已成功重建{count}個產品索引，耗时{time}毫秒",
     "reindexing": "正在重建搜索索引",

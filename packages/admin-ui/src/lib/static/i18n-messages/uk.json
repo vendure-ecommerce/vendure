@@ -149,6 +149,7 @@
     "products": "",
     "public": "Публічний",
     "quick-jump-placeholder": "",
+    "rebuild-search-index": "Відновити пошуковий індекс",
     "reindex-error": "Помилка при перебудові індексу пошуку",
     "reindex-successful": "Проіндексовано {count, plural, one {варіант товару} other {{count} варіантів товару}} за {time}мс",
     "reindexing": "Перебудова пошукового індексу",
