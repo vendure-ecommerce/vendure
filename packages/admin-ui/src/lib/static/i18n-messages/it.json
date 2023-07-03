@@ -105,6 +105,7 @@
     "facet-values": "Valori attributo",
     "facets": "",
     "filter-by-name": "Filtra per nome",
+    "filter-by-sku": "Filtra per codice SKU",
     "filter-inheritance": "",
     "filters": "Filtri",
     "inherit-filters-from-parent": "",

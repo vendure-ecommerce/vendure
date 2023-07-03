@@ -105,6 +105,7 @@
     "facet-values": "Valores de faceta",
     "facets": "Facets",
     "filter-by-name": "Filtrar por nombre",
+    "filter-by-sku": "Filtrar por código de referencia",
     "filter-inheritance": "Herencia de filtros",
     "filters": "Filtros",
     "inherit-filters-from-parent": "Heredar filtros del nivel superior",

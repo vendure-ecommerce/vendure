@@ -105,6 +105,7 @@
     "facet-values": "Valeurs de composant",
     "facets": "Composants",
     "filter-by-name": "Filtrer par nom",
+    "filter-by-sku": "Filtrer par UGS",
     "filter-inheritance": "Héritage des filtres",
     "filters": "Filtres",
     "inherit-filters-from-parent": "Hériter les filtres du parent",

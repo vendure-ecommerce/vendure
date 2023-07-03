@@ -105,6 +105,7 @@
     "facet-values": "Значення тегу",
     "facets": "",
     "filter-by-name": "Фільтр по імені",
+    "filter-by-sku": "Фільтрувати за SKU",
     "filter-inheritance": "",
     "filters": "Фільтри",
     "inherit-filters-from-parent": "",
