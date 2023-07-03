@@ -101,6 +101,25 @@ export interface AdminUiPluginOptions {
  * };
  * ```
  *
+ * ## Metrics
+ *
+ * This plugin also defines a `metricSummary` query which is used by the Admin UI to display the order metrics on the dashboard.
+ *
+ * If you are building a stand-alone version of the Admin UI app, and therefore don't need this plugin to server the Admin UI,
+ * you can still use the `metricSummary` query by adding the `AdminUiPlugin` to the `plugins` array, but without calling the `init()` method:
+ *
+ * @example
+ * ```TypeScript
+ * import { AdminUiPlugin } from '\@vendure/admin-ui-plugin';
+ *
+ * const config: VendureConfig = {
+ *   plugins: [
+ *     AdminUiPlugin, // <-- no call to .init()
+ *   ],
+ *   // ...
+ * };
+ * ```
+ *
  * @docsCategory core plugins/AdminUiPlugin
  */
 @VendurePlugin({
@@ -113,7 +132,7 @@ export interface AdminUiPluginOptions {
     compatibility: '^2.0.0',
 })
 export class AdminUiPlugin implements NestModule {
-    private static options: AdminUiPluginOptions;
+    private static options: AdminUiPluginOptions | undefined;
 
     constructor(private configService: ConfigService, private processContext: ProcessContext) {}
 
@@ -128,6 +147,13 @@ export class AdminUiPlugin implements NestModule {
 
     async configure(consumer: MiddlewareConsumer) {
         if (this.processContext.isWorker) {
+            return;
+        }
+        if (!AdminUiPlugin.options) {
+            Logger.info(
+                `AdminUiPlugin's init() method was not called. The Admin UI will not be served.`,
+                loggerCtx,
+            );
             return;
         }
         const { app, hostname, route, adminUiConfig } = AdminUiPlugin.options;
@@ -226,7 +252,8 @@ export class AdminUiPlugin implements NestModule {
      */
     private getAdminUiConfig(partialConfig?: Partial<AdminUiConfig>): AdminUiConfig {
         const { authOptions } = this.configService;
-
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const options = AdminUiPlugin.options!;
         const propOrDefault = <Prop extends keyof AdminUiConfig>(
             prop: Prop,
             defaultVal: AdminUiConfig[Prop],
@@ -248,17 +275,14 @@ export class AdminUiPlugin implements NestModule {
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
             defaultLocale: propOrDefault('defaultLocale', defaultLocale),
             availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
-            loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
-            brand: AdminUiPlugin.options.adminUiConfig?.brand,
+            loginUrl: options.adminUiConfig?.loginUrl,
+            brand: options.adminUiConfig?.brand,
             hideVendureBranding: propOrDefault(
                 'hideVendureBranding',
-                AdminUiPlugin.options.adminUiConfig?.hideVendureBranding || false,
+                options.adminUiConfig?.hideVendureBranding || false,
             ),
-            hideVersion: propOrDefault(
-                'hideVersion',
-                AdminUiPlugin.options.adminUiConfig?.hideVersion || false,
-            ),
-            loginImageUrl: AdminUiPlugin.options.adminUiConfig?.loginImageUrl,
+            hideVersion: propOrDefault('hideVersion', options.adminUiConfig?.hideVersion || false),
+            loginImageUrl: options.adminUiConfig?.loginImageUrl,
             cancellationReasons: propOrDefault('cancellationReasons', undefined),
         };
     }
