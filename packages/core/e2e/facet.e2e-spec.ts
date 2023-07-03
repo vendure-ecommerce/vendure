@@ -647,7 +647,7 @@ describe('Facet resolver', () => {
                         },
                     ],
                 });
-            }, "No Facet with the id '1' could be found"),
+            }, 'No Facet with the id "1" could be found'),
         );
 
         it('removing from channel with error', async () => {

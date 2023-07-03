@@ -611,7 +611,7 @@ describe('Customer resolver', () => {
                             firstName: 'updated',
                         },
                     }),
-                "No Customer with the id '3' could be found",
+                'No Customer with the id "3" could be found',
             ),
         );
 
@@ -629,7 +629,7 @@ describe('Customer resolver', () => {
                             },
                         },
                     ),
-                "No Customer with the id '3' could be found",
+                'No Customer with the id "3" could be found',
             ),
         );
 

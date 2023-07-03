@@ -118,7 +118,7 @@ describe('Configurable operations', () => {
                         },
                     },
                 );
-            }, 'The argument \'required\' is required'),
+            }, 'The argument "required" is required'),
         );
     });
 

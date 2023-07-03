@@ -1204,7 +1204,7 @@ describe('Product resolver', () => {
                             },
                         },
                     ),
-                "No Product with the id '999' could be found",
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1242,7 +1242,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: 'T_999',
                     }),
-                "No Product with the id '999' could be found",
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1272,7 +1272,7 @@ describe('Product resolver', () => {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
-                "No ProductOptionGroup with the id '999' could be found",
+                'No ProductOptionGroup with the id "999" could be found',
             ),
         );
 
@@ -1355,7 +1355,7 @@ describe('Product resolver', () => {
                         optionGroupId: '1',
                         productId: '999',
                     }),
-                "No Product with the id '999' could be found",
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1370,7 +1370,7 @@ describe('Product resolver', () => {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
-                "No ProductOptionGroup with the id '999' could be found",
+                'No ProductOptionGroup with the id "999" could be found',
             ),
         );
 
@@ -1667,7 +1667,7 @@ describe('Product resolver', () => {
                                 },
                             ],
                         }),
-                    "No ProductVariant with the id '999' could be found",
+                    'No ProductVariant with the id "999" could be found',
                 ),
             );
 
@@ -2117,7 +2117,7 @@ describe('Product resolver', () => {
                             },
                         },
                     ),
-                "No Product with the id '1' could be found",
+                'No Product with the id "1" could be found',
             ),
         );
 
@@ -2132,7 +2132,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
-                "No Product with the id '1' could be found",
+                'No Product with the id "1" could be found',
             ),
         );
 
@@ -2147,7 +2147,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
-                "No Product with the id '1' could be found",
+                'No Product with the id "1" could be found',
             ),
         );
 
