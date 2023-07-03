@@ -226,7 +226,6 @@ export class ProductVariantDetailComponent
                             'trackInventory',
                             'outOfStockThreshold',
                             'useGlobalOutOfStockThreshold',
-                            'stockOnHand',
                             'customFields',
                         ],
                     ) as UpdateProductVariantInput;
@@ -276,7 +275,7 @@ export class ProductVariantDetailComponent
     }
 
     assetsChanged(): boolean {
-        return false;
+        return !!Object.values(this.assetChanges).length;
     }
 
     inventoryIsNotTracked(formGroup: UntypedFormGroup): boolean {

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 import { DataService } from '../../data/providers/data.service';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
@@ -17,6 +18,12 @@ export class ThemeSwitcherComponent implements OnInit {
 
     ngOnInit() {
         this.activeTheme$ = this.dataService.client.uiState().mapStream(data => data.uiState.theme);
+    }
+
+    @HostListener('click', ['$event'])
+    @HostListener('keydown.enter', ['$event'])
+    onHostClick() {
+        this.activeTheme$.pipe(take(1)).subscribe(current => this.toggleTheme(current));
     }
 
     toggleTheme(current: string) {

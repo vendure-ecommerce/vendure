@@ -8,7 +8,7 @@ import { CustomFieldConfig } from '../../common/generated-types';
  * as expected by the server.
  */
 export function transformRelationCustomFieldInputs<
-    T extends { input?: Record<string, any> | Array<Record<string, any>> } & Record<string, any> = any
+    T extends { input?: Record<string, any> | Array<Record<string, any>> } & Record<string, any> = any,
 >(variables: T, customFieldConfig: CustomFieldConfig[]): T {
     if (variables.input) {
         if (Array.isArray(variables.input)) {
@@ -36,7 +36,7 @@ function transformRelations<T>(input: T, customFieldConfig: CustomFieldConfig[])
                     delete input.customFields[field.name];
                     input.customFields[getGraphQlInputName(field)] =
                         field.list && Array.isArray(entityValue)
-                            ? entityValue.map(v => v?.id)
+                            ? entityValue.map(v => (typeof v === 'string' ? v : v?.id))
                             : entityValue === null
                             ? null
                             : entityValue?.id;

@@ -147,7 +147,6 @@ export type DefaultFormComponentId =
     | 'select-form-input'
     | 'text-form-input'
     | 'textarea-form-input'
-    | 'asset-form-input'
     | 'product-multi-form-input'
     | 'combination-mode-form-input';
 
@@ -177,7 +176,6 @@ type DefaultFormConfigHash = {
     'textarea-form-input': {
         spellcheck?: boolean;
     };
-    'asset-form-input': Record<string, never>;
     'product-multi-form-input': {
         selectionMode?: 'product' | 'variant';
     };

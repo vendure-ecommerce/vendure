@@ -1,11 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { gql } from 'apollo-angular';
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-
-import { FormInputComponent } from '../../../../common/component-registry-types';
 import { GetAssetQuery, RelationCustomFieldConfig } from '../../../../common/generated-types';
 import { ASSET_FRAGMENT, TAG_FRAGMENT } from '../../../../data/definitions/product-definitions';
 import { DataService } from '../../../../data/providers/data.service';
@@ -32,8 +29,7 @@ export const RELATION_ASSET_INPUT_QUERY = gql`
     styleUrls: ['./relation-asset-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RelationAssetInputComponent implements FormInputComponent, OnInit {
-    static readonly id: DefaultFormComponentId = 'asset-form-input';
+export class RelationAssetInputComponent implements OnInit {
     @Input() readonly: boolean;
     @Input('parentFormControl') formControl: UntypedFormControl;
     @Input() config: RelationCustomFieldConfig;

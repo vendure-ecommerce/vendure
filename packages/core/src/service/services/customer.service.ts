@@ -338,7 +338,11 @@ export class CustomerService {
                         return new EmailAddressConflictAdminError();
                     }
 
-                    await this.userService.changeNativeIdentifier(ctx, customer.user.id, input.emailAddress);
+                    await this.userService.changeUserAndNativeIdentifier(
+                        ctx,
+                        customer.user.id,
+                        input.emailAddress,
+                    );
                 }
             }
         }
