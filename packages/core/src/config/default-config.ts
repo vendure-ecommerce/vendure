@@ -86,6 +86,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         cookieOptions: {
             secret: Math.random().toString(36).substr(3),
             httpOnly: true,
+            sameSite: 'lax',
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
