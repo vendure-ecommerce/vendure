@@ -482,7 +482,7 @@ describe('ChannelAware Products and ProductVariants', () => {
                         translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
                     },
                 });
-            }, "No Product with the id '2' could be found"),
+            }, 'No Product with the id "2" could be found'),
         );
     });
 });

@@ -1020,7 +1020,7 @@ describe('Collection resolver', () => {
                 >(DELETE_COLLECTION, {
                     id: 'T_999',
                 });
-            }, 'No Collection with the id \'999\' could be found'),
+            }, 'No Collection with the id "999" could be found'),
         );
 
         it('collection and product related prior to deletion', async () => {

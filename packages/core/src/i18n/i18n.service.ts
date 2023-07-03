@@ -56,7 +56,7 @@ export class I18nService implements OnModuleInit {
         return i18next
             .use(i18nextMiddleware.LanguageDetector)
             .use(Backend as any)
-            .use(ICU as any)
+            .use(ICU)
             .init({
                 nsSeparator: false,
                 preload: ['en', 'de', 'ru', 'uk'],

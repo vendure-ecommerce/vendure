@@ -405,7 +405,7 @@ describe('Promotion resolver', () => {
                             enabled: false,
                         },
                     }),
-                "No Promotion with the id '1' could be found",
+                'No Promotion with the id "1" could be found',
             ),
         );
     });

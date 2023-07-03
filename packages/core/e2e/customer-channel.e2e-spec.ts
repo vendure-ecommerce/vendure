@@ -99,7 +99,7 @@ describe('ChannelAware Customers', () => {
                         streetLine1: 'Dummy street',
                     },
                 });
-            }, "No Address with the id '1' could be found"),
+            }, 'No Address with the id "1" could be found'),
         );
 
         it(
@@ -116,7 +116,7 @@ describe('ChannelAware Customers', () => {
                         countryCode: 'BE',
                     },
                 });
-            }, "No Customer with the id '1' could be found"),
+            }, 'No Customer with the id "1" could be found'),
         );
 
         it(
@@ -129,7 +129,7 @@ describe('ChannelAware Customers', () => {
                 >(DELETE_ADDRESS, {
                     id: 'T_1',
                 });
-            }, "No Address with the id '1' could be found"),
+            }, 'No Address with the id "1" could be found'),
         );
     });
 
@@ -144,7 +144,7 @@ describe('ChannelAware Customers', () => {
                 >(DELETE_CUSTOMER, {
                     id: firstCustomer.id,
                 });
-            }, "No Customer with the id '1' could be found"),
+            }, 'No Customer with the id "1" could be found'),
         );
 
         it(
@@ -161,7 +161,7 @@ describe('ChannelAware Customers', () => {
                         lastName: 'Doe',
                     },
                 });
-            }, "No Customer with the id '1' could be found"),
+            }, 'No Customer with the id "1" could be found'),
         );
 
         it('creates customers on current and default channel', async () => {
