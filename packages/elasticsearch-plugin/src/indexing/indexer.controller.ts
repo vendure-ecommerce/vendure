@@ -1,5 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Asset,
@@ -11,6 +12,7 @@ import {
     EntityRelationPaths,
     FacetValue,
     ID,
+    Injector,
     InternalServerError,
     LanguageCode,
     Logger,
@@ -85,6 +87,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     private asyncQueue = new AsyncQueue('elasticsearch-indexer', 5);
     private productRelations: Array<EntityRelationPaths<Product>>;
     private variantRelations: Array<EntityRelationPaths<ProductVariant>>;
+    private injector: Injector;
 
     constructor(
         private connection: TransactionalConnection,
@@ -93,6 +96,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         private configService: ConfigService,
         private productVariantService: ProductVariantService,
         private requestContextCache: RequestContextCacheService,
+        private moduleRef: ModuleRef,
     ) {}
 
     onModuleInit(): any {
@@ -105,6 +109,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             defaultVariantRelations,
             this.options.hydrateProductVariantRelations,
         );
+        this.injector = new Injector(this.moduleRef);
     }
 
     onModuleDestroy(): any {
@@ -596,7 +601,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         {
                             index: VARIANT_INDEX_NAME,
                             operation: {
-                                doc: this.createSyntheticProductIndexItem(product, ctx, languageCode),
+                                doc: await this.createSyntheticProductIndexItem(product, ctx, languageCode),
                                 doc_as_upsert: true,
                             },
                         },
@@ -887,12 +892,12 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             };
             const variantCustomMappings = Object.entries(this.options.customProductVariantMappings);
             for (const [name, def] of variantCustomMappings) {
-                item[`variant-${name}`] = def.valueFn(v, languageCode);
+                item[`variant-${name}`] = await def.valueFn(v, languageCode, this.injector);
             }
 
             const productCustomMappings = Object.entries(this.options.customProductMappings);
             for (const [name, def] of productCustomMappings) {
-                item[`product-${name}`] = def.valueFn(v.product, variants, languageCode);
+                item[`product-${name}`] = await def.valueFn(v.product, variants, languageCode, this.injector);
             }
             return item;
         } catch (err: any) {
@@ -918,11 +923,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
      * If a Product has no variants, we create a synthetic variant for the purposes
      * of making that product visible via the search query.
      */
-    private createSyntheticProductIndexItem(
+    private async createSyntheticProductIndexItem(
         product: Product,
         ctx: RequestContext,
         languageCode: LanguageCode,
-    ): VariantIndexItem {
+    ): Promise<VariantIndexItem> {
         const productTranslation = this.getTranslation(product, languageCode);
         const productAsset = product.featuredAsset;
 
@@ -966,7 +971,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         };
         const productCustomMappings = Object.entries(this.options.customProductMappings);
         for (const [name, def] of productCustomMappings) {
-            item[`product-${name}`] = def.valueFn(product, [], languageCode);
+            item[`product-${name}`] = await def.valueFn(product, [], languageCode, this.injector);
         }
         return item;
     }
