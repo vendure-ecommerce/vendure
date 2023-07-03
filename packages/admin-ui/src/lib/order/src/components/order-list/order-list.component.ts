@@ -4,6 +4,7 @@ import {
     ChannelService,
     GetOrderListDocument,
     getOrderStateTranslationToken,
+    LogicalOperator,
     OrderListOptions,
     OrderType,
     ServerConfigService,
@@ -137,6 +138,12 @@ export class OrderListComponent
                 code: {
                     contains: searchTerm,
                 },
+                customerLastName: {
+                    contains: searchTerm,
+                },
+                transactionId: {
+                    contains: searchTerm,
+                },
             };
         }
         return {
@@ -146,6 +153,7 @@ export class OrderListComponent
                 filter: {
                     ...(filterInput ?? {}),
                 },
+                filterOperator: LogicalOperator.OR,
                 sort: this.sorts.createSortInput(),
             },
         };
