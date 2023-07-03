@@ -29,9 +29,10 @@ export const iframeNode: NodeSpec = {
                         name: node.name,
                         referrerpolicy: node.referrerPolicy,
                         src: node.src,
-                        srcdoc: node.srcdoc || undefined,
                         title: node.title ?? '',
                         width: node.width,
+                        // Note: we do not allow the `srcdoc` attribute to be
+                        // set as it presents an XSS attack vector
                     };
                     if (node.sandbox.length) {
                         attrs.sandbox = node.sandbox;
@@ -43,7 +44,7 @@ export const iframeNode: NodeSpec = {
         },
     ],
     toDOM(node) {
-        return ['iframe', { ...node.attrs }];
+        return ['iframe', { ...node.attrs, sandbox: 'allow-scripts allow-same-origin' }];
     },
 };
 
