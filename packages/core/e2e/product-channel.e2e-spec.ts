@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -9,6 +14,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 import {
     AssignProductsToChannelDocument,
     AssignProductVariantsToChannelDocument,
+    ChannelFragment,
     CreateAdministratorDocument,
     CreateChannelDocument,
     CreateProductDocument,
@@ -17,6 +23,8 @@ import {
     CreateRoleDocument,
     CreateRoleMutation,
     CurrencyCode,
+    GetChannelsDocument,
+    GetProductVariantListDocument,
     GetProductWithVariantsDocument,
     GetProductWithVariantsQuery,
     LanguageCode,
@@ -24,7 +32,9 @@ import {
     ProductVariantFragment,
     RemoveProductsFromChannelDocument,
     RemoveProductVariantsFromChannelDocument,
+    UpdateChannelDocument,
     UpdateProductDocument,
+    UpdateProductVariantsDocument,
 } from './graphql/generated-e2e-admin-types';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -416,5 +426,85 @@ describe('ChannelAware Products and ProductVariants', () => {
                 });
             }, 'No Product with the id "2" could be found'),
         );
+    });
+
+    describe('updating channel defaultCurrencyCode', () => {
+        let secondChannelId: string;
+        const channelGuard: ErrorResultGuard<ChannelFragment> = createErrorResultGuard(input => !!input.id);
+
+        beforeAll(async () => {
+            const { channels } = await adminClient.query(GetChannelsDocument);
+            secondChannelId = channels.items.find(c => c.token === SECOND_CHANNEL_TOKEN)!.id;
+        });
+
+        it('updates variant prices from old default to new', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { productVariants } = await adminClient.query(GetProductVariantListDocument, {});
+
+            expect(productVariants.items.map(i => i.currencyCode)).toEqual(['GBP']);
+
+            const { updateChannel } = await adminClient.query(UpdateChannelDocument, {
+                input: {
+                    id: secondChannelId,
+                    availableCurrencyCodes: [CurrencyCode.MYR, CurrencyCode.GBP, CurrencyCode.EUR],
+                    defaultCurrencyCode: CurrencyCode.MYR,
+                },
+            });
+
+            channelGuard.assertSuccess(updateChannel);
+            expect(updateChannel.defaultCurrencyCode).toBe(CurrencyCode.MYR);
+
+            const { productVariants: variantsAfter } = await adminClient.query(
+                GetProductVariantListDocument,
+                {},
+            );
+
+            expect(variantsAfter.items.map(i => i.currencyCode)).toEqual(['MYR']);
+        });
+
+        it('does not change prices in other currencies', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { productVariants } = await adminClient.query(GetProductVariantListDocument, {});
+
+            const { updateProductVariants } = await adminClient.query(UpdateProductVariantsDocument, {
+                input: productVariants.items.map(i => ({
+                    id: i.id,
+                    prices: [
+                        { price: 100, currencyCode: CurrencyCode.GBP },
+                        { price: 200, currencyCode: CurrencyCode.MYR },
+                        { price: 300, currencyCode: CurrencyCode.EUR },
+                    ],
+                })),
+            });
+
+            expect(updateProductVariants[0]?.prices.sort((a, b) => a.price - b.price)).toEqual([
+                { currencyCode: 'GBP', price: 100 },
+                { currencyCode: 'MYR', price: 200 },
+                { currencyCode: 'EUR', price: 300 },
+            ]);
+            expect(updateProductVariants[0]?.currencyCode).toBe('MYR');
+
+            await adminClient.query(UpdateChannelDocument, {
+                input: {
+                    id: secondChannelId,
+                    availableCurrencyCodes: [
+                        CurrencyCode.MYR,
+                        CurrencyCode.GBP,
+                        CurrencyCode.EUR,
+                        CurrencyCode.AUD,
+                    ],
+                    defaultCurrencyCode: CurrencyCode.AUD,
+                },
+            });
+
+            const { productVariants: after } = await adminClient.query(GetProductVariantListDocument, {});
+
+            expect(after.items.map(i => i.currencyCode)).toEqual(['AUD']);
+            expect(after.items[0]?.prices.sort((a, b) => a.price - b.price)).toEqual([
+                { currencyCode: 'GBP', price: 100 },
+                { currencyCode: 'AUD', price: 200 },
+                { currencyCode: 'EUR', price: 300 },
+            ]);
+        });
     });
 });
