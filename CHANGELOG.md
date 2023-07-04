@@ -25,6 +25,7 @@
 * **admin-ui** Styling improvements to custom field relation controls ([fb8aca6](https://github.com/vendure-ecommerce/vendure/commit/fb8aca6))
 * **admin-ui** Update es translation (#2260) ([fbc4dff](https://github.com/vendure-ecommerce/vendure/commit/fbc4dff)), closes [#2260](https://github.com/vendure-ecommerce/vendure/issues/2260)
 * **admin-ui** Use SKU to filter product variant list ([52a09a4](https://github.com/vendure-ecommerce/vendure/commit/52a09a4))
+* **admin-ui** Prevent XSS attack vector in rich text editor ([GHSA-gm68-572p-q28r](https://github.com/vendure-ecommerce/vendure/security/advisories/GHSA-gm68-572p-q28r))
 * **core** Correctly set currencyCode when assigning variants to channel ([5e13b0e](https://github.com/vendure-ecommerce/vendure/commit/5e13b0e)), closes [#2228](https://github.com/vendure-ecommerce/vendure/issues/2228)
 * **core** Delete user sessions & token upon user-deletion (#2241) ([b989607](https://github.com/vendure-ecommerce/vendure/commit/b989607)), closes [#2241](https://github.com/vendure-ecommerce/vendure/issues/2241)
 * **core** Disable graphql playground according to apiOptions setting ([b9a0200](https://github.com/vendure-ecommerce/vendure/commit/b9a0200)), closes [#2246](https://github.com/vendure-ecommerce/vendure/issues/2246)
