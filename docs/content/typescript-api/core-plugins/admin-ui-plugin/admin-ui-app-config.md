@@ -1,7 +1,7 @@
 ---
 title: "AdminUiAppConfig"
 weight: 10
-date: 2023-06-21T06:23:40.393Z
+date: 2023-07-04T11:02:13.660Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # AdminUiAppConfig
 
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="333" packageName="@vendure/common">}}
+{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="331" packageName="@vendure/common">}}
 
 Configures the path to a custom-build of the Admin UI app.
 

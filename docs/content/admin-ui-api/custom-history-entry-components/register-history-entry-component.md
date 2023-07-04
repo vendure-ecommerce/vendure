@@ -1,7 +1,7 @@
 ---
 title: "RegisterHistoryEntryComponent"
 weight: 10
-date: 2023-06-21T06:23:42.112Z
+date: 2023-07-04T11:02:14.974Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "CustomFieldType"
 weight: 10
-date: 2023-06-21T06:23:40.354Z
+date: 2023-07-04T11:02:13.616Z
 showtoc: true
 generated: true
 ---

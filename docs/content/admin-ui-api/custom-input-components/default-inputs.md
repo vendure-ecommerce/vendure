@@ -1,7 +1,7 @@
 ---
 title: "Default Inputs"
 weight: 10
-date: 2023-06-21T06:23:42.639Z
+date: 2023-07-04T11:02:15.425Z
 showtoc: true
 generated: true
 ---
@@ -336,12 +336,13 @@ Should be used with `ID` type fields which represent Customer IDs.
 class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
   static readonly static readonly id: DefaultFormComponentId = 'customer-group-form-input';
   @Input() @Input() readonly: boolean;
-  formControl: UntypedFormControl;
+  formControl: FormControl<string | { id: string }>;
   customerGroups$: Observable<GetCustomerGroupsQuery['customerGroups']['items']>;
   config: DefaultFormComponentConfig<'customer-group-form-input'>;
   constructor(dataService: DataService)
   ngOnInit() => ;
   selectGroup(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
+  compareWith(o1: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>, o2: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
 }
 ```
 ## Implements
@@ -366,7 +367,7 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
 
 ### formControl
 
-{{< member-info kind="property" type="UntypedFormControl"  >}}
+{{< member-info kind="property" type="FormControl&#60;string | { id: string }&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -397,6 +398,12 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
 ### selectGroup
 
 {{< member-info kind="method" type="(group: ItemOf&#60;GetCustomerGroupsQuery, 'customerGroups'&#62;) => "  >}}
+
+{{< member-description >}}{{< /member-description >}}
+
+### compareWith
+
+{{< member-info kind="method" type="(o1: ItemOf&#60;GetCustomerGroupsQuery, 'customerGroups'&#62;, o2: ItemOf&#60;GetCustomerGroupsQuery, 'customerGroups'&#62;) => "  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -705,8 +712,8 @@ class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
   static readonly static readonly id: DefaultFormComponentId = 'product-selector-form-input';
   readonly readonly isListInput = true;
   readonly: boolean;
-  formControl: UntypedFormControl;
-  config: InputComponentConfig;
+  formControl: FormControl<Array<string | { id: string }>>;
+  config: DefaultFormComponentUiConfig<'product-selector-form-input'>;
   selection$: Observable<Array<GetProductVariantQuery['productVariant']>>;
   constructor(dataService: DataService)
   ngOnInit() => ;
@@ -742,13 +749,13 @@ class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
 
 ### formControl
 
-{{< member-info kind="property" type="UntypedFormControl"  >}}
+{{< member-info kind="property" type="FormControl&#60;Array&#60;string | { id: string }&#62;&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
 ### config
 
-{{< member-info kind="property" type="InputComponentConfig"  >}}
+{{< member-info kind="property" type="DefaultFormComponentUiConfig&#60;'product-selector-form-input'&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

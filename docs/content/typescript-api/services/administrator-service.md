@@ -1,7 +1,7 @@
 ---
 title: "AdministratorService"
 weight: 10
-date: 2023-06-21T06:23:39.396Z
+date: 2023-07-04T11:02:12.999Z
 showtoc: true
 generated: true
 ---
