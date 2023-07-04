@@ -153,7 +153,7 @@ export class OrderListComponent
                 filter: {
                     ...(filterInput ?? {}),
                 },
-                filterOperator: LogicalOperator.OR,
+                filterOperator: searchTerm ? LogicalOperator.OR : LogicalOperator.AND,
                 sort: this.sorts.createSortInput(),
             },
         };
