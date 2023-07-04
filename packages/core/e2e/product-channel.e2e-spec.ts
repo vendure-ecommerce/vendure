@@ -4,36 +4,35 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
+    AssignProductsToChannelDocument,
+    AssignProductVariantsToChannelDocument,
+    CreateAdministratorDocument,
+    CreateChannelDocument,
+    CreateProductDocument,
+    CreateProductMutation,
+    CreateProductVariantsDocument,
+    CreateRoleDocument,
+    CreateRoleMutation,
     CurrencyCode,
+    GetProductWithVariantsDocument,
+    GetProductWithVariantsQuery,
     LanguageCode,
     Permission,
     ProductVariantFragment,
+    RemoveProductsFromChannelDocument,
+    RemoveProductVariantsFromChannelDocument,
+    UpdateProductDocument,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import {
-    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
-    ASSIGN_PRODUCT_TO_CHANNEL,
-    CREATE_ADMINISTRATOR,
-    CREATE_CHANNEL,
-    CREATE_PRODUCT,
-    CREATE_PRODUCT_VARIANTS,
-    CREATE_ROLE,
-    GET_PRODUCT_WITH_VARIANTS,
-    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
-    REMOVE_PRODUCT_FROM_CHANNEL,
-    UPDATE_CHANNEL,
-    UPDATE_PRODUCT,
-} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('ChannelAware Products and ProductVariants', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
     const THIRD_CHANNEL_TOKEN = 'third_channel_token';
-    let secondChannelAdminRole: CreateRole.CreateRole;
+    let secondChannelAdminRole: CreateRoleMutation['createRole'];
 
     beforeAll(async () => {
         await server.init({
@@ -43,40 +42,31 @@ describe('ChannelAware Products and ProductVariants', () => {
         });
         await adminClient.asSuperAdmin();
 
-        await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-            CREATE_CHANNEL,
-            {
-                input: {
-                    code: 'second-channel',
-                    token: SECOND_CHANNEL_TOKEN,
-                    defaultLanguageCode: LanguageCode.en,
-                    currencyCode: CurrencyCode.USD,
-                    pricesIncludeTax: true,
-                    defaultShippingZoneId: 'T_1',
-                    defaultTaxZoneId: 'T_1',
-                },
+        await adminClient.query(CreateChannelDocument, {
+            input: {
+                code: 'second-channel',
+                token: SECOND_CHANNEL_TOKEN,
+                defaultLanguageCode: LanguageCode.en,
+                currencyCode: CurrencyCode.GBP,
+                pricesIncludeTax: true,
+                defaultShippingZoneId: 'T_1',
+                defaultTaxZoneId: 'T_1',
             },
-        );
+        });
 
-        await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-            CREATE_CHANNEL,
-            {
-                input: {
-                    code: 'third-channel',
-                    token: THIRD_CHANNEL_TOKEN,
-                    defaultLanguageCode: LanguageCode.en,
-                    currencyCode: CurrencyCode.USD,
-                    pricesIncludeTax: true,
-                    defaultShippingZoneId: 'T_1',
-                    defaultTaxZoneId: 'T_1',
-                },
+        await adminClient.query(CreateChannelDocument, {
+            input: {
+                code: 'third-channel',
+                token: THIRD_CHANNEL_TOKEN,
+                defaultLanguageCode: LanguageCode.en,
+                currencyCode: CurrencyCode.EUR,
+                pricesIncludeTax: true,
+                defaultShippingZoneId: 'T_1',
+                defaultTaxZoneId: 'T_1',
             },
-        );
+        });
 
-        const { createRole } = await adminClient.query<
-            Codegen.CreateRoleMutation,
-            Codegen.CreateRoleMutationVariables
-        >(CREATE_ROLE, {
+        const { createRole } = await adminClient.query(CreateRoleDocument, {
             input: {
                 description: 'second channel admin',
                 code: 'second-channel-admin',
@@ -92,10 +82,7 @@ describe('ChannelAware Products and ProductVariants', () => {
         });
         secondChannelAdminRole = createRole;
 
-        await adminClient.query<
-            Codegen.CreateAdministratorMutation,
-            Codegen.CreateAdministratorMutationVariables
-        >(CREATE_ADMINISTRATOR, {
+        await adminClient.query(CreateAdministratorDocument, {
             input: {
                 firstName: 'Admin',
                 lastName: 'Two',
@@ -111,16 +98,13 @@ describe('ChannelAware Products and ProductVariants', () => {
     });
 
     describe('assigning Product to Channels', () => {
-        let product1: GetProductWithVariants.Product;
+        let product1: NonNullable<GetProductWithVariantsQuery['product']>;
 
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: 'T_1',
             });
             product1 = product!;
@@ -130,10 +114,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             'throws if attempting to assign Product to channel to which the admin has no access',
             assertThrowsWithMessage(async () => {
                 await adminClient.asUserWithCredentials('admin2@test.com', 'test');
-                await adminClient.query<
-                    Codegen.AssignProductsToChannelMutation,
-                    Codegen.AssignProductsToChannelMutationVariables
-                >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                await adminClient.query(AssignProductsToChannelDocument, {
                     input: {
                         channelId: 'T_3',
                         productIds: [product1.id],
@@ -146,10 +127,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const PRICE_FACTOR = 0.5;
             await adminClient.asSuperAdmin();
-            const { assignProductsToChannel } = await adminClient.query<
-                Codegen.AssignProductsToChannelMutation,
-                Codegen.AssignProductsToChannelMutationVariables
-            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+            const { assignProductsToChannel } = await adminClient.query(AssignProductsToChannelDocument, {
                 input: {
                     channelId: 'T_2',
                     productIds: [product1.id],
@@ -159,10 +137,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
             expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: product1.id,
             });
 
@@ -173,14 +148,13 @@ describe('ChannelAware Products and ProductVariants', () => {
             expect(product!.variants.map(v => v.priceWithTax)).toEqual(
                 product1.variants.map(v => Math.round(v.priceWithTax * PRICE_FACTOR)),
             );
+            // Second Channel has the default currency of GBP, so the prices should be the same.
+            expect(product!.variants.map(v => v.currencyCode)).toEqual(['GBP', 'GBP', 'GBP', 'GBP']);
         });
 
         it('ProductVariant.channels includes all Channels from default Channel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: product1.id,
             });
 
@@ -189,10 +163,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         it('ProductVariant.channels includes only current Channel from non-default Channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: product1.id,
             });
 
@@ -201,10 +172,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         it('does not assign Product to same channel twice', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { assignProductsToChannel } = await adminClient.query<
-                Codegen.AssignProductsToChannelMutation,
-                Codegen.AssignProductsToChannelMutationVariables
-            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+            const { assignProductsToChannel } = await adminClient.query(AssignProductsToChannelDocument, {
                 input: {
                     channelId: 'T_2',
                     productIds: [product1.id],
@@ -217,10 +185,7 @@ describe('ChannelAware Products and ProductVariants', () => {
         it(
             'throws if attempting to remove Product from default Channel',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    Codegen.RemoveProductsFromChannelMutation,
-                    Codegen.RemoveProductsFromChannelMutationVariables
-                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                await adminClient.query(RemoveProductsFromChannelDocument, {
                     input: {
                         productIds: [product1.id],
                         channelId: 'T_1',
@@ -232,10 +197,7 @@ describe('ChannelAware Products and ProductVariants', () => {
         it('removes Product from Channel', async () => {
             await adminClient.asSuperAdmin();
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { removeProductsFromChannel } = await adminClient.query<
-                Codegen.RemoveProductsFromChannelMutation,
-                Codegen.RemoveProductsFromChannelMutationVariables
-            >(REMOVE_PRODUCT_FROM_CHANNEL, {
+            const { removeProductsFromChannel } = await adminClient.query(RemoveProductsFromChannelDocument, {
                 input: {
                     productIds: [product1.id],
                     channelId: 'T_2',
@@ -247,16 +209,13 @@ describe('ChannelAware Products and ProductVariants', () => {
     });
 
     describe('assigning ProductVariant to Channels', () => {
-        let product1: GetProductWithVariants.Product;
+        let product1: NonNullable<GetProductWithVariantsQuery['product']>;
 
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: 'T_2',
             });
             product1 = product!;
@@ -266,10 +225,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             'throws if attempting to assign ProductVariant to channel to which the admin has no access',
             assertThrowsWithMessage(async () => {
                 await adminClient.asUserWithCredentials('admin2@test.com', 'test');
-                await adminClient.query<
-                    Codegen.AssignProductVariantsToChannelMutation,
-                    Codegen.AssignProductVariantsToChannelMutationVariables
-                >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
+                await adminClient.query(AssignProductVariantsToChannelDocument, {
                     input: {
                         channelId: 'T_3',
                         productVariantIds: [product1.variants[0].id],
@@ -282,23 +238,20 @@ describe('ChannelAware Products and ProductVariants', () => {
             const PRICE_FACTOR = 0.5;
             await adminClient.asSuperAdmin();
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { assignProductVariantsToChannel } = await adminClient.query<
-                Codegen.AssignProductVariantsToChannelMutation,
-                Codegen.AssignProductVariantsToChannelMutationVariables
-            >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
-                input: {
-                    channelId: 'T_3',
-                    productVariantIds: [product1.variants[0].id],
-                    priceFactor: PRICE_FACTOR,
+            const { assignProductVariantsToChannel } = await adminClient.query(
+                AssignProductVariantsToChannelDocument,
+                {
+                    input: {
+                        channelId: 'T_3',
+                        productVariantIds: [product1.variants[0].id],
+                        priceFactor: PRICE_FACTOR,
+                    },
                 },
-            });
+            );
 
             expect(assignProductVariantsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
             adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: product1.id,
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_3']);
@@ -307,11 +260,11 @@ describe('ChannelAware Products and ProductVariants', () => {
                 Math.round(product1.variants[0].priceWithTax * PRICE_FACTOR),
             ]);
 
+            // Third Channel has the default currency EUR
+            expect(product!.variants.map(v => v.currencyCode)).toEqual(['EUR']);
+
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { product: check } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product: check } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: product1.id,
             });
 
@@ -324,25 +277,22 @@ describe('ChannelAware Products and ProductVariants', () => {
         it('does not assign ProductVariant to same channel twice', async () => {
             await adminClient.asSuperAdmin();
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { assignProductVariantsToChannel } = await adminClient.query<
-                Codegen.AssignProductVariantsToChannelMutation,
-                Codegen.AssignProductVariantsToChannelMutationVariables
-            >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
-                input: {
-                    channelId: 'T_3',
-                    productVariantIds: [product1.variants[0].id],
+            const { assignProductVariantsToChannel } = await adminClient.query(
+                AssignProductVariantsToChannelDocument,
+                {
+                    input: {
+                        channelId: 'T_3',
+                        productVariantIds: [product1.variants[0].id],
+                    },
                 },
-            });
+            );
             expect(assignProductVariantsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
         });
 
         it(
             'throws if attempting to remove ProductVariant from default Channel',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    Codegen.RemoveProductVariantsFromChannelMutation,
-                    Codegen.RemoveProductVariantsFromChannelMutationVariables
-                >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
+                await adminClient.query(RemoveProductVariantsFromChannelDocument, {
                     input: {
                         productVariantIds: [product1.variants[0].id],
                         channelId: 'T_1',
@@ -354,32 +304,29 @@ describe('ChannelAware Products and ProductVariants', () => {
         it('removes ProductVariant but not Product from Channel', async () => {
             await adminClient.asSuperAdmin();
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { assignProductVariantsToChannel } = await adminClient.query<
-                Codegen.AssignProductVariantsToChannelMutation,
-                Codegen.AssignProductVariantsToChannelMutationVariables
-            >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
-                input: {
-                    channelId: 'T_3',
-                    productVariantIds: [product1.variants[1].id],
+            const { assignProductVariantsToChannel } = await adminClient.query(
+                AssignProductVariantsToChannelDocument,
+                {
+                    input: {
+                        channelId: 'T_3',
+                        productVariantIds: [product1.variants[1].id],
+                    },
                 },
-            });
+            );
             expect(assignProductVariantsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
 
-            const { removeProductVariantsFromChannel } = await adminClient.query<
-                Codegen.RemoveProductVariantsFromChannelMutation,
-                Codegen.RemoveProductVariantsFromChannelMutationVariables
-            >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
-                input: {
-                    productVariantIds: [product1.variants[1].id],
-                    channelId: 'T_3',
+            const { removeProductVariantsFromChannel } = await adminClient.query(
+                RemoveProductVariantsFromChannelDocument,
+                {
+                    input: {
+                        productVariantIds: [product1.variants[1].id],
+                        channelId: 'T_3',
+                    },
                 },
-            });
+            );
             expect(removeProductVariantsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
 
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: product1.id,
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
@@ -388,22 +335,19 @@ describe('ChannelAware Products and ProductVariants', () => {
         it('removes ProductVariant and Product from Channel', async () => {
             await adminClient.asSuperAdmin();
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { removeProductVariantsFromChannel } = await adminClient.query<
-                Codegen.RemoveProductVariantsFromChannelMutation,
-                Codegen.RemoveProductVariantsFromChannelMutationVariables
-            >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
-                input: {
-                    productVariantIds: [product1.variants[0].id],
-                    channelId: 'T_3',
+            const { removeProductVariantsFromChannel } = await adminClient.query(
+                RemoveProductVariantsFromChannelDocument,
+                {
+                    input: {
+                        productVariantIds: [product1.variants[0].id],
+                        channelId: 'T_3',
+                    },
                 },
-            });
+            );
 
             expect(removeProductVariantsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
 
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: product1.id,
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1']);
@@ -411,16 +355,13 @@ describe('ChannelAware Products and ProductVariants', () => {
     });
 
     describe('creating Product in sub-channel', () => {
-        let createdProduct: CreateProduct.CreateProduct;
+        let createdProduct: CreateProductMutation['createProduct'];
         let createdVariant: ProductVariantFragment;
 
         it('creates a Product in sub-channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-            const { createProduct } = await adminClient.query<
-                Codegen.CreateProductMutation,
-                Codegen.CreateProductMutationVariables
-            >(CREATE_PRODUCT, {
+            const { createProduct } = await adminClient.query(CreateProductDocument, {
                 input: {
                     translations: [
                         {
@@ -432,10 +373,7 @@ describe('ChannelAware Products and ProductVariants', () => {
                     ],
                 },
             });
-            const { createProductVariants } = await adminClient.query<
-                Codegen.CreateProductVariantsMutation,
-                Codegen.CreateProductVariantsMutationVariables
-            >(CREATE_PRODUCT_VARIANTS, {
+            const { createProductVariants } = await adminClient.query(CreateProductVariantsDocument, {
                 input: [
                     {
                         productId: createProduct.id,
@@ -455,10 +393,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
-            const { product } = await adminClient.query<
-                Codegen.GetProductWithVariantsQuery,
-                Codegen.GetProductWithVariantsQueryVariables
-            >(GET_PRODUCT_WITH_VARIANTS, {
+            const { product } = await adminClient.query(GetProductWithVariantsDocument, {
                 id: createProduct.id,
             });
 
@@ -473,10 +408,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             'throws if attempting to update a Product which is not assigned to that Channel',
             assertThrowsWithMessage(async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
-                >(UPDATE_PRODUCT, {
+                await adminClient.query(UpdateProductDocument, {
                     input: {
                         id: 'T_2',
                         translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
