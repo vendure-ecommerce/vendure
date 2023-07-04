@@ -664,7 +664,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_34',
                     name: 'Bonsai Tree',
@@ -702,7 +704,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_23',
                     name: 'Skipping Rope',
@@ -740,7 +744,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_23',
                     name: 'Skipping Rope',
@@ -783,7 +789,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_20',
                     name: 'Tripod',
@@ -814,7 +822,9 @@ describe('Product resolver', () => {
 
             // Note the results are incorrect. This is a design trade-off. See the
             // commend on the ProductVariant.priceWithTax annotation for explanation.
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_20',
                     name: 'Tripod',
@@ -839,7 +849,9 @@ describe('Product resolver', () => {
                 productId: 'T_1',
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_1',
                     name: 'Laptop 13 inch 8GB',
