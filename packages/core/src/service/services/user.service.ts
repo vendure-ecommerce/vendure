@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { VerifyCustomerAccountResult } from '@vendure/common/lib/generated-shop-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
@@ -41,6 +42,7 @@ export class UserService {
         private roleService: RoleService,
         private passwordCipher: PasswordCipher,
         private verificationTokenGenerator: VerificationTokenGenerator,
+        private moduleRef: ModuleRef,
     ) {}
 
     async getUserById(ctx: RequestContext, userId: ID): Promise<User | undefined> {
@@ -170,6 +172,10 @@ export class UserService {
     }
 
     async softDelete(ctx: RequestContext, userId: ID) {
+        // Dynamic import to avoid the circular dependency of SessionService
+        await this.moduleRef
+            .get((await import('./session.service.js')).SessionService)
+            .deleteSessionsByUser(ctx, new User({ id: userId }));
         await this.connection.getEntityOrThrow(ctx, User, userId);
         await this.connection.getRepository(ctx, User).update({ id: userId }, { deletedAt: new Date() });
     }
