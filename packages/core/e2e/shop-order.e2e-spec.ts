@@ -210,7 +210,7 @@ describe('Shop orders', () => {
                         productVariantId: 'T_999',
                         quantity: 1,
                     }),
-                "No ProductVariant with the id '999' could be found",
+                'No ProductVariant with the id "999" could be found',
             ),
         );
 
@@ -1937,7 +1937,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, "No ProductVariant with the id '34' could be found"),
+            }, 'No ProductVariant with the id "34" could be found'),
         );
 
         it(
@@ -1971,7 +1971,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, "No ProductVariant with the id '34' could be found"),
+            }, 'No ProductVariant with the id "34" could be found'),
         );
         it(
             'addItemToOrder errors when product is deleted',
@@ -1990,7 +1990,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, "No ProductVariant with the id '34' could be found"),
+            }, 'No ProductVariant with the id "34" could be found'),
         );
         it(
             'addItemToOrder errors when product variant is deleted',
@@ -2009,7 +2009,7 @@ describe('Shop orders', () => {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
-            }, "No ProductVariant with the id '34' could be found"),
+            }, 'No ProductVariant with the id "34" could be found'),
         );
 
         let orderWithDeletedProductVariantId: string;

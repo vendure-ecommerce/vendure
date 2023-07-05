@@ -256,7 +256,7 @@ describe('Asset resolver', () => {
 
             expect(createAssets.length).toBe(1);
             expect(createAssets[0]).toEqual({
-                message: 'The MIME type \'text/plain\' is not permitted.',
+                message: 'The MIME type "text/plain" is not permitted.',
                 mimeType: 'text/plain',
                 fileName: 'dummy.txt',
             });

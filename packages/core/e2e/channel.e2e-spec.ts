@@ -110,7 +110,9 @@ describe('Channels', () => {
             id: 'T_2',
             code: 'second-channel',
             token: SECOND_CHANNEL_TOKEN,
+            availableCurrencyCodes: ['GBP'],
             currencyCode: 'GBP',
+            defaultCurrencyCode: 'GBP',
             defaultLanguageCode: 'en',
             defaultShippingZone: {
                 id: 'T_1',

@@ -1,7 +1,7 @@
 ---
 title: "FormInputComponent"
 weight: 10
-date: 2023-06-21T06:23:42.028Z
+date: 2023-07-04T11:02:14.880Z
 showtoc: true
 generated: true
 ---
@@ -24,7 +24,7 @@ inputs for custom fields, or for configurable arguments.
 interface FormInputComponent<C = InputComponentConfig> {
   isListInput?: boolean;
   readonly: boolean;
-  formControl: UntypedFormControl;
+  formControl: FormControl;
   config: C;
 }
 ```
@@ -47,7 +47,7 @@ component should be rendered in a read-only state.{{< /member-description >}}
 
 ### formControl
 
-{{< member-info kind="property" type="UntypedFormControl"  >}}
+{{< member-info kind="property" type="FormControl"  >}}
 
 {{< member-description >}}This controls the actual value of the form item. The current value is available
 as `this.formControl.value`, and an Observable stream of value changes is available

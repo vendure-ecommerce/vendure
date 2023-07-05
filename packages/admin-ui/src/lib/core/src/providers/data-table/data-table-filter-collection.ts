@@ -199,7 +199,7 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     connectToRoute(route: ActivatedRoute) {
         this.valueChanges.subscribe(value => {
             this.router.navigate(['./'], {
-                queryParams: { [this.#filtersQueryParamName]: this.serialize() },
+                queryParams: { [this.#filtersQueryParamName]: this.serialize(), page: 1 },
                 relativeTo: route,
                 queryParamsHandling: 'merge',
             });

@@ -664,7 +664,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_34',
                     name: 'Bonsai Tree',
@@ -702,7 +704,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_23',
                     name: 'Skipping Rope',
@@ -740,7 +744,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_23',
                     name: 'Skipping Rope',
@@ -783,7 +789,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_20',
                     name: 'Tripod',
@@ -814,7 +822,9 @@ describe('Product resolver', () => {
 
             // Note the results are incorrect. This is a design trade-off. See the
             // commend on the ProductVariant.priceWithTax annotation for explanation.
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_20',
                     name: 'Tripod',
@@ -839,7 +849,9 @@ describe('Product resolver', () => {
                 productId: 'T_1',
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_1',
                     name: 'Laptop 13 inch 8GB',
@@ -1204,7 +1216,7 @@ describe('Product resolver', () => {
                             },
                         },
                     ),
-                "No Product with the id '999' could be found",
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1242,7 +1254,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: 'T_999',
                     }),
-                "No Product with the id '999' could be found",
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1272,7 +1284,7 @@ describe('Product resolver', () => {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
-                "No ProductOptionGroup with the id '999' could be found",
+                'No ProductOptionGroup with the id "999" could be found',
             ),
         );
 
@@ -1355,7 +1367,7 @@ describe('Product resolver', () => {
                         optionGroupId: '1',
                         productId: '999',
                     }),
-                "No Product with the id '999' could be found",
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1370,7 +1382,7 @@ describe('Product resolver', () => {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
-                "No ProductOptionGroup with the id '999' could be found",
+                'No ProductOptionGroup with the id "999" could be found',
             ),
         );
 
@@ -1667,7 +1679,7 @@ describe('Product resolver', () => {
                                 },
                             ],
                         }),
-                    "No ProductVariant with the id '999' could be found",
+                    'No ProductVariant with the id "999" could be found',
                 ),
             );
 
@@ -2117,7 +2129,7 @@ describe('Product resolver', () => {
                             },
                         },
                     ),
-                "No Product with the id '1' could be found",
+                'No Product with the id "1" could be found',
             ),
         );
 
@@ -2132,7 +2144,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
-                "No Product with the id '1' could be found",
+                'No Product with the id "1" could be found',
             ),
         );
 
@@ -2147,7 +2159,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
-                "No Product with the id '1' could be found",
+                'No Product with the id "1" could be found',
             ),
         );
 

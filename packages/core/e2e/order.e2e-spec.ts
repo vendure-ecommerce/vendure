@@ -523,7 +523,7 @@ describe('Orders resolver', () => {
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, { id: 'T_2', options: { sort: { id: SortOrder.ASC } } });
-            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+            expect(order.history.items.map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
@@ -1668,7 +1668,7 @@ describe('Orders resolver', () => {
                         paymentId: 'T_999',
                     },
                 });
-            }, "No Payment with the id '999' could be found"),
+            }, 'No Payment with the id "999" could be found'),
         );
 
         it('returns error result if payment and order lines do not belong to the same Order', async () => {
