@@ -1,8 +1,9 @@
 import { CurrencyCode, GlobalFlag } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { roundMoney } from '../../common/round-money';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -13,8 +14,9 @@ import { Collection } from '../collection/collection.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
 import { FacetValue } from '../facet-value/facet-value.entity';
-import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
+import { ProductOption } from '../product-option/product-option.entity';
+import { StockLevel } from '../stock-level/stock-level.entity';
 import { StockMovement } from '../stock-movement/stock-movement.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { TaxRate } from '../tax-rate/tax-rate.entity';
@@ -35,7 +37,8 @@ import { ProductVariantTranslation } from './product-variant-translation.entity'
 @Entity()
 export class ProductVariant
     extends VendureEntity
-    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware {
+    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware
+{
     constructor(input?: DeepPartial<ProductVariant>) {
         super(input);
     }
@@ -73,7 +76,9 @@ export class ProductVariant
         if (this.listPrice == null) {
             return 0;
         }
-        return this.listPriceIncludesTax ? this.taxRateApplied.netPriceOf(this.listPrice) : this.listPrice;
+        return roundMoney(
+            this.listPriceIncludesTax ? this.taxRateApplied.netPriceOf(this.listPrice) : this.listPrice,
+        );
     }
 
     @Calculated({
@@ -87,7 +92,9 @@ export class ProductVariant
         if (this.listPrice == null) {
             return 0;
         }
-        return this.listPriceIncludesTax ? this.listPrice : this.taxRateApplied.grossPriceOf(this.listPrice);
+        return roundMoney(
+            this.listPriceIncludesTax ? this.listPrice : this.taxRateApplied.grossPriceOf(this.listPrice),
+        );
     }
 
     /**
@@ -95,6 +102,7 @@ export class ProductVariant
      */
     taxRateApplied: TaxRate;
 
+    @Index()
     @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
@@ -103,6 +111,7 @@ export class ProductVariant
     })
     assets: ProductVariantAsset[];
 
+    @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
 
@@ -112,17 +121,12 @@ export class ProductVariant
     @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductVariant>>;
 
+    @Index()
     @ManyToOne(type => Product, product => product.variants)
     product: Product;
 
     @EntityId({ nullable: true })
     productId: ID;
-
-    @Column({ default: 0 })
-    stockOnHand: number;
-
-    @Column({ default: 0 })
-    stockAllocated: number;
 
     /**
      * @description
@@ -142,6 +146,9 @@ export class ProductVariant
 
     @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
     trackInventory: GlobalFlag;
+
+    @OneToMany(type => StockLevel, stockLevel => stockLevel.productVariant)
+    stockLevels: StockLevel[];
 
     @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];

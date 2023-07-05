@@ -1,14 +1,14 @@
 import {
-    Adjustment,
     CurrencyCode,
     Discount,
     OrderAddress,
     OrderTaxSummary,
+    OrderType,
     TaxLine,
 } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { InternalServerError } from '../../common/error/errors';
@@ -20,7 +20,8 @@ import { Channel } from '../channel/channel.entity';
 import { CustomOrderFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
-import { OrderItem } from '../order-item/order-item.entity';
+import { Fulfillment } from '../fulfillment/fulfillment.entity';
+import { Money } from '../money.decorator';
 import { OrderLine } from '../order-line/order-line.entity';
 import { OrderModification } from '../order-modification/order-modification.entity';
 import { Payment } from '../payment/payment.entity';
@@ -45,13 +46,28 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         super(input);
     }
 
+    @Column('varchar', { default: OrderType.Regular })
+    type: OrderType;
+
+    @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder)
+    sellerOrders: Order[];
+
+    @Index()
+    @ManyToOne(type => Order, aggregateOrder => aggregateOrder.sellerOrders)
+    aggregateOrder?: Order;
+
+    @EntityId({ nullable: true })
+    aggregateOrderId?: ID;
+
     /**
      * @description
      * A unique code for the Order, generated according to the
      * {@link OrderCodeStrategy}. This should be used as an order reference
      * for Customers, rather than the Order's id.
      */
-    @Column() code: string;
+    @Column()
+    @Index({ unique: true })
+    code: string;
 
     @Column('varchar') state: OrderState;
 
@@ -74,8 +90,12 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @Column({ nullable: true })
     orderPlacedAt?: Date;
 
+    @Index()
     @ManyToOne(type => Customer)
     customer?: Customer;
+
+    @EntityId({ nullable: true })
+    customerId?: ID;
 
     @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];
@@ -113,6 +133,10 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
 
+    @ManyToMany(type => Fulfillment)
+    @JoinTable()
+    fulfillments: Fulfillment[];
+
     @Column('varchar')
     currencyCode: CurrencyCode;
 
@@ -136,14 +160,14 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * To get a total of all OrderLines which does not account for prorated discounts, use the
      * sum of {@link OrderLine}'s `discountedLinePrice` values.
      */
-    @Column()
+    @Money()
     subTotal: number;
 
     /**
      * @description
      * Same as subTotal, but inclusive of tax.
      */
-    @Column()
+    @Money()
     subTotalWithTax: number;
 
     /**
@@ -157,13 +181,13 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * @description
      * The total of all the `shippingLines`.
      */
-    @Column({ default: 0 })
+    @Money({ default: 0 })
     shipping: number;
 
-    @Column({ default: 0 })
+    @Money({ default: 0 })
     shippingWithTax: number;
 
-    @Calculated({ relations: ['lines', 'lines.items', 'shippingLines'] })
+    @Calculated({ relations: ['lines', 'shippingLines'] })
     get discounts(): Discount[] {
         this.throwIfLinesNotJoined('discounts');
         const groupedAdjustments = new Map<string, Discount>();
@@ -241,16 +265,15 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     }
 
     @Calculated({
-        relations: ['lines', 'lines.items'],
+        relations: ['lines'],
         query: qb => {
             qb.leftJoin(
                 qb1 => {
                     return qb1
                         .from(Order, 'order')
-                        .select('COUNT(DISTINCT items.id)', 'qty')
+                        .select('SUM(lines.quantity)', 'qty')
                         .addSelect('order.id', 'oid')
                         .leftJoin('order.lines', 'lines')
-                        .leftJoin('lines.items', 'items')
                         .groupBy('order.id');
                 },
                 't1',
@@ -268,7 +291,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * @description
      * A summary of the taxes being applied to this Order.
      */
-    @Calculated({ relations: ['lines', 'lines.items'] })
+    @Calculated({ relations: ['lines'] })
     get taxSummary(): OrderTaxSummary[] {
         this.throwIfLinesNotJoined('taxSummary');
         const taxRateMap = new Map<
@@ -309,18 +332,11 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         }));
     }
 
-    getOrderItems(): OrderItem[] {
-        this.throwIfLinesNotJoined('getOrderItems');
-        return this.lines.reduce((items, line) => {
-            return [...items, ...line.items];
-        }, [] as OrderItem[]);
-    }
-
     private throwIfLinesNotJoined(propertyName: keyof Order) {
         if (this.lines == null) {
             const errorMessage = [
                 `The property "${propertyName}" on the Order entity requires the Order.lines relation to be joined.`,
-                `This can be done with the EntityHydratorService: \`await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })\``,
+                "This can be done with the EntityHydratorService: `await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })`",
             ];
 
             throw new InternalServerError(errorMessage.join('\n'));

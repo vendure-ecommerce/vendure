@@ -1,0 +1,12 @@
+{{ define "main" }}
+<article class="markdown">
+    {{ partial "breadcrumbs" . }} {{- .Content -}} {{ if gt (len .Pages) 0 }}
+    <h3>Contents:</h3>
+    <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {{ range .Pages.ByParam "title" }}
+            <a href="{{ .RelPermalink }}" class="border border-blue-100 rounded p-4 bg-blue-50 hover:bg-blue-100 hover:no-underline">{{ .Title }}</a>
+        {{ end}}
+    </div>
+    {{ end }}
+</article>
+{{ end }} {{ define "toc" }} {{ partial "docs/toc" . }} {{ end }}

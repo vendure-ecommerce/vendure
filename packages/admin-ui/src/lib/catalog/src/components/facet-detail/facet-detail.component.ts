@@ -1,29 +1,44 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+    FormBuilder,
+    UntypedFormArray,
+    UntypedFormControl,
+    UntypedFormGroup,
+    Validators,
+} from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     CreateFacetInput,
     CreateFacetValueInput,
     createUpdatedTranslatable,
-    CustomFieldConfig,
     DataService,
     DeletionResult,
-    FacetWithValues,
+    FACET_WITH_VALUES_FRAGMENT,
+    FacetWithValuesFragment,
     findTranslation,
+    GetFacetDetailDocument,
     LanguageCode,
     ModalService,
     NotificationService,
     Permission,
-    ServerConfigService,
+    TypedBaseDetailComponent,
     UpdateFacetInput,
     UpdateFacetValueInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { gql } from 'apollo-angular';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
-import { map, mapTo, mergeMap, switchMap, take } from 'rxjs/operators';
+import { map, mergeMap, switchMap, take } from 'rxjs/operators';
+
+export const FACET_DETAIL_QUERY = gql`
+    query GetFacetDetail($id: ID!) {
+        facet(id: $id) {
+            ...FacetWithValues
+        }
+    }
+    ${FACET_WITH_VALUES_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-facet-detail',
@@ -32,39 +47,38 @@ import { map, mapTo, mergeMap, switchMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacetDetailComponent
-    extends BaseDetailComponent<FacetWithValues.Fragment>
+    extends TypedBaseDetailComponent<typeof GetFacetDetailDocument, 'facet'>
     implements OnInit, OnDestroy
 {
-    customFields: CustomFieldConfig[];
-    customValueFields: CustomFieldConfig[];
-    detailForm: FormGroup;
-    values: Array<FacetWithValues.Values | { name: string; code: string }>;
+    readonly customFields = this.getCustomFieldConfig('Facet');
+    readonly customValueFields = this.getCustomFieldConfig('FacetValue');
+    detailForm = this.formBuilder.group({
+        facet: this.formBuilder.group({
+            code: ['', Validators.required],
+            name: '',
+            visible: true,
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
+        }),
+        values: this.formBuilder.array<{
+            id: string;
+            name: string;
+            code: string;
+            customFields: any;
+        }>([]),
+    });
+    values: Array<FacetWithValuesFragment['values'][number] | { name: string; code: string }> = [];
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateFacet];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
         private modalService: ModalService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Facet');
-        this.customValueFields = this.getCustomFieldConfig('FacetValue');
-        this.detailForm = this.formBuilder.group({
-            facet: this.formBuilder.group({
-                code: ['', Validators.required],
-                name: '',
-                visible: true,
-                customFields: this.formBuilder.group(
-                    this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-                ),
-            }),
-            values: this.formBuilder.array([]),
-        });
+        super();
     }
 
     ngOnInit() {
@@ -97,26 +111,27 @@ export class FacetDetailComponent
         return !!this.detailForm.get(['values', index, 'customFields', name]);
     }
 
-    getValuesFormArray(): FormArray {
-        return this.detailForm.get('values') as FormArray;
+    getValuesFormArray(): UntypedFormArray {
+        return this.detailForm.get('values') as UntypedFormArray;
     }
 
     addFacetValue() {
-        const valuesFormArray = this.detailForm.get('values') as FormArray | null;
+        const valuesFormArray = this.detailForm.get('values') as UntypedFormArray | null;
         if (valuesFormArray) {
             const valueGroup = this.formBuilder.group({
                 id: '',
                 name: ['', Validators.required],
                 code: '',
+                customFields: this.formBuilder.group({}),
             });
             const newValue: any = { name: '', code: '' };
             if (this.customValueFields.length) {
-                const customValueFieldsGroup = new FormGroup({});
+                const customValueFieldsGroup = new UntypedFormGroup({});
                 newValue.customFields = {};
 
                 for (const fieldDef of this.customValueFields) {
                     const key = fieldDef.name;
-                    customValueFieldsGroup.addControl(key, new FormControl());
+                    customValueFieldsGroup.addControl(key, new UntypedFormControl());
                 }
 
                 valueGroup.addControl('customFields', customValueFieldsGroup);
@@ -127,75 +142,76 @@ export class FacetDetailComponent
     }
 
     create() {
-        const facetForm = this.detailForm.get('facet');
+        const facetForm = this.detailForm.get('facet') as (typeof this.detailForm)['controls']['facet'];
         if (!facetForm || !facetForm.dirty) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(
-                take(1),
-                mergeMap(([facet, languageCode]) => {
-                    const newFacet = this.getUpdatedFacet(
-                        facet,
-                        facetForm as FormGroup,
-                        languageCode,
-                    ) as CreateFacetInput;
-                    return this.dataService.facet.createFacet(newFacet);
-                }),
-                switchMap(data => this.dataService.facet.getAllFacets().single$.pipe(mapTo(data))),
-            )
-            .subscribe(
-                data => {
-                    this.notificationService.success(_('common.notify-create-success'), { entity: 'Facet' });
-                    this.detailForm.markAsPristine();
-                    this.changeDetector.markForCheck();
-                    this.router.navigate(['../', data.createFacet.id], { relativeTo: this.route });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-create-error'), {
-                        entity: 'Facet',
-                    });
-                },
-            );
+        const newFacet = this.getUpdatedFacet(
+            {
+                id: '',
+                createdAt: '',
+                updatedAt: '',
+                isPrivate: false,
+                languageCode: this.languageCode,
+                name: '',
+                code: '',
+                translations: [],
+                values: [],
+            },
+            facetForm,
+            this.languageCode,
+        ) as CreateFacetInput;
+        this.dataService.facet.createFacet(newFacet).subscribe(
+            data => {
+                this.notificationService.success(_('common.notify-create-success'), { entity: 'Facet' });
+                this.detailForm.markAsPristine();
+                this.changeDetector.markForCheck();
+                this.router.navigate(['../', data.createFacet.id], { relativeTo: this.route });
+            },
+            err => {
+                this.notificationService.error(_('common.notify-create-error'), {
+                    entity: 'Facet',
+                });
+            },
+        );
     }
 
     save() {
+        const valuesArray = this.detailForm.get('values') as (typeof this.detailForm)['controls']['values'];
         combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
                 mergeMap(([facet, languageCode]) => {
-                    const facetGroup = this.detailForm.get('facet');
+                    const facetForm = this.detailForm.get(
+                        'facet',
+                    ) as (typeof this.detailForm)['controls']['facet'];
                     const updateOperations: Array<Observable<any>> = [];
 
-                    if (facetGroup && facetGroup.dirty) {
+                    if (facetForm && facetForm.dirty) {
                         const newFacet = this.getUpdatedFacet(
                             facet,
-                            facetGroup as FormGroup,
+                            facetForm,
                             languageCode,
                         ) as UpdateFacetInput;
                         if (newFacet) {
                             updateOperations.push(this.dataService.facet.updateFacet(newFacet));
                         }
                     }
-                    const valuesArray = this.detailForm.get('values');
                     if (valuesArray && valuesArray.dirty) {
-                        const createdValues = this.getCreatedFacetValues(
-                            facet,
-                            valuesArray as FormArray,
-                            languageCode,
-                        );
+                        const createdValues = this.getCreatedFacetValues(facet, valuesArray, languageCode);
                         if (createdValues.length) {
                             updateOperations.push(
-                                this.dataService.facet
-                                    .createFacetValues(createdValues)
-                                    .pipe(switchMap(() => this.dataService.facet.getFacet(this.id).single$)),
+                                this.dataService.facet.createFacetValues(createdValues).pipe(
+                                    switchMap(
+                                        () =>
+                                            this.dataService.query(GetFacetDetailDocument, {
+                                                id: this.id,
+                                            }).single$,
+                                    ),
+                                ),
                             );
                         }
-                        const updatedValues = this.getUpdatedFacetValues(
-                            facet,
-                            valuesArray as FormArray,
-                            languageCode,
-                        );
+                        const updatedValues = this.getUpdatedFacetValues(facet, valuesArray, languageCode);
                         if (updatedValues.length) {
                             updateOperations.push(this.dataService.facet.updateFacetValues(updatedValues));
                         }
@@ -203,7 +219,6 @@ export class FacetDetailComponent
 
                     return forkJoin(updateOperations);
                 }),
-                switchMap(() => this.dataService.facet.getAllFacets().single$),
             )
             .subscribe(
                 () => {
@@ -222,7 +237,7 @@ export class FacetDetailComponent
     deleteFacetValue(facetValueId: string | undefined, index: number) {
         if (!facetValueId) {
             // deleting a newly-added (not persisted) FacetValue
-            const valuesFormArray = this.detailForm.get('values') as FormArray | null;
+            const valuesFormArray = this.detailForm.get('values') as UntypedFormArray | null;
             if (valuesFormArray) {
                 valuesFormArray.removeAt(index);
             }
@@ -240,11 +255,17 @@ export class FacetDetailComponent
                         );
                     }
                 }),
-                switchMap(deleted => (deleted ? this.dataService.facet.getFacet(this.id).single$ : [])),
+                switchMap(deleted =>
+                    deleted
+                        ? this.dataService.query(GetFacetDetailDocument, {
+                              id: this.id,
+                          }).single$
+                        : [],
+                ),
             )
             .subscribe(
                 () => {
-                    const valuesFormArray = this.detailForm.get('values') as FormArray | null;
+                    const valuesFormArray = this.detailForm.get('values') as UntypedFormArray | null;
                     if (valuesFormArray) {
                         valuesFormArray.removeAt(index);
                     }
@@ -281,7 +302,7 @@ export class FacetDetailComponent
     /**
      * Sets the values of the form on changes to the facet or current language.
      */
-    protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
+    protected setFormValues(facet: FacetWithValuesFragment, languageCode: LanguageCode) {
         const currentTranslation = findTranslation(facet, languageCode);
 
         this.detailForm.patchValue({
@@ -293,7 +314,7 @@ export class FacetDetailComponent
         });
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['facet', 'customFields']) as FormGroup;
+            const customFieldsGroup = this.detailForm.get(['facet', 'customFields']) as UntypedFormGroup;
             this.setCustomFieldFormValues(
                 this.customFields,
                 this.detailForm.get(['facet', 'customFields']),
@@ -302,7 +323,7 @@ export class FacetDetailComponent
             );
         }
 
-        const currentValuesFormArray = this.detailForm.get('values') as FormArray;
+        const currentValuesFormArray = this.detailForm.get('values') as UntypedFormArray;
         this.values = [...facet.values];
         facet.values.forEach(value => {
             const valueTranslation = findTranslation(value, languageCode);
@@ -313,7 +334,7 @@ export class FacetDetailComponent
             };
             let valueControl = currentValuesFormArray.controls.find(
                 control => control.value.id === value.id,
-            ) as FormGroup | undefined;
+            ) as UntypedFormGroup | undefined;
             if (valueControl) {
                 valueControl.get('id')?.setValue(group.id);
                 valueControl.get('code')?.setValue(group.code);
@@ -323,9 +344,11 @@ export class FacetDetailComponent
                 currentValuesFormArray.push(valueControl);
             }
             if (this.customValueFields.length) {
-                let customValueFieldsGroup = valueControl.get(['customFields']) as FormGroup | undefined;
+                let customValueFieldsGroup = valueControl.get(['customFields']) as
+                    | UntypedFormGroup
+                    | undefined;
                 if (!customValueFieldsGroup) {
-                    customValueFieldsGroup = new FormGroup({});
+                    customValueFieldsGroup = new UntypedFormGroup({});
                     valueControl.addControl('customFields', customValueFieldsGroup);
                 }
 
@@ -340,7 +363,7 @@ export class FacetDetailComponent
                         if (control) {
                             control.setValue(fieldValue);
                         } else {
-                            customValueFieldsGroup.addControl(key, new FormControl(fieldValue));
+                            customValueFieldsGroup.addControl(key, new UntypedFormControl(fieldValue));
                         }
                     }
                 }
@@ -353,8 +376,8 @@ export class FacetDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedFacet(
-        facet: FacetWithValues.Fragment,
-        facetFormGroup: FormGroup,
+        facet: FacetWithValuesFragment,
+        facetFormGroup: (typeof this.detailForm)['controls']['facet'],
         languageCode: LanguageCode,
     ): CreateFacetInput | UpdateFacetInput {
         const input = createUpdatedTranslatable({
@@ -376,17 +399,17 @@ export class FacetDetailComponent
      * which can be persisted to the API via a createFacetValues mutation.
      */
     private getCreatedFacetValues(
-        facet: FacetWithValues.Fragment,
-        valuesFormArray: FormArray,
+        facet: FacetWithValuesFragment,
+        valuesFormArray: (typeof this.detailForm)['controls']['values'],
         languageCode: LanguageCode,
     ): CreateFacetValueInput[] {
         return valuesFormArray.controls
-            .filter(c => !c.value.id)
+            .filter(c => !c.value?.id)
             .map(c => c.value)
             .map(value =>
                 createUpdatedTranslatable({
                     translatable: { ...value, translations: [] as any },
-                    updatedFields: value,
+                    updatedFields: value ?? {},
                     customFieldConfig: this.customValueFields,
                     languageCode,
                     defaultTranslation: {
@@ -397,6 +420,7 @@ export class FacetDetailComponent
             )
             .map(input => ({
                 facetId: facet.id,
+                code: input.code ?? '',
                 ...input,
             }));
     }
@@ -406,8 +430,8 @@ export class FacetDetailComponent
      * which can be persisted to the API via an updateFacetValues mutation.
      */
     private getUpdatedFacetValues(
-        facet: FacetWithValues.Fragment,
-        valuesFormArray: FormArray,
+        facet: FacetWithValuesFragment,
+        valuesFormArray: UntypedFormArray,
         languageCode: LanguageCode,
     ): UpdateFacetValueInput[] {
         const dirtyValues = facet.values.filter((v, i) => {
@@ -422,8 +446,8 @@ export class FacetDetailComponent
             throw new Error(_(`error.facet-value-form-values-do-not-match`));
         }
         return dirtyValues
-            .map((value, i) => {
-                return createUpdatedTranslatable({
+            .map((value, i) =>
+                createUpdatedTranslatable({
                     translatable: value,
                     updatedFields: dirtyValueValues[i],
                     customFieldConfig: this.customValueFields,
@@ -432,8 +456,8 @@ export class FacetDetailComponent
                         languageCode,
                         name: '',
                     },
-                });
-            })
+                }),
+            )
             .filter(notNullOrUndefined);
     }
 }

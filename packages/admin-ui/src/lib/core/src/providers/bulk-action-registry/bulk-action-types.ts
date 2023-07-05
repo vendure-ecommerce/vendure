@@ -9,7 +9,27 @@ import { ActivatedRoute } from '@angular/router';
  * @docsCategory bulk-actions
  * @docsPage BulkAction
  */
-export type BulkActionLocationId = 'product-list' | 'facet-list' | 'collection-list' | string;
+export type BulkActionLocationId =
+    | 'product-list'
+    | 'facet-list'
+    | 'collection-list'
+    | 'customer-list'
+    | 'customer-group-list'
+    | 'customer-group-members-list'
+    | 'customer-group-members-picker-list'
+    | 'promotion-list'
+    | 'seller-list'
+    | 'channel-list'
+    | 'administrator-list'
+    | 'role-list'
+    | 'shipping-method-list'
+    | 'stock-location-list'
+    | 'payment-method-list'
+    | 'tax-category-list'
+    | 'tax-rate-list'
+    | 'zone-list'
+    | 'zone-members-list'
+    | string;
 
 /**
  * @description
@@ -89,7 +109,7 @@ export interface BulkAction<ItemType = any, ComponentType = any> {
     ) => Record<string, string | number> | Promise<Record<string, string | number>>;
     /**
      * @description
-     * A valid [Clarity Icons](https://clarity.design/icons) icon shape, e.g.
+     * A valid [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/) icon shape, e.g.
      * "cog", "user", "info-standard".
      */
     icon?: string;

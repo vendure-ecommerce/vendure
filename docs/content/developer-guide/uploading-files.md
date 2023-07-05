@@ -5,7 +5,7 @@ showtoc: true
 
 # Uploading Files 
 
-Vendure handles file uploads with the [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec). Internally, we use the [graphql-upload package](https://github.com/jaydenseric/graphql-upload). Once uploaded, a file is known as an [Asset]({{< relref "/docs/typescript-api/entities/asset" >}}). Assets are typically used for images, but can represent any kind of binary data such as PDF files or videos.
+Vendure handles file uploads with the [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec). Internally, we use the [graphql-upload package](https://github.com/jaydenseric/graphql-upload). Once uploaded, a file is known as an [Asset]({{< relref "/typescript-api/entities/asset" >}}). Assets are typically used for images, but can represent any kind of binary data such as PDF files or videos.
 
 ## Upload clients
 
@@ -15,7 +15,7 @@ For testing, it is even possible to use a [plain curl request](https://github.co
 
 ## The `createAssets` mutation
 
-The [createAssets mutation]({{< relref "/docs/graphql-api/admin/mutations" >}}#createassets) in the Admin API is the only means of uploading files by default. 
+The [createAssets mutation]({{< relref "/graphql-api/admin/mutations" >}}#createassets) in the Admin API is the only means of uploading files by default. 
 
 Here's an example of how a file upload would look using the `apollo-upload-client` package:
 
@@ -45,7 +45,7 @@ function UploadFile() {
     if (target.validity.valid) {
       mutate({ 
         variables: {
-          input: target.files.map(file => ({ file }))
+          input: Array.from(target.files).map((file) => ({ file }));
         }  
       });
     }

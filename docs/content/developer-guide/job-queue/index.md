@@ -52,7 +52,7 @@ In this case it is recommended to try the [BullMQJobQueuePlugin]({{< relref "bul
 
 ## Using Job Queues in a plugin
 
-If you create a [Vendure plugin]({{< relref "/docs/plugins" >}}) which involves some long-running tasks, you can also make use of the job queue. See the [JobQueue plugin example]({{< relref "using-job-queue-service" >}}) for a detailed annotated example.
+If you create a [Vendure plugin]({{< relref "/plugins" >}}) which involves some long-running tasks, you can also make use of the job queue. See the [JobQueue plugin example]({{< relref "using-job-queue-service" >}}) for a detailed annotated example.
 
 {{< alert "primary" >}}
 A real example of this can be seen in the [EmailPlugin source](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/plugin.ts)

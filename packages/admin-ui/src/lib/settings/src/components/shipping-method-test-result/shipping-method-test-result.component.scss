@@ -1,3 +1,6 @@
+:host {
+    display: block;
+}
 .test-result {
     &.success .card-block {
         background-color: var(--color-success-100);

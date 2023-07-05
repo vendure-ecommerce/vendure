@@ -1,6 +1,7 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
+import { globSync } from 'glob';
 import * as path from 'path';
 
 import {
@@ -8,13 +9,12 @@ import {
     GLOBAL_STYLES_OUTPUT_DIR,
     MODULES_OUTPUT_DIR,
     SHARED_EXTENSIONS_FILE,
-    STATIC_ASSETS_OUTPUT_DIR,
 } from './constants';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
-    AdminUiExtension,
     AdminUiExtensionLazyModule,
     AdminUiExtensionSharedModule,
+    AdminUiExtensionWithId,
     Extension,
     GlobalStylesExtension,
     SassVariableOverridesExtension,
@@ -35,10 +35,13 @@ import {
 
 export async function setupScaffold(outputPath: string, extensions: Extension[]) {
     deleteExistingExtensionModules(outputPath);
-    copyAdminUiSource(outputPath);
 
     const adminUiExtensions = extensions.filter(isAdminUiExtension);
     const normalizedExtensions = normalizeExtensions(adminUiExtensions);
+
+    const modulePathMapping = generateModulePathMapping(normalizedExtensions);
+    copyAdminUiSource(outputPath, modulePathMapping);
+
     await copyExtensionModules(outputPath, normalizedExtensions);
 
     const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
@@ -52,14 +55,6 @@ export async function setupScaffold(outputPath: string, extensions: Extension[])
     await mergeExtensionTranslations(outputPath, allTranslationFiles);
 
     copyUiDevkit(outputPath);
-    try {
-        await checkIfNgccWasRun();
-    } catch (e) {
-        const cmd = shouldUseYarn() ? 'yarn ngcc' : 'npx ngcc';
-        logger.log(
-            `An error occurred when running ngcc. Try removing node_modules, re-installing, and then manually running "${cmd}" in the project root.`,
-        );
-    }
 }
 
 /**
@@ -71,10 +66,29 @@ function deleteExistingExtensionModules(outputPath: string) {
 }
 
 /**
+ * Generates a module path mapping object for all extensions with a "pathAlias"
+ * property declared (if any).
+ */
+function generateModulePathMapping(extensions: AdminUiExtensionWithId[]) {
+    const extensionsWithAlias = extensions.filter(e => e.pathAlias);
+    if (extensionsWithAlias.length === 0) {
+        return undefined;
+    }
+
+    return extensionsWithAlias.reduce((acc, e) => {
+        // for imports from the index file if there is one
+        acc[e.pathAlias as string] = [`src/extensions/${e.id}`];
+        // direct access to files / deep imports
+        acc[`${e.pathAlias as string}/*`] = [`src/extensions/${e.id}/*`];
+        return acc;
+    }, {} as Record<string, string[]>);
+}
+
+/**
  * Copies all files from the extensionPaths of the configured extensions into the
  * admin-ui source tree.
  */
-async function copyExtensionModules(outputPath: string, extensions: Array<Required<AdminUiExtension>>) {
+async function copyExtensionModules(outputPath: string, extensions: AdminUiExtensionWithId[]) {
     const extensionRoutesSource = generateLazyExtensionRoutes(extensions);
     fs.writeFileSync(path.join(outputPath, EXTENSION_ROUTES_FILE), extensionRoutesSource, 'utf8');
     const sharedExtensionModulesSource = generateSharedExtensionModule(extensions);
@@ -82,7 +96,17 @@ async function copyExtensionModules(outputPath: string, extensions: Array<Requir
 
     for (const extension of extensions) {
         const dest = path.join(outputPath, MODULES_OUTPUT_DIR, extension.id);
-        fs.copySync(extension.extensionPath, dest);
+        if (!extension.exclude) {
+            fs.copySync(extension.extensionPath, dest);
+            continue;
+        }
+
+        const exclude = extension.exclude
+            .map(e => globSync(path.join(extension.extensionPath, e)))
+            .flatMap(e => e);
+        fs.copySync(extension.extensionPath, dest, {
+            filter: name => name === extension.extensionPath || exclude.every(e => e !== name),
+        });
     }
 }
 
@@ -128,7 +152,7 @@ async function addGlobalStyles(
 
     const globalStylesSource =
         overridesImport +
-        `@import "./styles/styles";\n` +
+        '@import "./styles/styles";\n' +
         imports.map(file => `@import "./${GLOBAL_STYLES_OUTPUT_DIR}/${file}";`).join('\n');
 
     const globalStylesFile = path.join(outputPath, 'src', 'global-styles.scss');
@@ -142,9 +166,9 @@ export async function copyGlobalStyleFile(outputPath: string, stylePath: string)
     await fs.copyFile(stylePath, styleOutputPath);
 }
 
-function generateLazyExtensionRoutes(extensions: Array<Required<AdminUiExtension>>): string {
+function generateLazyExtensionRoutes(extensions: AdminUiExtensionWithId[]): string {
     const routes: string[] = [];
-    for (const extension of extensions as Array<Required<AdminUiExtension>>) {
+    for (const extension of extensions) {
         for (const module of extension.ngModules) {
             if (module.type === 'lazy') {
                 routes.push(`  {
@@ -159,7 +183,7 @@ function generateLazyExtensionRoutes(extensions: Array<Required<AdminUiExtension
     return `export const extensionRoutes = [${routes.join(',\n')}];\n`;
 }
 
-function generateSharedExtensionModule(extensions: Array<Required<AdminUiExtension>>) {
+function generateSharedExtensionModule(extensions: AdminUiExtensionWithId[]) {
     return `import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 ${extensions
@@ -193,15 +217,17 @@ function getModuleFilePath(
 }
 
 /**
- * Copy the Admin UI sources & static assets to the outputPath if it does not already
- * exists there.
+ * Copies the Admin UI sources & static assets to the outputPath if it does not already
+ * exist there.
  */
-function copyAdminUiSource(outputPath: string) {
-    const angularJsonFile = path.join(outputPath, 'angular.json');
-    const indexFile = path.join(outputPath, '/src/index.html');
-    if (fs.existsSync(angularJsonFile) && fs.existsSync(indexFile)) {
+function copyAdminUiSource(outputPath: string, modulePathMapping: Record<string, string[]> | undefined) {
+    const tsconfigFilePath = path.join(outputPath, 'tsconfig.json');
+    const indexFilePath = path.join(outputPath, '/src/index.html');
+    if (fs.existsSync(tsconfigFilePath) && fs.existsSync(indexFilePath)) {
+        configureModulePathMapping(tsconfigFilePath, modulePathMapping);
         return;
     }
+
     const scaffoldDir = path.join(__dirname, '../scaffold');
     const adminUiSrc = path.join(require.resolve('@vendure/admin-ui'), '../../static');
 
@@ -216,6 +242,7 @@ function copyAdminUiSource(outputPath: string) {
     fs.removeSync(outputPath);
     fs.ensureDirSync(outputPath);
     fs.copySync(scaffoldDir, outputPath);
+    configureModulePathMapping(tsconfigFilePath, modulePathMapping);
 
     // copy source files from admin-ui package
     const outputSrc = path.join(outputPath, 'src');
@@ -223,55 +250,26 @@ function copyAdminUiSource(outputPath: string) {
     fs.copySync(adminUiSrc, outputSrc);
 }
 
-/**
- * Attempts to find out it the ngcc compiler has been run on the Angular packages, and if not,
- * attemps to run it. This is done this way because attempting to run ngcc from a sub-directory
- * where the angular libs are in a higher-level node_modules folder currently results in the error
- * NG6002, see https://github.com/angular/angular/issues/35747.
- *
- * However, when ngcc is run from the root, it works.
- */
-async function checkIfNgccWasRun(): Promise<void> {
-    const coreUmdFile = require.resolve('@vendure/admin-ui/core');
-    if (!coreUmdFile) {
-        logger.error(`Could not resolve the "@vendure/admin-ui/core" package!`);
-        return;
-    }
-    // ngcc creates a particular folder after it has been run once
-    const ivyDir = path.join(coreUmdFile, '../..', '__ivy_ngcc__');
-    if (fs.existsSync(ivyDir)) {
-        return;
-    }
-    // Looks like ngcc has not been run, so attempt to do so.
-    const rootDir = coreUmdFile.split('node_modules')[0];
-    return new Promise((resolve, reject) => {
-        logger.log(
-            'Running the Angular Ivy compatibility compiler (ngcc) on Vendure Admin UI dependencies ' +
-                '(this is only needed on the first run)...',
-        );
-        const cmd = shouldUseYarn() ? 'yarn' : 'npx';
-        const ngccProcess = spawn(
-            cmd,
-            [
-                'ngcc',
-                '--properties es2015 browser module main',
-                '--first-only',
-                '--create-ivy-entry-points',
-                '-l=error',
-            ],
-            {
-                cwd: rootDir,
-                shell: true,
-                stdio: 'inherit',
-            },
-        );
+export async function setBaseHref(outputPath: string, baseHref: string) {
+    const angularJsonFilePath = path.join(outputPath, '/angular.json');
+    const angularJson = await fs.readJSON(angularJsonFilePath, 'utf-8');
+    angularJson.projects['vendure-admin'].architect.build.options.baseHref = baseHref;
+    await fs.writeJSON(angularJsonFilePath, angularJson, { spaces: 2 });
+}
 
-        ngccProcess.on('close', code => {
-            if (code !== 0) {
-                reject(code);
-            } else {
-                resolve();
-            }
-        });
-    });
+/**
+ * Adds module path mapping to the bundled tsconfig.json file if defined as a UI extension.
+ */
+function configureModulePathMapping(
+    tsconfigFilePath: string,
+    modulePathMapping: Record<string, string[]> | undefined,
+) {
+    if (!modulePathMapping) {
+        return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const tsconfig = require(tsconfigFilePath);
+    tsconfig.compilerOptions.paths = modulePathMapping;
+    fs.writeFileSync(tsconfigFilePath, JSON.stringify(tsconfig, null, 2));
 }

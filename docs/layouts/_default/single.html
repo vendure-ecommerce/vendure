@@ -1,0 +1,10 @@
+{{ define "main" }}
+<article class="markdown">
+    {{ partial "breadcrumbs" . }}
+    {{- .Content -}}
+</article>
+{{ end }}
+
+{{ define "toc" }}
+{{ partial "docs/toc" . }}
+{{ end }}

@@ -33,7 +33,7 @@ export class HealthCheckService {
 
     private readonly pollingDelayMs = 60 * 1000;
     private readonly healthCheckEndpoint: string;
-    private readonly _refresh = new Subject();
+    private readonly _refresh = new Subject<void>();
 
     constructor(private httpClient: HttpClient) {
         this.healthCheckEndpoint = getServerLocation() + '/health';
@@ -47,9 +47,7 @@ export class HealthCheckService {
         this.status$ = result$.pipe(map(res => res.status));
         this.details$ = result$.pipe(
             map(res =>
-                Object.keys(res.details).map(key => {
-                    return { key, result: res.details[key] };
-                }),
+                Object.keys(res.details).map(key => ({ key, result: res.details[key] })),
             ),
         );
         this.lastCheck$ = result$.pipe(map(res => res.lastChecked));

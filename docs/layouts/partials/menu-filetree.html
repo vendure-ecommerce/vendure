@@ -1,0 +1,41 @@
+<ul>
+    <li>
+    <ul><li><a href="/getting-started" {{- if eq .Page.Title "Getting Started" }} class="text-blue-700 active"{{ end }}>
+      Getting Started
+    </a></li></ul>
+    </li>
+    <li>{{ template "book-section" (dict "Section" .Site.Sections "CurrentPage" $.Permalink) }}</li>
+</ul>
+
+{{ define "book-section" }} <!-- Single section of menu (recursive) -->
+<ul {{ if .Expanded }}class="expanded"{{ end }}>
+    {{ range (.Section.ByParam "Title").ByParam "Weight" }}
+        {{ if ne .Title "Search Index" }}
+            {{ if and (eq .Kind "section") (or (gt (len .Pages) 0) (gt (len .Sections) 0) ) }}
+                <li class="section">
+                    {{ $expanded := in $.CurrentPage .Permalink }}
+                    <div class="section-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 section-icon {{ if $expanded}}expanded{{ end }}">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                        </svg>
+                        {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+                    </div>
+                    {{ template "book-section" (dict "Section" .Pages "CurrentPage" $.CurrentPage "Expanded" $expanded) }}
+                </li>
+            {{ else }}
+                <li>
+                    {{ template "book-page-link" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+                </li>
+            {{ end }}
+        {{end }}
+    {{ end }}
+  </ul>
+{{ end }}
+
+{{ define "book-page-link" }}
+{{- with .Page -}}
+<a href="{{ .RelPermalink }}" {{- if eq $.CurrentPage .Permalink }} class="text-blue-700 active"{{ end }}>
+  {{- template "title" . -}}
+</a>
+{{- end -}}
+{{ end }}

@@ -12,8 +12,7 @@ export interface SelfRefreshingCache<V, RefreshArgs extends any[] = []> {
      * The current value of the cache. If the value is stale, the data will be refreshed and then
      * the fresh value will be returned.
      */
-    value(): Promise<V>;
-    value(...refreshArgs: RefreshArgs | [undefined]): Promise<V>;
+    value(...refreshArgs: RefreshArgs | [undefined] | []): Promise<V>;
 
     /**
      * @description
@@ -65,11 +64,11 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
  */
 export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
     config: SelfRefreshingCacheConfig<V, RefreshArgs>,
-    refreshArgs?: RefreshArgs
+    refreshArgs?: RefreshArgs,
 ): Promise<SelfRefreshingCache<V, RefreshArgs>> {
     const { ttl, name, refresh, getTimeFn } = config;
     const getTimeNow = getTimeFn ?? (() => new Date().getTime());
-    const initialValue = await refresh.fn(...(refreshArgs ?? refresh.defaultArgs));
+    const initialValue: V = await refresh.fn(...(refreshArgs ?? refresh.defaultArgs));
     let value = initialValue;
     let expires = getTimeNow() + ttl;
     const memoCache = new Map<string, { expires: number; value: any }>();
@@ -84,25 +83,27 @@ export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
                 }
                 return value;
             })
-            .catch(err => {
+            .catch((err: any) => {
+                const _message = err.message;
+                const message = typeof _message === 'string' ? _message : JSON.stringify(err.message);
                 Logger.error(
-                    `Failed to update SelfRefreshingCache "${name}": ${err.message}`,
+                    `Failed to update SelfRefreshingCache "${name}": ${message}`,
                     undefined,
                     err.stack,
                 );
                 return value;
             });
     };
-    const getValue = async (refreshArgs?: RefreshArgs, resetMemoCache = true): Promise<V> => {
+    const getValue = async (_refreshArgs?: RefreshArgs, resetMemoCache = true): Promise<V> => {
         const now = getTimeNow();
         if (expires < now) {
-            return refreshValue(resetMemoCache, refreshArgs ?? refresh.defaultArgs);
+            return refreshValue(resetMemoCache, _refreshArgs ?? refresh.defaultArgs);
         }
         return value;
     };
     const memoize = async <Args extends any[], R>(
         args: Args,
-        refreshArgs: RefreshArgs,
+        _refreshArgs: RefreshArgs,
         fn: (value: V, ...args: Args) => R,
     ): Promise<R> => {
         const key = JSON.stringify(args);
@@ -111,7 +112,7 @@ export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
         if (cached && now < cached.expires) {
             return cached.value;
         }
-        const result = getValue(refreshArgs, false).then(val => fn(val, ...args));
+        const result = getValue(_refreshArgs, false).then(val => fn(val, ...args));
         memoCache.set(key, {
             expires: now + ttl,
             value: result,
@@ -119,7 +120,12 @@ export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
         return result;
     };
     return {
-        value: (...args) => getValue(!args.length || args.length === 1 && args[0] === undefined ? undefined : args as RefreshArgs),
+        value: (...args) =>
+            getValue(
+                !args.length || (args.length === 1 && args[0] === undefined)
+                    ? undefined
+                    : (args as RefreshArgs),
+            ),
         refresh: (...args) => refreshValue(true, args),
         memoize,
     };

@@ -1,5 +1,5 @@
 import { getAppConfig } from '../../app.config';
-import { GetNetworkStatus, GetUiState, GetUserStatus } from '../../common/generated-types';
+import { GetNetworkStatusQuery, GetUiStateQuery, GetUserStatusQuery } from '../../common/generated-types';
 import { getDefaultUiLanguage, getDefaultUiLocale } from '../../common/utilities/get-default-ui-language';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 
@@ -12,8 +12,9 @@ export function getClientDefaults(localStorageService: LocalStorageService) {
         networkStatus: {
             inFlightRequests: 0,
             __typename: 'NetworkStatus',
-        } as GetNetworkStatus.NetworkStatus,
+        } as GetNetworkStatusQuery['networkStatus'],
         userStatus: {
+            administratorId: null,
             username: '',
             isLoggedIn: false,
             loginTime: '',
@@ -21,14 +22,15 @@ export function getClientDefaults(localStorageService: LocalStorageService) {
             permissions: [],
             channels: [],
             __typename: 'UserStatus',
-        } as GetUserStatus.UserStatus,
+        } as GetUserStatusQuery['userStatus'],
         uiState: {
             language: currentLanguage,
             locale: currentLocale || '',
             contentLanguage: currentContentLanguage,
             theme: activeTheme,
             displayUiExtensionPoints: false,
+            mainNavExpanded: false,
             __typename: 'UiState',
-        } as GetUiState.UiState,
+        } as GetUiStateQuery['uiState'],
     };
 }

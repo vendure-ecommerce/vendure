@@ -3,6 +3,9 @@ scalar JSON
 scalar DateTime
 scalar Upload
 
+# Our custom scalars
+scalar Money
+
 interface PaginatedList {
     items: [Node!]!
     totalItems: Int!
@@ -21,7 +24,8 @@ type Adjustment {
     adjustmentSource: String!
     type: AdjustmentType!
     description: String!
-    amount: Int!
+    amount: Money!
+    data: JSON
 }
 
 type TaxLine {
@@ -232,8 +236,8 @@ type Success {
 
 type ShippingMethodQuote {
     id: ID!
-    price: Int!
-    priceWithTax: Int!
+    price: Money!
+    priceWithTax: Money!
     code: String!
     name: String!
     description: String!

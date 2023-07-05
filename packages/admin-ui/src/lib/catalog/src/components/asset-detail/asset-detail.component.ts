@@ -1,15 +1,30 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    Asset,
-    BaseDetailComponent,
-    CustomFieldConfig,
-    GetAsset,
+    ASSET_FRAGMENT,
+    AssetDetailQueryDocument,
+    AssetDetailQueryQuery,
+    DataService,
     LanguageCode,
+    NotificationService,
+    TAG_FRAGMENT,
+    TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
-import { DataService, NotificationService, ServerConfigService } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+export const ASSET_DETAIL_QUERY = gql`
+    query AssetDetailQuery($id: ID!) {
+        asset(id: $id) {
+            ...Asset
+            tags {
+                ...Tag
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-asset-detail',
@@ -17,30 +32,28 @@ import { DataService, NotificationService, ServerConfigService } from '@vendure/
     styleUrls: ['./asset-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssetDetailComponent extends BaseDetailComponent<GetAsset.Asset> implements OnInit, OnDestroy {
-    detailForm = new FormGroup({});
-    customFields: CustomFieldConfig[];
+export class AssetDetailComponent
+    extends TypedBaseDetailComponent<typeof AssetDetailQueryDocument, 'asset'>
+    implements OnInit, OnDestroy
+{
+    readonly customFields = this.getCustomFieldConfig('Asset');
+    detailForm = new FormGroup({
+        name: new FormControl(''),
+        tags: new FormControl([] as string[]),
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private notificationService: NotificationService,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Asset');
+        super();
     }
 
     ngOnInit() {
-        this.detailForm = new FormGroup({
-            name: new FormControl(''),
-            tags: new FormControl([]),
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
         this.init();
     }
 
@@ -74,9 +87,12 @@ export class AssetDetailComponent extends BaseDetailComponent<GetAsset.Asset> im
             );
     }
 
-    protected setFormValues(entity: GetAsset.Asset, languageCode: LanguageCode): void {
+    protected setFormValues(
+        entity: NonNullable<AssetDetailQueryQuery['asset']>,
+        languageCode: LanguageCode,
+    ): void {
         this.detailForm.get('name')?.setValue(entity.name);
-        this.detailForm.get('tags')?.setValue(entity.tags);
+        this.detailForm.get('tags')?.setValue(entity.tags.map(t => t.id));
         if (this.customFields.length) {
             this.setCustomFieldFormValues(this.customFields, this.detailForm.get(['customFields']), entity);
         }

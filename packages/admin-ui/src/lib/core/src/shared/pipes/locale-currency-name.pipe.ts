@@ -34,13 +34,11 @@ export class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransf
         let symbol = '';
         const activeLocale = this.getActiveLocale(locale);
 
-        // Awaiting TS types for this API: https://github.com/microsoft/TypeScript/pull/44022/files
-        const DisplayNames = (Intl as any).DisplayNames;
-
         if (display === 'full' || display === 'name') {
-            name = new DisplayNames([activeLocale], {
-                type: 'currency',
-            }).of(value);
+            name =
+                new Intl.DisplayNames([activeLocale], {
+                    type: 'currency',
+                }).of(value) ?? '';
         }
         if (display === 'full' || display === 'symbol') {
             const parts = (

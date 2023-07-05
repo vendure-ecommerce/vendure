@@ -113,11 +113,111 @@ export interface AdminUiExtension
      * scss style sheets etc.
      */
     extensionPath: string;
+
     /**
      * @description
      * One or more Angular modules which extend the default Admin UI.
      */
     ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+
+    /**
+     * @description
+     * An optional alias for the module so it can be referenced by other UI extension modules.
+     *
+     * By default, Angular modules declared in an AdminUiExtension do not have access to code outside the directory
+     * defined by the `extensionPath`. A scenario in which that can be useful though is in a monorepo codebase where
+     * a common NgModule is shared across different plugins, each defined in its own package. An example can be found
+     * below - note that the main `tsconfig.json` also maps the target module but using a path relative to the project's
+     * root folder. The UI module is not part of the main TypeScript build task as explained in
+     * [Extending the Admin UI](https://www.vendure.io/docs/plugins/extending-the-admin-ui/) but having `paths`
+     * properly configured helps with usual IDE code editing features such as code completion and quick navigation, as
+     * well as linting.
+     *
+     * @example
+     * ```ts
+     * // packages/common-ui-module/src/ui/ui-shared.module.ts
+     * import { NgModule } from '\@angular/core';
+     * import { SharedModule } from '\@vendure/admin-ui/core';
+     * import { CommonUiComponent } from './components/common-ui/common-ui.component';
+     *
+     * export { CommonUiComponent };
+     *
+     * \@NgModule({
+     *  imports: [SharedModule],
+     *  exports: [CommonUiComponent],
+     *  declarations: [CommonUiComponent],
+     * })
+     * export class CommonSharedUiModule {}
+     * ```
+     *
+     * ```ts
+     * // packages/common-ui-module/src/index.ts
+     * import path from 'path';
+     *
+     * import { AdminUiExtension } from '\@vendure/ui-devkit/compiler';
+     *
+     * export const uiExtensions: AdminUiExtension = {
+     *   pathAlias: '\@common-ui-module',     // this is the important part
+     *   extensionPath: path.join(__dirname, 'ui'),
+     *   ngModules: [
+     *     {
+     *       type: 'shared' as const,
+     *       ngModuleFileName: 'ui-shared.module.ts',
+     *       ngModuleName: 'CommonSharedUiModule',
+     *     },
+     *   ],
+     * };
+     * ```
+     *
+     * ```json
+     * // tsconfig.json
+     * {
+     *   "compilerOptions": {
+     *     "baseUrl": ".",
+     *     "paths": {
+     *       "\@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
+     *     }
+     *   }
+     * }
+     * ```
+     *
+     * ```ts
+     * // packages/sample-plugin/src/ui/ui-extension.module.ts
+     * import { NgModule } from '\@angular/core';
+     * import { SharedModule } from '\@vendure/admin-ui/core';
+     * // the import below works both in the context of the custom Admin UI app as well as the main project
+     * // '\@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
+     * import { CommonSharedUiModule, CommonUiComponent } from '\@common-ui-module/ui-shared.module';
+     *
+     * \@NgModule({
+     *   imports: [
+     *     SharedModule,
+     *     CommonSharedUiModule,
+     *     RouterModule.forChild([
+     *       {
+     *         path: '',
+     *         pathMatch: 'full',
+     *         component: CommonUiComponent,
+     *       },
+     *     ]),
+     *   ],
+     * })
+     * export class SampleUiExtensionModule {}
+     * ```
+     */
+    pathAlias?: string;
+
+    /**
+     * @description
+     * Optional array specifying filenames or [glob](https://github.com/isaacs/node-glob) patterns that should
+     * be skipped when copying the directory defined by `extensionPath`.
+     *
+     * @example
+     * ```ts
+     * exclude: ['**\/*.spec.ts']
+     * ```
+     */
+    exclude?: string[];
 }
 
 /**
@@ -232,6 +332,23 @@ export interface UiExtensionCompilerOptions {
      * of the app, for example with the default value of `'/admin/'`, the Admin UI app
      * will be configured to be served from `http://<host>/admin/`.
      *
+     * Note: if you are using this in conjunction with the {@link AdminUiPlugin} then you should
+     * also set the `route` option to match this value.
+     *
+     * @example
+     * ```TypeScript
+     * AdminUiPlugin.init({
+     *   route: 'my-route',
+     *   port: 5001,
+     *   app: compileUiExtensions({
+     *     baseHref: '/my-route/',
+     *     outputPath: path.join(__dirname, './custom-admin-ui'),
+     *     extensions: [],
+     *     devMode: true,
+     *   }),
+     * }),
+     * ```
+     *
      * @default '/admin/'
      */
     baseHref?: string;
@@ -279,4 +396,8 @@ export interface BrandingOptions {
     smallLogoPath?: string;
     largeLogoPath?: string;
     faviconPath?: string;
+}
+
+export interface AdminUiExtensionWithId extends AdminUiExtension {
+    id: string;
 }

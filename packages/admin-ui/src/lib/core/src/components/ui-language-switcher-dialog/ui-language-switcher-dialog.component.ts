@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 import { CurrencyCode, LanguageCode } from '../../common/generated-types';
-import { Dialog } from '../../providers/modal/modal.service';
+import { Dialog } from '../../providers/modal/modal.types';
 
 @Component({
     selector: 'vdr-ui-language-switcher',

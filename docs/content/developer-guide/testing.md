@@ -18,10 +18,64 @@ The `@vendure/testing` package gives you some simple but powerful tooling for cr
 ### Install dependencies
 
 * [`@vendure/testing`](https://www.npmjs.com/package/@vendure/testing)
-* [`jest`](https://www.npmjs.com/package/jest) You'll need to install a testing framework. In this example, we will use [Jest](https://jestjs.io/), but any other framework such as Jasmine should work too.
+* [`vitest`](https://vitest.dev/) You'll need to install a testing framework. In this example, we will use [Vitest](https://vitest.dev/) as it has very good support for the modern JavaScript features that Vendure uses, and is very fast.
 * [`graphql-tag`](https://www.npmjs.com/package/graphql-tag) This is not strictly required but makes it much easier to create the DocumentNodes needed to query your server.
+* We also need to install some packages to allow us to compile TypeScript code that uses decorators:
+  - `@swc/core`
+  - `unplugin-swc`
 
-Please see the [Jest documentation](https://jestjs.io/docs/en/getting-started) on how to get set up. The remainder of this article will assume a working Jest setup configured to work with TypeScript.
+### Configure Vitest
+
+Create a `vitest.config.js` file in the root of your project:
+
+```TypeScript
+import path from 'path';
+import swc from 'unplugin-swc';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    include: '**/*.e2e-spec.ts',
+    typecheck: {
+      tsconfig: path.join(__dirname, 'tsconfig.e2e.json'),
+    },
+  },
+  plugins: [
+    // SWC required to support decorators used in test plugins
+    // See https://github.com/vitest-dev/vitest/issues/708#issuecomment-1118628479
+    // Vite plugin
+    swc.vite({
+      jsc: {
+        transform: {
+          // See https://github.com/vendure-ecommerce/vendure/issues/2099
+          useDefineForClassFields: false,
+        },
+      },
+    }),
+  ],
+});
+```
+
+and a `tsconfig.e2e.json` tsconfig file for the tests:
+
+```json
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "lib": ["es2015"],
+    "useDefineForClassFields": false,
+    "skipLibCheck": true,
+    "inlineSourceMap": false,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true
+  }
+}
+
+```
 
 ### Register database-specific initializers
 
@@ -29,10 +83,10 @@ The `@vendure/testing` package uses "initializers" to create the test databases 
 
 ```TypeScript
 import {
-    MysqlInitializer,
-    PostgresInitializer,
-    SqljsInitializer,
-    registerInitializer,
+  MysqlInitializer,
+  PostgresInitializer,
+  SqljsInitializer,
+  registerInitializer,
 } from '@vendure/testing';
 
 const sqliteDataDir = path.join(__dirname, '__data__');
@@ -52,14 +106,15 @@ The `@vendure/testing` package exports a [`createTestEnvironment` function]({{< 
 
 ```TypeScript
 import { createTestEnvironment, testConfig } from '@vendure/testing';
+import { describe } from 'vitest';
 import { MyPlugin } from '../my-plugin.ts';
 
 describe('my plugin', () => {
 
-    const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
-        plugins: [MyPlugin],
-    });
+  const { server, adminClient, shopClient } = createTestEnvironment({
+    ...testConfig,
+    plugins: [MyPlugin],
+  });
 
 });
 ```
@@ -75,27 +130,28 @@ Notice that we pass a [`VendureConfig`]({{< relref "vendure-config" >}}) object 
 The [`TestServer`]({{< relref "test-server" >}}) needs to be initialized before it can be used. The `TestServer.init()` method takes an options object which defines how to populate the server:
 
 ```TypeScript
+import { beforeAll, afterAll } from 'vitest';
 import { myInitialData } from './fixtures/my-initial-data.ts';
 
 // ...
 
 beforeAll(async () => {
-    await server.init({
-        productsCsvPath: path.join(__dirname, 'fixtures/e2e-products.csv'),
-        initialData: myInitialData,
-        customerCount: 2,
-    });
-    await adminClient.asSuperAdmin();
+  await server.init({
+    productsCsvPath: path.join(__dirname, 'fixtures/e2e-products.csv'),
+    initialData: myInitialData,
+    customerCount: 2,
+  });
+  await adminClient.asSuperAdmin();
 }, 60000);
 
 afterAll(async () => {
-    await server.destroy();
+  await server.destroy();
 });
 ```
 
 An explanation of the options:
 
-* `productsCsvPath` This is a path to a CSV file containing product data. See [Product Import Format]({{< relref "importing-product-data" >}}#product-import-format). You can see [an example used in the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/e2e/fixtures/e2e-products-full.csv) to get an idea of how it works. To start with you can just copy this file directly and use it as-is.
+* `productsCsvPath` This is a path to an optional CSV file containing product data. See [Product Import Format]({{< relref "importing-product-data" >}}#product-import-format). You can see [an example used in the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/e2e/fixtures/e2e-products-full.csv) to get an idea of how it works. To start with you can just copy this file directly and use it as-is.
 * `initialData` This is an object which defines how other non-product data (Collections, ShippingMethods, Countries etc.) is populated. See [Initial Data Format]({{< relref "importing-product-data" >}}#initial-data). You can [copy this example from the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/e2e-common/e2e-initial-data.ts)
 * `customerCount` Specifies the number of fake Customers to create. Defaults to 10 if not specified.
 
@@ -105,21 +161,22 @@ Now we are all set up to create a test. Let's test one of the GraphQL queries us
 
 ```TypeScript
 import gql from 'graphql-tag';
+import { it, expect } from 'vitest';
 
 it('myNewQuery returns the expected result', async () => {
-    adminClient.asSuperAdmin(); // log in as the SuperAdmin user
+  adminClient.asSuperAdmin(); // log in as the SuperAdmin user
 
-    const query = gql`
-        query MyNewQuery($id: ID!) {
-            myNewQuery(id: $id) {
-                field1
-                field2
-            }
-        }
-    `;
-    const result = await adminClient.query(query, { id: 123 });
+  const query = gql`
+    query MyNewQuery($id: ID!) {
+      myNewQuery(id: $id) {
+        field1
+        field2
+      }
+    }
+  `;
+  const result = await adminClient.query(query, { id: 123 });
 
-    expect(result.myNewQuery).toEqual({ /* ... */ })
+  expect(result.myNewQuery).toEqual({ /* ... */ })
 });
 ```
 
@@ -130,5 +187,5 @@ Running the test will then assert that your new query works as expected.
 All that's left is to run your tests to find out whether your code behaves as expected!
 
 {{< alert "warning" >}} 
-**Note:** When using **Jest**, make sure you run with the [`--runInBand` option](https://jestjs.io/docs/cli#--runinband), which ensures that your tests run in series rather than in parallel.
+**Note:** When using **Vitest**, make sure you run with the [`--runInBand` option](https://jestjs.io/docs/cli#--runinband), which ensures that your tests run in series rather than in parallel.
 {{< /alert >}}

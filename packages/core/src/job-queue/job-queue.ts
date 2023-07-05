@@ -22,7 +22,7 @@ import { CreateQueueOptions, JobConfig, JobData } from './types';
  *
  * @docsCategory JobQueue
  */
-export class JobQueue<Data extends JobData<Data> = {}> {
+export class JobQueue<Data extends JobData<Data> = object> {
     private running = false;
 
     get name(): string {
@@ -102,7 +102,7 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             try {
                 const addedJob = await this.jobQueueStrategy.add(job);
                 return new SubscribableJob(addedJob, this.jobQueueStrategy);
-            } catch (err) {
+            } catch (err: any) {
                 Logger.error(`Could not add Job to "${this.name}" queue`, undefined, err.stack);
                 return new SubscribableJob(job, this.jobQueueStrategy);
             }

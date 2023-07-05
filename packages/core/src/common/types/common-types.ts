@@ -173,13 +173,35 @@ export type PriceCalculationResult = {
     priceIncludesTax: boolean;
 };
 
-// tslint:disable-next-line:ban-types
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type MiddlewareHandler = Type<any> | Function;
 
 /**
  * @description
  * Defines API middleware, set in the {@link ApiOptions}. Middleware can be either
  * [Express middleware](https://expressjs.com/en/guide/using-middleware.html) or [NestJS middleware](https://docs.nestjs.com/middleware).
+ *
+ * ## Increasing the maximum request body size limit
+ *
+ * Internally, Vendure relies on the body-parser middleware to parse incoming JSON data. By default, the maximum
+ * body size is set to 100kb. Attempting to send a request with more than 100kb of JSON data will result in a
+ * `PayloadTooLargeError`. To increase this limit, we can manually configure the body-parser middleware:
+ *
+ * @example
+ * ```TypeScript
+ * import { VendureConfig } from '\@vendure/core';
+ * import { json } from 'body-parser';
+ *
+ * export const config: VendureConfig = {
+ *   // ...
+ *   apiOptions: {
+ *     middleware: [{
+ *       handler: json({ limit: '10mb' }),
+ *       route: '*',
+ *       beforeListen: true,
+ *     }],
+ *   },
+ * };
  *
  * @docsCategory Common
  */

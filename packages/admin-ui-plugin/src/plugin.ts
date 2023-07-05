@@ -19,6 +19,8 @@ import express from 'express';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { adminApiExtensions } from './api/api-extensions';
+import { MetricsResolver } from './api/metrics.resolver';
 import {
     defaultAvailableLanguages,
     defaultLanguage,
@@ -26,17 +28,22 @@ import {
     DEFAULT_APP_PATH,
     loggerCtx,
 } from './constants';
+import { MetricsService } from './service/metrics.service';
 
 /**
  * @description
  * Configuration options for the {@link AdminUiPlugin}.
  *
- * @docsCategory AdminUiPlugin
+ * @docsCategory core plugins/AdminUiPlugin
  */
 export interface AdminUiPluginOptions {
     /**
      * @description
      * The route to the Admin UI.
+     *
+     * Note: If you are using the {@link compileUiExtensions} function to compile a custom version of the Admin UI, then
+     * the route should match the `baseHref` option passed to that function. The default value of `baseHref` is `/admin/`,
+     * so it only needs to be changed if you set this `route` option to something other than `"admin"`.
      */
     route: string;
     /**
@@ -94,14 +101,38 @@ export interface AdminUiPluginOptions {
  * };
  * ```
  *
- * @docsCategory AdminUiPlugin
+ * ## Metrics
+ *
+ * This plugin also defines a `metricSummary` query which is used by the Admin UI to display the order metrics on the dashboard.
+ *
+ * If you are building a stand-alone version of the Admin UI app, and therefore don't need this plugin to server the Admin UI,
+ * you can still use the `metricSummary` query by adding the `AdminUiPlugin` to the `plugins` array, but without calling the `init()` method:
+ *
+ * @example
+ * ```TypeScript
+ * import { AdminUiPlugin } from '\@vendure/admin-ui-plugin';
+ *
+ * const config: VendureConfig = {
+ *   plugins: [
+ *     AdminUiPlugin, // <-- no call to .init()
+ *   ],
+ *   // ...
+ * };
+ * ```
+ *
+ * @docsCategory core plugins/AdminUiPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [],
+    adminApiExtensions: {
+        schema: adminApiExtensions,
+        resolvers: [MetricsResolver],
+    },
+    providers: [MetricsService],
+    compatibility: '^2.0.0',
 })
 export class AdminUiPlugin implements NestModule {
-    private static options: AdminUiPluginOptions;
+    private static options: AdminUiPluginOptions | undefined;
 
     constructor(private configService: ConfigService, private processContext: ProcessContext) {}
 
@@ -116,6 +147,13 @@ export class AdminUiPlugin implements NestModule {
 
     async configure(consumer: MiddlewareConsumer) {
         if (this.processContext.isWorker) {
+            return;
+        }
+        if (!AdminUiPlugin.options) {
+            Logger.info(
+                `AdminUiPlugin's init() method was not called. The Admin UI will not be served.`,
+                loggerCtx,
+            );
             return;
         }
         const { app, hostname, route, adminUiConfig } = AdminUiPlugin.options;
@@ -163,13 +201,13 @@ export class AdminUiPlugin implements NestModule {
                 )
                 .forRoutes('sockjs-node');
 
-            Logger.info(`Compiling Admin UI app in development mode`, loggerCtx);
+            Logger.info('Compiling Admin UI app in development mode', loggerCtx);
             app.compile().then(
                 () => {
-                    Logger.info(`Admin UI compiling and watching for changes...`, loggerCtx);
+                    Logger.info('Admin UI compiling and watching for changes...', loggerCtx);
                 },
                 (err: any) => {
-                    Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
+                    Logger.error(`Failed to compile: ${JSON.stringify(err)}`, loggerCtx, err.stack);
                 },
             );
             await overwriteConfig();
@@ -178,15 +216,15 @@ export class AdminUiPlugin implements NestModule {
             consumer.apply(await this.createStaticServer(app)).forRoutes(route);
 
             if (app && typeof app.compile === 'function') {
-                Logger.info(`Compiling Admin UI app in production mode...`, loggerCtx);
+                Logger.info('Compiling Admin UI app in production mode...', loggerCtx);
                 app.compile()
                     .then(overwriteConfig)
                     .then(
                         () => {
-                            Logger.info(`Admin UI successfully compiled`, loggerCtx);
+                            Logger.info('Admin UI successfully compiled', loggerCtx);
                         },
                         (err: any) => {
-                            Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
+                            Logger.error(`Failed to compile: ${JSON.stringify(err)}`, loggerCtx, err.stack);
                         },
                     );
             } else {
@@ -214,7 +252,8 @@ export class AdminUiPlugin implements NestModule {
      */
     private getAdminUiConfig(partialConfig?: Partial<AdminUiConfig>): AdminUiConfig {
         const { authOptions } = this.configService;
-
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const options = AdminUiPlugin.options!;
         const propOrDefault = <Prop extends keyof AdminUiConfig>(
             prop: Prop,
             defaultVal: AdminUiConfig[Prop],
@@ -236,17 +275,14 @@ export class AdminUiPlugin implements NestModule {
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
             defaultLocale: propOrDefault('defaultLocale', defaultLocale),
             availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
-            loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
-            brand: AdminUiPlugin.options.adminUiConfig?.brand,
+            loginUrl: options.adminUiConfig?.loginUrl,
+            brand: options.adminUiConfig?.brand,
             hideVendureBranding: propOrDefault(
                 'hideVendureBranding',
-                AdminUiPlugin.options.adminUiConfig?.hideVendureBranding || false,
+                options.adminUiConfig?.hideVendureBranding || false,
             ),
-            hideVersion: propOrDefault(
-                'hideVersion',
-                AdminUiPlugin.options.adminUiConfig?.hideVersion || false,
-            ),
-            loginImageUrl: AdminUiPlugin.options.adminUiConfig?.loginImageUrl,
+            hideVersion: propOrDefault('hideVersion', options.adminUiConfig?.hideVersion || false),
+            loginImageUrl: options.adminUiConfig?.loginImageUrl,
             cancellationReasons: propOrDefault('cancellationReasons', undefined),
         };
     }
@@ -258,16 +294,18 @@ export class AdminUiPlugin implements NestModule {
     private async overwriteAdminUiConfig(adminUiConfigPath: string, config: AdminUiConfig) {
         try {
             const content = await this.pollForFile(adminUiConfigPath);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx);
             throw e;
         }
         try {
             await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
-        } catch (e) {
-            throw new Error('[AdminUiPlugin] Could not write vendure-ui-config.json file:\n' + e.message);
+        } catch (e: any) {
+            throw new Error(
+                '[AdminUiPlugin] Could not write vendure-ui-config.json file:\n' + JSON.stringify(e.message),
+            );
         }
-        Logger.verbose(`Applied configuration to vendure-ui-config.json file`, loggerCtx);
+        Logger.verbose('Applied configuration to vendure-ui-config.json file', loggerCtx);
     }
 
     /**
@@ -278,7 +316,7 @@ export class AdminUiPlugin implements NestModule {
         let indexHtmlContent: string;
         try {
             indexHtmlContent = await this.pollForFile(indexHtmlPath);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx);
             throw e;
         }
@@ -288,8 +326,8 @@ export class AdminUiPlugin implements NestModule {
                 `<base href="/${baseHref}/" />`,
             );
             await fs.writeFile(indexHtmlPath, withCustomBaseHref);
-        } catch (e) {
-            throw new Error('[AdminUiPlugin] Could not write index.html file:\n' + e.message);
+        } catch (e: any) {
+            throw new Error('[AdminUiPlugin] Could not write index.html file:\n' + JSON.stringify(e.message));
         }
         Logger.verbose(`Applied baseHref "/${baseHref}/" to index.html file`, loggerCtx);
     }
@@ -311,7 +349,7 @@ export class AdminUiPlugin implements NestModule {
                 Logger.verbose(`Checking for admin ui file: ${filePath}`, loggerCtx);
                 const configFileContent = await fs.readFile(filePath, 'utf-8');
                 return configFileContent;
-            } catch (e) {
+            } catch (e: any) {
                 attempts++;
                 Logger.verbose(
                     `Unable to locate admin ui file: ${filePath} (attempt ${attempts})`,

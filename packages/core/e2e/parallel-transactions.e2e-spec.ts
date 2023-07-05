@@ -1,18 +1,14 @@
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
 import { SlowMutationPlugin } from './fixtures/test-plugins/slow-mutation-plugin';
-import {
-    AddOptionGroupToProduct,
-    CreateProduct,
-    CreateProductOptionGroup,
-    CreateProductVariants,
-    LanguageCode,
-} from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
@@ -67,22 +63,22 @@ describe('Parallel transactions', () => {
     it('does not deadlock on concurrent creating ProductVariants', async () => {
         const CONCURRENCY_LIMIT = 4;
 
-        const { createProduct } = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-            CREATE_PRODUCT,
-            {
-                input: {
-                    translations: [
-                        { languageCode: LanguageCode.en, name: 'Test', slug: 'test', description: 'test' },
-                    ],
-                },
+        const { createProduct } = await adminClient.query<
+            Codegen.CreateProductMutation,
+            Codegen.CreateProductMutationVariables
+        >(CREATE_PRODUCT, {
+            input: {
+                translations: [
+                    { languageCode: LanguageCode.en, name: 'Test', slug: 'test', description: 'test' },
+                ],
             },
-        );
+        });
 
-        const sizes = Array.from({ length: CONCURRENCY_LIMIT }).map(i => `size-${i}`);
+        const sizes = Array.from({ length: CONCURRENCY_LIMIT }).map(i => `size-${i as string}`);
 
         const { createProductOptionGroup } = await adminClient.query<
-            CreateProductOptionGroup.Mutation,
-            CreateProductOptionGroup.Variables
+            Codegen.CreateProductOptionGroupMutation,
+            Codegen.CreateProductOptionGroupMutationVariables
         >(CREATE_PRODUCT_OPTION_GROUP, {
             input: {
                 code: 'size',
@@ -94,35 +90,35 @@ describe('Parallel transactions', () => {
             },
         });
 
-        await adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-            ADD_OPTION_GROUP_TO_PRODUCT,
-            {
-                productId: createProduct.id,
-                optionGroupId: createProductOptionGroup.id,
-            },
-        );
+        await adminClient.query<
+            Codegen.AddOptionGroupToProductMutation,
+            Codegen.AddOptionGroupToProductMutationVariables
+        >(ADD_OPTION_GROUP_TO_PRODUCT, {
+            productId: createProduct.id,
+            optionGroupId: createProductOptionGroup.id,
+        });
 
         const createVariantMutations = createProductOptionGroup.options
             .filter((_, index) => index < CONCURRENCY_LIMIT)
             .map((option, i) => {
-                return adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
-                    CREATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                sku: `VARIANT-${i}`,
-                                productId: createProduct.id,
-                                optionIds: [option.id],
-                                translations: [{ languageCode: LanguageCode.en, name: `Variant ${i}` }],
-                                price: 1000,
-                                taxCategoryId: 'T_1',
-                                facetValueIds: ['T_1', 'T_2'],
-                                featuredAssetId: 'T_1',
-                                assetIds: ['T_1'],
-                            },
-                        ],
-                    },
-                );
+                return adminClient.query<
+                    Codegen.CreateProductVariantsMutation,
+                    Codegen.CreateProductVariantsMutationVariables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            sku: `VARIANT-${i}`,
+                            productId: createProduct.id,
+                            optionIds: [option.id],
+                            translations: [{ languageCode: LanguageCode.en, name: `Variant ${i}` }],
+                            price: 1000,
+                            taxCategoryId: 'T_1',
+                            facetValueIds: ['T_1', 'T_2'],
+                            featuredAssetId: 'T_1',
+                            assetIds: ['T_1'],
+                        },
+                    ],
+                });
             });
 
         const results = await Promise.all(createVariantMutations);

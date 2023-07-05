@@ -4,7 +4,7 @@ import { ComplexityEstimator } from 'graphql-query-complexity/dist/cjs/QueryComp
  * @description
  * Options that can be passed to the `.init()` static method of the HardenPlugin.
  *
- * @docsCategory HardenPlugin
+ * @docsCategory core plugins/HardenPlugin
  */
 export interface HardenPluginOptions {
     /**

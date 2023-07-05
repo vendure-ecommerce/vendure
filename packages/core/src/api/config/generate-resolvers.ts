@@ -1,8 +1,7 @@
+import { IFieldResolver, IResolvers } from '@graphql-tools/utils';
 import { StockMovementType } from '@vendure/common/lib/generated-types';
-import { IFieldResolver, IResolvers } from 'apollo-server-express';
-import { GraphQLSchema } from 'graphql';
-import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
-import { GraphQLUpload } from 'graphql-upload';
+import { GraphQLFloat, GraphQLSchema } from 'graphql';
+import { GraphQLDateTime, GraphQLJSON, GraphQLSafeInt } from 'graphql-scalars';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import {
@@ -10,20 +9,25 @@ import {
     ErrorResult,
 } from '../../common/error/generated-graphql-admin-errors';
 import { shopErrorOperationTypeResolvers } from '../../common/error/generated-graphql-shop-errors';
+import { InternalServerError } from '../../common/index';
 import { Translatable } from '../../common/types/locale-types';
 import { ConfigService } from '../../config/config.service';
 import { CustomFieldConfig, RelationCustomFieldConfig } from '../../config/custom-field/custom-field-types';
+import { Region } from '../../entity/region/region.entity';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { ApiType } from '../common/get-api-type';
 import { RequestContext } from '../common/request-context';
+
+import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
+import { GraphQLMoney } from './money-scalar';
 
 /**
  * @description
  * Generates additional resolvers required for things like resolution of union types,
  * custom scalars and "relation"-type custom fields.
  */
-export function generateResolvers(
+export async function generateResolvers(
     configService: ConfigService,
     customFieldRelationResolverService: CustomFieldRelationResolverService,
     apiType: ApiType,
@@ -56,6 +60,20 @@ export function generateResolvers(
         },
     };
 
+    const regionResolveType = {
+        __resolveType(value: Region) {
+            switch (value.type) {
+                case 'country':
+                    return 'Country';
+                case 'province':
+                    return 'Province';
+                default: {
+                    throw new InternalServerError(`No __resolveType defined for Region type "${value.type}"`);
+                }
+            }
+        },
+    };
+
     const customFieldsConfigResolveType = {
         __resolveType(value: any) {
             switch (value.type) {
@@ -65,6 +83,8 @@ export function generateResolvers(
                     return 'LocaleStringCustomFieldConfig';
                 case 'text':
                     return 'TextCustomFieldConfig';
+                case 'localeText':
+                    return 'LocaleTextCustomFieldConfig';
                 case 'int':
                     return 'IntCustomFieldConfig';
                 case 'float':
@@ -79,12 +99,16 @@ export function generateResolvers(
         },
     };
 
+    // @ts-ignore
+    const { default: GraphQLUpload } = await import('graphql-upload/GraphQLUpload.mjs');
+
     const commonResolvers = {
         JSON: GraphQLJSON,
         DateTime: GraphQLDateTime,
+        Money: GraphQLMoney,
         Node: dummyResolveType,
         PaginatedList: dummyResolveType,
-        Upload: (GraphQLUpload as any) || dummyResolveType,
+        Upload: GraphQLUpload || dummyResolveType,
         SearchResultPrice: {
             __resolveType(value: any) {
                 return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
@@ -97,6 +121,7 @@ export function generateResolvers(
                 return value.__typename;
             },
         },
+        Region: regionResolveType,
     };
 
     const customFieldRelationResolvers = generateCustomFieldRelationResolvers(
@@ -138,7 +163,8 @@ function generateCustomFieldRelationResolvers(
     const adminResolvers: IResolvers = {};
     const shopResolvers: IResolvers = {};
 
-    for (const [entityName, customFields] of Object.entries(configService.customFields)) {
+    const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(configService.customFields, schema);
+    for (const [entityName, customFields] of customFieldsConfig) {
         const relationCustomFields = customFields.filter(isRelationalType);
         if (relationCustomFields.length === 0 || !schema.getType(entityName)) {
             continue;

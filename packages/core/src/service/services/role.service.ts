@@ -79,9 +79,13 @@ export class RoleService {
     }
 
     findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>): Promise<Role | undefined> {
-        return this.connection.getRepository(ctx, Role).findOne(roleId, {
-            relations: relations ?? ['channels'],
-        });
+        return this.connection
+            .getRepository(ctx, Role)
+            .findOne({
+                where: { id: roleId },
+                relations: relations ?? ['channels'],
+            })
+            .then(result => result ?? undefined);
     }
 
     getChannelsForRole(ctx: RequestContext, roleId: ID): Promise<Channel[]> {
@@ -95,7 +99,7 @@ export class RoleService {
     getSuperAdminRole(ctx?: RequestContext): Promise<Role> {
         return this.getRoleByCode(ctx, SUPER_ADMIN_ROLE_CODE).then(role => {
             if (!role) {
-                throw new InternalServerError(`error.super-admin-role-not-found`);
+                throw new InternalServerError('error.super-admin-role-not-found');
             }
             return role;
         });
@@ -108,7 +112,7 @@ export class RoleService {
     getCustomerRole(ctx?: RequestContext): Promise<Role> {
         return this.getRoleByCode(ctx, CUSTOMER_ROLE_CODE).then(role => {
             if (!role) {
-                throw new InternalServerError(`error.customer-role-not-found`);
+                throw new InternalServerError('error.customer-role-not-found');
             }
             return role;
         });
@@ -210,7 +214,7 @@ export class RoleService {
             throw new EntityNotFoundError('Role', input.id);
         }
         if (role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE) {
-            throw new InternalServerError(`error.cannot-modify-role`, { roleCode: role.code });
+            throw new InternalServerError('error.cannot-modify-role', { roleCode: role.code });
         }
         const targetChannels = input.channelIds
             ? await this.getPermittedChannels(ctx, input.channelIds)
@@ -243,7 +247,7 @@ export class RoleService {
             throw new EntityNotFoundError('Role', id);
         }
         if (role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE) {
-            throw new InternalServerError(`error.cannot-delete-role`, { roleCode: role.code });
+            throw new InternalServerError('error.cannot-delete-role', { roleCode: role.code });
         }
         const deletedRole = new Role(role);
         await this.connection.getRepository(ctx, Role).remove(role);
@@ -334,7 +338,7 @@ export class RoleService {
             const superAdminRole = await this.getSuperAdminRole();
             superAdminRole.permissions = assignablePermissions;
             await this.connection.rawConnection.getRepository(Role).save(superAdminRole, { reload: false });
-        } catch (err) {
+        } catch (err: any) {
             const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),
@@ -354,7 +358,7 @@ export class RoleService {
     private async ensureCustomerRoleExists() {
         try {
             await this.getCustomerRole();
-        } catch (err) {
+        } catch (err: any) {
             const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),

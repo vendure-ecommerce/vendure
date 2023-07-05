@@ -1,13 +1,18 @@
 
 :host {
-    display: inline-flex;
+    display: flex;
+}
+
+.input-wrapper {
+    flex: 1;
 }
 
 .affix {
     color: var(--color-grey-800);
     display: flex;
     align-items: center;
-    background-color: var(--color-grey-200);
+    background-color: var(--color-component-bg-200);
+    color: var(--color-text-200);
     border: 1px solid var(--color-component-border-300);
     top: 1px;
     padding: 3px;
@@ -15,9 +20,11 @@
     transition: border 0.2s;
 }
 
-::ng-deep .has-prefix input {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
+::ng-deep .has-prefix > {
+    input[type="text"], input[type="number"] {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important
+    }
 }
 
 .prefix {
@@ -26,9 +33,11 @@
     border-right: none;
 }
 
-::ng-deep .has-suffix input {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
+::ng-deep .has-suffix > {
+    input[type="text"], input[type="number"] {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
 }
 
 .suffix {

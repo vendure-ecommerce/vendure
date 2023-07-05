@@ -1,85 +1,34 @@
-
 :host {
     display: block;
-
-    .form-group > label:first-child {
-        top: 6px;
-    }
-    .form-group > label:nth-of-type(2) {
-        flex: 1;
-        max-width: 20rem;
-
-        ::ng-deep > *:not(.tooltip-content) {
-            width: 100%;
-        }
-    }
-    .form-group .tooltip-validation {
-        height: initial;
-    }
-    .form-group.no-label {
-        margin: -6px 0 0 0;
-        padding: 0;
-        justify-content: center;
-        > label {
-            position: relative;
-            justify-content: center;
-        }
-        .input-row {
-            justify-content: center;
-        }
-    }
-    .input-row {
-        display: flex;
-        ::ng-deep input {
-            flex: 1;
-            &[disabled] {
-                background-color: var(--color-component-bg-200);
-            }
-        }
-        button.edit-button {
-            margin: 0;
-            border-radius: 0 3px 3px 0;
-        }
-
-        &.has-toggle {
-            ::ng-deep input {
-                border-top-right-radius: 0 !important;
-                border-bottom-right-radius: 0 !important;
-                border-right: none;
-            }
-        }
-        ::ng-deep clr-toggle-wrapper {
-            margin-top: 8px;
-        }
-    }
 }
 
-.tooltip.tooltip-validation.invalid::before {
-    position: absolute;
-    content: '';
-    height: .666667rem;
-    width: .666667rem;
-    top: .125rem;
-    right: .25rem;
-    background-image: url(data:image/svg+xml;charset=utf8,%3Csvg%20version%3D%221.1%22%20viewBox%3D%225%205%2026%2026%22%20preserveAspectRatio%3D%22xMidYMid%20meet%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%3Cdefs%3E%3Cstyle%3E.clr-i-outline%7Bfill%3A%23a32100%3B%7D%3C%2Fstyle%3E%3C%2Fdefs%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Ctitle%3Eexclamation-circle-line%3C%2Ftitle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20class%3D%22clr-i-outline%20clr-i-outline-path-1%22%20d%3D%22M18%2C6A12%2C12%2C0%2C1%2C0%2C30%2C18%2C12%2C12%2C0%2C0%2C0%2C18%2C6Zm0%2C22A10%2C10%2C0%2C1%2C1%2C28%2C18%2C10%2C10%2C0%2C0%2C1%2C18%2C28Z%22%3E%3C%2Fpath%3E%3Cpath%20class%3D%22clr-i-outline%20clr-i-outline-path-2%22%20d%3D%22M18%2C20.07a1.3%2C1.3%2C0%2C0%2C1-1.3-1.3v-6a1.3%2C1.3%2C0%2C1%2C1%2C2.6%2C0v6A1.3%2C1.3%2C0%2C0%2C1%2C18%2C20.07Z%22%3E%3C%2Fpath%3E%3Ccircle%20class%3D%22clr-i-outline%20clr-i-outline-path-3%22%20cx%3D%2217.95%22%20cy%3D%2223.02%22%20r%3D%221.5%22%3E%3C%2Fcircle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2Fsvg%3E);
-    background-repeat: no-repeat;
-    background-size: contain;
-    vertical-align: middle;
-    margin: 0;
+.form-group {
+    label {
+        font-size: var(--font-size-sm);
+        color: var(--color-weight-800);
+        margin-bottom: 4px;
+        display: inline-block;
+    }
+}
+.tooltip-text {
+    font-size: var(--font-size-xs);
+    line-height: var(--font-size-sm);
+    margin-bottom: 4px;
+}
+.input-row {
+    display: flex;
 }
 
-
-element.style {
-}
-.tooltip.tooltip-sm > .tooltip-content, .tooltip .tooltip-content.tooltip-sm {
-    width: 5rem;
-}
-
-.tooltip:hover > .tooltip-content {
-    right: 12px;
-    margin-bottom: 0;
-}
-
-.tooltip:not(.invalid):hover > .tooltip-content {
-    display: none;
+::ng-deep .input-row {
+    input,
+    select,
+    textarea,
+    vdr-zone-selector,
+    vdr-facet-value-selector,
+    vdr-option-value-input,
+    vdr-affixed-input,
+    vdr-currency-input,
+    vdr-rich-text-editor {
+        width: 100%;
+    }
 }

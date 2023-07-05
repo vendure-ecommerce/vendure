@@ -45,7 +45,7 @@ export const config: VendureConfig = {
 
 ## API hardening
 
-It is recommended that you install and configure the [HardenPlugin]({{< relref "harden-plugin" >}}) for all production deployments. This plugin locks down your schema (disabling introspection and field suggestions) and protects your Shop API against malicious queries that could otherwise overwhelm your server.
+It is recommended that you install and configure the [HardenPlugin]({{< relref "typescript-api/core-plugins/harden-plugin" >}}) for all production deployments. This plugin locks down your schema (disabling introspection and field suggestions) and protects your Shop API against malicious queries that could otherwise overwhelm your server.
 
 Install the plugin: 
 
@@ -78,7 +78,7 @@ export const config: VendureConfig = {
 ```
 
 {{< alert primary >}}
-For a detailed explanation of how to best configure this plugin, see the [HardenPlugin docs]({{< relref "harden-plugin" >}}).
+For a detailed explanation of how to best configure this plugin, see the [HardenPlugin docs]({{< relref "typescript-api/core-plugins/harden-plugin" >}}).
 {{< /alert >}}
 
 ## ID Strategy

@@ -50,7 +50,7 @@ export type PathsToStringProps2<T extends VendureEntity> = T extends string
           [K in EntityRelationKeys<T>]: T[K] extends VendureEntity[]
               ? [K, PathsToStringProps1<T[K][number]>]
               : T[K] extends VendureEntity | undefined
-              ? [K, PathsToStringProps1<T[K]>]
+              ? [K, PathsToStringProps1<NonNullable<T[K]>>]
               : never;
       }[Extract<EntityRelationKeys<T>, string>];
 
@@ -61,7 +61,7 @@ export type Join<T extends Array<string | any>, D extends string> = T extends []
     ? never
     : T extends [infer F]
     ? F
-    : // tslint:disable-next-line:no-shadowed-variable
+    : // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
     T extends [infer F, ...infer R]
     ? F extends string
         ? `${F}${D}${Join<Extract<R, string[]>, D>}`

@@ -1,19 +1,38 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Administrator,
-    BaseDetailComponent,
-    CustomFieldConfig,
     DataService,
-    GetActiveAdministrator,
+    GetProfileDetailDocument,
     LanguageCode,
     NotificationService,
-    ServerConfigService,
+    TypedBaseDetailComponent,
     UpdateActiveAdministratorInput,
 } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { mergeMap, take } from 'rxjs/operators';
+
+export const GET_PROFILE_DETAIL = gql`
+    query GetProfileDetail {
+        activeAdministrator {
+            ...ProfileDetail
+        }
+    }
+    fragment ProfileDetail on Administrator {
+        id
+        createdAt
+        updatedAt
+        firstName
+        lastName
+        emailAddress
+        user {
+            id
+            lastLogin
+            verified
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-profile',
@@ -22,32 +41,27 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent
-    extends BaseDetailComponent<GetActiveAdministrator.ActiveAdministrator>
+    extends TypedBaseDetailComponent<typeof GetProfileDetailDocument, 'activeAdministrator'>
     implements OnInit, OnDestroy
 {
-    customFields: CustomFieldConfig[];
-    detailForm: FormGroup;
+    customFields = this.getCustomFieldConfig('Administrator');
+    detailForm = this.formBuilder.group({
+        emailAddress: ['', Validators.required],
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
+        password: [''],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Administrator');
-        this.detailForm = this.formBuilder.group({
-            emailAddress: ['', Validators.required],
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            password: [''],
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
+        super();
     }
 
     ngOnInit() {

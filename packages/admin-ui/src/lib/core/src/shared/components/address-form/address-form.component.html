@@ -1,75 +1,51 @@
 <form [formGroup]="formGroup">
-    <div class="clr-row">
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.full-name' | translate }}</label>
-                <input formControlName="fullName" type="text" clrInput />
-            </clr-input-container>
-        </div>
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.company' | translate }}</label>
-                <input formControlName="company" type="text" clrInput />
-            </clr-input-container>
-        </div>
-    </div>
+    <vdr-card>
+        <vdr-form-field [label]="'customer.full-name' | translate">
+            <input formControlName="fullName" type="text" />
+        </vdr-form-field>
+        <vdr-form-field [label]="'customer.company' | translate">
+            <input formControlName="company" type="text" />
+        </vdr-form-field>
 
-    <div class="clr-row">
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.street-line-1' | translate }}</label>
-                <input formControlName="streetLine1" type="text" clrInput />
-            </clr-input-container>
-        </div>
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.street-line-2' | translate }}</label>
-                <input formControlName="streetLine2" type="text" clrInput />
-            </clr-input-container>
-        </div>
-    </div>
-    <div class="clr-row">
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.city' | translate }}</label>
-                <input formControlName="city" type="text" clrInput />
-            </clr-input-container>
-        </div>
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.province' | translate }}</label>
-                <input formControlName="province" type="text" clrInput />
-            </clr-input-container>
-        </div>
-    </div>
-    <div class="clr-row">
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.postal-code' | translate }}</label>
-                <input formControlName="postalCode" type="text" clrInput />
-            </clr-input-container>
-        </div>
-        <div class="clr-col-md-4">
-            <clr-input-container>
-                <label>{{ 'customer.country' | translate }}</label>
-                <select name="countryCode" formControlName="countryCode" clrInput clrSelect>
-                    <option *ngFor="let country of availableCountries" [value]="country.code">
-                        {{ country.name }}
-                    </option>
-                </select>
-            </clr-input-container>
-        </div>
-    </div>
-    <clr-input-container>
-        <label>{{ 'customer.phone-number' | translate }}</label>
-        <input formControlName="phoneNumber" type="text" clrInput />
-    </clr-input-container>
-    <section formGroupName="customFields" *ngIf="formGroup.get('customFields') as customFieldsGroup">
-        <label>{{ 'common.custom-fields' | translate }}</label>
-        <vdr-tabbed-custom-fields
-            entityName="Address"
-            [customFields]="customFields"
-            [customFieldsFormGroup]="customFieldsGroup"
-        ></vdr-tabbed-custom-fields>
-    </section>
+        <vdr-form-field [label]="'customer.street-line-1' | translate">
+            <input formControlName="streetLine1" type="text" />
+        </vdr-form-field>
+
+        <vdr-form-field [label]="'customer.street-line-2' | translate">
+            <input formControlName="streetLine2" type="text" />
+        </vdr-form-field>
+
+        <vdr-form-field [label]="'customer.city' | translate">
+            <input formControlName="city" type="text" />
+        </vdr-form-field>
+
+        <vdr-form-field [label]="'customer.province' | translate">
+            <input formControlName="province" type="text" />
+        </vdr-form-field>
+
+        <vdr-form-field [label]="'customer.postal-code' | translate">
+            <input formControlName="postalCode" type="text" />
+        </vdr-form-field>
+
+        <vdr-form-field [label]="'customer.country' | translate">
+            <select name="countryCode" formControlName="countryCode">
+                <option *ngFor="let country of availableCountries" [value]="country.code">
+                    {{ country.name }}
+                </option>
+            </select>
+        </vdr-form-field>
+        <vdr-form-field [label]="'customer.phone-number' | translate">
+            <input formControlName="phoneNumber" type="text" />
+        </vdr-form-field>
+        <section
+            formGroupName="customFields"
+            *ngIf="formGroup.get('customFields') as customFieldsGroup"
+        >
+            <vdr-tabbed-custom-fields
+                entityName="Address"
+                [customFields]="customFields"
+                [customFieldsFormGroup]="customFieldsGroup"
+            ></vdr-tabbed-custom-fields>
+        </section>
+    </vdr-card>
 </form>

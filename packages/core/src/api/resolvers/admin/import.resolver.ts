@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { ImportInfo, MutationImportProductsArgs, Permission } from '@vendure/common/lib/generated-types';
+import { MutationImportProductsArgs, Permission } from '@vendure/common/lib/generated-types';
 
 import { Importer } from '../../../data-import/providers/importer/importer';
 import { RequestContext } from '../../common/request-context';
@@ -12,10 +12,7 @@ export class ImportResolver {
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
-    async importProducts(
-        @Ctx() ctx: RequestContext,
-        @Args() args: MutationImportProductsArgs,
-    ): Promise<ImportInfo> {
+    async importProducts(@Ctx() ctx: RequestContext, @Args() args: MutationImportProductsArgs) {
         const { createReadStream, filename, mimetype, encoding } = await args.csvFile;
         const stream = createReadStream();
         return this.importer.parseAndImport(stream, ctx).toPromise();

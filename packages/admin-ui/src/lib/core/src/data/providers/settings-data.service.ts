@@ -1,65 +1,13 @@
 import { FetchPolicy, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
 
+import * as Codegen from '../../common/generated-types';
 import {
-    AddMembersToZone,
-    CancelJob,
-    CreateChannel,
-    CreateChannelInput,
-    CreateCountry,
-    CreateCountryInput,
-    CreatePaymentMethod,
-    CreatePaymentMethodInput,
-    CreateTaxCategory,
-    CreateTaxCategoryInput,
-    CreateTaxRate,
-    CreateTaxRateInput,
-    CreateZone,
-    CreateZoneInput,
-    DeleteChannel,
-    DeleteCountry,
-    DeletePaymentMethod,
-    DeleteTaxCategory,
-    DeleteTaxRate,
-    DeleteZone,
-    GetActiveChannel,
-    GetAllJobs,
-    GetAvailableCountries,
-    GetChannel,
-    GetChannels,
-    GetCountry,
-    GetCountryList,
-    GetGlobalSettings,
-    GetJobInfo,
-    GetJobQueueList,
-    GetJobsById,
-    GetPaymentMethod,
-    GetPaymentMethodList,
-    GetPaymentMethodOperations,
-    GetTaxCategories,
-    GetTaxCategory,
-    GetTaxRate,
-    GetTaxRateList,
-    GetTaxRateListSimple,
-    GetZone,
-    GetZones,
+    ChannelListOptions,
     JobListOptions,
     JobState,
-    RemoveMembersFromZone,
-    UpdateChannel,
-    UpdateChannelInput,
-    UpdateCountry,
-    UpdateCountryInput,
-    UpdateGlobalSettings,
-    UpdateGlobalSettingsInput,
-    UpdatePaymentMethod,
-    UpdatePaymentMethodInput,
-    UpdateTaxCategory,
-    UpdateTaxCategoryInput,
-    UpdateTaxRate,
-    UpdateTaxRateInput,
-    UpdateZone,
-    UpdateZoneInput,
+    SellerListOptions,
+    TaxCategoryListOptions,
 } from '../../common/generated-types';
 import {
     ADD_MEMBERS_TO_ZONE,
@@ -67,40 +15,43 @@ import {
     CREATE_CHANNEL,
     CREATE_COUNTRY,
     CREATE_PAYMENT_METHOD,
+    CREATE_SELLER,
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
     DELETE_CHANNEL,
+    DELETE_CHANNELS,
+    DELETE_COUNTRIES,
     DELETE_COUNTRY,
     DELETE_PAYMENT_METHOD,
+    DELETE_PAYMENT_METHODS,
+    DELETE_SELLER,
+    DELETE_SELLERS,
+    DELETE_TAX_CATEGORIES,
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
+    DELETE_TAX_RATES,
     DELETE_ZONE,
+    DELETE_ZONES,
     GET_ACTIVE_CHANNEL,
     GET_AVAILABLE_COUNTRIES,
-    GET_CHANNEL,
     GET_CHANNELS,
-    GET_COUNTRY,
-    GET_COUNTRY_LIST,
     GET_GLOBAL_SETTINGS,
-    GET_JOBS_BY_ID,
-    GET_JOBS_LIST,
     GET_JOB_INFO,
     GET_JOB_QUEUE_LIST,
-    GET_PAYMENT_METHOD,
-    GET_PAYMENT_METHOD_LIST,
+    GET_JOBS_BY_ID,
+    GET_JOBS_LIST,
     GET_PAYMENT_METHOD_OPERATIONS,
+    GET_SELLERS,
     GET_TAX_CATEGORIES,
-    GET_TAX_CATEGORY,
-    GET_TAX_RATE,
-    GET_TAX_RATE_LIST,
     GET_TAX_RATE_LIST_SIMPLE,
-    GET_ZONES,
+    GET_ZONE,
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
     UPDATE_GLOBAL_SETTINGS,
     UPDATE_PAYMENT_METHOD,
+    UPDATE_SELLER,
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
     UPDATE_ZONE,
@@ -111,142 +62,158 @@ import { BaseDataService } from './base-data.service';
 export class SettingsDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getCountries(take: number = 10, skip: number = 0, filterTerm?: string) {
-        return this.baseDataService.query<GetCountryList.Query, GetCountryList.Variables>(GET_COUNTRY_LIST, {
-            options: {
-                take,
-                skip,
-                filter: {
-                    name: filterTerm ? { contains: filterTerm } : null,
-                },
-            },
-        });
-    }
-
     getAvailableCountries() {
-        return this.baseDataService.query<GetAvailableCountries.Query>(GET_AVAILABLE_COUNTRIES);
+        return this.baseDataService.query<Codegen.GetAvailableCountriesQuery>(GET_AVAILABLE_COUNTRIES);
     }
 
-    getCountry(id: string) {
-        return this.baseDataService.query<GetCountry.Query, GetCountry.Variables>(GET_COUNTRY, { id });
-    }
-
-    createCountry(input: CreateCountryInput) {
-        return this.baseDataService.mutate<CreateCountry.Mutation, CreateCountry.Variables>(CREATE_COUNTRY, {
+    createCountry(input: Codegen.CreateCountryInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateCountryMutation,
+            Codegen.CreateCountryMutationVariables
+        >(CREATE_COUNTRY, {
             input: pick(input, ['code', 'enabled', 'translations', 'customFields']),
         });
     }
 
-    updateCountry(input: UpdateCountryInput) {
-        return this.baseDataService.mutate<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
+    updateCountry(input: Codegen.UpdateCountryInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateCountryMutation,
+            Codegen.UpdateCountryMutationVariables
+        >(UPDATE_COUNTRY, {
             input: pick(input, ['id', 'code', 'enabled', 'translations', 'customFields']),
         });
     }
 
     deleteCountry(id: string) {
-        return this.baseDataService.mutate<DeleteCountry.Mutation, DeleteCountry.Variables>(DELETE_COUNTRY, {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCountryMutation,
+            Codegen.DeleteCountryMutationVariables
+        >(DELETE_COUNTRY, {
             id,
         });
     }
 
-    getZones() {
-        return this.baseDataService.query<GetZones.Query>(GET_ZONES);
+    deleteCountries(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCountriesMutation,
+            Codegen.DeleteCountriesMutationVariables
+        >(DELETE_COUNTRIES, {
+            ids,
+        });
     }
 
     getZone(id: string) {
-        return this.baseDataService.query<GetZone.Query, GetZone.Variables>(GET_ZONES, { id });
-    }
-
-    createZone(input: CreateZoneInput) {
-        return this.baseDataService.mutate<CreateZone.Mutation, CreateZone.Variables>(CREATE_ZONE, {
-            input,
+        return this.baseDataService.query<Codegen.GetZoneQuery, Codegen.GetZoneQueryVariables>(GET_ZONE, {
+            id,
         });
     }
 
-    updateZone(input: UpdateZoneInput) {
-        return this.baseDataService.mutate<UpdateZone.Mutation, UpdateZone.Variables>(UPDATE_ZONE, {
-            input,
-        });
+    createZone(input: Codegen.CreateZoneInput) {
+        return this.baseDataService.mutate<Codegen.CreateZoneMutation, Codegen.CreateZoneMutationVariables>(
+            CREATE_ZONE,
+            {
+                input,
+            },
+        );
+    }
+
+    updateZone(input: Codegen.UpdateZoneInput) {
+        return this.baseDataService.mutate<Codegen.UpdateZoneMutation, Codegen.UpdateZoneMutationVariables>(
+            UPDATE_ZONE,
+            {
+                input,
+            },
+        );
     }
 
     deleteZone(id: string) {
-        return this.baseDataService.mutate<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, {
-            id,
-        });
-    }
-
-    addMembersToZone(zoneId: string, memberIds: string[]) {
-        return this.baseDataService.mutate<AddMembersToZone.Mutation, AddMembersToZone.Variables>(
-            ADD_MEMBERS_TO_ZONE,
-            {
-                zoneId,
-                memberIds,
-            },
-        );
-    }
-
-    removeMembersFromZone(zoneId: string, memberIds: string[]) {
-        return this.baseDataService.mutate<RemoveMembersFromZone.Mutation, RemoveMembersFromZone.Variables>(
-            REMOVE_MEMBERS_FROM_ZONE,
-            {
-                zoneId,
-                memberIds,
-            },
-        );
-    }
-
-    getTaxCategories() {
-        return this.baseDataService.query<GetTaxCategories.Query>(GET_TAX_CATEGORIES);
-    }
-
-    getTaxCategory(id: string) {
-        return this.baseDataService.query<GetTaxCategory.Query, GetTaxCategory.Variables>(GET_TAX_CATEGORY, {
-            id,
-        });
-    }
-
-    createTaxCategory(input: CreateTaxCategoryInput) {
-        return this.baseDataService.mutate<CreateTaxCategory.Mutation, CreateTaxCategory.Variables>(
-            CREATE_TAX_CATEGORY,
-            {
-                input,
-            },
-        );
-    }
-
-    updateTaxCategory(input: UpdateTaxCategoryInput) {
-        return this.baseDataService.mutate<UpdateTaxCategory.Mutation, UpdateTaxCategory.Variables>(
-            UPDATE_TAX_CATEGORY,
-            {
-                input,
-            },
-        );
-    }
-
-    deleteTaxCategory(id: string) {
-        return this.baseDataService.mutate<DeleteTaxCategory.Mutation, DeleteTaxRate.Variables>(
-            DELETE_TAX_CATEGORY,
+        return this.baseDataService.mutate<Codegen.DeleteZoneMutation, Codegen.DeleteZoneMutationVariables>(
+            DELETE_ZONE,
             {
                 id,
             },
         );
     }
 
-    getTaxRates(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
-        return this.baseDataService.query<GetTaxRateList.Query, GetTaxRateList.Variables>(
-            GET_TAX_RATE_LIST,
+    deleteZones(ids: string[]) {
+        return this.baseDataService.mutate<Codegen.DeleteZonesMutation, Codegen.DeleteZonesMutationVariables>(
+            DELETE_ZONES,
             {
-                options: {
-                    take,
-                    skip,
-                },
+                ids,
             },
-            fetchPolicy,
         );
     }
 
-    getTaxRatesSimple(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
-        return this.baseDataService.query<GetTaxRateListSimple.Query, GetTaxRateListSimple.Variables>(
+    addMembersToZone(zoneId: string, memberIds: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.AddMembersToZoneMutation,
+            Codegen.AddMembersToZoneMutationVariables
+        >(ADD_MEMBERS_TO_ZONE, {
+            zoneId,
+            memberIds,
+        });
+    }
+
+    removeMembersFromZone(zoneId: string, memberIds: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.RemoveMembersFromZoneMutation,
+            Codegen.RemoveMembersFromZoneMutationVariables
+        >(REMOVE_MEMBERS_FROM_ZONE, {
+            zoneId,
+            memberIds,
+        });
+    }
+
+    getTaxCategories(options: TaxCategoryListOptions = {}) {
+        return this.baseDataService.query<
+            Codegen.GetTaxCategoriesQuery,
+            Codegen.GetTaxCategoriesQueryVariables
+        >(GET_TAX_CATEGORIES, {
+            options,
+        });
+    }
+
+    createTaxCategory(input: Codegen.CreateTaxCategoryInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateTaxCategoryMutation,
+            Codegen.CreateTaxCategoryMutationVariables
+        >(CREATE_TAX_CATEGORY, {
+            input,
+        });
+    }
+
+    updateTaxCategory(input: Codegen.UpdateTaxCategoryInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateTaxCategoryMutation,
+            Codegen.UpdateTaxCategoryMutationVariables
+        >(UPDATE_TAX_CATEGORY, {
+            input,
+        });
+    }
+
+    deleteTaxCategory(id: string) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteTaxCategoryMutation,
+            Codegen.DeleteTaxCategoryMutationVariables
+        >(DELETE_TAX_CATEGORY, {
+            id,
+        });
+    }
+
+    deleteTaxCategories(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteTaxCategoriesMutation,
+            Codegen.DeleteTaxCategoriesMutationVariables
+        >(DELETE_TAX_CATEGORIES, {
+            ids,
+        });
+    }
+
+    getTaxRatesSimple(take = 10, skip = 0, fetchPolicy?: FetchPolicy) {
+        return this.baseDataService.query<
+            Codegen.GetTaxRateListSimpleQuery,
+            Codegen.GetTaxRateListSimpleQueryVariables
+        >(
             GET_TAX_RATE_LIST_SIMPLE,
             {
                 options: {
@@ -258,148 +225,224 @@ export class SettingsDataService {
         );
     }
 
-    getTaxRate(id: string) {
-        return this.baseDataService.query<GetTaxRate.Query, GetTaxRate.Variables>(GET_TAX_RATE, {
-            id,
-        });
-    }
-
-    createTaxRate(input: CreateTaxRateInput) {
-        return this.baseDataService.mutate<CreateTaxRate.Mutation, CreateTaxRate.Variables>(CREATE_TAX_RATE, {
+    createTaxRate(input: Codegen.CreateTaxRateInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateTaxRateMutation,
+            Codegen.CreateTaxRateMutationVariables
+        >(CREATE_TAX_RATE, {
             input,
         });
     }
 
-    updateTaxRate(input: UpdateTaxRateInput) {
-        return this.baseDataService.mutate<UpdateTaxRate.Mutation, UpdateTaxRate.Variables>(UPDATE_TAX_RATE, {
+    updateTaxRate(input: Codegen.UpdateTaxRateInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateTaxRateMutation,
+            Codegen.UpdateTaxRateMutationVariables
+        >(UPDATE_TAX_RATE, {
             input,
         });
     }
 
     deleteTaxRate(id: string) {
-        return this.baseDataService.mutate<DeleteTaxRate.Mutation, DeleteTaxRate.Variables>(DELETE_TAX_RATE, {
+        return this.baseDataService.mutate<
+            Codegen.DeleteTaxRateMutation,
+            Codegen.DeleteTaxRateMutationVariables
+        >(DELETE_TAX_RATE, {
             id,
         });
     }
 
-    getChannels() {
-        return this.baseDataService.query<GetChannels.Query>(GET_CHANNELS);
-    }
-
-    getChannel(id: string) {
-        return this.baseDataService.query<GetChannel.Query, GetChannel.Variables>(GET_CHANNEL, {
-            id,
+    deleteTaxRates(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteTaxRatesMutation,
+            Codegen.DeleteTaxRatesMutationVariables
+        >(DELETE_TAX_RATES, {
+            ids,
         });
     }
 
-    getActiveChannel(fetchPolicy?: FetchPolicy) {
-        return this.baseDataService.query<GetActiveChannel.Query, GetActiveChannel.Variables>(
-            GET_ACTIVE_CHANNEL,
-            {},
-            fetchPolicy,
+    getChannels(options: ChannelListOptions = {}) {
+        return this.baseDataService.query<Codegen.GetChannelsQuery, Codegen.GetChannelsQueryVariables>(
+            GET_CHANNELS,
+            { options },
         );
     }
 
-    createChannel(input: CreateChannelInput) {
-        return this.baseDataService.mutate<CreateChannel.Mutation, CreateChannel.Variables>(CREATE_CHANNEL, {
+    getSellerList(options?: SellerListOptions) {
+        return this.baseDataService.query<Codegen.GetSellersQuery, Codegen.GetSellersQueryVariables>(
+            GET_SELLERS,
+            { options },
+        );
+    }
+
+    createSeller(input: Codegen.CreateSellerInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateSellerMutation,
+            Codegen.CreateSellerMutationVariables
+        >(CREATE_SELLER, {
             input,
         });
     }
 
-    updateChannel(input: UpdateChannelInput) {
-        return this.baseDataService.mutate<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+    updateSeller(input: Codegen.UpdateSellerInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateSellerMutation,
+            Codegen.UpdateSellerMutationVariables
+        >(UPDATE_SELLER, {
+            input,
+        });
+    }
+
+    deleteSeller(id: string) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteSellerMutation,
+            Codegen.DeleteSellerMutationVariables
+        >(DELETE_SELLER, {
+            id,
+        });
+    }
+
+    deleteSellers(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteSellersMutation,
+            Codegen.DeleteSellersMutationVariables
+        >(DELETE_SELLERS, {
+            ids,
+        });
+    }
+
+    getActiveChannel(fetchPolicy?: FetchPolicy) {
+        return this.baseDataService.query<
+            Codegen.GetActiveChannelQuery,
+            Codegen.GetActiveChannelQueryVariables
+        >(GET_ACTIVE_CHANNEL, {}, fetchPolicy);
+    }
+
+    createChannel(input: Codegen.CreateChannelInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateChannelMutation,
+            Codegen.CreateChannelMutationVariables
+        >(CREATE_CHANNEL, {
+            input,
+        });
+    }
+
+    updateChannel(input: Codegen.UpdateChannelInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateChannelMutation,
+            Codegen.UpdateChannelMutationVariables
+        >(UPDATE_CHANNEL, {
             input,
         });
     }
 
     deleteChannel(id: string) {
-        return this.baseDataService.mutate<DeleteChannel.Mutation, DeleteChannel.Variables>(DELETE_CHANNEL, {
+        return this.baseDataService.mutate<
+            Codegen.DeleteChannelMutation,
+            Codegen.DeleteChannelMutationVariables
+        >(DELETE_CHANNEL, {
             id,
         });
     }
 
-    getPaymentMethods(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetPaymentMethodList.Query, GetPaymentMethodList.Variables>(
-            GET_PAYMENT_METHOD_LIST,
-            {
-                options: {
-                    skip,
-                    take,
-                },
-            },
-        );
+    deleteChannels(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteChannelsMutation,
+            Codegen.DeleteChannelsMutationVariables
+        >(DELETE_CHANNELS, {
+            ids,
+        });
     }
 
-    getPaymentMethod(id: string) {
-        return this.baseDataService.query<GetPaymentMethod.Query, GetPaymentMethod.Variables>(
-            GET_PAYMENT_METHOD,
-            {
-                id,
-            },
-        );
+    createPaymentMethod(input: Codegen.CreatePaymentMethodInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreatePaymentMethodMutation,
+            Codegen.CreatePaymentMethodMutationVariables
+        >(CREATE_PAYMENT_METHOD, {
+            input: pick(input, ['code', 'checker', 'handler', 'enabled', 'translations', 'customFields']),
+        });
     }
 
-    createPaymentMethod(input: CreatePaymentMethodInput) {
-        return this.baseDataService.mutate<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
-            CREATE_PAYMENT_METHOD,
-            {
-                input,
-            },
-        );
-    }
-
-    updatePaymentMethod(input: UpdatePaymentMethodInput) {
-        return this.baseDataService.mutate<UpdatePaymentMethod.Mutation, UpdatePaymentMethod.Variables>(
-            UPDATE_PAYMENT_METHOD,
-            {
-                input,
-            },
-        );
+    updatePaymentMethod(input: Codegen.UpdatePaymentMethodInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdatePaymentMethodMutation,
+            Codegen.UpdatePaymentMethodMutationVariables
+        >(UPDATE_PAYMENT_METHOD, {
+            input: pick(input, [
+                'id',
+                'code',
+                'checker',
+                'handler',
+                'enabled',
+                'translations',
+                'customFields',
+            ]),
+        });
     }
 
     deletePaymentMethod(id: string, force: boolean) {
-        return this.baseDataService.mutate<DeletePaymentMethod.Mutation, DeletePaymentMethod.Variables>(
-            DELETE_PAYMENT_METHOD,
-            {
-                id,
-                force,
-            },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeletePaymentMethodMutation,
+            Codegen.DeletePaymentMethodMutationVariables
+        >(DELETE_PAYMENT_METHOD, {
+            id,
+            force,
+        });
+    }
+
+    deletePaymentMethods(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<
+            Codegen.DeletePaymentMethodsMutation,
+            Codegen.DeletePaymentMethodsMutationVariables
+        >(DELETE_PAYMENT_METHODS, {
+            ids,
+            force,
+        });
     }
 
     getPaymentMethodOperations() {
-        return this.baseDataService.query<GetPaymentMethodOperations.Query>(GET_PAYMENT_METHOD_OPERATIONS);
+        return this.baseDataService.query<Codegen.GetPaymentMethodOperationsQuery>(
+            GET_PAYMENT_METHOD_OPERATIONS,
+        );
     }
 
     getGlobalSettings(fetchPolicy?: WatchQueryFetchPolicy) {
-        return this.baseDataService.query<GetGlobalSettings.Query>(
+        return this.baseDataService.query<Codegen.GetGlobalSettingsQuery>(
             GET_GLOBAL_SETTINGS,
             undefined,
             fetchPolicy,
         );
     }
 
-    updateGlobalSettings(input: UpdateGlobalSettingsInput) {
-        return this.baseDataService.mutate<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
-            UPDATE_GLOBAL_SETTINGS,
+    updateGlobalSettings(input: Codegen.UpdateGlobalSettingsInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateGlobalSettingsMutation,
+            Codegen.UpdateGlobalSettingsMutationVariables
+        >(UPDATE_GLOBAL_SETTINGS, {
+            input,
+        });
+    }
+
+    getJob(id: string) {
+        return this.baseDataService.query<Codegen.GetJobInfoQuery, Codegen.GetJobInfoQueryVariables>(
+            GET_JOB_INFO,
             {
-                input,
+                id,
             },
         );
     }
 
-    getJob(id: string) {
-        return this.baseDataService.query<GetJobInfo.Query, GetJobInfo.Variables>(GET_JOB_INFO, { id });
-    }
-
     pollJobs(ids: string[]) {
-        return this.baseDataService.query<GetJobsById.Query, GetJobsById.Variables>(GET_JOBS_BY_ID, {
-            ids,
-        });
+        return this.baseDataService.query<Codegen.GetJobsByIdQuery, Codegen.GetJobsByIdQueryVariables>(
+            GET_JOBS_BY_ID,
+            {
+                ids,
+            },
+        );
     }
 
     getAllJobs(options?: JobListOptions) {
-        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(
+        return this.baseDataService.query<Codegen.GetAllJobsQuery, Codegen.GetAllJobsQueryVariables>(
             GET_JOBS_LIST,
             {
                 options,
@@ -409,24 +452,30 @@ export class SettingsDataService {
     }
 
     getJobQueues() {
-        return this.baseDataService.query<GetJobQueueList.Query>(GET_JOB_QUEUE_LIST);
+        return this.baseDataService.query<Codegen.GetJobQueueListQuery>(GET_JOB_QUEUE_LIST);
     }
 
     getRunningJobs() {
-        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_JOBS_LIST, {
-            options: {
-                filter: {
-                    state: {
-                        eq: JobState.RUNNING,
+        return this.baseDataService.query<Codegen.GetAllJobsQuery, Codegen.GetAllJobsQueryVariables>(
+            GET_JOBS_LIST,
+            {
+                options: {
+                    filter: {
+                        state: {
+                            eq: JobState.RUNNING,
+                        },
                     },
                 },
             },
-        });
+        );
     }
 
     cancelJob(id: string) {
-        return this.baseDataService.mutate<CancelJob.Mutation, CancelJob.Variables>(CANCEL_JOB, {
-            id,
-        });
+        return this.baseDataService.mutate<Codegen.CancelJobMutation, Codegen.CancelJobMutationVariables>(
+            CANCEL_JOB,
+            {
+                id,
+            },
+        );
     }
 }

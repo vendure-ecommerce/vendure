@@ -1,0 +1,26 @@
+<div class="member-info">
+    <div class="kind">
+        <div class="kind-label">{{ .Get "kind" | safeHTML }}</div>
+    </div>
+
+    {{- if isset .Params "since" -}}
+    <div class="since mr-2 bg-yellow-100 px-2 rounded-sm" title="This API was added in v{{ .Get "since" | safeHTML }}">
+        <div class="text-yellow-700">v{{ .Get "since" | safeHTML }}</div>
+    </div>
+    {{ end }}
+    {{- if isset .Params "experimental" -}}
+    <div class="since mr-2 bg-yellow-100 px-2 rounded-sm" title="This API is experimental and may change in a future release">
+        <div class="text-yellow-700">experimental</div>
+    </div>
+    {{ end }}
+    <div class="type">
+        <div class="label">type:</div>
+        <code>{{ .Get "type" | safeHTML }}</code>
+    </div>
+    {{- if isset .Params "default" -}}
+    <div class="default">
+        <div class="label">default:</div>
+        <code>{{ .Get "default" | safeHTML }}</code>
+    </div>
+    {{ end }}
+</div>

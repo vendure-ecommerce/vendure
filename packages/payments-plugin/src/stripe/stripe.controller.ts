@@ -43,46 +43,39 @@ export class StripeController {
             response.status(HttpStatus.BAD_REQUEST).send(missingHeaderErrorMessage);
             return;
         }
-
-        let event = null;
-        try {
-            event = this.stripeService.constructEventFromPayload(request.rawBody, signature);
-        } catch (e: any) {
-            Logger.error(`${signatureErrorMessage} ${signature}: ${e.message}`, loggerCtx);
-            response.status(HttpStatus.BAD_REQUEST).send(signatureErrorMessage);
-            return;
-        }
-
+        const event = request.body as Stripe.Event;
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         if (!paymentIntent) {
             Logger.error(noPaymentIntentErrorMessage, loggerCtx);
             response.status(HttpStatus.BAD_REQUEST).send(noPaymentIntentErrorMessage);
             return;
         }
-
         const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;
-
+        const ctx = await this.createContext(channelToken, request);
+        const order = await this.orderService.findOneByCode(ctx, orderCode);
+        if (!order) {
+            throw Error(`Unable to find order ${orderCode}, unable to settle payment ${paymentIntent.id}!`);
+        }
+        try {
+            // Throws an error if the signature is invalid
+            await this.stripeService.constructEventFromPayload(ctx, order, request.rawBody, signature);
+        } catch (e: any) {
+            Logger.error(`${signatureErrorMessage} ${signature}: ${(e as Error)?.message}`, loggerCtx);
+            response.status(HttpStatus.BAD_REQUEST).send(signatureErrorMessage);
+            return;
+        }
         if (event.type === 'payment_intent.payment_failed') {
-            const message = paymentIntent.last_payment_error?.message;
+            const message = paymentIntent.last_payment_error?.message ?? 'unknown error';
             Logger.warn(`Payment for order ${orderCode} failed: ${message}`, loggerCtx);
             response.status(HttpStatus.OK).send('Ok');
             return;
         }
-
         if (event.type !== 'payment_intent.succeeded') {
             // This should never happen as the webhook is configured to receive
             // payment_intent.succeeded and payment_intent.payment_failed events only
             Logger.info(`Received ${event.type} status update for order ${orderCode}`, loggerCtx);
             return;
         }
-
-        const ctx = await this.createContext(channelToken, request);
-
-        const order = await this.orderService.findOneByCode(ctx, orderCode);
-        if (!order) {
-            throw Error(`Unable to find order ${orderCode}, unable to settle payment ${paymentIntent.id}!`);
-        }
-
         if (order.state !== 'ArrangingPayment') {
             const transitionToStateResult = await this.orderService.transitionToState(
                 ctx,

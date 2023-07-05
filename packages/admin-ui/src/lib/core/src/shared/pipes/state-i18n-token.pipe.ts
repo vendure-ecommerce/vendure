@@ -26,18 +26,24 @@ export class StateI18nTokenPipe implements PipeTransform {
         Modifying: _('state.modifying'),
         ArrangingAdditionalPayment: _('state.arranging-additional-payment'),
     };
-    transform<T extends unknown>(value: T): T {
+    transform<T>(value: T): T {
         if (typeof value === 'string' && value.length) {
             const defaultStateToken = this.stateI18nTokens[value as any];
             if (defaultStateToken) {
                 return defaultStateToken;
             }
-            return ('state.' +
-                value
-                    .replace(/([a-z])([A-Z])/g, '$1-$2')
-                    .replace(/ +/g, '-')
-                    .toLowerCase()) as any;
+            return getOrderStateTranslationToken(value as string) as T;
         }
         return value;
     }
+}
+
+export function getOrderStateTranslationToken(state: string): string {
+    return (
+        'state.' +
+        state
+            .replace(/([a-z])([A-Z])/g, '$1-$2')
+            .replace(/ +/g, '-')
+            .toLowerCase()
+    );
 }

@@ -1,13 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import {
-    CurrencyCode,
-    CustomFieldConfig,
-    DataService,
-    GetProductVariant,
-    GetProductVariantQuery,
-    ProductSelectorSearchQuery,
-} from '@vendure/admin-ui/core';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { CurrencyCode, CustomFieldConfig, DataService, GetProductVariantQuery } from '@vendure/admin-ui/core';
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -21,9 +14,9 @@ export class DraftOrderVariantSelectorComponent implements OnInit {
     @Input() currencyCode: CurrencyCode;
     @Input() orderLineCustomFields: CustomFieldConfig[];
     @Output() addItem = new EventEmitter<{ productVariantId: string; quantity: number; customFields: any }>();
-    customFieldsFormGroup = new FormGroup({});
+    customFieldsFormGroup = new UntypedFormGroup({});
     selectedVariant$: Observable<GetProductVariantQuery['productVariant']>;
-    selectedVariantId$ = new Subject<string>();
+    selectedVariantId$ = new Subject<string | undefined>();
     quantity = 1;
     constructor(private dataService: DataService) {}
 
@@ -40,7 +33,7 @@ export class DraftOrderVariantSelectorComponent implements OnInit {
             }),
         );
         for (const customField of this.orderLineCustomFields) {
-            this.customFieldsFormGroup.addControl(customField.name, new FormControl(''));
+            this.customFieldsFormGroup.addControl(customField.name, new UntypedFormControl(''));
         }
     }
 

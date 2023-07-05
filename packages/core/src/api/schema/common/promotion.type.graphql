@@ -7,10 +7,22 @@ type Promotion implements Node {
     couponCode: String
     perCustomerUsageLimit: Int
     name: String!
+    description: String!
     enabled: Boolean!
     conditions: [ConfigurableOperation!]!
     actions: [ConfigurableOperation!]!
+    translations: [PromotionTranslation!]!
 }
+
+type PromotionTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+    description: String!
+}
+
 
 type PromotionList implements PaginatedList {
     items: [Promotion!]!

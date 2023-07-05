@@ -30,7 +30,7 @@ export class MutableRequestContext extends RequestContext {
 
     static deserialize(ctxObject: SerializedRequestContext): MutableRequestContext {
         return new MutableRequestContext({
-            req: ctxObject._req as any,
+            req: ctxObject._req,
             apiType: ctxObject._apiType,
             channel: new Channel(ctxObject._channel),
             session: {

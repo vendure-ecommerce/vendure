@@ -6,7 +6,7 @@ showtoc: true
 
 # Using the Job Queue
 
-If your plugin involves long-running tasks, you can take advantage of the [job queue system]({{< relref "/docs/developer-guide/job-queue" >}}) that comes with Vendure. This example defines a mutation that can be used to transcode and link a video to a Product's customFields.
+If your plugin involves long-running tasks, you can take advantage of the [job queue system]({{< relref "/developer-guide/job-queue" >}}) that comes with Vendure. This example defines a mutation that can be used to transcode and link a video to a Product's customFields.
 
 ```TypeScript
 // product-video.resolver.ts

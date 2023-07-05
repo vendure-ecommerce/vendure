@@ -14,13 +14,11 @@ function copyI18nMessages() {
     return src(MESSAGES_GLOB).pipe(dest('../dist/i18n/messages'));
 }
 
-export const build = parallel(
-    copySchemas,
-    copyI18nMessages,
-);
+export const build = parallel(copySchemas, copyI18nMessages);
 
 export function watch() {
     const watcher1 = gulpWatch(SCHEMAS_GLOB, copySchemas);
     const watcher2 = gulpWatch(MESSAGES_GLOB, copyI18nMessages);
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return new Promise(resolve => {});
 }

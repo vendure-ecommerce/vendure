@@ -1,9 +1,9 @@
 import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
-import { User } from '../../entity/user/user.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 
 import { RequestContext, SerializedRequestContext } from './request-context';
@@ -131,16 +131,12 @@ describe('RequestContext', () => {
     });
 
     function createRequestContext(req?: any) {
-        let session: CachedSession;
-        let channel: Channel;
-        let activeOrder: Order;
-        let zone: Zone;
-        activeOrder = new Order({
+        const activeOrder = new Order({
             id: '55555',
             active: true,
             code: 'ADAWDJAWD',
         });
-        session = {
+        const session = {
             cacheExpiry: Number.MAX_SAFE_INTEGER,
             expires: new Date(),
             id: '1234',
@@ -152,16 +148,16 @@ describe('RequestContext', () => {
                 verified: true,
                 channelPermissions: [],
             },
-        };
-        zone = new Zone({
+        } satisfies CachedSession;
+        const zone = new Zone({
             id: '62626',
             name: 'Europe',
         });
-        channel = new Channel({
+        const channel = new Channel({
             token: 'oiajwodij09au3r',
             id: '995859',
             code: '__default_channel__',
-            currencyCode: CurrencyCode.EUR,
+            defaultCurrencyCode: CurrencyCode.EUR,
             pricesIncludeTax: true,
             defaultLanguageCode: LanguageCode.en,
             defaultShippingZone: zone,

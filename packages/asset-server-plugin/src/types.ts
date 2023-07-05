@@ -16,7 +16,7 @@ export type ImageTransformFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif';
  * * resize: Preserving aspect ratio, resizes the image to be as large as possible
  * while ensuring its dimensions are less than or equal to both those specified.
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  */
 export type ImageTransformMode = 'crop' | 'resize';
 
@@ -34,7 +34,7 @@ export type ImageTransformMode = 'crop' | 'resize';
  *
  * `http://localhost:3000/assets/some-asset.jpg?w=50&h=50&mode=crop`
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  */
 export interface ImageTransformPreset {
     name: string;
@@ -47,7 +47,7 @@ export interface ImageTransformPreset {
  * @description
  * A configuration option for the Cache-Control header in the AssetServerPlugin asset response.
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  */
 export type CacheConfig = {
     /**
@@ -67,7 +67,7 @@ export type CacheConfig = {
  * @description
  * The configuration options for the AssetServerPlugin.
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  */
 export interface AssetServerOptions {
     /**

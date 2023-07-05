@@ -1,21 +1,21 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Administrator resolver createAdministrator 1`] = `
-Object {
+exports[`Administrator resolver > createAdministrator 1`] = `
+{
   "emailAddress": "test@test.com",
   "firstName": "First",
   "id": "T_2",
   "lastName": "Last",
-  "user": Object {
+  "user": {
     "id": "T_3",
     "identifier": "test@test.com",
     "lastLogin": null,
-    "roles": Array [
-      Object {
+    "roles": [
+      {
         "code": "__super_admin_role__",
         "description": "SuperAdmin",
         "id": "T_1",
-        "permissions": Array [
+        "permissions": [
           "Authenticated",
           "SuperAdmin",
           "UpdateGlobalSettings",
@@ -91,6 +91,14 @@ Object {
           "ReadTaxRate",
           "UpdateTaxRate",
           "DeleteTaxRate",
+          "CreateSeller",
+          "ReadSeller",
+          "UpdateSeller",
+          "DeleteSeller",
+          "CreateStockLocation",
+          "ReadStockLocation",
+          "UpdateStockLocation",
+          "DeleteStockLocation",
           "CreateSystem",
           "ReadSystem",
           "UpdateSystem",
@@ -106,22 +114,22 @@ Object {
 }
 `;
 
-exports[`Administrator resolver updateAdministrator 1`] = `
-Object {
+exports[`Administrator resolver > updateAdministrator 1`] = `
+{
   "emailAddress": "new-email",
   "firstName": "new first",
   "id": "T_2",
   "lastName": "new last",
-  "user": Object {
+  "user": {
     "id": "T_3",
     "identifier": "new-email",
     "lastLogin": null,
-    "roles": Array [
-      Object {
+    "roles": [
+      {
         "code": "__customer_role__",
         "description": "Customer",
         "id": "T_2",
-        "permissions": Array [
+        "permissions": [
           "Authenticated",
         ],
       },

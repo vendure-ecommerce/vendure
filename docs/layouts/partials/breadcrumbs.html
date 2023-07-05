@@ -1,0 +1,57 @@
+<nav class="flex my-6" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center breadcrumbs">
+        {{ template "breadcrumb" dict "currentPage" .Page "id" .UniqueID }}
+    </ol>
+</nav>
+
+<!-- templates -->
+{{ define "breadcrumb" }} {{ if .currentPage.Parent }} {{ template "breadcrumb" dict "currentPage"
+.currentPage.Parent }} {{ else }}
+<li class="list-none">
+    <a href="/" class="block md:mr-3">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-4 h-4"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+            />
+        </svg>
+    </a>
+</li>
+{{ end }} {{ $title := cond (eq .currentPage.RelPermalink "/docs/" ) "Docs" (title .currentPage.Title) }} {{
+if (ne .currentPage.Parent .IsHome) }}
+<li class="list-none">
+    <div class="flex items-center md:space-x-3 md:mr-3">
+        {{ if ne $title "Docs" }}
+        <svg
+            class="flex-shrink-0 h-5 w-5 text-gray-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+        >
+            <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+            />
+        </svg>
+        {{ end }} {{ if eq .id .currentPage.UniqueID }}
+        <span class="text-sm font-medium text-gray-500 hover:text-gray-700">{{ $title }}</span>
+        {{ else }}
+        <a
+            href="{{ .currentPage.RelPermalink  }}"
+            class="text-sm font-medium text-gray-500 hover:text-gray-700"
+            >{{ $title }}</a
+        >
+        {{ end }}
+    </div>
+</li>
+{{ end }} {{ end }}

@@ -12,7 +12,7 @@
     "strict": true,
     "noImplicitAny": false,
     "strictPropertyInitialization": false,
-    "target": "es2015",
+    "target": "ES2022",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -56,6 +56,7 @@
       "@vendure/admin-ui/system": [
         "./src/lib/system/src/public_api"
       ]
-    }
+    },
+    "useDefineForClassFields": false
   }
 }

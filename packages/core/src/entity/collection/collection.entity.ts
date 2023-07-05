@@ -1,12 +1,14 @@
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import {
     Column,
     Entity,
+    Index,
     JoinTable,
     ManyToMany,
     ManyToOne,
     OneToMany,
+    Tree,
     TreeChildren,
     TreeParent,
 } from 'typeorm';
@@ -18,6 +20,7 @@ import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomCollectionFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 
 import { CollectionAsset } from './collection-asset.entity';
@@ -30,13 +33,11 @@ import { CollectionTranslation } from './collection-translation.entity';
  * @docsCategory entities
  */
 @Entity()
-// TODO: It would be ideal to use the TypeORM built-in tree support, but unfortunately it is incomplete
-// at this time - does not support moving or deleting. See https://github.com/typeorm/typeorm/issues/2032
-// Therefore we will just use an adjacency list which will have a perf impact when needing to lookup
-// decendants or ancestors more than 1 level removed.
-// @Tree('closure-table')
-export class Collection extends VendureEntity
-    implements Translatable, HasCustomFields, ChannelAware, Orderable {
+@Tree('closure-table')
+export class Collection
+    extends VendureEntity
+    implements Translatable, HasCustomFields, ChannelAware, Orderable
+{
     constructor(input?: DeepPartial<Collection>) {
         super(input);
     }
@@ -56,22 +57,28 @@ export class Collection extends VendureEntity
 
     slug: LocaleString;
 
-    @OneToMany((type) => CollectionTranslation, (translation) => translation.base, { eager: true })
+    @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Collection>>;
 
-    @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
+    @Index()
+    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
-    @OneToMany((type) => CollectionAsset, (collectionAsset) => collectionAsset.collection)
+    @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
     assets: CollectionAsset[];
 
     @Column('simple-json') filters: ConfigurableOperation[];
 
-    @ManyToMany((type) => ProductVariant, (productVariant) => productVariant.collections)
+    /**
+     * @since 2.0.0
+     */
+    @Column({ default: true }) inheritFilters: boolean;
+
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.collections)
     @JoinTable()
     productVariants: ProductVariant[];
 
-    @Column((type) => CustomCollectionFields)
+    @Column(type => CustomCollectionFields)
     customFields: CustomCollectionFields;
 
     @TreeChildren()
@@ -80,7 +87,10 @@ export class Collection extends VendureEntity
     @TreeParent()
     parent: Collection;
 
-    @ManyToMany((type) => Channel)
+    @EntityId({ nullable: true })
+    parentId: ID;
+
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

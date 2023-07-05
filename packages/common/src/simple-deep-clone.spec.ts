@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { simpleDeepClone } from './simple-deep-clone';
 
 describe('simpleDeepClone()', () => {

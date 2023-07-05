@@ -29,4 +29,4 @@ Tax rates set the rate of tax for a given **tax category** destined for a partic
 
 ## Tax Compliance
 
-Please note that tax compliance is a complex topic that varies significantly between countries. Vendure does not (and cannot) offer a complete out-of-the-box tax solution which is guaranteed to be compliant with your use-case. What we strive to do is to provide a very flexible set of tools that your developers can use to tailor tax calculations exactly to your needs. These are covered in the [Developer's guide to taxes]({{< relref "/docs/developer-guide/taxes" >}}). 
+Please note that tax compliance is a complex topic that varies significantly between countries. Vendure does not (and cannot) offer a complete out-of-the-box tax solution which is guaranteed to be compliant with your use-case. What we strive to do is to provide a very flexible set of tools that your developers can use to tailor tax calculations exactly to your needs. These are covered in the [Developer's guide to taxes]({{< relref "/developer-guide/taxes" >}}). 

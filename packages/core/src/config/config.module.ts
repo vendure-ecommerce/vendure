@@ -67,8 +67,12 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
     private getInjectableStrategies(): InjectableStrategy[] {
         const { assetNamingStrategy, assetPreviewStrategy, assetStorageStrategy } =
             this.configService.assetOptions;
-        const { productVariantPriceCalculationStrategy, stockDisplayStrategy } =
-            this.configService.catalogOptions;
+        const {
+            productVariantPriceCalculationStrategy,
+            productVariantPriceSelectionStrategy,
+            stockDisplayStrategy,
+            stockLocationStrategy,
+        } = this.configService.catalogOptions;
         const {
             adminAuthenticationStrategy,
             shopAuthenticationStrategy,
@@ -82,15 +86,21 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             mergeStrategy,
             checkoutMergeStrategy,
             orderItemPriceCalculationStrategy,
-            process,
+            process: orderProcess,
             orderCodeStrategy,
             orderByCodeAccessStrategy,
             stockAllocationStrategy,
             activeOrderStrategy,
             changedPriceHandlingStrategy,
+            orderSellerStrategy,
+            guestCheckoutStrategy,
         } = this.configService.orderOptions;
-        const { customFulfillmentProcess } = this.configService.shippingOptions;
-        const { customPaymentProcess } = this.configService.paymentOptions;
+        const {
+            customFulfillmentProcess,
+            process: fulfillmentProcess,
+            shippingLineAssignmentStrategy,
+        } = this.configService.shippingOptions;
+        const { customPaymentProcess, process: paymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
         const { entityIdStrategy } = this.configService.entityOptions;
         const { healthChecks } = this.configService.systemOptions;
@@ -116,15 +126,22 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...[entityIdStrategy].filter(notNullOrUndefined),
             productVariantPriceCalculationStrategy,
             orderItemPriceCalculationStrategy,
-            ...process,
+            ...orderProcess,
             ...customFulfillmentProcess,
+            ...fulfillmentProcess,
             ...customPaymentProcess,
+            ...paymentProcess,
             stockAllocationStrategy,
             stockDisplayStrategy,
             ...healthChecks,
             assetImportStrategy,
             changedPriceHandlingStrategy,
             ...(Array.isArray(activeOrderStrategy) ? activeOrderStrategy : [activeOrderStrategy]),
+            orderSellerStrategy,
+            shippingLineAssignmentStrategy,
+            stockLocationStrategy,
+            productVariantPriceSelectionStrategy,
+            guestCheckoutStrategy,
         ];
     }
 

@@ -1,8 +1,8 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { fail } from 'assert';
+import { describe, expect, it } from 'vitest';
 
 import { Injector } from '../../common/injector';
-import { CustomFieldConfig } from '../../config/custom-field/custom-field-types';
 
 import { validateCustomFieldValue } from './validate-custom-field-value';
 
@@ -13,7 +13,7 @@ describe('validateCustomFieldValue()', () => {
         try {
             await validateFn();
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe(message);
         }
     }
@@ -31,9 +31,9 @@ describe('validateCustomFieldValue()', () => {
             );
 
         it('passes valid pattern', async () => {
-            expect(await validate('1')).not.toThrow();
-            expect(await validate('123')).not.toThrow();
-            expect(await validate('1foo')).not.toThrow();
+            expect(validate('1')).not.toThrow();
+            expect(validate('123')).not.toThrow();
+            expect(validate('1foo')).not.toThrow();
         });
 
         it('throws on invalid pattern', async () => {
@@ -56,8 +56,8 @@ describe('validateCustomFieldValue()', () => {
             );
 
         it('passes valid option', async () => {
-            expect(await validate('small')).not.toThrow();
-            expect(await validate('large')).not.toThrow();
+            expect(validate('small')).not.toThrow();
+            expect(validate('large')).not.toThrow();
         });
 
         it('throws on invalid option', async () => {
@@ -81,9 +81,9 @@ describe('validateCustomFieldValue()', () => {
             );
 
         it('passes valid range', async () => {
-            expect(await validate(5)).not.toThrow();
-            expect(await validate(7)).not.toThrow();
-            expect(await validate(10)).not.toThrow();
+            expect(validate(5)).not.toThrow();
+            expect(validate(7)).not.toThrow();
+            expect(validate(10)).not.toThrow();
         });
 
         it('throws on invalid range', async () => {
@@ -107,9 +107,9 @@ describe('validateCustomFieldValue()', () => {
             );
 
         it('passes valid range', async () => {
-            expect(await validate('2019-01-01T08:30:00.000')).not.toThrow();
-            expect(await validate('2019-06-01T08:30:00.000')).not.toThrow();
-            expect(await validate('2019-04-12T14:15:51.200')).not.toThrow();
+            expect(validate('2019-01-01T08:30:00.000')).not.toThrow();
+            expect(validate('2019-06-01T08:30:00.000')).not.toThrow();
+            expect(validate('2019-04-12T14:15:51.200')).not.toThrow();
         });
 
         it('throws on invalid range', async () => {
@@ -159,11 +159,11 @@ describe('validateCustomFieldValue()', () => {
             );
 
         it('passes validate fn string', async () => {
-            expect(await validate1('valid')).not.toThrow();
+            expect(validate1('valid')).not.toThrow();
         });
 
         it('passes validate fn localized string', async () => {
-            expect(await validate2('valid', LanguageCode.de)).not.toThrow();
+            expect(validate2('valid', LanguageCode.de)).not.toThrow();
         });
 
         it('fails validate fn string', async () => {
@@ -194,7 +194,7 @@ describe('validateCustomFieldValue()', () => {
                     injector,
                 );
 
-            expect(await validate([1, 2, 6])).not.toThrow();
+            expect(validate([1, 2, 6])).not.toThrow();
             await assertThrowsError(validate([1, 15, 3]), 'error.field-invalid-number-range-max');
         });
 
@@ -211,7 +211,7 @@ describe('validateCustomFieldValue()', () => {
                     injector,
                 );
 
-            expect(await validate(['small', 'large'])).not.toThrow();
+            expect(validate(['small', 'large'])).not.toThrow();
             await assertThrowsError(validate(['small', 'huge']), 'error.field-invalid-string-option');
         });
 
@@ -232,7 +232,7 @@ describe('validateCustomFieldValue()', () => {
                     injector,
                 );
 
-            expect(await validate(['valid', 'valid'])).not.toThrow();
+            expect(validate(['valid', 'valid'])).not.toThrow();
             await assertThrowsError(validate(['bad input', 'valid']), 'invalid');
         });
     });

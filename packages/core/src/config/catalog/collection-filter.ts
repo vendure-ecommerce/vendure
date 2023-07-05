@@ -17,7 +17,7 @@ export type ApplyCollectionFilterFn<T extends ConfigArgs> = (
 export interface CollectionFilterConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     apply: ApplyCollectionFilterFn<T>;
 }
-// tslint:disable:max-line-length
+/* eslint-disable max-len */
 /**
  * @description
  * A CollectionFilter defines a rule which can be used to associate ProductVariants with a Collection.
@@ -62,7 +62,7 @@ export interface CollectionFilterConfig<T extends ConfigArgs> extends Configurab
  * @docsCategory configuration
  */
 export class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
-    // tslint:enable:max-line-length
+    /* eslint-enable max-len */
     private readonly applyFn: ApplyCollectionFilterFn<T>;
     constructor(config: CollectionFilterConfig<T>) {
         super(config);

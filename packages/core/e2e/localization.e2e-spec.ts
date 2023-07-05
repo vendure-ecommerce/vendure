@@ -2,19 +2,16 @@ import { pick } from '@vendure/common/lib/pick';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import {
-    GetProductWithVariants,
-    LanguageCode,
-    UpdateOptionGroup,
-    UpdateProduct,
-} from './graphql/generated-e2e-admin-types';
+import { LanguageCode } from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_WITH_VARIANTS, UPDATE_PRODUCT } from './graphql/shared-definitions';
 
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('Localization', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
 
@@ -26,48 +23,48 @@ describe('Localization', () => {
         });
         await adminClient.asSuperAdmin();
 
-        const { updateProduct } = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-            UPDATE_PRODUCT,
-            {
-                input: {
-                    id: 'T_1',
-                    translations: [
-                        {
-                            languageCode: LanguageCode.en,
-                            name: 'en name',
-                            slug: 'en-slug',
-                            description: 'en-description',
-                        },
-                        {
-                            languageCode: LanguageCode.de,
-                            name: 'de name',
-                            slug: 'de-slug',
-                            description: 'de-description',
-                        },
-                        {
-                            languageCode: LanguageCode.zh,
-                            name: 'zh name',
-                            slug: 'zh-slug',
-                            description: 'zh-description',
-                        },
-                    ],
-                },
+        const { updateProduct } = await adminClient.query<
+            Codegen.UpdateProductMutation,
+            Codegen.UpdateProductMutationVariables
+        >(UPDATE_PRODUCT, {
+            input: {
+                id: 'T_1',
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'en name',
+                        slug: 'en-slug',
+                        description: 'en-description',
+                    },
+                    {
+                        languageCode: LanguageCode.de,
+                        name: 'de name',
+                        slug: 'de-slug',
+                        description: 'de-description',
+                    },
+                    {
+                        languageCode: LanguageCode.zh,
+                        name: 'zh name',
+                        slug: 'zh-slug',
+                        description: 'zh-description',
+                    },
+                ],
             },
-        );
+        });
 
-        await adminClient.query<UpdateOptionGroup.Mutation, UpdateOptionGroup.Variables>(
-            UPDATE_OPTION_GROUP,
-            {
-                input: {
-                    id: 'T_1',
-                    translations: [
-                        { languageCode: LanguageCode.en, name: 'en name' },
-                        { languageCode: LanguageCode.de, name: 'de name' },
-                        { languageCode: LanguageCode.zh, name: 'zh name' },
-                    ],
-                },
+        await adminClient.query<
+            Codegen.UpdateOptionGroupMutation,
+            Codegen.UpdateOptionGroupMutationVariables
+        >(UPDATE_OPTION_GROUP, {
+            input: {
+                id: 'T_1',
+                translations: [
+                    { languageCode: LanguageCode.en, name: 'en name' },
+                    { languageCode: LanguageCode.de, name: 'de name' },
+                    { languageCode: LanguageCode.zh, name: 'zh name' },
+                ],
             },
-        );
+        });
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -76,8 +73,8 @@ describe('Localization', () => {
 
     it('returns default language when none specified', async () => {
         const { product } = await adminClient.query<
-            GetProductWithVariants.Query,
-            GetProductWithVariants.Variables
+            Codegen.GetProductWithVariantsQuery,
+            Codegen.GetProductWithVariantsQueryVariables
         >(GET_PRODUCT_WITH_VARIANTS, {
             id: 'T_1',
         });
@@ -90,8 +87,8 @@ describe('Localization', () => {
 
     it('returns specified language', async () => {
         const { product } = await adminClient.query<
-            GetProductWithVariants.Query,
-            GetProductWithVariants.Variables
+            Codegen.GetProductWithVariantsQuery,
+            Codegen.GetProductWithVariantsQueryVariables
         >(
             GET_PRODUCT_WITH_VARIANTS,
             {
@@ -108,8 +105,8 @@ describe('Localization', () => {
 
     it('falls back to default language code', async () => {
         const { product } = await adminClient.query<
-            GetProductWithVariants.Query,
-            GetProductWithVariants.Variables
+            Codegen.GetProductWithVariantsQuery,
+            Codegen.GetProductWithVariantsQueryVariables
         >(
             GET_PRODUCT_WITH_VARIANTS,
             {
@@ -126,8 +123,8 @@ describe('Localization', () => {
 
     it('nested entites are translated', async () => {
         const { product } = await adminClient.query<
-            GetProductWithVariants.Query,
-            GetProductWithVariants.Variables
+            Codegen.GetProductWithVariantsQuery,
+            Codegen.GetProductWithVariantsQueryVariables
         >(
             GET_PRODUCT_WITH_VARIANTS,
             {
@@ -141,7 +138,10 @@ describe('Localization', () => {
     });
 
     it('translates results of mutation', async () => {
-        const { updateProduct } = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+        const { updateProduct } = await adminClient.query<
+            Codegen.UpdateProductMutation,
+            Codegen.UpdateProductMutationVariables
+        >(
             UPDATE_PRODUCT,
             {
                 input: {

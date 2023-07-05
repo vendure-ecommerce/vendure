@@ -27,6 +27,7 @@ export const shopSchema = gql`
     }
     union MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError
     input MolliePaymentIntentInput {
+        redirectUrl: String
         paymentMethodCode: String!
         molliePaymentMethodCode: String
     }

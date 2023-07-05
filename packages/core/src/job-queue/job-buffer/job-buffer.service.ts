@@ -66,9 +66,11 @@ export class JobBufferService {
                 let jobsToAdd = jobsForBuffer;
                 try {
                     jobsToAdd = await buffer.reduce(jobsForBuffer);
-                } catch (e) {
+                } catch (e: any) {
                     Logger.error(
-                        `Error encountered processing jobs in JobBuffer "${buffer.id}":\n${e.message}`,
+                        `Error encountered processing jobs in JobBuffer "${buffer.id}":\n${JSON.stringify(
+                            e.message,
+                        )}`,
                         undefined,
                         e.stack,
                     );

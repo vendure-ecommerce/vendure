@@ -1,6 +1,6 @@
 import { getMetadataArgsStorage } from 'typeorm';
 
-import { VendureConfig } from '../config/index';
+import { VendureConfig } from '../config/vendure-config';
 
 export async function runEntityMetadataModifiers(config: VendureConfig) {
     if (config.entityOptions?.metadataModifiers?.length) {

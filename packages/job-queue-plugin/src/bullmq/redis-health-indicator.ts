@@ -18,7 +18,11 @@ export class RedisHealthIndicator extends HealthIndicator {
         const pingResult = await new Promise(async (resolve, reject) => {
             try {
                 connection.on('error', err => {
-                    Logger.error(`Redis health check error: ${err.message}`, loggerCtx, err.stack);
+                    Logger.error(
+                        `Redis health check error: ${JSON.stringify(err.message)}`,
+                        loggerCtx,
+                        err.stack,
+                    );
                     resolve(err);
                 });
                 if (this.timeoutTimer) {
@@ -33,14 +37,14 @@ export class RedisHealthIndicator extends HealthIndicator {
                     resolve('timeout');
                     return;
                 }
-                client.ping((err, res) => {
+                void client.ping((err: any, res: any) => {
                     if (err) {
                         resolve(err);
                     } else {
                         resolve(res);
                     }
                 });
-            } catch (e) {
+            } catch (e: any) {
                 resolve(e);
             }
         });
@@ -48,8 +52,12 @@ export class RedisHealthIndicator extends HealthIndicator {
         try {
             await connection.close();
             // await connection.disconnect();
-        } catch (e) {
-            Logger.error(`Redis health check error closing connection: ${e.message}`, loggerCtx, e.stack);
+        } catch (e: any) {
+            Logger.error(
+                `Redis health check error closing connection: ${JSON.stringify(e.message)}`,
+                loggerCtx,
+                e.stack,
+            );
         }
 
         const result = this.getStatus(key, pingResult === 'PONG');

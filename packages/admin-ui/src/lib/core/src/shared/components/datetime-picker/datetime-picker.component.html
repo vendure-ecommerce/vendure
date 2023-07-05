@@ -1,31 +1,34 @@
 <div class="input-wrapper">
     <input
         readonly
-        [ngModel]="selected$ | async | localeDate: 'medium'"
+        [ngModel]="selected$ | async | localeDate : 'medium'"
         class="selected-datetime"
         (keydown.enter)="dropdownComponent.toggleOpen()"
         (keydown.space)="dropdownComponent.toggleOpen()"
         #datetimeInput
     />
-    <button class="clear-value-button btn" [class.visible]="!disabled && !readonly && (selected$ | async)" (click)="clearValue()">
+    <button
+        class="clear-value-button"
+        [class.visible]="!disabled && !readonly && (selected$ | async)"
+        (click)="clearValue()"
+    >
         <clr-icon shape="times"></clr-icon>
     </button>
 </div>
 <vdr-dropdown #dropdownComponent>
-    <button class="btn btn-outline calendar-button" vdrDropdownTrigger [disabled]="readonly || disabled">
+    <button class="calendar-button" vdrDropdownTrigger [disabled]="readonly || disabled">
         <clr-icon shape="calendar"></clr-icon>
     </button>
     <vdr-dropdown-menu>
-        <div class="datetime-picker" *ngIf="current$ | async as currentView" (keydown.escape)="closeDatepicker()">
+        <div
+            class="datetime-picker"
+            *ngIf="current$ | async as currentView"
+            (keydown.escape)="closeDatepicker()"
+        >
             <div class="controls">
                 <div class="selects">
                     <div class="month-select">
-                        <select
-                            clrSelect
-                            name="month"
-                            [ngModel]="currentView.month"
-                            (change)="setMonth($event)"
-                        >
+                        <select name="month" [ngModel]="currentView.month" (change)="setMonth($event)">
                             <option [value]="1">{{ 'datetime.month-jan' | translate }}</option>
                             <option [value]="2">{{ 'datetime.month-feb' | translate }}</option>
                             <option [value]="3">{{ 'datetime.month-mar' | translate }}</option>
@@ -41,12 +44,7 @@
                         </select>
                     </div>
                     <div class="year-select">
-                        <select
-                            clrSelect
-                            name="month"
-                            [ngModel]="currentView.year"
-                            (change)="setYear($event)"
-                        >
+                        <select name="month" [ngModel]="currentView.year" (change)="setYear($event)">
                             <option *ngFor="let year of years" [value]="year">{{ year }}</option>
                         </select>
                     </div>
@@ -59,7 +57,11 @@
                     >
                         <clr-icon shape="caret" dir="left"></clr-icon>
                     </button>
-                    <button class="btn btn-link btn-sm" (click)="selectToday()" [title]="'common.select-today' | translate">
+                    <button
+                        class="btn btn-link btn-sm"
+                        (click)="selectToday()"
+                        [title]="'common.select-today' | translate"
+                    >
                         <clr-icon shape="event"></clr-icon>
                     </button>
                     <button
@@ -71,47 +73,47 @@
                     </button>
                 </div>
             </div>
-            <table class="calendar-table" #calendarTable tabindex="0" (keydown)="handleCalendarKeydown($event)">
+            <table
+                class="calendar-table"
+                #calendarTable
+                tabindex="0"
+                (keydown)="handleCalendarKeydown($event)"
+            >
                 <thead>
-                <tr>
-                    <td *ngFor="let weekdayName of weekdays">
-                        {{ weekdayName | translate }}
-                    </td>
-                </tr>
+                    <tr>
+                        <td *ngFor="let weekdayName of weekdays">
+                            {{ weekdayName | translate }}
+                        </td>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let week of calendarView$ | async">
-                    <td
-                        *ngFor="let day of week"
-                        class="day-cell"
-                        [class.selected]="day.selected"
-                        [class.today]="day.isToday"
-                        [class.viewing]="day.isViewing"
-                        [class.current-month]="day.inCurrentMonth"
-                        [class.disabled]="day.disabled"
-                        (keydown.enter)="selectDay(day)"
-                        (click)="selectDay(day)"
-                    >
-                        {{ day.dayOfMonth }}
-                    </td>
-                </tr>
+                    <tr *ngFor="let week of calendarView$ | async">
+                        <td
+                            *ngFor="let day of week"
+                            class="day-cell"
+                            [class.selected]="day.selected"
+                            [class.today]="day.isToday"
+                            [class.viewing]="day.isViewing"
+                            [class.current-month]="day.inCurrentMonth"
+                            [class.disabled]="day.disabled"
+                            (keydown.enter)="selectDay(day)"
+                            (click)="selectDay(day)"
+                        >
+                            {{ day.dayOfMonth }}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <div class="time-picker">
                 <span class="flex-spacer"> {{ 'datetime.time' | translate }}: </span>
-                <select clrSelect name="hour" [ngModel]="selectedHours$ | async" (change)="setHour($event)">
-                    <option *ngFor="let hour of hours" [value]="hour">{{ hour | number: '2.0-0' }}</option>
+                <select name="hour" [ngModel]="selectedHours$ | async" (change)="setHour($event)">
+                    <option *ngFor="let hour of hours" [value]="hour">{{ hour | number : '2.0-0' }}</option>
                 </select>
                 <span>:</span>
-                <select
-                    clrSelect
-                    name="hour"
-                    [ngModel]="selectedMinutes$ | async"
-                    (change)="setMinute($event)"
-                >
-                    <option *ngFor="let minute of minutes" [value]="minute">{{
-                        minute | number: '2.0-0'
-                        }}</option>
+                <select name="hour" [ngModel]="selectedMinutes$ | async" (change)="setMinute($event)">
+                    <option *ngFor="let minute of minutes" [value]="minute">
+                        {{ minute | number : '2.0-0' }}
+                    </option>
                 </select>
             </div>
         </div>

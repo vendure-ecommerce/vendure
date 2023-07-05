@@ -50,15 +50,27 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./src/styles"
+                "./src/styles",
+                "./src/fonts"
               ]
             },
             "allowedCommonJsDependencies": [
               "graphql-tag",
               "zen-observable",
               "lodash",
+              "dayjs",
               "apollo-upload-client",
-              "@vendure/common/lib/simple-deep-clone"
+              "@clr/icons",
+              "@clr/icons/shapes/all-shapes",
+              "@vendure/common/lib/generated-types",
+              "@vendure/common/lib/simple-deep-clone",
+              "@vendure/common/lib/shared-constants",
+              "@vendure/common/lib/shared-utils",
+              "@vendure/common/lib/normalize-string",
+              "@vendure/common/lib/unique",
+              "@vendure/common/lib/omit",
+              "@vendure/common/lib/pick",
+              "@messageformat/core"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -87,7 +99,6 @@
                 }
               },
               "outputHashing": "all",
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false
@@ -104,7 +115,6 @@
       }
     }
   },
-  "defaultProject": "vendure-admin",
   "schematics": {
     "@schematics/angular:component": {
       "skipTests": true,

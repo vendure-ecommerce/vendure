@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MutationUpdaterFn, WatchQueryFetchPolicy } from '@apollo/client/core';
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { DocumentNode } from 'graphql';
 import { Observable } from 'rxjs';
 
@@ -77,8 +78,8 @@ export class DataService {
      * ).mapSingle(data => data.product);
      * ```
      */
-    query<T, V = Record<string, any>>(
-        query: DocumentNode,
+    query<T, V extends Record<string, any> = Record<string, any>>(
+        query: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
     ): QueryResult<T, V> {
@@ -92,18 +93,18 @@ export class DataService {
      * @example
      * ```TypeScript
      * const result$ = this.dataService.mutate(gql`
-     *   mutation MyMutation($input: UpdateEntityInput!) {
+     *   mutation MyMutation($Codegen.UpdateEntityInput!) {
      *     updateEntity(input: $input) {
      *       id
      *       name
      *     }
      *   },
-     *   { input: updateEntityInput },
+     *   { Codegen.updateEntityInput },
      * );
      * ```
      */
-    mutate<T, V = Record<string, any>>(
-        mutation: DocumentNode,
+    mutate<T, V extends Record<string, any> = Record<string, any>>(
+        mutation: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         update?: MutationUpdaterFn<T>,
     ): Observable<T> {

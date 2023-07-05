@@ -3,22 +3,29 @@ import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import mjml2html from 'mjml';
 import path from 'path';
-import { EmailGenerator } from './email-generator';
 
-import { EmailPluginDevModeOptions, EmailPluginOptions } from './types';
+import { EmailGenerator } from './email-generator';
+import {
+    EmailPluginDevModeOptions,
+    EmailPluginOptions,
+    InitializedEmailPluginOptions,
+    Partial,
+} from './types';
 
 /**
  * @description
  * Uses Handlebars (https://handlebarsjs.com/) to output MJML (https://mjml.io) which is then
  * compiled down to responsive email HTML.
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailGenerator
  */
 export class HandlebarsMjmlGenerator implements EmailGenerator {
-    onInit(options: EmailPluginOptions | EmailPluginDevModeOptions) {
-        const partialsPath = path.join(options.templatePath, 'partials');
-        this.registerPartials(partialsPath);
+    async onInit(options: InitializedEmailPluginOptions) {
+        if (options.templateLoader.loadPartials) {
+            const partials = await options.templateLoader.loadPartials();
+            partials.forEach(({ name, content }) => Handlebars.registerPartial(name, content));
+        }
         this.registerHelpers();
     }
 
@@ -36,14 +43,6 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         const mjml = compiledTemplate(templateVars, { allowProtoPropertiesByDefault: true });
         const body = mjml2html(mjml).html;
         return { from: fromResult, subject: subjectResult, body };
-    }
-
-    private registerPartials(partialsPath: string) {
-        const partialsFiles = fs.readdirSync(partialsPath);
-        for (const partialFile of partialsFiles) {
-            const partialContent = fs.readFileSync(path.join(partialsPath, partialFile), 'utf-8');
-            Handlebars.registerPartial(path.basename(partialFile, '.hbs'), partialContent);
-        }
     }
 
     private registerHelpers() {

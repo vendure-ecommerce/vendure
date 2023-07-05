@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     BaseListComponent,
     DataService,
-    GetAllJobs,
-    GetFacetList,
-    GetJobQueueList,
+    GetAllJobsQuery,
+    GetJobQueueListQuery,
+    ItemOf,
     ModalService,
     NotificationService,
     SortOrder,
@@ -21,12 +21,13 @@ import { filter, map, takeUntil } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JobListComponent
-    extends BaseListComponent<GetAllJobs.Query, GetAllJobs.Items>
-    implements OnInit {
-    queues$: Observable<GetJobQueueList.JobQueues[]>;
-    liveUpdate = new FormControl(true);
-    hideSettled = new FormControl(true);
-    queueFilter = new FormControl('all');
+    extends BaseListComponent<GetAllJobsQuery, ItemOf<GetAllJobsQuery, 'jobs'>>
+    implements OnInit
+{
+    queues$: Observable<GetJobQueueListQuery['jobQueues']>;
+    liveUpdate = new UntypedFormControl(true);
+    hideSettled = new UntypedFormControl(true);
+    queueFilter = new UntypedFormControl('all');
 
     constructor(
         private dataService: DataService,
@@ -73,14 +74,10 @@ export class JobListComponent
         this.queues$ = this.dataService.settings
             .getJobQueues()
             .mapStream(res => res.jobQueues)
-            .pipe(
-                map(queues => {
-                    return [{ name: 'all', running: true }, ...queues];
-                }),
-            );
+            .pipe(map(queues => [{ name: 'all', running: true }, ...queues]));
     }
 
-    hasResult(job: GetAllJobs.Items): boolean {
+    hasResult(job: ItemOf<GetAllJobsQuery, 'jobs'>): boolean {
         const result = job.result;
         if (result == null) {
             return false;

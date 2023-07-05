@@ -9,7 +9,7 @@ showtoc: true
 This is an overview of the GraphQL Shop API, which is used when implementing a storefront application with Vendure. 
 
 {{< alert "warning" >}}
-This guide only lists some of the more common operations you'll need for your storefront. Please consult [the Shop API reference]({{< relref "/docs/graphql-api/shop" >}}) for a complete guide.
+This guide only lists some of the more common operations you'll need for your storefront. Please consult [the Shop API reference]({{< relref "/graphql-api/shop" >}}) for a complete guide.
 {{< /alert >}}
 
 ## Universal Parameters
@@ -21,7 +21,7 @@ There are a couple of query parameters that are valid for all GraphQL operations
   ```text
   POST http://localhost:3000/shop-api?languageCode=de
   ```
-* `vendure-token`: If your Vendure instance features more than a single [Channel]({{< relref "/docs/developer-guide/channels" >}}), the token of the active Channel can be specified by token as either a query parameter _or_ as a header. The name of the key can be configured by the [`channelTokenKey` config option]({{< relref "vendure-config" >}}#channeltokenkey).
+* `vendure-token`: If your Vendure instance features more than a single [Channel]({{< relref "/developer-guide/channels" >}}), the token of the active Channel can be specified by token as either a query parameter _or_ as a header. The name of the key can be configured by the [`channelTokenKey` config option]({{< relref "vendure-config" >}}#channeltokenkey).
 
 ## Browsing the catalogue
 
@@ -111,7 +111,7 @@ Use the `product` query for the Product detail view.
 * {{< shop-api-operation operation="registerCustomerAccount" type="mutation" >}}: Creates a new Customer account.
 * {{< shop-api-operation operation="login" type="mutation" >}}: Log in with registered Customer credentials.
 * {{< shop-api-operation operation="logout" type="mutation" >}}: Log out from Customer account.
-* {{< shop-api-operation operation="activeCustomer" type="query" >}}: Returns the current logged-in Customer, or `null` if not logged in. This is useful for displaying the logged-in status in the storefront. The returned [`Customer`]({{< relref "/docs/graphql-api/shop/object-types" >}}#customer) type can also be used to query the Customer's Order history, list of Addresses and other personal details.
+* {{< shop-api-operation operation="activeCustomer" type="query" >}}: Returns the current logged-in Customer, or `null` if not logged in. This is useful for displaying the logged-in status in the storefront. The returned [`Customer`]({{< relref "/graphql-api/shop/object-types" >}}#customer) type can also be used to query the Customer's Order history, list of Addresses and other personal details.
 * {{< shop-api-operation operation="requestPasswordReset" type="mutation" >}}: Use this to implement a "forgotten password" flow. This will trigger a password reset email to be sent.
 * {{< shop-api-operation operation="resetPassword" type="mutation" >}}: Use the token provided in the password reset email to set a new password.
 

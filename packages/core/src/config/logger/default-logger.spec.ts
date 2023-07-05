@@ -1,10 +1,12 @@
+import { afterEach, beforeEach, describe, expect, it, SpyInstance, vi } from 'vitest';
+
 import { DefaultLogger } from './default-logger';
 import { Logger, LogLevel } from './vendure-logger';
 
 describe('DefaultLogger', () => {
-    let stdOutSpy: jest.SpyInstance;
+    let stdOutSpy: SpyInstance;
     beforeEach(() => {
-        stdOutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+        stdOutSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
     });
 
     afterEach(() => {

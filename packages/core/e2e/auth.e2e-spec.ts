@@ -1,31 +1,18 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ProtectedFieldsPlugin, transactions } from './fixtures/test-plugins/with-protected-field-resolver';
-import {
-    AttemptLogin,
-    CreateAdministrator,
-    CreateCustomer,
-    CreateCustomerGroup,
-    CreateRole,
-    CurrentUserFragment,
-    ErrorCode,
-    GetCustomerList,
-    GetTaxRates,
-    Me,
-    MutationCreateProductArgs,
-    MutationLoginArgs,
-    MutationUpdateProductArgs,
-    Permission,
-    UpdateTaxRate,
-} from './graphql/generated-e2e-admin-types';
+import { ErrorCode, Permission } from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
     CREATE_ADMINISTRATOR,
@@ -70,12 +57,12 @@ describe('Authorization & permissions', () => {
             it(
                 'me is not permitted',
                 assertThrowsWithMessage(async () => {
-                    await adminClient.query<Me.Query>(ME);
+                    await adminClient.query<Codegen.MeQuery>(ME);
                 }, 'You are not currently authorized to perform this action'),
             );
 
             it('can attempt login', async () => {
-                await assertRequestAllowed<MutationLoginArgs>(ATTEMPT_LOGIN, {
+                await assertRequestAllowed<Codegen.MutationLoginArgs>(ATTEMPT_LOGIN, {
                     username: SUPER_ADMIN_USER_IDENTIFIER,
                     password: SUPER_ADMIN_USER_PASSWORD,
                     rememberMe: false,
@@ -87,7 +74,9 @@ describe('Authorization & permissions', () => {
             let customerEmailAddress: string;
             beforeAll(async () => {
                 await adminClient.asSuperAdmin();
-                const { customers } = await adminClient.query<GetCustomerList.Query>(GET_CUSTOMER_LIST);
+                const { customers } = await adminClient.query<Codegen.GetCustomerListQuery>(
+                    GET_CUSTOMER_LIST,
+                );
                 customerEmailAddress = customers.items[0].emailAddress;
             });
 
@@ -108,7 +97,7 @@ describe('Authorization & permissions', () => {
             });
 
             it('me returns correct permissions', async () => {
-                const { me } = await adminClient.query<Me.Query>(ME);
+                const { me } = await adminClient.query<Codegen.MeQuery>(ME);
 
                 expect(me!.channels[0].permissions).toEqual([
                     Permission.Authenticated,
@@ -121,7 +110,7 @@ describe('Authorization & permissions', () => {
             });
 
             it('cannot update', async () => {
-                await assertRequestForbidden<MutationUpdateProductArgs>(UPDATE_PRODUCT, {
+                await assertRequestForbidden<Codegen.MutationUpdateProductArgs>(UPDATE_PRODUCT, {
                     input: {
                         id: '1',
                         translations: [],
@@ -130,7 +119,7 @@ describe('Authorization & permissions', () => {
             });
 
             it('cannot create', async () => {
-                await assertRequestForbidden<MutationCreateProductArgs>(CREATE_PRODUCT, {
+                await assertRequestForbidden<Codegen.MutationCreateProductArgs>(CREATE_PRODUCT, {
                     input: {
                         translations: [],
                     },
@@ -151,7 +140,7 @@ describe('Authorization & permissions', () => {
             });
 
             it('me returns correct permissions', async () => {
-                const { me } = await adminClient.query<Me.Query>(ME);
+                const { me } = await adminClient.query<Codegen.MeQuery>(ME);
 
                 expect(me!.channels[0].permissions).toEqual([
                     Permission.Authenticated,
@@ -193,34 +182,37 @@ describe('Authorization & permissions', () => {
         const adminPassword = 'admin-password';
         const customerPassword = 'customer-password';
 
-        const loginErrorGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard(
+        const loginErrorGuard: ErrorResultGuard<Codegen.CurrentUserFragment> = createErrorResultGuard(
             input => !!input.identifier,
         );
 
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
 
-            await adminClient.query<CreateAdministrator.Mutation, CreateAdministrator.Variables>(
-                CREATE_ADMINISTRATOR,
+            await adminClient.query<
+                Codegen.CreateAdministratorMutation,
+                Codegen.CreateAdministratorMutationVariables
+            >(CREATE_ADMINISTRATOR, {
+                input: {
+                    emailAddress,
+                    firstName: 'First',
+                    lastName: 'Last',
+                    password: adminPassword,
+                    roleIds: ['1'],
+                },
+            });
+
+            await adminClient.query<Codegen.CreateCustomerMutation, Codegen.CreateCustomerMutationVariables>(
+                CREATE_CUSTOMER,
                 {
                     input: {
                         emailAddress,
                         firstName: 'First',
                         lastName: 'Last',
-                        password: adminPassword,
-                        roleIds: ['1'],
                     },
+                    password: customerPassword,
                 },
             );
-
-            await adminClient.query<CreateCustomer.Mutation, CreateCustomer.Variables>(CREATE_CUSTOMER, {
-                input: {
-                    emailAddress,
-                    firstName: 'First',
-                    lastName: 'Last',
-                },
-                password: customerPassword,
-            });
         });
 
         beforeEach(async () => {
@@ -229,52 +221,52 @@ describe('Authorization & permissions', () => {
         });
 
         it('can log in as an administrator', async () => {
-            const loginResult = await adminClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(
-                ATTEMPT_LOGIN,
-                {
-                    username: emailAddress,
-                    password: adminPassword,
-                },
-            );
+            const loginResult = await adminClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: adminPassword,
+            });
 
             loginErrorGuard.assertSuccess(loginResult.login);
             expect(loginResult.login.identifier).toEqual(emailAddress);
         });
 
         it('can log in as a customer', async () => {
-            const loginResult = await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(
-                ATTEMPT_LOGIN,
-                {
-                    username: emailAddress,
-                    password: customerPassword,
-                },
-            );
+            const loginResult = await shopClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: customerPassword,
+            });
 
             loginErrorGuard.assertSuccess(loginResult.login);
             expect(loginResult.login.identifier).toEqual(emailAddress);
         });
 
         it('cannot log in as an administrator using a customer password', async () => {
-            const loginResult = await adminClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(
-                ATTEMPT_LOGIN,
-                {
-                    username: emailAddress,
-                    password: customerPassword,
-                },
-            );
+            const loginResult = await adminClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: customerPassword,
+            });
 
             loginErrorGuard.assertErrorResult(loginResult.login);
             expect(loginResult.login.errorCode).toEqual(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('cannot log in as a customer using an administrator password', async () => {
-            const loginResult = await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(
-                ATTEMPT_LOGIN,
-                {
-                    username: emailAddress,
-                    password: adminPassword,
-                },
-            );
+            const loginResult = await shopClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: adminPassword,
+            });
 
             loginErrorGuard.assertErrorResult(loginResult.login);
             expect(loginResult.login.errorCode).toEqual(ErrorCode.INVALID_CREDENTIALS_ERROR);
@@ -314,8 +306,8 @@ describe('Authorization & permissions', () => {
 
             try {
                 const status = await adminClient.query(gql(GET_PRODUCT_WITH_TRANSACTIONS), { id: 'T_1' });
-                fail(`Should have thrown`);
-            } catch (e) {
+                fail('Should have thrown');
+            } catch (e: any) {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
             }
         });
@@ -336,8 +328,8 @@ describe('Authorization & permissions', () => {
         it('protects against deep query data leakage', async () => {
             await adminClient.asSuperAdmin();
             const { createCustomerGroup } = await adminClient.query<
-                CreateCustomerGroup.Mutation,
-                CreateCustomerGroup.Variables
+                Codegen.CreateCustomerGroupMutation,
+                Codegen.CreateCustomerGroupMutationVariables
             >(CREATE_CUSTOMER_GROUP, {
                 input: {
                     name: 'Test group',
@@ -346,26 +338,29 @@ describe('Authorization & permissions', () => {
             });
 
             const taxRateName = `Standard Tax ${initialData.defaultZone}`;
-            const { taxRates } = await adminClient.query<GetTaxRates.Query, GetTaxRates.Variables>(
-                GET_TAX_RATES_LIST,
-                {
-                    options: {
-                        filter: {
-                            name: { eq: taxRateName },
-                        },
+            const { taxRates } = await adminClient.query<
+                Codegen.GetTaxRatesQuery,
+                Codegen.GetTaxRatesQueryVariables
+            >(GET_TAX_RATES_LIST, {
+                options: {
+                    filter: {
+                        name: { eq: taxRateName },
                     },
                 },
-            );
+            });
 
             const standardTax = taxRates.items[0];
             expect(standardTax.name).toBe(taxRateName);
 
-            await adminClient.query<UpdateTaxRate.Mutation, UpdateTaxRate.Variables>(UPDATE_TAX_RATE, {
-                input: {
-                    id: standardTax.id,
-                    customerGroupId: createCustomerGroup.id,
+            await adminClient.query<Codegen.UpdateTaxRateMutation, Codegen.UpdateTaxRateMutationVariables>(
+                UPDATE_TAX_RATE,
+                {
+                    input: {
+                        id: standardTax.id,
+                        customerGroupId: createCustomerGroup.id,
+                    },
                 },
-            });
+            );
 
             try {
                 const status = await shopClient.query(
@@ -388,8 +383,8 @@ describe('Authorization & permissions', () => {
                 }`),
                     { id: 'T_1' },
                 );
-                fail(`Should have thrown`);
-            } catch (e) {
+                fail('Should have thrown');
+            } catch (e: any) {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
             }
         });
@@ -399,10 +394,10 @@ describe('Authorization & permissions', () => {
         try {
             const status = await adminClient.queryStatus(operation, variables);
             expect(status).toBe(200);
-        } catch (e) {
+        } catch (e: any) {
             const errorCode = getErrorCode(e);
             if (!errorCode) {
-                fail(`Unexpected failure: ${e}`);
+                fail(`Unexpected failure: ${JSON.stringify(e)}`);
             } else {
                 fail(`Operation should be allowed, got status ${getErrorCode(e)}`);
             }
@@ -412,8 +407,8 @@ describe('Authorization & permissions', () => {
     async function assertRequestForbidden<V>(operation: DocumentNode, variables: V) {
         try {
             const status = await adminClient.query(operation, variables);
-            fail(`Should have thrown`);
-        } catch (e) {
+            fail('Should have thrown');
+        } catch (e: any) {
             expect(getErrorCode(e)).toBe('FORBIDDEN');
         }
     }
@@ -426,7 +421,10 @@ describe('Authorization & permissions', () => {
         code: string,
         permissions: Permission[],
     ): Promise<{ identifier: string; password: string }> {
-        const roleResult = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+        const roleResult = await adminClient.query<
+            Codegen.CreateRoleMutation,
+            Codegen.CreateRoleMutationVariables
+        >(CREATE_ROLE, {
             input: {
                 code,
                 description: '',
@@ -437,11 +435,11 @@ describe('Authorization & permissions', () => {
         const role = roleResult.createRole;
 
         const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
-        const password = `test`;
+        const password = 'test';
 
         const adminResult = await adminClient.query<
-            CreateAdministrator.Mutation,
-            CreateAdministrator.Variables
+            Codegen.CreateAdministratorMutation,
+            Codegen.CreateAdministratorMutationVariables
         >(CREATE_ADMINISTRATOR, {
             input: {
                 emailAddress: identifier,

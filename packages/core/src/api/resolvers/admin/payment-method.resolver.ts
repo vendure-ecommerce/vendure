@@ -2,14 +2,18 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ConfigurableOperationDefinition,
     DeletionResponse,
+    MutationAssignPaymentMethodsToChannelArgs,
     MutationCreatePaymentMethodArgs,
     MutationDeletePaymentMethodArgs,
+    MutationDeletePaymentMethodsArgs,
+    MutationRemovePaymentMethodsFromChannelArgs,
     MutationUpdatePaymentMethodArgs,
     Permission,
     QueryPaymentMethodArgs,
     QueryPaymentMethodsArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { Translated } from '../../../common/index';
 
 import { PaymentMethod } from '../../../entity/payment-method/payment-method.entity';
 import { PaymentMethodService } from '../../../service/services/payment-method.service';
@@ -73,6 +77,16 @@ export class PaymentMethodResolver {
         return this.paymentMethodService.delete(ctx, args.id, args.force);
     }
 
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeletePaymentMethod)
+    deletePaymentMethods(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeletePaymentMethodsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.paymentMethodService.delete(ctx, id, args.force)));
+    }
+
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadPaymentMethod)
     paymentMethodHandlers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
@@ -83,5 +97,25 @@ export class PaymentMethodResolver {
     @Allow(Permission.ReadSettings, Permission.ReadPaymentMethod)
     paymentMethodEligibilityCheckers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.paymentMethodService.getPaymentMethodEligibilityCheckers(ctx);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateSettings, Permission.UpdatePaymentMethod)
+    async assignPaymentMethodsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignPaymentMethodsToChannelArgs,
+    ): Promise<Array<Translated<PaymentMethod>>> {
+        return await this.paymentMethodService.assignPaymentMethodsToChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeletePaymentMethod)
+    async removePaymentMethodsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemovePaymentMethodsFromChannelArgs,
+    ): Promise<Array<Translated<PaymentMethod>>> {
+        return await this.paymentMethodService.removePaymentMethodsFromChannel(ctx, args.input);
     }
 }

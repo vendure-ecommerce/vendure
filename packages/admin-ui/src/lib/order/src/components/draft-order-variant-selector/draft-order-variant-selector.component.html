@@ -1,18 +1,18 @@
 <div class="card">
     <div class="card-block">
         <h4 class="card-title">{{ 'order.add-item-to-order' | translate }}</h4>
-        <vdr-product-selector
+        <vdr-product-variant-selector
             (productSelected)="selectedVariantId$.next($event.productVariantId)"
-        ></vdr-product-selector>
+        ></vdr-product-variant-selector>
     </div>
     <div class="card-block" *ngIf="selectedVariant$ | async as selectedVariant">
         <div class="variant-details">
-            <img class="mr2" [src]="selectedVariant.featuredAsset || selectedVariant.product.featuredAsset | assetPreview: 32">
+            <img class="mr-2" [src]="selectedVariant.featuredAsset || selectedVariant.product.featuredAsset | assetPreview: 32">
             <div class="details">
                 <div>{{ selectedVariant?.name }}</div>
                 <div class="small">{{ selectedVariant?.sku }}</div>
             </div>
-            <div class="details ml4">
+            <div class="details ml-4">
                 <div class="small">
                     {{ 'catalog.stock-on-hand' | translate }}: {{ selectedVariant.stockOnHand }}
                 </div>

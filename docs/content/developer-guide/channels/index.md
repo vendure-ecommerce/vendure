@@ -7,10 +7,10 @@ showtoc: true
 
 Channels are a feature of Vendure which allows multiple sales channels to be represented in a single Vendure instance. A Channel allows you to:
 
-* Set a channel-specific currency, tax and shipping defaults
+* Set Channel-specific currency, language, tax and shipping defaults
 * Assign only specific Products to the Channel (with Channel-specific prices)
 * Create Administrator roles limited to the Channel
-* Assign only specific Promotions, Collections, ShippingMethods to the Channel
+* Assign specific StockLocations, Assets, Facets, Collections, Promotions, ShippingMethods & PaymentMethods to the Channel
 * Have Orders and Customers associated with specific Channels.
 
 Every Vendure server always has a **default Channel**, which contains _all_ entities. Subsequent channels can then contain a subset of the above entities.
@@ -22,19 +22,20 @@ Use-cases of Channels include:
 * Multi-region stores, where there is a distinct website for each territory with its own available inventory, pricing, tax and shipping rules.
 * Creating distinct rules and inventory for different sales channels such as Amazon.
 * Specialized stores offering a subset of the main inventory.
+* Implementing [multi-vendor marketplace]({{< relref "multi-vendor-marketplaces" >}}) applications.
 
 ## Channels, Currencies & Prices
 
-Each Channel has an associated **currencyCode** property, which sets the currency for all monetary values in that channel.
+Each Channel has a set of `availableCurrencyCodes`, and one of these is designated as the `defaultCurrencyCode`, which sets the currency for all monetary values in that channel.
 
 {{< figure src="channels_currencies_diagram.png" >}}
 
-Internally, there is a one-to-many relation from [ProductVariant]({{< relref "product-variant" >}}) to [ProductVariantPrice]({{< relref "product-variant-price" >}}). So the ProductVariant does _not_ hold a price for the product - this is actually stored on the ProductVariantPrice entity, and there will be one for each Channel to which the ProductVariant has been assigned.
+Internally, there is a one-to-many relation from [ProductVariant]({{< relref "product-variant" >}}) to [ProductVariantPrice]({{< relref "product-variant-price" >}}). So the ProductVariant does _not_ hold a price for the product - this is actually stored on the ProductVariantPrice entity, and there will be at least one for each Channel to which the ProductVariant has been assigned.
 
 {{< figure src="channels_prices_diagram.png" >}}
 
 {{< alert "warning" >}}
-**Note:** in the diagram above that the ProductVariant is **always assigned to the default Channel**, and thus will have a price in the default channel too. Likewise, the default Channel also has a currencyCode.
+**Note:** in the diagram above that the ProductVariant is **always assigned to the default Channel**, and thus will have a price in the default channel too. Likewise, the default Channel also has a defaultCurrencyCode.
 {{< /alert >}}
 
 ### Use-case: single shop
@@ -57,13 +58,12 @@ In this case, you can create the entire inventory in the default Channel and the
 **Note:** When creating a new Product & ProductVariants inside a sub-Channel, it will also **always get assigned to the default Channel**. If your sub-Channel uses a different currency from the default Channel, you should be aware that in the default Channel, that ProductVariant will be assigned the **same price** as it has in the sub-Channel. If the currency differs between the Channels, you need to make sure to set the correct price in the default Channel if you are exposing it to Customers via a storefront. 
 {{< /alert >}}
 
+### Use-case: Multi-vendor marketplace
+
+This is the most advanced use of channels. For a detailed guide to this use-case, see our [Multi-vendor marketplace guide]({{< relref "multi-vendor-marketplaces" >}}).
+
 
 ## How to set the channel when using the GraphQL API
 
 To specify which channel to use when making an API call, set the `'vendure-token'` header to match the token of the desired Channel.
 
-## Multi-Tenant (Marketplace) Support
-
-Channels can also be used to implement a multi-tenant or marketplace application. In such a setup, each merchant would have their own dedicated Channel and would be granted permissions on that Channel only.
- 
-For a detailed guide on how this would be set up, see our [Multi-Tenant guide]({{< relref "multi-tenant" >}}).

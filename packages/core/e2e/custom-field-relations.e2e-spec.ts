@@ -20,13 +20,14 @@ import {
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { TestPlugin1636_1664 } from './fixtures/test-plugins/issue-1636-1664/issue-1636-1664-plugin';
-import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
+import { AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
@@ -46,7 +47,6 @@ const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'Asset',
     'Channel',
     'Collection',
-    'Country',
     'Customer',
     'CustomerGroup',
     'Facet',
@@ -61,6 +61,8 @@ const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'ProductOptionGroup',
     'ProductVariant',
     'Promotion',
+    'Region',
+    'Seller',
     'ShippingMethod',
     'TaxCategory',
     'TaxRate',
@@ -568,9 +570,9 @@ describe('Custom field relations', () => {
             });
         });
 
-        describe('Fulfillment entity', () => {
-            // Currently no GraphQL API to set customFields on fulfillments
-        });
+        // describe('Fulfillment entity', () => {
+        //     // Currently no GraphQL API to set customFields on fulfillments
+        // });
 
         describe('GlobalSettings entity', () => {
             it('admin updateGlobalSettings', async () => {
@@ -596,7 +598,7 @@ describe('Custom field relations', () => {
             let orderId: string;
 
             beforeAll(async () => {
-                const { addItemToOrder } = await shopClient.query<any, AddItemToOrder.Variables>(
+                const { addItemToOrder } = await shopClient.query<any, AddItemToOrderMutationVariables>(
                     ADD_ITEM_TO_ORDER,
                     {
                         productVariantId: 'T_1',
@@ -972,9 +974,9 @@ describe('Custom field relations', () => {
             });
         });
 
-        describe('User entity', () => {
-            // Currently no GraphQL API to set User custom fields
-        });
+        // describe('User entity', () => {
+        //     // Currently no GraphQL API to set User custom fields
+        // });
 
         describe('ShippingMethod entity', () => {
             let shippingMethodId: string;
@@ -1057,14 +1059,14 @@ describe('Custom field relations', () => {
                     mutation {
                         createPaymentMethod(
                             input: {
-                                name: "test"
                                 code: "test"
                                 enabled: true
                                 handler: {
                                     code: "${testSuccessfulPaymentMethod.code}"
                                     arguments: []
                                 }
-                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] },
+                                translations: [{ languageCode: en, name: "test" }]
                             }
                         ) {
                             id
@@ -1083,7 +1085,7 @@ describe('Custom field relations', () => {
                         updatePaymentMethod(
                             input: {
                                 id: "${paymentMethodId}"
-                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] },
                             }
                         ) {
                             id

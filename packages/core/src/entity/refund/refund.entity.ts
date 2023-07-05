@@ -1,11 +1,12 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 
 import { PaymentMetadata } from '../../common/types/common-types';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
-import { OrderItem } from '../order-item/order-item.entity';
+import { Money } from '../money.decorator';
+import { RefundLine } from '../order-line-reference/refund-line.entity';
 import { Payment } from '../payment/payment.entity';
 
 @Entity()
@@ -14,13 +15,13 @@ export class Refund extends VendureEntity {
         super(input);
     }
 
-    @Column() items: number;
+    @Money() items: number;
 
-    @Column() shipping: number;
+    @Money() shipping: number;
 
-    @Column() adjustment: number;
+    @Money() adjustment: number;
 
-    @Column() total: number;
+    @Money() total: number;
 
     @Column() method: string;
 
@@ -30,10 +31,11 @@ export class Refund extends VendureEntity {
 
     @Column({ nullable: true }) transactionId: string;
 
-    @OneToMany(type => OrderItem, orderItem => orderItem.refund)
+    @OneToMany(type => RefundLine, line => line.refund)
     @JoinTable()
-    orderItems: OrderItem[];
+    lines: RefundLine[];
 
+    @Index()
     @ManyToOne(type => Payment)
     @JoinColumn()
     payment: Payment;

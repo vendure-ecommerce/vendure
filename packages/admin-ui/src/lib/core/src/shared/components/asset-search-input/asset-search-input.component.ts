@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewCh
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { SearchProducts, TagFragment } from '../../../common/generated-types';
+import { SearchProductsQuery, TagFragment } from '../../../common/generated-types';
 import { SingleSearchSelectionModelFactory } from '../../../common/single-search-selection-model';
 
 @Component({
@@ -40,9 +40,7 @@ export class AssetSearchInputComponent {
             }
         });
 
-        tags.map(tag => {
-            return items?.find(item => this.isTag(item) && item.id === tag.id);
-        })
+        tags.map(tag => items?.find(item => this.isTag(item) && item.id === tag.id))
             .filter(notNullOrUndefined)
             .forEach(item => {
                 const isSelected = this.selectComponent.selectedItems.find(i => {
@@ -58,7 +56,10 @@ export class AssetSearchInputComponent {
             });
     }
 
-    filterTagResults = (term: string, item: SearchProducts.FacetValues | { label: string }) => {
+    filterTagResults = (
+        term: string,
+        item: SearchProductsQuery['search']['facetValues'] | { label: string },
+    ) => {
         if (!this.isTag(item)) {
             return false;
         }
@@ -101,7 +102,6 @@ export class AssetSearchInputComponent {
         return { label: item };
     }
 
-    private isTag = (input: unknown): input is TagFragment => {
-        return typeof input === 'object' && !!input && input.hasOwnProperty('value');
-    };
+    private isTag = (input: unknown): input is TagFragment =>
+        typeof input === 'object' && !!input && input.hasOwnProperty('value');
 }

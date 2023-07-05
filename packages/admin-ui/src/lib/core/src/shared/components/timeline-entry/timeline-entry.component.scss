@@ -53,7 +53,7 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        color: var(--color-primary-600);
+        color: var(--color-primary-700);
         background-color: var(--color-component-bg-100);
         border: 1px solid var(--color-component-border-200);
         display: none;
@@ -117,7 +117,7 @@
 
 .success {
     .timeline, .timeline .custom-icon {
-        color: var(--color-success-400);
+        color: var(--color-success-700);
     }
     .timeline:after {
         background-color: var(--color-success-200);
@@ -127,7 +127,7 @@
 
 .error {
     .timeline, .timeline .custom-icon {
-        color: var(--color-error-400);
+        color: var(--color-error-700);
     }
     .timeline:after {
         background-color: var(--color-error-200);
@@ -137,7 +137,7 @@
 
 .warning {
     .timeline, .timeline .custom-icon {
-        color: var(--color-warning-400);
+        color: var(--color-warning-700);
     }
     .timeline:after {
         background-color: var(--color-warning-200);

@@ -29,6 +29,7 @@ export const TEST_ORDER_FRAGMENT = gql`
             unitPriceWithTax
             unitPriceChangeSinceAdded
             unitPriceWithTaxChangeSinceAdded
+            discountedUnitPriceWithTax
             proratedUnitPriceWithTax
             productVariant {
                 id
@@ -39,11 +40,6 @@ export const TEST_ORDER_FRAGMENT = gql`
                 amountWithTax
                 description
                 type
-            }
-            items {
-                id
-                unitPrice
-                unitPriceWithTax
             }
         }
         shippingLines {
@@ -84,6 +80,8 @@ export const UPDATED_ORDER_FRAGMENT = gql`
             productVariant {
                 id
             }
+            linePrice
+            linePriceWithTax
             discounts {
                 adjustmentSource
                 amount
@@ -343,12 +341,6 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
                 linePrice
                 lineTax
                 linePriceWithTax
-                items {
-                    id
-                    unitPrice
-                    unitPriceWithTax
-                    taxRate
-                }
                 taxLines {
                     taxRate
                     description
@@ -403,7 +395,7 @@ export const GET_ELIGIBLE_SHIPPING_METHODS = gql`
 `;
 
 export const SET_SHIPPING_METHOD = gql`
-    mutation SetShippingMethod($id: ID!) {
+    mutation SetShippingMethod($id: [ID!]!) {
         setOrderShippingMethod(shippingMethodId: $id) {
             ...TestOrderFragment
             ... on ErrorResult {
@@ -437,6 +429,9 @@ export const SET_CUSTOMER = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on GuestCheckoutError {
+                errorDetail
             }
         }
     }
@@ -635,15 +630,12 @@ export const GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS = gql`
                     state
                     lines {
                         id
-                        items {
-                            id
-                            fulfillment {
-                                id
-                                state
-                                method
-                                trackingCode
-                            }
-                        }
+                    }
+                    fulfillments {
+                        id
+                        state
+                        method
+                        trackingCode
                     }
                 }
             }

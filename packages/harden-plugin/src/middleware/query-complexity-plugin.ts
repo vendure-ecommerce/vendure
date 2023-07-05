@@ -21,7 +21,7 @@ import { HardenPluginOptions } from '../types';
 export class QueryComplexityPlugin implements ApolloServerPlugin {
     constructor(private options: HardenPluginOptions) {}
 
-    requestDidStart({ schema }: GraphQLRequestContext): GraphQLRequestListener {
+    async requestDidStart({ schema }: GraphQLRequestContext): Promise<GraphQLRequestListener> {
         const maxQueryComplexity = this.options.maxQueryComplexity ?? 1000;
         return {
             didResolveOperation: async ({ request, document }) => {
@@ -67,7 +67,7 @@ export class QueryComplexityPlugin implements ApolloServerPlugin {
                         }" is ${complexity}, which exceeds the maximum of ${maxQueryComplexity}`,
                         loggerCtx,
                     );
-                    throw new InternalServerError(`Query is too complex`);
+                    throw new InternalServerError('Query is too complex');
                 }
             },
         };
@@ -90,7 +90,7 @@ function isAdminApi(schema: GraphQLSchema): boolean {
  * When selecting PaginatedList types, the "take" argument is used to estimate a complexity
  * factor. If the "take" argument is omitted, a default factor of 1000 is applied.
  *
- * @docsCategory HardenPlugin
+ * @docsCategory core plugins/HardenPlugin
  */
 export function defaultVendureComplexityEstimator(
     customComplexityFactors: { [path: string]: number },

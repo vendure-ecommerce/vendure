@@ -1,3 +1,6 @@
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+
+import { roundMoney } from '../../common/round-money';
 import {
     createRequestContext,
     MockTaxRateService,
@@ -5,18 +8,21 @@ import {
     taxCategoryStandard,
     taxRateDefaultReduced,
     taxRateDefaultStandard,
-    taxRateOtherReduced,
-    taxRateOtherStandard,
     zoneDefault,
     zoneOther,
     zoneWithNoTaxRate,
 } from '../../testing/order-test-utils';
+import { ensureConfigLoaded } from '../config-helpers';
 
 import { DefaultProductVariantPriceCalculationStrategy } from './default-product-variant-price-calculation-strategy';
 
 describe('DefaultProductVariantPriceCalculationStrategy', () => {
     let strategy: DefaultProductVariantPriceCalculationStrategy;
     const inputPrice = 6543;
+
+    beforeAll(async () => {
+        await ensureConfigLoaded();
+    });
 
     beforeEach(async () => {
         strategy = new DefaultProductVariantPriceCalculationStrategy();
@@ -146,7 +152,7 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
 
             expect(result).toEqual({
-                price: taxRateDefaultStandard.netPriceOf(inputPrice),
+                price: roundMoney(taxRateDefaultStandard.netPriceOf(inputPrice)),
                 priceIncludesTax: false,
             });
         });
@@ -161,7 +167,7 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
 
             expect(result).toEqual({
-                price: taxRateDefaultReduced.netPriceOf(inputPrice),
+                price: roundMoney(taxRateDefaultReduced.netPriceOf(inputPrice)),
                 priceIncludesTax: false,
             });
         });
@@ -176,7 +182,7 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
 
             expect(result).toEqual({
-                price: taxRateDefaultStandard.netPriceOf(inputPrice),
+                price: roundMoney(taxRateDefaultStandard.netPriceOf(inputPrice)),
                 priceIncludesTax: false,
             });
         });

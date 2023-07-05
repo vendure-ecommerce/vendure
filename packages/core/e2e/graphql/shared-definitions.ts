@@ -137,6 +137,7 @@ export const GET_CUSTOMER_LIST = gql`
                 phoneNumber
                 user {
                     id
+                    identifier
                     verified
                 }
             }
@@ -724,11 +725,8 @@ export const CANCEL_ORDER = gql`
         id
         state
         lines {
+            id
             quantity
-            items {
-                id
-                cancelled
-            }
         }
     }
 `;
@@ -765,6 +763,7 @@ export const GET_PRODUCTS_WITH_VARIANT_PRICES = gql`
                     id
                     price
                     priceWithTax
+                    currencyCode
                     sku
                     facetValues {
                         id
@@ -871,20 +870,25 @@ export const GET_ASSET_FRAGMENT_FIRST = gql`
     }
 `;
 
+export const ASSET_WITH_TAGS_AND_FOCAL_POINT_FRAGMENT = gql`
+    fragment AssetWithTagsAndFocalPoint on Asset {
+        ...Asset
+        focalPoint {
+            x
+            y
+        }
+        tags {
+            id
+            value
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
-            ...Asset
-            ... on Asset {
-                focalPoint {
-                    x
-                    y
-                }
-                tags {
-                    id
-                    value
-                }
-            }
+            ...AssetWithTagsAndFocalPoint
             ... on MimeTypeError {
                 message
                 fileName
@@ -892,7 +896,7 @@ export const CREATE_ASSETS = gql`
             }
         }
     }
-    ${ASSET_FRAGMENT}
+    ${ASSET_WITH_TAGS_AND_FOCAL_POINT_FRAGMENT}
 `;
 
 export const DELETE_SHIPPING_METHOD = gql`
@@ -978,7 +982,7 @@ export const TRANSITION_PAYMENT_TO_STATE = gql`
 `;
 
 export const GET_PRODUCT_VARIANT_LIST = gql`
-    query GetProductVariantLIST($options: ProductVariantListOptions, $productId: ID) {
+    query GetProductVariantList($options: ProductVariantListOptions, $productId: ID) {
         productVariants(options: $options, productId: $productId) {
             items {
                 id
@@ -986,6 +990,11 @@ export const GET_PRODUCT_VARIANT_LIST = gql`
                 sku
                 price
                 priceWithTax
+                currencyCode
+                prices {
+                    currencyCode
+                    price
+                }
             }
             totalItems
         }
@@ -1003,9 +1012,11 @@ export const DELETE_PROMOTION = gql`
 export const GET_CHANNELS = gql`
     query GetChannels {
         channels {
-            id
-            code
-            token
+            items {
+                id
+                code
+                token
+            }
         }
     }
 `;

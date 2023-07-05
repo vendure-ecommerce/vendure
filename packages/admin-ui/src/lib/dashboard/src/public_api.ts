@@ -5,6 +5,7 @@ export * from './dashboard.module';
 export * from './dashboard.routes';
 export * from './default-widgets';
 export * from './widgets/latest-orders-widget/latest-orders-widget.component';
+export * from './widgets/order-chart-widget/order-chart-widget.component';
 export * from './widgets/order-summary-widget/order-summary-widget.component';
 export * from './widgets/test-widget/test-widget.component';
 export * from './widgets/welcome-widget/welcome-widget.component';

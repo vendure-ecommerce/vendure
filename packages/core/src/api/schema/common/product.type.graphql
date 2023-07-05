@@ -49,9 +49,9 @@ type ProductVariant implements Node {
     name: String!
     featuredAsset: Asset
     assets: [Asset!]!
-    price: Int!
+    price: Money!
     currencyCode: CurrencyCode!
-    priceWithTax: Int!
+    priceWithTax: Money!
     stockLevel: String!
     taxRateApplied: TaxRate!
     taxCategory: TaxCategory!

@@ -37,7 +37,7 @@ export type LoadTestSummary = {
 if (require.main === module) {
     const resultsFile = process.argv[2];
     generateSummary(resultsFile).then(result => {
-        // tslint:disable-next-line:no-console
+        // eslint-disable-next-line no-console
         console.log(JSON.stringify(result, null, 2));
         process.exit(0);
     });

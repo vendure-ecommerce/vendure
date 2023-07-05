@@ -5,16 +5,19 @@ import {
     DeletionResult,
     UpdateTaxCategoryInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
+import { ListQueryOptions } from '../../common/index';
 import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { Tag } from '../../entity/index';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { EventBus } from '../../event-bus';
 import { TaxCategoryEvent } from '../../event-bus/events/tax-category-event';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 /**
@@ -25,14 +28,30 @@ import { patchEntity } from '../helpers/utils/patch-entity';
  */
 @Injectable()
 export class TaxCategoryService {
-    constructor(private connection: TransactionalConnection, private eventBus: EventBus) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private eventBus: EventBus,
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
 
-    findAll(ctx: RequestContext): Promise<TaxCategory[]> {
-        return this.connection.getRepository(ctx, TaxCategory).find();
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<TaxCategory>,
+    ): Promise<PaginatedList<TaxCategory>> {
+        return this.listQueryBuilder
+            .build(TaxCategory, options, { ctx })
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({
+                items,
+                totalItems,
+            }));
     }
 
     findOne(ctx: RequestContext, taxCategoryId: ID): Promise<TaxCategory | undefined> {
-        return this.connection.getRepository(ctx, TaxCategory).findOne(taxCategoryId);
+        return this.connection
+            .getRepository(ctx, TaxCategory)
+            .findOne({ where: { id: taxCategoryId } })
+            .then(result => result ?? undefined);
     }
 
     async create(ctx: RequestContext, input: CreateTaxCategoryInput): Promise<TaxCategory> {
@@ -67,7 +86,7 @@ export class TaxCategoryService {
         const taxCategory = await this.connection.getEntityOrThrow(ctx, TaxCategory, id);
         const dependentRates = await this.connection
             .getRepository(ctx, TaxRate)
-            .count({ where: { category: id } });
+            .count({ where: { category: { id } } });
 
         if (0 < dependentRates) {
             const message = ctx.translate('message.cannot-remove-tax-category-due-to-tax-rates', {
@@ -87,7 +106,7 @@ export class TaxCategoryService {
             return {
                 result: DeletionResult.DELETED,
             };
-        } catch (e) {
+        } catch (e: any) {
             return {
                 result: DeletionResult.NOT_DELETED,
                 message: e.toString(),

@@ -55,12 +55,12 @@ export class ConfigArgService {
         const defsOfType = this.getDefinitions(defType);
         const match = defsOfType.find(def => def.code === code);
         if (!match) {
-            throw new UserInputError(`error.no-configurable-operation-def-with-code-found`, {
+            throw new UserInputError('error.no-configurable-operation-def-with-code-found', {
                 code,
                 type: defType,
             });
         }
-        return match as ConfigDefTypeMap[T];
+        return match;
     }
 
     /**
@@ -113,7 +113,7 @@ export class ConfigArgService {
                     } else {
                         valid = !!inputArg && JSON.parse(inputArg.value) != null;
                     }
-                } catch (e) {
+                } catch (e: any) {
                     // ignore
                 }
 

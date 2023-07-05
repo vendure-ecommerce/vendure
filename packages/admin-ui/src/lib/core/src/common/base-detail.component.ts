@@ -1,10 +1,14 @@
-import { AbstractControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { inject, Type } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
+import { ActivatedRoute, ActivationStart, ResolveFn, Router } from '@angular/router';
+import { ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { DataService } from '../data/providers/data.service';
 import { ServerConfigService } from '../data/server-config';
+import { BreadcrumbValue } from '../providers/breadcrumb/breadcrumb.service';
 
 import { DeactivateAware } from './deactivate-aware';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
@@ -23,7 +27,7 @@ import { TranslationOf } from './utilities/find-translation';
  *   styleUrls: ['./my-entity.component.scss'],
  *   changeDetection: ChangeDetectionStrategy.OnPush,
  * })
- * export class GlobalSettingsComponent extends BaseDetailComponent<MyEntity.Fragment> implements OnInit {
+ * export class GlobalSettingsComponent extends BaseDetailComponent<MyEntityFragment> implements OnInit {
  *   detailForm: FormGroup;
  *
  *   constructor(
@@ -39,7 +43,7 @@ import { TranslationOf } from './utilities/find-translation';
  *     });
  *   }
  *
- *   protected setFormValues(entity: MyEntity.Fragment, languageCode: LanguageCode): void {
+ *   protected setFormValues(entity: MyEntityFragment, languageCode: LanguageCode): void {
  *     this.detailForm.patchValue({
  *       name: entity.name,
  *     });
@@ -55,9 +59,10 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     entity$: Observable<Entity>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
+    languageCode: LanguageCode;
     isNew$: Observable<boolean>;
     id: string;
-    abstract detailForm: FormGroup;
+    abstract detailForm: UntypedFormGroup;
     protected destroy$ = new Subject<void>();
 
     protected constructor(
@@ -70,13 +75,18 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     init() {
         this.entity$ = this.route.data.pipe(
             switchMap(data => (data.entity as Observable<Entity>).pipe(takeUntil(this.destroy$))),
+            filter(notNullOrUndefined),
             tap(entity => (this.id = entity.id)),
             shareReplay(1),
         );
         this.isNew$ = this.entity$.pipe(
-            map(entity => entity.id === ''),
+            map(entity => !entity?.id),
             shareReplay(1),
         );
+        this.setUpStreams();
+    }
+
+    protected setUpStreams() {
         this.languageCode$ = this.route.paramMap.pipe(
             map(paramMap => paramMap.get('lang')),
             switchMap(lang => {
@@ -87,6 +97,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
                 }
             }),
             distinctUntilChanged(),
+            tap(val => (this.languageCode = val)),
             shareReplay(1),
         );
 
@@ -95,7 +106,9 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         combineLatest(this.entity$, this.languageCode$)
             .pipe(takeUntil(this.destroy$))
             .subscribe(([entity, languageCode]) => {
-                this.setFormValues(entity, languageCode);
+                if (entity) {
+                    this.setFormValues(entity, languageCode);
+                }
                 this.detailForm.markAsPristine();
             });
     }
@@ -125,7 +138,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         for (const fieldDef of customFields) {
             const key = fieldDef.name;
             const value =
-                fieldDef.type === 'localeString'
+                fieldDef.type === 'localeString' || fieldDef.type === 'localeText'
                     ? (currentTranslation as any)?.customFields?.[key]
                     : (entity as any).customFields?.[key];
             const control = formGroup?.get(key);
@@ -154,4 +167,124 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
             },
         );
     }
+}
+
+/**
+ * @description
+ * A version of the {@link BaseDetailComponent} which is designed to be used with a
+ * [TypedDocumentNode](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
+ *
+ * @docsCategory list-detail-views
+ */
+export abstract class TypedBaseDetailComponent<
+    T extends TypedDocumentNode<any, any>,
+    Field extends keyof ResultOf<T>,
+> extends BaseDetailComponent<NonNullable<ResultOf<T>[Field]>> {
+    protected result$: Observable<ResultOf<T>>;
+    protected entity: ResultOf<T>[Field];
+
+    protected constructor() {
+        super(inject(ActivatedRoute), inject(Router), inject(ServerConfigService), inject(DataService));
+    }
+
+    override init() {
+        this.entity$ = this.route.data.pipe(
+            switchMap(data =>
+                (data.detail.entity as Observable<ResultOf<T>[Field]>).pipe(takeUntil(this.destroy$)),
+            ),
+            filter(notNullOrUndefined),
+            tap(entity => {
+                this.id = entity.id;
+                this.entity = entity;
+            }),
+            shareReplay(1),
+        );
+        this.result$ = this.route.data.pipe(
+            map(data => data.detail.result),
+            shareReplay(1),
+        );
+        this.isNew$ = this.route.data.pipe(
+            switchMap(data => data.detail.entity),
+            map(entity => !entity),
+            shareReplay(1),
+        );
+        this.setUpStreams();
+    }
+}
+
+/**
+ * @description
+ * A helper function for creating tabs that point to a {@link TypedBaseDetailComponent}. This takes
+ * care of the route resolver parts so that the detail component automatically has access to the
+ * correct resolved detail data.
+ *
+ * @example
+ * ```TypeScript
+ * \@NgModule({
+ *   imports: [ReviewsSharedModule],
+ *   declarations: [/* ... *\/],
+ *   providers: [
+ *     registerPageTab({
+ *       location: 'product-detail',
+ *       tab: 'Specs',
+ *       route: 'specs',
+ *       component: detailComponentWithResolver({
+ *         component: ProductSpecDetailComponent,
+ *         query: GetProductSpecsDocument,
+ *         entityKey: 'spec',
+ *       }),
+ *     }),
+ *   ],
+ * })
+ * export class ProductSpecsUiExtensionModule {}
+ * ```
+ * @docsCategory list-detail-views
+ */
+export function detailComponentWithResolver<
+    T extends TypedDocumentNode<any, { id: string }>,
+    Field extends keyof ResultOf<T>,
+    R extends Field,
+>(config: {
+    component: Type<TypedBaseDetailComponent<T, Field>>;
+    query: T;
+    entityKey: R;
+    getBreadcrumbs?: (entity: ResultOf<T>[R]) => BreadcrumbValue;
+    variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
+}) {
+    const resolveFn: ResolveFn<{
+        entity: Observable<ResultOf<T>[Field] | null>;
+        result?: ResultOf<T>;
+    }> = route => {
+        const router = inject(Router);
+        const dataService = inject(DataService);
+        const id = route.paramMap.get('id');
+
+        // Complete the entity stream upon navigating away
+        const navigateAway$ = router.events.pipe(filter(event => event instanceof ActivationStart));
+
+        if (id == null) {
+            throw new Error('No id found in route');
+        }
+        if (id === 'create') {
+            return of({ entity: of(null) });
+        } else {
+            const result$ = dataService
+                .query(config.query, { id, ...(config.variables ?? {}) })
+                .refetchOnChannelChange()
+                .stream$.pipe(takeUntil(navigateAway$), shareReplay(1));
+            const entity$ = result$.pipe(map(result => result[config.entityKey]));
+            const entityStream$ = entity$.pipe(filter(notNullOrUndefined));
+            return result$.pipe(
+                map(result => ({
+                    entity: entityStream$,
+                    result,
+                })),
+            );
+        }
+    };
+    return {
+        resolveFn,
+        breadcrumbFn: (result: any) => config.getBreadcrumbs?.(result) ?? ([] as BreadcrumbValue[]),
+        component: config.component,
+    };
 }

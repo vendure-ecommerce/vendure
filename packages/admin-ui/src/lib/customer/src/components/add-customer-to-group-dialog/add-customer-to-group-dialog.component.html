@@ -3,15 +3,14 @@
 </ng-template>
 
 <vdr-customer-group-member-list
+    locationId="customer-group-members-picker-list"
     [members]="customers$ | async"
     [totalItems]="customersTotal$ | async"
     [route]="route"
     [selectedMemberIds]="selectedCustomerIds"
     (fetchParamsChange)="fetchGroupMembers$.next($event)"
     (selectionChange)="selectedCustomerIds = $event"
->
-
-</vdr-customer-group-member-list>
+/>
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>

@@ -1,5 +1,5 @@
 import { Job } from '@vendure/core';
-import { ConnectionOptions, QueueSchedulerOptions, WorkerOptions } from 'bullmq';
+import { ConnectionOptions, WorkerOptions } from 'bullmq';
 import { QueueOptions } from 'bullmq';
 
 /**
@@ -7,7 +7,7 @@ import { QueueOptions } from 'bullmq';
  * Configuration options for the {@link BullMQJobQueuePlugin}.
  *
  * @since 1.2.0
- * @docsCategory job-queue-plugin
+ * @docsCategory core plugins/JobQueuePlugin
  * @docsPage BullMQPluginOptions
  * @docsWeight 0
  */
@@ -34,13 +34,6 @@ export interface BullMQPluginOptions {
      * See the [BullMQ WorkerOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.workeroptions.md)
      */
     workerOptions?: Exclude<WorkerOptions, 'connection'>;
-    /**
-     * @description
-     * Additional options used when instantiating the BullMQ
-     * QueueScheduler instance.
-     * See the [BullMQ QueueSchedulerOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.queuescheduleroptions.md)
-     */
-    schedulerOptions?: Exclude<QueueSchedulerOptions, 'connection'>;
     /**
      * @description
      * When a job is added to the JobQueue using `JobQueue.add()`, the calling
@@ -91,7 +84,7 @@ export interface BullMQPluginOptions {
  * Configuration for the backoff function when retrying failed jobs.
  *
  * @since 1.3.0
- * @docsCategory job-queue-plugin
+ * @docsCategory core plugins/JobQueuePlugin
  * @docsPage BullMQPluginOptions
  * @docsWeight 1
  */

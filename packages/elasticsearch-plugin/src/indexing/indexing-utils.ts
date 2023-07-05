@@ -11,7 +11,7 @@ export async function createIndices(
     indexSettings: object,
     indexMappingProperties: object,
     mapAlias = true,
-    aliasPostfix = ``,
+    aliasPostfix = '',
 ) {
     const textWithKeyword = {
         type: 'text',
@@ -101,7 +101,7 @@ export async function createIndices(
         const alias = prefix + VARIANT_INDEX_NAME + aliasPostfix;
 
         await createIndex(variantMappings, index, alias);
-    } catch (e) {
+    } catch (e: any) {
         Logger.error(JSON.stringify(e, null, 2), loggerCtx);
     }
 }
@@ -111,7 +111,7 @@ export async function deleteIndices(client: Client, prefix: string) {
         const index = await getIndexNameByAlias(client, prefix + VARIANT_INDEX_NAME);
         await client.indices.delete({ index });
         Logger.verbose(`Deleted index "${index}"`, loggerCtx);
-    } catch (e) {
+    } catch (e: any) {
         Logger.error(e, loggerCtx);
     }
 }
@@ -128,7 +128,7 @@ export async function deleteByChannel(client: Client, prefix: string, channelId:
             },
         });
         Logger.verbose(`Deleted index "${index} for channel "${channelId}"`, loggerCtx);
-    } catch (e) {
+    } catch (e: any) {
         Logger.error(e, loggerCtx);
     }
 }

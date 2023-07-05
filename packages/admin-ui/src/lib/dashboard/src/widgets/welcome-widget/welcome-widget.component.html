@@ -1,5 +1,5 @@
 <div *ngIf="administrator$ | async as administrator">
-    <h4 class="h4">
+    <h4 class="">
         Welcome, {{ administrator.firstName }} {{ administrator.lastName }}<br />
         <small class="p5">Last login: {{ administrator.user.lastLogin | timeAgo }}</small>
     </h4>

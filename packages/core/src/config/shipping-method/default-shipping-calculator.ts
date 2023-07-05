@@ -4,7 +4,7 @@ import { RequestContext } from '../../api/common/request-context';
 
 import { ShippingCalculator } from './shipping-calculator';
 
-enum TaxSetting {
+export enum TaxSetting {
     include = 'include',
     exclude = 'exclude',
     auto = 'auto',

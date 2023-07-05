@@ -1,44 +1,27 @@
-import { RequestContext } from '../../api/common/request-context';
-import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
-import { Customer } from '../../entity/customer/customer.entity';
-import { VendureEvent } from '../vendure-event';
+import { CreateCustomerGroupInput, UpdateCustomerGroupInput } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
+
+import { RequestContext } from '../../api';
+import { CustomerGroup } from '../../entity';
+import { VendureEntityEvent } from '../vendure-entity-event';
+
+type CustomerGroupInputTypes = CreateCustomerGroupInput | UpdateCustomerGroupInput | ID;
 
 /**
  * @description
- * This event is fired whenever one or more {@link Customer} is assigned to or removed from a
- * {@link CustomerGroup}.
- *
- * @docsCategory events
- * @docsPage Event Types
- * @deprecated Use {@link CustomerGroupChangeEvent} instead
- */
-export class CustomerGroupEvent extends VendureEvent {
-    constructor(
-        public ctx: RequestContext,
-        public customers: Customer[],
-        public customGroup: CustomerGroup,
-        public type: 'assigned' | 'removed',
-    ) {
-        super();
-    }
-}
-
-/**
- * @description
- * This event is fired whenever one or more {@link Customer} is assigned to or removed from a
- * {@link CustomerGroup}.
+ * This event is fired whenever a {@link CustomerGroup} is added, updated or deleted.
  *
  * @docsCategory events
  * @docsPage Event Types
  * @since 1.4
  */
-export class CustomerGroupChangeEvent extends VendureEvent {
+export class CustomerGroupEvent extends VendureEntityEvent<CustomerGroup, CustomerGroupInputTypes> {
     constructor(
-        public ctx: RequestContext,
-        public customers: Customer[],
-        public customGroup: CustomerGroup,
-        public type: 'assigned' | 'removed',
+        ctx: RequestContext,
+        entity: CustomerGroup,
+        type: 'created' | 'updated' | 'deleted',
+        input?: CustomerGroupInputTypes,
     ) {
-        super();
+        super(entity, type, ctx, input);
     }
 }

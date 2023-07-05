@@ -15,6 +15,7 @@ type Mutation {
     setUiTheme(theme: String!): String!
     setActiveChannel(channelId: ID!): UserStatus!
     setDisplayUiExtensionPoints(display: Boolean!): Boolean!
+    setMainNavExpanded(expanded: Boolean!): Boolean!
     updateUserChannels(channels: [CurrentUserChannelInput!]!): UserStatus!
 }
 
@@ -23,6 +24,7 @@ type NetworkStatus {
 }
 
 type UserStatus {
+    administratorId: ID
     username: String!
     isLoggedIn: Boolean!
     loginTime: String!
@@ -37,6 +39,7 @@ type UiState {
     contentLanguage: LanguageCode!
     theme: String!
     displayUiExtensionPoints: Boolean!
+    mainNavExpanded: Boolean!
 }
 
 input CurrentUserChannelInput {
@@ -47,6 +50,7 @@ input CurrentUserChannelInput {
 }
 
 input UserStatusInput {
+    administratorId: ID!
     username: String!
     loginTime: String!
     activeChannelId: ID!

@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import path from 'path';
 
 /**
@@ -21,14 +21,16 @@ async function checkAngularVersions() {
         const devkitVersion =
             uiDevkitPackageJson.dependencies[pkg as keyof typeof uiDevkitPackageJson.dependencies];
 
-        if (illegalSemverPrefixes.test(uiVersion)) {
-            errors.push(`Angular compiler versions must be exact, got "${uiVersion}" in admin-ui package`);
-        }
-        if (illegalSemverPrefixes.test(devkitVersion)) {
-            errors.push(
-                `Angular compiler versions must be exact, got "${devkitVersion}" in ui-devkit package`,
-            );
-        }
+        // Removing this restriction to allow more flexibility in keeping angular versions
+        // current for end-users, and also preventing issues in monorepos.
+        // if (illegalSemverPrefixes.test(uiVersion)) {
+        //     errors.push(`Angular compiler versions must be exact, got "${uiVersion}" in admin-ui package`);
+        // }
+        // if (illegalSemverPrefixes.test(devkitVersion)) {
+        //     errors.push(
+        //         `Angular compiler versions must be exact, got "${devkitVersion}" in ui-devkit package`,
+        //     );
+        // }
 
         if (uiVersion !== devkitVersion) {
             errors.push(

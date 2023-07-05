@@ -21,6 +21,8 @@ import { IncomingMessage } from 'http';
 import mime from 'mime-types';
 import path from 'path';
 import { Readable, Stream } from 'stream';
+import { IsNull } from 'typeorm';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -37,8 +39,8 @@ import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Collection } from '../../entity/collection/collection.entity';
-import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
@@ -50,7 +52,7 @@ import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { TagService } from './tag.service';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const sizeOf = require('image-size');
 
 /**
@@ -109,9 +111,11 @@ export class AssetService {
     }
 
     findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<Asset>): Promise<Asset | undefined> {
-        return this.connection.findOneInChannel(ctx, Asset, id, ctx.channelId, {
-            relations: relations ?? [],
-        });
+        return this.connection
+            .findOneInChannel(ctx, Asset, id, ctx.channelId, {
+                relations: relations ?? [],
+            })
+            .then(result => result ?? undefined);
     }
 
     findAll(
@@ -132,7 +136,7 @@ export class AssetService {
                 .select('asset.id')
                 .from(Asset, 'asset')
                 .leftJoin('asset.tags', 'tags')
-                .where(`tags.value IN (:...tags)`);
+                .where('tags.value IN (:...tags)');
 
             if (operator === LogicalOperator.AND) {
                 subquery.groupBy('asset.id').having('COUNT(asset.id) = :tagCount');
@@ -169,9 +173,14 @@ export class AssetService {
         } else {
             entityWithFeaturedAsset = await this.connection
                 .getRepository(ctx, entityType)
-                .findOne(entity.id, {
-                    relations: ['featuredAsset'],
-                });
+                .findOne({
+                    where: { id: entity.id },
+                    relations: {
+                        featuredAsset: true,
+                    },
+                    // TODO: satisfies
+                } as FindOneOptions<T>)
+                .then(result => result ?? undefined);
         }
         return (entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset) || undefined;
     }
@@ -288,7 +297,7 @@ export class AssetService {
             let result: Asset | MimeTypeError;
             try {
                 result = await this.createAssetInternal(ctx, stream, filename, mimetype, input.customFields);
-            } catch (e) {
+            } catch (e: any) {
                 reject(e);
                 return;
             }
@@ -460,7 +469,7 @@ export class AssetService {
                     : RequestContext.empty();
             return this.createAssetInternal(ctx, stream, filename, mimetype);
         } else {
-            throw new InternalServerError(`error.path-should-be-a-string-got-buffer`);
+            throw new InternalServerError('error.path-should-be-a-string-got-buffer');
         }
     }
 
@@ -488,8 +497,8 @@ export class AssetService {
             try {
                 await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.source);
                 await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.preview);
-            } catch (e) {
-                Logger.error(`error.could-not-delete-asset-file`, undefined, e.stack);
+            } catch (e: any) {
+                Logger.error('error.could-not-delete-asset-file', undefined, e.stack);
             }
             this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted', deletedAsset.id));
         }
@@ -519,7 +528,7 @@ export class AssetService {
     ): Promise<Asset | MimeTypeError> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
-            return new MimeTypeError(filename, mimetype);
+            return new MimeTypeError({ fileName: filename, mimeType: mimetype });
         }
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(ctx, filename);
@@ -530,8 +539,9 @@ export class AssetService {
         let preview: Buffer;
         try {
             preview = await assetPreviewStrategy.generatePreviewImage(ctx, mimetype, sourceFile);
-        } catch (e) {
-            Logger.error(`Could not create Asset preview image: ${e.message}`, undefined, e.stack);
+        } catch (e: any) {
+            const message: string = typeof e.message === 'string' ? e.message : e.message.toString();
+            Logger.error(`Could not create Asset preview image: ${message}`, undefined, e.stack);
             throw e;
         }
         const previewFileIdentifier = await assetStorageStrategy.writeFileFromBuffer(
@@ -587,8 +597,8 @@ export class AssetService {
         try {
             const { width, height } = sizeOf(imageFile);
             return { width, height };
-        } catch (e) {
-            Logger.error(`Could not determine Asset dimensions: ` + e);
+        } catch (e: any) {
+            Logger.error('Could not determine Asset dimensions: ' + JSON.stringify(e));
             return { width: 0, height: 0 };
         }
     }
@@ -670,19 +680,19 @@ export class AssetService {
     ): Promise<{ products: Product[]; variants: ProductVariant[]; collections: Collection[] }> {
         const products = await this.connection.getRepository(ctx, Product).find({
             where: {
-                featuredAsset: asset,
-                deletedAt: null,
+                featuredAsset: { id: asset.id },
+                deletedAt: IsNull(),
             },
         });
         const variants = await this.connection.getRepository(ctx, ProductVariant).find({
             where: {
-                featuredAsset: asset,
-                deletedAt: null,
+                featuredAsset: { id: asset.id },
+                deletedAt: IsNull(),
             },
         });
         const collections = await this.connection.getRepository(ctx, Collection).find({
             where: {
-                featuredAsset: asset,
+                featuredAsset: { id: asset.id },
             },
         });
         return { products, variants, collections };

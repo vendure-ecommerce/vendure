@@ -1,8 +1,10 @@
+import { CurrencyCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
+import { Money } from '../money.decorator';
 
 import { ProductVariant } from './product-variant.entity';
 
@@ -19,10 +21,14 @@ export class ProductVariantPrice extends VendureEntity {
         super(input);
     }
 
-    @Column() price: number;
+    @Money() price: number;
 
-    @EntityId() channelId: ID;
+    @EntityId({ nullable: true }) channelId: ID;
 
-    @ManyToOne(type => ProductVariant, variant => variant.productVariantPrices)
+    @Column('varchar')
+    currencyCode: CurrencyCode;
+
+    @Index()
+    @ManyToOne(type => ProductVariant, variant => variant.productVariantPrices, { onDelete: 'CASCADE' })
     variant: ProductVariant;
 }

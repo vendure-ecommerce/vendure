@@ -1,32 +1,55 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Customer, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
+import { ModuleRef } from '@nestjs/core';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import {
+    Ctx,
+    Customer,
+    Injector,
+    Logger,
+    Order,
+    Payment,
+    PaymentMethodService,
+    RequestContext,
+    TransactionalConnection,
+    UserInputError,
+} from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { sanitizeMetadata } from './metadata-sanitize';
+import { VendureStripeClient } from './stripe-client';
 import { getAmountInStripeMinorUnits } from './stripe-utils';
+import { stripePaymentMethodHandler } from './stripe.handler';
 import { StripePluginOptions } from './types';
 
 @Injectable()
 export class StripeService {
-    protected stripe: Stripe;
-
     constructor(
         private connection: TransactionalConnection,
+        private paymentMethodService: PaymentMethodService,
         @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
-    ) {
-        this.stripe = new Stripe(this.options.apiKey, {
-            apiVersion: '2020-08-27',
-        });
-    }
+        private moduleRef: ModuleRef,
+    ) {}
 
-    async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string | undefined> {
+    async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string> {
         let customerId: string | undefined;
+        const stripe = await this.getStripeClient(ctx, order);
 
         if (this.options.storeCustomersInStripe && ctx.activeUserId) {
             customerId = await this.getStripeCustomerId(ctx, order);
         }
         const amountInMinorUnits = getAmountInStripeMinorUnits(order);
-        const { client_secret } = await this.stripe.paymentIntents.create(
+
+        const metadata = sanitizeMetadata({
+            ...(typeof this.options.metadata === 'function'
+                ? await this.options.metadata(new Injector(this.moduleRef), ctx, order)
+                : {}),
+            channelToken: ctx.channel.token,
+            orderId: order.id,
+            orderCode: order.code,
+        });
+
+        const { client_secret } = await stripe.paymentIntents.create(
             {
                 amount: amountInMinorUnits,
                 currency: order.currencyCode.toLowerCase(),
@@ -34,11 +57,7 @@ export class StripeService {
                 automatic_payment_methods: {
                     enabled: true,
                 },
-                metadata: {
-                    channelToken: ctx.channel.token,
-                    orderId: order.id,
-                    orderCode: order.code,
-                },
+                metadata,
             },
             { idempotencyKey: `${order.code}_${amountInMinorUnits}` },
         );
@@ -49,28 +68,68 @@ export class StripeService {
                 `Payment intent creation for order ${order.code} did not return client secret`,
                 loggerCtx,
             );
+            throw Error('Failed to create payment intent');
         }
 
         return client_secret ?? undefined;
     }
 
-    async createRefund(paymentIntentId: string, amount: number): Promise<Stripe.Refund | Stripe.StripeError> {
-        // TODO: Consider passing the "reason" property once this feature request is addressed:
-        // https://github.com/vendure-ecommerce/vendure/issues/893
-        try {
-            const refund = await this.stripe.refunds.create({
-                payment_intent: paymentIntentId,
-                amount,
-            });
-
-            return refund;
-        } catch (e: any) {
-            return e as Stripe.StripeError;
-        }
+    async constructEventFromPayload(
+        ctx: RequestContext,
+        order: Order,
+        payload: Buffer,
+        signature: string,
+    ): Promise<Stripe.Event> {
+        const stripe = await this.getStripeClient(ctx, order);
+        return stripe.webhooks.constructEvent(payload, signature, stripe.webhookSecret);
     }
 
-    constructEventFromPayload(payload: Buffer, signature: string): Stripe.Event {
-        return this.stripe.webhooks.constructEvent(payload, signature, this.options.webhookSigningSecret);
+    async createRefund(
+        ctx: RequestContext,
+        order: Order,
+        payment: Payment,
+        amount: number,
+    ): Promise<Stripe.Response<Stripe.Refund>> {
+        const stripe = await this.getStripeClient(ctx, order);
+        return stripe.refunds.create({
+            payment_intent: payment.transactionId,
+            amount,
+        });
+    }
+
+    /**
+     * Get Stripe client based on eligible payment methods for order
+     */
+    async getStripeClient(ctx: RequestContext, order: Order): Promise<VendureStripeClient> {
+        const [eligiblePaymentMethods, paymentMethods] = await Promise.all([
+            this.paymentMethodService.getEligiblePaymentMethods(ctx, order),
+            this.paymentMethodService.findAll(ctx, {
+                filter: {
+                    enabled: { eq: true },
+                },
+            }),
+        ]);
+        const stripePaymentMethod = paymentMethods.items.find(
+            pm => pm.handler.code === stripePaymentMethodHandler.code,
+        );
+        if (!stripePaymentMethod) {
+            throw new UserInputError('No enabled Stripe payment method found');
+        }
+        const isEligible = eligiblePaymentMethods.some(pm => pm.code === stripePaymentMethod.code);
+        if (!isEligible) {
+            throw new UserInputError(`Stripe payment method is not eligible for order ${order.code}`);
+        }
+        const apiKey = this.findOrThrowArgValue(stripePaymentMethod.handler.args, 'apiKey');
+        const webhookSecret = this.findOrThrowArgValue(stripePaymentMethod.handler.args, 'webhookSecret');
+        return new VendureStripeClient(apiKey, webhookSecret);
+    }
+
+    private findOrThrowArgValue(args: ConfigArg[], name: string): string {
+        const value = args.find(arg => arg.name === name)?.value;
+        if (!value) {
+            throw Error(`No argument named '${name}' found!`);
+        }
+        return value;
     }
 
     /**
@@ -79,10 +138,14 @@ export class StripeService {
      * Otherwise, creates a new Customer record in Stripe and returns the generated id.
      */
     private async getStripeCustomerId(ctx: RequestContext, activeOrder: Order): Promise<string | undefined> {
-        // Load relation with customer not available in the response from activeOrderService.getOrderFromContext()
-        const order = await this.connection.getRepository(Order).findOne(activeOrder.id, {
-            relations: ['customer'],
-        });
+        const [stripe, order] = await Promise.all([
+            this.getStripeClient(ctx, activeOrder),
+            // Load relation with customer not available in the response from activeOrderService.getOrderFromContext()
+            this.connection.getRepository(ctx, Order).findOne({
+                where: { id: activeOrder.id },
+                relations: ['customer'],
+            }),
+        ]);
 
         if (!order || !order.customer) {
             // This should never happen
@@ -97,11 +160,11 @@ export class StripeService {
 
         let stripeCustomerId;
 
-        const stripeCustomers = await this.stripe.customers.list({ email: customer.emailAddress });
+        const stripeCustomers = await stripe.customers.list({ email: customer.emailAddress });
         if (stripeCustomers.data.length > 0) {
             stripeCustomerId = stripeCustomers.data[0].id;
         } else {
-            const newStripeCustomer = await this.stripe.customers.create({
+            const newStripeCustomer = await stripe.customers.create({
                 email: customer.emailAddress,
                 name: `${customer.firstName} ${customer.lastName}`,
             });

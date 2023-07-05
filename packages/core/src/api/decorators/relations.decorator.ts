@@ -2,12 +2,14 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { getNamedType, GraphQLResolveInfo, GraphQLSchema, isObjectType } from 'graphql';
-import graphqlFields from 'graphql-fields';
 import { getMetadataArgsStorage } from 'typeorm';
 
 import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../../common/calculated-decorator';
 import { EntityRelationPaths, InternalServerError, TtlCache } from '../../common/index';
-import { VendureEntity } from '../../entity/index';
+import { VendureEntity } from '../../entity/base/base.entity';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const graphqlFields = require('graphql-fields');
 
 export type RelationPaths<T extends VendureEntity> = Array<EntityRelationPaths<T>>;
 
@@ -73,9 +75,9 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * then the value of `relations` will be
  *
  * ```
- * ['customer', 'lines', 'lines.items']
+ * ['customer', 'lines'']
  * ```
- * The `'customer'` comes from the fact that the query is nesting the "customer" object, and the `'lines'` & `'lines.items'` are taken
+ * The `'customer'` comes from the fact that the query is nesting the "customer" object, and the `'lines'` is taken
  * from the `Order` entity's `totalQuantity` property, which uses {@link Calculated} decorator and defines those relations as dependencies
  * for deriving the calculated value.
  *
@@ -126,19 +128,19 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * ```
  *
  * @docsCategory request
- * @docsPage Api Decorator
+ * @docsPage Relations Decorator
  * @since 1.6.0
  */
 export const Relations: <T extends VendureEntity>(data: FieldsDecoratorConfig<T>) => ParameterDecorator =
     createParamDecorator<FieldsDecoratorConfig<any>>((data, ctx: ExecutionContext) => {
         const info = ctx.getArgByIndex(3);
         if (data == null) {
-            throw new InternalServerError(`The @Relations() decorator requires an entity type argument`);
+            throw new InternalServerError('The @Relations() decorator requires an entity type argument');
         }
         if (!isGraphQLResolveInfo(info)) {
             return [];
         }
-        const cacheKey = info.fieldName + '__' + ctx.getArgByIndex(2).req.body.query;
+        const cacheKey = info.fieldName + '__' + (ctx.getArgByIndex(2).req.body.query as string);
         const cachedResult = cache.get(cacheKey);
         if (cachedResult) {
             return cachedResult;
@@ -193,7 +195,8 @@ function getRelationPaths(
                 relationPaths.push(property);
                 const relatedEntity =
                     typeof relationMetadata.type === 'function'
-                        ? relationMetadata.type()
+                        ? // https://github.com/microsoft/TypeScript/issues/37663
+                          (relationMetadata.type as any)()
                         : relationMetadata.type;
                 if (depth < maxDepth) {
                     depth++;

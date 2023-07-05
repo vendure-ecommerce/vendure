@@ -1,6 +1,13 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { RouterModule, ROUTES } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import {
+    detailComponentWithResolver,
+    OrderDetailQueryDocument,
+    OrderType,
+    PageService,
+    SharedModule,
+} from '@vendure/admin-ui/core';
 
 import { AddManualPaymentDialogComponent } from './components/add-manual-payment-dialog/add-manual-payment-dialog.component';
 import { CancelOrderDialogComponent } from './components/cancel-order-dialog/cancel-order-dialog.component';
@@ -15,6 +22,7 @@ import { LineFulfillmentComponent } from './components/line-fulfillment/line-ful
 import { LineRefundsComponent } from './components/line-refunds/line-refunds.component';
 import { ModificationDetailComponent } from './components/modification-detail/modification-detail.component';
 import { OrderCustomFieldsCardComponent } from './components/order-custom-fields-card/order-custom-fields-card.component';
+import { OrderTotalColumnComponent } from './components/order-data-table/order-total-column.component';
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { OrderEditorComponent } from './components/order-editor/order-editor.component';
 import { OrderEditsPreviewDialogComponent } from './components/order-edits-preview-dialog/order-edits-preview-dialog.component';
@@ -35,12 +43,22 @@ import { RefundStateLabelComponent } from './components/refund-state-label/refun
 import { SelectAddressDialogComponent } from './components/select-address-dialog/select-address-dialog.component';
 import { SelectCustomerDialogComponent } from './components/select-customer-dialog/select-customer-dialog.component';
 import { SelectShippingMethodDialogComponent } from './components/select-shipping-method-dialog/select-shipping-method-dialog.component';
+import { SellerOrdersCardComponent } from './components/seller-orders-card/seller-orders-card.component';
 import { SettleRefundDialogComponent } from './components/settle-refund-dialog/settle-refund-dialog.component';
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
-import { orderRoutes } from './order.routes';
+import { createRoutes } from './order.routes';
+import { OrderDataTableComponent } from './components/order-data-table/order-data-table.component';
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(orderRoutes)],
+    imports: [SharedModule, RouterModule.forChild([])],
+    providers: [
+        {
+            provide: ROUTES,
+            useFactory: (pageService: PageService) => createRoutes(pageService),
+            multi: true,
+            deps: [PageService],
+        },
+    ],
     declarations: [
         OrderListComponent,
         OrderDetailComponent,
@@ -77,6 +95,70 @@ import { orderRoutes } from './order.routes';
         CouponCodeSelectorComponent,
         SelectShippingMethodDialogComponent,
         OrderHistoryEntryHostComponent,
+        SellerOrdersCardComponent,
+        OrderDataTableComponent,
+        OrderTotalColumnComponent,
     ],
+    exports: [OrderCustomFieldsCardComponent],
 })
-export class OrderModule {}
+export class OrderModule {
+    constructor(private pageService: PageService) {
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'order-list',
+            tab: _('order.orders'),
+            route: '',
+            component: OrderListComponent,
+        });
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'order-detail',
+            tab: _('order.order'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: OrderDetailComponent,
+                query: OrderDetailQueryDocument,
+                entityKey: 'order',
+                getBreadcrumbs: entity =>
+                    entity?.type !== OrderType.Seller || !entity?.aggregateOrder
+                        ? [
+                              {
+                                  label: `${entity?.code}`,
+                                  link: [entity?.id],
+                              },
+                          ]
+                        : [
+                              {
+                                  label: `${entity?.aggregateOrder?.code}`,
+                                  link: ['/orders/', entity?.aggregateOrder?.id],
+                              },
+                              {
+                                  label: _('breadcrumb.seller-orders'),
+                                  link: ['/orders/', entity?.aggregateOrder?.id],
+                              },
+                              {
+                                  label: `${entity?.code}`,
+                                  link: [entity?.id],
+                              },
+                          ],
+            }),
+        });
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'draft-order-detail',
+            tab: _('order.order'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: DraftOrderDetailComponent,
+                query: OrderDetailQueryDocument,
+                entityKey: 'order',
+                getBreadcrumbs: entity => [
+                    {
+                        label: _('order.draft-order'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+    }
+}

@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { INestApplicationContext } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { VendureConfig } from '@vendure/core';
@@ -8,7 +8,7 @@ import { TestServerOptions } from '../types';
 
 import { populateCustomers } from './populate-customers';
 
-// tslint:disable:no-floating-promises
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /**
  * Clears all tables from the database and populates with (deterministic) random data.
  */
@@ -35,11 +35,22 @@ export async function populateForTesting<T extends INestApplicationContext>(
     return app;
 }
 
-async function populateProducts(app: INestApplicationContext, productsCsvPath: string, logging: boolean) {
+async function populateProducts(
+    app: INestApplicationContext,
+    productsCsvPath: string | undefined,
+    logging: boolean,
+) {
+    if (!productsCsvPath) {
+        if (logging) {
+            console.log('\nNo product data provided, skipping product import');
+        }
+        return;
+    }
+
     const importResult = await importProductsFromCsv(app, productsCsvPath, LanguageCode.en);
     if (importResult.errors && importResult.errors.length) {
         console.log(`${importResult.errors.length} errors encountered when importing product data:`);
-        await console.log(importResult.errors.join('\n'));
+        console.log(importResult.errors.join('\n'));
     }
 
     if (logging) {

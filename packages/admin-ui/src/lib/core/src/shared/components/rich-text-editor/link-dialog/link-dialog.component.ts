@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { Dialog } from '../../../../providers/modal/modal.service';
+import { Dialog } from '../../../../providers/modal/modal.types';
 
 export interface LinkAttrs {
     href: string;
@@ -15,15 +15,15 @@ export interface LinkAttrs {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkDialogComponent implements OnInit, Dialog<LinkAttrs> {
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     resolveWith: (result?: LinkAttrs) => void;
     existing?: LinkAttrs;
 
     ngOnInit(): void {
-        this.form = new FormGroup({
-            href: new FormControl(this.existing ? this.existing.href : '', Validators.required),
-            title: new FormControl(this.existing ? this.existing.title : ''),
+        this.form = new UntypedFormGroup({
+            href: new UntypedFormControl(this.existing ? this.existing.href : '', Validators.required),
+            title: new UntypedFormControl(this.existing ? this.existing.title : ''),
         });
     }
 

@@ -36,6 +36,7 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     userPermissions: string[] = [];
 
     private subscription: Subscription;
+    private onClearSelectionFns: Array<() => void> = [];
 
     constructor(
         private bulkActionRegistryService: BulkActionRegistryService,
@@ -48,8 +49,8 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     ngOnInit(): void {
         const actionsForLocation = this.bulkActionRegistryService.getBulkActionsForLocation(this.locationId);
         this.actions$ = this.selectionManager.selectionChanges$.pipe(
-            switchMap(selection => {
-                return Promise.all(
+            switchMap(selection =>
+                Promise.all(
                     actionsForLocation.map(async action => {
                         let display = true;
                         let translationVars = {};
@@ -69,8 +70,8 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
                         }
                         return { ...action, display, translationVars };
                     }),
-                );
-            }),
+                ),
+            ),
         );
         this.subscription = this.dataService.client
             .userStatus()
@@ -113,5 +114,10 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     clearSelection() {
         this.selectionManager.clearSelection();
         this.changeDetectorRef.markForCheck();
+        this.onClearSelectionFns.forEach(fn => fn());
+    }
+
+    onClearSelection(callback: () => void) {
+        this.onClearSelectionFns.push(callback);
     }
 }

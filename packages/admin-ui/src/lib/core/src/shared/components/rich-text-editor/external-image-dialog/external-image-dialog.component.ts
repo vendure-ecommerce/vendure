@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import { Dialog } from '../../../../providers/modal/modal.service';
+import { Dialog } from '../../../../providers/modal/modal.types';
 
 export interface ExternalImageAttrs {
     src: string;
@@ -16,17 +16,17 @@ export interface ExternalImageAttrs {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExternalImageDialogComponent implements OnInit, Dialog<ExternalImageAttrs> {
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     resolveWith: (result?: ExternalImageAttrs) => void;
     previewLoaded = false;
     existing?: ExternalImageAttrs;
 
     ngOnInit(): void {
-        this.form = new FormGroup({
-            src: new FormControl(this.existing ? this.existing.src : '', Validators.required),
-            title: new FormControl(this.existing ? this.existing.title : ''),
-            alt: new FormControl(this.existing ? this.existing.alt : ''),
+        this.form = new UntypedFormGroup({
+            src: new UntypedFormControl(this.existing ? this.existing.src : '', Validators.required),
+            title: new UntypedFormControl(this.existing ? this.existing.title : ''),
+            alt: new UntypedFormControl(this.existing ? this.existing.alt : ''),
         });
     }
 

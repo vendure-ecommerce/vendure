@@ -2,7 +2,10 @@
 
 :host {
     display: flex;
-    overflow: hidden;
+    flex-direction: column-reverse;
+    @media screen and (min-width: $breakpoint-medium) {
+        flex-direction: row;
+    }
 }
 
 .gallery {
@@ -12,10 +15,6 @@
     grid-template-columns: repeat(auto-fill, 150px);
     grid-template-rows: repeat(auto-fill, 180px);
     grid-gap: 10px 20px;
-    overflow-y: auto;
-    padding-left: 12px;
-    padding-top: 12px;
-    padding-bottom: 12px;
 
     .card:hover {
         box-shadow: 0 0.125rem 0 0 var(--color-primary-500);
@@ -52,6 +51,9 @@ vdr-select-toggle {
 }
 
 .detail {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     font-size: 12px;
     margin: 3px;
     overflow: hidden;
@@ -63,7 +65,9 @@ vdr-select-toggle {
 }
 
 .info-bar {
-    width: 25%;
+    @media screen and (min-width: $breakpoint-medium) {
+        width: 25%;
+    }
     padding: 0 6px;
     overflow-y: auto;
 

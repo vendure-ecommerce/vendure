@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
 import { EventBus } from '../../../event-bus/event-bus';
-import { CustomerGroupEvent } from '../../../event-bus/events/customer-group-event';
+import { CustomerGroupChangeEvent } from '../../../event-bus/index';
 import { PromotionCondition } from '../promotion-condition';
 
 let customerService: import('../../../service/services/customer.service').CustomerService;
@@ -26,11 +26,11 @@ export const customerGroup = new PromotionCondition({
     },
     async init(injector) {
         // Lazily-imported to avoid circular dependency issues.
-        const { CustomerService } = await import('../../../service/services/customer.service');
+        const { CustomerService } = await import('../../../service/services/customer.service.js');
         customerService = injector.get(CustomerService);
         subscription = injector
             .get(EventBus)
-            .ofType(CustomerGroupEvent)
+            .ofType(CustomerGroupChangeEvent)
             .subscribe(event => {
                 // When a customer is added to or removed from a group, we need
                 // to invalidate the cache for that customer id

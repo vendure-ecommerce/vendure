@@ -6,7 +6,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 
 /**
  * @description
- * The OrderItemPriceCalculationStrategy defines the price of an OrderItem. By default the
+ * The OrderItemPriceCalculationStrategy defines the listPrice of an OrderLine when adding an item to an Order. By default the
  * {@link DefaultOrderItemPriceCalculationStrategy} is used.
  *
  * ### When is the strategy invoked ?
@@ -18,9 +18,13 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  * ### OrderItemPriceCalculationStrategy vs Promotions
  * Both the OrderItemPriceCalculationStrategy and Promotions can be used to alter the price paid for a product.
  *
+ * The main difference is when a Promotion is applied, it adds a `discount` line to the Order, and the regular
+ * price is used for the value of `OrderLine.listPrice` property, whereas
+ * the OrderItemPriceCalculationStrategy actually alters the value of `OrderLine.listPrice` itself, and does not
+ * add any discounts to the Order.
+ *
  * Use OrderItemPriceCalculationStrategy if:
  *
- * * The price is not dependent on quantity or on the other contents of the Order.
  * * The price calculation is based on the properties of the ProductVariant and any CustomFields
  *   specified on the OrderLine, for example via a product configurator.
  * * The logic is a permanent part of your business requirements.
@@ -41,6 +45,8 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  *   a gift-wrapping surcharge would be added to the price.
  * * A product-configurator where e.g. various finishes, colors, and materials can be selected and stored
  *   as OrderLine custom fields (see [Customizing models](/docs/developer-guide/customizing-models/#configurable-order-products).
+ * * Price lists or bulk pricing, where different price bands are stored e.g. in a customField on the ProductVariant, and this
+ *   is used to calculate the price based on the current quantity.
  *
  * @docsCategory Orders
  */
@@ -51,12 +57,16 @@ export interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
      * the price for a single unit.
      *
      * Note: if you have any `relation` type custom fields defined on the OrderLine entity, they will only be
-     * passed in to this method if they are set to `eager: true`.
+     * passed in to this method if they are set to `eager: true`. Otherwise, you can use the {@link EntityHydrator}
+     * to join the missing relations.
+     *
+     * Note: the `quantity` argument was added in v2.0.0
      */
     calculateUnitPrice(
         ctx: RequestContext,
         productVariant: ProductVariant,
         orderLineCustomFields: { [key: string]: any },
         order: Order,
+        quantity: number,
     ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }

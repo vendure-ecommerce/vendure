@@ -2,9 +2,10 @@ import { mergeConfig, Zone } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     RelationDecoratorTestService,
@@ -107,7 +108,7 @@ describe('Relations decorator', () => {
                 }
             }
         `);
-        expect(testService.getRelations()).toEqual(['lines', 'lines.items']);
+        expect(testService.getRelations()).toEqual(['lines']);
     });
 
     it('defaults to a depth of 3', async () => {

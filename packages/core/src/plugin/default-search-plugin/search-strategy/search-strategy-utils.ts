@@ -63,6 +63,7 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         productAsset,
         productVariantAsset,
         score: raw.score || 0,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         inStock: raw.si_inStock,
     };
@@ -106,7 +107,7 @@ function parseFocalPoint(focalPoint: any): Coordinate | undefined {
     if (focalPoint && typeof focalPoint === 'string') {
         try {
             return JSON.parse(focalPoint);
-        } catch (e) {
+        } catch (e: any) {
             // fall though
         }
     }
@@ -129,29 +130,32 @@ export function applyLanguageConstraints(
     languageCode: LanguageCode,
     defaultLanguageCode: LanguageCode,
 ) {
+    const lcEscaped = qb.escape('languageCode');
     if (languageCode === defaultLanguageCode) {
-        qb.andWhere('si.languageCode = :languageCode', { languageCode });
+        qb.andWhere(`si.${lcEscaped} = :languageCode`, { languageCode });
     } else {
-        qb.andWhere('si.languageCode IN (:...languageCodes)', {
+        qb.andWhere(`si.${lcEscaped} IN (:...languageCodes)`, {
             languageCodes: [languageCode, defaultLanguageCode],
         });
 
-        const joinFieldConditions = identifierFields.map(field => `si.${field} = sil.${field}`).join(' AND ');
+        const joinFieldConditions = identifierFields
+            .map(field => `si.${qb.escape(field)} = sil.${qb.escape(field)}`)
+            .join(' AND ');
 
         qb.leftJoin(
             SearchIndexItem,
             'sil',
             `
             ${joinFieldConditions}
-            AND si.languageCode != sil.languageCode
-            AND sil.languageCode = :languageCode
+            AND si.${lcEscaped} != sil.${lcEscaped}
+            AND sil.${lcEscaped} = :languageCode
         `,
             {
                 languageCode,
             },
         );
 
-        qb.andWhere('sil.languageCode IS NULL');
+        qb.andWhere(`sil.${lcEscaped} IS NULL`);
     }
 
     return qb;

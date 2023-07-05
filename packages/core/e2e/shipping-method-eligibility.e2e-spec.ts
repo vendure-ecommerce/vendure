@@ -7,27 +7,15 @@ import {
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import {
-    CreateShippingMethod,
-    LanguageCode,
-    ShippingMethodFragment,
-} from './graphql/generated-e2e-admin-types';
-import {
-    AddItemToOrder,
-    AdjustItemQuantity,
-    ErrorCode,
-    GetActiveOrder,
-    GetShippingMethods,
-    RemoveItemFromOrder,
-    SetShippingAddress,
-    SetShippingMethod,
-    TestOrderFragmentFragment,
-    UpdatedOrderFragment,
-} from './graphql/generated-e2e-shop-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { ErrorCode, LanguageCode } from './graphql/generated-e2e-shop-types';
 import { CREATE_SHIPPING_METHOD } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
@@ -39,7 +27,7 @@ import {
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
 
-const check1Spy = jest.fn();
+const check1Spy = vi.fn();
 const checker1 = new ShippingEligibilityChecker({
     code: 'checker1',
     description: [],
@@ -50,7 +38,7 @@ const checker1 = new ShippingEligibilityChecker({
     },
 });
 
-const check2Spy = jest.fn();
+const check2Spy = vi.fn();
 const checker2 = new ShippingEligibilityChecker({
     code: 'checker2',
     description: [],
@@ -61,7 +49,7 @@ const checker2 = new ShippingEligibilityChecker({
     },
 });
 
-const check3Spy = jest.fn();
+const check3Spy = vi.fn();
 const checker3 = new ShippingEligibilityChecker({
     code: 'checker3',
     description: [],
@@ -97,12 +85,13 @@ describe('ShippingMethod eligibility', () => {
         },
     });
 
-    const orderGuard: ErrorResultGuard<UpdatedOrderFragment | TestOrderFragmentFragment> =
-        createErrorResultGuard(input => !!input.lines);
+    const orderGuard: ErrorResultGuard<
+        CodegenShop.UpdatedOrderFragment | CodegenShop.TestOrderFragmentFragment
+    > = createErrorResultGuard(input => !!input.lines);
 
-    let singleLineShippingMethod: ShippingMethodFragment;
-    let multiLineShippingMethod: ShippingMethodFragment;
-    let optimizedShippingMethod: ShippingMethodFragment;
+    let singleLineShippingMethod: Codegen.ShippingMethodFragment;
+    let multiLineShippingMethod: Codegen.ShippingMethodFragment;
+    let optimizedShippingMethod: Codegen.ShippingMethodFragment;
 
     beforeAll(async () => {
         await server.init({
@@ -116,8 +105,8 @@ describe('ShippingMethod eligibility', () => {
         await adminClient.asSuperAdmin();
 
         const result1 = await adminClient.query<
-            CreateShippingMethod.Mutation,
-            CreateShippingMethod.Variables
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'single-line',
@@ -138,8 +127,8 @@ describe('ShippingMethod eligibility', () => {
         singleLineShippingMethod = result1.createShippingMethod;
 
         const result2 = await adminClient.query<
-            CreateShippingMethod.Mutation,
-            CreateShippingMethod.Variables
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'multi-line',
@@ -160,8 +149,8 @@ describe('ShippingMethod eligibility', () => {
         multiLineShippingMethod = result2.createShippingMethod;
 
         const result3 = await adminClient.query<
-            CreateShippingMethod.Mutation,
-            CreateShippingMethod.Variables
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'optimized',
@@ -187,7 +176,7 @@ describe('ShippingMethod eligibility', () => {
     });
 
     describe('default behavior', () => {
-        let order: UpdatedOrderFragment;
+        let order: CodegenShop.UpdatedOrderFragment;
 
         it('Does not run checkers before a ShippingMethod is assigned to Order', async () => {
             check1Spy.mockClear();
@@ -196,8 +185,8 @@ describe('ShippingMethod eligibility', () => {
             await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
 
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 quantity: 1,
                 productVariantId: 'T_1',
@@ -207,13 +196,13 @@ describe('ShippingMethod eligibility', () => {
             expect(check1Spy).not.toHaveBeenCalled();
             expect(check2Spy).not.toHaveBeenCalled();
 
-            await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                ADJUST_ITEM_QUANTITY,
-                {
-                    quantity: 2,
-                    orderLineId: addItemToOrder.lines[0].id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                quantity: 2,
+                orderLineId: addItemToOrder.lines[0].id,
+            });
 
             expect(check1Spy).not.toHaveBeenCalled();
             expect(check2Spy).not.toHaveBeenCalled();
@@ -225,7 +214,7 @@ describe('ShippingMethod eligibility', () => {
             check1Spy.mockClear();
             check2Spy.mockClear();
 
-            const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+            const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
                 GET_ELIGIBLE_SHIPPING_METHODS,
             );
 
@@ -237,36 +226,36 @@ describe('ShippingMethod eligibility', () => {
             check1Spy.mockClear();
             check2Spy.mockClear();
 
-            await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
-                SET_SHIPPING_METHOD,
-                {
-                    id: singleLineShippingMethod.id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.SetShippingMethodMutation,
+                CodegenShop.SetShippingMethodMutationVariables
+            >(SET_SHIPPING_METHOD, {
+                id: singleLineShippingMethod.id,
+            });
 
             // A check is done when assigning the method to ensure it
             // is eligible, and again when calculating order adjustments
             expect(check1Spy).toHaveBeenCalledTimes(2);
             expect(check2Spy).not.toHaveBeenCalled();
 
-            await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                ADJUST_ITEM_QUANTITY,
-                {
-                    quantity: 3,
-                    orderLineId: order.lines[0].id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                quantity: 3,
+                orderLineId: order.lines[0].id,
+            });
 
             expect(check1Spy).toHaveBeenCalledTimes(3);
             expect(check2Spy).not.toHaveBeenCalled();
 
-            await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                ADJUST_ITEM_QUANTITY,
-                {
-                    quantity: 4,
-                    orderLineId: order.lines[0].id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                quantity: 4,
+                orderLineId: order.lines[0].id,
+            });
 
             expect(check1Spy).toHaveBeenCalledTimes(4);
             expect(check2Spy).not.toHaveBeenCalled();
@@ -274,8 +263,8 @@ describe('ShippingMethod eligibility', () => {
 
         it('Prevents ineligible method from being assigned', async () => {
             const { setOrderShippingMethod } = await shopClient.query<
-                SetShippingMethod.Mutation,
-                SetShippingMethod.Variables
+                CodegenShop.SetShippingMethodMutation,
+                CodegenShop.SetShippingMethodMutationVariables
             >(SET_SHIPPING_METHOD, {
                 id: multiLineShippingMethod.id,
             });
@@ -295,8 +284,8 @@ describe('ShippingMethod eligibility', () => {
             // Adding a second OrderLine will make the singleLineShippingMethod
             // ineligible
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 quantity: 1,
                 productVariantId: 'T_2',
@@ -308,17 +297,17 @@ describe('ShippingMethod eligibility', () => {
             // Checked once when looking for a fallback
             expect(check2Spy).toHaveBeenCalledTimes(1);
 
-            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             // multiLineShippingMethod assigned as a fallback
             expect(activeOrder?.shippingLines?.[0]?.shippingMethod?.id).toBe(multiLineShippingMethod.id);
 
-            await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                ADJUST_ITEM_QUANTITY,
-                {
-                    quantity: 2,
-                    orderLineId: addItemToOrder.lines[1].id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                quantity: 2,
+                orderLineId: addItemToOrder.lines[1].id,
+            });
 
             // No longer called as singleLineShippingMethod not assigned
             expect(check1Spy).toHaveBeenCalledTimes(1);
@@ -327,8 +316,8 @@ describe('ShippingMethod eligibility', () => {
 
             // Remove the second OrderLine and make multiLineShippingMethod ineligible
             const { removeOrderLine } = await shopClient.query<
-                RemoveItemFromOrder.Mutation,
-                RemoveItemFromOrder.Variables
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
             >(REMOVE_ITEM_FROM_ORDER, {
                 orderLineId: addItemToOrder.lines[1].id,
             });
@@ -345,21 +334,27 @@ describe('ShippingMethod eligibility', () => {
     });
 
     describe('optimization via shouldRunCheck function', () => {
-        let order: UpdatedOrderFragment;
+        let order: CodegenShop.UpdatedOrderFragment;
 
         beforeAll(async () => {
             await shopClient.asAnonymousUser();
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 quantity: 1,
                 productVariantId: 'T_1',
             });
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 quantity: 1,
                 productVariantId: 'T_2',
             });
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 quantity: 1,
                 productVariantId: 'T_3',
@@ -367,22 +362,22 @@ describe('ShippingMethod eligibility', () => {
             orderGuard.assertSuccess(addItemToOrder);
             order = addItemToOrder;
 
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '42 Test Street',
-                        city: 'Doncaster',
-                        postalCode: 'DN1 4EE',
-                        countryCode: 'GB',
-                    },
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '42 Test Street',
+                    city: 'Doncaster',
+                    postalCode: 'DN1 4EE',
+                    countryCode: 'GB',
                 },
-            );
+            });
         });
 
         it('runs check on getEligibleShippingMethods', async () => {
             check3Spy.mockClear();
-            const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+            const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
                 GET_ELIGIBLE_SHIPPING_METHODS,
             );
 
@@ -391,25 +386,25 @@ describe('ShippingMethod eligibility', () => {
 
         it('does not re-run check on setting shipping method', async () => {
             check3Spy.mockClear();
-            await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
-                SET_SHIPPING_METHOD,
-                {
-                    id: optimizedShippingMethod.id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.SetShippingMethodMutation,
+                CodegenShop.SetShippingMethodMutationVariables
+            >(SET_SHIPPING_METHOD, {
+                id: optimizedShippingMethod.id,
+            });
             expect(check3Spy).toHaveBeenCalledTimes(0);
         });
 
         it('does not re-run check when changing cart contents', async () => {
             check3Spy.mockClear();
 
-            await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                ADJUST_ITEM_QUANTITY,
-                {
-                    quantity: 3,
-                    orderLineId: order.lines[0].id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                quantity: 3,
+                orderLineId: order.lines[0].id,
+            });
 
             expect(check3Spy).toHaveBeenCalledTimes(0);
         });
@@ -418,37 +413,37 @@ describe('ShippingMethod eligibility', () => {
             check3Spy.mockClear();
             // Update the shipping address, causing the `shouldRunCheck` function
             // to trigger a check
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '43 Test Street', // This line changed
-                        city: 'Doncaster',
-                        postalCode: 'DN1 4EE',
-                        countryCode: 'GB',
-                    },
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '43 Test Street', // This line changed
+                    city: 'Doncaster',
+                    postalCode: 'DN1 4EE',
+                    countryCode: 'GB',
                 },
-            );
+            });
 
-            await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                ADJUST_ITEM_QUANTITY,
-                {
-                    quantity: 2,
-                    orderLineId: order.lines[0].id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                quantity: 2,
+                orderLineId: order.lines[0].id,
+            });
 
             expect(check3Spy).toHaveBeenCalledTimes(1);
 
             // Does not check a second time though, since the shipping address
             // is now the same as on the last check.
-            await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                ADJUST_ITEM_QUANTITY,
-                {
-                    quantity: 3,
-                    orderLineId: order.lines[0].id,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                quantity: 3,
+                orderLineId: order.lines[0].id,
+            });
 
             expect(check3Spy).toHaveBeenCalledTimes(1);
         });

@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 
 import { Extension, TranslationExtension, Translations } from './types';
@@ -10,9 +10,9 @@ import { logger } from './utils';
  * Given an array of extensions, returns a map of languageCode to all files specified by the
  * configured globs.
  */
-export function getAllTranslationFiles(
-    extensions: TranslationExtension[],
-): { [languageCode in LanguageCode]?: string[] } {
+export function getAllTranslationFiles(extensions: TranslationExtension[]): {
+    [languageCode in LanguageCode]?: string[];
+} {
     // First collect all globs by language
     const allTranslationsWithGlobs: { [languageCode in LanguageCode]?: string[] } = {};
     for (const extension of extensions) {
@@ -22,7 +22,7 @@ export function getAllTranslationFiles(
                 if (!allTranslationsWithGlobs[code]) {
                     allTranslationsWithGlobs[code] = [globPattern];
                 } else {
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     allTranslationsWithGlobs[code]!.push(globPattern);
                 }
             }
@@ -38,8 +38,8 @@ export function getAllTranslationFiles(
             continue;
         }
         for (const pattern of globs) {
-            const files = glob.sync(pattern);
-            // tslint:disable-next-line:no-non-null-assertion
+            const files = globSync(pattern);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             allTranslationsWithFiles[code]!.push(...files);
         }
     }
@@ -69,7 +69,7 @@ export async function mergeExtensionTranslations(
             await fs.copy(translationFile, translationBackupFile);
             try {
                 translations = await fs.readJson(translationFile);
-            } catch (e) {
+            } catch (e: any) {
                 logger.error(`Could not load translation file: ${translationFile}`);
                 logger.error(e);
             }
@@ -79,7 +79,7 @@ export async function mergeExtensionTranslations(
             try {
                 const contents = await fs.readJson(file);
                 translations = mergeTranslations(translations, contents);
-            } catch (e) {
+            } catch (e: any) {
                 logger.error(`Could not load translation file: ${translationFile}`);
                 logger.error(e);
             }

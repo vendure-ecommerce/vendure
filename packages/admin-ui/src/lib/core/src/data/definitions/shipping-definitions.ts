@@ -27,27 +27,6 @@ export const SHIPPING_METHOD_FRAGMENT = gql`
     ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
-export const GET_SHIPPING_METHOD_LIST = gql`
-    query GetShippingMethodList($options: ShippingMethodListOptions) {
-        shippingMethods(options: $options) {
-            items {
-                ...ShippingMethod
-            }
-            totalItems
-        }
-    }
-    ${SHIPPING_METHOD_FRAGMENT}
-`;
-
-export const GET_SHIPPING_METHOD = gql`
-    query GetShippingMethod($id: ID!) {
-        shippingMethod(id: $id) {
-            ...ShippingMethod
-        }
-    }
-    ${SHIPPING_METHOD_FRAGMENT}
-`;
-
 export const GET_SHIPPING_METHOD_OPERATIONS = gql`
     query GetShippingMethodOperations {
         shippingEligibilityCheckers {
@@ -84,6 +63,15 @@ export const UPDATE_SHIPPING_METHOD = gql`
 export const DELETE_SHIPPING_METHOD = gql`
     mutation DeleteShippingMethod($id: ID!) {
         deleteShippingMethod(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_SHIPPING_METHODS = gql`
+    mutation DeleteShippingMethods($ids: [ID!]!) {
+        deleteShippingMethods(ids: $ids) {
             result
             message
         }

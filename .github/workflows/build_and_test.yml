@@ -14,7 +14,7 @@ on:
       - minor
 env:
   CI: true
-  node: 14.x
+  node: 18.x
 jobs:
   build:
     name: build
@@ -25,15 +25,15 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.node }}
-    - uses: actions/cache@v3
-      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-      with:
-        path: '**/node_modules'
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+#    - uses: actions/cache@v3
+#      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+#      with:
+#        path: '**/node_modules'
+#        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+#        restore-keys: |
+#          ${{ runner.os }}-yarn-
     - name: Yarn install
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
+#      if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install
     - name: Build
       run: |
@@ -48,15 +48,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node }}
-      - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+#      - uses: actions/cache@v3
+#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+#        with:
+#          path: '**/node_modules'
+#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-yarn-
       - name: Yarn install
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
+#        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --prefer-offline
       - name: Build
         run: |
@@ -108,6 +108,7 @@ jobs:
           - 9200
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
+      fail-fast: false
       matrix:
         db: [sqljs, mariadb, mysql, postgres]
     steps:
@@ -116,15 +117,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node }}
-      - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+#      - uses: actions/cache@v3
+#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+#        with:
+#          path: '**/node_modules'
+#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-yarn-
       - name: Yarn install
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
+#        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --prefer-offline
       - name: Build
         run: |

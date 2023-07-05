@@ -97,7 +97,7 @@ import { BullMQPluginOptions } from './types';
  * };
  * ```
  *
- * @docsCategory job-queue-plugin
+ * @docsCategory core plugins/JobQueuePlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -111,6 +111,7 @@ import { BullMQPluginOptions } from './types';
         { provide: BULLMQ_PLUGIN_OPTIONS, useFactory: () => BullMQJobQueuePlugin.options },
         RedisHealthIndicator,
     ],
+    compatibility: '^2.0.0',
 })
 export class BullMQJobQueuePlugin {
     static options: BullMQPluginOptions;

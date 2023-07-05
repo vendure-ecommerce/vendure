@@ -4,7 +4,7 @@ import {
     Column,
     ColumnOptions,
     ColumnType,
-    ConnectionOptions,
+    DataSourceOptions,
     Index,
     JoinColumn,
     JoinTable,
@@ -24,8 +24,6 @@ import {
     CustomChannelFields,
     CustomCollectionFields,
     CustomCollectionFieldsTranslation,
-    CustomCountryFields,
-    CustomCountryFieldsTranslation,
     CustomCustomerFields,
     CustomCustomerGroupFields,
     CustomFacetFields,
@@ -46,8 +44,12 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomPromotionFields,
+    CustomRegionFields,
+    CustomRegionFieldsTranslation,
+    CustomSellerFields,
     CustomShippingMethodFields,
     CustomShippingMethodFieldsTranslation,
+    CustomStockLocationFields,
     CustomTaxCategoryFields,
     CustomTaxRateFields,
     CustomUserFields,
@@ -65,7 +67,7 @@ const MAX_STRING_LENGTH = 65535;
 function registerCustomFieldsForEntity(
     config: VendureConfig,
     entityName: keyof CustomFields,
-    // tslint:disable-next-line:callable-types
+    // eslint-disable-next-line @typescript-eslint/prefer-function-type
     ctor: { new (): any },
     translation = false,
 ) {
@@ -96,7 +98,8 @@ function registerCustomFieldsForEntity(
                         const length = customField.length || 255;
                         if (MAX_STRING_LENGTH < length) {
                             throw new Error(
-                                `ERROR: The "length" property of the custom field "${customField.name}" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
+                                `ERROR: The "length" property of the custom field "${customField.name}" is ` +
+                                    `greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
                             );
                         }
                         options.length = length;
@@ -135,11 +138,11 @@ function registerCustomFieldsForEntity(
             };
 
             if (translation) {
-                if (customField.type === 'localeString') {
+                if (customField.type === 'localeString' || customField.type === 'localeText') {
                     registerColumn();
                 }
             } else {
-                if (customField.type !== 'localeString') {
+                if (customField.type !== 'localeString' && customField.type !== 'localeText') {
                     registerColumn();
                 }
             }
@@ -166,7 +169,7 @@ function registerCustomFieldsForEntity(
     }
 }
 
-function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: any): Date | string {
+function formatDefaultDatetime(dbEngine: DataSourceOptions['type'], datetime: any): Date | string {
     if (!datetime) {
         return datetime;
     }
@@ -183,7 +186,7 @@ function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: an
 }
 
 function getColumnType(
-    dbEngine: ConnectionOptions['type'],
+    dbEngine: DataSourceOptions['type'],
     type: Exclude<CustomFieldType, 'relation'>,
 ): ColumnType {
     switch (type) {
@@ -191,6 +194,7 @@ function getColumnType(
         case 'localeString':
             return 'varchar';
         case 'text':
+        case 'localeText':
             switch (dbEngine) {
                 case 'mysql':
                 case 'mariadb':
@@ -229,7 +233,7 @@ function getColumnType(
     return 'varchar';
 }
 
-function getDefault(customField: CustomFieldConfig, dbEngine: ConnectionOptions['type']) {
+function getDefault(customField: CustomFieldConfig, dbEngine: DataSourceOptions['type']) {
     const { name, type, list, defaultValue, nullable } = customField;
     if (list && defaultValue) {
         if (dbEngine === 'mysql') {
@@ -256,8 +260,6 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFields);
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Channel', CustomChannelFields);
-    registerCustomFieldsForEntity(config, 'Country', CustomCountryFields);
-    registerCustomFieldsForEntity(config, 'Country', CustomCountryFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Customer', CustomCustomerFields);
     registerCustomFieldsForEntity(config, 'CustomerGroup', CustomCustomerGroupFields);
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFields);
@@ -286,7 +288,11 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'TaxRate', CustomTaxRateFields);
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
+    registerCustomFieldsForEntity(config, 'Region', CustomRegionFields);
+    registerCustomFieldsForEntity(config, 'Region', CustomRegionFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'Seller', CustomSellerFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'StockLocation', CustomStockLocationFields);
     registerCustomFieldsForEntity(config, 'Zone', CustomZoneFields);
 }

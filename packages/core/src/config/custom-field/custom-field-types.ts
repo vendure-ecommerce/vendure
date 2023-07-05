@@ -5,6 +5,7 @@ import {
     FloatCustomFieldConfig as GraphQLFloatCustomFieldConfig,
     IntCustomFieldConfig as GraphQLIntCustomFieldConfig,
     LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
+    LocaleTextCustomFieldConfig as GraphQLLocaleTextCustomFieldConfig,
     LocalizedString,
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
@@ -23,7 +24,7 @@ import { VendureEntity } from '../../entity/base/base.entity';
 
 // prettier-ignore
 export type DefaultValueType<T extends CustomFieldType> =
-    T extends 'string' | 'localeString' ? string :
+    T extends 'string' | 'localeString' | 'text' | 'localeText' ? string :
         T extends 'int' | 'float' ? number :
             T extends 'boolean' ? boolean :
                 T extends 'datetime' ? Date :
@@ -84,6 +85,10 @@ export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<
     GraphQLLocaleStringCustomFieldConfig
 >;
 export type TextCustomFieldConfig = TypedCustomFieldConfig<'text', GraphQLTextCustomFieldConfig>;
+export type LocaleTextCustomFieldConfig = TypedCustomFieldConfig<
+    'localeText',
+    GraphQLLocaleTextCustomFieldConfig
+>;
 export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCustomFieldConfig>;
 export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
 export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;
@@ -103,6 +108,7 @@ export type CustomFieldConfig =
     | StringCustomFieldConfig
     | LocaleStringCustomFieldConfig
     | TextCustomFieldConfig
+    | LocaleTextCustomFieldConfig
     | IntCustomFieldConfig
     | FloatCustomFieldConfig
     | BooleanCustomFieldConfig
@@ -202,7 +208,6 @@ export interface CustomFields {
     Asset?: CustomFieldConfig[];
     Channel?: CustomFieldConfig[];
     Collection?: CustomFieldConfig[];
-    Country?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
     CustomerGroup?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];
@@ -217,7 +222,10 @@ export interface CustomFields {
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
+    Region?: CustomFieldConfig[];
+    Seller?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
+    StockLocation?: CustomFieldConfig[];
     TaxCategory?: CustomFieldConfig[];
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];

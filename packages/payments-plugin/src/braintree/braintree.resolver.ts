@@ -34,13 +34,13 @@ export class BraintreeResolver {
     ) {
         if (orderId) {
             Logger.warn(
-                `The orderId argument to the generateBraintreeClientToken mutation has been deprecated and may be omitted.`,
+                'The orderId argument to the generateBraintreeClientToken mutation has been deprecated and may be omitted.',
             );
         }
         const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
         if (!sessionOrder) {
             throw new InternalServerError(
-                `Cannot generate Braintree clientToken as there is no active Order.`,
+                'Cannot generate Braintree clientToken as there is no active Order.',
             );
         }
         const order = await this.orderService.findOne(ctx, sessionOrder.id);
@@ -73,9 +73,9 @@ export class BraintreeResolver {
                         `Could not generate Braintree clientToken: ${result.message}`,
                     );
                 }
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(
-                    `Could not generate Braintree clientToken. Check the configured credentials.`,
+                    'Could not generate Braintree clientToken. Check the configured credentials.',
                     loggerCtx,
                 );
                 throw e;

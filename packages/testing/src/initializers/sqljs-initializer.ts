@@ -48,7 +48,7 @@ export class SqljsInitializer implements TestDbInitializer<SqljsConnectionOption
     }
 
     private getDbFilePath(testFileName: string) {
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const dbFileName = path.basename(testFileName) + '.sqlite';
         const dbFilePath = path.join(this.dataDir, dbFileName);
         return dbFilePath;

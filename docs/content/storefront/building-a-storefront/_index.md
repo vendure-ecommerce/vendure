@@ -12,7 +12,7 @@ One of the benefits of Vendure's headless architecture is that you can build you
 
 ## Storefront starters
 
-To get you up and running with your storefront implementation, we offer a number of integrations with popular front-end frameworks such as Next.js, Vue Storefront, Remix & Angular. See all of our [storefront integrations]({{< relref "integration" >}}).
+To get you up and running with your storefront implementation, we offer a number of integrations with popular front-end frameworks such as Remix, Angular & Qwik. See all of our [storefront integrations](https://demo.vendure.io/).
 
 ## Custom-building
 

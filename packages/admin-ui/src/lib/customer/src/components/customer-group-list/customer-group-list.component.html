@@ -1,125 +1,106 @@
-<vdr-action-bar>
-    <vdr-ab-left>
-        <input
-            type="text"
-            name="emailSearchTerm"
-            [formControl]="searchTerm"
-            [placeholder]="'customer.search-by-group-name' | translate"
-            class="search-input"
-        />
-    </vdr-ab-left>
-    <vdr-ab-right>
-        <vdr-action-bar-items locationId="customer-group-list"></vdr-action-bar-items>
-        <button class="btn btn-primary" *vdrIfPermissions="'CreateCustomerGroup'" (click)="create()">
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'customer.create-new-customer-group' | translate }}
-        </button>
-    </vdr-ab-right>
-</vdr-action-bar>
-<div class="group-wrapper">
-    <div class="group-list">
-        <vdr-data-table
-            [class.expanded]="activeGroup$ | async"
+<vdr-page-block>
+    <vdr-action-bar>
+        <vdr-ab-left> </vdr-ab-left>
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="customer-group-list"></vdr-action-bar-items>
+            <a class="btn btn-primary" *vdrIfPermissions="'CreateCustomerGroup'" [routerLink]="['./', 'create']">
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'customer.create-new-customer-group' | translate }}
+            </a>
+        </vdr-ab-right>
+    </vdr-action-bar>
+</vdr-page-block>
+<vdr-split-view [rightPanelOpen]="activeGroup$ | async" (closeClicked)="closeMembers()">
+    <ng-template vdrSplitViewLeft>
+        <vdr-data-table-2
+            class="mt-2"
+            id="customer-group-list"
             [items]="items$ | async"
             [itemsPerPage]="itemsPerPage$ | async"
             [totalItems]="totalItems$ | async"
             [currentPage]="currentPage$ | async"
+            [filters]="filters"
+            [activeIndex]="activeIndex$ | async"
             (pageChange)="setPageNumber($event)"
             (itemsPerPageChange)="setItemsPerPage($event)"
         >
-            <ng-template let-group="item">
-                <td class="left align-middle" [class.active]="group.id === activeGroupId">
-                    <vdr-entity-info [entity]="group"></vdr-entity-info>
-                </td>
-                <td class="left align-middle" [class.active]="group.id === activeGroupId">
-                    <vdr-chip [colorFrom]="group.id">{{ group.name }}</vdr-chip>
-                </td>
-                <td class="left align-middle" [class.active]="group.id === activeGroupId">
+            <vdr-bulk-action-menu
+                locationId="customer-group-list"
+                [hostComponent]="this"
+                [selectionManager]="selectionManager"
+            ></vdr-bulk-action-menu>
+            <vdr-dt2-search
+                [searchTermControl]="searchTermControl"
+                [searchTermPlaceholder]="'common.search-by-name' | translate"
+            ></vdr-dt2-search>
+            <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+                <ng-template let-customerGroup="item">
+                    {{ customerGroup.id }}
+                </ng-template>
+            </vdr-dt2-column>
+            <vdr-dt2-column
+                [heading]="'common.created-at' | translate"
+                [hiddenByDefault]="true"
+                [sort]="sorts.get('createdAt')"
+            >
+                <ng-template let-customerGroup="item">
+                    {{ customerGroup.createdAt | localeDate : 'short' }}
+                </ng-template>
+            </vdr-dt2-column>
+            <vdr-dt2-column
+                [heading]="'common.updated-at' | translate"
+                [hiddenByDefault]="true"
+                [sort]="sorts.get('updatedAt')"
+            >
+                <ng-template let-customerGroup="item">
+                    {{ customerGroup.updatedAt | localeDate : 'short' }}
+                </ng-template>
+            </vdr-dt2-column>
+            <vdr-dt2-column
+                [heading]="'common.name' | translate"
+                [optional]="false"
+                [sort]="sorts.get('name')"
+            >
+                <ng-template let-customerGroup="item">
+                    <a class="button-ghost" [routerLink]="['./', customerGroup.id]"
+                        ><span>{{ customerGroup.name }}</span>
+                        <clr-icon shape="arrow right"></clr-icon>
+                    </a>
+                </ng-template>
+            </vdr-dt2-column>
+            <vdr-dt2-column
+                [heading]="'common.view-contents' | translate"
+                [optional]="false"
+            >
+                <ng-template let-customerGroup="item">
                     <a
-                        class="btn btn-link btn-sm"
-                        [routerLink]="['./', { contents: group.id }]"
+                        class="button-small bg-weight-150"
+                        [routerLink]="['./', { contents: customerGroup.id }]"
                         queryParamsHandling="preserve"
                     >
-                        <clr-icon shape="view-list"></clr-icon>
-                        {{ 'customer.view-group-members' | translate }}
+                        <span>{{ 'customer.view-group-members' | translate }}</span>
+                        <clr-icon shape="file-group"></clr-icon>
                     </a>
-                </td>
-                <td class="right align-middle" [class.active]="group.id === activeGroupId">
-                    <button class="btn btn-link btn-sm" (click)="update(group)">
-                        <clr-icon shape="edit"></clr-icon>
-                        {{ 'common.edit' | translate }}
-                    </button>
-                </td>
-                <td [class.active]="group.id === activeGroupId" class="align-middle">
-                    <vdr-dropdown>
-                        <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
-                            {{ 'common.actions' | translate }}
-                            <clr-icon shape="caret down"></clr-icon>
-                        </button>
-                        <vdr-dropdown-menu vdrPosition="bottom-right">
-                            <button
-                                class="button"
-                                vdrDropdownItem
-                                (click)="delete(group.id)"
-                                [disabled]="!('DeleteCustomerGroup' | hasPermission)"
-                            >
-                                <clr-icon shape="trash" class="is-danger"></clr-icon>
-                                {{ 'common.delete' | translate }}
-                            </button>
-                        </vdr-dropdown-menu>
-                    </vdr-dropdown>
-                </td>
-            </ng-template>
-        </vdr-data-table>
-    </div>
-    <ng-template #emptyPlaceholder>
-        <vdr-empty-placeholder></vdr-empty-placeholder>
+                </ng-template>
+            </vdr-dt2-column>
+        </vdr-data-table-2>
     </ng-template>
-    <div class="group-members" [class.expanded]="activeGroup$ | async">
+    <ng-template vdrSplitViewRight [splitViewTitle]="(activeGroup$ | async)?.name">
         <ng-container *ngIf="activeGroup$ | async as activeGroup">
-            <div class="flex">
-                <div class="header-title-row">{{ activeGroup.name }} ({{ membersTotal$ | async }})</div>
-                <div class="flex-spacer"></div>
-                <button type="button" class="close-button" (click)="closeMembers()">
-                    <clr-icon shape="close"></clr-icon>
-                </button>
-            </div>
-            <div class="controls">
-                <vdr-dropdown>
-                    <button
-                        type="button"
-                        class="btn btn-secondary btn-sm"
-                        vdrDropdownTrigger
-                        [disabled]="selectedCustomerIds.length === 0"
-                    >
-                        {{ 'common.with-selected' | translate: { count: selectedCustomerIds.length } }}
-                        <clr-icon shape="caret down"></clr-icon>
-                    </button>
-                    <vdr-dropdown-menu vdrPosition="bottom-right">
-                        <button
-                            type="button"
-                            class="delete-button"
-                            (click)="removeFromGroup(activeGroup, selectedCustomerIds)"
-                            vdrDropdownItem
-                            [disabled]="!('UpdateCustomerGroup' | hasPermission)"
-                        >
-                            <clr-icon shape="trash" class="is-danger"></clr-icon>
-                            {{ 'customer.remove-from-group' | translate }}
-                        </button>
-                    </vdr-dropdown-menu>
-                </vdr-dropdown>
-                <button class="btn btn-secondary btn-sm" (click)="addToGroup(activeGroup)">
-                    {{ 'customer.add-customers-to-group' | translate: { groupName: activeGroup.name } }}
-                </button>
-            </div>
+            <button class="button-ghost ml-4" (click)="addToGroup(activeGroup)">
+                <clr-icon shape="plus"></clr-icon>
+                <span>{{
+                    'customer.add-customers-to-group' | translate : { groupName: activeGroup.name }
+                }}</span>
+            </button>
             <vdr-customer-group-member-list
+                locationId="customer-group-members-list"
                 [members]="members$ | async"
                 [route]="route"
                 [totalItems]="membersTotal$ | async"
-                [selectedMemberIds]="selectedCustomerIds"
-                (selectionChange)="selectedCustomerIds = $event"
+                [activeGroup]="activeGroup$ | async"
                 (fetchParamsChange)="fetchGroupMembers$.next($event)"
-            ></vdr-customer-group-member-list>
+            />
         </ng-container>
-    </div>
-</div>
+    </ng-template>
+</vdr-split-view>

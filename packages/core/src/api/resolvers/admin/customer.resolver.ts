@@ -8,6 +8,7 @@ import {
     MutationDeleteCustomerAddressArgs,
     MutationDeleteCustomerArgs,
     MutationDeleteCustomerNoteArgs,
+    MutationDeleteCustomersArgs,
     MutationUpdateCustomerAddressArgs,
     MutationUpdateCustomerArgs,
     MutationUpdateCustomerNoteArgs,
@@ -130,6 +131,16 @@ export class CustomerResolver {
             });
         }
         return this.customerService.softDelete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCustomer)
+    async deleteCustomers(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteCustomersArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.deleteCustomer(ctx, { id })));
     }
 
     @Transaction()

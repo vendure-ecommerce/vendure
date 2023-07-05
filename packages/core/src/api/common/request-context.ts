@@ -1,4 +1,4 @@
-import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
@@ -43,6 +43,7 @@ export type SerializedRequestContext = {
  */
 export class RequestContext {
     private readonly _languageCode: LanguageCode;
+    private readonly _currencyCode: CurrencyCode;
     private readonly _channel: Channel;
     private readonly _session?: CachedSession;
     private readonly _isAuthorized: boolean;
@@ -60,16 +61,18 @@ export class RequestContext {
         channel: Channel;
         session?: CachedSession;
         languageCode?: LanguageCode;
+        currencyCode?: CurrencyCode;
         isAuthorized: boolean;
         authorizedAsOwnerOnly: boolean;
         translationFn?: TFunction;
     }) {
-        const { req, apiType, channel, session, languageCode, translationFn } = options;
+        const { req, apiType, channel, session, languageCode, currencyCode, translationFn } = options;
         this._req = req;
         this._apiType = apiType;
         this._channel = channel;
         this._session = session;
         this._languageCode = languageCode || (channel && channel.defaultLanguageCode);
+        this._currencyCode = currencyCode || (channel && channel.defaultCurrencyCode);
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
         this._translationFn = translationFn || (((key: string) => key) as any);
@@ -99,7 +102,7 @@ export class RequestContext {
      */
     static deserialize(ctxObject: SerializedRequestContext): RequestContext {
         return new RequestContext({
-            req: ctxObject._req as any,
+            req: ctxObject._req,
             apiType: ctxObject._apiType,
             channel: new Channel(ctxObject._channel),
             session: {
@@ -185,6 +188,10 @@ export class RequestContext {
         return this._languageCode;
     }
 
+    get currencyCode(): CurrencyCode {
+        return this._currencyCode;
+    }
+
     get session(): CachedSession | undefined {
         return this._session;
     }
@@ -219,8 +226,8 @@ export class RequestContext {
     translate(key: string, variables?: { [k: string]: any }): string {
         try {
             return this._translationFn(key, variables);
-        } catch (e) {
-            return `Translation format error: ${e.message}). Original key: ${key}`;
+        } catch (e: any) {
+            return `Translation format error: ${JSON.stringify(e.message)}). Original key: ${key}`;
         }
     }
 
@@ -242,7 +249,7 @@ export class RequestContext {
     private shallowCloneRequestObject(req: Request) {
         function copySimpleFieldsToDepth(target: any, maxDepth: number, depth: number = 0) {
             const result: any = {};
-            // tslint:disable-next-line:forin
+            // eslint-disable-next-line guard-for-in
             for (const key in target) {
                 if (key === 'host' && depth === 0) {
                     // avoid Express "deprecated: req.host" warning
@@ -250,8 +257,8 @@ export class RequestContext {
                 }
                 let val: any;
                 try {
-                    val = (target as any)[key];
-                } catch (e) {
+                    val = target[key];
+                } catch (e: any) {
                     val = String(e);
                 }
 

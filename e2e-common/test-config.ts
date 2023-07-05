@@ -8,7 +8,8 @@ import {
 } from '@vendure/testing';
 import fs from 'fs-extra';
 import path from 'path';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
+import { fileURLToPath } from 'url';
 
 import { getPackageDir } from './get-package-dir';
 
@@ -34,33 +35,14 @@ registerInitializer('postgres', new PostgresInitializer());
 registerInitializer('mysql', new MysqlInitializer());
 registerInitializer('mariadb', new MysqlInitializer());
 
-/**
- * Increase default timeout in CI because occasionally valid tests fail due to
- * timeouts.
- */
-if (process.env.CI) {
-    jest.setTimeout(30 * 1000);
-} else {
-    jest.setTimeout(15 * 1000);
-}
-
-/**
- * For local debugging of the e2e tests, we set a very long timeout value otherwise tests will
- * automatically fail for going over the 5 second default timeout.
- */
-if (process.env.E2E_DEBUG) {
-    // tslint:disable-next-line:no-console
-    console.log('E2E_DEBUG', process.env.E2E_DEBUG, ' - setting long timeout');
-    jest.setTimeout(1800 * 1000);
-}
-
 export const testConfig = () => {
-    const portsFile = path.join(__dirname, 'ports.json');
+    // @ts-ignore
+    const portsFile = fileURLToPath(new URL('ports.json', import.meta.url));
     fs.ensureFileSync(portsFile);
     let usedPorts: number[];
     try {
         usedPorts = fs.readJSONSync(portsFile) ?? [3010];
-    } catch (e) {
+    } catch (e: any) {
         usedPorts = [3010];
     }
     const nextPort = Math.max(...usedPorts) + 1;
@@ -81,7 +63,7 @@ export const testConfig = () => {
     });
 };
 
-function getDbConfig(): ConnectionOptions {
+function getDbConfig(): DataSourceOptions {
     const dbType = process.env.DB || 'sqljs';
     switch (dbType) {
         case 'postgres':

@@ -3,31 +3,28 @@
     [class.no-label]="!label"
     [class.clr-error]="formFieldControl?.formControlName?.invalid"
 >
-    <label *ngIf="label" [for]="for" class="clr-control-label">
+    <label *ngIf="label" [for]="for" class="">
         {{ label }}
-        <vdr-help-tooltip *ngIf="tooltip" [content]="tooltip"></vdr-help-tooltip>
     </label>
-    <label
-        [for]="for"
-        aria-haspopup="true"
-        role="tooltip"
+    <div *ngIf="tooltip" class="tooltip-text">
+        {{ tooltip }}
+    </div>
+    <div
+        class="input-row"
+        [class.has-toggle]="readOnlyToggle"
         [class.invalid]="formFieldControl?.touched && !formFieldControl?.valid"
-        class="tooltip tooltip-validation tooltip-sm tooltip-top-left"
     >
-        <div class="input-row" [class.has-toggle]="readOnlyToggle">
-            <ng-content></ng-content>
-            <button
-                *ngIf="readOnlyToggle"
-                type="button"
-                [disabled]="!isReadOnly"
-                [title]="'common.edit-field' | translate"
-                class="btn btn-icon edit-button"
-                (click)="setReadOnly(false)"
-            >
-                <clr-icon shape="edit"></clr-icon>
-            </button>
-        </div>
-        <div class="clr-subtext" *ngIf="getErrorMessage()">{{ getErrorMessage() }}</div>
-        <span class="tooltip-content">{{ label }} is required.</span>
-    </label>
+        <ng-content></ng-content>
+        <button
+            *ngIf="readOnlyToggle"
+            type="button"
+            [disabled]="!isReadOnly"
+            [title]="'common.edit-field' | translate"
+            class="btn btn-icon edit-button"
+            (click)="setReadOnly(false)"
+        >
+            <clr-icon shape="edit"></clr-icon>
+        </button>
+    </div>
+    <div class="error-message" *ngIf="getErrorMessage()">{{ getErrorMessage() }}</div>
 </div>

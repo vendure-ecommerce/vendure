@@ -83,12 +83,17 @@ import { HardenPluginOptions } from './types';
  * The complexity score is calculated by the [graphql-query-complexity library](https://www.npmjs.com/package/graphql-query-complexity),
  * and by default uses the {@link defaultVendureComplexityEstimator}, which is tuned specifically to the Vendure Shop API.
  *
+ * {{% alert "warning" %}}
+ * Note: By default, if the "take" argument is omitted from a list query (e.g. the `products` or `collections` query), a default factor of 1000 is applied.
+ * {{% /alert %}}
+ *
  * The optimal max complexity score will vary depending on:
  *
  * - The requirements of your storefront and other clients using the Shop API
  * - The resources available to your server
  *
- * You should aim to set the maximum as low as possible while still being able to service all the requests required. This will take some manual tuning.
+ * You should aim to set the maximum as low as possible while still being able to service all the requests required.
+ * This will take some manual tuning.
  * While tuning the max, you can turn on the `logComplexityScore` to get a detailed breakdown of the complexity of each query, as well as how
  * that total score is derived from its child fields:
  *
@@ -136,7 +141,7 @@ import { HardenPluginOptions } from './types';
  * verbose 16/12/22, 14:12 - [HardenPlugin] Query complexity [ProductList]: 35
  * ```
  *
- * @docsCategory HardenPlugin
+ * @docsCategory core plugins/HardenPlugin
  */
 @VendurePlugin({
     providers: [
@@ -147,7 +152,7 @@ import { HardenPluginOptions } from './types';
     ],
     configuration: config => {
         if (HardenPlugin.options.hideFieldSuggestions !== false) {
-            Logger.verbose(`Configuring HideValidationErrorsPlugin`, loggerCtx);
+            Logger.verbose('Configuring HideValidationErrorsPlugin', loggerCtx);
             config.apiOptions.apolloServerPlugins.push(new HideValidationErrorsPlugin());
         }
         config.apiOptions.apolloServerPlugins.push(new QueryComplexityPlugin(HardenPlugin.options));
@@ -159,6 +164,7 @@ import { HardenPluginOptions } from './types';
 
         return config;
     },
+    compatibility: '^2.0.0',
 })
 export class HardenPlugin {
     static options: HardenPluginOptions;

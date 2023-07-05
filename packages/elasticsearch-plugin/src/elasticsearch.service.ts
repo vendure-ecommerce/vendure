@@ -71,11 +71,14 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 try {
                     const pingResult = await this.client.ping({}, { requestTimeout: 1000 });
                     if (pingResult.body) {
-                        Logger.verbose(`Ping to Elasticsearch successful`, loggerCtx);
+                        Logger.verbose('Ping to Elasticsearch successful', loggerCtx);
                         return resolve();
                     }
-                } catch (e) {
-                    Logger.verbose(`Ping to Elasticsearch failed with error "${e.message}"`, loggerCtx);
+                } catch (e: any) {
+                    Logger.verbose(
+                        `Ping to Elasticsearch failed with error "${e.message as string}"`,
+                        loggerCtx,
+                    );
                 }
                 Logger.verbose(
                     `Connection to Elasticsearch could not be made, trying again after ${connectionAttemptInterval}ms (attempt ${attempts} of ${connectionAttempts})`,
@@ -83,7 +86,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 );
                 await new Promise(resolve1 => setTimeout(resolve1, connectionAttemptInterval));
             }
-            reject(`Could not connection to Elasticsearch. Aborting bootstrap.`);
+            reject('Could not connection to Elasticsearch. Aborting bootstrap.');
         });
     }
 
@@ -112,7 +115,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
                 const tempName = new Date().getTime();
                 const nameSalt = Math.random().toString(36).substring(7);
-                const tempPrefix = `temp-` + `${tempName}-${nameSalt}-`;
+                const tempPrefix = 'temp-' + `${tempName}-${nameSalt}-`;
                 const tempIndex = tempPrefix + indexName;
 
                 await createIndices(
@@ -126,13 +129,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 const tempIndexSettings = tempIndexSettingsResult.body[tempIndex].settings.index;
 
                 const indexParamsToExclude = [
-                    `routing`,
-                    `number_of_shards`,
-                    `provided_name`,
-                    `creation_date`,
-                    `number_of_replicas`,
-                    `uuid`,
-                    `version`,
+                    'routing',
+                    'number_of_shards',
+                    'provided_name',
+                    'creation_date',
+                    'number_of_replicas',
+                    'uuid',
+                    'version',
                 ];
                 for (const param of indexParamsToExclude) {
                     delete tempIndexSettings[param];
@@ -154,7 +157,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     });
                     const tempIndexMappings = tempIndexMappingsResult.body[tempIndex].mappings;
                     if (!equal(tempIndexMappings, existingIndexMappings))
-                        // tslint:disable-next-line:max-line-length
+                        // eslint-disable-next-line max-len
                         Logger.warn(
                             `Index "${index}" mapping differs from index mapping in vendure config! Consider re-indexing the data.`,
                             loggerCtx,
@@ -162,7 +165,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 }
 
                 await this.client.indices.delete({
-                    index: [tempPrefix + `variants`],
+                    index: [tempPrefix + 'variants'],
                 });
             }
         };
@@ -199,7 +202,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
                     totalItems,
                 };
-            } catch (e) {
+            } catch (e: any) {
                 if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
                     // Log runtime error of the script exception instead of stacktrace
                     Logger.error(
@@ -224,7 +227,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
                     totalItems: body.hits.total ? body.hits.total.value : 0,
                 };
-            } catch (e) {
+            } catch (e: any) {
                 if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
                     // Log runtime error of the script exception instead of stacktrace
                     Logger.error(
@@ -259,7 +262,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         elasticSearchBody.aggs = {
             total: {
                 cardinality: {
-                    field: `productId`,
+                    field: 'productId',
                 },
             },
         };
@@ -290,7 +293,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             ctx,
             input,
             enabledOnly,
-            `facetValueIds`,
+            'facetValueIds',
             this.options.searchConfig.facetValueMaxSize,
         );
 
@@ -326,7 +329,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             ctx,
             input,
             enabledOnly,
-            `collectionIds`,
+            'collectionIds',
             this.options.searchConfig.collectionMaxSize,
         );
 
@@ -380,7 +383,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             elasticSearchBody.aggs.aggregation_field.aggs = {
                 total: {
                     cardinality: {
-                        field: `productId`,
+                        field: 'productId',
                     },
                 },
             };
@@ -393,7 +396,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             body = result.body;
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
             throw e;
         }
@@ -481,8 +484,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
      */
     async reindex(ctx: RequestContext): Promise<Job> {
         const job = await this.elasticsearchIndexService.reindex(ctx);
-        // tslint:disable-next-line:no-non-null-assertion
-        return job!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return job;
     }
 
     private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
@@ -596,22 +599,22 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         if (productCustomMappings.length) {
             const customMappingsResult: any = {};
             for (const name of productCustomMappings) {
-                customMappingsResult[name] = (source as any)[`product-${name}`];
+                customMappingsResult[name] = source[`product-${name}`];
             }
-            (result as any).customProductMappings = customMappingsResult;
+            result.customProductMappings = customMappingsResult;
             if (groupByProduct) {
-                (result as any).customMappings = customMappingsResult;
+                result.customMappings = customMappingsResult;
             }
         }
         const variantCustomMappings = Object.keys(variantMappings);
         if (variantCustomMappings.length) {
             const customMappingsResult: any = {};
             for (const name of variantCustomMappings) {
-                customMappingsResult[name] = (source as any)[`variant-${name}`];
+                customMappingsResult[name] = source[`variant-${name}`];
             }
-            (result as any).customProductVariantMappings = customMappingsResult;
+            result.customProductVariantMappings = customMappingsResult;
             if (!groupByProduct) {
-                (result as any).customMappings = customMappingsResult;
+                result.customMappings = customMappingsResult;
             }
         }
         return result;
@@ -629,7 +632,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             for (const name of customMappings) {
                 const env = mappings[name].context;
                 if (env === environment || env === 'both') {
-                    const fieldVal = (fields as any)[name] || undefined;
+                    const fieldVal = fields[name] || undefined;
                     if (Array.isArray(fieldVal)) {
                         if (fieldVal.length === 1) {
                             customScriptFieldsResult[name] = fieldVal[0];
@@ -642,7 +645,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     }
                 }
             }
-            (result as any).customScriptFields = customScriptFieldsResult;
+            result.customScriptFields = customScriptFieldsResult;
         }
         return result;
     }

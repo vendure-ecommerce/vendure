@@ -1,33 +1,12 @@
-import { FetchPolicy } from '@apollo/client';
-
-import {
-    CreateAdministrator,
-    CreateAdministratorInput,
-    CreateRole,
-    CreateRoleInput,
-    DeleteAdministrator,
-    DeleteRole,
-    GetActiveAdministrator,
-    GetAdministrator,
-    GetAdministrators,
-    GetRole,
-    GetRoles,
-    UpdateActiveAdministrator,
-    UpdateActiveAdministratorInput,
-    UpdateAdministrator,
-    UpdateAdministratorInput,
-    UpdateRole,
-    UpdateRoleInput,
-} from '../../common/generated-types';
+import * as Codegen from '../../common/generated-types';
 import {
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,
     DELETE_ADMINISTRATOR,
+    DELETE_ADMINISTRATORS,
     DELETE_ROLE,
+    DELETE_ROLES,
     GET_ACTIVE_ADMINISTRATOR,
-    GET_ADMINISTRATOR,
-    GET_ADMINISTRATORS,
-    GET_ROLE,
     GET_ROLES,
     UPDATE_ACTIVE_ADMINISTRATOR,
     UPDATE_ADMINISTRATOR,
@@ -39,61 +18,47 @@ import { BaseDataService } from './base-data.service';
 export class AdministratorDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getAdministrators(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetAdministrators.Query, GetAdministrators.Variables>(
-            GET_ADMINISTRATORS,
-            {
-                options: {
-                    take,
-                    skip,
-                },
-            },
-        );
-    }
-
     getActiveAdministrator() {
-        return this.baseDataService.query<GetActiveAdministrator.Query>(GET_ACTIVE_ADMINISTRATOR, {});
+        return this.baseDataService.query<Codegen.GetActiveAdministratorQuery>(GET_ACTIVE_ADMINISTRATOR, {});
     }
 
-    getAdministrator(id: string) {
-        return this.baseDataService.query<GetAdministrator.Query, GetAdministrator.Variables>(
-            GET_ADMINISTRATOR,
-            {
-                id,
-            },
-        );
-    }
-
-    createAdministrator(input: CreateAdministratorInput) {
-        return this.baseDataService.mutate<CreateAdministrator.Mutation, CreateAdministrator.Variables>(
-            CREATE_ADMINISTRATOR,
-            { input },
-        );
-    }
-
-    updateAdministrator(input: UpdateAdministratorInput) {
-        return this.baseDataService.mutate<UpdateAdministrator.Mutation, UpdateAdministrator.Variables>(
-            UPDATE_ADMINISTRATOR,
-            { input },
-        );
-    }
-
-    updateActiveAdministrator(input: UpdateActiveAdministratorInput) {
+    createAdministrator(input: Codegen.CreateAdministratorInput) {
         return this.baseDataService.mutate<
-            UpdateActiveAdministrator.Mutation,
-            UpdateActiveAdministrator.Variables
+            Codegen.CreateAdministratorMutation,
+            Codegen.CreateAdministratorMutationVariables
+        >(CREATE_ADMINISTRATOR, { input });
+    }
+
+    updateAdministrator(input: Codegen.UpdateAdministratorInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateAdministratorMutation,
+            Codegen.UpdateAdministratorMutationVariables
+        >(UPDATE_ADMINISTRATOR, { input });
+    }
+
+    updateActiveAdministrator(input: Codegen.UpdateActiveAdministratorInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateActiveAdministratorMutation,
+            Codegen.UpdateActiveAdministratorMutationVariables
         >(UPDATE_ACTIVE_ADMINISTRATOR, { input });
     }
 
     deleteAdministrator(id: string) {
-        return this.baseDataService.mutate<DeleteAdministrator.Mutation, DeleteAdministrator.Variables>(
-            DELETE_ADMINISTRATOR,
-            { id },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteAdministratorMutation,
+            Codegen.DeleteAdministratorMutationVariables
+        >(DELETE_ADMINISTRATOR, { id });
     }
 
-    getRoles(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetRoles.Query, GetRoles.Variables>(GET_ROLES, {
+    deleteAdministrators(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteAdministratorsMutation,
+            Codegen.DeleteAdministratorsMutationVariables
+        >(DELETE_ADMINISTRATORS, { ids });
+    }
+
+    getRoles(take = 10, skip = 0) {
+        return this.baseDataService.query<Codegen.GetRolesQuery, Codegen.GetRolesQueryVariables>(GET_ROLES, {
             options: {
                 take,
                 skip,
@@ -101,19 +66,39 @@ export class AdministratorDataService {
         });
     }
 
-    getRole(id: string) {
-        return this.baseDataService.query<GetRole.Query, GetRole.Variables>(GET_ROLE, { id });
+    createRole(input: Codegen.CreateRoleInput) {
+        return this.baseDataService.mutate<Codegen.CreateRoleMutation, Codegen.CreateRoleMutationVariables>(
+            CREATE_ROLE,
+            {
+                input,
+            },
+        );
     }
 
-    createRole(input: CreateRoleInput) {
-        return this.baseDataService.mutate<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, { input });
-    }
-
-    updateRole(input: UpdateRoleInput) {
-        return this.baseDataService.mutate<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, { input });
+    updateRole(input: Codegen.UpdateRoleInput) {
+        return this.baseDataService.mutate<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
+            UPDATE_ROLE,
+            {
+                input,
+            },
+        );
     }
 
     deleteRole(id: string) {
-        return this.baseDataService.mutate<DeleteRole.Mutation, DeleteRole.Variables>(DELETE_ROLE, { id });
+        return this.baseDataService.mutate<Codegen.DeleteRoleMutation, Codegen.DeleteRoleMutationVariables>(
+            DELETE_ROLE,
+            {
+                id,
+            },
+        );
+    }
+
+    deleteRoles(ids: string[]) {
+        return this.baseDataService.mutate<Codegen.DeleteRolesMutation, Codegen.DeleteRolesMutationVariables>(
+            DELETE_ROLES,
+            {
+                ids,
+            },
+        );
     }
 }

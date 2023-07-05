@@ -94,11 +94,10 @@ export class EntityHydrator {
             }
 
             if (missingRelations.length) {
-                const hydrated = await this.connection
-                    .getRepository(ctx, target.constructor)
-                    .findOne(target.id, {
-                        relations: missingRelations,
-                    });
+                const hydrated = await this.connection.getRepository(ctx, target.constructor).findOne({
+                    where: { id: target.id },
+                    relations: missingRelations,
+                });
                 const propertiesToAdd = unique(missingRelations.map(relation => relation.split('.')[0]));
                 for (const prop of propertiesToAdd) {
                     (target as any)[prop] = this.mergeDeep((target as any)[prop], (hydrated as any)[prop]);

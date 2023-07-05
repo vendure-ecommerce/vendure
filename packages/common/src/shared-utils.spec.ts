@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { generateAllCombinations, isClassInstance } from './shared-utils';
 
 describe('generateAllCombinations()', () => {
@@ -12,7 +14,10 @@ describe('generateAllCombinations()', () => {
     });
 
     it('works with an input of length 2', () => {
-        const result = generateAllCombinations([['red', 'green', 'blue'], ['small', 'large']]);
+        const result = generateAllCombinations([
+            ['red', 'green', 'blue'],
+            ['small', 'large'],
+        ]);
         expect(result).toEqual([
             ['red', 'small'],
             ['red', 'large'],
@@ -33,7 +38,7 @@ describe('isClassInstance()', () => {
     it('returns true for class instances', () => {
         expect(isClassInstance(new Date())).toBe(true);
         expect(isClassInstance(new Foo())).toBe(true);
-        // tslint:disable-next-line:no-construct
+        // eslint-disable-next-line no-new-wrappers
         expect(isClassInstance(new Number(1))).toBe(true);
     });
 

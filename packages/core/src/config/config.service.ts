@@ -1,10 +1,10 @@
 import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { Logger, VendureLogger } from './logger/vendure-logger';
 import {
     ApiOptions,
@@ -31,7 +31,7 @@ export class ConfigService implements VendureConfig {
     constructor() {
         this.activeConfig = getConfig();
         if (this.activeConfig.authOptions.disableAuth) {
-            // tslint:disable-next-line
+            // eslint-disable-next-line
             Logger.warn('Auth has been disabled. This should never be the case for a production system!');
         }
     }
@@ -68,7 +68,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.assetOptions;
     }
 
-    get dbConnectionOptions(): ConnectionOptions {
+    get dbConnectionOptions(): DataSourceOptions {
         return this.activeConfig.dbConnectionOptions;
     }
 
@@ -81,7 +81,7 @@ export class ConfigService implements VendureConfig {
     }
 
     get orderOptions(): Required<OrderOptions> {
-        return this.activeConfig.orderOptions as Required<OrderOptions>;
+        return this.activeConfig.orderOptions;
     }
 
     get paymentOptions(): Required<PaymentOptions> {

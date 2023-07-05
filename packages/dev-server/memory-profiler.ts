@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint-disable */
 /**
  * Used to profile peak memory usage for perf optimization purposes
  *

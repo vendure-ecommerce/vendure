@@ -1,23 +1,31 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     CreateRoleInput,
     DataService,
+    GetRoleDetailDocument,
     LanguageCode,
     NotificationService,
     Permission,
-    PermissionDefinition,
     Role,
-    ServerConfigService,
+    ROLE_FRAGMENT,
+    TypedBaseDetailComponent,
     UpdateRoleInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { unique } from '@vendure/common/lib/unique';
-import { Observable } from 'rxjs';
+import { gql } from 'apollo-angular';
 import { mergeMap, take } from 'rxjs/operators';
+
+export const GET_ROLE_DETAIL = gql`
+    query GetRoleDetail($id: ID!) {
+        role(id: $id) {
+            ...Role
+        }
+    }
+    ${ROLE_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-role-detail',
@@ -25,32 +33,28 @@ import { mergeMap, take } from 'rxjs/operators';
     styleUrls: ['./role-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoleDetailComponent extends BaseDetailComponent<Role> implements OnInit, OnDestroy {
-    role$: Observable<Role>;
-    detailForm: FormGroup;
-    permissionDefinitions: PermissionDefinition[];
+export class RoleDetailComponent
+    extends TypedBaseDetailComponent<typeof GetRoleDetailDocument, 'role'>
+    implements OnInit, OnDestroy
+{
+    detailForm = this.formBuilder.group({
+        code: ['', Validators.required],
+        description: ['', Validators.required],
+        channelIds: [[] as string[]],
+        permissions: [[] as Permission[]],
+    });
+    permissionDefinitions = this.serverConfigService.getPermissionDefinitions();
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.detailForm = this.formBuilder.group({
-            code: ['', Validators.required],
-            description: ['', Validators.required],
-            channelIds: [],
-            permissions: [],
-        });
+        super();
     }
 
     ngOnInit() {
         this.init();
-        this.role$ = this.entity$;
-        this.permissionDefinitions = this.serverConfigService.getPermissionDefinitions();
     }
 
     ngOnDestroy(): void {
@@ -68,18 +72,27 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         const permissionsControl = this.detailForm.get('permissions');
         if (permissionsControl) {
             const currentPermissions = permissionsControl.value as string[];
-            const newValue =
+            const newValue = (
                 change.value === true
                     ? unique([...currentPermissions, change.permission])
-                    : currentPermissions.filter(p => p !== change.permission);
+                    : currentPermissions.filter(p => p !== change.permission)
+            ) as Permission[];
             permissionsControl.setValue(newValue);
             permissionsControl.markAsDirty();
         }
     }
 
     create() {
-        const formValue = this.detailForm.value;
-        const role: CreateRoleInput = formValue;
+        const { code, description, permissions, channelIds } = this.detailForm.value;
+        if (!code || !description) {
+            return;
+        }
+        const role: CreateRoleInput = {
+            code,
+            description,
+            permissions: permissions ?? [],
+            channelIds,
+        };
         this.dataService.administrator.createRole(role).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), { entity: 'Role' });
@@ -96,7 +109,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     }
 
     save() {
-        this.role$
+        this.entity$
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {

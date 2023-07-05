@@ -1,10 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/generated-types';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
+import { ensureConfigLoaded } from '../../../config/config-helpers';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
@@ -15,7 +17,6 @@ import {
     TaxLineCalculationStrategy,
 } from '../../../config/tax/tax-line-calculation-strategy';
 import { Promotion } from '../../../entity';
-import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
@@ -42,6 +43,7 @@ describe('OrderCalculator', () => {
     let orderCalculator: OrderCalculator;
 
     beforeAll(async () => {
+        await ensureConfigLoaded();
         const module = await createTestModule();
         orderCalculator = module.get(OrderCalculator);
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
@@ -240,7 +242,7 @@ describe('OrderCalculator', () => {
             code: 'percentage_item_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: { discount: { type: 'int' } },
-            async execute(ctx, orderItem, orderLine, args) {
+            async execute(ctx, orderLine, args) {
                 const unitPrice = ctx.channel.pricesIncludeTax
                     ? orderLine.unitPriceWithTax
                     : orderLine.unitPrice;
@@ -508,13 +510,7 @@ describe('OrderCalculator', () => {
 
                     // increase the quantity to 2, which will take the total over the minimum set by the
                     // condition.
-                    order.lines[0].items.push(
-                        new OrderItem({
-                            listPrice: 500,
-                            taxLines: [],
-                            adjustments: [],
-                        }),
-                    );
+                    order.lines[0].quantity = 2;
 
                     await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
@@ -546,14 +542,7 @@ describe('OrderCalculator', () => {
 
                     // increase the quantity to 2, which will take the total over the minimum set by the
                     // condition.
-                    order.lines[0].items.push(
-                        new OrderItem({
-                            listPrice: 500,
-                            listPriceIncludesTax: true,
-                            taxLines: [],
-                            adjustments: [],
-                        }),
-                    );
+                    order.lines[0].quantity = 2;
 
                     await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
@@ -867,7 +856,7 @@ describe('OrderCalculator', () => {
 
                 // increase the quantity to 3, which will trigger the first promotion and thus
                 // bring the order total below the threshold for the second promotion.
-                order.lines[0].items.push(new OrderItem({ listPrice: 500, taxLines: [], adjustments: [] }));
+                order.lines[0].quantity = 3;
 
                 await orderCalculator.applyPriceAdjustments(
                     ctx,
@@ -910,14 +899,7 @@ describe('OrderCalculator', () => {
                     assertOrderTotalsAddUp(order);
 
                     // increase the quantity to 3, which will trigger both promotions
-                    order.lines[0].items.push(
-                        new OrderItem({
-                            listPrice: 800,
-                            listPriceIncludesTax: false,
-                            taxLines: [],
-                            adjustments: [],
-                        }),
-                    );
+                    order.lines[0].quantity = 3;
 
                     await orderCalculator.applyPriceAdjustments(
                         ctx,
@@ -1055,8 +1037,8 @@ describe('OrderCalculator', () => {
                     code: 'percentage_item_action',
                     description: [{ languageCode: LanguageCode.en, value: '' }],
                     args: { discount: { type: 'int' } },
-                    async execute(ctx, orderItem, orderLine, args) {
-                        if (orderItem.listPrice === 1000) {
+                    async execute(ctx, orderLine, args) {
+                        if (orderLine.listPrice === 1000) {
                             const unitPrice = ctx.channel.pricesIncludeTax
                                 ? orderLine.unitPriceWithTax
                                 : orderLine.unitPrice;
@@ -1156,10 +1138,48 @@ describe('OrderCalculator', () => {
                         fifteenPcOff$10Items,
                         $5OffOrderPromo,
                     ]);
+                    // console.table([
+                    //     {
+                    //         unitPrice: order.lines[0].unitPrice,
+                    //         linePrice: order.lines[0].linePrice,
+                    //         linePriceWithTax: order.lines[0].linePriceWithTax,
+                    //         discountedLinePrice: order.lines[0].discountedLinePrice,
+                    //         discountedLinePriceWithTax: order.lines[0].discountedLinePriceWithTax,
+                    //         proratedUnitPriceWithTax: order.lines[0].proratedUnitPriceWithTax,
+                    //         proratedLinePriceWithTax: order.lines[0].proratedLinePriceWithTax,
+                    //     },
+                    //     {
+                    //         unitPrice: order.lines[1].unitPrice,
+                    //         linePrice: order.lines[1].linePrice,
+                    //         linePriceWithTax: order.lines[1].linePriceWithTax,
+                    //         discountedLinePrice: order.lines[1].discountedLinePrice,
+                    //         discountedLinePriceWithTax: order.lines[1].discountedLinePriceWithTax,
+                    //         proratedUnitPriceWithTax: order.lines[1].proratedUnitPriceWithTax,
+                    //         proratedLinePriceWithTax: order.lines[1].proratedLinePriceWithTax,
+                    //     },
+                    //     {
+                    //         unitPrice: order.lines[2].unitPrice,
+                    //         linePrice: order.lines[2].linePrice,
+                    //         linePriceWithTax: order.lines[2].linePriceWithTax,
+                    //         discountedLinePrice: order.lines[2].discountedLinePrice,
+                    //         discountedLinePriceWithTax: order.lines[2].discountedLinePriceWithTax,
+                    //         proratedUnitPriceWithTax: order.lines[2].proratedUnitPriceWithTax,
+                    //         proratedLinePriceWithTax: order.lines[2].proratedLinePriceWithTax,
+                    //     },
+                    // ]);
 
-                    expect(order.subTotal).toBe(5082);
-                    expect(order.subTotalWithTax).toBe(5719);
-                    assertOrderTotalsAddUp(order);
+                    // Note: This combination produces slight discrepancies when using the rounding method
+                    // of the DefaultMoneyStrategy - i.e. "round then multiply". When using a strategy
+                    // of "multiply then round", we would expect the following:
+                    // ```
+                    // expect(order.subTotal).toBe(5082);
+                    // expect(order.subTotalWithTax).toBe(5719);
+                    // assertOrderTotalsAddUp(order);
+                    // ```
+                    // However, there is always a tradeoff when using integer precision with compounding
+                    // fractional multiplication.
+                    expect(order.subTotal).toBe(5079);
+                    expect(order.subTotalWithTax).toBe(5722);
                 });
             });
         });
@@ -1591,7 +1611,7 @@ function createTestModule() {
             { provide: ListQueryBuilder, useValue: {} },
             { provide: ConfigService, useClass: MockConfigService },
             { provide: EventBus, useValue: { publish: () => ({}) } },
-            { provide: ZoneService, useValue: { findAll: () => [] } },
+            { provide: ZoneService, useValue: { getAllWithMembers: () => [] } },
         ],
     }).compile();
 }
@@ -1601,12 +1621,7 @@ function createTestModule() {
  */
 function assertOrderTotalsAddUp(order: Order) {
     for (const line of order.lines) {
-        const itemUnitPriceSum = summate(line.items, 'unitPrice');
-        expect(line.linePrice).toBe(itemUnitPriceSum);
-        const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
-        expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
-
-        const pricesIncludeTax = line.firstItem?.listPriceIncludesTax;
+        const pricesIncludeTax = line.listPriceIncludesTax;
 
         if (pricesIncludeTax) {
             const lineDiscountsAmountWithTaxSum = summate(line.discounts, 'amountWithTax');

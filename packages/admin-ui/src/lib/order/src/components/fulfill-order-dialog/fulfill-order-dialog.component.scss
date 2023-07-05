@@ -1,9 +1,12 @@
 @import "variables";
+@import "../order-table/order-table-mixin";
+
 
 :host {
     height: 100%;
     display: flex;
     min-height: 64vh;
+    @include order-table;
 }
 .fulfillment-wrapper {
     flex: 1;

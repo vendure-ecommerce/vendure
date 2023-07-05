@@ -1,18 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { UntypedFormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
-    CustomFieldConfig,
     DataService,
     DeletionResult,
     DraftOrderEligibleShippingMethodsQuery,
     ModalService,
     NotificationService,
     Order,
-    OrderDetail,
-    ServerConfigService,
+    OrderDetailFragment,
+    OrderDetailQueryDocument,
+    TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
@@ -29,30 +27,27 @@ import { SelectShippingMethodDialogComponent } from '../select-shipping-method-d
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DraftOrderDetailComponent
-    extends BaseDetailComponent<OrderDetail.Fragment>
+    extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>
     implements OnInit, OnDestroy
 {
-    detailForm = new FormGroup({});
+    customFields = this.getCustomFieldConfig('Order');
+    orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
+    detailForm = new UntypedFormGroup({});
     eligibleShippingMethods$: Observable<
         DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder']
     >;
     nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();
-    customFields: CustomFieldConfig[];
-    orderLineCustomFields: CustomFieldConfig[];
     displayCouponCodeInput = false;
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
         private orderTransitionService: OrderTransitionService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {
@@ -67,8 +62,6 @@ export class DraftOrderDetailComponent
                     ),
             ),
         );
-        this.customFields = this.getCustomFieldConfig('Order');
-        this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
     }
 
     ngOnDestroy() {
@@ -126,14 +119,14 @@ export class DraftOrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(SelectAddressDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(SelectAddressDialogComponent, {
                         locals: {
                             customerId: order.customer?.id,
                             currentAddress: order.shippingAddress ?? undefined,
                         },
-                    });
-                }),
+                    }),
+                ),
             )
             .subscribe(result => {
                 if (result) {
@@ -146,14 +139,14 @@ export class DraftOrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(SelectAddressDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(SelectAddressDialogComponent, {
                         locals: {
                             customerId: order.customer?.id,
                             currentAddress: order.billingAddress ?? undefined,
                         },
-                    });
-                }),
+                    }),
+                ),
             )
             .subscribe(result => {
                 if (result) {
@@ -229,7 +222,7 @@ export class DraftOrderDetailComponent
         return typeof input === 'object' && !!input.id;
     }
 
-    protected setFormValues(entity: Order.Fragment): void {
+    protected setFormValues(entity: OrderDetailFragment): void {
         // empty
     }
 }

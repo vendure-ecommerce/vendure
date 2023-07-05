@@ -1,6 +1,6 @@
 @import 'order-table-mixin';
 
-.order-table {
+:host {
     @include order-table;
 }
 

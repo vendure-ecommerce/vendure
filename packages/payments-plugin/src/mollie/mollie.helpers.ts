@@ -37,18 +37,20 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
         vatRate: String(line.taxRate),
         vatAmount: toAmount(
             calculateLineTaxAmount(line.taxRate, line.proratedLinePriceWithTax),
-            order.currencyCode
+            order.currencyCode,
         ),
     }));
     // Add shippingLines
-    lines.push(...order.shippingLines.map(line => ({
-        name: line.shippingMethod?.name || 'Shipping',
-        quantity: 1,
-        unitPrice: toAmount(line.discountedPriceWithTax, order.currencyCode),
-        totalAmount: toAmount(line.discountedPriceWithTax, order.currencyCode),
-        vatRate: String(line.taxRate),
-        vatAmount: toAmount(line.discountedPriceWithTax - line.discountedPrice, order.currencyCode),
-    })));
+    lines.push(
+        ...order.shippingLines.map(line => ({
+            name: line.shippingMethod?.name || 'Shipping',
+            quantity: 1,
+            unitPrice: toAmount(line.discountedPriceWithTax, order.currencyCode),
+            totalAmount: toAmount(line.discountedPriceWithTax, order.currencyCode),
+            vatRate: String(line.taxRate),
+            vatAmount: toAmount(line.discountedPriceWithTax - line.discountedPrice, order.currencyCode),
+        })),
+    );
     // Add surcharges
     lines.push(...order.surcharges.map(surcharge => ({
         name: surcharge.description,
@@ -103,14 +105,41 @@ export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: n
  * If both lookups fail, resolve to en_US to prevent payment failure
  */
 export function getLocale(countryCode: string, channelLanguage: string): string {
-    const allowedLocales = ['en_US', 'en_GB', 'nl_NL', 'nl_BE', 'fr_FR', 'fr_BE', 'de_DE', 'de_AT', 'de_CH', 'es_ES', 'ca_ES', 'pt_PT', 'it_IT', 'nb_NO', 'sv_SE', 'fi_FI', 'da_DK', 'is_IS', 'hu_HU', 'pl_PL', 'lv_LV', 'lt_LT'];
+    const allowedLocales = [
+        'en_US',
+        'en_GB',
+        'nl_NL',
+        'nl_BE',
+        'fr_FR',
+        'fr_BE',
+        'de_DE',
+        'de_AT',
+        'de_CH',
+        'es_ES',
+        'ca_ES',
+        'pt_PT',
+        'it_IT',
+        'nb_NO',
+        'sv_SE',
+        'fi_FI',
+        'da_DK',
+        'is_IS',
+        'hu_HU',
+        'pl_PL',
+        'lv_LV',
+        'lt_LT',
+    ];
     // Prefer order locale if possible
-    const orderLocale = allowedLocales.find(locale => (locale.toLowerCase()).indexOf(countryCode.toLowerCase()) > -1);
+    const orderLocale = allowedLocales.find(
+        locale => locale.toLowerCase().indexOf(countryCode.toLowerCase()) > -1,
+    );
     if (orderLocale) {
         return orderLocale;
     }
     // If no order locale, try channel default
-    const channelLocale = allowedLocales.find(locale => (locale.toLowerCase()).indexOf(channelLanguage.toLowerCase()) > -1);
+    const channelLocale = allowedLocales.find(
+        locale => locale.toLowerCase().indexOf(channelLanguage.toLowerCase()) > -1,
+    );
     if (channelLocale) {
         return channelLocale;
     }

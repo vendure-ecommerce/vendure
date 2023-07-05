@@ -1,7 +1,10 @@
 import { PluginFunction } from '@graphql-codegen/plugin-helpers';
 import { buildScalars } from '@graphql-codegen/visitor-plugin-common';
 import {
+    ASTNode,
+    ASTVisitor,
     FieldDefinitionNode,
+    getNamedType,
     GraphQLFieldMap,
     GraphQLNamedType,
     GraphQLObjectType,
@@ -13,15 +16,16 @@ import {
     isObjectType,
     isTypeDefinitionNode,
     isUnionType,
+    Kind,
+    ListTypeNode,
     NonNullTypeNode,
     ObjectTypeDefinitionNode,
     parse,
     printSchema,
     UnionTypeDefinitionNode,
     visit,
-    Visitor,
-    ListTypeNode,
 } from 'graphql';
+import { ASTVisitFn } from 'graphql/language/visitor';
 
 // This plugin generates classes for all GraphQL types which implement the `ErrorResult` interface.
 // This means that when returning an error result from a GraphQL operation, you can use one of
@@ -32,65 +36,81 @@ import {
 export const ERROR_INTERFACE_NAME = 'ErrorResult';
 const empty = () => '';
 
-const errorsVisitor: Visitor<any> = {
-    NonNullType(node: NonNullTypeNode): string | ListTypeNode {
-        return node.type.kind === 'NamedType'
-            ? node.type.name.value
-            : node.type.kind === 'ListType'
-            ? node.type
-            : '';
-    },
-    FieldDefinition(node: FieldDefinitionNode): string {
-        const type = ((node.type.kind === 'ListType' ? node.type.type : node.type) as unknown) as string;
-        const tsType = isScalar(type) ? `Scalars['${type}']` : 'any';
-        const listPart = node.type.kind === 'ListType' ? `[]` : ``;
-        return `${node.name.value}: ${tsType}${listPart}`;
-    },
-    ScalarTypeDefinition: empty,
-    InputObjectTypeDefinition: empty,
-    EnumTypeDefinition: empty,
-    UnionTypeDefinition: empty,
-    InterfaceTypeDefinition(node: InterfaceTypeDefinitionNode) {
-        if (node.name.value !== ERROR_INTERFACE_NAME) {
+type TransformedField = { name: string; type: string };
+
+const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
+    switch (node.kind) {
+        case Kind.NON_NULL_TYPE: {
+            return node.type.kind === 'NamedType'
+                ? node.type.name.value
+                : node.type.kind === 'ListType'
+                ? node.type
+                : '';
+        }
+        case Kind.FIELD_DEFINITION: {
+            const type = (node.type.kind === 'ListType' ? node.type.type : node.type) as unknown as string;
+            const tsType = isScalar(type) ? `Scalars['${type}']` : 'any';
+            const listPart = node.type.kind === 'ListType' ? `[]` : ``;
+            return { name: node.name.value, type: `${tsType}${listPart}` };
+        }
+        case Kind.SCALAR_TYPE_DEFINITION: {
             return '';
         }
-        return [
-            `export class ${ERROR_INTERFACE_NAME} {`,
-            `  readonly __typename: string;`,
-            `  readonly errorCode: string;`,
-            ...node.fields.filter(f => !(f as any).includes('errorCode:')).map(f => `${f};`),
-            `}`,
-        ].join('\n');
-    },
-
-    ObjectTypeDefinition(
-        node: ObjectTypeDefinitionNode,
-        key: number | string | undefined,
-        parent: any,
-    ): string {
-        if (!inheritsFromErrorResult(node)) {
+        case Kind.INPUT_OBJECT_TYPE_DEFINITION: {
             return '';
         }
-        const originalNode = parent[key] as ObjectTypeDefinitionNode;
+        case Kind.ENUM_TYPE_DEFINITION: {
+            return '';
+        }
+        case Kind.UNION_TYPE_DEFINITION: {
+            return '';
+        }
+        case Kind.INTERFACE_TYPE_DEFINITION: {
+            if (node.name.value !== ERROR_INTERFACE_NAME) {
+                return '';
+            }
+            return [
+                `export class ${ERROR_INTERFACE_NAME} {`,
+                `  readonly __typename: string;`,
+                `  readonly errorCode: string;`,
+                ...node.fields
+                    .filter(f => (f as any as TransformedField).name !== 'errorCode')
+                    .map(f => `  readonly ${f.name}: ${f.type};`),
+                `}`,
+            ].join('\n');
+        }
+        case Kind.OBJECT_TYPE_DEFINITION: {
+            if (!inheritsFromErrorResult(node)) {
+                return '';
+            }
+            const originalNode = parent[key] as ObjectTypeDefinitionNode;
+            const constructorArgs = (node.fields as any as TransformedField[]).filter(
+                f => f.name !== 'errorCode' && f.name !== 'message',
+            );
 
-        return [
-            `export class ${node.name.value} extends ${ERROR_INTERFACE_NAME} {`,
-            `  readonly __typename = '${node.name.value}';`,
-            // We cast this to "any" otherwise we need to specify it as type "ErrorCode",
-            // which means shared ErrorResult classes e.g. OrderStateTransitionError
-            // will not be compatible between the admin and shop variations.
-            `  readonly errorCode = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
-            `  readonly message = '${camelToUpperSnakeCase(node.name.value)}';`,
-            `  constructor(`,
-            ...node.fields
-                .filter(f => !(f as any).includes('errorCode:') && !(f as any).includes('message:'))
-                .map(f => `    public ${f},`),
-            `  ) {`,
-            `    super();`,
-            `  }`,
-            `}`,
-        ].join('\n');
-    },
+            return [
+                `export class ${node.name.value} extends ${ERROR_INTERFACE_NAME} {`,
+                `  readonly __typename = '${node.name.value}';`,
+                // We cast this to "any" otherwise we need to specify it as type "ErrorCode",
+                // which means shared ErrorResult classes e.g. OrderStateTransitionError
+                // will not be compatible between the admin and shop variations.
+                `  readonly errorCode = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
+                `  readonly message = '${camelToUpperSnakeCase(node.name.value)}';`,
+                ...constructorArgs.map(f => `  readonly ${f.name}: ${f.type};`),
+                `  constructor(`,
+                constructorArgs.length
+                    ? `    input: { ${constructorArgs.map(f => `${f.name}: ${f.type}`).join(', ')} }`
+                    : '',
+                `  ) {`,
+                `    super();`,
+                ...(constructorArgs.length
+                    ? constructorArgs.map(f => `    this.${f.name} = input.${f.name}`)
+                    : []),
+                `  }`,
+                `}`,
+            ].join('\n');
+        }
+    }
 };
 
 export const plugin: PluginFunction<any> = (schema, documents, config, info) => {
@@ -100,7 +120,7 @@ export const plugin: PluginFunction<any> = (schema, documents, config, info) => 
     const defs = result.definitions
         .filter(d => !!d)
         // Ensure the ErrorResult base class is first
-        .sort((a, b) => (a.includes('class ErrorResult') ? -1 : 1));
+        .sort((a, b) => ((a as any).includes('class ErrorResult') ? -1 : 1));
     return {
         content: [
             `/** This file was generated by the graphql-errors-plugin, which is part of the "codegen" npm script. */`,
@@ -134,11 +154,10 @@ function generateErrorClassSource(node: ObjectTypeDefinitionNode) {
 
 function generateIsErrorFunction(schema: GraphQLSchema) {
     const errorNodes = Object.values(schema.getTypeMap())
-        .map(type => type.astNode)
-        .filter(isObjectTypeDefinition)
+        .filter(isObjectType)
         .filter(node => inheritsFromErrorResult(node));
     return `
-const errorTypeNames = new Set([${errorNodes.map(n => `'${n.name.value}'`).join(', ')}]);
+const errorTypeNames = new Set<string>([${errorNodes.map(n => `'${n.name}'`).join(', ')}]);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').${ERROR_INTERFACE_NAME} {
   return input instanceof ${ERROR_INTERFACE_NAME} || errorTypeNames.has(input.__typename);
 }`;
@@ -161,7 +180,7 @@ function generateTypeResolvers(schema: GraphQLSchema) {
             result.push(
                 `  ${returnType.name}: {`,
                 `    __resolveType(value: any) {`,
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 `      return isGraphQLError(value) ? (value as any).__typename : '${nonErrorResult!.name}';`,
                 `    },`,
                 `  },`,
@@ -175,16 +194,15 @@ function generateTypeResolvers(schema: GraphQLSchema) {
 function getOperationsThatReturnErrorUnions(schema: GraphQLSchema, fields: GraphQLFieldMap<any, any>) {
     return Object.values(fields).filter(operation => {
         const innerType = unwrapType(operation.type);
-        if (innerType.astNode?.kind === 'UnionTypeDefinition') {
-            return isUnionOfResultAndErrors(schema, innerType.astNode);
+        if (isUnionType(innerType)) {
+            return isUnionOfResultAndErrors(schema, innerType.getTypes());
         }
         return false;
     });
 }
 
-function isUnionOfResultAndErrors(schema: GraphQLSchema, node: UnionTypeDefinitionNode) {
-    const errorResultTypes = node.types.filter(namedType => {
-        const type = schema.getType(namedType.name.value);
+function isUnionOfResultAndErrors(schema: GraphQLSchema, types: ReadonlyArray<GraphQLObjectType>) {
+    const errorResultTypes = types.filter(type => {
         if (isObjectType(type)) {
             if (inheritsFromErrorResult(type)) {
                 return true;
@@ -192,7 +210,7 @@ function isUnionOfResultAndErrors(schema: GraphQLSchema, node: UnionTypeDefiniti
         }
         return false;
     });
-    return (errorResultTypes.length = node.types.length - 1);
+    return (errorResultTypes.length = types.length - 1);
 }
 
 function isObjectTypeDefinition(node: any): node is ObjectTypeDefinitionNode {
@@ -210,14 +228,7 @@ function inheritsFromErrorResult(node: ObjectTypeDefinitionNode | GraphQLObjectT
  * Unwraps the inner type from a higher-order type, e.g. [Address!]! => Address
  */
 function unwrapType(type: GraphQLType): GraphQLNamedType {
-    if (isNamedType(type)) {
-        return type;
-    }
-    let innerType = type;
-    while (!isNamedType(innerType)) {
-        innerType = innerType.ofType;
-    }
-    return innerType;
+    return getNamedType(type);
 }
 
 function isAdminApi(schema: GraphQLSchema): boolean {

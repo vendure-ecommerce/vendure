@@ -12,7 +12,7 @@ export function jsonValidator(): ValidatorFn {
 
         try {
             JSON.parse(control.value);
-        } catch (e) {
+        } catch (e: any) {
             control.setErrors(error);
             return error;
         }
@@ -83,7 +83,7 @@ export class JsonEditorFormInputComponent
             getErrorMessage: (json: string): string | undefined => {
                 try {
                     JSON.parse(json);
-                } catch (e) {
+                } catch (e: any) {
                     return e.message;
                 }
                 return;

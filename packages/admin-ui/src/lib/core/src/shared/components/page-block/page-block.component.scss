@@ -1,0 +1,12 @@
+@import 'variables';
+
+:host {
+    display: block;
+}
+
+.page-block {
+    margin-left: var(--surface-margin-left);
+    margin-right: var(--space-unit);
+    margin-top: var(--space-unit);
+    max-width: var(--layout-content-max-width);
+}

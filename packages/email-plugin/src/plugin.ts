@@ -15,19 +15,25 @@ import {
     PluginCommonModule,
     ProcessContext,
     registerPluginStartupMessage,
+    RequestContext,
     Type,
+    UserInputError,
     VendurePlugin,
 } from '@vendure/core';
+import Module from 'module';
 
-import { isDevModeOptions } from './common';
+import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handler';
+import { FileBasedTemplateLoader } from './template-loader';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
+    EmailTransportOptions,
     EventWithContext,
+    InitializedEmailPluginOptions,
     IntermediateEmailDetails,
 } from './types';
 
@@ -91,6 +97,14 @@ import {
  * `node_modules/\@vendure/email-plugin/templates` to a location of your choice, and then point the `templatePath` config
  * property at that directory.
  *
+ * * ### Dynamic Email Templates
+ * Instead of passing a static value to `templatePath`, use `templateLoader` to define a template path.
+ * ```ts
+ *   EmailPlugin.init({
+ *    ...,
+ *    templateLoader: new FileBasedTemplateLoader(my/order-confirmation/templates)
+ *   })
+ * ```
  * ## Customizing templates
  *
  * Emails are generated from templates which use [MJML](https://mjml.io/) syntax. MJML is an open-source HTML-like markup
@@ -178,6 +192,36 @@ import {
  *
  * For all available methods of extending a handler, see the {@link EmailEventHandler} documentation.
  *
+ * ## Dynamic SMTP settings
+ *
+ * Instead of defining static transport settings, you can also provide a function that dynamically resolves
+ * channel aware transport settings.
+ *
+ * @example
+ * ```ts
+ * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ * import { MyTransportService } from './transport.services.ts';
+ * const config: VendureConfig = {
+ *   plugins: [
+ *     EmailPlugin.init({
+ *       handlers: defaultEmailHandlers,
+ *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       transport: (injector, ctx) => {
+ *         if (ctx) {
+ *           return injector.get(MyTransportService).getSettings(ctx);
+ *         } else {
+ *           return {
+                type: 'smtp',
+                host: 'smtp.example.com',
+                // ... etc.
+              }
+ *         }
+ *       }
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
  * ## Dev mode
  *
  * For development, the `transport` option can be replaced by `devMode: true`. Doing so configures Vendure to use the
@@ -228,14 +272,15 @@ import {
  * };
  * ```
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
+    compatibility: '^2.0.0',
 })
 export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
-    private static options: EmailPluginOptions | EmailPluginDevModeOptions;
+    private static options: InitializedEmailPluginOptions;
     private devMailbox: DevMailbox | undefined;
     private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
     private testingProcessor: EmailProcessor | undefined;
@@ -247,14 +292,24 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         private emailProcessor: EmailProcessor,
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
-        @Inject(EMAIL_PLUGIN_OPTIONS) private options: EmailPluginOptions,
+        @Inject(EMAIL_PLUGIN_OPTIONS) private options: InitializedEmailPluginOptions,
     ) {}
 
     /**
      * Set the plugin options.
      */
     static init(options: EmailPluginOptions | EmailPluginDevModeOptions): Type<EmailPlugin> {
-        this.options = options;
+        if (options.templateLoader) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            Logger.info(`Using custom template loader '${options.templateLoader.constructor.name}'`);
+        } else if (!options.templateLoader && options.templatePath) {
+            // TODO: this else-if can be removed when deprecated templatePath is removed,
+            // because we will either have a custom template loader, or the default loader with a default path
+            options.templateLoader = new FileBasedTemplateLoader(options.templatePath);
+        } else {
+            throw new Error('You must either supply a templatePath or provide a custom templateLoader');
+        }
+        this.options = options as InitializedEmailPluginOptions;
         return EmailPlugin;
     }
 
@@ -262,10 +317,11 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
     async onApplicationBootstrap(): Promise<void> {
         await this.initInjectableStrategies();
         await this.setupEventSubscribers();
-        if (!isDevModeOptions(this.options) && this.options.transport.type === 'testing') {
+        const transport = await resolveTransportSettings(this.options, new Injector(this.moduleRef));
+        if (!isDevModeOptions(this.options) && transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(this.options);
+            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();
@@ -340,7 +396,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
             } else if (this.testingProcessor) {
                 await this.testingProcessor.process(result);
             }
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
         }
     }

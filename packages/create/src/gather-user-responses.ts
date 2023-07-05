@@ -1,12 +1,25 @@
+import { cancel, intro, isCancel, outro, select, text } from '@clack/prompts';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
-import prompts, { PromptObject } from 'prompts';
 
 import { DbType, FileSources, UserResponses } from './types';
 
-// tslint:disable:no-console
+interface PromptAnswers {
+    dbType: DbType;
+    dbHost: string | symbol;
+    dbPort: string | symbol;
+    dbName: string | symbol;
+    dbSchema?: string | symbol;
+    dbUserName: string | symbol;
+    dbPassword: string | symbol;
+    superadminIdentifier: string | symbol;
+    superadminPassword: string | symbol;
+    populateProducts: boolean | symbol;
+}
+
+/* eslint-disable no-console */
 
 /**
  * Prompts the user to determine how the new Vendure app should be configured.
@@ -16,106 +29,101 @@ export async function gatherUserResponses(
     alreadyRanScaffold: boolean,
     useYarn: boolean,
 ): Promise<UserResponses> {
-    function onSubmit(prompt: PromptObject, answer: any) {
-        if (prompt.name === 'dbType') {
-            dbType = answer;
-        }
-    }
+    const dbType = (await select({
+        message: 'Which database are you using?',
+        options: [
+            { label: 'MySQL', value: 'mysql' },
+            { label: 'MariaDB', value: 'mariadb' },
+            { label: 'Postgres', value: 'postgres' },
+            { label: 'SQLite', value: 'sqlite' },
+            { label: 'SQL.js', value: 'sqljs' },
+        ],
+        initialValue: 'sqlite' as DbType,
+    })) as DbType;
+    checkCancel(dbType);
 
-    let dbType: DbType;
-
-    const scaffoldPrompts: Array<prompts.PromptObject<any>> = [
-        {
-            type: 'select',
-            name: 'dbType',
-            message: 'Which database are you using?',
-            choices: [
-                { title: 'MySQL', value: 'mysql' },
-                { title: 'MariaDB', value: 'mariadb' },
-                { title: 'Postgres', value: 'postgres' },
-                { title: 'SQLite', value: 'sqlite' },
-                { title: 'SQL.js', value: 'sqljs' },
-                // Don't show these until they have been tested.
-                // { title: 'MS SQL Server', value: 'mssql' },
-                // { title: 'Oracle', value: 'oracle' },
-            ],
-            initial: 0 as any,
-        },
-        {
-            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-            name: 'dbHost',
-            message: `What's the database host address?`,
-            initial: 'localhost',
-        },
-        {
-            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-            name: 'dbPort',
-            message: `What port is the database listening on?`,
-            initial: (() => defaultDBPort(dbType)) as any,
-        },
-        {
-            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-            name: 'dbName',
-            message: `What's the name of the database?`,
-            initial: 'vendure',
-        },
-        {
-            type: (() => (dbType === 'postgres' ? 'text' : null)) as any,
-            name: 'dbSchema',
-            message: `What's the schema name we should use?`,
-            initial: 'public',
-        },
-        {
-            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-            name: 'dbUserName',
-            message: `What's the database user name?`,
-            initial: 'root',
-        },
-        {
-            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'password')) as any,
-            name: 'dbPassword',
-            message: `What's the database password?`,
-        },
-        {
-            type: 'text',
-            name: 'superadminIdentifier',
-            message: 'What identifier do you want to use for the superadmin user?',
-            initial: SUPER_ADMIN_USER_IDENTIFIER,
-        },
-        {
-            type: 'text',
-            name: 'superadminPassword',
-            message: 'What password do you want to use for the superadmin user?',
-            initial: SUPER_ADMIN_USER_PASSWORD,
-        },
-    ];
-
-    const initPrompts: Array<prompts.PromptObject<any>> = [
-        {
-            type: 'toggle',
-            name: 'populateProducts',
-            message: 'Populate with some sample product data?',
-            initial: true,
-            active: 'yes',
-            inactive: 'no',
-        },
-    ];
-
-    const answers = await prompts(alreadyRanScaffold ? initPrompts : [...scaffoldPrompts, ...initPrompts], {
-        onSubmit,
-        onCancel() {
-            /* */
-            console.log(`Setup cancelled`);
-            process.exit(1);
-        },
+    const hasConnection = dbType !== 'sqlite' && dbType !== 'sqljs';
+    const dbHost = hasConnection
+        ? await text({
+              message: "What's the database host address?",
+              initialValue: 'localhost',
+          })
+        : '';
+    checkCancel(dbHost);
+    const dbPort = hasConnection
+        ? await text({
+              message: 'What port is the database listening on?',
+              initialValue: defaultDBPort(dbType).toString(),
+          })
+        : '';
+    checkCancel(dbPort);
+    const dbName = hasConnection
+        ? await text({
+              message: "What's the name of the database?",
+              initialValue: 'vendure',
+          })
+        : '';
+    checkCancel(dbName);
+    const dbSchema =
+        dbType === 'postgres'
+            ? await text({
+                  message: "What's the schema name we should use?",
+                  initialValue: 'public',
+              })
+            : '';
+    checkCancel(dbSchema);
+    const dbUserName = hasConnection
+        ? await text({
+              message: "What's the database user name?",
+          })
+        : '';
+    checkCancel(dbUserName);
+    const dbPassword = hasConnection
+        ? await text({
+              message: "What's the database password?",
+              defaultValue: '',
+          })
+        : '';
+    checkCancel(dbPassword);
+    const superadminIdentifier = await text({
+        message: 'What identifier do you want to use for the superadmin user?',
+        initialValue: SUPER_ADMIN_USER_IDENTIFIER,
     });
+    checkCancel(superadminIdentifier);
+    const superadminPassword = await text({
+        message: 'What password do you want to use for the superadmin user?',
+        initialValue: SUPER_ADMIN_USER_PASSWORD,
+    });
+    checkCancel(superadminPassword);
+    const populateProducts = await select({
+        message: 'Populate with some sample product data?',
+        options: [
+            { label: 'yes', value: true },
+            { label: 'no', value: false },
+        ],
+        initialValue: true,
+    });
+    checkCancel(populateProducts);
+
+    const answers: PromptAnswers = {
+        dbType,
+        dbHost,
+        dbPort,
+        dbName,
+        dbSchema,
+        dbUserName,
+        dbPassword,
+        superadminIdentifier,
+        superadminPassword,
+        populateProducts,
+    };
 
     return {
         ...(await generateSources(root, answers, useYarn)),
-        dbType: answers.dbType,
-        populateProducts: answers.populateProducts,
-        superadminIdentifier: answers.superadminIdentifier,
-        superadminPassword: answers.superadminPassword,
+        dbType,
+        populateProducts: answers.populateProducts as boolean,
+        superadminIdentifier: answers.superadminIdentifier as string,
+        superadminPassword: answers.superadminPassword as string,
     };
 }
 
@@ -144,10 +152,18 @@ export async function gatherCiUserResponses(root: string, useYarn: boolean): Pro
     };
 }
 
+function checkCancel<T>(value: T | symbol): value is T {
+    if (isCancel(value)) {
+        cancel('Setup cancelled.');
+        process.exit(0);
+    }
+    return true;
+}
+
 /**
  * Create the server index, worker and config source code based on the options specified by the CLI prompts.
  */
-async function generateSources(root: string, answers: any, useYarn: boolean): Promise<FileSources> {
+async function generateSources(root: string, answers: PromptAnswers, useYarn: boolean): Promise<FileSources> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     /**
@@ -156,7 +172,7 @@ async function generateSources(root: string, answers: any, useYarn: boolean): Pr
      * Instead, we disable escaping and use this custom helper to escape only the single quote character.
      */
     Handlebars.registerHelper('escapeSingle', (aString: unknown) => {
-        return typeof aString === 'string' ? aString.replace(/'/g, `\\'`) : aString;
+        return typeof aString === 'string' ? aString.replace(/'/g, "\\'") : aString;
     });
 
     const templateContext = {
@@ -174,6 +190,7 @@ async function generateSources(root: string, answers: any, useYarn: boolean): Pr
         const template = await fs.readFile(assetPath(filename), 'utf-8');
         return Handlebars.compile(template, { noEscape })(templateContext);
     }
+
     return {
         indexSource: await createSourceFile('index.hbs'),
         indexWorkerSource: await createSourceFile('index-worker.hbs'),

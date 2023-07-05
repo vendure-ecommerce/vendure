@@ -34,7 +34,7 @@ function cmdItem(cmd: (...args: any[]) => void, options: CmdItemOptions) {
             ? renderClarityIcon({ shape: options.iconShape, size: IconSize.Large })
             : undefined,
     };
-    // tslint:disable-next-line:forin
+    // eslint-disable-next-line guard-for-in
     for (const prop in options) {
         passedOptions[prop] = options[prop];
     }
@@ -52,7 +52,7 @@ function markItem(markType, options: CmdItemOptions) {
         },
         enable: true,
     };
-    // tslint:disable-next-line:forin
+    // eslint-disable-next-line guard-for-in
     for (const prop in options) {
         passedOptions[prop] = options[prop];
     }
@@ -124,7 +124,7 @@ function wrapListItem(nodeType, options: CmdItemOptions) {
 export function buildMenuItems(schema: Schema, modalService: ModalService) {
     const r: Record<string, any> = {};
     let type: MarkType | NodeType;
-    // tslint:disable:no-conditional-assignment
+    /* eslint-disable no-cond-assign */
     if ((type = schema.marks.strong)) {
         r.toggleStrong = markItem(type, {
             title: 'Toggle strong style',

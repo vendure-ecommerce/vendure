@@ -9,7 +9,7 @@ import { Channel } from '../channel/channel.entity';
 /**
  * @description
  * A Role represents a collection of permissions which determine the authorization
- * level of a {@link User}.
+ * level of a {@link User} on a given set of {@link Channel}s.
  *
  * @docsCategory entities
  */

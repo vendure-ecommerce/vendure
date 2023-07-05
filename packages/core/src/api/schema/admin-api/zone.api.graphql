@@ -1,7 +1,15 @@
 type Query {
-    zones: [Zone!]!
+    zones(options: ZoneListOptions): ZoneList!
     zone(id: ID!): Zone
 }
+
+type ZoneList implements PaginatedList {
+    items: [Zone!]!
+    totalItems: Int!
+}
+
+input ZoneListOptions
+
 
 type Mutation {
     "Create a new Zone"
@@ -12,6 +20,9 @@ type Mutation {
 
     "Delete a Zone"
     deleteZone(id: ID!): DeletionResponse!
+
+    "Delete a Zone"
+    deleteZones(ids: [ID!]!): [DeletionResponse!]!
 
     "Add members to a Zone"
     addMembersToZone(zoneId: ID!, memberIds: [ID!]!): Zone!

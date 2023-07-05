@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -13,7 +13,8 @@ import { ShippingMethod } from './shipping-method.entity';
 @Entity()
 export class ShippingMethodTranslation
     extends VendureEntity
-    implements Translation<ShippingMethod>, HasCustomFields {
+    implements Translation<ShippingMethod>, HasCustomFields
+{
     constructor(input?: DeepPartial<Translation<Product>>) {
         super(input);
     }
@@ -24,7 +25,8 @@ export class ShippingMethodTranslation
 
     @Column({ default: '' }) description: string;
 
-    @ManyToOne(type => ShippingMethod, base => base.translations)
+    @Index()
+    @ManyToOne(type => ShippingMethod, base => base.translations, { onDelete: 'CASCADE' })
     base: ShippingMethod;
 
     @Column(type => CustomShippingMethodFieldsTranslation)

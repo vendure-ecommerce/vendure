@@ -3,7 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
-import { Connection, ConnectionOptions, EntitySubscriberInterface } from 'typeorm';
+import { satisfies } from 'semver';
+import { Connection, DataSourceOptions, EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
 import { getConfig, setConfig } from './config/config-helpers';
@@ -15,10 +16,12 @@ import { coreEntitiesMap } from './entity/entities';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
 import { runEntityMetadataModifiers } from './entity/run-entity-metadata-modifiers';
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
+import { setMoneyStrategy } from './entity/set-money-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
-import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
+import { getCompatibility, getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getPluginStartupMessages } from './plugin/plugin-utils';
 import { setProcessContext } from './process-context/process-context';
+import { VENDURE_VERSION } from './version';
 import { VendureWorker } from './worker/vendure-worker';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
@@ -36,17 +39,18 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  *     console.log(err);
  * });
  * ```
- * @docsCategory
+ * @docsCategory common
  * */
 export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
+    checkPluginCompatibility(config);
 
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
-    // tslint:disable-next-line:whitespace
-    const appModule = await import('./app.module');
+    // eslint-disable-next-line
+    const appModule = await import('./app.module.js');
     setProcessContext('server');
     const { hostname, port, cors, middleware } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
@@ -101,11 +105,12 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
     config.logger.setDefaultContext?.('Vendure Worker');
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
+    checkPluginCompatibility(config);
 
     setProcessContext('worker');
     DefaultLogger.hideNestBoostrapLogs();
 
-    const WorkerModule = await import('./worker/worker.module').then(m => m.WorkerModule);
+    const WorkerModule = await import('./worker/worker.module.js').then(m => m.WorkerModule);
     const workerApp = await NestFactory.createApplicationContext(WorkerModule, {
         logger: new Logger(),
     });
@@ -124,16 +129,18 @@ export async function preBootstrapConfig(
     userConfig: Partial<VendureConfig>,
 ): Promise<Readonly<RuntimeVendureConfig>> {
     if (userConfig) {
-        setConfig(userConfig);
+        await setConfig(userConfig);
     }
 
     const entities = await getAllEntities(userConfig);
-    const { coreSubscribersMap } = await import('./entity/subscribers');
-    setConfig({
+    const { coreSubscribersMap } = await import('./entity/subscribers.js');
+    await setConfig({
         dbConnectionOptions: {
             entities,
             subscribers: [
-                ...(userConfig.dbConnectionOptions?.subscribers ?? []),
+                ...((userConfig.dbConnectionOptions?.subscribers ?? []) as Array<
+                    Type<EntitySubscriberInterface>
+                >),
                 ...(Object.values(coreSubscribersMap) as Array<Type<EntitySubscriberInterface>>),
             ],
         },
@@ -142,16 +149,40 @@ export async function preBootstrapConfig(
     let config = getConfig();
     const entityIdStrategy = config.entityOptions.entityIdStrategy ?? config.entityIdStrategy;
     setEntityIdStrategy(entityIdStrategy, entities);
+    const moneyStrategy = config.entityOptions.moneyStrategy;
+    setMoneyStrategy(moneyStrategy, entities);
     const customFieldValidationResult = validateCustomFieldsConfig(config.customFields, entities);
     if (!customFieldValidationResult.valid) {
         process.exitCode = 1;
-        throw new Error(`CustomFields config error:\n- ` + customFieldValidationResult.errors.join('\n- '));
+        throw new Error('CustomFields config error:\n- ' + customFieldValidationResult.errors.join('\n- '));
     }
     config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     await runEntityMetadataModifiers(config);
     setExposedHeaders(config);
     return config;
+}
+
+function checkPluginCompatibility(config: RuntimeVendureConfig): void {
+    for (const plugin of config.plugins) {
+        const compatibility = getCompatibility(plugin);
+        const pluginName = (plugin as any).name as string;
+        if (!compatibility) {
+            Logger.info(
+                `The plugin "${pluginName}" does not specify a compatibility range, so it is not guaranteed to be compatible with this version of Vendure.`,
+            );
+        } else {
+            if (!satisfies(VENDURE_VERSION, compatibility, { loose: true, includePrerelease: true })) {
+                Logger.error(
+                    `Plugin "${pluginName}" is not compatible with this version of Vendure. ` +
+                        `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
+                );
+                throw new InternalServerError(
+                    `Plugin "${pluginName}" is not compatible with this version of Vendure.`,
+                );
+            }
+        }
+    }
 }
 
 /**
@@ -180,7 +211,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
     // which conflict with existing entities.
     for (const pluginEntity of pluginEntities) {
         if (allEntities.find(e => e.name === pluginEntity.name)) {
-            throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
+            throw new InternalServerError('error.entity-name-conflict', { entityName: pluginEntity.name });
         } else {
             allEntities.push(pluginEntity);
         }
@@ -218,12 +249,6 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
 }
 
 function logWelcomeMessage(config: RuntimeVendureConfig) {
-    let version: string;
-    try {
-        version = require('../package.json').version;
-    } catch (e) {
-        version = ' unknown';
-    }
     const { port, shopApiPath, adminApiPath, hostname } = config.apiOptions;
     const apiCliGreetings: Array<readonly [string, string]> = [];
     const pathToUrl = (path: string) => `http://${hostname || 'localhost'}:${port}/${path}`;
@@ -233,14 +258,14 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
         ...getPluginStartupMessages().map(({ label, path }) => [label, pathToUrl(path)] as const),
     );
     const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
-    const title = `Vendure server (v${version}) now running on port ${port}`;
+    const title = `Vendure server (v${VENDURE_VERSION}) now running on port ${port}`;
     const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
     const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
-    Logger.info(`=`.repeat(maxLineLength));
+    Logger.info('='.repeat(maxLineLength));
     Logger.info(title.padStart(title.length + titlePadLength));
     Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
     columnarGreetings.forEach(line => Logger.info(line));
-    Logger.info(`=`.repeat(maxLineLength));
+    Logger.info('='.repeat(maxLineLength));
 }
 
 function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): string[] {
@@ -253,11 +278,13 @@ function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): 
  * See: https://github.com/vendure-ecommerce/vendure/issues/152
  */
 function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonly<RuntimeVendureConfig> {
-    const config = { ...userConfig };
-    config.dbConnectionOptions = {
-        ...userConfig.dbConnectionOptions,
-        synchronize: false,
-    } as ConnectionOptions;
+    const config = {
+        ...userConfig,
+        dbConnectionOptions: {
+            ...userConfig.dbConnectionOptions,
+            synchronize: false,
+        } as DataSourceOptions,
+    };
     return config;
 }
 
@@ -276,7 +303,7 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
             try {
                 const adminCount = await connection.getRepository(Administrator).count();
                 return 0 < adminCount;
-            } catch (e) {
+            } catch (e: any) {
                 return false;
             }
         };
@@ -299,6 +326,6 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
             );
             await new Promise(resolve1 => setTimeout(resolve1, pollIntervalMs));
         }
-        reject(`Could not validate DB table structure. Aborting bootstrap.`);
+        reject('Could not validate DB table structure. Aborting bootstrap.');
     });
 }

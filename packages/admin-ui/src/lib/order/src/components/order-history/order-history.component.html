@@ -1,4 +1,3 @@
-<h4>{{ 'order.order-history' | translate }}</h4>
 <div class="entry-list" [class.expanded]="expanded">
     <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true">
         <div class="note-entry">
@@ -111,7 +110,7 @@
                     <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
                         {{
                             'order.history-items-cancelled'
-                                | translate: { count: entry.data.orderItemIds.length }
+                                | translate: { count: getCancelledQuantity(entry) }
                         }}
                         <vdr-history-entry-detail *ngIf="getCancelledItems(entry) as items">
                             <vdr-labeled-data [label]="'order.cancellation-reason' | translate">
@@ -178,7 +177,6 @@
                                 </button>
                                 <vdr-dropdown-menu vdrPosition="bottom-right">
                                     <button
-                                        class="button"
                                         vdrDropdownItem
                                         (click)="updateNote.emit(entry)"
                                         [disabled]="!('UpdateOrder' | hasPermission)"
@@ -188,7 +186,6 @@
                                     </button>
                                     <div class="dropdown-divider"></div>
                                     <button
-                                        class="button"
                                         vdrDropdownItem
                                         (click)="deleteNote.emit(entry)"
                                         [disabled]="!('UpdateOrder' | hasPermission)"

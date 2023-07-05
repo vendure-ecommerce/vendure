@@ -1,5 +1,6 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { A11yModule } from '@angular/cdk/a11y';
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -30,6 +31,7 @@ import { AssetPreviewDialogComponent } from './components/asset-preview-dialog/a
 import { AssetPreviewLinksComponent } from './components/asset-preview-links/asset-preview-links.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 import { AssetSearchInputComponent } from './components/asset-search-input/asset-search-input.component';
+import { AssignToChannelDialogComponent } from './components/assign-to-channel-dialog/assign-to-channel-dialog.component';
 import { BulkActionMenuComponent } from './components/bulk-action-menu/bulk-action-menu.component';
 import { ChannelAssignmentControlComponent } from './components/channel-assignment-control/channel-assignment-control.component';
 import { ChannelBadgeComponent } from './components/channel-badge/channel-badge.component';
@@ -39,6 +41,14 @@ import { CurrencyInputComponent } from './components/currency-input/currency-inp
 import { CustomDetailComponentHostComponent } from './components/custom-detail-component-host/custom-detail-component-host.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
+import { DataTable2ColumnComponent } from './components/data-table-2/data-table-column.component';
+import { DataTableCustomFieldColumnComponent } from './components/data-table-2/data-table-custom-field-column.component';
+import { DataTable2SearchComponent } from './components/data-table-2/data-table-search.component';
+import { DataTable2Component } from './components/data-table-2/data-table2.component';
+import { DataTableColumnPickerComponent } from './components/data-table-column-picker/data-table-column-picker.component';
+import { DataTableFilterLabelComponent } from './components/data-table-filter-label/data-table-filter-label.component';
+import { CustomFilterComponentDirective } from './components/data-table-filters/custom-filter-component.directive';
+import { DataTableFiltersComponent } from './components/data-table-filters/data-table-filters.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { DatetimePickerComponent } from './components/datetime-picker/datetime-picker.component';
@@ -62,6 +72,7 @@ import { HistoryEntryDetailComponent } from './components/history-entry-detail/h
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LabeledDataComponent } from './components/labeled-data/labeled-data.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
+import { LocalizedTextComponent } from './components/localized-text/localized-text.component';
 import { ManageTagsDialogComponent } from './components/manage-tags-dialog/manage-tags-dialog.component';
 import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons.directive';
 import { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
@@ -69,10 +80,20 @@ import { DialogTitleDirective } from './components/modal-dialog/dialog-title.dir
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
+import { PageBlockComponent } from './components/page-block/page-block.component';
+import { PageBodyComponent } from './components/page-body/page-body.component';
+import { PageDetailLayoutComponent } from './components/page-detail-layout/page-detail-layout.component';
+import { PageDetailSidebarComponent } from './components/page-detail-layout/page-detail-sidebar.component';
+import { PageEntityInfoComponent } from './components/page-entity-info/page-entity-info.component';
+import { PageHeaderDescriptionComponent } from './components/page-header-description/page-header-description.component';
+import { PageHeaderTabsComponent } from './components/page-header-tabs/page-header-tabs.component';
+import { PageHeaderComponent } from './components/page-header/page-header.component';
+import { PageTitleComponent } from './components/page-title/page-title.component';
+import { PageComponent } from './components/page/page.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
-import { ProductSelectorComponent } from './components/product-selector/product-selector.component';
+import { ProductVariantSelectorComponent } from './components/product-variant-selector/product-variant-selector.component';
 import { RadioCardFieldsetComponent } from './components/radio-card/radio-card-fieldset.component';
 import { RadioCardComponent } from './components/radio-card/radio-card.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
@@ -82,6 +103,11 @@ import { RawHtmlDialogComponent } from './components/rich-text-editor/raw-html-d
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
+import { SplitViewComponent } from './components/split-view/split-view.component';
+import {
+    SplitViewLeftDirective,
+    SplitViewRightDirective,
+} from './components/split-view/split-view.directive';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { TabbedCustomFieldsComponent } from './components/tabbed-custom-fields/tabbed-custom-fields.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
@@ -140,6 +166,11 @@ import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
+import { CardComponent, CardControlsDirective } from './components/card/card.component';
+import { ZoneSelectorComponent } from './components/zone-selector/zone-selector.component';
+import { ChartComponent } from './components/chart/chart.component';
+import { CurrencyCodeSelectorComponent } from './components/currency-code-selector/currency-code-selector.component';
+import { LanguageCodeSelectorComponent } from './components/language-code-selector/language-code-selector.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -152,6 +183,7 @@ const IMPORTS = [
     TranslateModule,
     OverlayModule,
     DragDropModule,
+    A11yModule,
 ];
 
 const DECLARATIONS = [
@@ -229,7 +261,7 @@ const DECLARATIONS = [
     EditNoteDialogComponent,
     ProductSelectorFormInputComponent,
     StateI18nTokenPipe,
-    ProductSelectorComponent,
+    ProductVariantSelectorComponent,
     HelpTooltipComponent,
     CustomerGroupFormInputComponent,
     AddressFormComponent,
@@ -253,6 +285,35 @@ const DECLARATIONS = [
     BulkActionMenuComponent,
     RadioCardComponent,
     RadioCardFieldsetComponent,
+    DataTable2Component,
+    DataTable2ColumnComponent,
+    DataTableFiltersComponent,
+    DataTableFilterLabelComponent,
+    DataTableColumnPickerComponent,
+    DataTable2SearchComponent,
+    DataTableCustomFieldColumnComponent,
+    SplitViewComponent,
+    SplitViewLeftDirective,
+    SplitViewRightDirective,
+    PageComponent,
+    CustomFilterComponentDirective,
+    PageHeaderComponent,
+    PageTitleComponent,
+    PageHeaderDescriptionComponent,
+    PageHeaderTabsComponent,
+    PageBodyComponent,
+    PageBlockComponent,
+    PageEntityInfoComponent,
+    LocalizedTextComponent,
+    PageDetailLayoutComponent,
+    PageDetailSidebarComponent,
+    CardComponent,
+    CardControlsDirective,
+    ZoneSelectorComponent,
+    ChartComponent,
+    AssignToChannelDialogComponent,
+    CurrencyCodeSelectorComponent,
+    LanguageCodeSelectorComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

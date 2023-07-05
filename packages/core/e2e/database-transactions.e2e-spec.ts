@@ -3,6 +3,7 @@ import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { ReplaySubject } from 'rxjs';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -17,10 +18,8 @@ import {
 type DBType = 'mysql' | 'postgres' | 'sqlite' | 'sqljs';
 
 const itIfDb = (dbs: DBType[]) => {
-    return dbs.includes(process.env.DB as DBType || 'sqljs')
-        ? it
-        : it.skip
-} 
+    return dbs.includes((process.env.DB as DBType) || 'sqljs') ? it : it.skip;
+};
 
 describe('Transaction infrastructure', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -66,7 +65,7 @@ describe('Transaction infrastructure', () => {
                 fail: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -83,8 +82,8 @@ describe('Transaction infrastructure', () => {
             await adminClient.query(CREATE_N_ADMINS, {
                 emailAddress: 'testN-',
                 failFactor: 0.4,
-                n: 10
-            })
+                n: 10,
+            });
             fail('Should have thrown');
         } catch (e) {
             expect(e.message).toContain('Failed!');
@@ -105,7 +104,7 @@ describe('Transaction infrastructure', () => {
                 fail: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -124,7 +123,7 @@ describe('Transaction infrastructure', () => {
                 fail: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -144,7 +143,7 @@ describe('Transaction infrastructure', () => {
                 noContext: false,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -156,26 +155,30 @@ describe('Transaction infrastructure', () => {
         expect(!!verify.users.find((u: any) => u.identifier === 'test5')).toBe(false);
     });
 
-    itIfDb(['postgres', 'mysql'])('failing mutation inside connection.withTransaction() wrapper with context and promise concurrent execution', async () => {
-        try {
-            await adminClient.query(CREATE_N_ADMINS2, {
-                emailAddress: 'testN-',
-                failFactor: 0.4,
-                n: 10
-            })
-            fail('Should have thrown');
-        } catch (e) {
-            expect(e.message)
-                .toMatch(/^Failed!|Query runner already released. Cannot run queries anymore.$/);
-        }
+    itIfDb(['postgres', 'mysql'])(
+        'failing mutation inside connection.withTransaction() wrapper with context and promise concurrent execution',
+        async () => {
+            try {
+                await adminClient.query(CREATE_N_ADMINS2, {
+                    emailAddress: 'testN-',
+                    failFactor: 0.4,
+                    n: 10,
+                });
+                fail('Should have thrown');
+            } catch (e) {
+                expect(e.message).toMatch(
+                    /^Failed!|Query runner already released. Cannot run queries anymore.$/,
+                );
+            }
 
-        const { verify } = await adminClient.query(VERIFY_TEST);
+            const { verify } = await adminClient.query(VERIFY_TEST);
 
-        expect(verify.admins.length).toBe(2);
-        expect(verify.users.length).toBe(3);
-        expect(!!verify.admins.find((a: any) => a.emailAddress.includes('testN'))).toBe(false);
-        expect(!!verify.users.find((u: any) => u.identifier.includes('testN'))).toBe(false);
-    });
+            expect(verify.admins.length).toBe(2);
+            expect(verify.users.length).toBe(3);
+            expect(!!verify.admins.find((a: any) => a.emailAddress.includes('testN'))).toBe(false);
+            expect(!!verify.users.find((u: any) => u.identifier.includes('testN'))).toBe(false);
+        },
+    );
 
     it('failing mutation inside connection.withTransaction() wrapper without request context', async () => {
         try {
@@ -185,7 +188,7 @@ describe('Transaction infrastructure', () => {
                 noContext: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -201,15 +204,19 @@ describe('Transaction infrastructure', () => {
         await adminClient.query(CREATE_N_ADMINS3, {
             emailAddress: 'testNestedTransactionsN-',
             failFactor: 0.5,
-            n: 2
-        })
+            n: 2,
+        });
 
         const { verify } = await adminClient.query(VERIFY_TEST);
 
         expect(verify.admins.length).toBe(3);
         expect(verify.users.length).toBe(4);
-        expect(verify.admins.filter((a: any) => a.emailAddress.includes('testNestedTransactionsN'))).toHaveLength(1);
-        expect(verify.users.filter((u: any) => u.identifier.includes('testNestedTransactionsN'))).toHaveLength(1);
+        expect(
+            verify.admins.filter((a: any) => a.emailAddress.includes('testNestedTransactionsN')),
+        ).toHaveLength(1);
+        expect(
+            verify.users.filter((u: any) => u.identifier.includes('testNestedTransactionsN')),
+        ).toHaveLength(1);
     });
 
     it('event do not publish after transaction rollback', async () => {
@@ -218,7 +225,7 @@ describe('Transaction infrastructure', () => {
             await adminClient.query(CREATE_N_ADMINS, {
                 emailAddress: TRIGGER_NO_OPERATION,
                 failFactor: 0.5,
-                n: 2
+                n: 2,
             });
             fail('Should have thrown');
         } catch (e) {
@@ -227,7 +234,7 @@ describe('Transaction infrastructure', () => {
 
         // Wait a bit to see an events in handlers
         await new Promise(resolve => setTimeout(resolve, 100));
-        
+
         expect(TransactionTestPlugin.callHandler).not.toHaveBeenCalled();
         expect(TransactionTestPlugin.errorHandler).not.toHaveBeenCalled();
     });

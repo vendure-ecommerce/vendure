@@ -1,33 +1,25 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
-    CancelOrder,
-    CustomFieldConfig,
     DataService,
     EditNoteDialogComponent,
     FulfillmentFragment,
-    FulfillmentLineSummary,
-    GetOrderHistory,
+    GetOrderHistoryQuery,
     GetOrderQuery,
-    HistoryEntryType,
     ModalService,
     NotificationService,
-    Order,
-    OrderDetail,
+    ORDER_DETAIL_FRAGMENT,
     OrderDetailFragment,
-    OrderLineFragment,
+    OrderDetailQueryDocument,
     Refund,
-    RefundOrder,
-    ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
+    TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
-import { pick } from '@vendure/common/lib/pick';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
-import { EMPTY, merge, Observable, of, Subject } from 'rxjs';
+import { gql } from 'apollo-angular';
+import { EMPTY, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
@@ -38,6 +30,17 @@ import { OrderProcessGraphDialogComponent } from '../order-process-graph-dialog/
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
 import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
 
+type Payment = NonNullable<OrderDetailFragment['payments']>[number];
+
+export const ORDER_DETAIL_QUERY = gql`
+    query OrderDetailQuery($id: ID!) {
+        order(id: $id) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
 @Component({
     selector: 'vdr-order-detail',
     templateUrl: './order-detail.component.html',
@@ -45,15 +48,19 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderDetailComponent
-    extends BaseDetailComponent<OrderDetail.Fragment>
+    extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>
     implements OnInit, OnDestroy
 {
-    detailForm = new FormGroup({});
-    history$: Observable<GetOrderHistory.Items[] | undefined>;
+    customFields = this.getCustomFieldConfig('Order');
+    orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
+    detailForm = new FormGroup({
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
+    history$: Observable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'] | undefined>;
     nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();
-    customFields: CustomFieldConfig[];
-    orderLineCustomFields: CustomFieldConfig[];
     private readonly defaultStates = [
         'AddingItems',
         'ArrangingPayment',
@@ -69,16 +76,14 @@ export class OrderDetailComponent
     ];
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
         private orderTransitionService: OrderTransitionService,
+        private formBuilder: FormBuilder,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     ngOnInit() {
@@ -88,19 +93,17 @@ export class OrderDetailComponent
                 this.router.navigate(['./', 'modify'], { relativeTo: this.route });
             }
         });
-        this.customFields = this.getCustomFieldConfig('Order');
-        this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
-            switchMap(() => {
-                return this.dataService.order
+            switchMap(() =>
+                this.dataService.order
                     .getOrderHistory(this.id, {
                         sort: {
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream(data => data.order?.history.items);
-            }),
+                    .mapStream(data => data.order?.history.items),
+            ),
         );
         this.nextStates$ = this.entity$.pipe(
             map(order => {
@@ -171,11 +174,11 @@ export class OrderDetailComponent
             });
     }
 
-    updateCustomFields(customFieldsValue: any) {
+    updateCustomFields() {
         this.dataService.order
             .updateOrderCustomFields({
                 id: this.id,
-                customFields: customFieldsValue,
+                customFields: this.detailForm.value.customFields,
             })
             .subscribe(() => {
                 this.notificationService.success(_('common.notify-update-success'), { entity: 'Order' });
@@ -191,7 +194,7 @@ export class OrderDetailComponent
             .filter(line => !!line);
     }
 
-    settlePayment(payment: OrderDetail.Payments) {
+    settlePayment(payment: Payment) {
         this.dataService.order.settlePayment(payment.id).subscribe(({ settlePayment }) => {
             switch (settlePayment.__typename) {
                 case 'Payment':
@@ -211,7 +214,7 @@ export class OrderDetailComponent
         });
     }
 
-    transitionPaymentState({ payment, state }: { payment: OrderDetail.Payments; state: string }) {
+    transitionPaymentState({ payment, state }: { payment: Payment; state: string }) {
         if (state === 'Cancelled') {
             this.dataService.order.cancelPayment(payment.id).subscribe(({ cancelPayment }) => {
                 switch (cancelPayment.__typename) {
@@ -253,15 +256,15 @@ export class OrderDetailComponent
         }
     }
 
-    canAddFulfillment(order: OrderDetail.Fragment): boolean {
-        const allFulfillmentSummaryRows: FulfillmentFragment['summary'] = (order.fulfillments ?? []).reduce(
-            (all, fulfillment) => [...all, ...fulfillment.summary],
-            [] as FulfillmentFragment['summary'],
+    canAddFulfillment(order: OrderDetailFragment): boolean {
+        const allFulfillmentLines: FulfillmentFragment['lines'] = (order.fulfillments ?? []).reduce(
+            (all, fulfillment) => [...all, ...fulfillment.lines],
+            [] as FulfillmentFragment['lines'],
         );
         let allItemsFulfilled = true;
         for (const line of order.lines) {
-            const totalFulfilledCount = allFulfillmentSummaryRows
-                .filter(row => row.orderLine.id === line.id)
+            const totalFulfilledCount = allFulfillmentLines
+                .filter(row => row.orderLineId === line.id)
                 .reduce((sum, row) => sum + row.quantity, 0);
             if (totalFulfilledCount < line.quantity) {
                 allItemsFulfilled = false;
@@ -289,7 +292,7 @@ export class OrderDetailComponent
     }
 
     outstandingPaymentAmount(order: OrderDetailFragment): number {
-        const paymentIsValid = (p: OrderDetail.Payments): boolean =>
+        const paymentIsValid = (p: Payment): boolean =>
             p.state !== 'Cancelled' && p.state !== 'Declined' && p.state !== 'Error';
 
         let amountCovered = 0;
@@ -334,9 +337,7 @@ export class OrderDetailComponent
                                     order.nextStates,
                                 );
                             } else {
-                                return this.dataService.order
-                                    .transitionToState(this.id, 'PaymentSettled')
-                                    .pipe(mapTo('PaymentSettled'));
+                                return of('PaymentSettled');
                             }
                         case 'ManualPaymentStateError':
                             this.notificationService.error(addManualPaymentToOrder.message);
@@ -357,14 +358,14 @@ export class OrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(FulfillOrderDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(FulfillOrderDialogComponent, {
                         size: 'xl',
                         locals: {
                             order,
                         },
-                    });
-                }),
+                    }),
+                ),
                 switchMap(input => {
                     if (input) {
                         return this.dataService.order.createFulfillment(input);
@@ -412,7 +413,7 @@ export class OrderDetailComponent
             });
     }
 
-    cancelOrRefund(order: OrderDetail.Fragment) {
+    cancelOrRefund(order: OrderDetailFragment) {
         const isRefundable = this.orderHasSettledPayments(order);
         if (order.state === 'PaymentAuthorized' || order.active === true || !isRefundable) {
             this.cancelOrder(order);
@@ -421,7 +422,7 @@ export class OrderDetailComponent
         }
     }
 
-    settleRefund(refund: OrderDetail.Refunds) {
+    settleRefund(refund: Payment['refunds'][number]) {
         this.modalService
             .fromComponent(SettleRefundDialogComponent, {
                 size: 'md',
@@ -518,11 +519,11 @@ export class OrderDetailComponent
             });
     }
 
-    orderHasSettledPayments(order: OrderDetail.Fragment): boolean {
+    orderHasSettledPayments(order: OrderDetailFragment): boolean {
         return !!order.payments?.find(p => p.state === 'Settled');
     }
 
-    private cancelOrder(order: OrderDetail.Fragment) {
+    private cancelOrder(order: OrderDetailFragment) {
         this.modalService
             .fromComponent(CancelOrderDialogComponent, {
                 size: 'xl',
@@ -547,7 +548,7 @@ export class OrderDetailComponent
             });
     }
 
-    private refundOrder(order: OrderDetail.Fragment) {
+    private refundOrder(order: OrderDetailFragment) {
         this.modalService
             .fromComponent(RefundOrderDialogComponent, {
                 size: 'xl',
@@ -629,7 +630,9 @@ export class OrderDetailComponent
         }
     }
 
-    protected setFormValues(entity: Order.Fragment): void {
-        // empty
+    protected setFormValues(entity: OrderDetailFragment): void {
+        if (this.customFields.length) {
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get(['customFields']), entity);
+        }
     }
 }

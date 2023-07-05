@@ -39,14 +39,13 @@ import { StripePluginOptions } from './types';
  *
  *     plugins: [
  *       StripePlugin.init({
- *         apiKey: process.env.YOUR_STRIPE_SECRET_KEY,
- *         webhookSigningSecret: process.env.YOUR_STRIPE_WEBHOOK_SIGNING_SECRET,
  *         // This prevents different customers from using the same PaymentIntent
  *         storeCustomersInStripe: true,
  *       }),
  *     ]
  *     ````
  * 2. Create a new PaymentMethod in the Admin UI, and select "Stripe payments" as the handler.
+ * 3. Set the webhook secret and API key in the PaymentMethod form.
  *
  * ## Storefront usage
  *
@@ -154,7 +153,7 @@ import { StripePluginOptions } from './types';
  *    ```
  * 4. The Stripe CLI will create a webhook signing secret you can then use in your config of the StripePlugin.
  *
- * @docsCategory payments-plugin
+ * @docsCategory core plugins/PaymentsPlugin
  * @docsPage StripePlugin
  */
 @VendurePlugin({
@@ -192,11 +191,12 @@ import { StripePluginOptions } from './types';
     shopApiExtensions: {
         schema: gql`
             extend type Mutation {
-                createStripePaymentIntent: String
+                createStripePaymentIntent: String!
             }
         `,
         resolvers: [StripeResolver],
     },
+    compatibility: '^2.0.0',
 })
 export class StripePlugin {
     static options: StripePluginOptions;

@@ -17,9 +17,9 @@ import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Asset, Product, ProductVariant } from '../../entity';
+import { Facet } from '../../entity/facet/facet.entity';
 import { FacetValueTranslation } from '../../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { Facet } from '../../entity/facet/facet.entity';
 import { EventBus } from '../../event-bus';
 import { FacetValueEvent } from '../../event-bus/events/facet-value-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -60,10 +60,10 @@ export class FacetValueService {
     ): Promise<Array<Translated<FacetValue>>> {
         const [repository, languageCode] =
             ctxOrLang instanceof RequestContext
-                ? // tslint:disable-next-line:no-non-null-assertion
+                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   [this.connection.getRepository(ctxOrLang, FacetValue), lang!]
                 : [this.connection.rawConnection.getRepository(FacetValue), ctxOrLang];
-        // ToDo Implement usage of channelLanguageCode
+        // TODO: Implement usage of channelLanguageCode
         return repository
             .find({
                 relations: ['facet'],
@@ -87,6 +87,7 @@ export class FacetValueService {
     ): Promise<PaginatedList<Translated<FacetValue>>> {
         return this.listQueryBuilder
             .build(FacetValue, options, {
+                ctx,
                 relations: relations ?? ['facet'],
                 channelId: ctx.channelId,
             })
@@ -102,10 +103,14 @@ export class FacetValueService {
     findOne(ctx: RequestContext, id: ID): Promise<Translated<FacetValue> | undefined> {
         return this.connection
             .getRepository(ctx, FacetValue)
-            .findOne(id, {
+            .findOne({
+                where: { id },
                 relations: ['facet'],
             })
-            .then(facetValue => facetValue && this.translator.translate(facetValue, ctx, ['facet']));
+            .then(
+                facetValue =>
+                    (facetValue && this.translator.translate(facetValue, ctx, ['facet'])) ?? undefined,
+            );
     }
 
     findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {

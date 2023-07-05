@@ -35,9 +35,10 @@ export class CancelOrderDialogComponent implements OnInit, Dialog<CancelOrderInp
     }
 
     ngOnInit() {
-        this.lineQuantities = this.order.lines.reduce((result, line) => {
-            return { ...result, [line.id]: line.quantity };
-        }, {});
+        this.lineQuantities = this.order.lines.reduce(
+            (result, line) => ({ ...result, [line.id]: line.quantity }),
+            {},
+        );
     }
 
     radioChanged() {

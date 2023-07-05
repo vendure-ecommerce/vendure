@@ -27,13 +27,13 @@ export class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform 
 
     transform(value: unknown, ...args: unknown[]): string | unknown {
         const [currencyCode, locale] = args;
-        if (typeof value === 'number' && typeof currencyCode === 'string') {
+        if (typeof value === 'number') {
             const activeLocale = this.getActiveLocale(locale);
             const majorUnits = value / 100;
             try {
                 return new Intl.NumberFormat(activeLocale, {
                     style: 'currency',
-                    currency: currencyCode,
+                    currency: currencyCode as any,
                 }).format(majorUnits);
             } catch (e: any) {
                 return majorUnits.toFixed(2);

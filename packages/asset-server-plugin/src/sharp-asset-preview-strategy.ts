@@ -11,7 +11,7 @@ import { loggerCtx } from './constants';
  * preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
  * overlay will be generated.
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  * @docsPage SharpAssetPreviewStrategy
  */
 interface SharpAssetPreviewConfig {
@@ -88,7 +88,7 @@ interface SharpAssetPreviewConfig {
  * }),
  * ```
  *
- * @docsCategory AssetServerPlugin
+ * @docsCategory core plugins/AssetServerPlugin
  * @docsPage SharpAssetPreviewStrategy
  * @docsWeight 0
  */
@@ -147,9 +147,9 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
                 }
             } catch (err: any) {
                 Logger.error(
-                    `An error occurred when generating preview for image with mimeType ${mimeType}: ${
-                        err.message ?? err.toString()
-                    }`,
+                    `An error occurred when generating preview for image with mimeType ${mimeType}: ${JSON.stringify(
+                        err.message,
+                    )}`,
                     loggerCtx,
                 );
                 return this.generateBinaryFilePreview(mimeType);

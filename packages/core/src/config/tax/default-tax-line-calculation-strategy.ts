@@ -4,14 +4,14 @@ import { CalculateTaxLinesArgs, TaxLineCalculationStrategy } from './tax-line-ca
 
 /**
  * @description
- * The default {@link TaxLineCalculationStrategy} which applies a single TaxLine to the OrderItem
+ * The default {@link TaxLineCalculationStrategy} which applies a single TaxLine to the OrderLine
  * based on the applicable {@link TaxRate}.
  *
  * @docsCategory tax
  */
 export class DefaultTaxLineCalculationStrategy implements TaxLineCalculationStrategy {
     calculate(args: CalculateTaxLinesArgs): TaxLine[] {
-        const { orderItem, applicableTaxRate } = args;
-        return [applicableTaxRate.apply(orderItem.proratedUnitPrice)];
+        const { orderLine, applicableTaxRate } = args;
+        return [applicableTaxRate.apply(orderLine.proratedUnitPrice)];
     }
 }

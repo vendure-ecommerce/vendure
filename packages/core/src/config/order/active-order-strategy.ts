@@ -2,7 +2,7 @@ import { DocumentNode } from 'graphql';
 
 import { RequestContext } from '../../api/index';
 import { InjectableStrategy } from '../../common/index';
-import { Order } from '../../entity/index';
+import { Order } from '../../entity/order/order.entity';
 
 export const ACTIVE_ORDER_INPUT_FIELD_NAME = 'activeOrderInput';
 

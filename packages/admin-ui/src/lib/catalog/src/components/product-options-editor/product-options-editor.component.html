@@ -1,114 +1,134 @@
-<vdr-action-bar>
-    <vdr-ab-left>
-        <vdr-language-selector
-            [availableLanguageCodes]="availableLanguages$ | async"
-            [currentLanguageCode]="languageCode$ | async"
-            (languageCodeChange)="setLanguage($event)"
-        ></vdr-language-selector>
-    </vdr-ab-left>
+<vdr-page-header>
+    <vdr-page-title></vdr-page-title>
+    <vdr-page-header-description>{{ 'catalog.page-description-options-editor' | translate }}</vdr-page-header-description>
+</vdr-page-header>
+<vdr-page-body>
+    <vdr-page-block>
+        <vdr-action-bar>
+            <vdr-ab-left>
+                <vdr-language-selector
+                    [availableLanguageCodes]="availableLanguages$ | async"
+                    [currentLanguageCode]="languageCode$ | async"
+                    (languageCodeChange)="setLanguage($event)"
+                ></vdr-language-selector>
+            </vdr-ab-left>
 
-    <vdr-ab-right>
-        <div class="flex center">
-            <div class="mr2">
-                <clr-checkbox-wrapper>
-                    <input
-                        clrCheckbox
-                        type="checkbox"
-                        id="auto-update"
-                        [(ngModel)]="autoUpdateVariantNames"
-                    />
-                    <label>{{ 'catalog.auto-update-product-variant-name' | translate }}</label>
-                </clr-checkbox-wrapper>
-            </div>
-            <button
-                *vdrIfPermissions="updatePermission"
-                class="btn btn-primary"
-                (click)="save()"
-                [disabled]="detailForm.pristine || detailForm.invalid"
-            >
-                {{ 'common.update' | translate }}
-            </button>
-        </div>
-    </vdr-ab-right>
-</vdr-action-bar>
-<form class="form" [formGroup]="detailForm" *ngIf="optionGroups$ | async as optionGroups">
-    <div formGroupName="optionGroups" class="clr-row">
-        <div class="clr-col-12 clr-col-xl-6" *ngFor="let optionGroup of getOptionGroups(); index as i">
-            <section class="card" [formArrayName]="i">
-                <div class="card-header option-group-header">
-                    <vdr-entity-info [entity]="optionGroup.value"></vdr-entity-info>
-                    <div class="ml2">{{ optionGroup.value.code }}</div>
+            <vdr-ab-right>
+                <div class="flex center">
+                    <div class="mr-2">
+                        <clr-checkbox-wrapper>
+                            <input
+                                clrCheckbox
+                                type="checkbox"
+                                id="auto-update"
+                                [(ngModel)]="autoUpdateVariantNames"
+                            />
+                            <label>{{ 'catalog.auto-update-product-variant-name' | translate }}</label>
+                        </clr-checkbox-wrapper>
+                    </div>
+                    <button
+                        *vdrIfPermissions="updatePermission"
+                        class="btn btn-primary"
+                        (click)="save()"
+                        [disabled]="detailForm.pristine || detailForm.invalid"
+                    >
+                        {{ 'common.update' | translate }}
+                    </button>
                 </div>
-                <div class="card-block">
-                    <vdr-form-field [label]="'common.name' | translate" for="name">
-                        <input
-                            [id]="'name-' + i"
-                            type="text"
-                            formControlName="name"
-                            [readonly]="!(updatePermission | hasPermission)"
-                        />
-                    </vdr-form-field>
-                    <vdr-form-field [label]="'common.code' | translate" for="code">
-                        <input
-                            [id]="'code-' + i"
-                            type="text"
-                            [readonly]="!(updatePermission | hasPermission)"
-                            formControlName="code"
-                        />
-                    </vdr-form-field>
-                    <section formGroupName="customFields" *ngIf="optionGroupCustomFields.length">
-                        <label>{{ 'common.custom-fields' | translate }}</label>
+            </vdr-ab-right>
+        </vdr-action-bar>
+    </vdr-page-block>
+    <vdr-page-block>
+        <form class="form" [formGroup]="detailForm" *ngIf="optionGroups$ | async as optionGroups">
+            <div formGroupName="optionGroups">
+                <vdr-card
+                    *ngFor="let optionGroup of getOptionGroups(); index as i"
+                    [formArrayName]="i"
+                    [title]="optionGroup.value.code"
+                >
+                    <vdr-page-entity-info [entity]="optionGroup.value"></vdr-page-entity-info>
+                    <div class="form-grid">
+                        <vdr-form-field [label]="'common.name' | translate" for="name">
+                            <input
+                                [id]="'name-' + i"
+                                type="text"
+                                formControlName="name"
+                                [readonly]="!(updatePermission | hasPermission)"
+                            />
+                        </vdr-form-field>
+                        <vdr-form-field [label]="'common.code' | translate" for="code">
+                            <input
+                                [id]="'code-' + i"
+                                type="text"
+                                [readonly]="!(updatePermission | hasPermission)"
+                                formControlName="code"
+                            />
+                        </vdr-form-field>
+                    </div>
+                    <ng-container formGroupName="customFields" *ngIf="optionGroupCustomFields.length">
                         <vdr-tabbed-custom-fields
                             entityName="ProductOptionGroup"
                             [customFields]="optionGroupCustomFields"
                             [customFieldsFormGroup]="optionGroup.get('customFields')"
                             [readonly]="!(updatePermission | hasPermission)"
                         ></vdr-tabbed-custom-fields>
-                    </section>
-                </div>
-                <section class="card-block">
-                    <table class="facet-values-list table mt2 mb4" formGroupName="options">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>{{ 'common.name' | translate }}</th>
-                                <th>{{ 'common.code' | translate }}</th>
-                                <ng-container *ngIf="optionCustomFields.length">
-                                    <th>{{ 'common.custom-fields' | translate }}</th>
-                                </ng-container>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                class="facet-value"
-                                *ngFor="let option of getOptions(optionGroup); let i = index"
-                                [formGroupName]="i"
-                            >
-                                <td class="align-middle">
-                                    <vdr-entity-info [entity]="option.value"></vdr-entity-info>
-                                </td>
-                                <td class="align-middle">
-                                    <input
-                                        type="text"
-                                        formControlName="name"
-                                        [readonly]="!(updatePermission | hasPermission)"
-                                    />
-                                </td>
-                                <td class="align-middle"><input type="text" formControlName="code" /></td>
-                                <td class="" *ngIf="optionCustomFields.length">
-                                    <vdr-tabbed-custom-fields
-                                        entityName="ProductOption"
-                                        [customFields]="optionCustomFields"
-                                        [compact]="true"
-                                        [customFieldsFormGroup]="option.get('customFields')"
-                                        [readonly]="!(updatePermission | hasPermission)"
-                                    ></vdr-tabbed-custom-fields>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-            </section>
-        </div>
-    </div>
-</form>
+                    </ng-container>
+
+                    <vdr-data-table-2
+                        id="edit-options-list"
+                        *ngIf="getOptions(optionGroup) as options"
+                        [items]="options"
+                        [itemsPerPage]="paginationSettings[optionGroup.value.id]?.itemsPerPage"
+                        [currentPage]="paginationSettings[optionGroup.value.id]?.currentPage"
+                        (pageChange)="paginationSettings[optionGroup.value.id].currentPage = $event"
+                        [totalItems]="options.length"
+                    >
+                        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+                            <ng-template let-optionControl="item">
+                                {{ optionControl.value.id }}
+                            </ng-template>
+                        </vdr-dt2-column>
+                        <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+                            <ng-template let-optionControl="item">
+                                {{ optionControl.value.createdAt | localeDate : 'short' }}
+                            </ng-template>
+                        </vdr-dt2-column>
+                        <vdr-dt2-column [heading]="'common.updated-at' | translate" [hiddenByDefault]="true">
+                            <ng-template let-optionControl="item">
+                                {{ optionControl.value.updatedAt | localeDate : 'short' }}
+                            </ng-template>
+                        </vdr-dt2-column>
+                        <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false">
+                            <ng-template let-optionControl="item">
+                                <input
+                                    type="text"
+                                    [formControl]="optionControl.get('name')"
+                                    [readonly]="!(updatePermission | hasPermission)"
+                                />
+                            </ng-template>
+                        </vdr-dt2-column>
+                        <vdr-dt2-column [heading]="'common.code' | translate" [optional]="false">
+                            <ng-template let-optionControl="item">
+                                <input type="text" [formControl]="optionControl.get('code')" />
+                            </ng-template>
+                        </vdr-dt2-column>
+                        <vdr-dt2-column
+                            [heading]="'common.custom-fields' | translate"
+                            [hiddenByDefault]="optionCustomFields.length === 0"
+                        >
+                            <ng-template let-optionControl="item">
+                                <vdr-tabbed-custom-fields
+                                    entityName="ProductOption"
+                                    [customFields]="optionCustomFields"
+                                    [compact]="true"
+                                    [customFieldsFormGroup]="optionControl.get('customFields')"
+                                    [readonly]="!(updatePermission | hasPermission)"
+                                ></vdr-tabbed-custom-fields>
+                            </ng-template>
+                        </vdr-dt2-column>
+                    </vdr-data-table-2>
+                </vdr-card>
+            </div>
+        </form>
+    </vdr-page-block>
+</vdr-page-body>

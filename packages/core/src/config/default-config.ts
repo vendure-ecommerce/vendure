@@ -18,23 +18,32 @@ import { DefaultPasswordValidationStrategy } from './auth/default-password-valid
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
+import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-product-variant-price-selection-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
-import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
+import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
+import { DefaultMoneyStrategy } from './entity/default-money-strategy';
+import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
 import { DefaultActiveOrderStrategy } from './order/default-active-order-strategy';
 import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
+import { DefaultGuestCheckoutStrategy } from './order/default-guest-checkout-strategy';
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
+import { defaultOrderProcess } from './order/default-order-process';
+import { DefaultOrderSellerStrategy } from './order/default-order-seller-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { DefaultOrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
+import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
+import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
 import { DefaultTaxLineCalculationStrategy } from './tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
 import { RuntimeVendureConfig } from './vendure-config';
@@ -77,6 +86,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         cookieOptions: {
             secret: Math.random().toString(36).substr(3),
             httpOnly: true,
+            sameSite: 'lax',
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
@@ -96,8 +106,10 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
+        productVariantPriceSelectionStrategy: new DefaultProductVariantPriceSelectionStrategy(),
         productVariantPriceCalculationStrategy: new DefaultProductVariantPriceCalculationStrategy(),
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
+        stockLocationStrategy: new DefaultStockLocationStrategy(),
     },
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
@@ -112,6 +124,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         type: 'mysql',
     },
     entityOptions: {
+        moneyStrategy: new DefaultMoneyStrategy(),
         channelCacheTtl: 30000,
         zoneCacheTtl: 30000,
         taxRateCacheTtl: 30000,
@@ -124,7 +137,9 @@ export const defaultConfig: RuntimeVendureConfig = {
     shippingOptions: {
         shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
         shippingCalculators: [defaultShippingCalculator],
+        shippingLineAssignmentStrategy: new DefaultShippingLineAssignmentStrategy(),
         customFulfillmentProcess: [],
+        process: [defaultFulfillmentProcess],
         fulfillmentHandlers: [manualFulfillmentHandler],
     },
     orderOptions: {
@@ -133,18 +148,21 @@ export const defaultConfig: RuntimeVendureConfig = {
         orderItemPriceCalculationStrategy: new DefaultOrderItemPriceCalculationStrategy(),
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
-        process: [],
+        process: [defaultOrderProcess],
         stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
         orderByCodeAccessStrategy: new DefaultOrderByCodeAccessStrategy('2h'),
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
         activeOrderStrategy: new DefaultActiveOrderStrategy(),
+        orderSellerStrategy: new DefaultOrderSellerStrategy(),
+        guestCheckoutStrategy: new DefaultGuestCheckoutStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],
         paymentMethodHandlers: [],
         customPaymentProcess: [],
+        process: [defaultPaymentProcess],
     },
     taxOptions: {
         taxZoneStrategy: new DefaultTaxZoneStrategy(),
@@ -158,7 +176,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),
         jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
-        enableWorkerHealthCheck: false,
         prefix: '',
     },
     customFields: {
@@ -167,7 +184,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         Asset: [],
         Channel: [],
         Collection: [],
-        Country: [],
         Customer: [],
         CustomerGroup: [],
         Facet: [],
@@ -182,7 +198,10 @@ export const defaultConfig: RuntimeVendureConfig = {
         ProductOptionGroup: [],
         ProductVariant: [],
         Promotion: [],
+        Region: [],
+        Seller: [],
         ShippingMethod: [],
+        StockLocation: [],
         TaxCategory: [],
         TaxRate: [],
         User: [],

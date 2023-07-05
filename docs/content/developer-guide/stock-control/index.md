@@ -9,7 +9,7 @@ Vendure includes features to help manage your stock levels, stock allocations an
 
 Stock control is enabled globally via the Global Settings:
 
-{{< figure src="./global-stock-control.jpg" >}}
+{{< figure src="./global-stock-control.webp" >}}
 
 It can be disabled if, for example, you manage your stock with a separate inventory management system and synchronize stock levels into Vendure automatically. The setting can also be overridden at the individual ProductVariant level.
 
@@ -32,7 +32,7 @@ Stock on hand | Allocated | Out-of-stock threshold | Saleable
 10            | 10        | 0                      | 0
 10            | 10        | -5                     | 5
 
-The saleable value is what determines whether the customer is able to add a variant to an order. If there is 0 saleable stock, then any attempt to add to the order will result in an [`InsufficientStockError`]({{< relref "/docs/graphql-api/shop/object-types" >}}#insufficientstockerror).
+The saleable value is what determines whether the customer is able to add a variant to an order. If there is 0 saleable stock, then any attempt to add to the order will result in an [`InsufficientStockError`]({{< relref "/graphql-api/shop/object-types" >}}#insufficientstockerror).
 
 ```JSON
 {

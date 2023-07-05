@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -8,21 +8,23 @@ import {
     CustomFieldConfig,
     DataService,
     findTranslation,
-    GetProductVariantOptions,
+    GetProductVariantOptionsQuery,
     LanguageCode,
     NotificationService,
     Permission,
-    ProductOption,
-    ProductOptionGroup,
+    ProductOptionFragment,
+    ProductOptionGroupFragment,
     ServerConfigService,
     TranslationOf,
     UpdateProductOptionGroupInput,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
 import { combineLatest, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { map, mergeMap, take, tap } from 'rxjs/operators';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
+
+type ProductWithOptions = NonNullable<GetProductVariantOptionsQuery['product']>;
 
 @Component({
     selector: 'vdr-product-options-editor',
@@ -30,17 +32,15 @@ import { ProductDetailService } from '../../providers/product-detail/product-det
     styleUrls: ['./product-options-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductOptionsEditorComponent
-    extends BaseDetailComponent<GetProductVariantOptions.Product>
-    implements OnInit
-{
-    detailForm: FormGroup;
-    optionGroups$: Observable<GetProductVariantOptions.OptionGroups[]>;
+export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWithOptions> implements OnInit {
+    detailForm: UntypedFormGroup;
+    optionGroups$: Observable<ProductWithOptions['optionGroups']>;
     languageCode$: Observable<LanguageCode>;
     availableLanguages$: Observable<LanguageCode[]>;
     optionGroupCustomFields: CustomFieldConfig[];
     optionCustomFields: CustomFieldConfig[];
     autoUpdateVariantNames = true;
+    paginationSettings: { [groupId: string]: { currentPage: number; itemsPerPage: number } } = {};
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
 
     constructor(
@@ -49,7 +49,7 @@ export class ProductOptionsEditorComponent
         protected serverConfigService: ServerConfigService,
         protected dataService: DataService,
         private productDetailService: ProductDetailService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private changeDetector: ChangeDetectorRef,
         private notificationService: NotificationService,
     ) {
@@ -60,29 +60,37 @@ export class ProductOptionsEditorComponent
 
     ngOnInit(): void {
         this.optionGroups$ = this.route.snapshot.data.entity.pipe(
-            map((product: GetProductVariantOptions.Product) => product.optionGroups),
+            map((product: ProductWithOptions) => product.optionGroups),
+            tap((optionGroups: ProductWithOptions['optionGroups']) => {
+                for (const group of optionGroups) {
+                    this.paginationSettings[group.id] = {
+                        currentPage: 1,
+                        itemsPerPage: 10,
+                    };
+                }
+            }),
         );
-        this.detailForm = new FormGroup({
-            optionGroups: new FormArray([]),
+        this.detailForm = new UntypedFormGroup({
+            optionGroups: new UntypedFormArray([]),
         });
         super.init();
     }
 
-    getOptionGroups(): FormGroup[] {
+    getOptionGroups(): UntypedFormGroup[] {
         const optionGroups = this.detailForm.get('optionGroups');
-        return (optionGroups as FormArray).controls as FormGroup[];
+        return (optionGroups as UntypedFormArray).controls as UntypedFormGroup[];
     }
 
-    getOptions(optionGroup: FormGroup): FormGroup[] {
+    getOptions(optionGroup: UntypedFormGroup): UntypedFormGroup[] {
         const options = optionGroup.get('options');
-        return (options as FormArray).controls as FormGroup[];
+        return (options as UntypedFormArray).controls as UntypedFormGroup[];
     }
 
     save() {
         if (this.detailForm.invalid || this.detailForm.pristine) {
             return;
         }
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const $product = this.dataService.product.getProduct(this.id).mapSingle(data => data.product!);
         combineLatest(this.entity$, this.languageCode$, $product)
             .pipe(
@@ -148,8 +156,8 @@ export class ProductOptionsEditorComponent
     }
 
     private getUpdatedOptionGroup(
-        optionGroup: ProductOptionGroup.Fragment,
-        optionGroupFormGroup: FormGroup,
+        optionGroup: ProductOptionGroupFragment,
+        optionGroupFormGroup: UntypedFormGroup,
         languageCode: LanguageCode,
     ): UpdateProductOptionGroupInput {
         const input = createUpdatedTranslatable({
@@ -166,8 +174,8 @@ export class ProductOptionsEditorComponent
     }
 
     private getUpdatedOption(
-        option: ProductOption.Fragment,
-        optionFormGroup: FormGroup,
+        option: ProductOptionFragment,
+        optionFormGroup: UntypedFormGroup,
         languageCode: LanguageCode,
     ): UpdateProductOptionInput {
         const input = createUpdatedTranslatable({
@@ -183,15 +191,15 @@ export class ProductOptionsEditorComponent
         return input;
     }
 
-    protected setFormValues(entity: GetProductVariantOptions.Product, languageCode: LanguageCode): void {
-        const groupsForm = this.detailForm.get('optionGroups') as FormArray;
+    protected setFormValues(entity: ProductWithOptions, languageCode: LanguageCode): void {
+        const groupsForm = this.detailForm.get('optionGroups') as UntypedFormArray;
         for (const optionGroup of entity.optionGroups) {
             const groupTranslation = findTranslation(optionGroup, languageCode);
 
             const groupForm = this.setOptionGroupForm(optionGroup, groupsForm, groupTranslation);
             this.setCustomFieldsForm(this.optionGroupCustomFields, groupForm, optionGroup, groupTranslation);
 
-            let optionsForm = groupForm.get('options') as FormArray;
+            let optionsForm = groupForm.get('options') as UntypedFormArray;
             if (!optionsForm) {
                 optionsForm = this.formBuilder.array([]);
                 groupForm.addControl('options', optionsForm);
@@ -206,10 +214,10 @@ export class ProductOptionsEditorComponent
     }
 
     protected setCustomFieldsForm<
-        T extends GetProductVariantOptions.OptionGroups | GetProductVariantOptions.Options,
+        T extends ProductWithOptions['optionGroups'][0] | ProductWithOptions['optionGroups'][0]['options'][0],
     >(
         customFields: CustomFieldConfig[],
-        formGroup: FormGroup,
+        formGroup: UntypedFormGroup,
         entity: T,
         currentTranslation?: TranslationOf<T>,
     ) {
@@ -226,9 +234,9 @@ export class ProductOptionsEditorComponent
     }
 
     protected setOptionGroupForm(
-        entity: GetProductVariantOptions.OptionGroups,
-        groupsForm: FormArray,
-        currentTranslation?: TranslationOf<GetProductVariantOptions.OptionGroups>,
+        entity: ProductWithOptions['optionGroups'][0],
+        groupsForm: UntypedFormArray,
+        currentTranslation?: TranslationOf<ProductWithOptions['optionGroups'][0]>,
     ) {
         const group = {
             id: entity.id,
@@ -238,14 +246,14 @@ export class ProductOptionsEditorComponent
             name: currentTranslation?.name ?? '',
         };
         let groupForm = groupsForm.controls.find(control => control.value.id === entity.id) as
-            | FormGroup
+            | UntypedFormGroup
             | undefined;
         if (groupForm) {
             groupForm.get('id')?.setValue(group.id);
             groupForm.get('code')?.setValue(group.code);
             groupForm.get('name')?.setValue(group.name);
-            groupForm.get('createdAt')?.setValue(group.name);
-            groupForm.get('updatedAt')?.setValue(group.name);
+            groupForm.get('createdAt')?.setValue(group.createdAt);
+            groupForm.get('updatedAt')?.setValue(group.updatedAt);
         } else {
             groupForm = this.formBuilder.group(group);
             groupsForm.push(groupForm);
@@ -254,9 +262,9 @@ export class ProductOptionsEditorComponent
     }
 
     protected setOptionForm(
-        entity: GetProductVariantOptions.Options,
-        optionsForm: FormArray,
-        currentTranslation?: TranslationOf<GetProductVariantOptions.Options>,
+        entity: ProductWithOptions['optionGroups'][0]['options'][0],
+        optionsForm: UntypedFormArray,
+        currentTranslation?: TranslationOf<ProductWithOptions['optionGroups'][0]['options'][0]>,
     ) {
         const group = {
             id: entity.id,
@@ -266,14 +274,14 @@ export class ProductOptionsEditorComponent
             name: currentTranslation?.name ?? '',
         };
         let optionForm = optionsForm.controls.find(control => control.value.id === entity.id) as
-            | FormGroup
+            | UntypedFormGroup
             | undefined;
         if (optionForm) {
             optionForm.get('id')?.setValue(group.id);
             optionForm.get('code')?.setValue(group.code);
             optionForm.get('name')?.setValue(group.name);
-            optionForm.get('createdAt')?.setValue(group.name);
-            optionForm.get('updatedAt')?.setValue(group.name);
+            optionForm.get('createdAt')?.setValue(group.createdAt);
+            optionForm.get('updatedAt')?.setValue(group.updatedAt);
         } else {
             optionForm = this.formBuilder.group(group);
             optionsForm.push(optionForm);

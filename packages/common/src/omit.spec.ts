@@ -1,3 +1,5 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+
 import { omit } from './omit';
 
 declare const File: any;

@@ -3,8 +3,8 @@ import { Handler, Request } from 'express';
 import * as fs from 'fs';
 import { GraphQLError } from 'graphql';
 import i18next, { TFunction } from 'i18next';
-import i18nextMiddleware from 'i18next-express-middleware';
 import Backend from 'i18next-fs-backend';
+import i18nextMiddleware from 'i18next-http-middleware';
 import ICU from 'i18next-icu';
 import path from 'path';
 
@@ -18,7 +18,8 @@ import { I18nError } from './i18n-error';
  * @description
  * I18n resources used for translations
  *
- * @docsCategory Translation
+ * @docsCategory common
+ * @docsPage I18nService
  */
 export interface VendureTranslationResources {
     error: any;
@@ -35,7 +36,10 @@ export interface I18nRequest extends Request {
  * The `i18next-express-middleware` middleware detects the client's preferred language based on
  * the `Accept-Language` header or "lang" query param and adds language-specific translation
  * functions to the Express request / response objects.
- * @docsCategory Translation
+ *
+ * @docsCategory common
+ * @docsPage I18nService
+ * @docsWeight 0
  */
 @Injectable()
 export class I18nService implements OnModuleInit {
@@ -52,7 +56,7 @@ export class I18nService implements OnModuleInit {
         return i18next
             .use(i18nextMiddleware.LanguageDetector)
             .use(Backend as any)
-            .use(ICU as any)
+            .use(ICU)
             .init({
                 nsSeparator: false,
                 preload: ['en', 'de', 'ru', 'uk'],
@@ -86,8 +90,8 @@ export class I18nService implements OnModuleInit {
             const rawData = fs.readFileSync(filePath);
             const resources = JSON.parse(rawData.toString('utf-8'));
             this.addTranslation(langKey, resources);
-        } catch (err) {
-            Logger.error(`Could not load resources file ${filePath}`, `I18nService`);
+        } catch (err: any) {
+            Logger.error(`Could not load resources file ${filePath}`, 'I18nService');
         }
     }
 
@@ -114,8 +118,10 @@ export class I18nService implements OnModuleInit {
             let translation = originalError.message;
             try {
                 translation = t(originalError.message, originalError.variables);
-            } catch (e) {
-                translation += ` (Translation format error: ${e.message})`;
+            } catch (e: any) {
+                const message =
+                    typeof e.message === 'string' ? (e.message as string) : JSON.stringify(e.message);
+                translation += ` (Translation format error: ${message})`;
             }
             error.message = translation;
             // We can now safely remove the variables object so that they do not appear in
@@ -135,9 +141,10 @@ export class I18nService implements OnModuleInit {
         let translation: string = error.message;
         const key = `errorResult.${error.message}`;
         try {
-            translation = t(key, error as any);
-        } catch (e) {
-            translation += ` (Translation format error: ${e.message})`;
+            translation = t(key, error);
+        } catch (e: any) {
+            const message = typeof e.message === 'string' ? (e.message as string) : JSON.stringify(e.message);
+            translation += ` (Translation format error: ${message})`;
         }
         error.message = translation;
     }

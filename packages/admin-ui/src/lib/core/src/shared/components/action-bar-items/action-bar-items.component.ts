@@ -66,7 +66,7 @@ export class ActionBarItemsComponent implements OnInit, OnChanges {
     }
 
     getButtonStyles(item: ActionBarItem): string[] {
-        const styles = ['btn'];
+        const styles = ['button'];
         if (item.buttonStyle && item.buttonStyle === 'link') {
             styles.push('btn-link');
             return styles;
@@ -78,12 +78,13 @@ export class ActionBarItemsComponent implements OnInit, OnChanges {
     private getButtonColorClass(item: ActionBarItem): string {
         switch (item.buttonColor) {
             case undefined:
+                return '';
             case 'primary':
-                return item.buttonStyle === 'outline' ? 'btn-outline' : 'btn-primary';
+                return item.buttonStyle === 'outline' ? 'btn-outline' : 'primary';
             case 'success':
-                return item.buttonStyle === 'outline' ? 'btn-success-outline' : 'btn-success';
+                return item.buttonStyle === 'outline' ? 'btn-success-outline' : 'success';
             case 'warning':
-                return item.buttonStyle === 'outline' ? 'btn-warning-outline' : 'btn-warning';
+                return item.buttonStyle === 'outline' ? 'btn-warning-outline' : 'warning';
             default:
                 assertNever(item.buttonColor);
                 return '';

@@ -27,7 +27,8 @@ import {
 
 import { ErrorResultUnion, isGraphQlErrorResult, UserInputError } from '../../../common/index';
 import { TransactionalConnection } from '../../../connection/index';
-import { Customer, Order } from '../../../entity/index';
+import { Customer } from '../../../entity/customer/customer.entity';
+import { Order } from '../../../entity/order/order.entity';
 import { CustomerService, OrderService } from '../../../service/index';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
@@ -127,7 +128,7 @@ export class DraftOrderResolver {
     async setCustomerForDraftOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetCustomerForDraftOrderArgs,
-    ): Promise<ErrorResultUnion<SetCustomerForDraftOrderResult, Order>> {
+    ): Promise<ErrorResultUnion</* SetCustomerForDraftOrderResult*/ any, Order>> {
         let customer: Customer;
         if (args.customerId) {
             const result = await this.customerService.findOne(ctx, args.customerId);
@@ -140,12 +141,12 @@ export class DraftOrderResolver {
         } else if (args.input) {
             const result = await this.customerService.createOrUpdate(ctx, args.input, true);
             if (isGraphQlErrorResult(result)) {
-                return result;
+                return result as any;
             }
             customer = result;
         } else {
             throw new UserInputError(
-                `Either "customerId" or "input" must be supplied to setCustomerForDraftOrder`,
+                'Either "customerId" or "input" must be supplied to setCustomerForDraftOrder',
             );
         }
 
@@ -208,6 +209,6 @@ export class DraftOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetDraftOrderShippingMethodArgs,
     ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>> {
-        return this.orderService.setShippingMethod(ctx, args.orderId, args.shippingMethodId);
+        return this.orderService.setShippingMethod(ctx, args.orderId, [args.shippingMethodId]);
     }
 }

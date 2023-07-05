@@ -50,10 +50,10 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
                 customerId = await getBraintreeCustomerId(ctx, gateway, customer);
             }
             return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId, options);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e, loggerCtx);
             return {
-                amount: order.total,
+                amount,
                 state: 'Error' as const,
                 transactionId: '',
                 errorMessage: e.toString(),
@@ -152,7 +152,7 @@ async function getBraintreeCustomerId(
                 );
                 Logger.debug(JSON.stringify(result.errors, null, 2), loggerCtx);
             }
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
         }
     } else {

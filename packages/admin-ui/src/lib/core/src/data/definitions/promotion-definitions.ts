@@ -12,6 +12,7 @@ export const PROMOTION_FRAGMENT = gql`
         createdAt
         updatedAt
         name
+        description
         enabled
         couponCode
         perCustomerUsageLimit
@@ -23,29 +24,14 @@ export const PROMOTION_FRAGMENT = gql`
         actions {
             ...ConfigurableOperation
         }
+        translations {
+            id
+            languageCode
+            name
+            description
+        }
     }
     ${CONFIGURABLE_OPERATION_FRAGMENT}
-`;
-
-export const GET_PROMOTION_LIST = gql`
-    query GetPromotionList($options: PromotionListOptions) {
-        promotions(options: $options) {
-            items {
-                ...Promotion
-            }
-            totalItems
-        }
-    }
-    ${PROMOTION_FRAGMENT}
-`;
-
-export const GET_PROMOTION = gql`
-    query GetPromotion($id: ID!) {
-        promotion(id: $id) {
-            ...Promotion
-        }
-    }
-    ${PROMOTION_FRAGMENT}
 `;
 
 export const GET_ADJUSTMENT_OPERATIONS = gql`
@@ -83,6 +69,15 @@ export const UPDATE_PROMOTION = gql`
 export const DELETE_PROMOTION = gql`
     mutation DeletePromotion($id: ID!) {
         deletePromotion(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_PROMOTIONS = gql`
+    mutation DeletePromotions($ids: [ID!]!) {
+        deletePromotions(ids: $ids) {
             result
             message
         }

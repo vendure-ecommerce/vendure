@@ -1,15 +1,20 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { CurrencyCode, StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import {
+    CurrencyCode,
+    ProductVariantPrice,
+    StockMovementListOptions,
+} from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
-import { Asset, Channel, FacetValue, Product, ProductOption, TaxRate } from '../../../entity';
+import { Asset, Channel, FacetValue, Product, ProductOption, StockLevel, TaxRate } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
+import { StockLevelService } from '../../../service/index';
 import { AssetService } from '../../../service/services/asset.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
@@ -152,6 +157,7 @@ export class ProductVariantAdminEntityResolver {
     constructor(
         private productVariantService: ProductVariantService,
         private stockMovementService: StockMovementService,
+        private stockLevelService: StockLevelService,
     ) {}
 
     @ResolveField()
@@ -168,9 +174,50 @@ export class ProductVariantAdminEntityResolver {
     }
 
     @ResolveField()
+    async stockOnHand(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+        @Args() args: { options: StockMovementListOptions },
+    ): Promise<number> {
+        const { stockOnHand } = await this.stockLevelService.getAvailableStock(ctx, productVariant.id);
+        return stockOnHand;
+    }
+
+    @ResolveField()
+    async stockAllocated(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+        @Args() args: { options: StockMovementListOptions },
+    ): Promise<number> {
+        const { stockAllocated } = await this.stockLevelService.getAvailableStock(ctx, productVariant.id);
+        return stockAllocated;
+    }
+
+    @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<Channel[]> {
         const isDefaultChannel = ctx.channel.code === DEFAULT_CHANNEL_CODE;
         const channels = await this.productVariantService.getProductVariantChannels(ctx, productVariant.id);
         return channels.filter(channel => (isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId)));
+    }
+
+    @ResolveField()
+    async stockLevels(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<StockLevel[]> {
+        return this.stockLevelService.getStockLevelsForVariant(ctx, productVariant.id);
+    }
+
+    @ResolveField()
+    async prices(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<ProductVariantPrice[]> {
+        if (productVariant.productVariantPrices) {
+            return productVariant.productVariantPrices.filter(pvp =>
+                idsAreEqual(pvp.channelId, ctx.channelId),
+            );
+        }
+        return this.productVariantService.getProductVariantPrices(ctx, productVariant.id);
     }
 }

@@ -29,7 +29,7 @@ export interface MethodInfo extends MemberInfo {
 
 export interface DocsPage {
     title: string;
-    category: string;
+    category: string[];
     declarations: ParsedDeclaration[];
     fileName: string;
 }

@@ -1,23 +1,17 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseListComponent,
     DataService,
+    FacetValueFormInputComponent,
     JobQueueService,
     JobState,
-    LanguageCode,
-    LogicalOperator,
     ModalService,
     NotificationService,
-    ProductSearchInputComponent,
-    SearchInput,
-    SearchProducts,
-    SelectionManager,
-    ServerConfigService,
+    ProductListQueryDocument,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
-import { EMPTY, Observable } from 'rxjs';
-import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { EMPTY, lastValueFrom } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-products-list',
@@ -25,113 +19,104 @@ import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxj
     styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent
-    extends BaseListComponent<SearchProducts.Query, SearchProducts.Items, SearchProducts.Variables>
-    implements OnInit, AfterViewInit
+    extends TypedBaseListComponent<typeof ProductListQueryDocument, 'products'>
+    implements OnInit
 {
-    searchTerm = '';
-    facetValueIds: string[] = [];
-    groupByProduct = true;
-    selectedFacetValueIds$: Observable<string[]>;
-    facetValues$: Observable<SearchProducts.FacetValues[]>;
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
-    selectionManager: SelectionManager<SearchProducts.Items>;
+    readonly customFields = this.getCustomFieldConfig('Product');
+    readonly filters = this.createFilterCollection()
+        .addDateFilters()
+        .addFilters([
+            {
+                name: 'id',
+                type: { kind: 'text' },
+                label: _('common.id'),
+                filterField: 'id',
+            },
+            {
+                name: 'enabled',
+                type: { kind: 'boolean' },
+                label: _('common.enabled'),
+                filterField: 'enabled',
+            },
+            {
+                name: 'slug',
+                type: { kind: 'text' },
+                label: _('common.slug'),
+                filterField: 'slug',
+            },
+        ])
+        .addFilter({
+            name: 'facetValues',
+            type: {
+                kind: 'custom',
+                component: FacetValueFormInputComponent,
+                serializeValue: value => value.map(v => v.id).join(','),
+                deserializeValue: value => value.split(',').map(id => ({ id })),
+                getLabel: value => {
+                    if (value.length === 0) {
+                        return '';
+                    }
+                    if (value[0].name) {
+                        return value.map(v => v.name).join(', ');
+                    } else {
+                        return lastValueFrom(
+                            this.dataService.facet
+                                .getFacetValues({ filter: { id: { in: value.map(v => v.id) } } })
+                                .mapSingle(({ facetValues }) =>
+                                    facetValues.items.map(fv => fv.name).join(', '),
+                                ),
+                        );
+                    }
+                },
+            },
+            label: _('catalog.facet-values'),
+            toFilterInput: (value: any[]) => ({
+                facetValueId: {
+                    in: value.map(v => v.id),
+                },
+            }),
+        })
+        .addCustomFieldFilters(this.customFields)
+        .connectToRoute(this.route);
 
-    @ViewChild('productSearchInputComponent', { static: true })
-    private productSearchInput: ProductSearchInputComponent;
+    readonly sorts = this.createSortCollection()
+        .defaultSort('createdAt', 'DESC')
+        .addSorts([
+            { name: 'id' },
+            { name: 'createdAt' },
+            { name: 'updatedAt' },
+            { name: 'name' },
+            { name: 'slug' },
+        ])
+        .addCustomFieldSorts(this.customFields)
+        .connectToRoute(this.route);
 
     constructor(
-        private dataService: DataService,
+        protected dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
-        private serverConfigService: ServerConfigService,
-        router: Router,
-        route: ActivatedRoute,
     ) {
-        super(router, route);
-        this.route.queryParamMap
-            .pipe(
-                map(qpm => qpm.get('q')),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(term => {
-                this.searchTerm = term || '';
-                if (this.productSearchInput) {
-                    this.productSearchInput.setSearchTerm(term);
-                }
-            });
-        this.selectedFacetValueIds$ = this.route.queryParamMap.pipe(map(qpm => qpm.getAll('fvids')));
-
-        this.selectedFacetValueIds$.pipe(takeUntil(this.destroy$)).subscribe(ids => {
-            this.facetValueIds = ids;
-            if (this.productSearchInput) {
-                this.productSearchInput.setFacetValues(ids);
-            }
-        });
-        super.setQueryFn(
-            (...args: any[]) =>
-                this.dataService.product.searchProducts(this.searchTerm, ...args).refetchOnChannelChange(),
-            data => data.search,
-            // tslint:disable-next-line:no-shadowed-variable
-            (skip, take) => ({
-                input: {
+        super();
+        this.configure({
+            document: ProductListQueryDocument,
+            getItems: data => data.products,
+            setVariables: (skip, take) => ({
+                options: {
                     skip,
                     take,
-                    term: this.searchTerm,
-                    facetValueIds: this.facetValueIds,
-                    facetValueOperator: LogicalOperator.AND,
-                    groupByProduct: this.groupByProduct,
-                } as SearchInput,
+                    filter: {
+                        name: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    sort: this.sorts.createSortInput(),
+                },
             }),
-        );
-        this.selectionManager = new SelectionManager<SearchProducts.Items>({
-            multiSelect: true,
-            itemsAreEqual: (a, b) =>
-                this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,
-            additiveMode: true,
+            refreshListOnChanges: [this.sorts.valueChanges, this.filters.valueChanges],
         });
-    }
-
-    ngOnInit() {
-        super.ngOnInit();
-
-        this.facetValues$ = this.result$.pipe(map(data => data.search.facetValues));
-
-        this.facetValues$
-            .pipe(take(1), delay(100), withLatestFrom(this.selectedFacetValueIds$))
-            .subscribe(([__, ids]) => {
-                this.productSearchInput.setFacetValues(ids);
-            });
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage)
-            .pipe(tap(() => this.refresh()));
-
-        this.dataService.product
-            .getPendingSearchIndexUpdates()
-            .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates)
-            .subscribe(value => (this.pendingSearchIndexUpdates = value));
-    }
-
-    ngAfterViewInit() {
-        if (this.productSearchInput && this.searchTerm) {
-            setTimeout(() => this.productSearchInput.setSearchTerm(this.searchTerm));
-        }
-    }
-
-    setSearchTerm(term: string) {
-        this.searchTerm = term;
-        this.setQueryParam({ q: term || null, page: 1 });
-        this.refresh();
-    }
-
-    setFacetValueIds(ids: string[]) {
-        this.facetValueIds = ids;
-        this.setQueryParam({ fvids: ids, page: 1 });
-        this.refresh();
     }
 
     rebuildSearchIndex() {
@@ -149,15 +134,6 @@ export class ProductListComponent
                     this.notificationService.error(_('catalog.reindex-error'));
                 }
             });
-        });
-    }
-
-    runPendingSearchIndexUpdates() {
-        this.dataService.product.runPendingSearchIndexUpdates().subscribe(value => {
-            this.notificationService.info(_('catalog.running-search-index-updates'), {
-                count: this.pendingSearchIndexUpdates,
-            });
-            this.pendingSearchIndexUpdates = 0;
         });
     }
 
@@ -189,9 +165,5 @@ export class ProductListComponent
                     });
                 },
             );
-    }
-
-    setLanguage(code: LanguageCode) {
-        this.dataService.client.setContentLanguage(code).subscribe();
     }
 }

@@ -3,27 +3,23 @@
         {{ 'settings.test-address' | translate }}
     </div>
     <div class="card-block">
-        <form [formGroup]="form">
-            <clr-input-container>
-                <label>{{ 'customer.city' | translate }}</label>
-                <input formControlName="city" type="text" clrInput />
-            </clr-input-container>
-            <clr-input-container>
-                <label>{{ 'customer.province' | translate }}</label>
-                <input formControlName="province" type="text" clrInput />
-            </clr-input-container>
-            <clr-input-container>
-                <label>{{ 'customer.postal-code' | translate }}</label>
-                <input formControlName="postalCode" type="text" clrInput />
-            </clr-input-container>
-            <clr-input-container>
-                <label>{{ 'customer.country' | translate }}</label>
-                <select name="countryCode" formControlName="countryCode" clrInput clrSelect>
+        <form [formGroup]="form" class="form-grid">
+            <vdr-form-field [label]="'customer.city' | translate">
+                <input formControlName="city" type="text"  />
+            </vdr-form-field>
+            <vdr-form-field [label]="'customer.province' | translate">
+                <input formControlName="province" type="text"  />
+            </vdr-form-field>
+            <vdr-form-field [label]="'customer.postal-code' | translate">
+                <input formControlName="postalCode" type="text"  />
+            </vdr-form-field>
+            <vdr-form-field [label]="'customer.country' | translate">
+                <select name="countryCode" formControlName="countryCode" >
                     <option *ngFor="let country of availableCountries$ | async" [value]="country.code">
                         {{ country.name }}
                     </option>
                 </select>
-            </clr-input-container>
+            </vdr-form-field>
         </form>
     </div>
 </div>

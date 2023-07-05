@@ -7,13 +7,10 @@ weight: 0
 
 ## Requirements
  
-* [Node.js](https://nodejs.org/en/) **v14** or above, with support for **even-numbered Node.js versions**.
+* [Node.js](https://nodejs.org/en/) **v16** or above, with support for **even-numbered Node.js versions**.
 * The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors.
 * If you want to use MySQL, MariaDB, or Postgres as your data store, then you'll need an instance available locally. However, if you are just testing out Vendure, we recommend using SQLite, which has no external requirements.
-* For Windows users: make sure you have **[windows build tools](https://www.npmjs.com/package/windows-build-tools) installed**
-  * `npm install --global --production windows-build-tools`
-  * This step should be done with administrative rights, and is required because Vendure makes use of some dependencies which must be compiled upon installation.
- 
+
 ## Installation with @vendure/create
 
 The recommended way to get started with Vendure is by using the [@vendure/create](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create) tool. This is a command-line tool which will scaffold and configure your new Vendure project and install all dependencies.
@@ -65,7 +62,7 @@ Assuming the default config settings, you can now access:
 * The Vendure Admin UI: [http://localhost:3000/admin](http://localhost:3000/admin)
 
 {{< alert primary >}}
-Log in with the superadmin credentials:
+Log in with the superadmin credentials you specified, which default to:
 
 * **username**: superadmin
 * **password**: superadmin
@@ -73,6 +70,7 @@ Log in with the superadmin credentials:
 
 ## Next Steps
 
-* Learn more about [Configuration]({{< relref "/docs/developer-guide/configuration" >}}) of your Vendure server.
-* Get a better understanding of how Vendure works by reading the [Architecture Overview]({{< relref "/docs/developer-guide/overview" >}})
-* Learn how to implement a storefront with the [GraphQL API Guide]({{< relref "/docs/storefront/shop-api-guide" >}})
+* Learn more about [Configuration]({{< relref "/developer-guide/configuration" >}}) of your Vendure server.
+* Get a better understanding of how Vendure works by reading the [Architecture Overview]({{< relref "/developer-guide/overview" >}})
+* Start writing custom plugins with the [Plugin guide]({{< relref "/plugins" >}})
+* Learn how to implement a storefront with the [GraphQL API Guide]({{< relref "/storefront/shop-api-guide" >}})

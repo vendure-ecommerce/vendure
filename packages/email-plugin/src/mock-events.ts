@@ -6,14 +6,13 @@ import {
     IdentifierChangeRequestEvent,
     NativeAuthenticationMethod,
     Order,
-    OrderItem,
     OrderLine,
     OrderStateTransitionEvent,
     PasswordResetEvent,
     ProductVariant,
+    ShippingLine,
     User,
 } from '@vendure/core';
-import { ShippingLine } from '@vendure/core/dist/entity/shipping-line/shipping-line.entity';
 
 export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
     'ArrangingPayment',
@@ -45,22 +44,18 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                     name: 'Curvy Monitor 24 inch',
                     sku: 'C24F390',
                 }),
-                items: [
-                    new OrderItem({
-                        id: '6',
-                        listPrice: 14374,
-                        listPriceIncludesTax: true,
-                        adjustments: [
-                            {
-                                adjustmentSource: 'Promotion:1',
-                                type: AdjustmentType.PROMOTION,
-                                amount: -1000,
-                                description: '$10 off computer equipment',
-                            },
-                        ],
-                        taxLines: [],
-                    }),
+                quantity: 1,
+                listPrice: 14374,
+                listPriceIncludesTax: true,
+                adjustments: [
+                    {
+                        adjustmentSource: 'Promotion:1',
+                        type: AdjustmentType.PROMOTION,
+                        amount: -1000 as any,
+                        description: '$10 off computer equipment',
+                    },
                 ],
+                taxLines: [],
             }),
             new OrderLine({
                 id: '6',
@@ -72,15 +67,11 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                     name: 'Hard Drive 1TB',
                     sku: 'IHD455T1',
                 }),
-                items: [
-                    new OrderItem({
-                        id: '7',
-                        listPrice: 3799,
-                        listPriceIncludesTax: true,
-                        adjustments: [],
-                        taxLines: [],
-                    }),
-                ],
+                quantity: 1,
+                listPrice: 3799,
+                listPriceIncludesTax: true,
+                adjustments: [],
+                taxLines: [],
             }),
         ],
         subTotal: 15144,

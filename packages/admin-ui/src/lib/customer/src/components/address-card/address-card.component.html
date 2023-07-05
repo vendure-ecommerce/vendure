@@ -21,45 +21,40 @@
         </div>
     </div>
     <div class="card-footer">
-        <vdr-entity-info [entity]="address"></vdr-entity-info>
-        <ng-container *ngIf="editable">
-            <button class="btn btn-sm btn-link" (click)="editAddress()">
-                {{ 'common.edit' | translate }}
-            </button>
-            <vdr-dropdown>
-                <button type="button" class="btn btn-sm btn-link" vdrDropdownTrigger>
-                    {{ 'common.more' | translate }}
-                    <clr-icon shape="caret down"></clr-icon>
+        <div class="address-actions">
+            <vdr-entity-info [entity]="address"></vdr-entity-info>
+            <ng-container *ngIf="editable">
+                <button class="button-small" (click)="editAddress()">
+                    {{ 'common.edit' | translate }}
                 </button>
-                <vdr-dropdown-menu>
-                    <button
-                        vdrDropdownItem
-                        class="button"
-                        [disabled]="isDefaultShipping"
-                        (click)="setAsDefaultShippingAddress()"
-                    >
-                        {{ 'customer.set-as-default-shipping-address' | translate }}
+                <vdr-dropdown>
+                    <button type="button" class="button-small" vdrDropdownTrigger>
+                        {{ 'common.more' | translate }}
+                        <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
                     </button>
-                    <button
-                        vdrDropdownItem
-                        class="button"
-                        [disabled]="isDefaultBilling"
-                        (click)="setAsDefaultBillingAddress()"
-                    >
-                        {{ 'customer.set-as-default-billing-address' | translate }}
-                    </button>
-                    <div class="dropdown-divider"></div>
-                    <button
-                        type="button"
-                        class="delete-button"
-                        (click)="delete()"
-                        vdrDropdownItem
-                    >
-                        <clr-icon shape="trash" class="is-danger"></clr-icon>
-                        {{ 'common.delete' | translate }}
-                    </button>
-                </vdr-dropdown-menu>
-            </vdr-dropdown>
-        </ng-container>
+                    <vdr-dropdown-menu>
+                        <button
+                            vdrDropdownItem
+                            [disabled]="isDefaultShipping"
+                            (click)="setAsDefaultShippingAddress()"
+                        >
+                            {{ 'customer.set-as-default-shipping-address' | translate }}
+                        </button>
+                        <button
+                            vdrDropdownItem
+                            [disabled]="isDefaultBilling"
+                            (click)="setAsDefaultBillingAddress()"
+                        >
+                            {{ 'customer.set-as-default-billing-address' | translate }}
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button type="button" (click)="delete()" vdrDropdownItem>
+                            <clr-icon shape="trash" class="is-danger"></clr-icon>
+                            {{ 'common.delete' | translate }}
+                        </button>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
+            </ng-container>
+        </div>
     </div>
 </div>

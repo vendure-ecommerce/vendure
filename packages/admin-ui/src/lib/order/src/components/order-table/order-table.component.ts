@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { AdjustmentType, CustomFieldConfig, OrderDetail, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-order-table',
@@ -9,14 +9,14 @@ import { AdjustmentType, CustomFieldConfig, OrderDetail, OrderDetailFragment } f
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderTableComponent implements OnInit {
-    @Input() order: OrderDetail.Fragment;
+    @Input() order: OrderDetailFragment;
     @Input() orderLineCustomFields: CustomFieldConfig[];
     @Input() isDraft = false;
     @Output() adjust = new EventEmitter<{ lineId: string; quantity: number }>();
     @Output() remove = new EventEmitter<{ lineId: string }>();
     orderLineCustomFieldsVisible = false;
     customFieldsForLine: {
-        [lineId: string]: Array<{ config: CustomFieldConfig; formGroup: FormGroup; value: any }>;
+        [lineId: string]: Array<{ config: CustomFieldConfig; formGroup: UntypedFormGroup; value: any }>;
     } = {};
 
     get visibleOrderLineCustomFields(): CustomFieldConfig[] {
@@ -42,38 +42,36 @@ export class OrderTableComponent implements OnInit {
         this.orderLineCustomFieldsVisible = !this.orderLineCustomFieldsVisible;
     }
 
-    getLineDiscounts(line: OrderDetail.Lines) {
+    getLineDiscounts(line: OrderDetailFragment['lines'][number]) {
         return line.discounts.filter(a => a.type === AdjustmentType.PROMOTION);
     }
 
     private getLineCustomFields() {
         for (const line of this.order.lines) {
-            const formGroup = new FormGroup({});
+            const formGroup = new UntypedFormGroup({});
             const result = this.orderLineCustomFields
                 .map(config => {
                     const value = (line as any).customFields[config.name];
-                    formGroup.addControl(config.name, new FormControl(value));
+                    formGroup.addControl(config.name, new UntypedFormControl(value));
                     return {
                         config,
                         formGroup,
                         value,
                     };
                 })
-                .filter(field => {
-                    return this.orderLineCustomFieldsVisible ? true : field.value != null;
-                });
+                .filter(field => this.orderLineCustomFieldsVisible ? true : field.value != null);
             this.customFieldsForLine[line.id] = result;
         }
     }
 
-    getPromotionLink(promotion: OrderDetail.Discounts): any[] {
+    getPromotionLink(promotion: OrderDetailFragment['discounts'][number]): any[] {
         const id = promotion.adjustmentSource.split(':')[1];
         return ['/marketing', 'promotions', id];
     }
 
     getCouponCodeForAdjustment(
-        order: OrderDetail.Fragment,
-        promotionAdjustment: OrderDetail.Discounts,
+        order: OrderDetailFragment,
+        promotionAdjustment: OrderDetailFragment['discounts'][number],
     ): string | undefined {
         const id = promotionAdjustment.adjustmentSource.split(':')[1];
         const promotion = order.promotions.find(p => p.id === id);
@@ -82,7 +80,7 @@ export class OrderTableComponent implements OnInit {
         }
     }
 
-    getShippingNames(order: OrderDetail.Fragment) {
+    getShippingNames(order: OrderDetailFragment) {
         if (order.shippingLines.length) {
             return order.shippingLines.map(shippingLine => shippingLine.shippingMethod.name).join(', ');
         } else {

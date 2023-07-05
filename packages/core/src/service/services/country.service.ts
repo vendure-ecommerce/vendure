@@ -5,7 +5,7 @@ import {
     DeletionResult,
     UpdateCountryInput,
 } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -15,8 +15,9 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Address } from '../../entity';
-import { CountryTranslation } from '../../entity/country/country-translation.entity';
-import { Country } from '../../entity/country/country.entity';
+import { Country } from '../../entity/region/country.entity';
+import { RegionTranslation } from '../../entity/region/region-translation.entity';
+import { Region } from '../../entity/region/region.entity';
 import { EventBus } from '../../event-bus';
 import { CountryEvent } from '../../event-bus/events/country-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -63,8 +64,8 @@ export class CountryService {
     ): Promise<Translated<Country> | undefined> {
         return this.connection
             .getRepository(ctx, Country)
-            .findOne(countryId, { relations })
-            .then(country => country && this.translator.translate(country, ctx));
+            .findOne({ where: { id: countryId }, relations })
+            .then(country => (country && this.translator.translate(country, ctx)) ?? undefined);
     }
 
     /**
@@ -99,7 +100,7 @@ export class CountryService {
             ctx,
             input,
             entityType: Country,
-            translationType: CountryTranslation,
+            translationType: RegionTranslation,
         });
         this.eventBus.publish(new CountryEvent(ctx, country, 'created', input));
         return assertFound(this.findOne(ctx, country.id));
@@ -110,7 +111,7 @@ export class CountryService {
             ctx,
             input,
             entityType: Country,
-            translationType: CountryTranslation,
+            translationType: RegionTranslation,
         });
         this.eventBus.publish(new CountryEvent(ctx, country, 'updated', input));
         return assertFound(this.findOne(ctx, country.id));

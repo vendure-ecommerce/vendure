@@ -65,7 +65,8 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * ## Installation
  *
  * **Requires Elasticsearch v7.0 < required Elasticsearch version < 7.10 **
- * Elasticsearch version 7.10.2 will throw error due to incompatibility with elasticsearch-js client. [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519)
+ * Elasticsearch version 7.10.2 will throw error due to incompatibility with elasticsearch-js client.
+ * [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519)
  * `yarn add \@elastic/elasticsearch \@vendure/elasticsearch-plugin`
  *
  * or
@@ -216,7 +217,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *}
  * ```
  *
- * @docsCategory ElasticsearchPlugin
+ * @docsCategory core plugins/ElasticsearchPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -250,6 +251,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
         // which looks like possibly a TS/definitions bug.
         schema: () => generateSchemaExtensions(ElasticsearchPlugin.options as any),
     },
+    compatibility: '^2.0.0',
 })
 export class ElasticsearchPlugin implements OnApplicationBootstrap {
     private static options: ElasticsearchRuntimeOptions;
@@ -276,7 +278,7 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
         const nodeName = this.nodeName();
         try {
             await this.elasticsearchService.checkConnection();
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not connect to Elasticsearch instance at "${nodeName}"`, loggerCtx);
             Logger.error(JSON.stringify(e), loggerCtx);
             this.healthCheckRegistryService.registerIndicatorFunction(() =>

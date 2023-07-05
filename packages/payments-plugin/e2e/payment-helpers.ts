@@ -4,12 +4,14 @@ import { SimpleGraphQLClient, TestServer } from '@vendure/testing';
 import gql from 'graphql-tag';
 
 import { REFUND_ORDER } from './graphql/admin-queries';
-import { RefundFragment, RefundOrder } from './graphql/generated-admin-types';
+import { RefundFragment, RefundOrderMutation, RefundOrderMutationVariables } from './graphql/generated-admin-types';
 import {
-    GetShippingMethods,
-    SetShippingMethod,
+    GetShippingMethodsQuery,
+    SetShippingMethodMutation,
+    SetShippingMethodMutationVariables,
     TestOrderFragmentFragment,
-    TransitionToState,
+    TransitionToStateMutation,
+    TransitionToStateMutationVariables,
 } from './graphql/generated-shop-types';
 import {
     GET_ELIGIBLE_SHIPPING_METHODS,
@@ -28,10 +30,10 @@ export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void
             countryCode: 'AT',
         },
     });
-    const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+    const { eligibleShippingMethods } = await shopClient.query<GetShippingMethodsQuery>(
         GET_ELIGIBLE_SHIPPING_METHODS,
     );
-    await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
+    await shopClient.query<SetShippingMethodMutation, SetShippingMethodMutationVariables>(SET_SHIPPING_METHOD, {
         id: eligibleShippingMethods[1].id,
     });
 }
@@ -39,10 +41,10 @@ export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void
 export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
     await setShipping(shopClient);
     const { transitionOrderToState } = await shopClient.query<
-        TransitionToState.Mutation,
-        TransitionToState.Variables
+        TransitionToStateMutation,
+        TransitionToStateMutationVariables
     >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
-    // tslint:disable-next-line:no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return (transitionOrderToState as TestOrderFragmentFragment)!.id;
 }
 
@@ -53,7 +55,7 @@ export async function refundOrderLine(
     paymentId: string,
     adjustment: number,
 ): Promise<RefundFragment> {
-    const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(
+    const { refundOrder } = await adminClient.query<RefundOrderMutation, RefundOrderMutationVariables>(
         REFUND_ORDER,
         {
             input: {
@@ -101,6 +103,11 @@ export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
         }
     }
 `;
+
+export const CREATE_STRIPE_PAYMENT_INTENT = gql`
+    mutation createStripePaymentIntent{
+        createStripePaymentIntent
+    }`;
 
 export const GET_MOLLIE_PAYMENT_METHODS = gql`
     query molliePaymentMethods($input: MolliePaymentMethodsInput!) {

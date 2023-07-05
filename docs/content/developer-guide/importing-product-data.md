@@ -35,7 +35,7 @@ Here's an explanation of each column:
 * `name`: The name of the product. Rows with an empty "name" are interpreted as variants of the preceeding product row.
 * `slug`: The product's slug. Can be omitted, in which case will be generated from the name.
 * `description`: The product description.
-* `assets`: One or more asset file names separated by the pipe (`|`) character. The files can be located on the local file system, in which case the path is interpreted as being relative to the [`importAssetsDir`]({{< relref "/docs/typescript-api/import-export/import-export-options" >}}#importassetsdir) as defined in the VendureConfig. Files can also be urls which will be fetched from a remote http/https url. If you need more control over how assets are imported, you can implement a custom [AssetImportStrategy]({{< relref "asset-import-strategy" >}}). The first asset will be set as the featuredAsset.
+* `assets`: One or more asset file names separated by the pipe (`|`) character. The files can be located on the local file system, in which case the path is interpreted as being relative to the [`importAssetsDir`]({{< relref "/typescript-api/import-export/import-export-options" >}}#importassetsdir) as defined in the VendureConfig. Files can also be urls which will be fetched from a remote http/https url. If you need more control over how assets are imported, you can implement a custom [AssetImportStrategy]({{< relref "asset-import-strategy" >}}). The first asset will be set as the featuredAsset.
 * `facets`: One or more facets to apply to the product separated by the pipe (`|`) character. A facet has the format `<facet-name>:<facet-value>`.
 * `optionGroups`: OptionGroups define what variants make up the product. Applies only to products with more than one variant. 
 * `optionValues`: For each optionGroup defined, a corresponding value must be specified for each variant. Applies only to products with more than one variant.
@@ -84,7 +84,7 @@ Use of language codes has to be consistent throughout the file. You don't have t
 
 ## Initial Data
 
-As well as product data, other initialization data can be populated using the [`InitialData` object]({{< relref "initial-data" >}}). **This format is intentionally limited**; more advanced requirements (e.g. setting up ShippingMethods that use custom checkers & calculators) should be carried out via scripts which interact with the [Admin GraphQL API]({{< relref "/docs/graphql-api/admin" >}}).
+As well as product data, other initialization data can be populated using the [`InitialData` object]({{< relref "initial-data" >}}). **This format is intentionally limited**; more advanced requirements (e.g. setting up ShippingMethods that use custom checkers & calculators) should be carried out via scripts which interact with the [Admin GraphQL API]({{< relref "/graphql-api/admin" >}}).
 
 ```TypeScript
 import { InitialData, LanguageCode } from '@vendure/core';

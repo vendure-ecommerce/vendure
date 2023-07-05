@@ -1,0 +1,236 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'variables';
+@import 'markdown';
+@import 'utils';
+@import 'article';
+@import 'menu';
+@import 'shortcodes';
+@import 'syntax';
+@import 'search-widget';
+@import 'blog';
+@import 'toc';
+@import 'fonts';
+
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-500 border border-transparent rounded-md py-2 px-4 flex items-center justify-center text-base font-medium text-white font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500;
+  }
+}
+
+
+[x-cloak] {
+  display: none !important;
+}
+
+
+ul.pagination {
+  display: flex;
+  justify-content: center;
+  list-style-type: none;
+
+  .page-item a {
+    padding: $padding-8 $padding-16;
+    border: 1px solid $gray-200;
+    border-radius: 3px;
+  }
+
+  .page-item.active a {
+    background-color: $gray-200;
+  }
+
+  .page-item.disabled a {
+    color: $gray-500;
+  }
+
+  li + li {
+    margin-left: $padding-4;
+  }
+}
+
+.container {
+  min-width: $container-min-width;
+  max-width: $container-max-width;
+  margin: $top-bar-height auto 0;
+}
+
+ul.contents-list {
+  padding: 0;
+  list-style-type: none;
+  text-transform: capitalize;
+}
+
+.book-brand {
+  margin-top: 0;
+}
+
+.book-page {
+  min-width: $body-min-width;
+  min-height: 80vh;
+  flex: 1;
+  padding: $padding-16 * 1.6;
+  padding-right: 3px;
+
+  @media all and (max-width: $sm-breakpoint) {
+    padding: 6px;
+  }
+
+  figure {
+    img {
+      max-width: 100%;
+    }
+  }
+}
+
+.book-header {
+  margin-bottom: $padding-16;
+  display: none;
+}
+
+
+.book-toc {
+  font-size: $font-size-12;
+
+  nav {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 70vh;
+    padding-right: 1em;
+  }
+
+  nav > ul > li {
+    margin-bottom: 12px;
+  }
+
+  a.active {
+    //font-weight: bold;
+    text-decoration: underline;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 8px;
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: $brand-color;
+      opacity: 0.5;
+    }
+  }
+}
+
+.book-git-footer {
+  display: flex;
+  margin-top: $padding-16;
+  font-size: $font-size-14;
+  align-items: baseline;
+
+  img {
+    width: $font-size-14;
+    vertical-align: bottom;
+  }
+}
+
+.book-footer {
+  height: 200px;
+  text-align: center;
+  color: $gray-600;
+  margin-top: 60px;
+  font-size: 12px;
+}
+
+.book-posts {
+  min-width: $body-min-width;
+  max-width: $md-breakpoint;
+  padding: $padding-16;
+
+  article {
+    padding-bottom: $padding-16;
+  }
+}
+
+
+.texture-bg {
+  background-color: #1a1a1a;
+  box-shadow: inset 0px 0px 15px 8px rgba(0, 0, 0, 0.75);
+  background-image: url("/header-bg.png");
+  background-blend-mode: darken;
+}
+
+
+// Responsive styles
+aside nav,
+.book-page,
+.markdown {
+  transition: 0.2s ease-in-out;
+  transition-property: transform, margin-left, opacity;
+  will-change: transform, margin-left;
+}
+
+@media screen and (max-width: $md-breakpoint) {
+  .book-toc {
+    display: none;
+  }
+  .left-gutter {
+    display: none;
+  }
+}
+
+@media screen and (max-width: $sm-breakpoint) {
+  //.book-menu {
+  //    margin-left: -$menu-width;
+  //}
+
+  .book-header {
+    display: flex;
+  }
+
+  #menu-control:checked + main {
+    nav.book-menu,
+    .book-page {
+      transform: translateX($menu-width);
+    }
+
+    .book-header label {
+      transform: rotate(90deg);
+    }
+
+    .markdown {
+      opacity: 0.25;
+    }
+  }
+}
+
+
+//.custom-scrollbar {
+//
+//    &::-webkit-scrollbar {
+//        width: 10px;
+//        height: 10px;
+//    }
+//
+//    &::-webkit-scrollbar {
+//        width: 10px;
+//        height: 10px;
+//    }
+//    &::-webkit-scrollbar-corner {
+//        background-color: hsl(0 0% 90%);
+//    }
+//    &::-webkit-scrollbar-thumb {
+//        background-color: hsl(0 0% 75%);
+//        border: 2px solid hsl(0 0% 90%);
+//        border-radius: 10px;
+//    }
+//    &::-webkit-scrollbar-thumb:hover {
+//        background-color: hsl(0 0% 65%);
+//    }
+//    &::-webkit-scrollbar-track {
+//        background-color: hsl(0 0% 90%);
+//    }
+//}

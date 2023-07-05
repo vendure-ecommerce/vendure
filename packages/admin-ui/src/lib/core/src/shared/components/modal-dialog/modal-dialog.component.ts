@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-import { Dialog, ModalOptions } from '../../../providers/modal/modal.service';
+import { Dialog, ModalOptions } from '../../../providers/modal/modal.types';
 
 import { DialogButtonsDirective } from './dialog-buttons.directive';
 
@@ -41,7 +41,7 @@ export class ModalDialogComponent<T extends Dialog<any>> {
             this.closeModal(result);
         };
         if (this.options && this.options.locals) {
-            // tslint:disable-next-line
+            // eslint-disable-next-line
             for (const key in this.options.locals) {
                 componentInstance[key] = this.options.locals[key] as T[Extract<keyof T, string>];
             }

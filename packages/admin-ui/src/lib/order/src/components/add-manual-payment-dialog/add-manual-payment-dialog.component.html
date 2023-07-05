@@ -4,6 +4,7 @@
         <ng-select
             [items]="paymentMethods$ | async"
             bindLabel="code"
+            appendTo="body"
             autofocus
             bindValue="code"
             [addTag]="true"

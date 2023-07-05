@@ -1,6 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 
 import { TestingCommonModule } from '../../../../../testing/testing-common.module';
 import { NotificationComponent } from '../../components/notification/notification.component';
@@ -22,13 +21,6 @@ describe('NotificationService:', () => {
                 { provide: I18nService, useClass: MockI18nService },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        });
-        // TODO: it looks like there will be an easier way to declare the entryComponents,
-        // see https://github.com/angular/angular/issues/12079
-        TestBed.overrideModule(BrowserDynamicTestingModule, {
-            set: {
-                entryComponents: [NotificationComponent],
-            },
         });
     });
 
@@ -90,9 +82,7 @@ describe('NotificationService:', () => {
 });
 
 @Component({
-    template: `
-        <vdr-overlay-host></vdr-overlay-host>
-    `,
+    template: ` <vdr-overlay-host></vdr-overlay-host> `,
 })
 class TestComponent {
     constructor(public notificationService: NotificationService) {}

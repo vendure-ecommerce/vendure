@@ -78,30 +78,6 @@ export const GET_CUSTOMER_LIST = gql`
     }
 `;
 
-export const GET_CUSTOMER = gql`
-    query GetCustomer($id: ID!, $orderListOptions: OrderListOptions) {
-        customer(id: $id) {
-            ...Customer
-            groups {
-                id
-                name
-            }
-            orders(options: $orderListOptions) {
-                items {
-                    id
-                    code
-                    state
-                    totalWithTax
-                    currencyCode
-                    updatedAt
-                }
-                totalItems
-            }
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
 export const CREATE_CUSTOMER = gql`
     mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
         createCustomer(input: $input, password: $password) {
@@ -127,6 +103,15 @@ export const UPDATE_CUSTOMER = gql`
 export const DELETE_CUSTOMER = gql`
     mutation DeleteCustomer($id: ID!) {
         deleteCustomer(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_CUSTOMERS = gql`
+    mutation DeleteCustomers($ids: [ID!]!) {
+        deleteCustomers(ids: $ids) {
             result
             message
         }
@@ -186,6 +171,15 @@ export const DELETE_CUSTOMER_GROUP = gql`
     }
 `;
 
+export const DELETE_CUSTOMER_GROUPS = gql`
+    mutation DeleteCustomerGroups($ids: [ID!]!) {
+        deleteCustomerGroups(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_CUSTOMER_GROUPS = gql`
     query GetCustomerGroups($options: CustomerGroupListOptions) {
         customerGroups(options: $options) {
@@ -210,6 +204,9 @@ export const GET_CUSTOMER_GROUP_WITH_CUSTOMERS = gql`
                     emailAddress
                     firstName
                     lastName
+                    user {
+                        id
+                    }
                 }
                 totalItems
             }

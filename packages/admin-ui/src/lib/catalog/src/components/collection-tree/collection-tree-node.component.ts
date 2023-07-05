@@ -17,7 +17,8 @@ import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 import { RootNode, TreeNode } from './array-to-tree';
-import { CollectionPartial, CollectionTreeComponent } from './collection-tree.component';
+import { CollectionTreeService } from './collection-tree.service';
+import { CollectionPartial } from './collection-tree.types';
 
 @Component({
     selector: 'vdr-collection-tree-node',
@@ -39,8 +40,8 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges, OnDestroy
 
     constructor(
         @SkipSelf() @Optional() private parent: CollectionTreeNodeComponent,
-        private root: CollectionTreeComponent,
         private dataService: DataService,
+        private collectionTreeService: CollectionTreeService,
         private router: Router,
         private route: ActivatedRoute,
         private changeDetectorRef: ChangeDetectorRef,
@@ -108,11 +109,11 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges, OnDestroy
     }
 
     getMoveListItems(collection: CollectionPartial) {
-        this.moveListItems = this.root.getMoveListItems(collection);
+        this.moveListItems = this.collectionTreeService.getMoveListItems(collection);
     }
 
     move(collection: CollectionPartial, parentId: string) {
-        this.root.onMove({
+        this.collectionTreeService.onMove({
             index: 0,
             parentId,
             collectionId: collection.id,
@@ -123,7 +124,7 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges, OnDestroy
         if (!collection.parent) {
             return;
         }
-        this.root.onMove({
+        this.collectionTreeService.onMove({
             index: currentIndex - 1,
             parentId: collection.parent.id,
             collectionId: collection.id,
@@ -134,7 +135,7 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges, OnDestroy
         if (!collection.parent) {
             return;
         }
-        this.root.onMove({
+        this.collectionTreeService.onMove({
             index: currentIndex + 1,
             parentId: collection.parent.id,
             collectionId: collection.id,
@@ -143,10 +144,10 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges, OnDestroy
 
     drop(event: CdkDragDrop<CollectionPartial | RootNode<CollectionPartial>>) {
         moveItemInArray(this.collectionTree.children, event.previousIndex, event.currentIndex);
-        this.root.onDrop(event);
+        this.collectionTreeService.onDrop(event);
     }
 
     delete(id: string) {
-        this.root.onDelete(id);
+        this.collectionTreeService.onDelete(id);
     }
 }

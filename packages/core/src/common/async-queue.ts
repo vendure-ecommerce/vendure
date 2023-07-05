@@ -41,9 +41,9 @@ export class AsyncQueue {
      */
     push<T>(task: Task<T>): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            this.running < this.concurrency
+            void (this.running < this.concurrency
                 ? this.runTask(task, resolve, reject)
-                : this.enqueueTask(task, resolve, reject);
+                : this.enqueueTask(task, resolve, reject));
         });
     }
 
@@ -52,7 +52,7 @@ export class AsyncQueue {
         try {
             const result = await task();
             resolve(result);
-        } catch (e) {
+        } catch (e: any) {
             reject(e);
         }
         this.dec();

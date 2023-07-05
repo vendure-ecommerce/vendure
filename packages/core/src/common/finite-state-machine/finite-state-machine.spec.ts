@@ -1,4 +1,5 @@
 import { of } from 'rxjs';
+import { describe, expect, it, vi } from 'vitest';
 
 import { FSM } from './finite-state-machine';
 import { Transitions } from './types';
@@ -32,37 +33,37 @@ describe('Finite State Machine', () => {
         expect(fsm.getNextStates()).toEqual(['Moving', 'DoorsOpen']);
     });
 
-    it('allows valid transitions', () => {
+    it('allows valid transitions', async () => {
         const initialState = 'DoorsClosed';
         const fsm = new FSM<TestState>({ transitions }, initialState);
 
-        fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('Moving');
-        fsm.transitionTo('DoorsClosed');
+        await fsm.transitionTo('DoorsClosed', {});
         expect(fsm.currentState).toBe('DoorsClosed');
-        fsm.transitionTo('DoorsOpen');
+        await fsm.transitionTo('DoorsOpen', {});
         expect(fsm.currentState).toBe('DoorsOpen');
-        fsm.transitionTo('DoorsClosed');
+        await fsm.transitionTo('DoorsClosed', {});
         expect(fsm.currentState).toBe('DoorsClosed');
     });
 
-    it('does not allow invalid transitions', () => {
+    it('does not allow invalid transitions', async () => {
         const initialState = 'DoorsOpen';
         const fsm = new FSM<TestState>({ transitions }, initialState);
 
-        fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('DoorsOpen');
-        fsm.transitionTo('DoorsClosed');
+        await fsm.transitionTo('DoorsClosed', {});
         expect(fsm.currentState).toBe('DoorsClosed');
-        fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('Moving');
-        fsm.transitionTo('DoorsOpen');
+        await fsm.transitionTo('DoorsOpen', {});
         expect(fsm.currentState).toBe('Moving');
     });
 
-    it('onTransitionStart() is invoked before a transition takes place', () => {
+    it('onTransitionStart() is invoked before a transition takes place', async () => {
         const initialState = 'DoorsClosed';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const data = 123;
         let currentStateDuringCallback = '';
         const fsm = new FSM<TestState>(
@@ -75,15 +76,15 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        fsm.transitionTo('Moving', data);
+        await fsm.transitionTo('Moving', data);
 
         expect(spy).toHaveBeenCalledWith(initialState, 'Moving', data);
         expect(currentStateDuringCallback).toBe(initialState);
     });
 
-    it('onTransitionEnd() is invoked after a transition takes place', () => {
+    it('onTransitionEnd() is invoked after a transition takes place', async () => {
         const initialState = 'DoorsClosed';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const data = 123;
         let currentStateDuringCallback = '';
         const fsm = new FSM<TestState>(
@@ -96,8 +97,8 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        fsm.transitionTo('Moving', data);
-
+        const { finalize } = await fsm.transitionTo('Moving', data);
+        await finalize();
         expect(spy).toHaveBeenCalledWith(initialState, 'Moving', data);
         expect(currentStateDuringCallback).toBe('Moving');
     });
@@ -112,7 +113,7 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe(initialState);
     });
 
@@ -126,7 +127,7 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe(initialState);
     });
 
@@ -140,7 +141,7 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe(initialState);
     });
 
@@ -154,7 +155,7 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe(initialState);
     });
 
@@ -168,7 +169,7 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('Moving');
     });
 
@@ -184,13 +185,13 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('Moving');
     });
 
     it('onError() is invoked for invalid transitions', async () => {
         const initialState = 'DoorsOpen';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const fsm = new FSM<TestState>(
             {
                 transitions,
@@ -199,13 +200,13 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(spy).toHaveBeenCalledWith(initialState, 'Moving', undefined);
     });
 
     it('onTransitionStart() invokes onError() if it returns a string', async () => {
         const initialState = 'DoorsClosed';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const fsm = new FSM<TestState>(
             {
                 transitions,
@@ -215,7 +216,7 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        await fsm.transitionTo('Moving');
+        await fsm.transitionTo('Moving', {});
         expect(spy).toHaveBeenCalledWith(initialState, 'Moving', 'error');
     });
 });

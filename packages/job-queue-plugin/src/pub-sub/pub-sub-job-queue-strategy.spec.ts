@@ -2,6 +2,7 @@ import { PubSub } from '@google-cloud/pubsub';
 import { ModuleRef } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { Injector, Job } from '@vendure/core';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PUB_SUB_OPTIONS } from './constants';
 import { PubSubOptions } from './options';
@@ -14,10 +15,10 @@ describe('PubSubJobQueueStrategy', () => {
 
     beforeEach(async () => {
         topic = {
-            publish: jest.fn(),
+            publish: vi.fn(),
         };
         pubsub = {
-            topic: jest.fn(() => {
+            topic: vi.fn(() => {
                 return topic;
             }),
         };
@@ -47,7 +48,7 @@ describe('PubSubJobQueueStrategy', () => {
                     data: {},
                 }),
             );
-        } catch (err) {
+        } catch (err: any) {
             expect(err).toEqual(new Error('Topic name not set for queue: some-queue'));
         }
         expect(pubsub.topic).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { UuidIdStrategy } from '@vendure/core';
 // This import is here to simulate the behaviour of
 // the package end-user importing symbols from the
@@ -9,11 +9,12 @@ import { UuidIdStrategy } from '@vendure/core';
 import '@vendure/core/dist/index';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { GetProductList } from './graphql/generated-e2e-admin-types';
+import { GetProductListQuery, GetProductListQueryVariables } from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
 
 describe('UuidIdStrategy', () => {
@@ -36,7 +37,7 @@ describe('UuidIdStrategy', () => {
     });
 
     it('uses uuids', async () => {
-        const { products } = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
+        const { products } = await adminClient.query<GetProductListQuery, GetProductListQueryVariables>(
             GET_PRODUCT_LIST,
             {
                 options: {

@@ -1,3 +1,5 @@
+@import "variables";
+
 @mixin no-select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -6,27 +8,50 @@
     -ms-user-select: none;
     user-select: none;
 }
-
 @mixin ng-select-facet-values {
-    .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
-        background: none;
-        margin: 0;
+
+}
+@mixin table-base-styles {
+    th {
+        border-bottom: 1px solid var(--color-weight-200);
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        text-transform: uppercase;
+        position: relative;
+        white-space: nowrap;
     }
 
-    .ng-dropdown-panel-items div.ng-option:last-child {
-        display: none;
+    th,
+    td {
+        padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 1);
     }
 
-    .ng-dropdown-panel .ng-dropdown-header {
-        border: none;
-        padding: 0;
+    tr td:first-of-type,
+    tr th:first-of-type {
+        text-align: center;
+        @media screen and (min-width: $breakpoint-medium) {
+            padding-left: var(--surface-margin-left);
+            text-align: left;
+        }
     }
 
-    .ng-select.ng-select-multiple .ng-select-container .ng-value-container {
-        padding: 0;
+    th:last-of-type,
+    td:last-of-type {
+        border-right: 1px solid var(--color-weight-200);
     }
 
-    .ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-placeholder {
-        padding-left: 8px;
+    tr:first-of-type th:last-of-type {
+        border-image: linear-gradient(0deg, var(--color-weight-200), transparent) 1;
+    }
+    tr:last-of-type td:last-of-type {
+        border-image: linear-gradient(180deg, var(--color-weight-200), transparent) 1;
+    }
+
+    tbody td {
+        border-bottom: 1px solid var(--color-table-row-separator);
+    }
+
+    tbody tr:hover {
+        background-color: var(--color-table-row-hover-bg);
     }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { VerifyCustomerAccountResult } from '@vendure/common/lib/generated-shop-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
@@ -17,6 +18,7 @@ import {
     VerificationTokenExpiredError,
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { normalizeEmailAddress } from '../../common/index';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
@@ -40,12 +42,22 @@ export class UserService {
         private roleService: RoleService,
         private passwordCipher: PasswordCipher,
         private verificationTokenGenerator: VerificationTokenGenerator,
+        private moduleRef: ModuleRef,
     ) {}
 
     async getUserById(ctx: RequestContext, userId: ID): Promise<User | undefined> {
-        return this.connection.getRepository(ctx, User).findOne(userId, {
-            relations: ['roles', 'roles.channels', 'authenticationMethods'],
-        });
+        return this.connection
+            .getRepository(ctx, User)
+            .findOne({
+                where: { id: userId },
+                relations: {
+                    roles: {
+                        channels: true,
+                    },
+                    authenticationMethods: true,
+                },
+            })
+            .then(result => result ?? undefined);
     }
 
     async getUserByEmailAddress(
@@ -63,9 +75,12 @@ export class UserService {
             .leftJoinAndSelect('user.roles', 'roles')
             .leftJoinAndSelect('roles.channels', 'channels')
             .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethods')
-            .where('user.identifier = :identifier', { identifier: emailAddress })
+            .where('LOWER(user.identifier) = :identifier', {
+                identifier: normalizeEmailAddress(emailAddress),
+            })
             .andWhere('user.deletedAt IS NULL')
-            .getOne();
+            .getOne()
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -78,7 +93,7 @@ export class UserService {
         password?: string,
     ): Promise<User | PasswordValidationError> {
         const user = new User();
-        user.identifier = identifier;
+        user.identifier = normalizeEmailAddress(identifier);
         const customerRole = await this.roleService.getCustomerRole(ctx);
         user.roles = [customerRole];
         const addNativeAuthResult = await this.addNativeAuthenticationMethod(ctx, user, identifier, password);
@@ -128,7 +143,7 @@ export class UserService {
         } else {
             authenticationMethod.passwordHash = '';
         }
-        authenticationMethod.identifier = identifier;
+        authenticationMethod.identifier = normalizeEmailAddress(identifier);
         authenticationMethod.user = user;
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(authenticationMethod);
         user.authenticationMethods = [...(user.authenticationMethods ?? []), authenticationMethod];
@@ -141,14 +156,14 @@ export class UserService {
      */
     async createAdminUser(ctx: RequestContext, identifier: string, password: string): Promise<User> {
         const user = new User({
-            identifier,
+            identifier: normalizeEmailAddress(identifier),
             verified: true,
         });
         const authenticationMethod = await this.connection
             .getRepository(ctx, NativeAuthenticationMethod)
             .save(
                 new NativeAuthenticationMethod({
-                    identifier,
+                    identifier: normalizeEmailAddress(identifier),
                     passwordHash: await this.passwordCipher.hash(password),
                 }),
             );
@@ -157,6 +172,10 @@ export class UserService {
     }
 
     async softDelete(ctx: RequestContext, userId: ID) {
+        // Dynamic import to avoid the circular dependency of SessionService
+        await this.moduleRef
+            .get((await import('./session.service.js')).SessionService)
+            .deleteSessionsByUser(ctx, new User({ id: userId }));
         await this.connection.getEntityOrThrow(ctx, User, userId);
         await this.connection.getRepository(ctx, User).update({ id: userId }, { deletedAt: new Date() });
     }
@@ -294,7 +313,7 @@ export class UserService {
      * Changes the User identifier without an email verification step, so this should be only used when
      * an Administrator is setting a new email address.
      */
-    async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
+    async changeUserAndNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
         const user = await this.getUserById(ctx, userId);
         if (!user) {
             return;
@@ -302,18 +321,15 @@ export class UserService {
         const nativeAuthMethod = user.authenticationMethods.find(
             (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
         );
-        if (!nativeAuthMethod) {
-            // If the NativeAuthenticationMethod is not configured, then
-            // there is nothing to do.
-            return;
+        if (nativeAuthMethod) {
+            nativeAuthMethod.identifier = newIdentifier;
+            nativeAuthMethod.identifierChangeToken = null;
+            nativeAuthMethod.pendingIdentifier = null;
+            await this.connection
+                .getRepository(ctx, NativeAuthenticationMethod)
+                .save(nativeAuthMethod, { reload: false });
         }
         user.identifier = newIdentifier;
-        nativeAuthMethod.identifier = newIdentifier;
-        nativeAuthMethod.identifierChangeToken = null;
-        nativeAuthMethod.pendingIdentifier = null;
-        await this.connection
-            .getRepository(ctx, NativeAuthenticationMethod)
-            .save(nativeAuthMethod, { reload: false });
         await this.connection.getRepository(ctx, User).save(user, { reload: false });
     }
 
@@ -402,7 +418,7 @@ export class UserService {
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         const matches = await this.passwordCipher.check(currentPassword, nativeAuthMethod.passwordHash);
         if (!matches) {
-            return new InvalidCredentialsError('');
+            return new InvalidCredentialsError({ authenticationError: '' });
         }
         nativeAuthMethod.passwordHash = await this.passwordCipher.hash(newPassword);
         await this.connection
@@ -422,7 +438,7 @@ export class UserService {
                 typeof passwordValidationResult === 'string'
                     ? passwordValidationResult
                     : 'Password is invalid';
-            return new PasswordValidationError(message);
+            return new PasswordValidationError({ validationErrorMessage: message });
         } else {
             return true;
         }

@@ -3,7 +3,7 @@ import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 import { Translation } from '../../../common/index';
-import { VendureEntity } from '../../../entity/index';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 /**
  * @description

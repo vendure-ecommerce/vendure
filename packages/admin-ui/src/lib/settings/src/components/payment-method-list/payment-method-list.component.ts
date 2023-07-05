@@ -1,16 +1,27 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BaseListComponent,
-    DataService,
-    DeletionResult,
-    GetPaymentMethodList,
-    ModalService,
-    NotificationService,
-} from '@vendure/admin-ui/core';
-import { EMPTY } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { GetPaymentMethodListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
+
+export const GET_PAYMENT_METHOD_LIST = gql`
+    query GetPaymentMethodList($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                ...PaymentMethodListItem
+            }
+            totalItems
+        }
+    }
+    fragment PaymentMethodListItem on PaymentMethod {
+        id
+        createdAt
+        updatedAt
+        name
+        description
+        code
+        enabled
+    }
+`;
 
 @Component({
     selector: 'vdr-payment-method-list',
@@ -18,69 +29,70 @@ import { map, switchMap } from 'rxjs/operators';
     styleUrls: ['./payment-method-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PaymentMethodListComponent extends BaseListComponent<
-    GetPaymentMethodList.Query,
-    GetPaymentMethodList.Items
+export class PaymentMethodListComponent extends TypedBaseListComponent<
+    typeof GetPaymentMethodListDocument,
+    'paymentMethods'
 > {
-    constructor(
-        private dataService: DataService,
-        router: Router,
-        route: ActivatedRoute,
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-    ) {
-        super(router, route);
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getPaymentMethods(...args).refetchOnChannelChange(),
-            data => data.paymentMethods,
-        );
-    }
+    readonly customFields = this.getCustomFieldConfig('PaymentMethod');
+    readonly filters = this.createFilterCollection()
+        .addDateFilters()
+        .addFilter({
+            name: 'name',
+            type: { kind: 'text' },
+            label: _('common.name'),
+            filterField: 'name',
+        })
+        .addFilter({
+            name: 'code',
+            type: { kind: 'text' },
+            label: _('common.code'),
+            filterField: 'code',
+        })
+        .addFilter({
+            name: 'enabled',
+            type: { kind: 'boolean' },
+            label: _('common.enabled'),
+            filterField: 'enabled',
+        })
+        .addFilter({
+            name: 'description',
+            type: { kind: 'text' },
+            label: _('common.description'),
+            filterField: 'description',
+        })
+        .addCustomFieldFilters(this.customFields)
+        .connectToRoute(this.route);
 
-    deletePaymentMethod(paymentMethodId: string) {
-        this.showModalAndDelete(paymentMethodId)
-            .pipe(
-                switchMap(response => {
-                    if (response.result === DeletionResult.DELETED) {
-                        return [true];
-                    } else {
-                        return this.showModalAndDelete(paymentMethodId, response.message || '').pipe(
-                            map(r => r.result === DeletionResult.DELETED),
-                        );
-                    }
-                }),
-                // Refresh the cached facets to reflect the changes
-                switchMap(() => this.dataService.settings.getPaymentMethods(100).single$),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'PaymentMethod',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'PaymentMethod',
-                    });
-                },
-            );
-    }
+    readonly sorts = this.createSortCollection()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'id' })
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .addSort({ name: 'code' })
+        .addSort({ name: 'description' })
+        .addCustomFieldSorts(this.customFields)
+        .connectToRoute(this.route);
 
-    private showModalAndDelete(paymentMethodId: string, message?: string) {
-        return this.modalService
-            .dialog({
-                title: _('settings.confirm-delete-payment-method'),
-                body: message,
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(res =>
-                    res ? this.dataService.settings.deletePaymentMethod(paymentMethodId, !!message) : EMPTY,
-                ),
-                map(res => res.deletePaymentMethod),
-            );
+    constructor() {
+        super();
+        super.configure({
+            document: GetPaymentMethodListDocument,
+            getItems: data => data.paymentMethods,
+            setVariables: (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    sort: this.sorts.createSortInput(),
+                },
+            }),
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 }

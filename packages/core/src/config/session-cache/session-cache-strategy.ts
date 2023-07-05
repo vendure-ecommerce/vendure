@@ -61,21 +61,21 @@ export type CachedSession = {
  * @example
  * ```TypeScript
  * import { CachedSession, Logger, SessionCacheStrategy, VendurePlugin } from '\@vendure/core';
- * import IORedis from 'ioredis';
+ * import { Redis, RedisOptions } from 'ioredis';
  *
  * export interface RedisSessionCachePluginOptions {
  *   namespace?: string;
- *   redisOptions?: IORedis.RedisOptions;
+ *   redisOptions?: RedisOptions;
  * }
  * const loggerCtx = 'RedisSessionCacheStrategy';
  * const DEFAULT_NAMESPACE = 'vendure-session-cache';
  *
  * export class RedisSessionCacheStrategy implements SessionCacheStrategy {
- *   private client: IORedis.Redis;
+ *   private client: Redis;
  *   constructor(private options: RedisSessionCachePluginOptions) {}
  *
  *   init() {
- *     this.client = new IORedis(this.options.redisOptions);
+ *     this.client = new Redis(this.options.redisOptions as RedisOptions);
  *     this.client.on('error', err => Logger.error(err.message, loggerCtx, err.stack));
  *   }
  *

@@ -64,7 +64,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  * };
  * ```
  *
- * @docsCategory DefaultSearchPlugin
+ * @docsCategory core plugins/DefaultSearchPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -90,6 +90,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
         resolvers: [ShopFulltextSearchResolver],
     },
     entities: [SearchIndexItem],
+    compatibility: '>0.0.0',
 })
 export class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicationShutdown {
     static options: DefaultSearchPluginInitOptions = {};

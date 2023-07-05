@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { INestApplication } from '@nestjs/common';
 import { bootstrap, JobQueueService } from '@vendure/core';
 import { spawn } from 'child_process';
@@ -40,7 +40,7 @@ if (require.main === module) {
                     return closeAndExit(app, summaries);
                 })
                 .catch(err => {
-                    // tslint:disable-next-line
+                    // eslint-disable-next-line
                     console.log(err);
                 });
         } else {
@@ -112,7 +112,7 @@ async function getTimeSeriesCsvData(summary: LoadTestSummary): Promise<string> {
 
     stringifier.on('readable', () => {
         let row;
-        // tslint:disable-next-line:no-conditional-assignment
+        // eslint-disable-next-line no-cond-assign
         while ((row = stringifier.read())) {
             data.push(row);
         }

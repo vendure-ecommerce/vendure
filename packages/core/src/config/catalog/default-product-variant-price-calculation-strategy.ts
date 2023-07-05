@@ -1,4 +1,5 @@
 import { Injector } from '../../common/injector';
+import { roundMoney } from '../../common/round-money';
 import { PriceCalculationResult } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
 import { TaxRateService } from '../../service/services/tax-rate.service';
@@ -12,7 +13,7 @@ import {
  * @description
  * A default ProductVariant price calculation function.
  *
- * @docsCategory tax
+ * @docsCategory products & stock
  */
 export class DefaultProductVariantPriceCalculationStrategy implements ProductVariantPriceCalculationStrategy {
     private taxRateService: TaxRateService;
@@ -36,7 +37,7 @@ export class DefaultProductVariantPriceCalculationStrategy implements ProductVar
                     ctx.channel.defaultTaxZone,
                     taxCategory,
                 );
-                price = taxRateForDefaultZone.netPriceOf(inputPrice);
+                price = roundMoney(taxRateForDefaultZone.netPriceOf(inputPrice));
             }
         }
 

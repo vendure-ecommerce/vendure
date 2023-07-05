@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import http from 'http';
 import https from 'https';
 import path from 'path';
-import { from } from 'rxjs';
+import { from, lastValueFrom } from 'rxjs';
 import { delay, retryWhen, take, tap } from 'rxjs/operators';
 import { Readable } from 'stream';
 import { URL } from 'url';
@@ -25,8 +25,12 @@ function fetchUrl(urlString: string): Promise<Readable> {
             res => {
                 const { statusCode } = res;
                 if (statusCode !== 200) {
-                    Logger.error(`Failed to fetch "${urlString.substr(0, 100)}", statusCode: ${statusCode}`);
-                    reject(new Error(`Request failed. Status code: ${statusCode}`));
+                    Logger.error(
+                        `Failed to fetch "${urlString.substr(0, 100)}", statusCode: ${
+                            statusCode || 'unknown'
+                        }`,
+                    );
+                    reject(new Error(`Request failed. Status code: ${statusCode || 'unknown'}`));
                 } else {
                     resolve(res);
                 }
@@ -67,8 +71,8 @@ export class DefaultAssetImportStrategy implements AssetImportStrategy {
 
     private getStreamFromUrl(assetUrl: string): Promise<Readable> {
         const { retryCount, retryDelayMs } = this.options ?? {};
-        return from(fetchUrl(assetUrl))
-            .pipe(
+        return lastValueFrom(
+            from(fetchUrl(assetUrl)).pipe(
                 retryWhen(errors =>
                     errors.pipe(
                         tap(value => {
@@ -79,8 +83,8 @@ export class DefaultAssetImportStrategy implements AssetImportStrategy {
                         take(retryCount ?? 3),
                     ),
                 ),
-            )
-            .toPromise();
+            ),
+        );
     }
 
     private getStreamFromLocalFile(assetPath: string): Readable {

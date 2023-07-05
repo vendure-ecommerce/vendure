@@ -1,18 +1,12 @@
-<div class="contents-header">
+<div class="table-wrapper">
+    <div class="progress loop" [class.visible]="isLoading"></div>
     <div class="header-title-row">
         <ng-container
             *ngTemplateOutlet="headerTemplate; context: { $implicit: contentsTotalItems$ | async }"
         ></ng-container>
     </div>
-    <input
-        type="text"
-        [placeholder]="'catalog.filter-by-name' | translate"
-        [formControl]="filterTermControl"
-    />
-</div>
-<div class="table-wrapper">
-    <div class="progress loop" [class.visible]="isLoading"></div>
-    <vdr-data-table
+    <vdr-data-table-2
+        id="collection-contents"
         [class.loading]="isLoading"
         [items]="contents$ | async"
         [itemsPerPage]="contentsItemsPerPage$ | async"
@@ -21,16 +15,37 @@
         (pageChange)="setContentsPageNumber($event)"
         (itemsPerPageChange)="setContentsItemsPerPage($event)"
     >
-        <ng-template let-variant="item">
-            <td class="left align-middle">{{ variant.name }}</td>
-            <td class="left align-middle"><small class="sku">{{ variant.sku }}</small></td>
-            <td class="right align-middle">
-                <vdr-table-row-action
-                    iconShape="edit"
-                    [label]="'common.edit' | translate"
-                    [linkTo]="['/catalog/products', variant.productId, { tab: 'variants' }]"
-                ></vdr-table-row-action>
-            </td>
-        </ng-template>
-    </vdr-data-table>
+        <vdr-dt2-search
+            [searchTermControl]="filterTermControl"
+            [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+        />
+        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <ng-template let-variant="item">
+                {{ variant.id }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+            <ng-template let-variant="item">
+                {{ variant.createdAt | localeDate : 'short' }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'common.updated-at' | translate" [hiddenByDefault]="true">
+            <ng-template let-variant="item">
+                {{ variant.updatedAt | localeDate : 'short' }}
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false">
+            <ng-template let-variant="item">
+                <a class="button-ghost" [routerLink]="['/catalog/inventory', variant.productId]"
+                    ><span>{{ variant.name }}</span
+                    ><clr-icon shape="arrow right"
+                /></a>
+            </ng-template>
+        </vdr-dt2-column>
+        <vdr-dt2-column [heading]="'catalog.sku' | translate" [optional]="false">
+            <ng-template let-variant="item">
+                {{ variant.sku }}
+            </ng-template>
+        </vdr-dt2-column>
+    </vdr-data-table-2>
 </div>

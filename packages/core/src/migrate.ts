@@ -1,8 +1,8 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
-import { Connection, ConnectionOptions, createConnection } from 'typeorm';
+import { Connection, createConnection, DataSourceOptions } from 'typeorm';
 import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
 
@@ -47,8 +47,8 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
         for (const migration of migrations) {
             console.log(chalk.green(`Successfully ran migration: ${migration.name}`));
         }
-    } catch (e) {
-        console.log(chalk.red(`An error occurred when running migrations:`));
+    } catch (e: any) {
+        console.log(chalk.red('An error occurred when running migrations:'));
         console.log(e.message);
         process.exitCode = 1;
     } finally {
@@ -63,7 +63,7 @@ async function checkMigrationStatus(connection: Connection) {
     if (builderLog.upQueries.length) {
         console.log(
             chalk.yellow(
-                `Your database schema does not match your current configuration. Generate a new migration for the following changes:`,
+                'Your database schema does not match your current configuration. Generate a new migration for the following changes:',
             ),
         );
         for (const query of builderLog.upQueries) {
@@ -86,8 +86,8 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
         await disableForeignKeysForSqLite(connection, () =>
             connection.undoLastMigration({ transaction: 'each' }),
         );
-    } catch (e) {
-        console.log(chalk.red(`An error occurred when reverting migration:`));
+    } catch (e: any) {
+        console.log(chalk.red('An error occurred when reverting migration:'));
         console.log(e.message);
         process.exitCode = 1;
     } finally {
@@ -120,7 +120,7 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
         sqlInMemory.upQueries.forEach(upQuery => {
             upSqls.push(
                 '        await queryRunner.query("' +
-                    upQuery.query.replace(new RegExp(`"`, 'g'), `\\"`) +
+                    upQuery.query.replace(new RegExp('"', 'g'), '\\"') +
                     '", ' +
                     JSON.stringify(upQuery.parameters) +
                     ');',
@@ -129,7 +129,7 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
         sqlInMemory.downQueries.forEach(downQuery => {
             downSqls.push(
                 '        await queryRunner.query("' +
-                    downQuery.query.replace(new RegExp(`"`, 'g'), `\\"`) +
+                    downQuery.query.replace(new RegExp('"', 'g'), '\\"') +
                     '", ' +
                     JSON.stringify(downQuery.parameters) +
                     ');',
@@ -159,25 +159,25 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
     if (upSqls.length) {
         if (options.name) {
             const timestamp = new Date().getTime();
-            const filename = timestamp + '-' + options.name + '.ts';
+            const filename = timestamp.toString() + '-' + options.name + '.ts';
             const directory = options.outputDir;
             const fileContent = getTemplate(options.name as any, timestamp, upSqls, downSqls.reverse());
             const outputPath = directory
                 ? path.join(directory, filename)
                 : path.join(process.cwd(), filename);
             await fs.ensureFile(outputPath);
-            await fs.writeFileSync(outputPath, fileContent);
+            fs.writeFileSync(outputPath, fileContent);
 
             console.log(chalk.green(`Migration ${chalk.blue(outputPath)} has been generated successfully.`));
         }
     } else {
-        console.log(chalk.yellow(`No changes in database schema were found - cannot generate a migration.`));
+        console.log(chalk.yellow('No changes in database schema were found - cannot generate a migration.'));
     }
     await connection.close();
     resetConfig();
 }
 
-function createConnectionOptions(userConfig: Partial<VendureConfig>): ConnectionOptions {
+function createConnectionOptions(userConfig: Partial<VendureConfig>): DataSourceOptions {
     return Object.assign({ logging: ['query', 'error', 'schema'] }, userConfig.dbConnectionOptions, {
         subscribers: [],
         synchronize: false,

@@ -5,7 +5,7 @@ weight: 5
 
 # Custom Form Inputs
 
-Another way to extend the Admin UI app is to define custom form input components for manipulating any [Custom Fields]({{< ref "/docs/typescript-api/custom-fields" >}}) you have defined on your entities as well as [configurable args]({{< relref "config-args" >}}) used by custom [ConfigurableOperationDefs]({{< relref "configurable-operation-def" >}}).
+Another way to extend the Admin UI app is to define custom form input components for manipulating any [Custom Fields]({{< ref "/typescript-api/custom-fields" >}}) you have defined on your entities as well as [configurable args]({{< relref "config-args" >}}) used by custom [ConfigurableOperationDefs]({{< relref "configurable-operation-def" >}}).
 
 ## For Custom Fields
 
@@ -23,7 +23,7 @@ customFields: {
 
 By default, the "intensity" field will be displayed as a number input:
 
-{{< figure src="./ui-extensions-custom-field-default.jpg" >}}
+{{< figure src="./ui-extensions-custom-field-default.webp" >}}
 
 But let's say we want to display a range slider instead. Here's how we can do this using our shared extension module combined with the [registerFormInputComponent function]({{< relref "register-form-input-component" >}}):
 
@@ -31,8 +31,7 @@ But let's say we want to display a range slider instead. Here's how we can do th
 // project/ui-extensions/shared.module.ts
 import { NgModule, Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { SharedModule, FormInputComponent, registerFormInputComponent } from '@vendure/admin-ui/core';
+import { IntCustomFieldConfig ,SharedModule, FormInputComponent, registerFormInputComponent } from '@vendure/admin-ui/core';
 
 @Component({
   template: `
@@ -44,9 +43,9 @@ import { SharedModule, FormInputComponent, registerFormInputComponent } from '@v
     {{ formControl.value }}
   `,
 })
-export class SliderControl implements FormInputComponent<CustomFieldConfig> {
+export class SliderControl implements FormInputComponent<IntCustomFieldConfig> {
   readonly: boolean;
-  config: CustomFieldConfig;
+  config: IntCustomFieldConfig;
   formControl: FormControl;
 }
 
@@ -103,7 +102,7 @@ If we want, we can also pass any other arbitrary data in the `ui` object, which 
 
 Re-compiling the Admin UI will result in our SliderControl now being used for the "intensity" custom field:
 
-{{< figure src="./ui-extensions-custom-field-slider.jpg" >}}
+{{< figure src="./ui-extensions-custom-field-slider.webp" >}}
 
 To recap the steps involved:
 
@@ -178,28 +177,6 @@ export class RelationReviewInputComponent implements OnInit, FormInputComponent<
     );
   }
 }
-```
-
-### Legacy `registerCustomFieldComponent`
-
-Prior to v1.4, the function `registerCustomFieldComponent()` was used to register a form control for a custom field. This function has now been deprecated in favour of `registerFormInputComponent()`, but is kept for backward-compatibility and will be removed in v2.0.
-
-`registerCustomFieldComponent` is used like this:
-
-```TypeScript
-import { NgModule, Component } from '@angular/core';
-import { SharedModule, registerCustomFieldComponent } from '@vendure/admin-ui/core';
-
-// SliderControl component definition as above
-
-@NgModule({
-  imports: [SharedModule],
-  declarations: [SliderControl],
-  providers: [
-    registerCustomFieldComponent('Product', 'intensity', SliderControl),
-  ]
-})
-export class SharedExtensionModule { }
 ```
 
 ## For ConfigArgs

@@ -6,6 +6,7 @@ import {
     MutationDeleteCustomerGroupArgs,
     MutationRemoveCustomersFromGroupArgs,
     MutationUpdateCustomerGroupArgs,
+    MutationDeleteCustomerGroupsArgs,
     Permission,
     QueryCustomerGroupArgs,
     QueryCustomerGroupsArgs,
@@ -72,6 +73,16 @@ export class CustomerGroupResolver {
         @Args() args: MutationDeleteCustomerGroupArgs,
     ): Promise<DeletionResponse> {
         return this.customerGroupService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCustomerGroup)
+    async deleteCustomerGroups(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteCustomerGroupsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.customerGroupService.delete(ctx, id)));
     }
 
     @Transaction()

@@ -3,7 +3,7 @@ import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
 import { ApolloLink } from '@apollo/client/link/core';
-import { APOLLO_OPTIONS } from 'apollo-angular';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
 import { createUploadLink } from 'apollo-upload-client';
 
 import { getAppConfig } from '../app.config';
@@ -86,12 +86,14 @@ export function createApollo(
     };
 }
 
+// List of all EU countries
+
 /**
  * The DataModule is responsible for all API calls *and* serves as the source of truth for global app
  * state via the apollo-link-state package.
  */
 @NgModule({
-    imports: [HttpClientModule],
+    imports: [HttpClientModule, ApolloModule],
     exports: [],
     declarations: [],
     providers: [

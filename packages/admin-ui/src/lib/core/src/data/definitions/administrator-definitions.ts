@@ -36,30 +36,9 @@ export const ADMINISTRATOR_FRAGMENT = gql`
     ${ROLE_FRAGMENT}
 `;
 
-export const GET_ADMINISTRATORS = gql`
-    query GetAdministrators($options: AdministratorListOptions) {
-        administrators(options: $options) {
-            items {
-                ...Administrator
-            }
-            totalItems
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
 export const GET_ACTIVE_ADMINISTRATOR = gql`
     query GetActiveAdministrator {
         activeAdministrator {
-            ...Administrator
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const GET_ADMINISTRATOR = gql`
-    query GetAdministrator($id: ID!) {
-        administrator(id: $id) {
             ...Administrator
         }
     }
@@ -102,6 +81,15 @@ export const DELETE_ADMINISTRATOR = gql`
     }
 `;
 
+export const DELETE_ADMINISTRATORS = gql`
+    mutation DeleteAdministrators($ids: [ID!]!) {
+        deleteAdministrators(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_ROLES = gql`
     query GetRoles($options: RoleListOptions) {
         roles(options: $options) {
@@ -109,15 +97,6 @@ export const GET_ROLES = gql`
                 ...Role
             }
             totalItems
-        }
-    }
-    ${ROLE_FRAGMENT}
-`;
-
-export const GET_ROLE = gql`
-    query GetRole($id: ID!) {
-        role(id: $id) {
-            ...Role
         }
     }
     ${ROLE_FRAGMENT}
@@ -144,6 +123,15 @@ export const UPDATE_ROLE = gql`
 export const DELETE_ROLE = gql`
     mutation DeleteRole($id: ID!) {
         deleteRole(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const DELETE_ROLES = gql`
+    mutation DeleteRoles($ids: [ID!]!) {
+        deleteRoles(ids: $ids) {
             result
             message
         }

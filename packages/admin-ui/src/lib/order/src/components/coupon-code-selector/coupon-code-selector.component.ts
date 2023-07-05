@@ -1,8 +1,26 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { DataService } from '@vendure/admin-ui/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { UntypedFormControl } from '@angular/forms';
+import {
+    DataService,
+    GetCouponCodeSelectorPromotionListDocument,
+    PROMOTION_FRAGMENT,
+} from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { concat, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, skip, startWith, switchMap } from 'rxjs/operators';
+
+export const GET_COUPON_CODE_SELECTOR_PROMOTION_LIST = gql`
+    query GetCouponCodeSelectorPromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
+            items {
+                id
+                name
+                couponCode
+            }
+            totalItems
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-coupon-code-selector',
@@ -12,7 +30,7 @@ import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators'
 })
 export class CouponCodeSelectorComponent implements OnInit {
     @Input() couponCodes: string[];
-    @Input() control: FormControl | undefined;
+    @Input() control: UntypedFormControl | undefined;
     @Output() addCouponCode = new EventEmitter<string>();
     @Output() removeCouponCode = new EventEmitter<string>();
     availableCouponCodes$: Observable<Array<{ code: string; promotionName: string }>>;
@@ -22,22 +40,29 @@ export class CouponCodeSelectorComponent implements OnInit {
     ngOnInit(): void {
         this.availableCouponCodes$ = concat(
             this.couponCodeInput$.pipe(
+                debounceTime(200),
                 distinctUntilChanged(),
                 switchMap(
                     term =>
-                        this.dataService.promotion.getPromotions(10, 0, {
-                            couponCode: { contains: term },
+                        this.dataService.query(GetCouponCodeSelectorPromotionListDocument, {
+                            options: {
+                                take: 10,
+                                skip: 0,
+                                filter: {
+                                    couponCode: { contains: term },
+                                },
+                            },
                         }).single$,
                 ),
                 map(({ promotions }) =>
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     promotions.items.map(p => ({ code: p.couponCode!, promotionName: p.name })),
                 ),
                 startWith([]),
             ),
         );
         if (!this.control) {
-            this.control = new FormControl(this.couponCodes ?? []);
+            this.control = new UntypedFormControl(this.couponCodes ?? []);
         }
     }
 }

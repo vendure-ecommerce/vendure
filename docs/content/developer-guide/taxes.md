@@ -44,7 +44,7 @@ When a customer adds an item to the Order, the following logic takes place:
 1. The price of the OrderItem, and whether or not that price is inclusive of tax, is determined according to the configured [OrderItemPriceCalculationStrategy]({{< relref "order-item-price-calculation-strategy" >}}).
 2. The active tax Zone is determined based on the configured [TaxZoneStrategy]({{< relref "tax-zone-strategy" >}}).
 3. The applicable TaxRate is fetched based on the ProductVariant's TaxCategory and the active tax Zone determined in step 1.
-4. The `TaxLineCalculationStrategy.calculate()` of the configured [TaxLineCalculationStrategy]({{< relref "tax-line-calculation-strategy" >}}) is called, which will return one or more [TaxLines]({{< relref "/docs/graphql-api/shop/object-types" >}}#taxline).
+4. The `TaxLineCalculationStrategy.calculate()` of the configured [TaxLineCalculationStrategy]({{< relref "tax-line-calculation-strategy" >}}) is called, which will return one or more [TaxLines]({{< relref "/graphql-api/shop/object-types" >}}#taxline).
 5. The final `priceWithTax` of the OrderItem is calculated based on all the above.
 
 ## Calculating taxes on shipping

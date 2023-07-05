@@ -10,20 +10,20 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { CustomFieldConfig, GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
+import { CustomFieldConfig, UpdateAssetInput } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../providers/modal/modal.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
+import { AssetLike } from '../asset-gallery/asset-gallery.types';
 import { Point } from '../focal-point-control/focal-point-control.component';
 import { ManageTagsDialogComponent } from '../manage-tags-dialog/manage-tags-dialog.component';
 
 export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | '';
-type AssetLike = GetAssetList.Items | GetAsset.Asset;
 
 @Component({
     selector: 'vdr-asset-preview',
@@ -35,11 +35,14 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     @Input() asset: AssetLike;
     @Input() editable = false;
     @Input() customFields: CustomFieldConfig[] = [];
-    @Input() customFieldsForm: FormGroup | undefined;
+    @Input() customFieldsForm: UntypedFormGroup | undefined;
     @Output() assetChange = new EventEmitter<Omit<UpdateAssetInput, 'focalPoint'>>();
     @Output() editClick = new EventEmitter();
 
-    form: FormGroup;
+    form = this.formBuilder.group({
+        name: '',
+        tags: [[] as string[]],
+    });
 
     size: PreviewPreset = 'medium';
     width = 0;
@@ -70,10 +73,8 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         const { focalPoint } = this.asset;
-        this.form = this.formBuilder.group({
-            name: [this.asset.name],
-            tags: [this.asset.tags?.map(t => t.value)],
-        });
+        this.form.get('name')?.setValue(this.asset.name);
+        this.form.get('tags')?.setValue(this.asset.tags?.map(t => t.value));
         this.subscription = this.form.valueChanges.subscribe(value => {
             this.assetChange.emit({
                 id: this.asset.id,

@@ -1,19 +1,10 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 
-import { GetAssetList } from '../../../common/generated-types';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
 import { ModalService } from '../../../providers/modal/modal.service';
 import { AssetPreviewDialogComponent } from '../asset-preview-dialog/asset-preview-dialog.component';
 
-export type AssetLike = GetAssetList.Items;
+import { AssetLike } from './asset-gallery.types';
 
 @Component({
     selector: 'vdr-asset-gallery',

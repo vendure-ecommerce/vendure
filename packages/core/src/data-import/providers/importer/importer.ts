@@ -10,8 +10,8 @@ import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
-import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../../entity/facet/facet.entity';
+import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -113,7 +113,7 @@ export class Importer {
                     imported: parsed.results.length,
                     processed: parsed.processed,
                 };
-            } catch (err) {
+            } catch (err: any) {
                 return {
                     errors: [err.message],
                     imported: 0,
@@ -260,7 +260,7 @@ export class Importer {
                     featuredAssetId: variantAssets.length ? variantAssets[0].id : undefined,
                     assetIds: variantAssets.map(a => a.id),
                     sku: variant.sku,
-                    taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories),
+                    taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories.items),
                     stockOnHand: variant.stockOnHand,
                     trackInventory: variant.trackInventory,
                     optionIds,

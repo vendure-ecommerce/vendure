@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
-import { Customer } from '../../../common/generated-types';
+import { CustomerFragment } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-customer-label',
@@ -9,5 +9,5 @@ import { Customer } from '../../../common/generated-types';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerLabelComponent {
-    @Input() customer: Customer.Fragment;
+    @Input() customer: CustomerFragment;
 }

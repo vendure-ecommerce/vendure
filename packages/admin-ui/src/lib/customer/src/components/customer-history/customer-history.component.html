@@ -1,4 +1,3 @@
-<h4>{{ 'customer.customer-history' | translate }}</h4>
 <div class="entry-list">
     <vdr-timeline-entry iconShape="note" displayType="muted" *vdrIfPermissions="'UpdateCustomer'">
         <div class="note-entry">
@@ -139,7 +138,6 @@
                                 </button>
                                 <vdr-dropdown-menu vdrPosition="bottom-right">
                                     <button
-                                        class="button"
                                         vdrDropdownItem
                                         (click)="updateNote.emit(entry)"
                                         [disabled]="!('UpdateCustomer' | hasPermission)"
@@ -149,7 +147,6 @@
                                     </button>
                                     <div class="dropdown-divider"></div>
                                     <button
-                                        class="button"
                                         vdrDropdownItem
                                         (click)="deleteNote.emit(entry)"
                                         [disabled]="!('UpdateCustomer' | hasPermission)"

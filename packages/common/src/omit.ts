@@ -11,11 +11,7 @@ export function omit<T extends object | any[], K extends keyof T>(
     keysToOmit: string[],
     recursive: boolean,
 ): T;
-export function omit<T extends any, K extends keyof T>(
-    obj: T,
-    keysToOmit: string[],
-    recursive: boolean = false,
-): T {
+export function omit<T, K extends keyof T>(obj: T, keysToOmit: string[], recursive: boolean = false): T {
     if ((recursive && !isObject(obj)) || isFileObject(obj)) {
         return obj;
     }

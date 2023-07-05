@@ -26,6 +26,13 @@ type EmailAddressConflictError implements ErrorResult {
     message: String!
 }
 
+"Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it."
+type GuestCheckoutError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    errorDetail: String!
+}
+
 "Returned when the maximum order size limit has been reached."
 type OrderLimitError implements ErrorResult {
     errorCode: ErrorCode!

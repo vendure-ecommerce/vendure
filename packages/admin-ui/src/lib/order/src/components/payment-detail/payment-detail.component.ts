@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-
-import { CurrencyCode, OrderDetail } from '@vendure/admin-ui/core';
+import { CurrencyCode, OrderDetailFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-payment-detail',
@@ -9,6 +8,6 @@ import { CurrencyCode, OrderDetail } from '@vendure/admin-ui/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentDetailComponent {
-    @Input() payment: OrderDetail.Payments;
+    @Input() payment: NonNullable<OrderDetailFragment['payments']>[number];
     @Input() currencyCode: CurrencyCode;
 }

@@ -3,6 +3,7 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { Observable } from 'rxjs';
+import { In, IsNull } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -14,8 +15,8 @@ import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
-import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { PLUGIN_INIT_OPTIONS } from '../constants';
@@ -89,7 +90,7 @@ export class IndexerController {
                     duration: +new Date() - timeStart,
                 });
             }
-            Logger.verbose(`Completed reindexing`, workerLoggerCtx);
+            Logger.verbose('Completed reindexing', workerLoggerCtx);
 
             return {
                 total: count,
@@ -116,9 +117,12 @@ export class IndexerController {
                     const end = begin + BATCH_SIZE;
                     Logger.verbose(`Updating ids from index ${begin} to ${end}`);
                     const batchIds = ids.slice(begin, end);
-                    const batch = await this.connection.getRepository(ctx, ProductVariant).findByIds(batchIds, {
+                    const batch = await this.connection.getRepository(ctx, ProductVariant).find({
                         relations: variantRelations,
-                        where: { deletedAt: null },
+                        where: {
+                            id: In(batchIds),
+                            deletedAt: IsNull(),
+                        },
                     });
                     await this.saveVariants(ctx, batch);
                     observer.next({
@@ -128,7 +132,7 @@ export class IndexerController {
                     });
                 }
             }
-            Logger.verbose(`Completed reindexing!`);
+            Logger.verbose('Completed reindexing!');
             return {
                 total: ids.length,
                 completed: ids.length,
@@ -154,7 +158,9 @@ export class IndexerController {
 
     async deleteVariant(data: UpdateVariantMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(data.variantIds);
+        const variants = await this.connection.getRepository(ctx, ProductVariant).find({
+            where: { id: In(data.variantIds) },
+        });
         if (variants.length) {
             const languageVariants = unique([
                 ...variants
@@ -188,7 +194,9 @@ export class IndexerController {
 
     async removeVariantFromChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        const variant = await this.connection.getRepository(ctx, ProductVariant).findOne(data.productVariantId);
+        const variant = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .findOne({ where: { id: data.productVariantId } });
         const languageVariants = variant?.translations.map(t => t.languageCode) ?? [];
         await this.removeSearchIndexItems(ctx, data.channelId, [data.productVariantId], languageVariants);
         return true;
@@ -230,17 +238,18 @@ export class IndexerController {
         productId: ID,
         channelId: ID,
     ): Promise<boolean> {
-        const product = await this.connection.getRepository(ctx, Product).findOne(productId, {
+        const product = await this.connection.getRepository(ctx, Product).findOne({
+            where: { id: productId },
             relations: ['variants'],
         });
         if (product) {
-            const updatedVariants = await this.connection.getRepository(ctx, ProductVariant).findByIds(
-                product.variants.map(v => v.id),
-                {
-                    relations: variantRelations,
-                    where: { deletedAt: null },
+            const updatedVariants = await this.connection.getRepository(ctx, ProductVariant).find({
+                relations: variantRelations,
+                where: {
+                    id: In(product.variants.map(v => v.id)),
+                    deletedAt: IsNull(),
                 },
-            );
+            });
             if (updatedVariants.length === 0) {
                 await this.saveSyntheticVariant(ctx, product);
             } else {
@@ -264,9 +273,12 @@ export class IndexerController {
         variantIds: ID[],
         channelId: ID,
     ): Promise<boolean> {
-        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(variantIds, {
+        const variants = await this.connection.getRepository(ctx, ProductVariant).find({
             relations: variantRelations,
-            where: { deletedAt: null },
+            where: {
+                id: In(variantIds),
+                deletedAt: IsNull(),
+            },
         });
         if (variants) {
             Logger.verbose(`Updating ${variants.length} variants`, workerLoggerCtx);
@@ -280,7 +292,8 @@ export class IndexerController {
         productId: ID,
         channelId: ID,
     ): Promise<boolean> {
-        const product = await this.connection.getRepository(ctx, Product).findOne(productId, {
+        const product = await this.connection.getRepository(ctx, Product).findOne({
+            where: { id: productId },
             relations: ['variants'],
         });
         if (product) {
@@ -300,16 +313,14 @@ export class IndexerController {
     }
 
     private getSearchIndexQueryBuilder(ctx: RequestContext, channelId: ID) {
-        const qb = this.connection.getRepository(ctx, ProductVariant).createQueryBuilder('variants');
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: variantRelations,
-        });
-        FindOptionsUtils.joinEagerRelations(
-            qb,
-            qb.alias,
-            this.connection.rawConnection.getMetadata(ProductVariant),
-        );
-        qb.leftJoin('variants.product', 'product')
+        const qb = this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variants')
+            .setFindOptions({
+                relations: variantRelations,
+                loadEagerRelations: true,
+            })
+            .leftJoin('variants.product', 'product')
             .leftJoin('product.channels', 'channel')
             .where('channel.id = :channelId', { channelId })
             .andWhere('product.deletedAt IS NULL')
@@ -487,7 +498,12 @@ export class IndexerController {
     /**
      * Remove items from the search index
      */
-    private async removeSearchIndexItems(ctx: RequestContext, channelId: ID, variantIds: ID[], languageCodes: LanguageCode[]) {
+    private async removeSearchIndexItems(
+        ctx: RequestContext,
+        channelId: ID,
+        variantIds: ID[],
+        languageCodes: LanguageCode[],
+    ) {
         const keys: Array<Partial<SearchIndexItem>> = [];
         for (const productVariantId of variantIds) {
             for (const languageCode of languageCodes) {
@@ -507,7 +523,7 @@ export class IndexerController {
      */
     private constrainDescription(description: string): string {
         const { type } = this.connection.rawConnection.options;
-        const isPostgresLike = type === 'postgres' || type === 'aurora-data-api-pg' || type === 'cockroachdb';
+        const isPostgresLike = type === 'postgres' || type === 'aurora-postgres' || type === 'cockroachdb';
         if (isPostgresLike) {
             return description.substring(0, 2600);
         }

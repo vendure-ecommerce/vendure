@@ -115,7 +115,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
             .limit(take)
             .offset(skip)
             .getRawMany()
-            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
+            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.defaultCurrencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
@@ -220,12 +220,12 @@ export class SqliteSearchStrategy implements SearchStrategy {
             );
         }
         if (collectionId) {
-            qb.andWhere(`(',' || si.collectionIds || ',') LIKE :collectionId`, {
+            qb.andWhere("(',' || si.collectionIds || ',') LIKE :collectionId", {
                 collectionId: `%,${collectionId},%`,
             });
         }
         if (collectionSlug) {
-            qb.andWhere(`(',' || si.collectionSlugs || ',') LIKE :collectionSlug`, {
+            qb.andWhere("(',' || si.collectionSlugs || ',') LIKE :collectionSlug", {
                 collectionSlug: `%,${collectionSlug},%`,
             });
         }

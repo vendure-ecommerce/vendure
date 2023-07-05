@@ -45,14 +45,14 @@ export class AppComponent implements OnInit {
             .mapStream(({ userStatus }) => userStatus.isLoggedIn)
             .pipe(
                 filter(loggedIn => loggedIn === true),
-                switchMap(() => {
-                    return this.dataService.client.uiState().mapStream(data => data.uiState.contentLanguage);
-                }),
-                switchMap(contentLang => {
-                    return this.serverConfigService
+                switchMap(() =>
+                    this.dataService.client.uiState().mapStream(data => data.uiState.contentLanguage),
+                ),
+                switchMap(contentLang =>
+                    this.serverConfigService
                         .getAvailableLanguages()
-                        .pipe(map(available => [contentLang, available] as const));
-                }),
+                        .pipe(map(available => [contentLang, available] as const)),
+                ),
             )
             .subscribe({
                 next: ([contentLanguage, availableLanguages]) => {
@@ -63,8 +63,28 @@ export class AppComponent implements OnInit {
                 },
             });
 
+        this.dataService.client.userStatus().stream$.subscribe(({ userStatus }) => {
+            this.localStorageService.setAdminId(userStatus.administratorId);
+
+            if (userStatus.administratorId) {
+                const theme = this.localStorageService.get('activeTheme');
+                if (theme) {
+                    this.dataService.client.setUiTheme(theme).subscribe(() => {
+                        this.localStorageService.set('activeTheme', theme);
+                    });
+                }
+                const activeChannelToken = this.localStorageService.get('activeChannelToken');
+                if (activeChannelToken) {
+                    const activeChannel = userStatus.channels.find(c => c.token === activeChannelToken);
+                    if (activeChannel) {
+                        this.dataService.client.setActiveChannel(activeChannel.id).subscribe();
+                    }
+                }
+            }
+        });
+
         if (isDevMode()) {
-            // tslint:disable-next-line:no-console
+            // eslint-disable-next-line no-console
             console.log(
                 `%cVendure Admin UI: Press "ctrl/cmd + u" to view UI extension points`,
                 `color: #17C1FF; font-weight: bold;`,

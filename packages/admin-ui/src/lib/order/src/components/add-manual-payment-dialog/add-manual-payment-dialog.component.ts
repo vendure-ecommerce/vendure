@@ -1,13 +1,35 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import {
     CurrencyCode,
     DataService,
     Dialog,
-    GetPaymentMethodList,
+    GetAddManualPaymentMethodListDocument,
+    GetAddManualPaymentMethodListQuery,
+    GetPaymentMethodListQuery,
+    ItemOf,
     ManualPaymentInput,
+    PAYMENT_METHOD_FRAGMENT,
 } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
+
+const GET_PAYMENT_METHODS_FOR_MANUAL_ADD = gql`
+    query GetAddManualPaymentMethodList($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+                code
+                description
+                enabled
+            }
+            totalItems
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-add-manual-payment-dialog',
@@ -21,16 +43,20 @@ export class AddManualPaymentDialogComponent implements OnInit, Dialog<Omit<Manu
     currencyCode: CurrencyCode;
 
     resolveWith: (result?: Omit<ManualPaymentInput, 'orderId'>) => void;
-    form = new FormGroup({
-        method: new FormControl('', Validators.required),
-        transactionId: new FormControl('', Validators.required),
+    form = new UntypedFormGroup({
+        method: new UntypedFormControl('', Validators.required),
+        transactionId: new UntypedFormControl('', Validators.required),
     });
-    paymentMethods$: Observable<GetPaymentMethodList.Items[]>;
+    paymentMethods$: Observable<Array<ItemOf<GetAddManualPaymentMethodListQuery, 'paymentMethods'>>>;
     constructor(private dataService: DataService) {}
 
     ngOnInit(): void {
-        this.paymentMethods$ = this.dataService.settings
-            .getPaymentMethods(999)
+        this.paymentMethods$ = this.dataService
+            .query(GetAddManualPaymentMethodListDocument, {
+                options: {
+                    take: 999,
+                },
+            })
             .mapSingle(data => data.paymentMethods.items);
     }
 

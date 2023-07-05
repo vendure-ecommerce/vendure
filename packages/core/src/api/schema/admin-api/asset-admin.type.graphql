@@ -1,3 +1,0 @@
-type Asset {
-    tags: [Tag!]!
-}

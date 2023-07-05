@@ -190,7 +190,7 @@ export class ImportParser {
                 input.pipe(parser);
                 parser.on('readable', () => {
                     let record;
-                    // tslint:disable-next-line:no-conditional-assignment
+                    // eslint-disable-next-line no-cond-assign
                     while ((record = parser.read())) {
                         records.push(record);
                     }
@@ -514,7 +514,9 @@ function populateOptionGroupValues(currentRow: ParsedProductWithVariants) {
         currentRow.product.optionGroups.forEach((og, i) => {
             const ogTranslation = og.translations.find(t => t.languageCode === translation.languageCode);
             if (!ogTranslation) {
-                throw new InternalServerError(`No translation '${LanguageCode}' for option groups'`);
+                throw new InternalServerError(
+                    `No translation '${translation.languageCode}' for option groups'`,
+                );
             }
             ogTranslation.values = unique(values.map(v => v[i]));
         });
@@ -657,7 +659,7 @@ function isRelationObject(value: string) {
     try {
         const parsed = JSON.parse(value);
         return parsed && parsed.hasOwnProperty('id');
-    } catch (e) {
+    } catch (e: any) {
         return false;
     }
 }

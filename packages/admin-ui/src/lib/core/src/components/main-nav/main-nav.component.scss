@@ -1,34 +1,78 @@
 @import 'variables';
 
 :host {
-    // flex: 0 0 auto;
-    order: -1;
     background-color: var(--clr-nav-background-color);
 }
 
-nav.sidenav {
+nav.main-nav {
     height: 100%;
     border-right-color: var(--clr-sidenav-border-color);
 }
 
-.sidenav .nav-group {
+.main-nav .nav-group {
+    margin-bottom: calc(var(--space-unit) * 2);
+    padding: calc(var(--space-unit) * 2) 0;
+    overflow: hidden;
+    transition: padding 0.2s ease-in-out, margin-bottom 0.2s ease-in-out;
+    &.collapsible.collapsed {
+        padding: 3px 0;
+        margin-bottom: calc(var(--space-unit) * 1);
+    }
+
+    &.active:not(.collapsible.collapsed) {
+        background-color: var(--color-weight-125);
+    }
     .nav-list {
         margin: 0;
+        transition: max-height 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    }
+    .section-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding-right: calc(var(--space-unit) * 4);
     }
     .nav-group-header {
-        margin: 0;
-        line-height: 1.2;
+        display: block;
+        margin: 0 0 var(--space-unit);
+        font-size: var(--font-size-xs);
+        letter-spacing: 0.05em;
+        color: var(--color-weight-700);
+        text-transform: uppercase;
     }
     .nav-link {
-        display: inline-flex;
-        line-height: 1rem;
-        padding-right: 0.6rem;
+        display: flex;
+        align-items: center;
+        line-height: 100%;
+        border-right: 2px solid transparent;
+        font-size: var(--font-size-sm);
+        padding: var(--space-unit) 0;
+        transition: border 0.1s, color 0.1s;
+
+        a:link,
+        a:visited {
+            color: var(--color-weight-700);
+        }
+        &:hover {
+            color: var(--color-left-nav-text-hover);
+            border-right-color: var(--color-weight-300);
+        }
+
+        &.active,
+        &.active a:link,
+        &.active a:visited {
+            color: var(--color-text-active);
+            border-right-color: var(--color-primary-500);
+            clr-icon {
+                color: var(--color-primary-500);
+            }
+        }
     }
 }
 
 .nav-list clr-icon {
     flex-shrink: 0;
-    margin-right: 12px;
+    margin-right: var(--space-unit);
 }
 
 .nav-group {
@@ -40,10 +84,9 @@ nav.sidenav {
     position: relative;
 }
 .nav-group vdr-status-badge {
-    left: 10px;
+    left: 27px;
     top: 6px;
 }
-.nav-link vdr-status-badge {
-    left: 25px;
-    top: 3px;
+.nav-group .section-header vdr-status-badge {
+    left: 20px;
 }

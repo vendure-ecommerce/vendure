@@ -1,21 +1,47 @@
-@import "variables";
-@import "forms";
+@import 'variables';
+@import 'forms';
+@import 'mixins';
 
 .main-container {
     background-color: var(--clr-global-app-background);
 }
 
-.content-area img, .modal-content img {
+h1:not([cds-text]),
+h2:not([cds-text]),
+h3:not([cds-text]),
+h4:not([cds-text]),
+h5:not([cds-text]),
+h6:not([cds-text]) {
+    font-family: Inter, sans-serif !important;
+}
+
+a:link,
+a:visited {
+    color: var(--clr-global-link-color);
+    text-decoration: none;
+}
+
+.content-area img,
+.modal-content img {
     object-fit: cover;
     width: 100%;
     height: 100%;
 }
 
-a:link, a:visited {
+.modal-header .close,
+.modal-header--accessible .close {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+a:link,
+a:visited {
     color: var(--clr-btn-link-color);
 }
 
-a:focus, button:focus {
+a:focus,
+button:focus {
     outline-color: var(--color-primary-400);
 }
 
@@ -32,32 +58,35 @@ a:focus, button:focus {
 }
 
 .table {
-    border-color: var(--color-component-border-100);
-
-    td.align-middle, th.align-middle {
-        vertical-align: middle!important;
+    border: none;
+    margin: 0;
+    background-color: transparent;
+    td {
+        border: none;
     }
-
-    td.right {
-        text-align: right;
-    }
+    @include table-base-styles;
 }
 
-.full-label, .compact-label {
+.full-label,
+.compact-label {
     margin-left: 6px;
 }
+
 .full-label {
     display: none;
 }
+
 .compact-label {
     display: initial;
 }
+
 button.icon-button {
     border: none;
     background: none;
     cursor: pointer;
     color: var(--color-icon-button);
 }
+
 @media screen and (min-width: $breakpoint-small) {
     .full-label {
         display: initial;
@@ -68,5 +97,46 @@ button.icon-button {
 }
 
 .cdk-overlay-container {
-    z-index: 1060;
+    z-index: 1050;
+}
+
+.card {
+    margin-top: 0;
+    box-shadow: none;
+
+    .card-header, .card-title {
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+    }
+}
+
+// clr tabs
+.btn.btn-link.nav-link {
+    background-color: transparent;
+}
+
+.alert {
+    border: 1px solid var(--color-primary-150);
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-900);
+    border-radius: var(--border-radius);
+    padding: var(--space-unit);
+
+    .alert-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    &.alert-danger {
+        border-color: var(--color-chip-error-border);
+        background-color: var(--color-chip-error-bg);
+        color: var(--color-chip-error-text);
+    }
+
+    &.alert-warning {
+        border-color: var(--color-chip-warning-border);
+        background-color: var(--color-chip-warning-bg);
+        color: var(--color-chip-warning-text);
+    }
 }

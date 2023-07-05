@@ -27,7 +27,16 @@ This two-step workflow can also be applied to other non-card forms of payment: e
 Payment integrations are created by defining a new [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and passing that handler into the [`paymentOptions.paymentMethodHandlers`]({{< relref "payment-options" >}}) array in the VendureConfig.
 
 ```TypeScript
-import { PaymentMethodHandler, VendureConfig, CreatePaymentResult, SettlePaymentResult, SettlePaymentErrorResult } from '@vendure/core';
+import {
+  CancelPaymentResult,
+  CancelPaymentErrorResult,
+  PaymentMethodHandler,
+  VendureConfig,
+  CreatePaymentResult,
+  SettlePaymentResult,
+  SettlePaymentErrorResult
+} from '@vendure/core';
+import { CancelPaymentErrorResult } from '@vendure/core/src/index';
 import { sdk } from 'payment-provider-sdk';
 
 /**
@@ -94,16 +103,32 @@ const myPaymentIntegration = new PaymentMethodHandler({
       }
     }
   },
+  
+  /** This is called when a payment is cancelled. */  
+  cancelPayment: async (ctx, order, payment, args): Promise<CancelPaymentResult | CancelPaymentErrorResult> => {
+    try {
+      const result = await sdk.charges.cancel({
+        apiKey: args.apiKey,
+        id: payment.transactionId,
+      });
+      return { success: true };
+    } catch (err) {
+      return {
+        success: false,
+        errorMessage: err.message,
+      }
+    }
+  },
 });
 
 /**
  * We now add this handler to our config
  */
 export const config: VendureConfig = {
-  // ...
-  paymentOptions: {
-    paymentMethodHandlers: [myPaymentIntegration],
-  },
+    // ...
+    paymentOptions: {
+        paymentMethodHandlers: [myPaymentIntegration],
+    },
 };
 ```
 
@@ -119,7 +144,7 @@ Once the PaymentMethodHandler is defined as above, you can use it to create a ne
 
 ## Payment flow
 
-1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.
+1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.
     ```GraphQL
     mutation {
         addPaymentToOrder(input: {
@@ -130,7 +155,7 @@ Once the PaymentMethodHandler is defined as above, you can use it to create a ne
     }
     ```
     The `metadata` field is used to store the specific data required by the payment provider. E.g. some providers have a client-side part which begins the transaction and returns a token which must then be verified on the server side.
-2. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function]({{< relref "payment-method-config-options" >}}#createpayment). This function returns a [CreatePaymentResult object]({{< relref "payment-method-types" >}}#payment-method-types) which is used to create a new [Payment]({{< relref "/docs/typescript-api/entities/payment" >}}). If the Payment amount equals the order total, then the Order is transitioned to either the "PaymentAuthorized" or "PaymentSettled" state and the customer checkout flow is complete.
+2. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function]({{< relref "payment-method-config-options" >}}#createpayment). This function returns a [CreatePaymentResult object]({{< relref "payment-method-types" >}}#payment-method-types) which is used to create a new [Payment]({{< relref "/typescript-api/entities/payment" >}}). If the Payment amount equals the order total, then the Order is transitioned to either the "PaymentAuthorized" or "PaymentSettled" state and the customer checkout flow is complete.
 
 ### Single-step
 
@@ -146,19 +171,29 @@ If the `createPayment()` function returns a result with the state set to `'Autho
 
 ## Custom Payment Flows
 
-If you need to support an entirely different payment flow than the above, it is also possible to do so by configuring a [CustomPaymentProcess]({{< relref "custom-payment-process" >}}). This allows new Payment states and transitions to be defined, as well as allowing custom logic to run on Payment state transitions.
+If you need to support an entirely different payment flow than the above, it is also possible to do so by configuring a [PaymentProcess]({{< relref "payment-process" >}}). This allows new Payment states and transitions to be defined, as well as allowing custom logic to run on Payment state transitions.
 
-Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [CustomOrderProcess]({{< relref "custom-order-process" >}}), [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and [OrderPlacedStrategy]({{< relref "order-placed-strategy" >}}).
+Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [OrderProcess]({{< relref "order-process" >}}), [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and [OrderPlacedStrategy]({{< relref "order-placed-strategy" >}}).
 
 ```TypeScript
 // types.ts
-import { CustomOrderStates } from '@vendure/core';
+import {
+  defaultPaymentProcess,
+  defaultOrderprocess,
+  CustomOrderStates,
+  OrderProcess,
+  PaymentProcess,
+  PaymentMethodHandler,
+  LanguageCode,
+  OrderPlacedStrategy,
+  RequestContext
+} from '@vendure/core';
 
 /**
  * Declare your custom state in special interface to make it type-safe
  */
 declare module '@vendure/core' {
-  interface CustomPaymentStates {
+  interface PaymentStates {
     Validating: never;
   }
 }
@@ -167,7 +202,7 @@ declare module '@vendure/core' {
  * Define a new "Validating" Payment state, and set up the
  * permitted transitions to/from it.
  */
-const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
+const customPaymentProcess: PaymentProcess<'Validating'> = {
   transitions: {
     Created: {
       to: ['Validating'],
@@ -183,7 +218,7 @@ const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
  * Define a new "ValidatingPayment" Order state, and set up the
  * permitted transitions to/from it.
  */
-const customOrderProcess: CustomOrderProcess<'ValidatingPayment'> = {
+const customOrderProcess: OrderProcess<'ValidatingPayment'> = {
   transitions: {
     ArrangingPayment: {
       to: ['ValidatingPayment'],
@@ -230,15 +265,15 @@ class MyOrderPlacedStrategy implements OrderPlacedStrategy {
 
 // Combine the above in the VendureConfig
 export const config: VendureConfig = {
-  // ...
-  orderOptions: {
-    process: [customOrderProcess],
-    orderPlacedStrategy: new MyOrderPlacedStrategy(),
-  },
-  paymentOptions: {
-    customPaymentProcess: [customPaymentProcess],
-    paymentMethodHandlers: [myPaymentHandler],
-  },
+    // ...
+    orderOptions: {
+        process: [defaultOrderProcess, customOrderProcess],
+        orderPlacedStrategy: new MyOrderPlacedStrategy(),
+    },
+    paymentOptions: {
+        process: [defaultPaymentProcess, customPaymentProcess],
+        paymentMethodHandlers: [myPaymentHandler],
+    },
 };
 ```
 

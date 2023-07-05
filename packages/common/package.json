@@ -1,25 +1,25 @@
 {
-  "name": "@vendure/common",
-  "version": "1.9.6",
-  "main": "index.js",
-  "license": "MIT",
-  "scripts": {
-    "watch": "tsc -p ./tsconfig.build.json -w",
-    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
-    "lint": "tslint --fix --project ./",
-    "test": "jest --config ./jest.config.js",
-    "ci": "yarn build"
-  },
-  "homepage": "https://www.vendure.io/",
-  "funding": "https://github.com/sponsors/michaelbromley",
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "devDependencies": {
-    "rimraf": "^3.0.2",
-    "typescript": "4.3.5"
-  }
+    "name": "@vendure/common",
+    "version": "2.0.3",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "watch": "tsc -p ./tsconfig.build.json -w",
+        "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+        "lint": "eslint --fix .",
+        "test": "vitest --run",
+        "ci": "yarn build"
+    },
+    "homepage": "https://www.vendure.io/",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "lib/**/*"
+    ],
+    "devDependencies": {
+        "rimraf": "^3.0.2",
+        "typescript": "4.9.5"
+    }
 }

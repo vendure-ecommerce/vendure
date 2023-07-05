@@ -7,6 +7,7 @@ import { getAppConfig } from '../../app.config';
 import { LanguageCode } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { AuthService } from '../../providers/auth/auth.service';
+import { BreadcrumbService } from '../../providers/breadcrumb/breadcrumb.service';
 import { I18nService } from '../../providers/i18n/i18n.service';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 import { ModalService } from '../../providers/modal/modal.service';
@@ -22,6 +23,8 @@ export class AppShellComponent implements OnInit {
     uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
     availableLanguages: LanguageCode[] = [];
     hideVendureBranding = getAppConfig().hideVendureBranding;
+    pageTitle$: Observable<string>;
+    mainNavExpanded$: Observable<boolean>;
 
     constructor(
         private authService: AuthService,
@@ -30,6 +33,7 @@ export class AppShellComponent implements OnInit {
         private i18nService: I18nService,
         private modalService: ModalService,
         private localStorageService: LocalStorageService,
+        private breadcrumbService: BreadcrumbService,
     ) {}
 
     ngOnInit() {
@@ -40,6 +44,12 @@ export class AppShellComponent implements OnInit {
             .uiState()
             .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
         this.availableLanguages = this.i18nService.availableLanguages;
+        this.pageTitle$ = this.breadcrumbService.breadcrumbs$.pipe(
+            map(breadcrumbs => breadcrumbs[breadcrumbs.length - 1].label),
+        );
+        this.mainNavExpanded$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => uiState.mainNavExpanded));
     }
 
     selectUiLanguage() {
@@ -68,6 +78,14 @@ export class AppShellComponent implements OnInit {
                     this.localStorageService.set('uiLocale', result.setUiLocale ?? undefined);
                 }
             });
+    }
+
+    expandNav() {
+        this.dataService.client.setMainNavExpanded(true).subscribe();
+    }
+
+    collapseNav() {
+        this.dataService.client.setMainNavExpanded(false).subscribe();
     }
 
     logOut() {

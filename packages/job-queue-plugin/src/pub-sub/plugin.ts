@@ -15,6 +15,7 @@ import { PubSubJobQueueStrategy } from './pub-sub-job-queue-strategy';
         config.jobQueueOptions.jobQueueStrategy = new PubSubJobQueueStrategy();
         return config;
     },
+    compatibility: '^2.0.0',
 })
 export class PubSubPlugin {
     private static options: PubSubOptions;

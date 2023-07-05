@@ -1,6 +1,6 @@
 import { SelectQueryBuilder } from 'typeorm';
 
-import { Logger } from '../config/index';
+import { Logger } from '../config/logger/vendure-logger';
 
 /**
  * This is a work-around for this issue: https://github.com/vendure-ecommerce/vendure/issues/1664
@@ -58,7 +58,9 @@ export function removeCustomFieldsWithEagerRelations<T extends string>(
             const relationsToRemove = relations.filter(r => r.startsWith(`customFields.${propertyName}`));
             if (relationsToRemove.length) {
                 Logger.debug(
-                    `TransactionalConnection.findOneInChannel cannot automatically join relation [${mainAlias?.metadata.name}.customFields.${propertyName}]`,
+                    `TransactionalConnection.findOneInChannel cannot automatically join relation [${
+                        mainAlias?.metadata.name ?? '(unknown)'
+                    }.customFields.${propertyName}]`,
                 );
                 resultingRelations = relations.filter(r => !r.startsWith(`customFields.${propertyName}`));
             }

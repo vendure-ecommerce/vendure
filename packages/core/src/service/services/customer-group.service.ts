@@ -17,11 +17,11 @@ import { RelationPaths } from '../../api/index';
 import { UserInputError } from '../../common/error/errors';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CustomerGroupEntityEvent } from '../../event-bus/events/customer-group-entity-event';
-import { CustomerGroupChangeEvent, CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
+import { CustomerGroupChangeEvent } from '../../event-bus/events/customer-group-change-event';
+import { CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -60,7 +60,10 @@ export class CustomerGroupService {
         customerGroupId: ID,
         relations: RelationPaths<CustomerGroup> = [],
     ): Promise<CustomerGroup | undefined> {
-        return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId, { relations });
+        return this.connection
+            .getRepository(ctx, CustomerGroup)
+            .findOne({ where: { id: customerGroupId }, relations })
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -104,7 +107,7 @@ export class CustomerGroupService {
         }
         const savedCustomerGroup = await assertFound(this.findOne(ctx, newCustomerGroup.id));
         await this.customFieldRelationService.updateRelations(ctx, CustomerGroup, input, savedCustomerGroup);
-        this.eventBus.publish(new CustomerGroupEntityEvent(ctx, savedCustomerGroup, 'created', input));
+        this.eventBus.publish(new CustomerGroupEvent(ctx, savedCustomerGroup, 'created', input));
         return assertFound(this.findOne(ctx, savedCustomerGroup.id));
     }
 
@@ -118,7 +121,7 @@ export class CustomerGroupService {
             input,
             updatedCustomerGroup,
         );
-        this.eventBus.publish(new CustomerGroupEntityEvent(ctx, customerGroup, 'updated', input));
+        this.eventBus.publish(new CustomerGroupEvent(ctx, customerGroup, 'updated', input));
         return assertFound(this.findOne(ctx, customerGroup.id));
     }
 
@@ -127,11 +130,11 @@ export class CustomerGroupService {
         try {
             const deletedGroup = new CustomerGroup(group);
             await this.connection.getRepository(ctx, CustomerGroup).remove(group);
-            this.eventBus.publish(new CustomerGroupEntityEvent(ctx, deletedGroup, 'deleted', id));
+            this.eventBus.publish(new CustomerGroupEvent(ctx, deletedGroup, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };
-        } catch (e) {
+        } catch (e: any) {
             return {
                 result: DeletionResult.NOT_DELETED,
                 message: e.message,
@@ -160,7 +163,6 @@ export class CustomerGroupService {
         }
 
         await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
-        this.eventBus.publish(new CustomerGroupEvent(ctx, customers, group, 'assigned'));
         this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'assigned'));
 
         return assertFound(this.findOne(ctx, group.id));
@@ -187,7 +189,6 @@ export class CustomerGroupService {
             });
         }
         await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
-        this.eventBus.publish(new CustomerGroupEvent(ctx, customers, group, 'removed'));
         this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'removed'));
         return assertFound(this.findOne(ctx, group.id));
     }

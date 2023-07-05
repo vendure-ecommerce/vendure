@@ -1,15 +1,27 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { UntypedFormControl } from '@angular/forms';
+import { gql } from 'apollo-angular';
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-
-import { FormInputComponent } from '../../../../common/component-registry-types';
-import { GetAsset, RelationCustomFieldConfig } from '../../../../common/generated-types';
+import { GetAssetQuery, RelationCustomFieldConfig } from '../../../../common/generated-types';
+import { ASSET_FRAGMENT, TAG_FRAGMENT } from '../../../../data/definitions/product-definitions';
 import { DataService } from '../../../../data/providers/data.service';
 import { ModalService } from '../../../../providers/modal/modal.service';
 import { AssetPickerDialogComponent } from '../../../components/asset-picker-dialog/asset-picker-dialog.component';
 import { AssetPreviewDialogComponent } from '../../../components/asset-preview-dialog/asset-preview-dialog.component';
+
+export const RELATION_ASSET_INPUT_QUERY = gql`
+    query RelationAssetInputQuery($id: ID!) {
+        asset(id: $id) {
+            ...Asset
+            tags {
+                ...Tag
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-relation-asset-input',
@@ -17,12 +29,11 @@ import { AssetPreviewDialogComponent } from '../../../components/asset-preview-d
     styleUrls: ['./relation-asset-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RelationAssetInputComponent implements FormInputComponent, OnInit {
-    static readonly id: DefaultFormComponentId = 'asset-form-input';
+export class RelationAssetInputComponent implements OnInit {
     @Input() readonly: boolean;
-    @Input('parentFormControl') formControl: FormControl;
+    @Input('parentFormControl') formControl: UntypedFormControl;
     @Input() config: RelationCustomFieldConfig;
-    asset$: Observable<GetAsset.Asset | undefined>;
+    asset$: Observable<GetAssetQuery['asset'] | undefined>;
 
     constructor(private modalService: ModalService, private dataService: DataService) {}
 
@@ -62,7 +73,7 @@ export class RelationAssetInputComponent implements FormInputComponent, OnInit {
         this.formControl.markAsDirty();
     }
 
-    previewAsset(asset: GetAsset.Asset) {
+    previewAsset(asset: NonNullable<GetAssetQuery['asset']>) {
         this.modalService
             .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',

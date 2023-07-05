@@ -21,19 +21,80 @@
     --color-text-100: hsl(210, 16%, 93%);
     --color-text-200: hsl(203, 16%, 72%);
     --color-text-300: var(--color-grey-300);
+    --color-text-inverse: var(--clr-global-font-color);
+    --color-text-active: var(--color-primary-600);
 
-    --color-chip-warning-border: var(--color-warning-700);
+    --color-weight-100: hsl(0 0% 95%);
+    --color-weight-125: hsl(0 0% 93%);
+    --color-weight-150: hsl(0 0% 90%);
+    --color-weight-200: hsl(0 0% 85%);
+    --color-weight-300: hsl(0 0% 75%);
+    --color-weight-400: hsl(0 0% 65%);
+    --color-weight-500: hsl(0 0% 55%);
+    --color-weight-600: hsl(0 0% 45%);
+    --color-weight-700: hsl(0 0% 35%);
+    --color-weight-800: hsl(0 0% 25%);
+    --color-weight-900: hsl(0 0% 15%);
+    --color-weight-950: hsl(0 0% 10%);
+    --color-weight-975: hsl(0 0% 7%);
+    --color-weight-1000: hsl(0 0% 5%);
+
+
+    --color-weight-100: hsl(201 30% 15%);
+    --color-weight-125: hsl(201 30% 17%);
+    --color-weight-150: hsl(201 30% 20%);
+    --color-weight-200: hsl(201 30% 35%);
+    --color-weight-300: hsl(201 30% 45%);
+    --color-weight-400: hsl(201 30% 55%);
+    --color-weight-500: hsl(201 30% 65%);
+    --color-weight-600: hsl(201 30% 75%);
+    --color-weight-700: hsl(201 30% 85%);
+    --color-weight-800: hsl(201 30% 90%);
+    --color-weight-900: hsl(201 30% 92%);
+    --color-weight-950: hsl(201 30% 94%);
+    --color-weight-975: hsl(201 30% 96%);
+    --color-weight-1000: hsl(201 30% 98%);
+
+
+    --color-scrollbar-bg: var(--color-weight-125);
+    --color-scrollbar-thumb: var(--color-weight-200);
+    --color-scrollbar-thumb-hover: var(--color-weight-300);
+    --color-surface-bg: hsl(201, 30%, 13%);
+    --color-page-header:hsl(201, 30%, 15%);
+    --color-page-header-item-bg: var(--color-weight-150);
+    --color-top-bar-bg: hsl(201, 30%, 15%);
+    --color-left-nav-bg: hsl(201, 30%, 20%);
+    --color-left-nav-text-hover: var(--color-primary-200);
+
+    --color-card-border: var(--color-weight-150);
+    --color-card-bg: var(--color-weight-100);
+
+    --color-button-bg: var(--color-weight-150);
+    --color-button-hover-bg: var(--color-weight-200);
+    --color-button-ghost-bg: var(--color-weight-125);
+    --color-button-ghost-text: var(--color-text-100);
+    --color-button-ghost-hover-text: var(--color-primary-100);
+    --color-button-ghost-hover-bg: var(--color-weight-200);
+    --color-button-small-bg: var(--color-weight-150);
+    --color-button-small-hover-bg: var(--color-weight-200);
+    --color-button-small-text: var(--color-weight-700);
+
+    --color-channel-switcher-bg: var(--color-weight-125);
+    --color-channel-switcher-hover-bg: var(--color-weight-100);
+
+    --color-chip-warning-border: var(--color-warning-800);
     --color-chip-warning-text: #fff;
-    --color-chip-warning-bg: var(--color-warning-600);
-    --color-chip-success-border: var(--color-success-700);
+    --color-chip-warning-bg: var(--color-warning-700);
+    --color-chip-success-border: var(--color-success-800);
     --color-chip-success-text: #fff;
-    --color-chip-success-bg: var(--color-success-600);
-    --color-chip-error-border: var(--color-error-700);
+    --color-chip-success-bg: var(--color-success-700);
+    --color-chip-error-border: var(--color-error-800);
     --color-chip-error-text: #fff;
-    --color-chip-error-bg: var(--color-error-600);
+    --color-chip-error-bg: var(--color-error-700);
 
     --color-icon-button: var(--color-grey-200);
-    --color-form-input-bg: hsl(212, 35%, 95%);
+    --color-form-input-bg: var(--color-weight-150);
+    --color-form-input-focus: var(--color-primary-500);
     --color-timeline-thread: var(--color-primary-700);
 
     --color-json-editor-background-color: var(--color-grey-600);
@@ -44,6 +105,10 @@
     --color-json-editor-null: var(--color-grey-300-grey-500);
     --color-json-editor-key: var(--color-success-300);
     --color-json-editor-error: var(--color-error-200);
+
+    --color-split-view-separator-border: var(--color-weight-150);
+    --color-split-view-separator-resize-border: var(--color-primary-700);
+
 
     // clarity styles
     --clr-global-app-background: hsl(201, 30%, 15%);
@@ -64,63 +129,6 @@
 
     --clr-theme-alert-font-color: hsl(210, 16%, 93%);
     --clr-theme-app-alert-font-color: hsl(0, 0%, 0%);
-
-    // Info type
-    --clr-alert-info-bg-color: hsl(198, 79%, 28%);
-    --clr-alert-info-font-color: var(--clr-theme-alert-font-color);
-    --clr-alert-info-border-color: transparent;
-    --clr-alert-info-icon-color: var(--clr-theme-alert-font-color);
-
-    // Success type
-    --clr-alert-success-bg-color: hsl(122, 45%, 23%);
-    --clr-alert-success-font-color: var(--clr-theme-alert-font-color);
-    --clr-alert-success-border-color: transparent;
-    --clr-alert-success-icon-color: var(--clr-theme-alert-font-color);
-
-    // Danger type
-    --clr-alert-danger-bg-color: hsl(357, 50%, 35%);
-    --clr-alert-danger-font-color: var(--clr-theme-alert-font-color);
-    --clr-alert-danger-border-color: transparent;
-    --clr-alert-danger-icon-color: var(--clr-theme-alert-font-color);
-
-    // Warning type
-    --clr-alert-warning-bg-color: hsl(47, 87%, 27%);
-    --clr-alert-warning-font-color: var(--clr-theme-alert-font-color);
-    --clr-alert-warning-border-color: transparent;
-    --clr-alert-warning-icon-color: var(--clr-theme-alert-font-color);
-
-    // App Info type
-    --clr-app-alert-info-bg-color: hsl(198, 65%, 57%);
-    --clr-app-alert-info-font-color: var(--clr-theme-app-alert-font-color);
-    --clr-app-alert-info-border-color: transparent;
-    --clr-app-alert-info-icon-color: var(--clr-theme-app-alert-font-color);
-
-    // App warning type
-    --clr-app-alert-warning-bg-color: hsl(49, 98%, 51%);
-    --clr-app-alert-warning-icon-color: var(--clr-theme-app-alert-font-color);
-    --clr-app-alert-warning-font-color: var(--clr-theme-app-alert-font-color);
-    --clr-app-alert-warning-border-color: transparent;
-
-    // App danger type
-    --clr-app-alert-danger-bg-color: hsl(3, 90%, 62%);
-    --clr-app-alert-danger-icon-color: var(--clr-theme-app-alert-font-color);
-    --clr-app-alert-danger-font-color: var(--clr-theme-app-alert-font-color);
-    --clr-app-alert-danger-border-color: transparent;
-
-    --clr-alert-action-color: hsl(0, 0%, 100%); // Used for dropdowns on the right side of an alert
-    --clr-alert-action-active-color: hsl(0, 0%, 100%); // Alert dropdowns when they are clicked on
-    --clr-app-alert-close-icon-color: var(--clr-close-color--normal); // Colors for the 'X' close btn in global alerts
-
-    --clr-alert-close-icon-opacity: 1;
-    --clr-alert-close-icon-hover-opacity: 1;
-
-    // Close icon colors for APP-LEVEL ALERTS
-    --clr-app-level-alert-color: hsl(0, 0%, 0%);
-    --clr-app-alert-close-icon-color: hsl(0, 0%, 0%);
-
-    /**********
-    * END: Alerts
-    */
 
     /*****************
     * Badge
@@ -290,7 +298,7 @@
     --clr-dropdown-bg-color: hsl(198, 28%, 18%);
     --clr-dropdown-text-color: hsl(203, 16%, 72%);
     --clr-dropdown-item-color: hsl(203, 16%, 72%);
-    --clr-dropdown-border-color: hsl(0, 0%, 0%);
+    --clr-dropdown-border-color: var(--color-weight-200);
     --clr-dropdown-child-border-color: hsl(0, 0%, 0%);
     --clr-dropdown-bg-active-color: var(--clr-global-selection-color);
     --clr-dropdown-bg-hover-color: var(--clr-global-hover-bg-color);
@@ -467,29 +475,6 @@
     --clr-spinner-opacity: 1;
     // END Spinners
 
-    /*********
-    * Stack View
-    */
-    --clr-stack-view-border-color: hsl(208, 14%, 39%);
-    --clr-stack-view-bg-color: var(--clr-global-app-background);
-    --clr-stack-view-stack-block-border-bottom: var(--clr-stack-view-border-color); //border-bottom for stack-view rows) (not last)
-    --clr-stack-view-border-box-color: var(--clr-stack-view-border-color);
-    --clr-stack-block-changed-border-top-color: hsl(205, 100%, 34%); // TODO: Figure out where this shows in the UI.
-    --clr-stack-view-stack-block-label-and-content-bg-color: var(--clr-global-app-background); // stkvw row bg color) when not expanded
-    --clr-stack-view-stack-children-stack-block-border-bottom-color: var(--clr-stack-view-border-color); // children of) an expanded row
-    --clr-stack-view-stack-children-stack-block-label-and-content-bg-color: hsl(
-    198,
-    28%,
-    18%
-    ); // children of an expanded row
-    --clr-stack-view-stack-block-label-text-color: hsl(212, 10%, 61%);
-    --clr-stack-view-stack-block-expanded-bg-color: hsl(203, 32%, 29%);
-    --clr-stack-view-stack-block-expandable-hover: hsl(203, 32%, 29%);
-    --clr-stack-view-stack-block-content-text-color: hsl(203, 16%, 72%);
-    --clr-stack-view-stack-block-expanded-text-color: hsl(0, 0%, 100%);
-    --clr-stack-view-stack-block-caret-color: hsl(0, 0%, 60%);
-    // END: Stack View overrides
-
     /**********
     * Table
     */
@@ -504,6 +489,10 @@
     --clr-table-border-color: var(--clr-datagrid-default-border-color);
     --clr-table-bordercolor: var(--clr-datagrid-default-border-color);
     --clr-table-borderstyle: 0.05rem solid var(--clr-datagrid-default-border-color);
+    --color-table-row-hover-bg: var(--color-weight-125);
+    --color-table-row-active-bg: var(--color-primary-900);
+    --color-table-row-separator: var(--color-weight-150);
+    --data-table-filter-box-shadow: inset -1px 6px 5px 0px hsla(201, 30%, 5%, 0.2);
     // END: Table
 
     /**********
@@ -570,34 +559,6 @@
     --clr-p6-color: var(--clr-global-font-color);
     --clr-p7-color: var(--clr-global-font-color);
     --clr-p8-color: var(--clr-global-font-color);
-
-    /**********
-    * Vertical Nav
-    */
-    --clr-vertical-nav-item-color: hsl(203, 16%, 72%);
-    --clr-vertical-nav-item-active-color: hsl(0, 0%, 100%);
-    --clr-vertical-nav-bg-color: hsl(201, 30%, 13%);
-    --clr-vertical-nav-active-bg-color: var(--clr-global-selection-color);
-    --clr-vertical-nav-hover-bg-color: var(--clr-global-hover-bg-color);
-    --clr-vertical-nav-icon-active-color: hsl(0, 0%, 100%);
-    --clr-vertical-nav-toggle-icon-color: hsl(203, 16%, 72%);
-    --clr-vertical-nav-trigger-divider-border-color: hsl(199, 19%, 17%);
-    // END Vertical Nav
-
-    /**********
-    * Wizard
-    */
-    --clr-wizard-sidenav-bg-color: hsl(201, 30%, 15%);
-    --clr-wizard-sidenav-text--active: hsl(0, 0%, 100%);
-    --clr-wizard-stepnav-active-bg-color: hsl(203, 32%, 29%);
-    --clr-wizard-stepnav-border-color: hsl(201, 14%, 27%);
-    --clr-wizard-stepnav-border-color--active: hsl(92, 79%, 40%);
-    --clr-wizard-step-nav-border-color: hsl(200, 30%, 12%);
-    --clr-wizard-sidenav-text: hsl(203, 16%, 72%);
-    --clr-wizard-title-text: hsl(210, 16%, 93%);
-    --clr-wizard-main-textColor: hsl(203, 16%, 72%);
-    --clr-wizard-stepnav-error-color: hsl(3, 90%, 62%);
-    // END: Wizard
 
     // ACCORDION
     --clr-accordion-text-color: var(--clr-color-neutral-0);

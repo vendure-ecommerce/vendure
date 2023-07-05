@@ -12,6 +12,9 @@ type Mutation {
 
     "Delete a Country"
     deleteCountry(id: ID!): DeletionResponse!
+
+    "Delete multiple Countries"
+    deleteCountries(ids: [ID!]!): [DeletionResponse!]!
 }
 
 input CountryTranslationInput {

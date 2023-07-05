@@ -1,12 +1,15 @@
-import { ConfigArg, ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
+import { LocaleString, Translatable, Translation } from '../../common/index';
 import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomPaymentMethodFields } from '../custom-entity-fields';
+
+import { PaymentMethodTranslation } from './payment-method-translation.entity';
 
 /**
  * @description
@@ -16,16 +19,19 @@ import { CustomPaymentMethodFields } from '../custom-entity-fields';
  * @docsCategory entities
  */
 @Entity()
-export class PaymentMethod extends VendureEntity implements ChannelAware, HasCustomFields {
+export class PaymentMethod extends VendureEntity implements Translatable, ChannelAware, HasCustomFields {
     constructor(input?: DeepPartial<PaymentMethod>) {
         super(input);
     }
 
-    @Column({ default: '' }) name: string;
+    name: LocaleString;
 
     @Column({ default: '' }) code: string;
 
-    @Column({ default: '' }) description: string;
+    description: LocaleString;
+
+    @OneToMany(type => PaymentMethodTranslation, translation => translation.base, { eager: true })
+    translations: Array<Translation<PaymentMethod>>;
 
     @Column() enabled: boolean;
 

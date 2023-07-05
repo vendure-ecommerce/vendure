@@ -1,9 +1,9 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path, { extname } from 'path';
 
-import { deleteGeneratedDocs } from './docgen-utils';
+import { deleteGeneratedDocs, normalizeForUrlPart } from './docgen-utils';
 import { TypeMap } from './typescript-docgen-types';
 import { TypescriptDocsParser } from './typescript-docs-parser';
 import { TypescriptDocsRenderer } from './typescript-docs-renderer';
@@ -78,13 +78,13 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
         for (const page of docsPages) {
             const { category, fileName, declarations } = page;
             for (const declaration of declarations) {
-                const pathToTypeDoc = `${outputPath}/${category ? category + '/' : ''}${
-                    fileName === '_index' ? '' : fileName
-                }#${toHash(declaration.title)}`;
+                const pathToTypeDoc = `${outputPath}/${
+                    category ? category.map(part => normalizeForUrlPart(part)).join('/') + '/' : ''
+                }${fileName === '_index' ? '' : fileName}#${toHash(declaration.title)}`;
                 globalTypeMap.set(declaration.title, pathToTypeDoc);
             }
         }
-        const docsUrl = `/docs`;
+        const docsUrl = ``;
         const generatedCount = new TypescriptDocsRenderer().render(
             docsPages,
             docsUrl,

@@ -2,7 +2,9 @@ import { Component, ContentChild, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'vdr-ab-left',
-    template: ` <ng-content></ng-content> `,
+    template: `
+        <ng-content></ng-content>
+    `,
 })
 export class ActionBarLeftComponent {
     @Input() grow = false;
@@ -10,7 +12,17 @@ export class ActionBarLeftComponent {
 
 @Component({
     selector: 'vdr-ab-right',
-    template: ` <ng-content></ng-content> `,
+    template: `
+        <ng-content></ng-content>
+    `,
+    styles: [
+        `
+            :host {
+                display: flex;
+                align-items: center;
+            }
+        `,
+    ],
 })
 export class ActionBarRightComponent {
     @Input() grow = false;

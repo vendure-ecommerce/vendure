@@ -1,12 +1,26 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { gql } from 'apollo-angular';
 import { Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { AssetFragment, GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
+import { GetAssetQuery, UpdateAssetInput } from '../../../common/generated-types';
+import { ASSET_FRAGMENT, TAG_FRAGMENT } from '../../../data/definitions/product-definitions';
 import { DataService } from '../../../data/providers/data.service';
-import { Dialog } from '../../../providers/modal/modal.service';
+import { Dialog } from '../../../providers/modal/modal.types';
+import { AssetLike } from '../asset-gallery/asset-gallery.types';
 
-type AssetLike = GetAssetList.Items | AssetFragment;
+export const ASSET_PREVIEW_QUERY = gql`
+    query AssetPreviewQuery($id: ID!) {
+        asset(id: $id) {
+            ...Asset
+            tags {
+                ...Tag
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-asset-preview-dialog',
@@ -19,7 +33,7 @@ export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
     asset: AssetLike;
     assetChanges?: UpdateAssetInput;
     resolveWith: (result?: void) => void;
-    assetWithTags$: Observable<GetAsset.Asset>;
+    assetWithTags$: Observable<GetAssetQuery['asset']>;
 
     ngOnInit() {
         this.assetWithTags$ = of(this.asset).pipe(
@@ -27,14 +41,14 @@ export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
                 if (this.hasTags(asset)) {
                     return of(asset);
                 } else {
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     return this.dataService.product.getAsset(asset.id).mapSingle(data => data.asset!);
                 }
             }),
         );
     }
 
-    private hasTags(asset: AssetLike): asset is GetAssetList.Items {
+    private hasTags(asset: AssetLike): asset is AssetLike & { tags: string[] } {
         return asset.hasOwnProperty('tags');
     }
 }

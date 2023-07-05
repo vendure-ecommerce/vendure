@@ -1,31 +1,31 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Product resolver product mutation createProduct creates a new Product 1`] = `
-Object {
-  "assets": Array [],
-  "channels": Array [
-    Object {
+exports[`Product resolver > product mutation > createProduct creates a new Product 1`] = `
+{
+  "assets": [],
+  "channels": [
+    {
       "code": "__default_channel__",
       "id": "T_1",
     },
   ],
   "description": "A baked potato",
   "enabled": true,
-  "facetValues": Array [],
+  "facetValues": [],
   "featuredAsset": null,
   "id": "T_22",
   "languageCode": "en",
   "name": "en Baked Potato",
-  "optionGroups": Array [],
+  "optionGroups": [],
   "slug": "en-baked-potato",
-  "variants": Array [],
+  "variants": [],
 }
 `;
 
-exports[`Product resolver product query returns expected properties 1`] = `
-Object {
-  "assets": Array [
-    Object {
+exports[`Product resolver > product query > returns expected properties 1`] = `
+{
+  "assets": [
+    {
       "fileSize": 1680,
       "id": "T_2",
       "mimeType": "image/jpeg",
@@ -35,27 +35,27 @@ Object {
       "type": "IMAGE",
     },
   ],
-  "channels": Array [
-    Object {
+  "channels": [
+    {
       "code": "__default_channel__",
       "id": "T_1",
     },
   ],
   "description": "Discover a truly immersive viewing experience with this monitor curved more deeply than any other. Wrapping around your field of vision the 1,800 R screencreates a wider field of view, enhances depth perception, and minimises peripheral distractions to draw you deeper in to your content.",
   "enabled": true,
-  "facetValues": Array [
-    Object {
+  "facetValues": [
+    {
       "code": "electronics",
-      "facet": Object {
+      "facet": {
         "id": "T_1",
         "name": "category",
       },
       "id": "T_1",
       "name": "electronics",
     },
-    Object {
+    {
       "code": "computers",
-      "facet": Object {
+      "facet": {
         "id": "T_1",
         "name": "category",
       },
@@ -63,7 +63,7 @@ Object {
       "name": "computers",
     },
   ],
-  "featuredAsset": Object {
+  "featuredAsset": {
     "fileSize": 1680,
     "id": "T_2",
     "mimeType": "image/jpeg",
@@ -75,8 +75,8 @@ Object {
   "id": "T_2",
   "languageCode": "en",
   "name": "Curvy Monitor",
-  "optionGroups": Array [
-    Object {
+  "optionGroups": [
+    {
       "code": "curvy-monitor-monitor-size",
       "id": "T_3",
       "languageCode": "en",
@@ -84,8 +84,8 @@ Object {
     },
   ],
   "slug": "curvy-monitor",
-  "translations": Array [
-    Object {
+  "translations": [
+    {
       "description": "Discover a truly immersive viewing experience with this monitor curved more deeply than any other. Wrapping around your field of vision the 1,800 R screencreates a wider field of view, enhances depth perception, and minimises peripheral distractions to draw you deeper in to your content.",
       "languageCode": "en",
       "name": "Curvy Monitor",

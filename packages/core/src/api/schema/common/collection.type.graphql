@@ -11,6 +11,7 @@ type Collection implements Node {
     featuredAsset: Asset
     assets: [Asset!]!
     parent: Collection
+    parentId: ID!
     children: [Collection!]
     filters: [ConfigurableOperation!]!
     translations: [CollectionTranslation!]!

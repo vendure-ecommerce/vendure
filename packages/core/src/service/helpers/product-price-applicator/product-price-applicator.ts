@@ -57,20 +57,27 @@ export class ProductPriceApplicator {
         ctx: RequestContext,
         order?: Order,
     ): Promise<ProductVariant> {
-        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
+        const { productVariantPriceSelectionStrategy, productVariantPriceCalculationStrategy } =
+            this.configService.catalogOptions;
+        const channelPrice = await productVariantPriceSelectionStrategy.selectPrice(
+            ctx,
+            variant.productVariantPrices,
+        );
         if (!channelPrice) {
-            throw new InternalServerError(`error.no-price-found-for-channel`, {
+            throw new InternalServerError('error.no-price-found-for-channel', {
                 variantId: variant.id,
                 channel: ctx.channel.code,
             });
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
-        const zones = await this.requestCache.get(ctx, 'allZones', () => this.zoneService.findAll(ctx));
-        const activeTaxZone = await this.requestCache.get(ctx, `activeTaxZone`, () =>
+        const zones = await this.requestCache.get(ctx, 'allZones', () =>
+            this.zoneService.getAllWithMembers(ctx),
+        );
+        const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
         if (!activeTaxZone) {
-            throw new InternalServerError(`error.no-active-tax-zone`);
+            throw new InternalServerError('error.no-active-tax-zone');
         }
         const applicableTaxRate = await this.requestCache.get(
             ctx,
@@ -78,7 +85,6 @@ export class ProductPriceApplicator {
             () => this.taxRateService.getApplicableTaxRate(ctx, activeTaxZone, variant.taxCategory),
         );
 
-        const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
         const { price, priceIncludesTax } = await productVariantPriceCalculationStrategy.calculate({
             inputPrice: channelPrice.price,
             taxCategory: variant.taxCategory,
@@ -89,7 +95,7 @@ export class ProductPriceApplicator {
         variant.listPrice = price;
         variant.listPriceIncludesTax = priceIncludesTax;
         variant.taxRateApplied = applicableTaxRate;
-        variant.currencyCode = ctx.channel.currencyCode;
+        variant.currencyCode = channelPrice.currencyCode;
         return variant;
     }
 }

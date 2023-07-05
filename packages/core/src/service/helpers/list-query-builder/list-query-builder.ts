@@ -4,9 +4,10 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Brackets,
-    FindConditions,
     FindManyOptions,
     FindOneOptions,
+    FindOptionsWhere,
+    In,
     Repository,
     SelectQueryBuilder,
 } from 'typeorm';
@@ -19,14 +20,13 @@ import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions, NullOptionals, SortParameter } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
-import { CustomFields } from '../../../config/index';
+import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
-import { parseChannelParam } from './parse-channel-param';
 import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
 
@@ -40,7 +40,7 @@ import { parseSortParams } from './parse-sort-params';
 export type ExtendedListQueryOptions<T extends VendureEntity> = {
     relations?: string[];
     channelId?: ID;
-    where?: FindConditions<T>;
+    where?: FindOptionsWhere<T>;
     orderBy?: FindOneOptions<T>['order'];
     /**
      * @description
@@ -112,6 +112,16 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * ```
      */
     customPropertyMap?: { [name: string]: string };
+    /**
+     * @description
+     * When set to `true`, the configured `shopListQueryLimit` and `adminListQueryLimit` values will be ignored,
+     * allowing unlimited results to be returned. Use caution when exposing an unlimited list query to the public,
+     * as it could become a vector for a denial of service attack if an attacker requests a very large list.
+     *
+     * @since 2.0.2
+     * @default false
+     */
+    ignoreQueryLimits?: boolean;
 };
 
 /**
@@ -206,21 +216,25 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     ): SelectQueryBuilder<T> {
         const apiType = extendedOptions.ctx?.apiType ?? 'shop';
         const rawConnection = this.connection.rawConnection;
-        const { take, skip } = this.parseTakeSkipParams(apiType, options);
+        const { take, skip } = this.parseTakeSkipParams(apiType, options, extendedOptions.ignoreQueryLimits);
 
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
             : this.connection.rawConnection.getRepository(entity);
-
-        const qb = repo.createQueryBuilder(extendedOptions.entityAlias || entity.name.toLowerCase());
+        const alias = extendedOptions.entityAlias || entity.name.toLowerCase();
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+        const qb = repo.createQueryBuilder(alias).setFindOptions({
             relations: minimumRequiredRelations,
             take,
             skip,
             where: extendedOptions.where || {},
-        } as FindManyOptions<T>);
-        // tslint:disable-next-line:no-non-null-assertion
+            // We would like to be able to use this feature
+            // rather than our custom `optimizeGetManyAndCountMethod()` implementation,
+            // but at this time (TypeORM 0.3.12) it throws an error in the case of
+            // a Collection that joins its parent entity.
+            // relationLoadStrategy: 'query',
+        });
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         // join the tables required by calculated columns
@@ -232,13 +246,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
         const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
         const sortParams = Object.assign({}, options.sort, extendedOptions.orderBy);
-        this.applyTranslationConditions(
-            qb,
-            entity,
-            sortParams,
-            extendedOptions.ctx,
-            extendedOptions.entityAlias,
-        );
+        this.applyTranslationConditions(qb, entity, sortParams, extendedOptions.ctx, alias);
         const sort = parseSortParams(
             rawConnection,
             entity,
@@ -273,15 +281,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (extendedOptions.channelId) {
-            const channelFilter = parseChannelParam(
-                rawConnection,
-                entity,
-                extendedOptions.channelId,
-                extendedOptions.entityAlias,
-            );
-            if (channelFilter) {
-                qb.andWhere(channelFilter.clause, channelFilter.parameters);
-            }
+            qb.leftJoin(`${alias}.channels`, 'lqb__channel').andWhere('lqb__channel.id = :channelId', {
+                channelId: extendedOptions.channelId,
+            });
         }
 
         qb.orderBy(sort);
@@ -293,9 +295,14 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     private parseTakeSkipParams(
         apiType: ApiType,
         options: ListQueryOptions<any>,
+        ignoreQueryLimits = false,
     ): { take: number; skip: number } {
         const { shopListQueryLimit, adminListQueryLimit } = this.configService.apiOptions;
-        const takeLimit = apiType === 'admin' ? adminListQueryLimit : shopListQueryLimit;
+        const takeLimit = ignoreQueryLimits
+            ? Number.MAX_SAFE_INTEGER
+            : apiType === 'admin'
+            ? adminListQueryLimit
+            : shopListQueryLimit;
         if (options.take && options.take > takeLimit) {
             throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
         }
@@ -479,11 +486,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const entitiesIdsWithRelations = await Promise.all(
             Array.from(groupedRelationsMap.values())?.map(relationPaths => {
                 return repo
-                    .findByIds(entitiesIds, {
+                    .find({
+                        where: { id: In(entitiesIds) },
                         select: ['id'],
                         relations: relationPaths,
-                        loadEagerRelations: false,
-                    })
+                        loadEagerRelations: true,
+                    } as FindManyOptions<T>)
                     .then(results =>
                         results.map(r => ({ relation: relationPaths[0] as keyof T, entity: r })),
                     );

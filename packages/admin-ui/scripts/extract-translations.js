@@ -96,7 +96,7 @@ function getNgxTranslateExtractCommand(locale) {
         `--format`,
         `namespaced-json`,
         `--format-indentation`,
-        `"  "`,
+        `  `,
         `-m`,
         `_`,
     ];

@@ -1,135 +1,156 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
-    GetCollectionList,
+    GetCollectionListDocument,
+    GetCollectionListQuery,
+    ItemOf,
     LanguageCode,
-    ModalService,
     NotificationService,
-    QueryResult,
-    SelectionManager,
-    ServerConfigService,
+    TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
-import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    map,
-    shareReplay,
-    switchMap,
-    take,
-    takeUntil,
-    tap,
-} from 'rxjs/operators';
-
-import { CollectionPartial, RearrangeEvent } from '../collection-tree/collection-tree.component';
+import { combineLatest, Observable, of } from 'rxjs';
+import { distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs/operators';
+import { CollectionOrderEvent } from '../collection-data-table/collection-data-table.component';
 
 @Component({
     selector: 'vdr-collection-list',
     templateUrl: './collection-list.component.html',
-    styleUrls: ['./collection-list.component.scss'],
+    styleUrls: ['./collection-list.component.scss', './collection-list-common.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollectionListComponent implements OnInit, OnDestroy {
-    filterTermControl = new FormControl('');
+export class CollectionListComponent
+    extends TypedBaseListComponent<typeof GetCollectionListDocument, 'collections'>
+    implements OnInit
+{
     activeCollectionId$: Observable<string | null>;
+    activeCollectionIndex$: Observable<number>;
     activeCollectionTitle$: Observable<string>;
-    items$: Observable<GetCollectionList.Items[]>;
-    availableLanguages$: Observable<LanguageCode[]>;
-    contentLanguage$: Observable<LanguageCode>;
-    expandAll = false;
+    subCollections$: Observable<Array<ItemOf<GetCollectionListQuery, 'collections'>>>;
     expandedIds: string[] = [];
-    selectionManager: SelectionManager<CollectionPartial>;
-    private queryResult: QueryResult<any>;
-    private destroy$ = new Subject<void>();
+    readonly customFields = this.getCustomFieldConfig('Collection');
+    readonly filters = this.createFilterCollection()
+        .addDateFilters()
+        .addFilter({
+            name: 'slug',
+            label: _('common.slug'),
+            type: { kind: 'text' },
+            filterField: 'slug',
+        })
+        .addFilter({
+            name: 'visibility',
+            type: { kind: 'boolean' },
+            label: _('common.visibility'),
+            toFilterInput: value => ({
+                isPrivate: { eq: !value },
+            }),
+        })
+        .addCustomFieldFilters(this.customFields)
+        .connectToRoute(this.route);
+    readonly sorts = this.createSortCollection()
+        .defaultSort('position', 'ASC')
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .addSort({ name: 'slug' })
+        .addSort({ name: 'position' })
+        .addCustomFieldSorts(this.customFields)
+        .connectToRoute(this.route);
 
-    constructor(
-        private dataService: DataService,
-        private notificationService: NotificationService,
-        private modalService: ModalService,
-        private router: Router,
-        private route: ActivatedRoute,
-        private serverConfigService: ServerConfigService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {
-        this.selectionManager = new SelectionManager({
-            additiveMode: true,
-            multiSelect: true,
-            itemsAreEqual: (a, b) => a.id === b.id,
+    constructor(protected dataService: DataService, private notificationService: NotificationService) {
+        super();
+        super.configure({
+            document: GetCollectionListDocument,
+            getItems: data => data.collections,
+            setVariables: (skip, _take) => {
+                const topLevelOnly =
+                    this.searchTermControl.value === '' && this.filters.activeFilters.length === 0
+                        ? true
+                        : undefined;
+                return {
+                    options: {
+                        skip,
+                        take: _take,
+                        filter: {
+                            name: { contains: this.searchTermControl.value },
+                            ...this.filters.createFilterInput(),
+                        },
+                        topLevelOnly,
+                        sort: this.sorts.createSortInput(),
+                    },
+                };
+            },
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
         });
     }
 
     ngOnInit() {
-        this.queryResult = this.dataService.collection.getCollections(1000, 0).refetchOnChannelChange();
-        this.items$ = this.queryResult
-            .mapStream(data => data.collections.items)
-            .pipe(
-                tap(items => this.selectionManager.setCurrentItems(items)),
-                shareReplay(1),
-            );
+        super.ngOnInit();
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
         );
-        this.expandedIds = this.route.snapshot.queryParamMap.get('expanded')?.split(',') ?? [];
-        this.expandAll = this.route.snapshot.queryParamMap.get('expanded') === 'all';
+        const expandedIds$ = this.route.queryParamMap.pipe(
+            map(qpm => qpm.get('expanded')),
+            distinctUntilChanged(),
+            map(ids => (ids ? ids.split(',') : [])),
+        );
+        expandedIds$.pipe(takeUntil(this.destroy$)).subscribe(ids => {
+            this.expandedIds = ids;
+        });
+        this.subCollections$ = combineLatest(expandedIds$, this.refresh$).pipe(
+            switchMap(([ids]) => {
+                if (ids.length) {
+                    return this.dataService.collection
+                        .getCollections({
+                            take: 999,
+                            filter: {
+                                parentId: { in: ids },
+                            },
+                        })
+                        .mapStream(data => data.collections.items);
+                } else {
+                    return of([]);
+                }
+            }),
+        );
 
-        this.activeCollectionTitle$ = combineLatest(this.activeCollectionId$, this.items$).pipe(
-            map(([id, collections]) => {
+        this.activeCollectionTitle$ = combineLatest(
+            this.activeCollectionId$,
+            this.items$,
+            this.subCollections$,
+        ).pipe(
+            map(([id, collections, subCollections]) => {
                 if (id) {
-                    const match = collections.find(c => c.id === id);
+                    const match = [...collections, ...subCollections].find(c => c.id === id);
                     return match ? match.name : '';
                 }
                 return '';
             }),
         );
-        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
-        this.contentLanguage$ = this.dataService.client
-            .uiState()
-            .mapStream(({ uiState }) => uiState.contentLanguage)
-            .pipe(tap(() => this.refresh()));
-
-        this.filterTermControl.valueChanges
-            .pipe(debounceTime(250), takeUntil(this.destroy$))
-            .subscribe(term => {
-                this.router.navigate(['./'], {
-                    queryParams: {
-                        q: term || undefined,
-                    },
-                    queryParamsHandling: 'merge',
-                    relativeTo: this.route,
-                });
-            });
-
-        this.route.queryParamMap
-            .pipe(
-                map(qpm => qpm.get('q')),
-                distinctUntilChanged(),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(() => this.refresh());
-        this.filterTermControl.patchValue(this.route.snapshot.queryParamMap.get('q'));
+        this.activeCollectionIndex$ = combineLatest(
+            this.activeCollectionId$,
+            this.items$,
+            this.subCollections$,
+        ).pipe(
+            map(([id, collections, subCollections]) => {
+                if (id) {
+                    const allCollections: typeof collections = [];
+                    for (const collection of collections) {
+                        allCollections.push(collection);
+                        const subCollectionMatches = subCollections.filter(
+                            c => c.parentId && c.parentId === collection.id,
+                        );
+                        allCollections.push(...subCollectionMatches);
+                    }
+                    return allCollections.findIndex(c => c.id === id);
+                }
+                return -1;
+            }),
+        );
     }
 
-    ngOnDestroy() {
-        this.queryResult.completed$.next();
-        this.destroy$.next(undefined);
-        this.destroy$.complete();
-    }
-
-    toggleExpandAll() {
-        this.router.navigate(['./'], {
-            queryParams: {
-                expanded: this.expandAll ? 'all' : undefined,
-            },
-            queryParamsHandling: 'merge',
-            relativeTo: this.route,
-        });
-    }
-
-    onRearrange(event: RearrangeEvent) {
+    onRearrange(event: CollectionOrderEvent) {
         this.dataService.collection.moveCollection([event]).subscribe({
             next: () => {
                 this.notificationService.success(_('common.notify-saved-changes'));
@@ -139,40 +160,6 @@ export class CollectionListComponent implements OnInit, OnDestroy {
                 this.notificationService.error(_('common.notify-save-changes-error'));
             },
         });
-    }
-
-    deleteCollection(id: string) {
-        this.items$
-            .pipe(
-                take(1),
-                map(items => -1 < items.findIndex(i => i.parent && i.parent.id === id)),
-                switchMap(hasChildren => {
-                    return this.modalService.dialog({
-                        title: _('catalog.confirm-delete-collection'),
-                        body: hasChildren
-                            ? _('catalog.confirm-delete-collection-and-children-body')
-                            : undefined,
-                        buttons: [
-                            { type: 'secondary', label: _('common.cancel') },
-                            { type: 'danger', label: _('common.delete'), returnValue: true },
-                        ],
-                    });
-                }),
-                switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Collection',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Collection',
-                    });
-                },
-            );
     }
 
     closeContents() {
@@ -185,22 +172,19 @@ export class CollectionListComponent implements OnInit, OnDestroy {
         this.dataService.client.setContentLanguage(code).subscribe();
     }
 
-    refresh() {
-        const filterTerm = this.route.snapshot.queryParamMap.get('q');
-        this.queryResult.ref.refetch({
-            options: {
-                skip: 0,
-                take: 1000,
-                ...(filterTerm
-                    ? {
-                          filter: {
-                              name: {
-                                  contains: filterTerm,
-                              },
-                          },
-                      }
-                    : {}),
+    toggleExpanded(collection: ItemOf<GetCollectionListQuery, 'collections'>) {
+        let expandedIds = this.expandedIds;
+        if (!expandedIds.includes(collection.id)) {
+            expandedIds.push(collection.id);
+        } else {
+            expandedIds = expandedIds.filter(id => id !== collection.id);
+        }
+        this.router.navigate(['./'], {
+            queryParams: {
+                expanded: expandedIds.filter(id => !!id).join(','),
             },
+            queryParamsHandling: 'merge',
+            relativeTo: this.route,
         });
     }
 }

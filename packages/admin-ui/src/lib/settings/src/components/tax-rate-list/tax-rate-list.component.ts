@@ -1,14 +1,19 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { EMPTY } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { GetTaxRateListDocument, TAX_RATE_FRAGMENT, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 
-import { BaseListComponent } from '@vendure/admin-ui/core';
-import { DeletionResult, GetTaxRateList } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
+export const GET_TAX_RATE_LIST = gql`
+    query GetTaxRateList($options: TaxRateListOptions) {
+        taxRates(options: $options) {
+            items {
+                ...TaxRate
+            }
+            totalItems
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-tax-rate-list',
@@ -16,53 +21,59 @@ import { ModalService } from '@vendure/admin-ui/core';
     styleUrls: ['./tax-rate-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaxRateListComponent extends BaseListComponent<GetTaxRateList.Query, GetTaxRateList.Items> {
-    constructor(
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-        private dataService: DataService,
-        router: Router,
-        route: ActivatedRoute,
-    ) {
-        super(router, route);
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getTaxRates(...args),
-            data => data.taxRates,
-        );
-    }
+export class TaxRateListComponent extends TypedBaseListComponent<typeof GetTaxRateListDocument, 'taxRates'> {
+    readonly customFields = this.getCustomFieldConfig('TaxRate');
+    readonly filters = this.createFilterCollection()
+        .addDateFilters()
+        .addFilter({
+            name: 'name',
+            type: { kind: 'text' },
+            label: _('common.name'),
+            filterField: 'name',
+        })
+        .addFilter({
+            name: 'enabled',
+            type: { kind: 'boolean' },
+            label: _('common.enabled'),
+            filterField: 'enabled',
+        })
+        .addFilter({
+            name: 'value',
+            type: { kind: 'number' },
+            label: _('common.value'),
+            filterField: 'value',
+        })
+        .addCustomFieldFilters(this.customFields)
+        .connectToRoute(this.route);
 
-    deleteTaxRate(taxRate: GetTaxRateList.Items) {
-        return this.modalService
-            .dialog({
-                title: _('settings.confirm-delete-tax-rate'),
-                body: taxRate.name,
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(
-                switchMap(res => (res ? this.dataService.settings.deleteTaxRate(taxRate.id) : EMPTY)),
-                map(res => res.deleteTaxRate),
-            )
-            .subscribe(
-                res => {
-                    if (res.result === DeletionResult.DELETED) {
-                        this.notificationService.success(_('common.notify-delete-success'), {
-                            entity: 'TaxRate',
-                        });
-                        this.refresh();
-                    } else {
-                        this.notificationService.error(res.message || _('common.notify-delete-error'), {
-                            entity: 'TaxRate',
-                        });
-                    }
+    readonly sorts = this.createSortCollection()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'name' })
+        .addSort({ name: 'value' })
+        .addCustomFieldSorts(this.customFields)
+        .connectToRoute(this.route);
+
+    constructor() {
+        super();
+        super.configure({
+            document: GetTaxRateListDocument,
+            getItems: data => data.taxRates,
+            setVariables: (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    sort: this.sorts.createSortInput(),
                 },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'TaxRate',
-                    });
-                },
-            );
+            }),
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 }

@@ -4,7 +4,7 @@ showtoc: true
 ---
 # Shipping & Fulfillment
 
-Shipping in Vendure is handled by [ShippingMethods]({{< relref "shipping-method" >}}). Multiple ShippingMethods can be set up and then your storefront can query [`eligibleShippingMethods`]({{< relref "/docs/graphql-api/shop/queries" >}}#eligibleshippingmethods) to find out which ones can be applied to the active order.
+Shipping in Vendure is handled by [ShippingMethods]({{< relref "shipping-method" >}}). Multiple ShippingMethods can be set up and then your storefront can query [`eligibleShippingMethods`]({{< relref "/graphql-api/shop/queries" >}}#eligibleshippingmethods) to find out which ones can be applied to the active order.
 
 A ShippingMethod is composed of a **checker** and a **calculator**. When querying `eligibleShippingMethods`, each of the defined ShippingMethods' checker functions is executed to find out whether the order is eligible for that method, and if so, the calculator is executed to determine the shipping cost.
 
@@ -151,7 +151,7 @@ Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "f
 * `Delivered` The Fulfillment has arrived with the customer
 * `Cancelled` The Fulfillment has been cancelled 
 
-These states cover the typical workflow for fulfilling orders. However, it is possible to customize the fulfillment workflow by defining a [CustomFulfillmentProcess]({{< relref "custom-fulfillment-process" >}}) and passing it to your VendureConfig:
+These states cover the typical workflow for fulfilling orders. However, it is possible to customize the fulfillment workflow by defining a [FulfillmentProcess]({{< relref "fulfillment-process" >}}) and passing it to your VendureConfig:
 
 ```TypeScript
 export const config: VendureConfig = {

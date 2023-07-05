@@ -1,10 +1,12 @@
 import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { roundMoney } from '../../common/round-money';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
+import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { getConfig } from '../../config/config-helpers';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import {
@@ -16,13 +18,14 @@ import {
 import { PromotionCondition, PromotionConditionState } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
 import { CustomPromotionFields } from '../custom-entity-fields';
-import { OrderItem } from '../order-item/order-item.entity';
-import { OrderLine } from '../order-line/order-line.entity';
 import { Order } from '../order/order.entity';
+import { OrderLine } from '../order-line/order-line.entity';
+import { PaymentMethodTranslation } from '../payment-method/payment-method-translation.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 
+import { PromotionTranslation } from './promotion-translation.entity';
+
 export interface ApplyOrderItemActionArgs {
-    orderItem: OrderItem;
     orderLine: OrderLine;
 }
 
@@ -52,7 +55,10 @@ export type PromotionTestResult = boolean | PromotionState;
  * @docsCategory entities
  */
 @Entity()
-export class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable, HasCustomFields {
+export class Promotion
+    extends AdjustmentSource
+    implements ChannelAware, SoftDeletable, HasCustomFields, Translatable
+{
     type = AdjustmentType.PROMOTION;
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
     private readonly allActions: {
@@ -89,7 +95,12 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     @Column({ nullable: true })
     perCustomerUsageLimit: number;
 
-    @Column() name: string;
+    name: LocaleString;
+
+    description: LocaleString;
+
+    @OneToMany(type => PromotionTranslation, translation => translation.base, { eager: true })
+    translations: Array<Translation<Promotion>>;
 
     @Column() enabled: boolean;
 
@@ -133,20 +144,20 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
             const promotionAction = this.allActions[action.code];
             if (promotionAction instanceof PromotionItemAction) {
                 if (this.isOrderItemArg(args)) {
-                    const { orderItem, orderLine } = args;
-                    amount += Math.round(
-                        await promotionAction.execute(ctx, orderItem, orderLine, action.args, state, this),
+                    const { orderLine } = args;
+                    amount += roundMoney(
+                        await promotionAction.execute(ctx, orderLine, action.args, state, this),
                     );
                 }
             } else if (promotionAction instanceof PromotionOrderAction) {
                 if (this.isOrderArg(args)) {
                     const { order } = args;
-                    amount += Math.round(await promotionAction.execute(ctx, order, action.args, state, this));
+                    amount += roundMoney(await promotionAction.execute(ctx, order, action.args, state, this));
                 }
             } else if (promotionAction instanceof PromotionShippingAction) {
                 if (this.isShippingArg(args)) {
                     const { shippingLine, order } = args;
-                    amount += Math.round(
+                    amount += roundMoney(
                         await promotionAction.execute(ctx, shippingLine, order, action.args, state, this),
                     );
                 }
@@ -158,6 +169,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
                 type: this.type,
                 description: this.name,
                 adjustmentSource: this.getSourceId(),
+                data: {},
             };
         }
     }
@@ -223,7 +235,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     private isOrderItemArg(
         value: ApplyOrderItemActionArgs | ApplyOrderActionArgs | ApplyShippingActionArgs,
     ): value is ApplyOrderItemActionArgs {
-        return value.hasOwnProperty('orderItem');
+        return value.hasOwnProperty('orderLine');
     }
 
     private isShippingArg(

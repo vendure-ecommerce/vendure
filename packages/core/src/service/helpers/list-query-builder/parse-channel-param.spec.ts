@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { Channel } from '../../../entity/channel/channel.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { Product } from '../../../entity/product/product.entity';

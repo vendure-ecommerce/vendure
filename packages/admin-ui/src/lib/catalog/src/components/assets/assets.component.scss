@@ -1,9 +1,33 @@
 
 :host {
-    width: 340px;
     display: block;
+    container-type: inline-size;
+
     &.compact {
         width: 162px;
+    }
+}
+
+.standard-view-container {
+    display: flex;
+    gap: calc(var(--space-unit) * 2);
+}
+
+
+.all-assets-container {
+    display: flex;
+    max-width: 50%;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+@container (max-width: 500px) {
+    .standard-view-container {
+        flex-direction: column;
+    }
+    .all-assets-container {
+        max-width: 100%;
     }
 }
 
@@ -21,6 +45,9 @@
 
     img {
         border-radius: var(--border-radius-img);
+        max-height: 400px;
+        max-width: 100%;
+        object-fit: contain;
     }
 
     &.compact {
@@ -74,6 +101,7 @@
         .drop-list {
             min-width: 54px;
         }
+
         .asset-thumb {
             margin: 1px;
             border-width: 1px;
@@ -83,6 +111,7 @@
 
 .all-assets.compact .cdk-drag-placeholder {
     width: 50px;
+
     .asset-thumb {
         width: 50px;
     }
@@ -101,5 +130,5 @@
 }
 
 .cdk-drop-list-dragging > *:not(.cdk-drag-placeholder) {
-  display: none;
+    display: none;
 }

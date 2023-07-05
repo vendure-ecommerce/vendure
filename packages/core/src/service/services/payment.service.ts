@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ManualPaymentInput, RefundOrderInput } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -12,12 +13,16 @@ import {
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
-import { Logger, PaymentMethodHandler } from '../../config/index';
+import { Logger } from '../../config/logger/vendure-logger';
+import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { PaymentMethod } from '../../entity/index';
-import { OrderItem } from '../../entity/order-item/order-item.entity';
+import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { RefundLine } from '../../entity/order-line-reference/refund-line.entity';
 import { Payment } from '../../entity/payment/payment.entity';
+import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
@@ -82,7 +87,7 @@ export class PaymentService {
         return this.transitionStateAndSave(ctx, payment, fromState, state);
     }
 
-    getNextStates(payment: Payment): ReadonlyArray<PaymentState> {
+    getNextStates(payment: Payment): readonly PaymentState[] {
         return this.paymentStateMachine.getNextStates(payment);
     }
 
@@ -108,7 +113,9 @@ export class PaymentService {
         if (paymentMethod.checker && checker) {
             const eligible = await checker.check(ctx, order, paymentMethod.checker.args, paymentMethod);
             if (eligible === false || typeof eligible === 'string') {
-                return new IneligiblePaymentMethodError(typeof eligible === 'string' ? eligible : undefined);
+                return new IneligiblePaymentMethodError({
+                    eligibilityCheckerMessage: typeof eligible === 'string' ? eligible : undefined,
+                });
             }
         }
         const result = await handler.createPayment(
@@ -123,11 +130,18 @@ export class PaymentService {
         const payment = await this.connection
             .getRepository(ctx, Payment)
             .save(new Payment({ ...result, method, state: initialState }));
-        await this.paymentStateMachine.transition(ctx, order, payment, result.state);
+        const { finalize } = await this.paymentStateMachine.transition(ctx, order, payment, result.state);
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('payments')
+            .of(order)
+            .add(payment);
         this.eventBus.publish(
             new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, order),
         );
+        await finalize();
         return payment;
     }
 
@@ -204,16 +218,19 @@ export class PaymentService {
             await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
             return payment;
         }
+        let finalize: () => Promise<any>;
         try {
-            await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
-        } catch (e) {
+            const result = await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
+            finalize = result.finalize;
+        } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState });
-            return new PaymentStateTransitionError(transitionError, fromState, toState);
+            return new PaymentStateTransitionError({ transitionError, fromState, toState });
         }
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         this.eventBus.publish(
             new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
         );
+        await finalize();
         return payment;
     }
 
@@ -238,9 +255,16 @@ export class PaymentService {
                 state: initialState,
             }),
         );
-        await this.paymentStateMachine.transition(ctx, order, payment, endState);
+        const { finalize } = await this.paymentStateMachine.transition(ctx, order, payment, endState);
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('payments')
+            .of(order)
+            .add(payment);
         this.eventBus.publish(new PaymentStateTransitionEvent(initialState, endState, ctx, payment, order));
+        await finalize();
         return payment;
     }
 
@@ -258,7 +282,6 @@ export class PaymentService {
         ctx: RequestContext,
         input: RefundOrderInput,
         order: Order,
-        items: OrderItem[],
         selectedPayment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
         const orderWithRefunds = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
@@ -274,10 +297,19 @@ export class PaymentService {
         const refundablePayments = orderWithRefunds.payments.filter(p => {
             return paymentRefundTotal(p) < p.amount;
         });
-        const itemAmount = summate(items, 'proratedUnitPriceWithTax');
+        let refundOrderLinesTotal = 0;
+        const orderLines = await this.connection
+            .getRepository(ctx, OrderLine)
+            .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
+        for (const line of input.lines) {
+            const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
+            if (orderLine && 0 < orderLine.quantity) {
+                refundOrderLinesTotal += line.quantity * orderLine.proratedUnitPriceWithTax;
+            }
+        }
         let primaryRefund: Refund | undefined;
         const refundedPaymentIds: ID[] = [];
-        const refundTotal = itemAmount + input.shipping + input.adjustment;
+        const refundTotal = refundOrderLinesTotal + input.shipping + input.adjustment;
         const refundMax =
             orderWithRefunds.payments
                 ?.map(p => p.amount - paymentRefundTotal(p))
@@ -289,15 +321,14 @@ export class PaymentService {
                     refundablePayments.find(p => idsAreEqual(p.id, selectedPayment.id))) ||
                 refundablePayments.find(p => !refundedPaymentIds.includes(p.id));
             if (!paymentToRefund) {
-                throw new InternalServerError(`Could not find a Payment to refund`);
+                throw new InternalServerError('Could not find a Payment to refund');
             }
             const amountNotRefunded = paymentToRefund.amount - paymentRefundTotal(paymentToRefund);
             const total = Math.min(amountNotRefunded, refundOutstanding);
             let refund = new Refund({
                 payment: paymentToRefund,
                 total,
-                orderItems: items,
-                items: itemAmount,
+                items: refundOrderLinesTotal,
                 reason: input.reason,
                 adjustment: input.adjustment,
                 shipping: input.shipping,
@@ -316,7 +347,8 @@ export class PaymentService {
                 handler = methodAndHandler.handler;
             } catch (e) {
                 Logger.warn(
-                    `Could not find a corresponding PaymentMethodHandler when creating a refund for the Payment with method "${paymentToRefund.method}"`,
+                    'Could not find a corresponding PaymentMethodHandler ' +
+                        `when creating a refund for the Payment with method "${paymentToRefund.method}"`,
                 );
             }
             const createRefundResult =
@@ -336,14 +368,43 @@ export class PaymentService {
                 refund.metadata = createRefundResult.metadata || {};
             }
             refund = await this.connection.getRepository(ctx, Refund).save(refund);
+            const refundLines: RefundLine[] = [];
+            for (const { orderLineId, quantity } of input.lines) {
+                const refundLine = await this.connection.getRepository(ctx, RefundLine).save(
+                    new RefundLine({
+                        refund,
+                        orderLineId,
+                        quantity,
+                    }),
+                );
+                refundLines.push(refundLine);
+            }
+            await this.connection
+                .getRepository(ctx, Fulfillment)
+                .createQueryBuilder()
+                .relation('lines')
+                .of(refund)
+                .add(refundLines);
             if (createRefundResult) {
+                let finalize: () => Promise<any>;
                 const fromState = refund.state;
                 try {
-                    await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
-                } catch (e) {
-                    return new RefundStateTransitionError(e.message, fromState, createRefundResult.state);
+                    const result = await this.refundStateMachine.transition(
+                        ctx,
+                        order,
+                        refund,
+                        createRefundResult.state,
+                    );
+                    finalize = result.finalize;
+                } catch (e: any) {
+                    return new RefundStateTransitionError({
+                        transitionError: e.message,
+                        fromState,
+                        toState: createRefundResult.state,
+                    });
                 }
                 await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
+                await finalize();
                 this.eventBus.publish(
                     new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
                 );
@@ -355,8 +416,8 @@ export class PaymentService {
             refundedPaymentIds.push(paymentToRefund.id);
             refundOutstanding = refundTotal - summate(refundsCreated, 'total');
         } while (0 < refundOutstanding);
-        // tslint:disable-next-line:no-non-null-assertion
-        return primaryRefund!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return primaryRefund;
     }
 
     private mergePaymentMetadata(m1: PaymentMetadata, m2?: PaymentMetadata): PaymentMetadata {

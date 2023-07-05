@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 
+import { ItemOf } from '../../../common/base-list.component';
 import { FormInputComponent } from '../../../common/component-registry-types';
-import { GetCustomerGroups } from '../../../common/generated-types';
+import { GetCustomerGroupsQuery } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 /**
@@ -25,8 +26,8 @@ import { DataService } from '../../../data/providers/data.service';
 export class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'customer-group-form-input';
     @Input() readonly: boolean;
-    formControl: FormControl;
-    customerGroups$: Observable<GetCustomerGroups.Items[]>;
+    formControl: FormControl<string | { id: string }>;
+    customerGroups$: Observable<GetCustomerGroupsQuery['customerGroups']['items']>;
     config: DefaultFormComponentConfig<'customer-group-form-input'>;
 
     constructor(private dataService: DataService) {}
@@ -40,7 +41,14 @@ export class CustomerGroupFormInputComponent implements FormInputComponent, OnIn
             .pipe(startWith([]));
     }
 
-    selectGroup(group: GetCustomerGroups.Items) {
-        this.formControl.setValue(group.id);
+    selectGroup(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) {
+        this.formControl.setValue(group ?? undefined);
+    }
+
+    compareWith(
+        o1: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>,
+        o2: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>,
+    ) {
+        return o1.id === o2.id;
     }
 }

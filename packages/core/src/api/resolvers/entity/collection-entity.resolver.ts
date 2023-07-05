@@ -9,7 +9,7 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
-import { CollectionFilter } from '../../../config/index';
+import { CollectionFilter } from '../../../config/catalog/collection-filter';
 import { Asset, Collection, Product, ProductVariant } from '../../../entity';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
@@ -136,7 +136,9 @@ export class CollectionEntityResolver {
             );
         } catch (e: any) {
             Logger.error(
-                `Could not decode the collection filter arguments for "${collection.name}" (id: ${collection.id}). Error message: ${e.message}`,
+                `Could not decode the collection filter arguments for "${collection.name}" (id: ${
+                    collection.id
+                }). Error message: ${JSON.stringify(e.message)}`,
             );
             return [];
         }

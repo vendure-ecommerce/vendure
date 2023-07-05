@@ -8,12 +8,12 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError } from '../../common/error/errors';
-import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/index';
+import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
-import { ConfigService } from '../../config/index';
+import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
@@ -75,9 +75,13 @@ export class TaxRateService {
         taxRateId: ID,
         relations?: RelationPaths<TaxRate>,
     ): Promise<TaxRate | undefined> {
-        return this.connection.getRepository(ctx, TaxRate).findOne(taxRateId, {
-            relations: relations ?? ['category', 'zone', 'customerGroup'],
-        });
+        return this.connection
+            .getRepository(ctx, TaxRate)
+            .findOne({
+                where: { id: taxRateId },
+                relations: relations ?? ['category', 'zone', 'customerGroup'],
+            })
+            .then(result => result ?? undefined);
     }
 
     async create(ctx: RequestContext, input: CreateTaxRateInput): Promise<TaxRate> {
@@ -143,7 +147,7 @@ export class TaxRateService {
             return {
                 result: DeletionResult.DELETED,
             };
-        } catch (e) {
+        } catch (e: any) {
             return {
                 result: DeletionResult.NOT_DELETED,
                 message: e.toString(),

@@ -9,12 +9,13 @@ import { Asset } from '../../../entity/asset/asset.entity';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { Product } from '../../../entity/product/product.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { Product } from '../../../entity/product/product.entity';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
 import { CollectionService } from '../../../service/services/collection.service';
+import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
@@ -32,6 +33,7 @@ export class ProductEntityResolver {
         private productOptionGroupService: ProductOptionGroupService,
         private assetService: AssetService,
         private productService: ProductService,
+        private facetValueService: FacetValueService,
         private localeStringHydrator: LocaleStringHydrator,
     ) {}
 
@@ -113,15 +115,16 @@ export class ProductEntityResolver {
         } else {
             facetValues = await this.productService.getFacetValuesForProduct(ctx, product.id);
         }
-        return facetValues.filter(fv => {
-            if (!fv.channels.find(c => idsAreEqual(c.id, ctx.channelId))) {
-                return false;
-            }
-            if (apiType === 'shop' && fv.facet.isPrivate) {
-                return false;
-            }
-            return true;
-        });
+        const filteredFacetValues = await this.facetValueService.findByIds(
+            ctx,
+            facetValues.map(facetValue => facetValue.id),
+        );
+
+        if (apiType === 'shop') {
+            return filteredFacetValues.filter(fv => !fv.facet.isPrivate);
+        } else {
+            return filteredFacetValues;
+        }
     }
 
     @ResolveField()

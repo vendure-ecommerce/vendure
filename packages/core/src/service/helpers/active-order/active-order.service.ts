@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { InternalServerError, UserInputError } from '../../../common/index';
-import { ConfigService } from '../../../config/index';
-import { TransactionalConnection } from '../../../connection/index';
+import { InternalServerError, UserInputError } from '../../../common/error/errors';
+import { ConfigService } from '../../../config/config.service';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../services/order.service';
 import { SessionService } from '../../services/session.service';
@@ -37,7 +37,7 @@ export class ActiveOrderService {
     async getOrderFromContext(ctx: RequestContext, createIfNotExists: true): Promise<Order>;
     async getOrderFromContext(ctx: RequestContext, createIfNotExists = false): Promise<Order | undefined> {
         if (!ctx.session) {
-            throw new InternalServerError(`error.no-active-session`);
+            throw new InternalServerError('error.no-active-session');
         }
         let order = ctx.session.activeOrderId
             ? await this.connection

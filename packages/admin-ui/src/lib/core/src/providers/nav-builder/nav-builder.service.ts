@@ -135,7 +135,7 @@ export function addActionBarItem(config: ActionBarItem): Provider {
     providedIn: 'root',
 })
 export class NavBuilderService {
-    navMenuConfig$: Observable<NavMenuSection[]>;
+    menuConfig$: Observable<NavMenuSection[]>;
     actionBarConfig$: Observable<ActionBarItem[]>;
     sectionBadges: { [sectionId: string]: Observable<NavMenuBadgeType> } = {};
 
@@ -191,10 +191,12 @@ export class NavBuilderService {
      * `data-location-id` attribute.
      */
     addActionBarItem(config: ActionBarItem) {
-        this.addedActionBarItems.push({
-            requiresPermission: Permission.Authenticated,
-            ...config,
-        });
+        if (!this.addedActionBarItems.find(item => item.id === config.id)) {
+            this.addedActionBarItems.push({
+                requiresPermission: Permission.Authenticated,
+                ...config,
+            });
+        }
     }
 
     getRouterLink(config: { routerLink?: RouterLinkDefinition }, route: ActivatedRoute): string[] | null {
@@ -236,12 +238,12 @@ export class NavBuilderService {
             shareReplay(1),
         );
 
-        this.navMenuConfig$ = combineLatest(combinedConfig$, itemAdditions$).pipe(
+        this.menuConfig$ = combineLatest(combinedConfig$, itemAdditions$).pipe(
             map(([sections, additionalItems]) => {
                 for (const item of additionalItems) {
                     const section = sections.find(s => s.id === item.sectionId);
                     if (!section) {
-                        // tslint:disable-next-line:no-console
+                        // eslint-disable-next-line no-console
                         console.error(
                             `Could not add menu item "${item.config.id}", section "${item.sectionId}" does not exist`,
                         );

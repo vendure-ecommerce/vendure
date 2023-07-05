@@ -8,29 +8,21 @@ import { JobQueueModule } from '../job-queue/job-queue.module';
 
 import { HealthCheckRegistryService } from './health-check-registry.service';
 import { HealthController } from './health-check.controller';
-import { WorkerHealthIndicator } from './worker-health-indicator';
 
 @Module({
     imports: [TerminusModule, ConfigModule, JobQueueModule],
     controllers: [HealthController],
-    providers: [HealthCheckRegistryService, WorkerHealthIndicator],
+    providers: [HealthCheckRegistryService],
     exports: [HealthCheckRegistryService],
 })
 export class HealthCheckModule {
     constructor(
         private configService: ConfigService,
         private healthCheckRegistryService: HealthCheckRegistryService,
-        private worker: WorkerHealthIndicator,
     ) {
         // Register all configured health checks
         for (const strategy of this.configService.systemOptions.healthChecks) {
             this.healthCheckRegistryService.registerIndicatorFunction(strategy.getHealthIndicator());
-        }
-
-        // TODO: Remove in v2
-        const { enableWorkerHealthCheck, jobQueueStrategy } = this.configService.jobQueueOptions;
-        if (enableWorkerHealthCheck && isInspectableJobQueueStrategy(jobQueueStrategy)) {
-            this.healthCheckRegistryService.registerIndicatorFunction([() => this.worker.isHealthy()]);
         }
     }
 }

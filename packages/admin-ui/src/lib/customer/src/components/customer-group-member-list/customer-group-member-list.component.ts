@@ -9,7 +9,14 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Customer, DataService } from '@vendure/admin-ui/core';
+import {
+    BulkActionLocationId,
+    Customer,
+    DataService,
+    GetCustomerGroupsQuery,
+    ItemOf,
+    SelectionManager,
+} from '@vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, takeUntil, tap } from 'rxjs/operators';
 
@@ -19,7 +26,7 @@ export interface CustomerGroupMemberFetchParams {
     filterTerm: string;
 }
 
-type CustomerGroupMember = Pick<
+export type CustomerGroupMember = Pick<
     Customer,
     'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'emailAddress'
 >;
@@ -31,16 +38,23 @@ type CustomerGroupMember = Pick<
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
+    @Input() locationId: BulkActionLocationId;
     @Input() members: CustomerGroupMember[];
     @Input() totalItems: number;
     @Input() route: ActivatedRoute;
     @Input() selectedMemberIds: string[] = [];
+    @Input() activeGroup: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>;
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() fetchParamsChange = new EventEmitter<CustomerGroupMemberFetchParams>();
 
     membersItemsPerPage$: Observable<number>;
     membersCurrentPage$: Observable<number>;
     filterTermControl = new FormControl('');
+    selectionManager = new SelectionManager<CustomerGroupMember>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: true,
+    });
     private refresh$ = new BehaviorSubject<boolean>(true);
     private destroy$ = new Subject<void>();
 
@@ -73,11 +87,17 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
                 const take = itemsPerPage;
                 const skip = (currentPage - 1) * itemsPerPage;
                 this.fetchParamsChange.emit({
-                    filterTerm,
+                    filterTerm: filterTerm ?? '',
                     skip,
                     take,
                 });
             });
+        this.selectionManager.setCurrentItems(
+            this.members?.filter(m => this.selectedMemberIds.includes(m.id)) ?? [],
+        );
+        this.selectionManager.selectionChanges$.pipe(takeUntil(this.destroy$)).subscribe(selection => {
+            this.selectionChange.emit(selection.map(s => s.id));
+        });
     }
 
     ngOnDestroy() {
@@ -103,32 +123,4 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
             queryParamsHandling: 'merge',
         });
     }
-
-    areAllSelected(): boolean {
-        if (this.members) {
-            return this.selectedMemberIds.length === this.members.length;
-        } else {
-            return false;
-        }
-    }
-
-    toggleSelectAll() {
-        if (this.areAllSelected()) {
-            this.selectionChange.emit([]);
-        } else {
-            this.selectionChange.emit(this.members.map(v => v.id));
-        }
-    }
-
-    toggleSelectMember({ item: member }: { item: { id: string } }) {
-        if (this.selectedMemberIds.includes(member.id)) {
-            this.selectionChange.emit(this.selectedMemberIds.filter(id => id !== member.id));
-        } else {
-            this.selectionChange.emit([...this.selectedMemberIds, member.id]);
-        }
-    }
-
-    isMemberSelected = (member: { id: string }): boolean => {
-        return -1 < this.selectedMemberIds.indexOf(member.id);
-    };
 }

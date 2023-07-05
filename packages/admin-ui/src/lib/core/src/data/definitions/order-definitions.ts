@@ -55,6 +55,7 @@ export const ORDER_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        type
         orderPlacedAt
         code
         state
@@ -83,13 +84,42 @@ export const FULFILLMENT_FRAGMENT = gql`
         createdAt
         updatedAt
         method
-        summary {
-            orderLine {
-                id
-            }
+        lines {
+            orderLineId
             quantity
         }
         trackingCode
+    }
+`;
+
+export const PAYMENT_WITH_REFUNDS_FRAGMENT = gql`
+    fragment PaymentWithRefunds on Payment {
+        id
+        createdAt
+        transactionId
+        amount
+        method
+        state
+        nextStates
+        errorMessage
+        metadata
+        refunds {
+            id
+            createdAt
+            state
+            items
+            adjustment
+            total
+            paymentId
+            reason
+            transactionId
+            method
+            metadata
+            lines {
+                orderLineId
+                quantity
+            }
+        }
     }
 `;
 
@@ -109,19 +139,15 @@ export const ORDER_LINE_FRAGMENT = gql`
         discounts {
             ...Discount
         }
-        fulfillments {
-            ...Fulfillment
+        fulfillmentLines {
+            fulfillmentId
+            quantity
         }
         unitPrice
         unitPriceWithTax
         proratedUnitPrice
         proratedUnitPriceWithTax
         quantity
-        items {
-            id
-            refundId
-            cancelled
-        }
         linePrice
         lineTax
         linePriceWithTax
@@ -135,6 +161,19 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        type
+        aggregateOrder {
+            id
+            code
+        }
+        sellerOrders {
+            id
+            code
+            channels {
+                id
+                code
+            }
+        }
         code
         state
         nextStates
@@ -192,31 +231,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             ...OrderAddress
         }
         payments {
-            id
-            createdAt
-            transactionId
-            amount
-            method
-            state
-            nextStates
-            errorMessage
-            metadata
-            refunds {
-                id
-                createdAt
-                state
-                items
-                adjustment
-                total
-                paymentId
-                reason
-                transactionId
-                method
-                metadata
-                orderItems {
-                    id
-                }
-            }
+            ...PaymentWithRefunds
         }
         fulfillments {
             ...Fulfillment
@@ -231,8 +246,9 @@ export const ORDER_DETAIL_FRAGMENT = gql`
                 id
                 amount
             }
-            orderItems {
-                id
+            lines {
+                orderLineId
+                quantity
             }
             refund {
                 id
@@ -248,6 +264,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
     ${ORDER_ADDRESS_FRAGMENT}
     ${FULFILLMENT_FRAGMENT}
     ${ORDER_LINE_FRAGMENT}
+    ${PAYMENT_WITH_REFUNDS_FRAGMENT}
 `;
 
 export const GET_ORDERS_LIST = gql`
@@ -461,19 +478,6 @@ export const TRANSITION_FULFILLMENT_TO_STATE = gql`
     }
     ${FULFILLMENT_FRAGMENT}
     ${ERROR_RESULT_FRAGMENT}
-`;
-
-export const GET_ORDER_SUMMARY = gql`
-    query GetOrderSummary($start: DateTime!, $end: DateTime!) {
-        orders(options: { filter: { orderPlacedAt: { between: { start: $start, end: $end } } } }) {
-            totalItems
-            items {
-                id
-                total
-                currencyCode
-            }
-        }
-    }
 `;
 
 export const MODIFY_ORDER = gql`

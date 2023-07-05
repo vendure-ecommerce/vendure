@@ -5,7 +5,7 @@ import { Environment, Transaction } from 'braintree';
 
 import { braintreePaymentMethodHandler } from './braintree.handler';
 
-export type PaymentMethodArgsHash = ConfigArgValues<typeof braintreePaymentMethodHandler['args']>;
+export type PaymentMethodArgsHash = ConfigArgValues<(typeof braintreePaymentMethodHandler)['args']>;
 
 // Note: deep import is necessary here because CustomCustomerFields is also extended in the Stripe
 // plugin. Reference: https://github.com/microsoft/TypeScript/issues/46617
@@ -19,7 +19,7 @@ declare module '@vendure/core/dist/entity/custom-entity-fields' {
  * @description
  * Options for the Braintree plugin.
  *
- * @docsCategory payments-plugin
+ * @docsCategory core plugins/PaymentsPlugin
  * @docsPage BraintreePlugin
  */
 export interface BraintreePluginOptions {

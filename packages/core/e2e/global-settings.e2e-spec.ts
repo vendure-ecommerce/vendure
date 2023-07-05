@@ -1,16 +1,18 @@
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { GLOBAL_SETTINGS_FRAGMENT } from './graphql/fragments';
 import {
-    GetGlobalSettings,
+    GetGlobalSettingsQuery,
     GlobalSettingsFragment,
     LanguageCode,
-    UpdateGlobalSettings,
+    UpdateGlobalSettingsMutation,
+    UpdateGlobalSettingsMutationVariables,
 } from './graphql/generated-e2e-admin-types';
 import { UPDATE_GLOBAL_SETTINGS } from './graphql/shared-definitions';
 
@@ -36,7 +38,7 @@ describe('GlobalSettings resolver', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+        await adminClient.query<UpdateGlobalSettingsMutation, UpdateGlobalSettingsMutationVariables>(
             UPDATE_GLOBAL_SETTINGS,
             {
                 input: {
@@ -44,7 +46,7 @@ describe('GlobalSettings resolver', () => {
                 },
             },
         );
-        const result = await adminClient.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS);
+        const result = await adminClient.query<GetGlobalSettingsQuery>(GET_GLOBAL_SETTINGS);
         globalSettings = result.globalSettings;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -90,8 +92,8 @@ describe('GlobalSettings resolver', () => {
     describe('update', () => {
         it('returns error result when removing required language', async () => {
             const { updateGlobalSettings } = await adminClient.query<
-                UpdateGlobalSettings.Mutation,
-                UpdateGlobalSettings.Variables
+                UpdateGlobalSettingsMutation,
+                UpdateGlobalSettingsMutationVariables
             >(UPDATE_GLOBAL_SETTINGS, {
                 input: {
                     availableLanguages: [LanguageCode.zh],
@@ -106,8 +108,8 @@ describe('GlobalSettings resolver', () => {
 
         it('successful update', async () => {
             const { updateGlobalSettings } = await adminClient.query<
-                UpdateGlobalSettings.Mutation,
-                UpdateGlobalSettings.Variables
+                UpdateGlobalSettingsMutation,
+                UpdateGlobalSettingsMutationVariables
             >(UPDATE_GLOBAL_SETTINGS, {
                 input: {
                     availableLanguages: [LanguageCode.en, LanguageCode.zh],

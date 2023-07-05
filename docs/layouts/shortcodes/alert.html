@@ -1,0 +1,11 @@
+{{ $type := index .Params 0 | default "primary" }}
+<div x-data="{ type: '{{ $type }}' }" class='border rounded px-4 py-2 my-6'
+    :class="{
+        'bg-blue-50 text-blue-900 border-blue-100': type === 'primary',
+        'bg-red-50 text-red-900 border-red-100': type === 'danger',
+        'bg-yellow-50 text-yellow-900 border-yellow-100': type === 'warning',
+        'bg-green-50 text-green-900 border-green-100': type === 'success',
+    }"
+>
+    <p>{{ .Inner | markdownify }}</p>
+</div>

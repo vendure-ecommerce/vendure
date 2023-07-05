@@ -1,15 +1,16 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Translatable, Translation } from '../../../common/types/locale-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { CollectionTranslation } from '../../../entity/collection/collection-translation.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
+import { ProductTranslation } from '../../../entity/product/product-translation.entity';
+import { Product } from '../../../entity/product/product.entity';
 import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { ProductTranslation } from '../../../entity/product/product-translation.entity';
-import { Product } from '../../../entity/product/product.entity';
 
 import { translateDeep, translateEntity, translateTree } from './translate-entity';
 

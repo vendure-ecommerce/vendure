@@ -18,7 +18,7 @@ import path from 'path';
 
 import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 type TargetApi = 'shop' | 'admin';
 
@@ -27,7 +27,7 @@ const targetApi: TargetApi = getTargetApiFromArgs();
 // The path to the introspection schema json file
 const SCHEMA_FILE = path.join(__dirname, `../../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
-const docsUrl = `/docs/graphql-api/${targetApi}/`;
+const docsUrl = `/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
 const outputPath = path.join(__dirname, `../../docs/content/graphql-api/${targetApi}`);
 
@@ -48,11 +48,11 @@ generateGraphqlDocs(outputPath);
 
 function generateGraphqlDocs(hugoOutputPath: string) {
     const timeStart = +new Date();
-    let queriesOutput = generateFrontMatter('Queries', 1) + `\n\n# Queries\n\n`;
-    let mutationsOutput = generateFrontMatter('Mutations', 2) + `\n\n# Mutations\n\n`;
-    let objectTypesOutput = generateFrontMatter('Types', 3) + `\n\n# Types\n\n`;
-    let inputTypesOutput = generateFrontMatter('Input Objects', 4) + `\n\n# Input Objects\n\n`;
-    let enumsOutput = generateFrontMatter('Enums', 5) + `\n\n# Enums\n\n`;
+    let queriesOutput = generateFrontMatter('Queries', 1) + '\n\n# Queries\n\n';
+    let mutationsOutput = generateFrontMatter('Mutations', 2) + '\n\n# Mutations\n\n';
+    let objectTypesOutput = generateFrontMatter('Types', 3) + '\n\n# Types\n\n';
+    let inputTypesOutput = generateFrontMatter('Input Objects', 4) + '\n\n# Input Objects\n\n';
+    let enumsOutput = generateFrontMatter('Enums', 5) + '\n\n# Enums\n\n';
     const sortByName = (a: { name: string }, b: { name: string }) => (a.name < b.name ? -1 : 1);
     const sortedTypes = Object.values(schema.getTypeMap()).sort(sortByName);
     for (const type of sortedTypes) {
@@ -81,7 +81,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
                 objectTypesOutput += `## ${type.name}\n\n`;
                 objectTypesOutput += renderDescription(type);
                 objectTypesOutput += renderFields(type);
-                objectTypesOutput += `\n`;
+                objectTypesOutput += '\n';
             }
         }
 
@@ -106,7 +106,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
             inputTypesOutput += `## ${type.name}\n\n`;
             inputTypesOutput += renderDescription(type);
             inputTypesOutput += renderFields(type);
-            inputTypesOutput += `\n`;
+            inputTypesOutput += '\n';
         }
 
         if (isUnionType(type)) {
@@ -203,7 +203,7 @@ function unwrapType(type: GraphQLType): GraphQLNamedType {
     if (isNamedType(type)) {
         return type;
     }
-    let innerType = type;
+    let innerType = type as GraphQLType;
     while (!isNamedType(innerType)) {
         innerType = innerType.ofType;
     }
@@ -213,7 +213,7 @@ function unwrapType(type: GraphQLType): GraphQLNamedType {
 function getTargetApiFromArgs(): TargetApi {
     const apiArg = process.argv.find(arg => /--api=(shop|admin)/.test(arg));
     if (!apiArg) {
-        console.error(`\nPlease specify which GraphQL API to generate docs for: --api=<shop|admin>\n`);
+        console.error('\nPlease specify which GraphQL API to generate docs for: --api=<shop|admin>\n');
         process.exit(1);
         return null as never;
     }

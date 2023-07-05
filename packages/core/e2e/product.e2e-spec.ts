@@ -4,43 +4,19 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { PRODUCT_VARIANT_FRAGMENT, PRODUCT_WITH_OPTIONS_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
-    AddOptionGroupToProduct,
-    ChannelFragment,
-    CreateProduct,
-    CreateProductOptionGroupMutation,
-    CreateProductOptionGroupMutationVariables,
-    CreateProductVariants,
-    DeleteProduct,
-    DeleteProductVariant,
     DeletionResult,
     ErrorCode,
-    GetAssetList,
-    GetOptionGroup,
-    GetProductList,
-    GetProductSimple,
-    GetProductVariant,
-    GetProductVariantList,
-    GetProductWithVariantList,
-    GetProductWithVariants,
-    GetProductWithVariantsQuery,
-    GetProductWithVariantsQueryVariables,
     LanguageCode,
-    ProductVariantFragment,
-    ProductVariantListOptions,
-    ProductWithOptionsFragment,
-    ProductWithVariants,
-    RemoveOptionGroupFromProduct,
     SortOrder,
-    UpdateChannel,
-    UpdateGlobalSettings,
-    UpdateProduct,
-    UpdateProductVariants,
+    UpdateChannelDocument,
 } from './graphql/generated-e2e-admin-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -54,26 +30,26 @@ import {
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_VARIANT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
-    UPDATE_CHANNEL,
     UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
-        // logger: new DefaultLogger(),
     });
 
-    const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard(
+    const removeOptionGuard: ErrorResultGuard<Codegen.ProductWithOptionsFragment> = createErrorResultGuard(
         input => !!input.optionGroups,
     );
 
-    const updateChannelGuard: ErrorResultGuard<ChannelFragment> = createErrorResultGuard(input => !!input.id);
+    const updateChannelGuard: ErrorResultGuard<Codegen.ChannelFragment> = createErrorResultGuard(
+        input => !!input.id,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -90,79 +66,79 @@ describe('Product resolver', () => {
 
     describe('products list query', () => {
         it('returns all products when no options passed', async () => {
-            const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {},
-            );
+            const result = await adminClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {});
 
             expect(result.products.items.length).toBe(20);
             expect(result.products.totalItems).toBe(20);
         });
 
         it('limits result set with skip & take', async () => {
-            const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {
-                    options: {
-                        skip: 0,
-                        take: 3,
-                    },
+            const result = await adminClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    skip: 0,
+                    take: 3,
                 },
-            );
+            });
 
             expect(result.products.items.length).toBe(3);
             expect(result.products.totalItems).toBe(20);
         });
 
         it('filters by name admin', async () => {
-            const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {
-                    options: {
-                        filter: {
-                            name: {
-                                contains: 'skateboard',
-                            },
+            const result = await adminClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    filter: {
+                        name: {
+                            contains: 'skateboard',
                         },
                     },
                 },
-            );
+            });
 
             expect(result.products.items.length).toBe(1);
             expect(result.products.items[0].name).toBe('Cruiser Skateboard');
         });
 
         it('filters multiple admin', async () => {
-            const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {
-                    options: {
-                        filter: {
-                            name: {
-                                contains: 'camera',
-                            },
-                            slug: {
-                                contains: 'tent',
-                            },
+            const result = await adminClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    filter: {
+                        name: {
+                            contains: 'camera',
+                        },
+                        slug: {
+                            contains: 'tent',
                         },
                     },
                 },
-            );
+            });
 
             expect(result.products.items.length).toBe(0);
         });
 
         it('sorts by name admin', async () => {
-            const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {
-                    options: {
-                        sort: {
-                            name: SortOrder.ASC,
-                        },
+            const result = await adminClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    sort: {
+                        name: SortOrder.ASC,
                     },
                 },
-            );
+            });
 
             expect(result.products.items.map(p => p.name)).toEqual([
                 'Bonsai Tree',
@@ -189,34 +165,34 @@ describe('Product resolver', () => {
         });
 
         it('filters by name shop', async () => {
-            const result = await shopClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {
-                    options: {
-                        filter: {
-                            name: {
-                                contains: 'skateboard',
-                            },
+            const result = await shopClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    filter: {
+                        name: {
+                            contains: 'skateboard',
                         },
                     },
                 },
-            );
+            });
 
             expect(result.products.items.length).toBe(1);
             expect(result.products.items[0].name).toBe('Cruiser Skateboard');
         });
 
         it('sorts by name shop', async () => {
-            const result = await shopClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {
-                    options: {
-                        sort: {
-                            name: SortOrder.ASC,
-                        },
+            const result = await shopClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    sort: {
+                        name: SortOrder.ASC,
                     },
                 },
-            );
+            });
 
             expect(result.products.items.map(p => p.name)).toEqual([
                 'Bonsai Tree',
@@ -245,10 +221,10 @@ describe('Product resolver', () => {
 
     describe('product query', () => {
         it('by id', async () => {
-            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
-                GET_PRODUCT_SIMPLE,
-                { id: 'T_2' },
-            );
+            const { product } = await adminClient.query<
+                Codegen.GetProductSimpleQuery,
+                Codegen.GetProductSimpleQueryVariables
+            >(GET_PRODUCT_SIMPLE, { id: 'T_2' });
 
             if (!product) {
                 fail('Product not found');
@@ -258,10 +234,10 @@ describe('Product resolver', () => {
         });
 
         it('by slug', async () => {
-            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
-                GET_PRODUCT_SIMPLE,
-                { slug: 'curvy-monitor' },
-            );
+            const { product } = await adminClient.query<
+                Codegen.GetProductSimpleQuery,
+                Codegen.GetProductSimpleQueryVariables
+            >(GET_PRODUCT_SIMPLE, { slug: 'curvy-monitor' });
 
             if (!product) {
                 fail('Product not found');
@@ -273,21 +249,21 @@ describe('Product resolver', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/820
         it('by slug with multiple assets', async () => {
             const { product: product1 } = await adminClient.query<
-                GetProductSimple.Query,
-                GetProductSimple.Variables
+                Codegen.GetProductSimpleQuery,
+                Codegen.GetProductSimpleQueryVariables
             >(GET_PRODUCT_SIMPLE, { id: 'T_1' });
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: product1!.id,
-                        assetIds: ['T_1', 'T_2', 'T_3'],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: product1!.id,
+                    assetIds: ['T_1', 'T_2', 'T_3'],
                 },
-            );
+            });
             const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, { slug: product1!.slug });
 
             if (!product) {
@@ -299,11 +275,10 @@ describe('Product resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/538
         it('falls back to default language slug', async () => {
-            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
-                GET_PRODUCT_SIMPLE,
-                { slug: 'curvy-monitor' },
-                { languageCode: LanguageCode.de },
-            );
+            const { product } = await adminClient.query<
+                Codegen.GetProductSimpleQuery,
+                Codegen.GetProductSimpleQueryVariables
+            >(GET_PRODUCT_SIMPLE, { slug: 'curvy-monitor' }, { languageCode: LanguageCode.de });
 
             if (!product) {
                 fail('Product not found');
@@ -315,30 +290,30 @@ describe('Product resolver', () => {
         it(
             'throws if neither id nor slug provided',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
-                    GET_PRODUCT_SIMPLE,
-                    {},
-                );
+                await adminClient.query<
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
+                >(GET_PRODUCT_SIMPLE, {});
             }, 'Either the Product id or slug must be provided'),
         );
 
         it(
             'throws if id and slug do not refer to the same Product',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
-                    GET_PRODUCT_SIMPLE,
-                    {
-                        id: 'T_2',
-                        slug: 'laptop',
-                    },
-                );
+                await adminClient.query<
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
+                >(GET_PRODUCT_SIMPLE, {
+                    id: 'T_2',
+                    slug: 'laptop',
+                });
             }, 'The provided id and slug refer to different Products'),
         );
 
         it('returns expected properties', async () => {
             const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_2',
             });
@@ -353,8 +328,8 @@ describe('Product resolver', () => {
 
         it('ProductVariant price properties are correct', async () => {
             const result = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_2',
             });
@@ -372,8 +347,8 @@ describe('Product resolver', () => {
 
         it('returns null when id not found', async () => {
             const result = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'bad_id',
             });
@@ -383,8 +358,8 @@ describe('Product resolver', () => {
 
         it('returns null when slug not found', async () => {
             const result = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 slug: 'bad_slug',
             });
@@ -393,32 +368,32 @@ describe('Product resolver', () => {
         });
 
         describe('product query with translations', () => {
-            let translatedProduct: ProductWithVariants.Fragment;
-            let en_translation: ProductWithVariants.Translations;
-            let de_translation: ProductWithVariants.Translations;
+            let translatedProduct: Codegen.ProductWithVariantsFragment;
+            let en_translation: Codegen.ProductWithVariantsFragment['translations'][number];
+            let de_translation: Codegen.ProductWithVariantsFragment['translations'][number];
 
             beforeAll(async () => {
-                const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                    CREATE_PRODUCT,
-                    {
-                        input: {
-                            translations: [
-                                {
-                                    languageCode: LanguageCode.en,
-                                    name: 'en Pineapple',
-                                    slug: 'en-pineapple',
-                                    description: 'A delicious pineapple',
-                                },
-                                {
-                                    languageCode: LanguageCode.de,
-                                    name: 'de Ananas',
-                                    slug: 'de-ananas',
-                                    description: 'Eine köstliche Ananas',
-                                },
-                            ],
-                        },
+                const result = await adminClient.query<
+                    Codegen.CreateProductMutation,
+                    Codegen.CreateProductMutationVariables
+                >(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Pineapple',
+                                slug: 'en-pineapple',
+                                description: 'A delicious pineapple',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'de Ananas',
+                                slug: 'de-ananas',
+                                description: 'Eine köstliche Ananas',
+                            },
+                        ],
                     },
-                );
+                });
                 translatedProduct = result.createProduct;
                 en_translation = translatedProduct.translations.find(
                     t => t.languageCode === LanguageCode.en,
@@ -430,8 +405,8 @@ describe('Product resolver', () => {
 
             it('en slug without translation arg', async () => {
                 const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
                 >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug });
 
                 if (!product) {
@@ -443,8 +418,8 @@ describe('Product resolver', () => {
 
             it('de slug without translation arg', async () => {
                 const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
                 >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug });
 
                 if (!product) {
@@ -456,8 +431,8 @@ describe('Product resolver', () => {
 
             it('en slug with translation en', async () => {
                 const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
                 >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.en });
 
                 if (!product) {
@@ -469,8 +444,8 @@ describe('Product resolver', () => {
 
             it('de slug with translation en', async () => {
                 const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
                 >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.en });
 
                 if (!product) {
@@ -482,8 +457,8 @@ describe('Product resolver', () => {
 
             it('en slug with translation de', async () => {
                 const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
                 >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.de });
 
                 if (!product) {
@@ -495,8 +470,8 @@ describe('Product resolver', () => {
 
             it('de slug with translation de', async () => {
                 const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
                 >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.de });
 
                 if (!product) {
@@ -508,8 +483,8 @@ describe('Product resolver', () => {
 
             it('de slug with translation ru', async () => {
                 const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
+                    Codegen.GetProductSimpleQuery,
+                    Codegen.GetProductSimpleQueryVariables
                 >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.ru });
 
                 if (!product) {
@@ -523,8 +498,8 @@ describe('Product resolver', () => {
         describe('product.variants', () => {
             it('returns product variants', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: 'T_1',
                 });
@@ -534,8 +509,8 @@ describe('Product resolver', () => {
 
             it('returns product variants in existing language', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(
                     GET_PRODUCT_WITH_VARIANTS,
                     {
@@ -549,8 +524,8 @@ describe('Product resolver', () => {
 
             it('returns product variants in non-existing language', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(
                     GET_PRODUCT_WITH_VARIANTS,
                     {
@@ -566,8 +541,8 @@ describe('Product resolver', () => {
         describe('product.variants', () => {
             it('returns product variants', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: 'T_1',
                 });
@@ -577,8 +552,8 @@ describe('Product resolver', () => {
 
             it('returns product variants in existing language', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(
                     GET_PRODUCT_WITH_VARIANTS,
                     {
@@ -592,8 +567,8 @@ describe('Product resolver', () => {
 
             it('returns product variants in non-existing language', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(
                     GET_PRODUCT_WITH_VARIANTS,
                     {
@@ -609,8 +584,8 @@ describe('Product resolver', () => {
         describe('product.variantList', () => {
             it('returns product variants', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariantList.Query,
-                    GetProductWithVariantList.Variables
+                    Codegen.GetProductWithVariantListQuery,
+                    Codegen.GetProductWithVariantListQueryVariables
                 >(GET_PRODUCT_WITH_VARIANT_LIST, {
                     id: 'T_1',
                 });
@@ -621,8 +596,8 @@ describe('Product resolver', () => {
 
             it('returns product variants in existing language', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariantList.Query,
-                    GetProductWithVariantList.Variables
+                    Codegen.GetProductWithVariantListQuery,
+                    Codegen.GetProductWithVariantListQueryVariables
                 >(
                     GET_PRODUCT_WITH_VARIANT_LIST,
                     {
@@ -636,8 +611,8 @@ describe('Product resolver', () => {
 
             it('returns product variants in non-existing language', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariantList.Query,
-                    GetProductWithVariantList.Variables
+                    Codegen.GetProductWithVariantListQuery,
+                    Codegen.GetProductWithVariantListQueryVariables
                 >(
                     GET_PRODUCT_WITH_VARIANT_LIST,
                     {
@@ -651,8 +626,8 @@ describe('Product resolver', () => {
 
             it('filter & sort', async () => {
                 const { product } = await adminClient.query<
-                    GetProductWithVariantList.Query,
-                    GetProductWithVariantList.Variables
+                    Codegen.GetProductWithVariantListQuery,
+                    Codegen.GetProductWithVariantListQueryVariables
                 >(GET_PRODUCT_WITH_VARIANT_LIST, {
                     id: 'T_1',
                     variantListOptions: {
@@ -678,8 +653,8 @@ describe('Product resolver', () => {
     describe('productVariants list query', () => {
         it('returns list', async () => {
             const { productVariants } = await adminClient.query<
-                GetProductVariantList.Query,
-                GetProductVariantList.Variables
+                Codegen.GetProductVariantListQuery,
+                Codegen.GetProductVariantListQueryVariables
             >(GET_PRODUCT_VARIANT_LIST, {
                 options: {
                     take: 3,
@@ -689,7 +664,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_34',
                     name: 'Bonsai Tree',
@@ -716,8 +693,8 @@ describe('Product resolver', () => {
 
         it('sort by price', async () => {
             const { productVariants } = await adminClient.query<
-                GetProductVariantList.Query,
-                GetProductVariantList.Variables
+                Codegen.GetProductVariantListQuery,
+                Codegen.GetProductVariantListQueryVariables
             >(GET_PRODUCT_VARIANT_LIST, {
                 options: {
                     take: 3,
@@ -727,7 +704,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_23',
                     name: 'Skipping Rope',
@@ -754,8 +733,8 @@ describe('Product resolver', () => {
 
         it('sort by priceWithTax', async () => {
             const { productVariants } = await adminClient.query<
-                GetProductVariantList.Query,
-                GetProductVariantList.Variables
+                Codegen.GetProductVariantListQuery,
+                Codegen.GetProductVariantListQueryVariables
             >(GET_PRODUCT_VARIANT_LIST, {
                 options: {
                     take: 3,
@@ -765,7 +744,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_23',
                     name: 'Skipping Rope',
@@ -792,8 +773,8 @@ describe('Product resolver', () => {
 
         it('filter by price', async () => {
             const { productVariants } = await adminClient.query<
-                GetProductVariantList.Query,
-                GetProductVariantList.Variables
+                Codegen.GetProductVariantListQuery,
+                Codegen.GetProductVariantListQueryVariables
             >(GET_PRODUCT_VARIANT_LIST, {
                 options: {
                     take: 3,
@@ -808,7 +789,9 @@ describe('Product resolver', () => {
                 },
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_20',
                     name: 'Tripod',
@@ -821,8 +804,8 @@ describe('Product resolver', () => {
 
         it('filter by priceWithTax', async () => {
             const { productVariants } = await adminClient.query<
-                GetProductVariantList.Query,
-                GetProductVariantList.Variables
+                Codegen.GetProductVariantListQuery,
+                Codegen.GetProductVariantListQueryVariables
             >(GET_PRODUCT_VARIANT_LIST, {
                 options: {
                     take: 3,
@@ -839,7 +822,9 @@ describe('Product resolver', () => {
 
             // Note the results are incorrect. This is a design trade-off. See the
             // commend on the ProductVariant.priceWithTax annotation for explanation.
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_20',
                     name: 'Tripod',
@@ -852,8 +837,8 @@ describe('Product resolver', () => {
 
         it('returns variants for particular product by id', async () => {
             const { productVariants } = await adminClient.query<
-                GetProductVariantList.Query,
-                GetProductVariantList.Variables
+                Codegen.GetProductVariantListQuery,
+                Codegen.GetProductVariantListQueryVariables
             >(GET_PRODUCT_VARIANT_LIST, {
                 options: {
                     take: 3,
@@ -864,7 +849,9 @@ describe('Product resolver', () => {
                 productId: 'T_1',
             });
 
-            expect(productVariants.items).toEqual([
+            expect(
+                productVariants.items.map(i => pick(i, ['id', 'name', 'price', 'priceWithTax', 'sku'])),
+            ).toEqual([
                 {
                     id: 'T_1',
                     name: 'Laptop 13 inch 8GB',
@@ -893,8 +880,8 @@ describe('Product resolver', () => {
     describe('productVariant query', () => {
         it('by id', async () => {
             const { productVariant } = await adminClient.query<
-                GetProductVariant.Query,
-                GetProductVariant.Variables
+                Codegen.GetProductVariantQuery,
+                Codegen.GetProductVariantQueryVariables
             >(GET_PRODUCT_VARIANT, {
                 id: 'T_1',
             });
@@ -904,8 +891,8 @@ describe('Product resolver', () => {
         });
         it('returns null when id not found', async () => {
             const { productVariant } = await adminClient.query<
-                GetProductVariant.Query,
-                GetProductVariant.Variables
+                Codegen.GetProductVariantQuery,
+                Codegen.GetProductVariantQueryVariables
             >(GET_PRODUCT_VARIANT, {
                 id: 'T_999',
             });
@@ -915,32 +902,32 @@ describe('Product resolver', () => {
     });
 
     describe('product mutation', () => {
-        let newTranslatedProduct: ProductWithVariants.Fragment;
-        let newProduct: ProductWithVariants.Fragment;
-        let newProductWithAssets: ProductWithVariants.Fragment;
+        let newTranslatedProduct: Codegen.ProductWithVariantsFragment;
+        let newProduct: Codegen.ProductWithVariantsFragment;
+        let newProductWithAssets: Codegen.ProductWithVariantsFragment;
 
         it('createProduct creates a new Product', async () => {
-            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                CREATE_PRODUCT,
-                {
-                    input: {
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'en Baked Potato',
-                                slug: 'en Baked Potato',
-                                description: 'A baked potato',
-                            },
-                            {
-                                languageCode: LanguageCode.de,
-                                name: 'de Baked Potato',
-                                slug: 'de-baked-potato',
-                                description: 'Eine baked Erdapfel',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Baked Potato',
+                            slug: 'en Baked Potato',
+                            description: 'A baked potato',
+                        },
+                        {
+                            languageCode: LanguageCode.de,
+                            name: 'de Baked Potato',
+                            slug: 'de-baked-potato',
+                            description: 'Eine baked Erdapfel',
+                        },
+                    ],
                 },
-            );
+            });
             expect(omit(result.createProduct, ['translations'])).toMatchSnapshot();
             expect(result.createProduct.translations.map(t => t.description).sort()).toEqual([
                 'A baked potato',
@@ -950,78 +937,79 @@ describe('Product resolver', () => {
         });
 
         it('createProduct creates a new Product with assets', async () => {
-            const assetsResult = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
-                GET_ASSET_LIST,
-            );
+            const assetsResult = await adminClient.query<
+                Codegen.GetAssetListQuery,
+                Codegen.GetAssetListQueryVariables
+            >(GET_ASSET_LIST);
             const assetIds = assetsResult.assets.items.slice(0, 2).map(a => a.id);
             const featuredAssetId = assetsResult.assets.items[0].id;
 
-            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                CREATE_PRODUCT,
-                {
-                    input: {
-                        assetIds,
-                        featuredAssetId,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'en Has Assets',
-                                slug: 'en-has-assets',
-                                description: 'A product with assets',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    assetIds,
+                    featuredAssetId,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Has Assets',
+                            slug: 'en-has-assets',
+                            description: 'A product with assets',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.createProduct.assets.map(a => a.id)).toEqual(assetIds);
             expect(result.createProduct.featuredAsset!.id).toBe(featuredAssetId);
             newProductWithAssets = result.createProduct;
         });
 
         it('createProduct creates a disabled Product', async () => {
-            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                CREATE_PRODUCT,
-                {
-                    input: {
-                        enabled: false,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'en Small apple',
-                                slug: 'en-small-apple',
-                                description: 'A small apple',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    enabled: false,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Small apple',
+                            slug: 'en-small-apple',
+                            description: 'A small apple',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.createProduct.enabled).toBe(false);
             newProduct = result.createProduct;
         });
 
         it('updateProduct updates a Product', async () => {
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'en Mashed Potato',
-                                slug: 'en-mashed-potato',
-                                description: 'A blob of mashed potato',
-                            },
-                            {
-                                languageCode: LanguageCode.de,
-                                name: 'de Mashed Potato',
-                                slug: 'de-mashed-potato',
-                                description: 'Eine blob von gemashed Erdapfel',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Mashed Potato',
+                            slug: 'en-mashed-potato',
+                            description: 'A blob of mashed potato',
+                        },
+                        {
+                            languageCode: LanguageCode.de,
+                            name: 'de Mashed Potato',
+                            slug: 'de-mashed-potato',
+                            description: 'Eine blob von gemashed Erdapfel',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.updateProduct.translations.map(t => t.description).sort()).toEqual([
                 'A blob of mashed potato',
                 'Eine blob von gemashed Erdapfel',
@@ -1029,97 +1017,97 @@ describe('Product resolver', () => {
         });
 
         it('slug is normalized to be url-safe', async () => {
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'en Mashed Potato',
-                                slug: 'A (very) nice potato!!',
-                                description: 'A blob of mashed potato',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Mashed Potato',
+                            slug: 'A (very) nice potato!!',
+                            description: 'A blob of mashed potato',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.updateProduct.slug).toBe('a-very-nice-potato');
         });
 
         it('create with duplicate slug is renamed to be unique', async () => {
-            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                CREATE_PRODUCT,
-                {
-                    input: {
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'Another baked potato',
-                                slug: 'a-very-nice-potato',
-                                description: 'Another baked potato but a bit different',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Another baked potato',
+                            slug: 'a-very-nice-potato',
+                            description: 'Another baked potato but a bit different',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.createProduct.slug).toBe('a-very-nice-potato-2');
         });
 
         it('update with duplicate slug is renamed to be unique', async () => {
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'Yet another baked potato',
-                                slug: 'a-very-nice-potato-2',
-                                description: 'Possibly the final baked potato',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Yet another baked potato',
+                            slug: 'a-very-nice-potato-2',
+                            description: 'Possibly the final baked potato',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.updateProduct.slug).toBe('a-very-nice-potato-3');
         });
 
         it('slug duplicate check does not include self', async () => {
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                slug: 'a-very-nice-potato-3',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            slug: 'a-very-nice-potato-3',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.updateProduct.slug).toBe('a-very-nice-potato-3');
         });
 
         it('updateProduct accepts partial input', async () => {
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'en Very Mashed Potato',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'en Very Mashed Potato',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.updateProduct.translations.length).toBe(2);
             expect(
                 result.updateProduct.translations.find(t => t.languageCode === LanguageCode.de)!.name,
@@ -1133,71 +1121,72 @@ describe('Product resolver', () => {
         });
 
         it('updateProduct adds Assets to a product and sets featured asset', async () => {
-            const assetsResult = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
-                GET_ASSET_LIST,
-            );
+            const assetsResult = await adminClient.query<
+                Codegen.GetAssetListQuery,
+                Codegen.GetAssetListQueryVariables
+            >(GET_ASSET_LIST);
             const assetIds = assetsResult.assets.items.map(a => a.id);
             const featuredAssetId = assetsResult.assets.items[2].id;
 
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        assetIds,
-                        featuredAssetId,
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    assetIds,
+                    featuredAssetId,
                 },
-            );
+            });
             expect(result.updateProduct.assets.map(a => a.id)).toEqual(assetIds);
             expect(result.updateProduct.featuredAsset!.id).toBe(featuredAssetId);
         });
 
         it('updateProduct sets a featured asset', async () => {
             const productResult = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: newProduct.id,
             });
             const assets = productResult.product!.assets;
 
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        featuredAssetId: assets[0].id,
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    featuredAssetId: assets[0].id,
                 },
-            );
+            });
             expect(result.updateProduct.featuredAsset!.id).toBe(assets[0].id);
         });
 
         it('updateProduct updates assets', async () => {
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        featuredAssetId: 'T_1',
-                        assetIds: ['T_1', 'T_2'],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    featuredAssetId: 'T_1',
+                    assetIds: ['T_1', 'T_2'],
                 },
-            );
+            });
             expect(result.updateProduct.assets.map(a => a.id)).toEqual(['T_1', 'T_2']);
         });
 
         it('updateProduct updates FacetValues', async () => {
-            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: newProduct.id,
-                        facetValueIds: ['T_1'],
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateProductMutation,
+                Codegen.UpdateProductMutationVariables
+            >(UPDATE_PRODUCT, {
+                input: {
+                    id: newProduct.id,
+                    facetValueIds: ['T_1'],
                 },
-            );
+            });
             expect(result.updateProduct.facetValues.length).toEqual(1);
         });
 
@@ -1205,34 +1194,37 @@ describe('Product resolver', () => {
             'updateProduct errors with an invalid productId',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                        input: {
-                            id: '999',
-                            translations: [
-                                {
-                                    languageCode: LanguageCode.en,
-                                    name: 'en Mashed Potato',
-                                    slug: 'en-mashed-potato',
-                                    description: 'A blob of mashed potato',
-                                },
-                                {
-                                    languageCode: LanguageCode.de,
-                                    name: 'de Mashed Potato',
-                                    slug: 'de-mashed-potato',
-                                    description: 'Eine blob von gemashed Erdapfel',
-                                },
-                            ],
+                    adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+                        UPDATE_PRODUCT,
+                        {
+                            input: {
+                                id: '999',
+                                translations: [
+                                    {
+                                        languageCode: LanguageCode.en,
+                                        name: 'en Mashed Potato',
+                                        slug: 'en-mashed-potato',
+                                        description: 'A blob of mashed potato',
+                                    },
+                                    {
+                                        languageCode: LanguageCode.de,
+                                        name: 'de Mashed Potato',
+                                        slug: 'de-mashed-potato',
+                                        description: 'Eine blob von gemashed Erdapfel',
+                                    },
+                                ],
+                            },
                         },
-                    }),
-                `No Product with the id '999' could be found`,
+                    ),
+                'No Product with the id "999" could be found',
             ),
         );
 
         it('addOptionGroupToProduct adds an option group', async () => {
             const optionGroup = await createOptionGroup('Quark-type', ['Charm', 'Strange']);
             const result = await adminClient.query<
-                AddOptionGroupToProduct.Mutation,
-                AddOptionGroupToProduct.Variables
+                Codegen.AddOptionGroupToProductMutation,
+                Codegen.AddOptionGroupToProductMutationVariables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: optionGroup.id,
                 productId: newProduct.id,
@@ -1242,8 +1234,8 @@ describe('Product resolver', () => {
 
             // not really testing this, but just cleaning up for later tests
             const { removeOptionGroupFromProduct } = await adminClient.query<
-                RemoveOptionGroupFromProduct.Mutation,
-                RemoveOptionGroupFromProduct.Variables
+                Codegen.RemoveOptionGroupFromProductMutation,
+                Codegen.RemoveOptionGroupFromProductMutationVariables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: optionGroup.id,
                 productId: newProduct.id,
@@ -1255,14 +1247,14 @@ describe('Product resolver', () => {
             'addOptionGroupToProduct errors with an invalid productId',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                        ADD_OPTION_GROUP_TO_PRODUCT,
-                        {
-                            optionGroupId: 'T_1',
-                            productId: 'T_999',
-                        },
-                    ),
-                `No Product with the id '999' could be found`,
+                    adminClient.query<
+                        Codegen.AddOptionGroupToProductMutation,
+                        Codegen.AddOptionGroupToProductMutationVariables
+                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                        optionGroupId: 'T_1',
+                        productId: 'T_999',
+                    }),
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1270,14 +1262,14 @@ describe('Product resolver', () => {
             'addOptionGroupToProduct errors if the OptionGroup is already assigned to another Product',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                        ADD_OPTION_GROUP_TO_PRODUCT,
-                        {
-                            optionGroupId: 'T_1',
-                            productId: 'T_2',
-                        },
-                    ),
-                `The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"`,
+                    adminClient.query<
+                        Codegen.AddOptionGroupToProductMutation,
+                        Codegen.AddOptionGroupToProductMutationVariables
+                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                        optionGroupId: 'T_1',
+                        productId: 'T_2',
+                    }),
+                'The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"',
             ),
         );
 
@@ -1285,30 +1277,30 @@ describe('Product resolver', () => {
             'addOptionGroupToProduct errors with an invalid optionGroupId',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                        ADD_OPTION_GROUP_TO_PRODUCT,
-                        {
-                            optionGroupId: '999',
-                            productId: newProduct.id,
-                        },
-                    ),
-                `No ProductOptionGroup with the id '999' could be found`,
+                    adminClient.query<
+                        Codegen.AddOptionGroupToProductMutation,
+                        Codegen.AddOptionGroupToProductMutationVariables
+                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                        optionGroupId: '999',
+                        productId: newProduct.id,
+                    }),
+                'No ProductOptionGroup with the id "999" could be found',
             ),
         );
 
         it('removeOptionGroupFromProduct removes an option group', async () => {
             const optionGroup = await createOptionGroup('Length', ['Short', 'Long']);
             const { addOptionGroupToProduct } = await adminClient.query<
-                AddOptionGroupToProduct.Mutation,
-                AddOptionGroupToProduct.Variables
+                Codegen.AddOptionGroupToProductMutation,
+                Codegen.AddOptionGroupToProductMutationVariables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
             });
             expect(addOptionGroupToProduct.optionGroups.length).toBe(1);
             const { removeOptionGroupFromProduct } = await adminClient.query<
-                RemoveOptionGroupFromProduct.Mutation,
-                RemoveOptionGroupFromProduct.Variables
+                Codegen.RemoveOptionGroupFromProductMutation,
+                Codegen.RemoveOptionGroupFromProductMutationVariables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
@@ -1321,8 +1313,8 @@ describe('Product resolver', () => {
 
         it('removeOptionGroupFromProduct return error result if the optionGroup is being used by variants', async () => {
             const { removeOptionGroupFromProduct } = await adminClient.query<
-                RemoveOptionGroupFromProduct.Mutation,
-                RemoveOptionGroupFromProduct.Variables
+                Codegen.RemoveOptionGroupFromProductMutation,
+                Codegen.RemoveOptionGroupFromProductMutationVariables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: 'T_3',
                 productId: 'T_2',
@@ -1330,7 +1322,7 @@ describe('Product resolver', () => {
             removeOptionGuard.assertErrorResult(removeOptionGroupFromProduct);
 
             expect(removeOptionGroupFromProduct.message).toBe(
-                `Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants`,
+                'Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants. Use the `force` argument to remove it anyway',
             );
             expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
             expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
@@ -1339,23 +1331,23 @@ describe('Product resolver', () => {
 
         it('removeOptionGroupFromProduct succeeds if all related ProductVariants are also deleted', async () => {
             const { product } = await adminClient.query<
-                GetProductWithVariantsQuery,
-                GetProductWithVariantsQueryVariables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, { id: 'T_2' });
 
             // Delete all variants for that product
             for (const variant of product!.variants) {
-                await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
-                    DELETE_PRODUCT_VARIANT,
-                    {
-                        id: variant.id,
-                    },
-                );
+                await adminClient.query<
+                    Codegen.DeleteProductVariantMutation,
+                    Codegen.DeleteProductVariantMutationVariables
+                >(DELETE_PRODUCT_VARIANT, {
+                    id: variant.id,
+                });
             }
 
             const { removeOptionGroupFromProduct } = await adminClient.query<
-                RemoveOptionGroupFromProduct.Mutation,
-                RemoveOptionGroupFromProduct.Variables
+                Codegen.RemoveOptionGroupFromProductMutation,
+                Codegen.RemoveOptionGroupFromProductMutationVariables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: product!.optionGroups[0].id,
                 productId: product!.id,
@@ -1369,13 +1361,13 @@ describe('Product resolver', () => {
             assertThrowsWithMessage(
                 () =>
                     adminClient.query<
-                        RemoveOptionGroupFromProduct.Mutation,
-                        RemoveOptionGroupFromProduct.Variables
+                        Codegen.RemoveOptionGroupFromProductMutation,
+                        Codegen.RemoveOptionGroupFromProductMutationVariables
                     >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '1',
                         productId: '999',
                     }),
-                `No Product with the id '999' could be found`,
+                'No Product with the id "999" could be found',
             ),
         );
 
@@ -1384,82 +1376,82 @@ describe('Product resolver', () => {
             assertThrowsWithMessage(
                 () =>
                     adminClient.query<
-                        RemoveOptionGroupFromProduct.Mutation,
-                        RemoveOptionGroupFromProduct.Variables
+                        Codegen.RemoveOptionGroupFromProductMutation,
+                        Codegen.RemoveOptionGroupFromProductMutationVariables
                     >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
-                `No ProductOptionGroup with the id '999' could be found`,
+                'No ProductOptionGroup with the id "999" could be found',
             ),
         );
 
         describe('variants', () => {
-            let variants: CreateProductVariants.CreateProductVariants[];
-            let optionGroup2: GetOptionGroup.ProductOptionGroup;
-            let optionGroup3: GetOptionGroup.ProductOptionGroup;
+            let variants: Codegen.CreateProductVariantsMutation['createProductVariants'];
+            let optionGroup2: NonNullable<Codegen.GetOptionGroupQuery['productOptionGroup']>;
+            let optionGroup3: NonNullable<Codegen.GetOptionGroupQuery['productOptionGroup']>;
 
             beforeAll(async () => {
                 optionGroup2 = await createOptionGroup('group-2', ['group2-option-1', 'group2-option-2']);
                 optionGroup3 = await createOptionGroup('group-3', ['group3-option-1', 'group3-option-2']);
-                await adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                    ADD_OPTION_GROUP_TO_PRODUCT,
-                    {
-                        optionGroupId: optionGroup2.id,
-                        productId: newProduct.id,
-                    },
-                );
-                await adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                    ADD_OPTION_GROUP_TO_PRODUCT,
-                    {
-                        optionGroupId: optionGroup3.id,
-                        productId: newProduct.id,
-                    },
-                );
+                await adminClient.query<
+                    Codegen.AddOptionGroupToProductMutation,
+                    Codegen.AddOptionGroupToProductMutationVariables
+                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                    optionGroupId: optionGroup2.id,
+                    productId: newProduct.id,
+                });
+                await adminClient.query<
+                    Codegen.AddOptionGroupToProductMutation,
+                    Codegen.AddOptionGroupToProductMutationVariables
+                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                    optionGroupId: optionGroup3.id,
+                    productId: newProduct.id,
+                });
             });
 
             it(
                 'createProductVariants throws if optionIds not compatible with product',
                 assertThrowsWithMessage(async () => {
-                    await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
-                        CREATE_PRODUCT_VARIANTS,
-                        {
-                            input: [
-                                {
-                                    productId: newProduct.id,
-                                    sku: 'PV1',
-                                    optionIds: [],
-                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
-                                },
-                            ],
-                        },
-                    );
+                    await adminClient.query<
+                        Codegen.CreateProductVariantsMutation,
+                        Codegen.CreateProductVariantsMutationVariables
+                    >(CREATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                productId: newProduct.id,
+                                sku: 'PV1',
+                                optionIds: [],
+                                translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                            },
+                        ],
+                    });
                 }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it(
                 'createProductVariants throws if optionIds are duplicated',
                 assertThrowsWithMessage(async () => {
-                    await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
-                        CREATE_PRODUCT_VARIANTS,
-                        {
-                            input: [
-                                {
-                                    productId: newProduct.id,
-                                    sku: 'PV1',
-                                    optionIds: [optionGroup2.options[0].id, optionGroup2.options[1].id],
-                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
-                                },
-                            ],
-                        },
-                    );
+                    await adminClient.query<
+                        Codegen.CreateProductVariantsMutation,
+                        Codegen.CreateProductVariantsMutationVariables
+                    >(CREATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                productId: newProduct.id,
+                                sku: 'PV1',
+                                optionIds: [optionGroup2.options[0].id, optionGroup2.options[1].id],
+                                translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                            },
+                        ],
+                    });
                 }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it('createProductVariants works', async () => {
                 const { createProductVariants } = await adminClient.query<
-                    CreateProductVariants.Mutation,
-                    CreateProductVariants.Variables
+                    Codegen.CreateProductVariantsMutation,
+                    Codegen.CreateProductVariantsMutationVariables
                 >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
@@ -1481,8 +1473,8 @@ describe('Product resolver', () => {
 
             it('createProductVariants adds multiple variants at once', async () => {
                 const { createProductVariants } = await adminClient.query<
-                    CreateProductVariants.Mutation,
-                    CreateProductVariants.Variables
+                    Codegen.CreateProductVariantsMutation,
+                    Codegen.CreateProductVariantsMutationVariables
                 >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
@@ -1512,32 +1504,32 @@ describe('Product resolver', () => {
             it(
                 'createProductVariants throws if options combination already exists',
                 assertThrowsWithMessage(async () => {
-                    await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
-                        CREATE_PRODUCT_VARIANTS,
-                        {
-                            input: [
-                                {
-                                    productId: newProduct.id,
-                                    sku: 'PV2',
-                                    optionIds: [optionGroup2.options[0].id, optionGroup3.options[0].id],
-                                    translations: [{ languageCode: LanguageCode.en, name: 'Variant 2' }],
-                                },
-                            ],
-                        },
-                    );
+                    await adminClient.query<
+                        Codegen.CreateProductVariantsMutation,
+                        Codegen.CreateProductVariantsMutationVariables
+                    >(CREATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                productId: newProduct.id,
+                                sku: 'PV2',
+                                optionIds: [optionGroup2.options[0].id, optionGroup3.options[0].id],
+                                translations: [{ languageCode: LanguageCode.en, name: 'Variant 2' }],
+                            },
+                        ],
+                    });
                 }, 'A ProductVariant with the selected options already exists: Variant 1'),
             );
 
             it('updateProductVariants updates variants', async () => {
                 const firstVariant = variants[0];
                 const { updateProductVariants } = await adminClient.query<
-                    UpdateProductVariants.Mutation,
-                    UpdateProductVariants.Variables
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
-                            id: firstVariant.id,
-                            translations: firstVariant.translations,
+                            id: firstVariant!.id,
+                            translations: firstVariant!.translations,
                             sku: 'ABC',
                             price: 432,
                         },
@@ -1561,20 +1553,20 @@ describe('Product resolver', () => {
 
                 const firstVariant = variants[0];
                 const { updateProductVariants } = await adminClient.query<
-                    UpdateProductVariants.Mutation,
-                    UpdateProductVariants.Variables
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
-                            id: firstVariant.id,
-                            translations: firstVariant.translations,
+                            id: firstVariant!.id,
+                            translations: firstVariant!.translations,
                             sku: 'ABCD',
                             price: 432,
                         },
                     ],
                 });
 
-                const updatedVariant = updateProductVariants.find(v => v?.id === variants[0].id);
+                const updatedVariant = updateProductVariants.find(v => v?.id === variants[0]!.id);
 
                 expect(updatedVariant?.updatedAt).not.toBe(updatedVariant?.createdAt);
             });
@@ -1582,12 +1574,12 @@ describe('Product resolver', () => {
             it('updateProductVariants updates assets', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<
-                    UpdateProductVariants.Mutation,
-                    UpdateProductVariants.Variables
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
-                            id: firstVariant.id,
+                            id: firstVariant!.id,
                             assetIds: ['T_1', 'T_2'],
                             featuredAssetId: 'T_2',
                         },
@@ -1605,12 +1597,12 @@ describe('Product resolver', () => {
             it('updateProductVariants updates assets again', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<
-                    UpdateProductVariants.Mutation,
-                    UpdateProductVariants.Variables
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
-                            id: firstVariant.id,
+                            id: firstVariant!.id,
                             assetIds: ['T_4', 'T_3'],
                             featuredAssetId: 'T_4',
                         },
@@ -1628,12 +1620,12 @@ describe('Product resolver', () => {
             it('updateProductVariants updates taxCategory and price', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<
-                    UpdateProductVariants.Mutation,
-                    UpdateProductVariants.Variables
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
-                            id: firstVariant.id,
+                            id: firstVariant!.id,
                             price: 105,
                             taxCategoryId: 'T_2',
                         },
@@ -1651,12 +1643,12 @@ describe('Product resolver', () => {
             it('updateProductVariants updates facetValues', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<
-                    UpdateProductVariants.Mutation,
-                    UpdateProductVariants.Variables
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
-                            id: firstVariant.id,
+                            id: firstVariant!.id,
                             facetValueIds: ['T_1'],
                         },
                     ],
@@ -1674,29 +1666,167 @@ describe('Product resolver', () => {
                 'updateProductVariants throws with an invalid variant id',
                 assertThrowsWithMessage(
                     () =>
-                        adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                            UPDATE_PRODUCT_VARIANTS,
-                            {
-                                input: [
-                                    {
-                                        id: 'T_999',
-                                        translations: variants[0].translations,
-                                        sku: 'ABC',
-                                        price: 432,
-                                    },
-                                ],
-                            },
-                        ),
-                    `No ProductVariant with the id '999' could be found`,
+                        adminClient.query<
+                            Codegen.UpdateProductVariantsMutation,
+                            Codegen.UpdateProductVariantsMutationVariables
+                        >(UPDATE_PRODUCT_VARIANTS, {
+                            input: [
+                                {
+                                    id: 'T_999',
+                                    translations: variants[0]!.translations,
+                                    sku: 'ABC',
+                                    price: 432,
+                                },
+                            ],
+                        }),
+                    'No ProductVariant with the id "999" could be found',
                 ),
             );
 
-            let deletedVariant: ProductVariantFragment;
+            describe('adding options to existing variants', () => {
+                let variantToModify: NonNullable<
+                    Codegen.CreateProductVariantsMutation['createProductVariants'][number]
+                >;
+                let initialOptionIds: string[];
+                let newOptionGroup: Codegen.CreateProductOptionGroupMutation['createProductOptionGroup'];
+
+                beforeAll(() => {
+                    variantToModify = variants[0]!;
+                    initialOptionIds = variantToModify.options.map(o => o.id);
+                });
+                it('assert initial state', async () => {
+                    expect(variantToModify.options.map(o => o.code)).toEqual([
+                        'group2-option-2',
+                        'group3-option-1',
+                    ]);
+                });
+
+                it(
+                    'passing optionIds from an invalid OptionGroup throws',
+                    assertThrowsWithMessage(async () => {
+                        await adminClient.query<
+                            Codegen.UpdateProductVariantsMutation,
+                            Codegen.UpdateProductVariantsMutationVariables
+                        >(UPDATE_PRODUCT_VARIANTS, {
+                            input: [
+                                {
+                                    id: variantToModify.id,
+                                    optionIds: [...variantToModify.options.map(o => o.id), 'T_1'],
+                                },
+                            ],
+                        });
+                    }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
+                );
+
+                it(
+                    'passing optionIds that match an existing variant throws',
+                    assertThrowsWithMessage(async () => {
+                        await adminClient.query<
+                            Codegen.UpdateProductVariantsMutation,
+                            Codegen.UpdateProductVariantsMutationVariables
+                        >(UPDATE_PRODUCT_VARIANTS, {
+                            input: [
+                                {
+                                    id: variantToModify.id,
+                                    optionIds: variants[1]!.options.map(o => o.id),
+                                },
+                            ],
+                        });
+                    }, 'A ProductVariant with the selected options already exists: Variant 3'),
+                );
+
+                it('addOptionGroupToProduct and then update existing ProductVariant with a new option', async () => {
+                    const optionGroup4 = await createOptionGroup('group-4', [
+                        'group4-option-1',
+                        'group4-option-2',
+                    ]);
+                    newOptionGroup = optionGroup4;
+                    const result = await adminClient.query<
+                        Codegen.AddOptionGroupToProductMutation,
+                        Codegen.AddOptionGroupToProductMutationVariables
+                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                        optionGroupId: optionGroup4.id,
+                        productId: newProduct.id,
+                    });
+                    expect(result.addOptionGroupToProduct.optionGroups.length).toBe(3);
+                    expect(result.addOptionGroupToProduct.optionGroups[2].id).toBe(optionGroup4.id);
+
+                    const { updateProductVariants } = await adminClient.query<
+                        Codegen.UpdateProductVariantsMutation,
+                        Codegen.UpdateProductVariantsMutationVariables
+                    >(UPDATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                id: variantToModify.id,
+                                optionIds: [
+                                    ...variantToModify.options.map(o => o.id),
+                                    optionGroup4.options[0].id,
+                                ],
+                            },
+                        ],
+                    });
+
+                    expect(updateProductVariants[0]!.options.map(o => o.code)).toEqual([
+                        'group2-option-2',
+                        'group3-option-1',
+                        'group4-option-1',
+                    ]);
+                });
+
+                it('removeOptionGroup fails because option is in use', async () => {
+                    const { removeOptionGroupFromProduct } = await adminClient.query<
+                        Codegen.RemoveOptionGroupFromProductMutation,
+                        Codegen.RemoveOptionGroupFromProductMutationVariables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        optionGroupId: newOptionGroup.id,
+                        productId: newProduct.id,
+                    });
+                    removeOptionGuard.assertErrorResult(removeOptionGroupFromProduct);
+
+                    expect(removeOptionGroupFromProduct.message).toBe(
+                        'Cannot remove ProductOptionGroup "group-4" as it is used by 3 ProductVariants. Use the `force` argument to remove it anyway',
+                    );
+                });
+
+                it('removeOptionGroup with force argument', async () => {
+                    const { removeOptionGroupFromProduct } = await adminClient.query<
+                        Codegen.RemoveOptionGroupFromProductMutation,
+                        Codegen.RemoveOptionGroupFromProductMutationVariables
+                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                        optionGroupId: newOptionGroup.id,
+                        productId: newProduct.id,
+                        force: true,
+                    });
+                    removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
+
+                    expect(removeOptionGroupFromProduct.optionGroups.length).toBe(2);
+
+                    const { product } = await adminClient.query<
+                        Codegen.GetProductWithVariantsQuery,
+                        Codegen.GetProductWithVariantsQueryVariables
+                    >(GET_PRODUCT_WITH_VARIANTS, {
+                        id: newProduct.id,
+                    });
+                    function assertNoOptionGroup(
+                        variant: Codegen.ProductVariantFragment,
+                        optionGroupId: string,
+                    ) {
+                        expect(variant.options.map(o => o.groupId).every(id => id !== optionGroupId)).toBe(
+                            true,
+                        );
+                    }
+                    assertNoOptionGroup(product!.variants[0]!, newOptionGroup.id);
+                    assertNoOptionGroup(product!.variants[1]!, newOptionGroup.id);
+                    assertNoOptionGroup(product!.variants[2]!, newOptionGroup.id);
+                });
+            });
+
+            let deletedVariant: Codegen.ProductVariantFragment;
 
             it('deleteProductVariant', async () => {
                 const result1 = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
@@ -1704,8 +1834,8 @@ describe('Product resolver', () => {
                 expect(sortedVariantIds).toEqual(['T_35', 'T_36', 'T_37']);
 
                 const { deleteProductVariant } = await adminClient.query<
-                    DeleteProductVariant.Mutation,
-                    DeleteProductVariant.Variables
+                    Codegen.DeleteProductVariantMutation,
+                    Codegen.DeleteProductVariantMutationVariables
                 >(DELETE_PRODUCT_VARIANT, {
                     id: sortedVariantIds[0],
                 });
@@ -1713,21 +1843,21 @@ describe('Product resolver', () => {
                 expect(deleteProductVariant.result).toBe(DeletionResult.DELETED);
 
                 const result2 = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
                 expect(result2.product!.variants.map(v => v.id).sort()).toEqual(['T_36', 'T_37']);
 
-                deletedVariant = result1.product?.variants.find(v => v.id === 'T_35')!;
+                deletedVariant = result1.product!.variants.find(v => v.id === 'T_35')!;
             });
 
             /** Testing https://github.com/vendure-ecommerce/vendure/issues/412 **/
             it('createProductVariants ignores deleted variants when checking for existing combinations', async () => {
                 const { createProductVariants } = await adminClient.query<
-                    CreateProductVariants.Mutation,
-                    CreateProductVariants.Variables
+                    Codegen.CreateProductVariantsMutation,
+                    Codegen.CreateProductVariantsMutationVariables
                 >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
@@ -1748,8 +1878,8 @@ describe('Product resolver', () => {
             // https://github.com/vendure-ecommerce/vendure/issues/980
             it('creating variants in a non-default language', async () => {
                 const { createProduct } = await adminClient.query<
-                    CreateProduct.Mutation,
-                    CreateProduct.Variables
+                    Codegen.CreateProductMutation,
+                    Codegen.CreateProductMutationVariables
                 >(CREATE_PRODUCT, {
                     input: {
                         translations: [
@@ -1764,8 +1894,8 @@ describe('Product resolver', () => {
                 });
 
                 const { createProductVariants } = await adminClient.query<
-                    CreateProductVariants.Mutation,
-                    CreateProductVariants.Variables
+                    Codegen.CreateProductVariantsMutation,
+                    Codegen.CreateProductVariantsMutationVariables
                 >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
@@ -1781,8 +1911,8 @@ describe('Product resolver', () => {
                 expect(createProductVariants[0]?.name).toBe('Ananas Klein');
 
                 const { product } = await adminClient.query<
-                    GetProductWithVariants.Query,
-                    GetProductWithVariants.Variables
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
                 >(
                     GET_PRODUCT_WITH_VARIANTS,
                     {
@@ -1801,26 +1931,26 @@ describe('Product resolver', () => {
                 function getProductWithVariantsInLanguage(
                     id: string,
                     languageCode: LanguageCode,
-                    variantListOptions?: ProductVariantListOptions,
+                    variantListOptions?: Codegen.ProductVariantListOptions,
                 ) {
                     return adminClient.query<
-                        GetProductWithVariantList.Query,
-                        GetProductWithVariantList.Variables
+                        Codegen.GetProductWithVariantListQuery,
+                        Codegen.GetProductWithVariantListQueryVariables
                     >(GET_PRODUCT_WITH_VARIANT_LIST, { id, variantListOptions }, { languageCode });
                 }
 
                 beforeAll(async () => {
-                    await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
-                        UPDATE_GLOBAL_SETTINGS,
-                        {
-                            input: {
-                                availableLanguages: [LanguageCode.en, LanguageCode.de],
-                            },
+                    await adminClient.query<
+                        Codegen.UpdateGlobalSettingsMutation,
+                        Codegen.UpdateGlobalSettingsMutationVariables
+                    >(UPDATE_GLOBAL_SETTINGS, {
+                        input: {
+                            availableLanguages: [LanguageCode.en, LanguageCode.de],
                         },
-                    );
+                    });
                     const { createProduct } = await adminClient.query<
-                        CreateProduct.Mutation,
-                        CreateProduct.Variables
+                        Codegen.CreateProductMutation,
+                        Codegen.CreateProductMutationVariables
                     >(CREATE_PRODUCT, {
                         input: {
                             translations: [
@@ -1835,24 +1965,24 @@ describe('Product resolver', () => {
                     });
 
                     productId = createProduct.id;
-                    await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
-                        CREATE_PRODUCT_VARIANTS,
-                        {
-                            input: [
-                                {
-                                    productId,
-                                    sku: 'BOTTLE111',
-                                    optionIds: [],
-                                    translations: [{ languageCode: LanguageCode.en, name: 'Bottle' }],
-                                },
-                            ],
-                        },
-                    );
+                    await adminClient.query<
+                        Codegen.CreateProductVariantsMutation,
+                        Codegen.CreateProductVariantsMutationVariables
+                    >(CREATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                productId,
+                                sku: 'BOTTLE111',
+                                optionIds: [],
+                                translations: [{ languageCode: LanguageCode.en, name: 'Bottle' }],
+                            },
+                        ],
+                    });
                 });
 
                 afterAll(async () => {
                     // Restore the default language to English for the subsequent tests
-                    await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                    await adminClient.query(UpdateChannelDocument, {
                         input: {
                             id: 'T_1',
                             defaultLanguageCode: LanguageCode.en,
@@ -1862,8 +1992,8 @@ describe('Product resolver', () => {
 
                 it('returns all variants', async () => {
                     const { product: product1 } = await adminClient.query<
-                        GetProductWithVariants.Query,
-                        GetProductWithVariants.Variables
+                        Codegen.GetProductWithVariantsQuery,
+                        Codegen.GetProductWithVariantsQueryVariables
                     >(
                         GET_PRODUCT_WITH_VARIANTS,
                         {
@@ -1874,10 +2004,7 @@ describe('Product resolver', () => {
                     expect(product1?.variants.length).toBe(1);
 
                     // Change the default language of the channel to "de"
-                    const { updateChannel } = await adminClient.query<
-                        UpdateChannel.Mutation,
-                        UpdateChannel.Variables
-                    >(UPDATE_CHANNEL, {
+                    const { updateChannel } = await adminClient.query(UpdateChannelDocument, {
                         input: {
                             id: 'T_1',
                             defaultLanguageCode: LanguageCode.de,
@@ -1923,34 +2050,34 @@ describe('Product resolver', () => {
     });
 
     describe('deletion', () => {
-        let allProducts: GetProductList.Items[];
-        let productToDelete: GetProductWithVariants.Product;
+        let allProducts: Codegen.GetProductListQuery['products']['items'];
+        let productToDelete: NonNullable<Codegen.GetProductWithVariantsQuery['product']>;
 
         beforeAll(async () => {
-            const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
-                GET_PRODUCT_LIST,
-                {
-                    options: {
-                        sort: {
-                            id: SortOrder.ASC,
-                        },
+            const result = await adminClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    sort: {
+                        id: SortOrder.ASC,
                     },
                 },
-            );
+            });
             allProducts = result.products.items;
         });
 
         it('deletes a product', async () => {
             const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: allProducts[0].id,
             });
-            const result = await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(
-                DELETE_PRODUCT,
-                { id: product!.id },
-            );
+            const result = await adminClient.query<
+                Codegen.DeleteProductMutation,
+                Codegen.DeleteProductMutationVariables
+            >(DELETE_PRODUCT, { id: product!.id });
 
             expect(result.deleteProduct).toEqual({ result: DeletionResult.DELETED });
 
@@ -1959,8 +2086,8 @@ describe('Product resolver', () => {
 
         it('cannot get a deleted product', async () => {
             const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: productToDelete.id,
             });
@@ -1972,8 +2099,8 @@ describe('Product resolver', () => {
         it('variants of deleted product are also deleted', async () => {
             for (const variant of productToDelete.variants) {
                 const { productVariant } = await adminClient.query<
-                    GetProductVariant.Query,
-                    GetProductVariant.Variables
+                    Codegen.GetProductVariantQuery,
+                    Codegen.GetProductVariantQueryVariables
                 >(GET_PRODUCT_VARIANT, {
                     id: variant.id,
                 });
@@ -1983,7 +2110,7 @@ describe('Product resolver', () => {
         });
 
         it('deleted product omitted from list', async () => {
-            const result = await adminClient.query<GetProductList.Query>(GET_PRODUCT_LIST);
+            const result = await adminClient.query<Codegen.GetProductListQuery>(GET_PRODUCT_LIST);
 
             expect(result.products.items.length).toBe(allProducts.length - 1);
             expect(result.products.items.map(c => c.id).includes(productToDelete.id)).toBe(false);
@@ -1993,13 +2120,16 @@ describe('Product resolver', () => {
             'updateProduct throws for deleted product',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                        input: {
-                            id: productToDelete.id,
-                            facetValueIds: ['T_1'],
+                    adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+                        UPDATE_PRODUCT,
+                        {
+                            input: {
+                                id: productToDelete.id,
+                                facetValueIds: ['T_1'],
+                            },
                         },
-                    }),
-                `No Product with the id '1' could be found`,
+                    ),
+                'No Product with the id "1" could be found',
             ),
         );
 
@@ -2007,14 +2137,14 @@ describe('Product resolver', () => {
             'addOptionGroupToProduct throws for deleted product',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
-                        ADD_OPTION_GROUP_TO_PRODUCT,
-                        {
-                            optionGroupId: 'T_1',
-                            productId: productToDelete.id,
-                        },
-                    ),
-                `No Product with the id '1' could be found`,
+                    adminClient.query<
+                        Codegen.AddOptionGroupToProductMutation,
+                        Codegen.AddOptionGroupToProductMutationVariables
+                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                        optionGroupId: 'T_1',
+                        productId: productToDelete.id,
+                    }),
+                'No Product with the id "1" could be found',
             ),
         );
 
@@ -2023,53 +2153,53 @@ describe('Product resolver', () => {
             assertThrowsWithMessage(
                 () =>
                     adminClient.query<
-                        RemoveOptionGroupFromProduct.Mutation,
-                        RemoveOptionGroupFromProduct.Variables
+                        Codegen.RemoveOptionGroupFromProductMutation,
+                        Codegen.RemoveOptionGroupFromProductMutationVariables
                     >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
-                `No Product with the id '1' could be found`,
+                'No Product with the id "1" could be found',
             ),
         );
 
         // https://github.com/vendure-ecommerce/vendure/issues/558
         it('slug of a deleted product can be re-used', async () => {
-            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                CREATE_PRODUCT,
-                {
-                    input: {
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'Product reusing deleted slug',
-                                slug: productToDelete.slug,
-                                description: 'stuff',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Product reusing deleted slug',
+                            slug: productToDelete.slug,
+                            description: 'stuff',
+                        },
+                    ],
                 },
-            );
+            });
             expect(result.createProduct.slug).toBe(productToDelete.slug);
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/1505
         it('attempting to re-use deleted slug twice is not allowed', async () => {
-            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                CREATE_PRODUCT,
-                {
-                    input: {
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'Product reusing deleted slug',
-                                slug: productToDelete.slug,
-                                description: 'stuff',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Product reusing deleted slug',
+                            slug: productToDelete.slug,
+                            description: 'stuff',
+                        },
+                    ],
                 },
-            );
+            });
 
             expect(result.createProduct.slug).not.toBe(productToDelete.slug);
             expect(result.createProduct.slug).toBe('laptop-2');
@@ -2077,10 +2207,10 @@ describe('Product resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/800
         it('product can be fetched by slug of a deleted product', async () => {
-            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
-                GET_PRODUCT_SIMPLE,
-                { slug: productToDelete.slug },
-            );
+            const { product } = await adminClient.query<
+                Codegen.GetProductSimpleQuery,
+                Codegen.GetProductSimpleQueryVariables
+            >(GET_PRODUCT_SIMPLE, { slug: productToDelete.slug });
 
             if (!product) {
                 fail('Product not found');
@@ -2092,8 +2222,8 @@ describe('Product resolver', () => {
 
     async function createOptionGroup(name: string, options: string[]) {
         const { createProductOptionGroup } = await adminClient.query<
-            CreateProductOptionGroupMutation,
-            CreateProductOptionGroupMutationVariables
+            Codegen.CreateProductOptionGroupMutation,
+            Codegen.CreateProductOptionGroupMutationVariables
         >(CREATE_PRODUCT_OPTION_GROUP, {
             input: {
                 code: name.toLowerCase(),
@@ -2109,8 +2239,8 @@ describe('Product resolver', () => {
 });
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
-    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
-        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
+    mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!, $force: Boolean) {
+        removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId, force: $force) {
             ...ProductWithOptions
             ... on ProductOptionInUseError {
                 errorCode

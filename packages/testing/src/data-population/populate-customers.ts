@@ -25,8 +25,8 @@ export async function populateCustomers(
                 continue;
             }
             await customerService.createAddress(ctx, createdCustomer.id, address);
-        } catch (e) {
-            loggingFn(`Failed to create customer: ${e.message}`);
+        } catch (e: any) {
+            loggingFn(`Failed to create customer: ${JSON.stringify(e.message)}`);
         }
     }
 }

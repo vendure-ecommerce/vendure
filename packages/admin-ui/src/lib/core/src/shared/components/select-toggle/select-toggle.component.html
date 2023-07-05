@@ -9,8 +9,18 @@
     (keydown.space)="$event.preventDefault(); selectedChange.emit(!selected)"
     (click)="selectedChange.emit(!selected)"
 >
-    <clr-icon shape="check-circle" [attr.size]="size === 'small' ? 24 : 32"></clr-icon>
+    <clr-icon
+        shape="check-circle"
+        [class.is-solid]="selected"
+        [attr.size]="size === 'small' ? 24 : 32"
+    ></clr-icon>
 </div>
-<div class="toggle-label" [class.disabled]="disabled" *ngIf="label" (click)="selectedChange.emit(!selected)">
+<div
+    class="toggle-label"
+    [class.selected]="selected"
+    [class.disabled]="disabled"
+    *ngIf="label"
+    (click)="selectedChange.emit(!selected)"
+>
     {{ label }}
 </div>

@@ -2,7 +2,7 @@ import { Permission } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
-import { Role } from '../../../entity/index';
+import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
 
 export interface UserChannelPermissions {

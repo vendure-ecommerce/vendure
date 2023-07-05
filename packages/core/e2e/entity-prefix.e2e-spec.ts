@@ -1,12 +1,13 @@
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
-import { GetCustomerList } from './graphql/generated-e2e-admin-types';
+import { GetCustomerListQuery, GetCustomerListQueryVariables } from './graphql/generated-e2e-admin-types';
 import { GET_CUSTOMER_LIST } from './graphql/shared-definitions';
 
 /**
@@ -38,7 +39,7 @@ describe('Entity prefix edge-cases', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1569
     it('customers list filter by postalCode', async () => {
-        const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
+        const result = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(
             GET_CUSTOMER_LIST,
             {
                 options: {

@@ -1,6 +1,6 @@
 # Vendure
 
-A headless [GraphQL](https://graphql.org/) ecommerce framework built on [Node.js](https://nodejs.org) with [Nest](https://nestjs.com/) & [TypeScript](http://www.typescriptlang.org/), with a focus on developer productivity and ease of customization.
+An open-source headless commerce platform built on [Node.js](https://nodejs.org) with [GraphQL](https://graphql.org/), [Nest](https://nestjs.com/) & [TypeScript](http://www.typescriptlang.org/), with a focus on developer productivity and ease of customization.
 
 [![Build Status](https://github.com/vendure-ecommerce/vendure/workflows/Build%20&%20Test/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions) 
 ![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)
@@ -8,9 +8,16 @@ A headless [GraphQL](https://graphql.org/) ecommerce framework built on [Node.js
 
 ### [www.vendure.io](https://www.vendure.io/)
 
-* [Getting Started](https://www.vendure.io/docs/getting-started/): Get Vendure up and running locally in a matter of minutes with a single command
+* [Getting Started](https://docs.vendure.io/getting-started/): Get Vendure up and running locally in a matter of minutes with a single command
 * [Live Demo](https://demo.vendure.io/)
-* [Vendure Slack](https://join.slack.com/t/vendure-ecommerce/shared_invite/zt-1exzio25w-vjL5TYkyJZjK52d6jkOsIA) Join us on Slack for support and answers to your questions
+* [Vendure Discord](https://www.vendure.io/community) Join us on Discord for support and answers to your questions
+
+## Branches
+
+- `master` - The latest stable release, currently the 2.x series.
+- `minor` - The next patch release, including new features
+- `major` - The next major release (v3.0)
+- `v1` - The 1.x series, which is no longer actively developed but may still receive critical fixes.
 
 ## Structure
 
@@ -40,6 +47,9 @@ The root directory has a `package.json` which contains build-related dependencie
 * Building & deploying the docs 
 * Generating TypeScript types from the GraphQL schema
 * Linting, formatting & testing tasks to run on git commit & push
+
+> Note:
+> When you do `yarn` for the first time, you will need to manually create the `package` folder under [/packages/admin-ui](/packages/admin-ui).
 
 ### 2. Bootstrap the packages
 

@@ -2,7 +2,7 @@
  * Returns the tax component of a given gross price.
  */
 export function taxComponentOf(grossPrice: number, taxRatePc: number): number {
-    return Math.round(grossPrice - grossPrice / ((100 + taxRatePc) / 100));
+    return grossPrice - grossPrice / ((100 + taxRatePc) / 100);
 }
 
 /**
@@ -16,7 +16,7 @@ export function netPriceOf(grossPrice: number, taxRatePc: number): number {
  * Returns the tax applicable to the given net price.
  */
 export function taxPayableOn(netPrice: number, taxRatePc: number): number {
-    return Math.round(netPrice * (taxRatePc / 100));
+    return netPrice * (taxRatePc / 100);
 }
 
 /**

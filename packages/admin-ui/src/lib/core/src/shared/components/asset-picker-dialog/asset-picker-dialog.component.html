@@ -11,7 +11,7 @@
     </div>
 </ng-template>
 <vdr-asset-search-input
-    class="mb2"
+    class="mb-2"
     [tags]="allTags$ | async"
     (searchTermChange)="searchTerm$.next($event)"
     (tagsChange)="filterByTags$.next($event)"

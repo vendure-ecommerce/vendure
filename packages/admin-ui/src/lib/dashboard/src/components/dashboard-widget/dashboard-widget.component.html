@@ -1,13 +1,6 @@
-<div class="card">
-    <div class="card-header">
-        <div class="title">
-            <ng-container *ngIf="widgetConfig.title as title">{{ title | translate }}</ng-container>
-        </div>
-        <div class="controls">
-            <ng-content></ng-content>
-        </div>
-    </div>
-    <div class="card-block">
-        <ng-template #portal></ng-template>
-    </div>
-</div>
+<vdr-card [title]="widgetConfig.title ?? '' | translate">
+    <ng-template vdrCardControls>
+        <ng-content></ng-content>
+    </ng-template>
+    <ng-template #portal></ng-template>
+</vdr-card>

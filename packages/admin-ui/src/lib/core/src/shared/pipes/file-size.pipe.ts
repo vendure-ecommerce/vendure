@@ -13,7 +13,7 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 @Pipe({ name: 'filesize' })
 export class FileSizePipe implements PipeTransform {
-    transform(value: number, useSiUnits: boolean = true): any {
+    transform(value: number, useSiUnits = true): any {
         if (typeof value !== 'number' && typeof value !== 'string') {
             return value;
         }

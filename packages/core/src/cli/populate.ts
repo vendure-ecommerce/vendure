@@ -1,10 +1,11 @@
 import { INestApplicationContext } from '@nestjs/common';
 import fs from 'fs-extra';
 import path from 'path';
+import { lastValueFrom } from 'rxjs';
 
 const loggerCtx = 'Populate';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * @description
  * Populates the Vendure server with some initial data and (optionally) product data from
@@ -111,8 +112,8 @@ export async function populateInitialData(
     const populator = app.get(Populator);
     try {
         await populator.populateInitialData(initialData, channel);
-        Logger.info(`Populated initial data`, loggerCtx);
-    } catch (err) {
+        Logger.info('Populated initial data', loggerCtx);
+    } catch (err: any) {
         Logger.error(err.message, loggerCtx);
     }
 }
@@ -129,7 +130,7 @@ export async function populateCollections(
             await populator.populateCollections(initialData, channel);
             Logger.info(`Created ${initialData.collections.length} Collections`, loggerCtx);
         }
-    } catch (err) {
+    } catch (err: any) {
         Logger.info(err.message, loggerCtx);
     }
 }
@@ -149,5 +150,5 @@ export async function importProductsFromCsv(
         languageCode,
         channelOrToken: channel,
     });
-    return importer.parseAndImport(productData, ctx, true).toPromise();
+    return lastValueFrom(importer.parseAndImport(productData, ctx, true));
 }

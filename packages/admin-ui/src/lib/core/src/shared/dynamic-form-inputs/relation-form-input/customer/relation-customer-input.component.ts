@@ -1,16 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
 
-import {
-    CustomerFragment,
-    GetCustomerList,
-    GetProductList,
-    GetProductSimple,
-    RelationCustomFieldConfig,
-} from '../../../../common/generated-types';
+import * as Codegen from '../../../../common/generated-types';
+import { CustomerFragment, RelationCustomFieldConfig } from '../../../../common/generated-types';
 import { DataService } from '../../../../data/providers/data.service';
 import { ModalService } from '../../../../providers/modal/modal.service';
 import { RelationSelectorDialogComponent } from '../relation-selector-dialog/relation-selector-dialog.component';
@@ -23,14 +18,12 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
 })
 export class RelationCustomerInputComponent implements OnInit {
     @Input() readonly: boolean;
-    @Input() parentFormControl: FormControl;
+    @Input() parentFormControl: UntypedFormControl;
     @Input() config: RelationCustomFieldConfig;
 
     @ViewChild('selector') template: TemplateRef<any>;
-
-    searchControl = new FormControl('');
     searchTerm$ = new Subject<string>();
-    results$: Observable<GetCustomerList.Items[]>;
+    results$: Observable<Codegen.GetCustomerListQuery['customers']['items']>;
 
     get customer(): CustomerFragment | undefined {
         return this.parentFormControl.value;
@@ -41,11 +34,11 @@ export class RelationCustomerInputComponent implements OnInit {
     ngOnInit() {
         this.results$ = this.searchTerm$.pipe(
             debounceTime(200),
-            switchMap(term => {
-                return this.dataService.customer
+            switchMap(term =>
+                this.dataService.customer
                     .getCustomerList(10, 0, term)
-                    .mapSingle(data => data.customers.items);
-            }),
+                    .mapSingle(data => data.customers.items),
+            ),
         );
     }
 

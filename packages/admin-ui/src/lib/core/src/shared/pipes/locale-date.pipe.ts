@@ -62,6 +62,12 @@ export class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
                     month: 'long',
                     day: 'numeric',
                 };
+            case 'shortDate':
+                return {
+                    day: 'numeric',
+                    month: 'numeric',
+                    year: '2-digit',
+                };
             case 'short':
                 return {
                     day: 'numeric',

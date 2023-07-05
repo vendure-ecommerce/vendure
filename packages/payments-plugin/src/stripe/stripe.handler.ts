@@ -23,13 +23,35 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
 
     description: [{ languageCode: LanguageCode.en, value: 'Stripe payments' }],
 
-    args: {},
+    args: {
+        apiKey: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'API Key' }],
+            ui: { component: 'password-form-input' },
+        },
+        webhookSecret: {
+            type: 'string',
+            label: [
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Webhook secret',
+                },
+            ],
+            description: [
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Secret to validate incoming webhooks. Get this from your Stripe dashboard',
+                },
+            ],
+            ui: { component: 'password-form-input' },
+        },
+    },
 
     init(injector: Injector) {
         stripeService = injector.get(StripeService);
     },
 
-    async createPayment(ctx, order, amount, ___, metadata): Promise<CreatePaymentResult> {
+    createPayment(ctx, order, amount, ___, metadata): CreatePaymentResult {
         // Payment is already settled in Stripe by the time the webhook in stripe.controller.ts
         // adds the payment to the order
         if (ctx.apiType !== 'admin') {
@@ -50,39 +72,43 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
     },
 
     async createRefund(ctx, input, amount, order, payment, args): Promise<CreateRefundResult> {
-        const result = await stripeService.createRefund(payment.transactionId, amount);
+        // TODO: Consider passing the "reason" property once this feature request is addressed:
+        // https://github.com/vendure-ecommerce/vendure/issues/893
+        try {
+            const refund = await stripeService.createRefund(ctx, order, payment, amount);
+            if (refund.status === 'succeeded') {
+                return {
+                    state: 'Settled' as const,
+                    transactionId: payment.transactionId,
+                };
+            }
 
-        if (result instanceof StripeError) {
+            if (refund.status === 'pending') {
+                return {
+                    state: 'Pending' as const,
+                    transactionId: payment.transactionId,
+                };
+            }
+
             return {
                 state: 'Failed' as const,
                 transactionId: payment.transactionId,
                 metadata: {
-                    type: result.type,
-                    message: result.message,
+                    message: refund.failure_reason,
                 },
             };
+        } catch (e: any) {
+            if (e instanceof StripeError) {
+                return {
+                    state: 'Failed' as const,
+                    transactionId: payment.transactionId,
+                    metadata: {
+                        type: e.type,
+                        message: e.message,
+                    },
+                };
+            }
+            throw e;
         }
-
-        if (result.status === 'succeeded') {
-            return {
-                state: 'Settled' as const,
-                transactionId: payment.transactionId,
-            };
-        }
-
-        if (result.status === 'pending') {
-            return {
-                state: 'Pending' as const,
-                transactionId: payment.transactionId,
-            };
-        }
-
-        return {
-            state: 'Failed' as const,
-            transactionId: payment.transactionId,
-            metadata: {
-                message: result.failure_reason,
-            },
-        };
     },
 });

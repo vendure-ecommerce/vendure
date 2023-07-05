@@ -1,5 +1,5 @@
 type Query {
-    channels: [Channel!]!
+    channels(options: ChannelListOptions): ChannelList!
     channel(id: ID!): Channel
     activeChannel: Channel!
 }
@@ -13,16 +13,32 @@ type Mutation {
 
     "Delete a Channel"
     deleteChannel(id: ID!): DeletionResponse!
+
+    "Delete multiple Channels"
+    deleteChannels(ids: [ID!]!): [DeletionResponse!]!
 }
+
+type ChannelList implements PaginatedList {
+    items: [Channel!]!
+    totalItems: Int!
+}
+
+input ChannelListOptions
 
 input CreateChannelInput {
     code: String!
     token: String!
     defaultLanguageCode: LanguageCode!
+    availableLanguageCodes: [LanguageCode!]
     pricesIncludeTax: Boolean!
-    currencyCode: CurrencyCode!
+    currencyCode: CurrencyCode @deprecated(reason: "Use defaultCurrencyCode instead")
+    defaultCurrencyCode: CurrencyCode
+    availableCurrencyCodes: [CurrencyCode!]
+    trackInventory: Boolean
+    outOfStockThreshold: Int
     defaultTaxZoneId: ID!
     defaultShippingZoneId: ID!
+    sellerId: ID
 }
 
 input UpdateChannelInput {
@@ -30,10 +46,16 @@ input UpdateChannelInput {
     code: String
     token: String
     defaultLanguageCode: LanguageCode
+    availableLanguageCodes: [LanguageCode!]
     pricesIncludeTax: Boolean
-    currencyCode: CurrencyCode
+    currencyCode: CurrencyCode @deprecated(reason: "Use defaultCurrencyCode instead")
+    defaultCurrencyCode: CurrencyCode
+    availableCurrencyCodes: [CurrencyCode!]
+    trackInventory: Boolean
+    outOfStockThreshold: Int
     defaultTaxZoneId: ID
     defaultShippingZoneId: ID
+    sellerId: ID
 }
 
 "Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings"

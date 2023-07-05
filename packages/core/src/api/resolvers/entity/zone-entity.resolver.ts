@@ -1,7 +1,8 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
-import { Country, Zone } from '../../../entity/index';
-import { ZoneService } from '../../../service/index';
+import { Country } from '../../../entity/region/country.entity';
+import { Zone } from '../../../entity/zone/zone.entity';
+import { ZoneService } from '../../../service/services/zone.service';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
 

@@ -3,10 +3,13 @@ import { PaginationInstance } from 'ngx-pagination';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { SearchProductsQuery } from '../../../common/generated-types';
+import {
+    GetProductVariantsForMultiSelectorDocument,
+    SearchProductsQuery,
+} from '../../../common/generated-types';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
 import { DataService } from '../../../data/providers/data.service';
-import { Dialog } from '../../../providers/modal/modal.service';
+import { Dialog } from '../../../providers/modal/modal.types';
 
 export type SearchItem = SearchProductsQuery['search']['items'][number];
 
@@ -95,11 +98,13 @@ export class ProductMultiSelectorDialogComponent implements OnInit, Dialog<Searc
                         this.changeDetector.markForCheck();
                     });
             } else {
-                this.dataService.product
-                    .getProductVariants({
-                        filter: {
-                            id: {
-                                in: this.initialSelectionIds,
+                this.dataService
+                    .query(GetProductVariantsForMultiSelectorDocument, {
+                        options: {
+                            filter: {
+                                id: {
+                                    in: this.initialSelectionIds,
+                                },
                             },
                         },
                     })

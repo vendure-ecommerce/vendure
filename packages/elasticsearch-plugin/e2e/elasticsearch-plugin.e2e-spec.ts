@@ -1,11 +1,12 @@
-/* tslint:disable:no-non-null-assertion no-console */
-import { SortOrder } from '@vendure/common/lib/generated-types';
+/* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
+import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
     DefaultLogger,
     FacetValue,
     facetValueCollectionFilter,
+    LanguageCode,
     LogLevel,
     mergeConfig,
 } from '@vendure/core';
@@ -13,38 +14,15 @@ import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testi
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import * as Codegen from '../../core/e2e/graphql/generated-e2e-admin-types';
 import {
-    AssignProductsToChannel,
-    AssignProductVariantsToChannel,
-    ChannelFragment,
-    CreateChannel,
-    CreateCollection,
-    CreateFacet,
-    CreateProduct,
-    CreateProductVariants,
-    CurrencyCode,
-    DeleteAsset,
-    DeleteProduct,
-    DeleteProductVariant,
-    LanguageCode,
-    RemoveProductsFromChannel,
-    RemoveProductVariantsFromChannel,
-    SearchCollections,
-    SearchFacetValues,
-    SearchGetPrices,
-    SearchInput,
-    UpdateAsset,
-    UpdateCollection,
-    UpdateProduct,
-    UpdateProductVariants,
-    UpdateProductVariantsMutation,
-    UpdateProductVariantsMutationVariables,
-    UpdateTaxRate,
-} from '../../core/e2e/graphql/generated-e2e-admin-types';
-import { SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
+    SearchProductsShopQuery,
+    SearchProductsShopQueryVariables,
+} from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
@@ -87,25 +65,16 @@ import {
     testSinglePrices,
 } from './e2e-helpers';
 import {
-    GetJobInfo,
+    GetJobInfoQuery,
+    GetJobInfoQueryVariables,
     JobState,
-    Reindex,
-    SearchProductsAdmin,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
-/**
- * The Elasticsearch tests sometimes take a long time in CI due to limited resources.
- * We increase the timeout to 30 seconds to prevent failure due to timeouts.
- */
-if (process.env.CI) {
-    jest.setTimeout(10 * 3000);
-}
-
-interface SearchProductShopVariables extends SearchProductsShop.Variables {
-    input: SearchProductsShop.Variables['input'] & {
+interface SearchProductShopVariables extends SearchProductsShopQueryVariables {
+    input: SearchProductsShopQueryVariables['input'] & {
         // This input field is dynamically added only when the `indexStockStatus` init option
         // of DefaultSearchPlugin is set to `true`, and therefore not included in the generated type. Therefore
         // we need to manually patch it here.
@@ -132,12 +101,12 @@ describe('Elasticsearch plugin', () => {
                     indexPrefix: INDEX_PREFIX,
                     port: elasticsearchPort,
                     host: elasticsearchHost,
-                    hydrateProductVariantRelations: ['customFields.material'],
+                    hydrateProductVariantRelations: ['customFields.material', 'stockLevels'],
                     customProductVariantMappings: {
                         inStock: {
                             graphQlType: 'Boolean!',
                             valueFn: variant => {
-                                return variant.stockOnHand > 0;
+                                return variant.stockLevels[0]?.stockOnHand > 0;
                             },
                         },
                         materialCode: {
@@ -182,7 +151,7 @@ describe('Elasticsearch plugin', () => {
                                 context: 'product',
                                 scriptFn: input => {
                                     const factor = input.factor ?? 2;
-                                    return { script: `doc['product-answer'].value * ${factor}` };
+                                    return { script: `doc['product-answer'].value * ${factor as string}` };
                                 },
                             },
                         },
@@ -260,14 +229,14 @@ describe('Elasticsearch plugin', () => {
         it('price ranges', () => testPriceRanges(shopClient));
 
         it('returns correct facetValues when not grouped by product', async () => {
-            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
-                SEARCH_GET_FACET_VALUES,
-                {
-                    input: {
-                        groupByProduct: false,
-                    },
+            const result = await shopClient.query<
+                Codegen.SearchFacetValuesQuery,
+                Codegen.SearchFacetValuesQueryVariables
+            >(SEARCH_GET_FACET_VALUES, {
+                input: {
+                    groupByProduct: false,
                 },
-            );
+            });
             expect(result.search.facetValues).toEqual([
                 { count: 21, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 17, facetValue: { id: 'T_2', name: 'computers' } },
@@ -279,14 +248,14 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('returns correct facetValues when grouped by product', async () => {
-            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
-                SEARCH_GET_FACET_VALUES,
-                {
-                    input: {
-                        groupByProduct: true,
-                    },
+            const result = await shopClient.query<
+                Codegen.SearchFacetValuesQuery,
+                Codegen.SearchFacetValuesQueryVariables
+            >(SEARCH_GET_FACET_VALUES, {
+                input: {
+                    groupByProduct: true,
                 },
-            );
+            });
             expect(result.search.facetValues).toEqual([
                 { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
@@ -298,40 +267,43 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('omits facetValues of private facets', async () => {
-            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
-                CREATE_FACET,
+            const { createFacet } = await adminClient.query<
+                Codegen.CreateFacetMutation,
+                Codegen.CreateFacetMutationVariables
+            >(CREATE_FACET, {
+                input: {
+                    code: 'profit-margin',
+                    isPrivate: true,
+                    translations: [{ languageCode: LanguageCode.en, name: 'Profit Margin' }],
+                    values: [
+                        {
+                            code: 'massive',
+                            translations: [{ languageCode: LanguageCode.en, name: 'massive' }],
+                        },
+                    ],
+                },
+            });
+            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+                UPDATE_PRODUCT,
                 {
                     input: {
-                        code: 'profit-margin',
-                        isPrivate: true,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Profit Margin' }],
-                        values: [
-                            {
-                                code: 'massive',
-                                translations: [{ languageCode: LanguageCode.en, name: 'massive' }],
-                            },
-                        ],
+                        id: 'T_2',
+                        // T_1 & T_2 are the existing facetValues (electronics & photo)
+                        facetValueIds: ['T_1', 'T_2', createFacet.values[0].id],
                     },
                 },
             );
-            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                input: {
-                    id: 'T_2',
-                    // T_1 & T_2 are the existing facetValues (electronics & photo)
-                    facetValueIds: ['T_1', 'T_2', createFacet.values[0].id],
-                },
-            });
 
             await awaitRunningJobs(adminClient);
 
-            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
-                SEARCH_GET_FACET_VALUES,
-                {
-                    input: {
-                        groupByProduct: true,
-                    },
+            const result = await shopClient.query<
+                Codegen.SearchFacetValuesQuery,
+                Codegen.SearchFacetValuesQueryVariables
+            >(SEARCH_GET_FACET_VALUES, {
+                input: {
+                    groupByProduct: true,
                 },
-            );
+            });
             expect(result.search.facetValues).toEqual([
                 { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
@@ -343,35 +315,35 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('returns correct collections when not grouped by product', async () => {
-            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
-                SEARCH_GET_COLLECTIONS,
-                {
-                    input: {
-                        groupByProduct: false,
-                    },
+            const result = await shopClient.query<
+                Codegen.SearchCollectionsQuery,
+                Codegen.SearchCollectionsQueryVariables
+            >(SEARCH_GET_COLLECTIONS, {
+                input: {
+                    groupByProduct: false,
                 },
-            );
+            });
             expect(result.search.collections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
         it('returns correct collections when grouped by product', async () => {
-            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
-                SEARCH_GET_COLLECTIONS,
-                {
-                    input: {
-                        groupByProduct: true,
-                    },
+            const result = await shopClient.query<
+                Codegen.SearchCollectionsQuery,
+                Codegen.SearchCollectionsQueryVariables
+            >(SEARCH_GET_COLLECTIONS, {
+                input: {
+                    groupByProduct: true,
                 },
-            );
+            });
             expect(result.search.collections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -388,14 +360,14 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('omits results for disabled ProductVariants', async () => {
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                UPDATE_PRODUCT_VARIANTS,
-                {
-                    input: [{ id: 'T_3', enabled: false }],
-                },
-            );
+            await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [{ id: 'T_3', enabled: false }],
+            });
             await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -408,7 +380,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -423,7 +395,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is false and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -436,7 +408,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is false and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -449,7 +421,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is true and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -462,7 +434,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is true and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -475,7 +447,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is undefined and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -488,7 +460,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is undefined and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -547,15 +519,15 @@ describe('Elasticsearch plugin', () => {
                     'IHD455T6',
                 ]);
 
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: search.items.map(i => ({
-                            id: i.productVariantId,
-                            sku: i.sku + '_updated',
-                        })),
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: search.items.map(i => ({
+                        id: i.productVariantId,
+                        sku: i.sku + '_updated',
+                    })),
+                });
                 await awaitRunningJobs(adminClient);
                 const { search: search2 } = await doAdminSearchQuery(adminClient, {
                     term: 'drive',
@@ -578,12 +550,12 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: false,
                 });
 
-                await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
-                    DELETE_PRODUCT_VARIANT,
-                    {
-                        id: search.items[0].productVariantId,
-                    },
-                );
+                await adminClient.query<
+                    Codegen.DeleteProductVariantMutation,
+                    Codegen.DeleteProductVariantMutationVariables
+                >(DELETE_PRODUCT_VARIANT, {
+                    id: search.items[0].productVariantId,
+                });
 
                 await awaitRunningJobs(adminClient);
                 await awaitRunningJobs(adminClient);
@@ -601,7 +573,10 @@ describe('Elasticsearch plugin', () => {
             });
 
             it('updates index when a Product is changed', async () => {
-                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                await adminClient.query<
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
+                >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_1',
                         facetValueIds: [],
@@ -633,7 +608,10 @@ describe('Elasticsearch plugin', () => {
                     'T_5',
                     'T_6',
                 ]);
-                await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                await adminClient.query<
+                    Codegen.DeleteProductMutation,
+                    Codegen.DeleteProductMutationVariables
+                >(DELETE_PRODUCT, {
                     id: 'T_5',
                 });
                 await awaitRunningJobs(adminClient);
@@ -645,29 +623,29 @@ describe('Elasticsearch plugin', () => {
             });
 
             it('updates index when a Collection is changed', async () => {
-                await adminClient.query<UpdateCollection.Mutation, UpdateCollection.Variables>(
-                    UPDATE_COLLECTION,
-                    {
-                        input: {
-                            id: 'T_2',
-                            filters: [
-                                {
-                                    code: facetValueCollectionFilter.code,
-                                    arguments: [
-                                        {
-                                            name: 'facetValueIds',
-                                            value: `["T_4"]`,
-                                        },
-                                        {
-                                            name: 'containsAny',
-                                            value: `false`,
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
+                await adminClient.query<
+                    Codegen.UpdateCollectionMutation,
+                    Codegen.UpdateCollectionMutationVariables
+                >(UPDATE_COLLECTION, {
+                    input: {
+                        id: 'T_2',
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: '["T_4"]',
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: 'false',
+                                    },
+                                ],
+                            },
+                        ],
                     },
-                );
+                });
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
@@ -704,8 +682,8 @@ describe('Elasticsearch plugin', () => {
 
             it('updates index when a Collection created', async () => {
                 const { createCollection } = await adminClient.query<
-                    CreateCollection.Mutation,
-                    CreateCollection.Variables
+                    Codegen.CreateCollectionMutation,
+                    Codegen.CreateCollectionMutationVariables
                 >(CREATE_COLLECTION, {
                     input: {
                         translations: [
@@ -722,11 +700,11 @@ describe('Elasticsearch plugin', () => {
                                 arguments: [
                                     {
                                         name: 'facetValueIds',
-                                        value: `["T_3"]`,
+                                        value: '["T_3"]',
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -749,7 +727,10 @@ describe('Elasticsearch plugin', () => {
             });
 
             it('updates index when a taxRate is changed', async () => {
-                await adminClient.query<UpdateTaxRate.Mutation, UpdateTaxRate.Variables>(UPDATE_TAX_RATE, {
+                await adminClient.query<
+                    Codegen.UpdateTaxRateMutation,
+                    Codegen.UpdateTaxRateMutationVariables
+                >(UPDATE_TAX_RATE, {
                     input: {
                         // Default Channel's defaultTaxZone is Europe (id 2) and the id of the standard TaxRate
                         // to Europe is 2.
@@ -758,15 +739,15 @@ describe('Elasticsearch plugin', () => {
                     },
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
-                    SEARCH_GET_PRICES,
-                    {
-                        input: {
-                            groupByProduct: true,
-                            term: 'laptop',
-                        } as SearchInput,
-                    },
-                );
+                const result = await adminClient.query<
+                    Codegen.SearchGetPricesQuery,
+                    Codegen.SearchGetPricesQueryVariables
+                >(SEARCH_GET_PRICES, {
+                    input: {
+                        groupByProduct: true,
+                        term: 'laptop',
+                    } as Codegen.SearchInput,
+                });
                 expect(result.search.items).toEqual([
                     {
                         price: { min: 129900, max: 229900 },
@@ -793,7 +774,10 @@ describe('Elasticsearch plugin', () => {
                     expect(search1.items[0].productAsset!.id).toBe('T_1');
                     expect(search1.items[0].productAsset!.focalPoint).toBeNull();
 
-                    await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
+                    await adminClient.query<
+                        Codegen.UpdateAssetMutation,
+                        Codegen.UpdateAssetMutationVariables
+                    >(UPDATE_ASSET, {
                         input: {
                             id: 'T_1',
                             focalPoint: {
@@ -817,7 +801,10 @@ describe('Elasticsearch plugin', () => {
                     const assetId = search1.items[0].productAsset?.id;
                     expect(assetId).toBeTruthy();
 
-                    await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(DELETE_ASSET, {
+                    await adminClient.query<
+                        Codegen.DeleteAssetMutation,
+                        Codegen.DeleteAssetMutationVariables
+                    >(DELETE_ASSET, {
                         input: {
                             assetId: assetId!,
                             force: true,
@@ -841,16 +828,16 @@ describe('Elasticsearch plugin', () => {
                 const variantToDelete = s1.items.find(i => i.sku === 'IHD455T2_updated')!;
 
                 const { deleteProductVariant } = await adminClient.query<
-                    DeleteProductVariant.Mutation,
-                    DeleteProductVariant.Variables
+                    Codegen.DeleteProductVariantMutation,
+                    Codegen.DeleteProductVariantMutationVariables
                 >(DELETE_PRODUCT_VARIANT, { id: variantToDelete.productVariantId });
 
                 await awaitRunningJobs(adminClient);
 
-                const { search } = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
-                    SEARCH_GET_PRICES,
-                    { input: { term: 'hard drive', groupByProduct: true } },
-                );
+                const { search } = await adminClient.query<
+                    Codegen.SearchGetPricesQuery,
+                    Codegen.SearchGetPricesQueryVariables
+                >(SEARCH_GET_PRICES, { input: { term: 'hard drive', groupByProduct: true } });
                 expect(search.items[0].price).toEqual({
                     min: 7896,
                     max: 13435,
@@ -871,15 +858,15 @@ describe('Elasticsearch plugin', () => {
             });
 
             it('when grouped, disabled is false if at least one variant is enabled', async () => {
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            { id: 'T_1', enabled: false },
-                            { id: 'T_2', enabled: false },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        { id: 'T_1', enabled: false },
+                        { id: 'T_2', enabled: false },
+                    ],
+                });
                 await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery(adminClient, {
                     groupByProduct: true,
@@ -891,12 +878,12 @@ describe('Elasticsearch plugin', () => {
             });
 
             it('when grouped, disabled is true if all variants are disabled', async () => {
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [{ id: 'T_4', enabled: false }],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [{ id: 'T_4', enabled: false }],
+                });
                 await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery(adminClient, {
                     groupByProduct: true,
@@ -909,7 +896,10 @@ describe('Elasticsearch plugin', () => {
             });
 
             it('when grouped, disabled is true product is disabled', async () => {
-                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                await adminClient.query<
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
+                >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_3',
                         enabled: false,
@@ -927,7 +917,7 @@ describe('Elasticsearch plugin', () => {
 
             // https://github.com/vendure-ecommerce/vendure/issues/295
             it('enabled status survives reindex', async () => {
-                await adminClient.query<Reindex.Mutation>(REINDEX);
+                await adminClient.query<Codegen.ReindexMutation>(REINDEX);
 
                 await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery(adminClient, {
@@ -947,8 +937,8 @@ describe('Elasticsearch plugin', () => {
 
             it('creates synthetic index item for Product with no variants', async () => {
                 const { createProduct } = await adminClient.query<
-                    CreateProduct.Mutation,
-                    CreateProduct.Variables
+                    Codegen.CreateProductMutation,
+                    Codegen.CreateProductMutationVariables
                 >(CREATE_PRODUCT, {
                     input: {
                         facetValueIds: ['T_1'],
@@ -994,8 +984,8 @@ describe('Elasticsearch plugin', () => {
 
             it('removes synthetic index item once a variant is created', async () => {
                 const { createProductVariants } = await adminClient.query<
-                    CreateProductVariants.Mutation,
-                    CreateProductVariants.Variables
+                    Codegen.CreateProductVariantsMutation,
+                    Codegen.CreateProductVariantsMutationVariables
                 >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
@@ -1023,12 +1013,12 @@ describe('Elasticsearch plugin', () => {
 
         describe('channel handling', () => {
             const SECOND_CHANNEL_TOKEN = 'second-channel-token';
-            let secondChannel: ChannelFragment;
+            let secondChannel: Codegen.ChannelFragment;
 
             beforeAll(async () => {
                 const { createChannel } = await adminClient.query<
-                    CreateChannel.Mutation,
-                    CreateChannel.Variables
+                    Codegen.CreateChannelMutation,
+                    Codegen.CreateChannelMutationVariables
                 >(CREATE_CHANNEL, {
                     input: {
                         code: 'second-channel',
@@ -1040,10 +1030,10 @@ describe('Elasticsearch plugin', () => {
                         defaultShippingZoneId: 'T_1',
                     },
                 });
-                secondChannel = createChannel as ChannelFragment;
+                secondChannel = createChannel as Codegen.ChannelFragment;
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                await adminClient.query<Reindex.Mutation>(REINDEX);
+                await adminClient.query<Codegen.ReindexMutation>(REINDEX);
                 await awaitRunningJobs(adminClient);
             });
 
@@ -1060,12 +1050,12 @@ describe('Elasticsearch plugin', () => {
 
             it('adding product to channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
-                    ASSIGN_PRODUCT_TO_CHANNEL,
-                    {
-                        input: { channelId: secondChannel.id, productIds: ['T_1', 'T_2'] },
-                    },
-                );
+                await adminClient.query<
+                    Codegen.AssignProductsToChannelMutation,
+                    Codegen.AssignProductsToChannelMutationVariables
+                >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                    input: { channelId: secondChannel.id, productIds: ['T_1', 'T_2'] },
+                });
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
@@ -1076,8 +1066,8 @@ describe('Elasticsearch plugin', () => {
             it('removing product from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 const { removeProductsFromChannel } = await adminClient.query<
-                    RemoveProductsFromChannel.Mutation,
-                    RemoveProductsFromChannel.Variables
+                    Codegen.RemoveProductsFromChannelMutation,
+                    Codegen.RemoveProductsFromChannelMutationVariables
                 >(REMOVE_PRODUCT_FROM_CHANNEL, {
                     input: {
                         productIds: ['T_2'],
@@ -1094,10 +1084,10 @@ describe('Elasticsearch plugin', () => {
             it('reindexes in channel', async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-                const { reindex } = await adminClient.query<Reindex.Mutation>(REINDEX);
+                const { reindex } = await adminClient.query<Codegen.ReindexMutation>(REINDEX);
                 await awaitRunningJobs(adminClient);
 
-                const { job } = await adminClient.query<GetJobInfo.Query, GetJobInfo.Variables>(
+                const { job } = await adminClient.query<GetJobInfoQuery, GetJobInfoQueryVariables>(
                     GET_JOB_INFO,
                     { id: reindex.id },
                 );
@@ -1110,8 +1100,8 @@ describe('Elasticsearch plugin', () => {
             it('adding product variant to channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 await adminClient.query<
-                    AssignProductVariantsToChannel.Mutation,
-                    AssignProductVariantsToChannel.Variables
+                    Codegen.AssignProductVariantsToChannelMutation,
+                    Codegen.AssignProductVariantsToChannelMutationVariables
                 >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
                 });
@@ -1140,8 +1130,8 @@ describe('Elasticsearch plugin', () => {
             it('removing product variant from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 await adminClient.query<
-                    RemoveProductVariantsFromChannel.Mutation,
-                    RemoveProductVariantsFromChannel.Variables
+                    Codegen.RemoveProductVariantsFromChannelMutation,
+                    Codegen.RemoveProductVariantsFromChannelMutationVariables
                 >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
                 });
@@ -1168,8 +1158,8 @@ describe('Elasticsearch plugin', () => {
             it('updating product affects current channel', async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { updateProduct } = await adminClient.query<
-                    UpdateProduct.Mutation,
-                    UpdateProduct.Variables
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
                 >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_3',
@@ -1200,7 +1190,10 @@ describe('Elasticsearch plugin', () => {
             it('removing from channel with multiple languages', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
-                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                await adminClient.query<
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
+                >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_4',
                         translations: [
@@ -1220,18 +1213,18 @@ describe('Elasticsearch plugin', () => {
                     },
                 });
 
-                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
-                    ASSIGN_PRODUCT_TO_CHANNEL,
-                    {
-                        input: { channelId: secondChannel.id, productIds: ['T_4'] },
-                    },
-                );
+                await adminClient.query<
+                    Codegen.AssignProductsToChannelMutation,
+                    Codegen.AssignProductsToChannelMutationVariables
+                >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                    input: { channelId: secondChannel.id, productIds: ['T_4'] },
+                });
                 await awaitRunningJobs(adminClient);
 
                 async function searchSecondChannelForDEProduct() {
                     adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                     const { search } = await adminClient.query<
-                        SearchProductsShop.Query,
+                        SearchProductsShopQuery,
                         SearchProductShopVariables
                     >(
                         SEARCH_PRODUCTS,
@@ -1248,8 +1241,8 @@ describe('Elasticsearch plugin', () => {
 
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 const { removeProductsFromChannel } = await adminClient.query<
-                    RemoveProductsFromChannel.Mutation,
-                    RemoveProductsFromChannel.Variables
+                    Codegen.RemoveProductsFromChannelMutation,
+                    Codegen.RemoveProductsFromChannelMutationVariables
                 >(REMOVE_PRODUCT_FROM_CHANNEL, {
                     input: {
                         productIds: ['T_4'],
@@ -1265,7 +1258,10 @@ describe('Elasticsearch plugin', () => {
 
         describe('multiple language handling', () => {
             function searchInLanguage(languageCode: LanguageCode, groupByProduct: boolean) {
-                return adminClient.query<SearchProductsAdmin.Query, SearchProductsAdmin.Variables>(
+                return adminClient.query<
+                    Codegen.SearchProductsAdminQuery,
+                    Codegen.SearchProductsAdminQueryVariables
+                >(
                     SEARCH_PRODUCTS,
                     {
                         input: {
@@ -1283,8 +1279,8 @@ describe('Elasticsearch plugin', () => {
             beforeAll(async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 const { updateProduct } = await adminClient.query<
-                    UpdateProduct.Mutation,
-                    UpdateProduct.Variables
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
                 >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_1',
@@ -1305,22 +1301,22 @@ describe('Elasticsearch plugin', () => {
                     },
                 });
 
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                id: updateProduct.variants[0].id,
-                                translations: [
-                                    {
-                                        languageCode: LanguageCode.fr,
-                                        name: 'laptop variant fr',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: updateProduct.variants[0].id,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.fr,
+                                    name: 'laptop variant fr',
+                                },
+                            ],
+                        },
+                    ],
+                });
 
                 await awaitRunningJobs(adminClient);
             });
@@ -1391,8 +1387,8 @@ describe('Elasticsearch plugin', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/1638
         it('hydrates variant custom field relation', async () => {
             const { updateProductVariants } = await adminClient.query<
-                UpdateProductVariantsMutation,
-                UpdateProductVariantsMutationVariables
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
             >(UPDATE_PRODUCT_VARIANTS, {
                 input: [
                     {
@@ -1405,7 +1401,7 @@ describe('Elasticsearch plugin', () => {
             });
             expect(updateProductVariants[0]!.id).toBe('T_20');
 
-            await adminClient.query<Reindex.Mutation>(REINDEX);
+            await adminClient.query<Codegen.ReindexMutation>(REINDEX);
             await awaitRunningJobs(adminClient);
             const query = `{
             search(input: { groupByProduct: false, term: "tripod" }) {
@@ -1463,7 +1459,7 @@ describe('Elasticsearch plugin', () => {
             }`;
             try {
                 await shopClient.query(gql(query));
-            } catch (error) {
+            } catch (error: any) {
                 expect(error).toBeDefined();
                 expect(error.message).toContain('Cannot query field "hello"');
                 return;

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import klawSync from 'klaw-sync';
 import { basename } from 'path';
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * Generates the Hugo front matter with the title of the document
@@ -19,7 +19,21 @@ generated: true
 }
 
 export function titleCase(input: string): string {
-    return input.split(' ').map(w => w[0].toLocaleUpperCase() + w.substr(1)).join(' ');
+    return input
+        .split(' ')
+        .map(w => w[0].toLocaleUpperCase() + w.substr(1))
+        .join(' ');
+}
+
+export function normalizeForUrlPart<T extends string | undefined>(input: T): T {
+    if (input == null) {
+        return input;
+    }
+    return input
+        .replace(/([a-z])([A-Z])/g, '$1-$2')
+        .replace(/[^a-zA-Z0-9-_/]/g, ' ')
+        .replace(/\s+/g, '-')
+        .toLowerCase() as T;
 }
 
 /**
@@ -31,7 +45,7 @@ export function deleteGeneratedDocs(outputPath: string) {
     }
     try {
         let deleteCount = 0;
-        const files = klawSync(outputPath, {nodir: true});
+        const files = klawSync(outputPath, { nodir: true });
         for (const file of files) {
             const content = fs.readFileSync(file.path, 'utf-8');
             if (isGenerated(content)) {
@@ -42,7 +56,7 @@ export function deleteGeneratedDocs(outputPath: string) {
         if (deleteCount) {
             console.log(`Deleted ${deleteCount} generated docs from ${outputPath}`);
         }
-    } catch (e) {
+    } catch (e: any) {
         console.error('Could not delete generated docs!');
         console.log(e);
         process.exitCode = 1;

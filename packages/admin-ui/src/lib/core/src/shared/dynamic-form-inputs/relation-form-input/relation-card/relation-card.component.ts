@@ -1,5 +1,5 @@
-import { EventEmitter } from '@angular/core';
 import {
+    EventEmitter,
     ChangeDetectionStrategy,
     Component,
     ContentChild,
@@ -30,6 +30,7 @@ export class RelationCardComponent {
     @Input() selectLabel: string;
     @Input() readonly: boolean;
     @Input() removable = true;
+    // eslint-disable-next-line @angular-eslint/no-output-native
     @Output() select = new EventEmitter();
     @Output() remove = new EventEmitter();
     @ContentChild(RelationCardPreviewDirective, { read: TemplateRef })

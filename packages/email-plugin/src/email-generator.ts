@@ -6,7 +6,7 @@ import { EmailDetails, EmailPluginOptions } from './types';
  * @description
  * An EmailGenerator generates the subject and body details of an email.
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailGenerator
  * @docsWeight 0
  */

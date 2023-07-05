@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { DECODED, ENCODED, MockIdStrategy } from '../../config/config.service.mock';
 
 import { IdCodec } from './id-codec';
@@ -59,7 +61,7 @@ describe('IdCodecService', () => {
         });
 
         it('does not clone complex object instances', () => {
-            // tslint:disable:no-floating-promises
+            /* eslint-disable @typescript-eslint/no-floating-promises */
             const promise = new Promise(() => {
                 /**/
             });
@@ -74,7 +76,7 @@ describe('IdCodecService', () => {
             expect(result.promise).toBe(promise);
             expect(result.date).toBe(date);
             expect(result.regex).toBe(regex);
-            // tslint:enable:no-floating-promises
+            /* eslint-enable @typescript-eslint/no-floating-promises */
         });
 
         it('works with simple entity', () => {

@@ -1,0 +1,13 @@
+{
+result :[
+    {{- range .Site.Pages -}}
+        {{ $titles := findRE "<h(1|2).*?>(.|\n)*?</h(1|2)>" .Content -}}
+        {{ $plain := apply $titles "plainify" "." -}}
+        {{ $cleaned := $plain | complement (slice "constructor" "Signature" "Members") -}}
+        {{ $quoted := apply $cleaned "replaceRE" ".*" "'$0'" "." -}}
+        {{ $section := cond (in .Dir "typescript-api") "config" (cond (in .Dir "graphql-api") "gql" (cond (in .Dir "user-guide") "user-guide" "developer-guide")) }}
+
+        { section: '{{ $section }}', parent: '{{ if .Parent }}{{ title .Parent.Title }}{{ end }}', title: '{{ .Title }}', headings: [{{ delimit $quoted ", " }}], url: '{{ .RelPermalink }}' },
+    {{- end }}
+]
+}

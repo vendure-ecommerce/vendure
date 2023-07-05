@@ -1,0 +1,28 @@
+:host {
+    --indent-spacing: 18px;
+}
+.indent-1 {
+    padding-left: var(--indent-spacing);
+}
+.indent-2 {
+    padding-left: calc(var(--indent-spacing) * 2);
+}
+.indent-3 {
+    padding-left: calc(var(--indent-spacing) * 3);
+}
+.indent-4, .indent-5, .indent-6, .indent-7, .indent-8, .indent-9 {
+    padding-left: calc(var(--indent-spacing) * 4);
+}
+.child-arrow {
+    margin: 1px 6px;
+    &.transparent {
+        opacity: 0;
+    }
+}
+.breadcrumb {
+    display: flex;
+}
+.separator {
+    color: var(--color-weight-500);
+    margin: 0 3px;
+}

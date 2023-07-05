@@ -1,35 +1,46 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    BaseDetailComponent,
     configurableDefinitionToInstance,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     CreateShippingMethodInput,
     createUpdatedTranslatable,
-    CustomFieldConfig,
     DataService,
     findTranslation,
-    GetActiveChannel,
+    GetActiveChannelQuery,
     getConfigArgValue,
+    GetShippingMethodDetailDocument,
+    GetShippingMethodDetailQuery,
     LanguageCode,
     NotificationService,
     Permission,
-    ServerConfigService,
+    SHIPPING_METHOD_FRAGMENT,
     ShippingMethod,
+    ShippingMethodFragment,
     TestShippingMethodInput,
     TestShippingMethodResult,
     toConfigurableOperationInput,
+    TypedBaseDetailComponent,
     UpdateShippingMethodInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { gql } from 'apollo-angular';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { TestAddress } from '../test-address-form/test-address-form.component';
 import { TestOrderLine } from '../test-order-builder/test-order-builder.component';
+
+export const GET_SHIPPING_METHOD_DETAIL = gql`
+    query GetShippingMethodDetail($id: ID!) {
+        shippingMethod(id: $id) {
+            ...ShippingMethod
+        }
+    }
+    ${SHIPPING_METHOD_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-shipping-method-detail',
@@ -38,10 +49,21 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShippingMethodDetailComponent
-    extends BaseDetailComponent<ShippingMethod.Fragment>
+    extends TypedBaseDetailComponent<typeof GetShippingMethodDetailDocument, 'shippingMethod'>
     implements OnInit, OnDestroy
 {
-    detailForm: FormGroup;
+    customFields = this.getCustomFieldConfig('ShippingMethod');
+    detailForm = this.formBuilder.group({
+        code: ['', Validators.required],
+        name: ['', Validators.required],
+        description: '',
+        fulfillmentHandler: ['', Validators.required],
+        checker: {} as NonNullable<GetShippingMethodDetailQuery['shippingMethod']>['checker'],
+        calculator: {} as NonNullable<GetShippingMethodDetailQuery['shippingMethod']>['calculator'],
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     checkers: ConfigurableOperationDefinition[] = [];
     calculators: ConfigurableOperationDefinition[] = [];
     fulfillmentHandlers: ConfigurableOperationDefinition[] = [];
@@ -49,54 +71,35 @@ export class ShippingMethodDetailComponent
     selectedCheckerDefinition?: ConfigurableOperationDefinition;
     selectedCalculator?: ConfigurableOperation | null;
     selectedCalculatorDefinition?: ConfigurableOperationDefinition;
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
+    activeChannel$: Observable<GetActiveChannelQuery['activeChannel']>;
     testAddress: TestAddress;
     testOrderLines: TestOrderLine[];
     testDataUpdated = false;
     testResult$: Observable<TestShippingMethodResult | undefined>;
-    customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateShippingMethod];
     private fetchTestResult$ = new Subject<[TestAddress, TestOrderLine[]]>();
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('ShippingMethod');
-        this.detailForm = this.formBuilder.group({
-            code: ['', Validators.required],
-            name: ['', Validators.required],
-            description: '',
-            fulfillmentHandler: ['', Validators.required],
-            checker: {},
-            calculator: {},
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
+        super();
     }
 
     ngOnInit() {
         this.init();
-        combineLatest([
-            this.dataService.shippingMethod.getShippingMethodOperations().single$,
-            this.entity$.pipe(take(1)),
-        ]).subscribe(([data, entity]) => {
+        this.dataService.shippingMethod.getShippingMethodOperations().single$.subscribe(data => {
             this.checkers = data.shippingEligibilityCheckers;
             this.calculators = data.shippingCalculators;
             this.fulfillmentHandlers = data.fulfillmentHandlers;
             this.changeDetector.markForCheck();
             this.selectedCheckerDefinition = data.shippingEligibilityCheckers.find(
-                c => c.code === (entity.checker && entity.checker.code),
+                c => c.code === this.entity?.checker?.code,
             );
             this.selectedCalculatorDefinition = data.shippingCalculators.find(
-                c => c.code === (entity.calculator && entity.calculator.code),
+                c => c.code === this.entity?.calculator?.code,
             );
         });
 
@@ -106,15 +109,15 @@ export class ShippingMethodDetailComponent
 
         this.testResult$ = this.fetchTestResult$.pipe(
             switchMap(([address, lines]) => {
-                if (!this.selectedChecker || !this.selectedCalculator) {
+                const { checker, calculator } = this.detailForm.value;
+                if (!this.selectedChecker || !this.selectedCalculator || !checker || !calculator) {
                     return of(undefined);
                 }
-                const formValue = this.detailForm.value;
                 const input: TestShippingMethodInput = {
                     shippingAddress: { ...address, streetLine1: 'test' },
                     lines: lines.map(l => ({ productVariantId: l.id, quantity: l.quantity })),
-                    checker: toConfigurableOperationInput(this.selectedChecker, formValue.checker),
-                    calculator: toConfigurableOperationInput(this.selectedCalculator, formValue.calculator),
+                    checker: toConfigurableOperationInput(this.selectedChecker, checker),
+                    calculator: toConfigurableOperationInput(this.selectedCalculator, calculator),
                 };
                 return this.dataService.shippingMethod
                     .testShippingMethod(input)
@@ -122,21 +125,21 @@ export class ShippingMethodDetailComponent
             }),
         );
 
-        // tslint:disable:no-non-null-assertion
+        /* eslint-disable @typescript-eslint/no-non-null-assertion */
         merge(
             this.detailForm.get(['checker'])!.valueChanges,
             this.detailForm.get(['calculator'])!.valueChanges,
         )
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => (this.testDataUpdated = true));
-        // tslint:enable:no-non-null-assertion
+        /* eslint-enable @typescript-eslint/no-non-null-assertion */
     }
 
     ngOnDestroy(): void {
         this.destroy();
     }
 
-    updateCode(currentCode: string, nameValue: string) {
+    updateCode(currentCode: string | undefined, nameValue: string) {
         if (!currentCode) {
             const codeControl = this.detailForm.get(['code']);
             if (codeControl && codeControl.pristine) {
@@ -172,47 +175,53 @@ export class ShippingMethodDetailComponent
     create() {
         const selectedChecker = this.selectedChecker;
         const selectedCalculator = this.selectedCalculator;
-        if (!selectedChecker || !selectedCalculator) {
+        const { checker, calculator } = this.detailForm.value;
+        if (!selectedChecker || !selectedCalculator || !checker || !calculator) {
             return;
         }
-        combineLatest([this.entity$, this.languageCode$])
-            .pipe(
-                take(1),
-                mergeMap(([shippingMethod, languageCode]) => {
-                    const formValue = this.detailForm.value;
-                    const input = {
-                        ...(this.getUpdatedShippingMethod(
-                            shippingMethod,
-                            this.detailForm,
-                            languageCode,
-                        ) as CreateShippingMethodInput),
-                        checker: toConfigurableOperationInput(selectedChecker, formValue.checker),
-                        calculator: toConfigurableOperationInput(selectedCalculator, formValue.calculator),
-                    };
-                    return this.dataService.shippingMethod.createShippingMethod(input);
-                }),
-            )
-            .subscribe(
-                data => {
-                    this.notificationService.success(_('common.notify-create-success'), {
-                        entity: 'ShippingMethod',
-                    });
-                    this.detailForm.markAsPristine();
-                    this.changeDetector.markForCheck();
-                    this.router.navigate(['../', data.createShippingMethod.id], { relativeTo: this.route });
+        const formValue = this.detailForm.value;
+        const input = {
+            ...(this.getUpdatedShippingMethod(
+                {
+                    createdAt: '',
+                    updatedAt: '',
+                    id: '',
+                    code: '',
+                    name: '',
+                    description: '',
+                    fulfillmentHandlerCode: '',
+                    checker: undefined as any,
+                    calculator: undefined as any,
+                    translations: [],
                 },
-                err => {
-                    this.notificationService.error(_('common.notify-create-error'), {
-                        entity: 'ShippingMethod',
-                    });
-                },
-            );
+                this.detailForm,
+                this.languageCode,
+            ) as CreateShippingMethodInput),
+            checker: toConfigurableOperationInput(selectedChecker, checker),
+            calculator: toConfigurableOperationInput(selectedCalculator, calculator),
+        };
+        this.dataService.shippingMethod.createShippingMethod(input).subscribe(
+            data => {
+                this.notificationService.success(_('common.notify-create-success'), {
+                    entity: 'ShippingMethod',
+                });
+                this.detailForm.markAsPristine();
+                this.changeDetector.markForCheck();
+                this.router.navigate(['../', data.createShippingMethod.id], { relativeTo: this.route });
+            },
+            err => {
+                this.notificationService.error(_('common.notify-create-error'), {
+                    entity: 'ShippingMethod',
+                });
+            },
+        );
     }
 
     save() {
         const selectedChecker = this.selectedChecker;
         const selectedCalculator = this.selectedCalculator;
-        if (!selectedChecker || !selectedCalculator) {
+        const { checker, calculator } = this.detailForm.value;
+        if (!selectedChecker || !selectedCalculator || !checker || !calculator) {
             return;
         }
         combineLatest([this.entity$, this.languageCode$])
@@ -226,8 +235,8 @@ export class ShippingMethodDetailComponent
                             this.detailForm,
                             languageCode,
                         ) as UpdateShippingMethodInput),
-                        checker: toConfigurableOperationInput(selectedChecker, formValue.checker),
-                        calculator: toConfigurableOperationInput(selectedCalculator, formValue.calculator),
+                        checker: toConfigurableOperationInput(selectedChecker, checker),
+                        calculator: toConfigurableOperationInput(selectedCalculator, calculator),
                     };
                     return this.dataService.shippingMethod.updateShippingMethod(input);
                 }),
@@ -241,7 +250,7 @@ export class ShippingMethodDetailComponent
                     this.changeDetector.markForCheck();
                 },
                 err => {
-                    // tslint:disable-next-line:no-console
+                    // eslint-disable-next-line no-console
                     console.error(err);
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'ShippingMethod',
@@ -280,8 +289,8 @@ export class ShippingMethodDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedShippingMethod(
-        shippingMethod: ShippingMethod.Fragment,
-        formGroup: FormGroup,
+        shippingMethod: NonNullable<GetShippingMethodDetailQuery['shippingMethod']>,
+        formGroup: typeof this.detailForm,
         languageCode: LanguageCode,
     ): Omit<CreateShippingMethodInput | UpdateShippingMethodInput, 'checker' | 'calculator'> {
         const formValue = formGroup.value;
@@ -299,7 +308,7 @@ export class ShippingMethodDetailComponent
         return { ...input, fulfillmentHandler: formValue.fulfillmentHandler };
     }
 
-    protected setFormValues(shippingMethod: ShippingMethod.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(shippingMethod: ShippingMethodFragment, languageCode: LanguageCode): void {
         const currentTranslation = findTranslation(shippingMethod, languageCode);
         this.detailForm.patchValue({
             name: currentTranslation?.name ?? '',

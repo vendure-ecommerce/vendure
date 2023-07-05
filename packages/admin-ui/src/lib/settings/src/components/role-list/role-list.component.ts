@@ -1,14 +1,27 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseListComponent } from '@vendure/admin-ui/core';
-import { GetRoles, Role } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
+import {
+    GetRoleListDocument,
+    GetRolesQuery,
+    ItemOf,
+    Role,
+    ROLE_FRAGMENT,
+    TypedBaseListComponent,
+} from '@vendure/admin-ui/core';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
-import { EMPTY, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { gql } from 'apollo-angular';
+
+export const GET_ROLE_LIST = gql`
+    query GetRoleList($options: RoleListOptions) {
+        roles(options: $options) {
+            items {
+                ...Role
+            }
+            totalItems
+        }
+    }
+    ${ROLE_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-role-list',
@@ -16,33 +29,53 @@ import { map, switchMap } from 'rxjs/operators';
     styleUrls: ['./role-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRoles.Items> implements OnInit {
+export class RoleListComponent
+    extends TypedBaseListComponent<typeof GetRoleListDocument, 'roles'>
+    implements OnInit
+{
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    visibleRoles$: Observable<GetRoles.Items[]>;
+    readonly filters = this.createFilterCollection()
+        .addDateFilters()
+        .addFilter({
+            name: 'code',
+            type: { kind: 'text' },
+            label: _('common.code'),
+            filterField: 'code',
+        })
+        .connectToRoute(this.route);
 
-    constructor(
-        private modalService: ModalService,
-        private notificationService: NotificationService,
-        private dataService: DataService,
-        router: Router,
-        route: ActivatedRoute,
-    ) {
-        super(router, route);
-        super.setQueryFn(
-            (...args: any[]) => this.dataService.administrator.getRoles(...args),
-            data => data.roles,
-        );
+    readonly sorts = this.createSortCollection()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({ name: 'createdAt' })
+        .addSort({ name: 'updatedAt' })
+        .addSort({ name: 'code' })
+        .addSort({ name: 'description' })
+        .connectToRoute(this.route);
+
+    constructor() {
+        super();
+        super.configure({
+            document: GetRoleListDocument,
+            getItems: data => data.roles,
+            setVariables: (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        code: {
+                            contains: this.searchTermControl.value,
+                        },
+                        ...this.filters.createFilterInput(),
+                    },
+                    sort: this.sorts.createSortInput(),
+                },
+            }),
+            refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],
+        });
     }
 
-    ngOnInit() {
-        super.ngOnInit();
-        this.visibleRoles$ = this.items$.pipe(
-            map(roles => roles.filter(role => role.code !== CUSTOMER_ROLE_CODE)),
-        );
-    }
-
-    toggleDisplayLimit(role: GetRoles.Items) {
+    toggleDisplayLimit(role: ItemOf<GetRolesQuery, 'roles'>) {
         if (this.displayLimit[role.id] === role.permissions.length) {
             this.displayLimit[role.id] = this.initialLimit;
         } else {
@@ -52,30 +85,5 @@ export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRole
 
     isDefaultRole(role: Role): boolean {
         return role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE;
-    }
-
-    deleteRole(id: string) {
-        this.modalService
-            .dialog({
-                title: _('settings.confirm-delete-role'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
-                ],
-            })
-            .pipe(switchMap(response => (response ? this.dataService.administrator.deleteRole(id) : EMPTY)))
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Role',
-                    });
-                    this.refresh();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Role',
-                    });
-                },
-            );
     }
 }

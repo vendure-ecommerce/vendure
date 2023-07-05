@@ -12,4 +12,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class FormItemComponent {
     @Input() label: string;
+    @Input() tooltip: string;
 }

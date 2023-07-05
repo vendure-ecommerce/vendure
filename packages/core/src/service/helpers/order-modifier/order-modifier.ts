@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import {
+    AdjustmentType,
+    CancelOrderInput,
     HistoryEntryType,
     ModifyOrderInput,
     ModifyOrderResult,
+    OrderLineInput,
     RefundOrderInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
@@ -12,11 +15,15 @@ import { RequestContext } from '../../../api/common/request-context';
 import { isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../../common/error/errors';
 import {
+    CancelActiveOrderError,
     CouponCodeExpiredError,
     CouponCodeInvalidError,
     CouponCodeLimitError,
+    EmptyOrderLineSelectionError,
+    MultipleOrderError,
     NoChangesSpecifiedError,
     OrderModificationStateError,
+    QuantityTooGreatError,
     RefundPaymentIdMissingError,
 } from '../../../common/error/generated-graphql-admin-errors';
 import {
@@ -24,18 +31,23 @@ import {
     NegativeQuantityError,
     OrderLimitError,
 } from '../../../common/error/generated-graphql-shop-errors';
-import { idsAreEqual } from '../../../common/utils';
+import { assertFound, idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { OrderItem } from '../../../entity/order-item/order-item.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
-import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
 import { Order } from '../../../entity/order/order.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
+import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderModificationLine } from '../../../entity/order-line-reference/order-modification-line.entity';
+import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
+import { Allocation } from '../../../entity/stock-movement/allocation.entity';
+import { Cancellation } from '../../../entity/stock-movement/cancellation.entity';
+import { Release } from '../../../entity/stock-movement/release.entity';
+import { Sale } from '../../../entity/stock-movement/sale.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { OrderLineEvent } from '../../../event-bus/index';
@@ -49,6 +61,7 @@ import { CustomFieldRelationService } from '../custom-field-relation/custom-fiel
 import { EntityHydrator } from '../entity-hydrator/entity-hydrator.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
 import { TranslatorService } from '../translator/translator.service';
+import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
 
 /**
@@ -124,8 +137,8 @@ export class OrderModifier {
 
     /**
      * @description
-     * Returns the OrderLine to which a new OrderItem belongs, creating a new OrderLine
-     * if no existing line is found.
+     * Returns the OrderLine containing the given {@link ProductVariant}, taking into account any custom field values. If no existing
+     * OrderLine is found, a new OrderLine will be created.
      */
     async getOrCreateOrderLine(
         ctx: RequestContext,
@@ -144,13 +157,27 @@ export class OrderModifier {
                 productVariant,
                 taxCategory: productVariant.taxCategory,
                 featuredAsset: productVariant.featuredAsset ?? productVariant.product.featuredAsset,
+                listPrice: productVariant.listPrice,
+                listPriceIncludesTax: productVariant.listPriceIncludesTax,
+                adjustments: [],
+                taxLines: [],
                 customFields,
+                quantity: 0,
             }),
         );
+        const { orderSellerStrategy } = this.configService.orderOptions;
+        if (typeof orderSellerStrategy.setOrderLineSellerChannel === 'function') {
+            orderLine.sellerChannel = await orderSellerStrategy.setOrderLineSellerChannel(ctx, orderLine);
+            await this.connection
+                .getRepository(ctx, OrderLine)
+                .createQueryBuilder()
+                .relation('sellerChannel')
+                .of(orderLine)
+                .set(orderLine.sellerChannel);
+        }
         await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
         const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
             relations: [
-                'items',
                 'taxCategory',
                 'productVariant',
                 'productVariant.productVariantPrices',
@@ -184,70 +211,157 @@ export class OrderModifier {
         order: Order,
     ): Promise<OrderLine> {
         const currentQuantity = orderLine.quantity;
-
+        orderLine.quantity = quantity;
         if (currentQuantity < quantity) {
-            if (!orderLine.items) {
-                orderLine.items = [];
-            }
-            const newOrderItems = [];
-            for (let i = currentQuantity; i < quantity; i++) {
-                newOrderItems.push(
-                    new OrderItem({
-                        listPrice: orderLine.productVariant.listPrice,
-                        listPriceIncludesTax: orderLine.productVariant.listPriceIncludesTax,
-                        adjustments: [],
-                        taxLines: [],
-                        lineId: orderLine.id,
-                    }),
-                );
-            }
-            const { identifiers } = await this.connection
-                .getRepository(ctx, OrderItem)
-                .createQueryBuilder()
-                .insert()
-                .into(OrderItem)
-                .values(newOrderItems)
-                .execute();
-            newOrderItems.forEach((item, i) => (item.id = identifiers[i].id));
-            orderLine.items = await this.connection
-                .getRepository(ctx, OrderItem)
-                .find({ where: { line: orderLine }, order: { createdAt: 'ASC' } });
             if (!order.active && order.state !== 'Draft') {
                 await this.stockMovementService.createAllocationsForOrderLines(ctx, [
                     {
-                        orderLine,
+                        orderLineId: orderLine.id,
                         quantity: quantity - currentQuantity,
                     },
                 ]);
             }
         } else if (quantity < currentQuantity) {
-            if (order.active || order.state === 'Draft') {
-                // When an Order is still active, it is fine to just delete
-                // any OrderItems that are no longer needed
-                const keepItems = orderLine.items.slice(0, quantity);
-                const removeItems = orderLine.items.slice(quantity);
-                orderLine.items = keepItems;
-                await this.connection
-                    .getRepository(ctx, OrderItem)
-                    .createQueryBuilder()
-                    .delete()
-                    .whereInIds(removeItems.map(i => i.id))
-                    .execute();
-            } else {
+            if (!order.active && order.state !== 'Draft') {
                 // When an Order is not active (i.e. Customer checked out), then we don't want to just
                 // delete the OrderItems - instead we will cancel them
-                const toSetAsCancelled = orderLine.items.filter(i => !i.cancelled).slice(quantity);
-                const fulfilledItems = toSetAsCancelled.filter(i => !!i.fulfillment);
-                const allocatedItems = toSetAsCancelled.filter(i => !i.fulfillment);
-                await this.stockMovementService.createCancellationsForOrderItems(ctx, fulfilledItems);
-                await this.stockMovementService.createReleasesForOrderItems(ctx, allocatedItems);
-                toSetAsCancelled.forEach(i => (i.cancelled = true));
-                await this.connection.getRepository(ctx, OrderItem).save(toSetAsCancelled, { reload: false });
+                // const toSetAsCancelled = orderLine.items.filter(i => !i.cancelled).slice(quantity);
+                // const fulfilledItems = toSetAsCancelled.filter(i => !!i.fulfillment);
+                // const allocatedItems = toSetAsCancelled.filter(i => !i.fulfillment);
+                await this.stockMovementService.createCancellationsForOrderLines(ctx, [
+                    { orderLineId: orderLine.id, quantity },
+                ]);
+                await this.stockMovementService.createReleasesForOrderLines(ctx, [
+                    { orderLineId: orderLine.id, quantity },
+                ]);
             }
         }
         await this.connection.getRepository(ctx, OrderLine).save(orderLine);
         this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
         return orderLine;
+    }
+
+    async cancelOrderByOrderLines(
+        ctx: RequestContext,
+        input: CancelOrderInput,
+        lineInputs: OrderLineInput[],
+    ) {
+        if (lineInputs.length === 0 || summate(lineInputs, 'quantity') === 0) {
+            return new EmptyOrderLineSelectionError();
+        }
+        const orders = await getOrdersFromLines(ctx, this.connection, lineInputs);
+        if (1 < orders.length) {
+            return new MultipleOrderError();
+        }
+        const order = orders[0];
+        if (!idsAreEqual(order.id, input.orderId)) {
+            return new MultipleOrderError();
+        }
+        if (order.active) {
+            return new CancelActiveOrderError({ orderState: order.state });
+        }
+        const fullOrder = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
+            relations: ['lines'],
+        });
+
+        const allocatedLines: OrderLineInput[] = [];
+        const fulfilledLines: OrderLineInput[] = [];
+        for (const lineInput of lineInputs) {
+            const orderLine = fullOrder.lines.find(l => idsAreEqual(l.id, lineInput.orderLineId));
+            if (orderLine && orderLine.quantity < lineInput.quantity) {
+                return new QuantityTooGreatError();
+            }
+            const allocationsForLine = await this.connection
+                .getRepository(ctx, Allocation)
+                .createQueryBuilder('allocation')
+                .leftJoinAndSelect('allocation.orderLine', 'orderLine')
+                .where('orderLine.id = :orderLineId', { orderLineId: lineInput.orderLineId })
+                .getMany();
+            const salesForLine = await this.connection
+                .getRepository(ctx, Sale)
+                .createQueryBuilder('sale')
+                .leftJoinAndSelect('sale.orderLine', 'orderLine')
+                .where('orderLine.id = :orderLineId', { orderLineId: lineInput.orderLineId })
+                .getMany();
+            const releasesForLine = await this.connection
+                .getRepository(ctx, Release)
+                .createQueryBuilder('release')
+                .leftJoinAndSelect('release.orderLine', 'orderLine')
+                .where('orderLine.id = :orderLineId', { orderLineId: lineInput.orderLineId })
+                .getMany();
+            const totalAllocated =
+                summate(allocationsForLine, 'quantity') +
+                summate(salesForLine, 'quantity') -
+                summate(releasesForLine, 'quantity');
+            if (0 < totalAllocated) {
+                allocatedLines.push({
+                    orderLineId: lineInput.orderLineId,
+                    quantity: Math.min(totalAllocated, lineInput.quantity),
+                });
+            }
+            const fulfillmentsForLine = await this.connection
+                .getRepository(ctx, FulfillmentLine)
+                .createQueryBuilder('fulfillmentLine')
+                .leftJoinAndSelect('fulfillmentLine.orderLine', 'orderLine')
+                .where('orderLine.id = :orderLineId', { orderLineId: lineInput.orderLineId })
+                .getMany();
+            const cancellationsForLine = await this.connection
+                .getRepository(ctx, Cancellation)
+                .createQueryBuilder('cancellation')
+                .leftJoinAndSelect('cancellation.orderLine', 'orderLine')
+                .where('orderLine.id = :orderLineId', { orderLineId: lineInput.orderLineId })
+                .getMany();
+            const totalFulfilled =
+                summate(fulfillmentsForLine, 'quantity') - summate(cancellationsForLine, 'quantity');
+            if (0 < totalFulfilled) {
+                fulfilledLines.push({
+                    orderLineId: lineInput.orderLineId,
+                    quantity: Math.min(totalFulfilled, lineInput.quantity),
+                });
+            }
+        }
+        await this.stockMovementService.createCancellationsForOrderLines(ctx, fulfilledLines);
+        await this.stockMovementService.createReleasesForOrderLines(ctx, allocatedLines);
+        for (const line of lineInputs) {
+            const orderLine = fullOrder.lines.find(l => idsAreEqual(l.id, line.orderLineId));
+            if (orderLine) {
+                await this.connection.getRepository(ctx, OrderLine).update(line.orderLineId, {
+                    quantity: orderLine.quantity - line.quantity,
+                });
+            }
+        }
+
+        const orderWithLines = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
+            relations: ['lines', 'surcharges', 'shippingLines'],
+        });
+        if (input.cancelShipping === true) {
+            for (const shippingLine of orderWithLines.shippingLines) {
+                shippingLine.adjustments.push({
+                    adjustmentSource: 'CANCEL_ORDER',
+                    type: AdjustmentType.OTHER,
+                    description: 'shipping cancellation',
+                    amount: -shippingLine.discountedPriceWithTax,
+                    data: {},
+                });
+                await this.connection.getRepository(ctx, ShippingLine).save(shippingLine, { reload: false });
+            }
+        }
+        // Update totals after cancellation
+        this.orderCalculator.calculateOrderTotals(orderWithLines);
+        await this.connection.getRepository(ctx, Order).save(orderWithLines, { reload: false });
+
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId: order.id,
+            type: HistoryEntryType.ORDER_CANCELLATION,
+            data: {
+                lines: lineInputs,
+                reason: input.reason || undefined,
+                shippingCancelled: !!input.cancelShipping,
+            },
+        });
+
+        return orderLinesAreAllCancelled(orderWithLines);
     }
 
     async modifyOrder(
@@ -259,7 +373,7 @@ export class OrderModifier {
         const modification = new OrderModification({
             order,
             note: input.note || '',
-            orderItems: [],
+            lines: [],
             surcharges: [],
         });
         const initialTotalWithTax = order.totalWithTax;
@@ -273,13 +387,12 @@ export class OrderModifier {
         const { orderItemsLimit } = this.configService.orderOptions;
         let currentItemsCount = summate(order.lines, 'quantity');
         const updatedOrderLineIds: ID[] = [];
-        const refundInput: RefundOrderInput & { orderItems: OrderItem[] } = {
+        const refundInput: RefundOrderInput = {
             lines: [],
             adjustment: 0,
             shipping: 0,
             paymentId: input.refund?.paymentId || '',
             reason: input.refund?.reason || input.note,
-            orderItems: [],
         };
 
         for (const row of input.addItems ?? []) {
@@ -296,17 +409,21 @@ export class OrderModifier {
                 quantity,
             );
             if (orderItemsLimit < currentItemsCount + correctedQuantity) {
-                return new OrderLimitError(orderItemsLimit);
+                return new OrderLimitError({ maxItems: orderItemsLimit });
             } else {
                 currentItemsCount += correctedQuantity;
             }
             if (correctedQuantity < quantity) {
-                return new InsufficientStockError(correctedQuantity, order);
+                return new InsufficientStockError({ quantityAvailable: correctedQuantity, order });
             }
             updatedOrderLineIds.push(orderLine.id);
             const initialQuantity = orderLine.quantity;
             await this.updateOrderLineQuantity(ctx, orderLine, initialQuantity + correctedQuantity, order);
-            modification.orderItems.push(...orderLine.items.slice(initialQuantity));
+
+            const orderModificationLine = await this.connection
+                .getRepository(ctx, OrderModificationLine)
+                .save(new OrderModificationLine({ orderLine, quantity: quantity - initialQuantity }));
+            modification.lines.push(orderModificationLine);
         }
 
         for (const row of input.adjustOrderLines ?? []) {
@@ -316,7 +433,7 @@ export class OrderModifier {
             }
             const orderLine = order.lines.find(line => idsAreEqual(line.id, orderLineId));
             if (!orderLine) {
-                throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
+                throw new UserInputError('error.order-does-not-contain-line-with-id', { id: orderLineId });
             }
             const initialLineQuantity = orderLine.quantity;
             let correctedQuantity = quantity;
@@ -330,32 +447,40 @@ export class OrderModifier {
             }
             const resultingOrderTotalQuantity = currentItemsCount + correctedQuantity - orderLine.quantity;
             if (orderItemsLimit < resultingOrderTotalQuantity) {
-                return new OrderLimitError(orderItemsLimit);
+                return new OrderLimitError({ maxItems: orderItemsLimit });
             } else {
                 currentItemsCount += correctedQuantity;
             }
             if (correctedQuantity < quantity) {
-                return new InsufficientStockError(correctedQuantity, order);
+                return new InsufficientStockError({ quantityAvailable: correctedQuantity, order });
             } else {
                 const customFields = (row as any).customFields;
                 if (customFields) {
                     patchEntity(orderLine, { customFields });
                 }
-                await this.updateOrderLineQuantity(ctx, orderLine, quantity, order);
+                if (quantity < initialLineQuantity) {
+                    const cancelLinesInput = [
+                        {
+                            orderLineId,
+                            quantity: initialLineQuantity - quantity,
+                        },
+                    ];
+                    await this.cancelOrderByOrderLines(ctx, { orderId: order.id }, cancelLinesInput);
+                    orderLine.quantity = quantity;
+                } else {
+                    await this.updateOrderLineQuantity(ctx, orderLine, quantity, order);
+                }
+                const orderModificationLine = await this.connection
+                    .getRepository(ctx, OrderModificationLine)
+                    .save(new OrderModificationLine({ orderLine, quantity: quantity - initialLineQuantity }));
+                modification.lines.push(orderModificationLine);
+
                 if (correctedQuantity < initialLineQuantity) {
                     const qtyDelta = initialLineQuantity - correctedQuantity;
-                    refundInput.lines.push({
+                    refundInput.lines?.push({
                         orderLineId: orderLine.id,
-                        quantity,
+                        quantity: qtyDelta,
                     });
-                    const cancelledOrderItems = orderLine.items.filter(i => i.cancelled).slice(0, qtyDelta);
-                    refundInput.orderItems.push(...cancelledOrderItems);
-                    modification.orderItems.push(...cancelledOrderItems);
-                } else {
-                    const addedOrderItems = orderLine.items
-                        .filter(i => !i.cancelled)
-                        .slice(initialLineQuantity);
-                    modification.orderItems.push(...addedOrderItems);
                 }
             }
             updatedOrderLineIds.push(orderLine.id);
@@ -463,16 +588,10 @@ export class OrderModifier {
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
-        const updatedOrderItems = await this.orderCalculator.applyPriceAdjustments(
-            ctx,
-            order,
-            promotions,
-            updatedOrderLines,
-            {
-                recalculateShipping: input.options?.recalculateShipping,
-            },
-        );
-
+        await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
+            recalculateShipping: input.options?.recalculateShipping,
+        });
+        await this.connection.getRepository(ctx, OrderLine).save(order.lines, { reload: false });
         const orderCustomFields = (input as any).customFields;
         if (orderCustomFields) {
             patchEntity(order, { customFields: orderCustomFields });
@@ -495,17 +614,11 @@ export class OrderModifier {
             if (shippingDelta < 0) {
                 refundInput.shipping = shippingDelta * -1;
             }
-            refundInput.adjustment += this.calculateRefundAdjustment(delta, refundInput);
+            refundInput.adjustment += await this.calculateRefundAdjustment(ctx, delta, refundInput);
             const existingPayments = await this.getOrderPayments(ctx, order.id);
             const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
             if (payment) {
-                const refund = await this.paymentService.createRefund(
-                    ctx,
-                    refundInput,
-                    order,
-                    refundInput.orderItems,
-                    payment,
-                );
+                const refund = await this.paymentService.createRefund(ctx, refundInput, order, payment);
                 if (!isGraphQlErrorResult(refund)) {
                     modification.refund = refund;
                 } else {
@@ -519,18 +632,6 @@ export class OrderModifier {
             .getRepository(ctx, OrderModification)
             .save(modification);
         await this.connection.getRepository(ctx, Order).save(order);
-        if (input.couponCodes) {
-            // When coupon codes have changed, this will likely affect the adjustments applied to
-            // OrderItems. So in this case we need to save all of them.
-            const orderItems = order.lines.reduce((all, line) => all.concat(line.items), [] as OrderItem[]);
-            await this.connection.getRepository(ctx, OrderItem).save(orderItems, { reload: false });
-        } else {
-            // Otherwise, just save those OrderItems that were specifically added/removed
-            // or updated when applying `OrderCalculator.applyPriceAdjustments()`
-            await this.connection
-                .getRepository(ctx, OrderItem)
-                .save([...modification.orderItems, ...updatedOrderItems], { reload: false });
-        }
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return { order, modification: createdModification };
     }
@@ -553,12 +654,18 @@ export class OrderModifier {
      * we need to make sure the amount gets adjusted to match any changes caused by other factors,
      * i.e. promotions that were previously active but are no longer.
      */
-    private calculateRefundAdjustment(
+    private async calculateRefundAdjustment(
+        ctx: RequestContext,
         delta: number,
-        refundInput: RefundOrderInput & { orderItems: OrderItem[] },
-    ): number {
+        refundInput: RefundOrderInput,
+    ): Promise<number> {
         const existingAdjustment = refundInput.adjustment;
-        const itemAmount = summate(refundInput.orderItems, 'proratedUnitPriceWithTax');
+
+        let itemAmount = 0; // TODO: figure out what this should be
+        for (const lineInput of refundInput.lines) {
+            const orderLine = await this.connection.getEntityOrThrow(ctx, OrderLine, lineInput.orderLineId);
+            itemAmount += orderLine.proratedUnitPriceWithTax * lineInput.quantity;
+        }
         const calculatedDelta = itemAmount + refundInput.shipping + existingAdjustment;
         const absDelta = Math.abs(delta);
         return absDelta !== calculatedDelta ? absDelta - calculatedDelta : 0;
@@ -607,9 +714,11 @@ export class OrderModifier {
             // existing entity assigned.
             lineWithCustomFieldRelations = await this.connection
                 .getRepository(ctx, OrderLine)
-                .findOne(orderLine.id, {
+                .findOne({
+                    where: { id: orderLine.id },
                     relations: customFieldRelations.map(r => `customFields.${r.name}`),
-                });
+                })
+                .then(result => result ?? undefined);
         }
 
         for (const def of customFieldDefs) {
@@ -627,7 +736,7 @@ export class OrderModifier {
             } else if (def.type === 'relation') {
                 const inputId = getGraphQlInputName(def);
                 const inputValue = inputCustomFields?.[inputId];
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const existingRelation = (lineWithCustomFieldRelations!.customFields as any)[key];
                 if (inputValue) {
                     const customFieldNotEqual = def.list

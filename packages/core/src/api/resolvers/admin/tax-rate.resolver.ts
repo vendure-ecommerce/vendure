@@ -4,6 +4,7 @@ import {
     MutationCreateTaxRateArgs,
     MutationDeleteTaxRateArgs,
     MutationUpdateTaxRateArgs,
+    MutationDeleteTaxRatesArgs,
     Permission,
     QueryTaxRateArgs,
     QueryTaxRatesArgs,
@@ -70,5 +71,15 @@ export class TaxRateResolver {
         @Args() args: MutationDeleteTaxRateArgs,
     ): Promise<DeletionResponse> {
         return this.taxRateService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeleteTaxRate)
+    async deleteTaxRates(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteTaxRatesArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.taxRateService.delete(ctx, id)));
     }
 }

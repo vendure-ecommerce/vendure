@@ -1,10 +1,24 @@
 import { ChangeDetectionStrategy, Component, NgModule, OnInit } from '@angular/core';
-import { CoreModule, DataService } from '@vendure/admin-ui/core';
+import { CoreModule, DataService, GetOrderSummaryDocument } from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators';
 
 export type Timeframe = 'day' | 'week' | 'month';
+
+export const GET_ORDER_SUMMARY = gql`
+    query GetOrderSummary($start: DateTime!, $end: DateTime!) {
+        orders(options: { filter: { orderPlacedAt: { between: { start: $start, end: $end } } } }) {
+            totalItems
+            items {
+                id
+                totalWithTax
+                currencyCode
+            }
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-order-summary-widget',
@@ -29,31 +43,29 @@ export class OrderSummaryWidgetComponent implements OnInit {
     ngOnInit(): void {
         this.dateRange$ = this.selection$.pipe(
             distinctUntilChanged(),
-            map(selection => {
-                return {
-                    start: dayjs(selection.date).startOf(selection.timeframe).toDate(),
-                    end: dayjs(selection.date).endOf(selection.timeframe).toDate(),
-                };
-            }),
+            map(selection => ({
+                start: dayjs(selection.date).startOf(selection.timeframe).toDate(),
+                end: dayjs(selection.date).endOf(selection.timeframe).toDate(),
+            })),
             shareReplay(1),
         );
         const orderSummary$ = this.dateRange$.pipe(
-            switchMap(({ start, end }) => {
-                return this.dataService.order
-                    .getOrderSummary(start, end)
+            switchMap(({ start, end }) =>
+                this.dataService
+                    .query(GetOrderSummaryDocument, { start: start.toISOString(), end: end.toISOString() })
                     .refetchOnChannelChange()
-                    .mapStream(data => data.orders);
-            }),
+                    .mapStream(data => data.orders),
+            ),
             shareReplay(1),
         );
         this.totalOrderCount$ = orderSummary$.pipe(map(res => res.totalItems));
         this.totalOrderValue$ = orderSummary$.pipe(
-            map(res => res.items.reduce((total, order) => total + order.total, 0) / 100),
+            map(res => res.items.reduce((total, order) => total + order.totalWithTax, 0) / 100),
         );
         this.currencyCode$ = this.dataService.settings
             .getActiveChannel()
             .refetchOnChannelChange()
-            .mapStream(data => data.activeChannel.currencyCode || undefined);
+            .mapStream(data => data.activeChannel.defaultCurrencyCode || undefined);
     }
 }
 

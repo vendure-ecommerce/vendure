@@ -1,36 +1,5 @@
-import {
-    AddCustomersToGroup,
-    AddNoteToCustomer,
-    CreateAddressInput,
-    CreateCustomer,
-    CreateCustomerAddress,
-    CreateCustomerGroup,
-    CreateCustomerGroupInput,
-    CreateCustomerInput,
-    CustomerGroupListOptions,
-    CustomerListOptions,
-    DeleteCustomer,
-    DeleteCustomerAddress,
-    DeleteCustomerGroup,
-    DeleteCustomerNote,
-    GetCustomer,
-    GetCustomerGroups,
-    GetCustomerGroupWithCustomers,
-    GetCustomerHistory,
-    GetCustomerList,
-    HistoryEntryListOptions,
-    LogicalOperator,
-    OrderListOptions,
-    RemoveCustomersFromGroup,
-    UpdateAddressInput,
-    UpdateCustomer,
-    UpdateCustomerAddress,
-    UpdateCustomerGroup,
-    UpdateCustomerGroupInput,
-    UpdateCustomerInput,
-    UpdateCustomerNote,
-    UpdateCustomerNoteInput,
-} from '../../common/generated-types';
+import * as Codegen from '../../common/generated-types';
+import { LogicalOperator } from '../../common/generated-types';
 import {
     ADD_CUSTOMERS_TO_GROUP,
     ADD_NOTE_TO_CUSTOMER,
@@ -40,8 +9,9 @@ import {
     DELETE_CUSTOMER,
     DELETE_CUSTOMER_ADDRESS,
     DELETE_CUSTOMER_GROUP,
+    DELETE_CUSTOMER_GROUPS,
     DELETE_CUSTOMER_NOTE,
-    GET_CUSTOMER,
+    DELETE_CUSTOMERS,
     GET_CUSTOMER_GROUP_WITH_CUSTOMERS,
     GET_CUSTOMER_GROUPS,
     GET_CUSTOMER_HISTORY,
@@ -58,7 +28,7 @@ import { BaseDataService } from './base-data.service';
 export class CustomerDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getCustomerList(take: number = 10, skip: number = 0, filterTerm?: string) {
+    getCustomerList(take = 10, skip = 0, filterTerm?: string) {
         const filter = filterTerm
             ? {
                   filter: {
@@ -71,116 +41,123 @@ export class CustomerDataService {
                   },
               }
             : {};
-        return this.baseDataService.query<GetCustomerList.Query, GetCustomerList.Variables>(
-            GET_CUSTOMER_LIST,
-            {
-                options: {
-                    take,
-                    skip,
-                    ...filter,
-                    filterOperator: LogicalOperator.OR,
-                },
+        return this.baseDataService.query<
+            Codegen.GetCustomerListQuery,
+            Codegen.GetCustomerListQueryVariables
+        >(GET_CUSTOMER_LIST, {
+            options: {
+                take,
+                skip,
+                ...filter,
+                filterOperator: LogicalOperator.OR,
             },
-        );
-    }
-
-    getCustomer(id: string, orderListOptions?: OrderListOptions) {
-        return this.baseDataService.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
-            id,
-            orderListOptions,
         });
     }
 
-    createCustomer(input: CreateCustomerInput, password?: string) {
-        return this.baseDataService.mutate<CreateCustomer.Mutation, CreateCustomer.Variables>(
-            CREATE_CUSTOMER,
-            {
-                input,
-                password,
-            },
-        );
+    createCustomer(input: Codegen.CreateCustomerInput, password?: string | null) {
+        return this.baseDataService.mutate<
+            Codegen.CreateCustomerMutation,
+            Codegen.CreateCustomerMutationVariables
+        >(CREATE_CUSTOMER, {
+            input,
+            password,
+        });
     }
 
-    updateCustomer(input: UpdateCustomerInput) {
-        return this.baseDataService.mutate<UpdateCustomer.Mutation, UpdateCustomer.Variables>(
-            UPDATE_CUSTOMER,
-            {
-                input,
-            },
-        );
+    updateCustomer(input: Codegen.UpdateCustomerInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateCustomerMutation,
+            Codegen.UpdateCustomerMutationVariables
+        >(UPDATE_CUSTOMER, {
+            input,
+        });
     }
 
     deleteCustomer(id: string) {
-        return this.baseDataService.mutate<DeleteCustomer.Mutation, DeleteCustomer.Variables>(
-            DELETE_CUSTOMER,
-            { id },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomerMutation,
+            Codegen.DeleteCustomerMutationVariables
+        >(DELETE_CUSTOMER, { id });
     }
 
-    createCustomerAddress(customerId: string, input: CreateAddressInput) {
-        return this.baseDataService.mutate<CreateCustomerAddress.Mutation, CreateCustomerAddress.Variables>(
-            CREATE_CUSTOMER_ADDRESS,
-            {
-                customerId,
-                input,
-            },
-        );
+    deleteCustomers(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomersMutation,
+            Codegen.DeleteCustomersMutationVariables
+        >(DELETE_CUSTOMERS, { ids });
     }
 
-    updateCustomerAddress(input: UpdateAddressInput) {
-        return this.baseDataService.mutate<UpdateCustomerAddress.Mutation, UpdateCustomerAddress.Variables>(
-            UPDATE_CUSTOMER_ADDRESS,
-            {
-                input,
-            },
-        );
+    createCustomerAddress(customerId: string, input: Codegen.CreateAddressInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateCustomerAddressMutation,
+            Codegen.CreateCustomerAddressMutationVariables
+        >(CREATE_CUSTOMER_ADDRESS, {
+            customerId,
+            input,
+        });
+    }
+
+    updateCustomerAddress(input: Codegen.UpdateAddressInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateCustomerAddressMutation,
+            Codegen.UpdateCustomerAddressMutationVariables
+        >(UPDATE_CUSTOMER_ADDRESS, {
+            input,
+        });
     }
 
     deleteCustomerAddress(id: string) {
-        return this.baseDataService.mutate<DeleteCustomerAddress.Mutation, DeleteCustomerAddress.Variables>(
-            DELETE_CUSTOMER_ADDRESS,
-            { id },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomerAddressMutation,
+            Codegen.DeleteCustomerAddressMutationVariables
+        >(DELETE_CUSTOMER_ADDRESS, { id });
     }
 
-    createCustomerGroup(input: CreateCustomerGroupInput) {
-        return this.baseDataService.mutate<CreateCustomerGroup.Mutation, CreateCustomerGroup.Variables>(
-            CREATE_CUSTOMER_GROUP,
-            {
-                input,
-            },
-        );
+    createCustomerGroup(input: Codegen.CreateCustomerGroupInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateCustomerGroupMutation,
+            Codegen.CreateCustomerGroupMutationVariables
+        >(CREATE_CUSTOMER_GROUP, {
+            input,
+        });
     }
 
-    updateCustomerGroup(input: UpdateCustomerGroupInput) {
-        return this.baseDataService.mutate<UpdateCustomerGroup.Mutation, UpdateCustomerGroup.Variables>(
-            UPDATE_CUSTOMER_GROUP,
-            {
-                input,
-            },
-        );
+    updateCustomerGroup(input: Codegen.UpdateCustomerGroupInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateCustomerGroupMutation,
+            Codegen.UpdateCustomerGroupMutationVariables
+        >(UPDATE_CUSTOMER_GROUP, {
+            input,
+        });
     }
 
     deleteCustomerGroup(id: string) {
-        return this.baseDataService.mutate<DeleteCustomerGroup.Mutation, DeleteCustomerGroup.Variables>(
-            DELETE_CUSTOMER_GROUP,
-            { id },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomerGroupMutation,
+            Codegen.DeleteCustomerGroupMutationVariables
+        >(DELETE_CUSTOMER_GROUP, { id });
     }
 
-    getCustomerGroupList(options?: CustomerGroupListOptions) {
-        return this.baseDataService.query<GetCustomerGroups.Query, GetCustomerGroups.Variables>(
-            GET_CUSTOMER_GROUPS,
-            {
-                options,
-            },
-        );
+    deleteCustomerGroups(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomerGroupsMutation,
+            Codegen.DeleteCustomerGroupsMutationVariables
+        >(DELETE_CUSTOMER_GROUPS, { ids });
     }
 
-    getCustomerGroupWithCustomers(id: string, options: CustomerListOptions) {
+    getCustomerGroupList(options?: Codegen.CustomerGroupListOptions) {
         return this.baseDataService.query<
-            GetCustomerGroupWithCustomers.Query,
-            GetCustomerGroupWithCustomers.Variables
+            Codegen.GetCustomerGroupsQuery,
+            Codegen.GetCustomerGroupsQueryVariables
+        >(GET_CUSTOMER_GROUPS, {
+            options,
+        });
+    }
+
+    getCustomerGroupWithCustomers(id: string, options: Codegen.CustomerListOptions) {
+        return this.baseDataService.query<
+            Codegen.GetCustomerGroupWithCustomersQuery,
+            Codegen.GetCustomerGroupWithCustomersQueryVariables
         >(GET_CUSTOMER_GROUP_WITH_CUSTOMERS, {
             id,
             options,
@@ -188,63 +165,63 @@ export class CustomerDataService {
     }
 
     addCustomersToGroup(groupId: string, customerIds: string[]) {
-        return this.baseDataService.mutate<AddCustomersToGroup.Mutation, AddCustomersToGroup.Variables>(
-            ADD_CUSTOMERS_TO_GROUP,
-            {
-                groupId,
-                customerIds,
-            },
-        );
+        return this.baseDataService.mutate<
+            Codegen.AddCustomersToGroupMutation,
+            Codegen.AddCustomersToGroupMutationVariables
+        >(ADD_CUSTOMERS_TO_GROUP, {
+            groupId,
+            customerIds,
+        });
     }
 
     removeCustomersFromGroup(groupId: string, customerIds: string[]) {
         return this.baseDataService.mutate<
-            RemoveCustomersFromGroup.Mutation,
-            RemoveCustomersFromGroup.Variables
+            Codegen.RemoveCustomersFromGroupMutation,
+            Codegen.RemoveCustomersFromGroupMutationVariables
         >(REMOVE_CUSTOMERS_FROM_GROUP, {
             groupId,
             customerIds,
         });
     }
 
-    getCustomerHistory(id: string, options?: HistoryEntryListOptions) {
-        return this.baseDataService.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
-            GET_CUSTOMER_HISTORY,
-            {
-                id,
-                options,
-            },
-        );
+    getCustomerHistory(id: string, options?: Codegen.HistoryEntryListOptions) {
+        return this.baseDataService.query<
+            Codegen.GetCustomerHistoryQuery,
+            Codegen.GetCustomerHistoryQueryVariables
+        >(GET_CUSTOMER_HISTORY, {
+            id,
+            options,
+        });
     }
 
     addNoteToCustomer(customerId: string, note: string) {
-        return this.baseDataService.mutate<AddNoteToCustomer.Mutation, AddNoteToCustomer.Variables>(
-            ADD_NOTE_TO_CUSTOMER,
-            {
-                input: {
-                    note,
-                    isPublic: false,
-                    id: customerId,
-                },
+        return this.baseDataService.mutate<
+            Codegen.AddNoteToCustomerMutation,
+            Codegen.AddNoteToCustomerMutationVariables
+        >(ADD_NOTE_TO_CUSTOMER, {
+            input: {
+                note,
+                isPublic: false,
+                id: customerId,
             },
-        );
+        });
     }
 
-    updateCustomerNote(input: UpdateCustomerNoteInput) {
-        return this.baseDataService.mutate<UpdateCustomerNote.Mutation, UpdateCustomerNote.Variables>(
-            UPDATE_CUSTOMER_NOTE,
-            {
-                input,
-            },
-        );
+    updateCustomerNote(input: Codegen.UpdateCustomerNoteInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateCustomerNoteMutation,
+            Codegen.UpdateCustomerNoteMutationVariables
+        >(UPDATE_CUSTOMER_NOTE, {
+            input,
+        });
     }
 
     deleteCustomerNote(id: string) {
-        return this.baseDataService.mutate<DeleteCustomerNote.Mutation, DeleteCustomerNote.Variables>(
-            DELETE_CUSTOMER_NOTE,
-            {
-                id,
-            },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomerNoteMutation,
+            Codegen.DeleteCustomerNoteMutationVariables
+        >(DELETE_CUSTOMER_NOTE, {
+            id,
+        });
     }
 }

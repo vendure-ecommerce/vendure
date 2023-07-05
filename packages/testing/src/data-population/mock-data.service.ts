@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 
 import { SimpleGraphQLClient } from '../simple-graphql-client';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * A service for creating mock data via the GraphQL API.
  */

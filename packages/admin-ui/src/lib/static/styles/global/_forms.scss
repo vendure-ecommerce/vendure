@@ -4,26 +4,7 @@
 
 .form,
 form {
-    padding-top: 0.5rem;
-}
-
-.form-group {
-    display: flex;
-    flex-wrap: wrap;
-    position: relative;
-    padding-left: 9.5rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.65rem;
-    letter-spacing: normal;
-    line-height: 1rem;
-
-    label:first-child {
-        position: absolute;
-        width: 8.5rem;
-        left: 0;
-        top: 0.25rem;
-        margin: 0;
-    }
+    padding-top: 0;
 }
 
 .form .form-block,
@@ -31,10 +12,34 @@ form .form-block {
     margin: 0.5rem 0 1.5rem;
 }
 
-input,
+.form-grid {
+    display: grid;
+    gap: calc(var(--space-unit) * 4);
+    grid-template-columns: 1fr 1fr;
+    .form-grid-span {
+        grid-column: span 2;
+    }
+
+    @container (max-width: 500px) {
+        grid-template-columns: 1fr;
+    }
+    @container (max-width: 700px) {
+        gap: calc(var(--space-unit) * 2);
+    }
+    @container (max-width: 500px) {
+        grid-template-columns: 1fr;
+
+        .form-grid-span {
+            grid-column: initial;
+        }
+    }
+}
+
+input:not([type='checkbox']):not([type='radio']),
 select,
 textarea,
 .clr-input {
+    color: var(--color-text-100);
     background-color: var(--color-form-input-bg);
     &:not([readonly]) {
         background-color: var(--color-form-input-bg);
@@ -42,26 +47,44 @@ textarea,
             background-size: 0% 100%;
         }
     }
-}
+    &[readonly] {
+        border-color: var(--color-weight-200);
+    }
+    font-weight: 400;
+    &::placeholder {
+        color: var(--color-weight-400);
+    }
 
-input,
-select {
-    border-radius: var(--border-radius-input) !important;
-    border: 1px solid var(--color-grey-300) !important;
-    padding: 5px !important;
-    height: initial !important;
-    transition: background-color 0.2s, box-shadow 0.2s !important;
-    &:focus {
-        border-color: var(--color-primary-500) !important;
-        box-shadow: 0 0 1px 1px var(--color-primary-100);
-        outline: none;
+    &.ng-invalid {
+        color: var(--color-error-700);
+        border-color: var(--color-error-300);
     }
 }
 
-textarea {
-    border-color: var(--clr-forms-border-color);
+input:not([type='checkbox']):not([type='radio']),
+textarea,
+select {
+    border-radius: var(--border-radius-input) !important;
+    border: 1px solid var(--color-weight-300);
+    padding: 5px !important;
+    transition: background-color 0.2s, box-shadow 0.2s !important;
     &:focus {
-        border-color: var(--color-primary-500) !important;
+        border-color: var(--color-primary-500);
+        box-shadow: 0 0 1px 1px var(--color-form-input-focus);
+        outline: none;
+    }
+    &[readonly]:focus {
+        border-color: var(--color-weight-400);
+    }
+}
+input:not([type='checkbox']):not([type='radio']),
+select {
+    height: 36px !important;
+}
+
+textarea {
+    &:focus {
+        border-color: var(--color-primary-500);
         outline: none;
     }
 }
@@ -95,6 +118,15 @@ clr-input-container.expand {
     }
 }
 
+.clr-toggle-wrapper .clr-control-label {
+    display: inline-block;
+    font-size: var(--font-size-sm);
+}
+
+.clr-checkbox-wrapper .clr-control-label {
+    display: inline-block;
+}
+
 .tooltip.tooltip-validation::before {
     top: 10px !important;
 }
@@ -114,12 +146,18 @@ select {
 
 .ng-select .ng-select-container {
     background: var(--color-form-input-bg) !important;
+    color: var(--color-text-100);
+    line-height: initial;
+    position: initial !important;
+    border: 1px solid var(--color-weight-300);
 }
 .ng-select .ng-select-container .ng-value-container {
-    padding-top: 0;
+    //padding-top: 0;
     min-width: 60px;
     .ng-value {
         margin: 0 6px 0 0;
+        background-color: var(--color-form-input-bg) !important;
+        color: var(--color-text-100) !important;
     }
     .ng-input {
         margin: 0;
@@ -127,10 +165,11 @@ select {
     input {
         border: none !important;
         background: none !important;
+        height: initial !important;
     }
 }
 .ng-select.ng-select-single > .ng-select-container {
-    padding-top: 9px;
+    //padding-top: 9px;
     input {
         padding-left: 0 !important;
     }

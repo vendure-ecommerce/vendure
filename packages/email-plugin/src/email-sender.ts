@@ -38,7 +38,7 @@ import { EmailDetails, EmailTransportOptions } from './types';
  * };
  * ```
  *
- * @docsCategory EmailPlugin
+ * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailSender
  * @docsWeight 0
  */

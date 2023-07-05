@@ -1,30 +1,53 @@
-<nav class="sidenav" [clr-nav-level]="2">
-    <section class="sidenav-content">
-        <ng-container *ngFor="let section of navBuilderService.navMenuConfig$ | async">
+<nav class="main-nav">
+    <section class="">
+        <ng-container *ngFor="let section of mainMenuConfig$ | async">
             <section
                 class="nav-group"
                 [attr.data-section-id]="section.id"
                 [class.collapsible]="section.collapsible"
+                [class.collapsed]="section.collapsible && !expandedSections.includes(section.id)"
+                routerLinkActive="active"
+                (isActiveChange)="setExpanded(section, $event)"
                 *ngIf="shouldDisplayLink(section)"
             >
-                <vdr-ui-extension-point [locationId]="section.id" api="navMenu" [topPx]="-6" [leftPx]="8">
-                    <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
-                        <vdr-status-badge
-                            *ngIf="sectionBadge !== 'none'"
-                            [type]="sectionBadge"
-                        ></vdr-status-badge>
-                    </ng-container>
-                    <input [id]="section.id" type="checkbox" [checked]="section.collapsedByDefault" />
-                    <label class="nav-group-header" [for]="section.id">{{ section.label | translate }}</label>
-                    <ul class="nav-list">
+                <vdr-ui-extension-point
+                    [locationId]="section.id"
+                    api="navMenu"
+                    [topPx]="-6"
+                    [leftPx]="8"
+                    display="block"
+                >
+                    <div class="section-header">
+                        <ng-container
+                            *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge"
+                        >
+                            <vdr-status-badge
+                                *ngIf="sectionBadge !== 'none'"
+                                [type]="sectionBadge"
+                            ></vdr-status-badge>
+                        </ng-container>
+                        <label class="nav-group-header mx-4" [for]="section.id">{{
+                            section.label | translate
+                        }}</label>
+                        <button *ngIf="section.collapsible" class="button-small bg-weight-150" (click)="toggleExpand(section)">
+                            <clr-icon
+                                [attr.shape]="expandedSections.includes(section.id) ? 'caret up' : 'caret down'"
+                                size="12"
+                                [title]="'common.expand-entries' | translate"
+                            ></clr-icon>
+                        </button>
+                    </div>
+                    <div class="nav-list" [ngStyle]="getStyleForSection(section)">
                         <ng-container *ngFor="let item of section.items">
-                            <li *ngIf="shouldDisplayLink(item)">
+                            <div
+                                *ngIf="shouldDisplayLink(item)"
+                                class="nav-link px-4"
+                                routerLinkActive="active"
+                            >
                                 <a
-                                    class="nav-link"
                                     [attr.data-item-id]="section.id"
                                     [routerLink]="getRouterLink(item)"
-                                    routerLinkActive="active"
-                                    (click)="item.onClick && item.onClick($event)"
+                                    (click)="onItemClick(item, $event)"
                                 >
                                     <ng-container *ngIf="item.statusBadge | async as itemBadge">
                                         <vdr-status-badge
@@ -32,12 +55,16 @@
                                             [type]="itemBadge.type"
                                         ></vdr-status-badge>
                                     </ng-container>
-                                    <clr-icon [attr.shape]="item.icon || 'block'" size="20"></clr-icon>
-                                    {{ item.label | translate }}
+                                    <clr-icon
+                                        [attr.shape]="item.icon || 'block'"
+                                        size="16"
+                                        [title]="item.label | translate"
+                                    ></clr-icon>
+                                    <span class="">{{ item.label | translate }}</span>
                                 </a>
-                            </li>
+                            </div>
                         </ng-container>
-                    </ul>
+                    </div>
                 </vdr-ui-extension-point>
             </section>
         </ng-container>

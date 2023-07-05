@@ -1,15 +1,16 @@
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Resolve, Router, Routes } from '@angular/router';
+import { Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 
 import { MockTranslatePipe } from '../../../../../testing/translate.pipe.mock';
 import { DataService } from '../../data/providers/data.service';
+import { BreadcrumbLabelLinkPair } from '../../providers/breadcrumb/breadcrumb.service';
 
-import { BreadcrumbComponent, BreadcrumbLabelLinkPair } from './breadcrumb.component';
+import { BreadcrumbComponent } from './breadcrumb.component';
 
 describe('BeadcrumbsComponent', () => {
     let baseRouteConfig: Routes;
@@ -244,7 +245,7 @@ describe('BeadcrumbsComponent', () => {
         return fakeAsync(() => {
             const fixture = TestBed.createComponent(TestChildComponent);
             // Run in ngZone to prevent warning: https://github.com/angular/angular/issues/25837#issuecomment-445796236
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             fixture.ngZone!.run(() => {
                 router.navigate(route);
             });
@@ -328,6 +329,7 @@ describe('BeadcrumbsComponent', () => {
         getFixtureForRoute(['', 'pair-function-child', 'string-grandchild'], fixture => {
             const labels = getBreadcrumbLabels(fixture);
             const links = getBreadcrumbLinks(fixture);
+            console.log(`labels: ${labels}`);
             expect(labels).toEqual(['Root', 'PairA', 'PairB', 'Grandchild']);
             expect(links).toEqual(['/', '/foo/bar', '/baz/quux']);
         }),
@@ -422,11 +424,12 @@ function getBreadcrumbsElement(fixture: ComponentFixture<TestComponent>): DebugE
 }
 
 function getBreadcrumbListItems(fixture: ComponentFixture<TestComponent>): HTMLLIElement[] {
-    return fixture.debugElement.queryAll(By.css('.breadcrumbs li')).map(de => de.nativeElement);
+    return fixture.debugElement.queryAll(By.css('.breadcrumbs:not(.mobile) li')).map(de => de.nativeElement);
 }
 
 function getBreadcrumbLabels(fixture: ComponentFixture<TestComponent>): string[] {
-    return getBreadcrumbListItems(fixture).map(item => item.innerText.trim());
+    const labels = getBreadcrumbListItems(fixture).map(item => item.innerText.trim());
+    return labels;
 }
 
 function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] {
@@ -437,8 +440,8 @@ function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] 
         .filter(notNullOrUndefined);
 }
 
-// tslint:disable component-selector
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-root-component',
     template: `
         <vdr-breadcrumb></vdr-breadcrumb>
@@ -448,16 +451,15 @@ function getBreadcrumbLinks(fixture: ComponentFixture<TestComponent>): string[] 
 class TestParentComponent {}
 
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-child-component',
-    template: `
-        <vdr-breadcrumb></vdr-breadcrumb>
-    `,
+    template: ` <vdr-breadcrumb></vdr-breadcrumb> `,
 })
 class TestChildComponent {}
 
 type TestComponent = TestParentComponent | TestChildComponent;
 
-class FooResolver implements Resolve<string> {
+class FooResolver {
     resolve(): Observable<string> {
         return observableOf('Foo');
     }

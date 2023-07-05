@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import { createHash } from 'crypto';
@@ -8,6 +8,7 @@ import * as path from 'path';
 import { STATIC_ASSETS_OUTPUT_DIR } from './constants';
 import {
     AdminUiExtension,
+    AdminUiExtensionWithId,
     Extension,
     GlobalStylesExtension,
     SassVariableOverridesExtension,
@@ -28,7 +29,7 @@ export function shouldUseYarn(): boolean {
     try {
         execSync('yarnpkg --version', { stdio: 'ignore' });
         return true;
-    } catch (e) {
+    } catch (e: any) {
         return false;
     }
 }
@@ -56,9 +57,8 @@ export function copyUiDevkit(outputPath: string) {
  */
 export async function copyStaticAsset(outputPath: string, staticAssetDef: StaticAssetDefinition) {
     const staticAssetPath = getStaticAssetPath(staticAssetDef);
-    let assetOutputPath: string;
     const assetBasename = path.basename(staticAssetPath);
-    assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetBasename);
+    const assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetBasename);
     fs.copySync(staticAssetPath, assetOutputPath);
     if (typeof staticAssetDef !== 'string') {
         // The asset is being renamed
@@ -68,7 +68,7 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
             // EPERM error in Windows.
             await fs.copy(assetOutputPath, newName);
             await fs.remove(assetOutputPath);
-        } catch (e) {
+        } catch (e: any) {
             logger.log(e);
         }
     }
@@ -79,7 +79,7 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
  * If not defined by the user, a deterministic ID is generated
  * from a hash of the extension config.
  */
-export function normalizeExtensions(extensions?: AdminUiExtension[]): Array<Required<AdminUiExtension>> {
+export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExtensionWithId[] {
     return (extensions || []).map(e => {
         let id = e.id;
         if (!id) {

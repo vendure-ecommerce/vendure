@@ -106,18 +106,6 @@ export const DELETE_FACET_VALUES = gql`
     }
 `;
 
-export const GET_FACET_LIST = gql`
-    query GetFacetList($options: FacetListOptions) {
-        facets(options: $options) {
-            items {
-                ...FacetWithValues
-            }
-            totalItems
-        }
-    }
-    ${FACET_WITH_VALUES_FRAGMENT}
-`;
-
 export const GET_FACET_VALUE_LIST = gql`
     query GetFacetValueList($options: FacetValueListOptions) {
         facetValues(options: $options) {
@@ -128,15 +116,6 @@ export const GET_FACET_VALUE_LIST = gql`
         }
     }
     ${FACET_VALUE_FRAGMENT}
-`;
-
-export const GET_FACET_WITH_VALUES = gql`
-    query GetFacetWithValues($id: ID!) {
-        facet(id: $id) {
-            ...FacetWithValues
-        }
-    }
-    ${FACET_WITH_VALUES_FRAGMENT}
 `;
 
 export const ASSIGN_FACETS_TO_CHANNEL = gql`

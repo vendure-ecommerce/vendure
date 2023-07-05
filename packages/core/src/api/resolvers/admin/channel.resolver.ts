@@ -4,11 +4,14 @@ import {
     DeletionResponse,
     MutationCreateChannelArgs,
     MutationDeleteChannelArgs,
+    MutationDeleteChannelsArgs,
     MutationUpdateChannelArgs,
     Permission,
     QueryChannelArgs,
+    QueryChannelsArgs,
     UpdateChannelResult,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
 import { Channel } from '../../../entity/channel/channel.entity';
@@ -25,8 +28,11 @@ export class ChannelResolver {
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadChannel)
-    channels(@Ctx() ctx: RequestContext): Promise<Channel[]> {
-        return this.channelService.findAll(ctx);
+    async channels(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryChannelsArgs,
+    ): Promise<PaginatedList<Channel>> {
+        return this.channelService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
@@ -81,5 +87,15 @@ export class ChannelResolver {
         @Args() args: MutationDeleteChannelArgs,
     ): Promise<DeletionResponse> {
         return this.channelService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.SuperAdmin, Permission.DeleteChannel)
+    async deleteChannels(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteChannelsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.channelService.delete(ctx, id)));
     }
 }

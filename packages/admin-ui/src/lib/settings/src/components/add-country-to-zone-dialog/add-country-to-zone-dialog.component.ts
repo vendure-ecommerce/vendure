@@ -1,7 +1,36 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { DataService, Dialog, GetCountryList, GetZones } from '@vendure/admin-ui/core';
+import {
+    DataService,
+    Dialog,
+    GetCountryListDocument,
+    GetCountryListQuery,
+    GetZoneListQuery,
+    GetZoneMembersDocument,
+    GetZoneMembersQuery,
+    ItemOf,
+} from '@vendure/admin-ui/core';
+import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { map, withLatestFrom } from 'rxjs/operators';
+
+export const GET_ZONE_MEMBERS = gql`
+    query GetZoneMembers($zoneId: ID!) {
+        zone(id: $zoneId) {
+            id
+            createdAt
+            updatedAt
+            name
+            members {
+                createdAt
+                updatedAt
+                id
+                name
+                code
+                enabled
+            }
+        }
+    }
+`;
 
 @Component({
     selector: 'vdr-add-country-to-zone-dialog',
@@ -12,18 +41,28 @@ import { filter, map } from 'rxjs/operators';
 export class AddCountryToZoneDialogComponent implements Dialog<string[]>, OnInit {
     resolveWith: (result?: string[]) => void;
     zoneName: string;
-    currentMembers: GetZones.Members[] = [];
-    availableCountries$: Observable<GetCountryList.Items[]>;
+    zoneId: string;
+    currentMembers$: Observable<NonNullable<GetZoneMembersQuery['zone']>['members']>;
+    availableCountries$: Observable<Array<ItemOf<GetCountryListQuery, 'countries'>>>;
     selectedMemberIds: string[] = [];
 
     constructor(private dataService: DataService) {}
 
     ngOnInit(): void {
-        const currentMemberIds = this.currentMembers.map(m => m.id);
-        this.availableCountries$ = this.dataService.settings
-            .getCountries(999)
+        this.currentMembers$ = this.dataService
+            .query(GetZoneMembersDocument, { zoneId: this.zoneId })
+            .mapSingle(({ zone }) => zone?.members ?? []);
+        this.availableCountries$ = this.dataService
+            .query(GetCountryListDocument, {
+                options: { take: 999 },
+            })
             .mapStream(data => data.countries.items)
-            .pipe(map(countries => countries.filter(c => !currentMemberIds.includes(c.id))));
+            .pipe(
+                withLatestFrom(this.currentMembers$),
+                map(([countries, currentMembers]) =>
+                    countries.filter(c => !currentMembers.find(cm => cm.id === c.id)),
+                ),
+            );
     }
 
     cancel() {

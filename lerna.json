@@ -1,13 +1,11 @@
 {
-  "packages": [
-    "packages/*"
-  ],
-  "version": "1.9.6",
-  "npmClient": "yarn",
-  "useWorkspaces": true,
-  "command": {
-    "version": {
-      "push": false
+    "packages": ["packages/*"],
+    "version": "2.0.3",
+    "npmClient": "yarn",
+    "useWorkspaces": true,
+    "command": {
+        "version": {
+            "push": false
+        }
     }
-  }
 }

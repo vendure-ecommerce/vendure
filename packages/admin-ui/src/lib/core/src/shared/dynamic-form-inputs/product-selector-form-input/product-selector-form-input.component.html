@@ -9,7 +9,7 @@
         </div>
         <div class="flex-spacer"></div>
         <button
-            class="btn btn-link btn-sm btn-warning"
+            class="button-small"
             (click)="removeProductVariant(variant.id)"
             [title]="'common.remove-item-from-list' | translate"
         >
@@ -17,4 +17,4 @@
         </button>
     </li>
 </ul>
-<vdr-product-selector (productSelected)="addProductVariant($event)"></vdr-product-selector>
+<vdr-product-variant-selector (productSelected)="addProductVariant($event)"></vdr-product-variant-selector>

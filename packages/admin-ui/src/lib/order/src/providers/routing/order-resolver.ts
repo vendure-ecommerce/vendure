@@ -1,15 +1,10 @@
 import { Injectable } from '@angular/core';
-import {
-    ActivatedRouteSnapshot,
-    ActivationStart,
-    Resolve,
-    Router,
-    RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, ActivationStart, Router, RouterStateSnapshot } from '@angular/router';
 import { DataService, OrderDetailFragment } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, Observable } from 'rxjs';
 import { filter, map, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
+
 import { DraftOrderDetailComponent } from '../../components/draft-order-detail/draft-order-detail.component';
 
 /**
@@ -18,7 +13,7 @@ import { DraftOrderDetailComponent } from '../../components/draft-order-detail/d
 @Injectable({
     providedIn: 'root',
 })
-export class OrderResolver implements Resolve<Observable<OrderDetailFragment>> {
+export class OrderResolver  {
     constructor(private router: Router, private dataService: DataService) {}
 
     /** @internal */
@@ -32,6 +27,7 @@ export class OrderResolver implements Resolve<Observable<OrderDetailFragment>> {
         const navigateAway$ = this.router.events.pipe(filter(event => event instanceof ActivationStart));
 
         const stream = this.dataService.order
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             .getOrder(id!)
             .mapStream(data => data.order)
             .pipe(

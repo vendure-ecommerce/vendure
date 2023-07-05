@@ -1,5 +1,7 @@
+import { Injector, Order, RequestContext } from '@vendure/core';
 import '@vendure/core/dist/entity/custom-entity-fields';
 import { Request } from 'express';
+import Stripe from 'stripe';
 
 // Note: deep import is necessary here because CustomCustomerFields is also extended in the Braintree
 // plugin. Reference: https://github.com/microsoft/TypeScript/issues/46617
@@ -13,20 +15,10 @@ declare module '@vendure/core/dist/entity/custom-entity-fields' {
  * @description
  * Configuration options for the Stripe payments plugin.
  *
- * @docsCategory payments-plugin
+ * @docsCategory core plugins/PaymentsPlugin
  * @docsPage StripePlugin
  */
 export interface StripePluginOptions {
-    /**
-     * @description
-     * Secret key of your Stripe account.
-     */
-    apiKey: string;
-    /**
-     * @description
-     * Signing secret of your configured Stripe webhook.
-     */
-    webhookSigningSecret: string;
     /**
      * @description
      * If set to `true`, a [Customer](https://stripe.com/docs/api/customers) object will be created in Stripe - if
@@ -37,6 +29,18 @@ export interface StripePluginOptions {
      * @default false
      */
     storeCustomersInStripe?: boolean;
+
+    /**
+     * @description
+     * Attach extra metadata to Stripe payment intent
+     *
+     * @since 1.9.7
+     */
+    metadata?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => Stripe.MetadataParam | Promise<Stripe.MetadataParam>;
 }
 
 export interface RequestWithRawBody extends Request {

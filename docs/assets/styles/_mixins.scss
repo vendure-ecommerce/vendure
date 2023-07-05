@@ -1,0 +1,52 @@
+@import "variables";
+
+@mixin code-block {
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 3px;
+    overflow-x: auto;
+    border: 1px solid $color-code-border;
+    color: $color-code-text;
+    background-color: $color-code-bg;
+    position: relative;
+
+    code {
+        font-family: 'Source Code Pro', monospace;
+    }
+}
+
+@mixin code-block-lang {
+    position: absolute;
+    right: 3px;
+    top: 0;
+    font-size: 12px;
+    color: $gray-400;
+    text-transform: uppercase;
+}
+
+@mixin custom-scrollbar {
+
+    &::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    &::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    &::-webkit-scrollbar-corner {
+        background-color: #{'hsl(0 0% 90%)'};
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: #{'hsl(0 0% 75%)'};
+        border: 2px solid #{'hsl(0 0% 90%)'};
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #{'hsl(0 0% 65%)'}
+    }
+    &::-webkit-scrollbar-track {
+        background-color: #{'hsl(0 0% 90%)'}
+    }
+}

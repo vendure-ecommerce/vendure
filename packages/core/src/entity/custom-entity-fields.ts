@@ -4,8 +4,6 @@ export class CustomAssetFields {}
 export class CustomChannelFields {}
 export class CustomCollectionFields {}
 export class CustomCollectionFieldsTranslation {}
-export class CustomCountryFields {}
-export class CustomCountryFieldsTranslation {}
 export class CustomCustomerFields {}
 export class CustomCustomerGroupFields {}
 export class CustomFacetFields {}
@@ -17,6 +15,7 @@ export class CustomGlobalSettingsFields {}
 export class CustomOrderFields {}
 export class CustomOrderLineFields {}
 export class CustomPaymentMethodFields {}
+export class CustomPaymentMethodFieldsTranslation {}
 export class CustomProductFields {}
 export class CustomProductFieldsTranslation {}
 export class CustomProductOptionFields {}
@@ -26,8 +25,13 @@ export class CustomProductOptionGroupFieldsTranslation {}
 export class CustomProductVariantFields {}
 export class CustomProductVariantFieldsTranslation {}
 export class CustomPromotionFields {}
+export class CustomPromotionFieldsTranslation {}
+export class CustomRegionFields {}
+export class CustomRegionFieldsTranslation {}
+export class CustomSellerFields {}
 export class CustomShippingMethodFields {}
 export class CustomShippingMethodFieldsTranslation {}
+export class CustomStockLocationFields {}
 export class CustomTaxCategoryFields {}
 export class CustomTaxRateFields {}
 export class CustomUserFields {}

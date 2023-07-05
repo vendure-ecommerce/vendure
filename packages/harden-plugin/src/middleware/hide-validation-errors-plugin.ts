@@ -7,7 +7,7 @@ import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServiceContext } fro
  * Based on ideas discussed in https://github.com/apollographql/apollo-server/issues/3919
  */
 export class HideValidationErrorsPlugin implements ApolloServerPlugin {
-    requestDidStart(): GraphQLRequestListener {
+    async requestDidStart(): Promise<GraphQLRequestListener> {
         return {
             willSendResponse: async requestContext => {
                 const { errors, context } = requestContext;

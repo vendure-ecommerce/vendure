@@ -12,6 +12,8 @@ export * from './components/line-fulfillment/line-fulfillment.component';
 export * from './components/line-refunds/line-refunds.component';
 export * from './components/modification-detail/modification-detail.component';
 export * from './components/order-custom-fields-card/order-custom-fields-card.component';
+export * from './components/order-data-table/order-data-table.component';
+export * from './components/order-data-table/order-total-column.component';
 export * from './components/order-detail/order-detail.component';
 export * from './components/order-editor/order-editor.component';
 export * from './components/order-edits-preview-dialog/order-edits-preview-dialog.component';
@@ -35,6 +37,8 @@ export * from './components/select-address-dialog/select-address-dialog.componen
 export * from './components/select-address-dialog/select-address-dialog.graphql';
 export * from './components/select-customer-dialog/select-customer-dialog.component';
 export * from './components/select-shipping-method-dialog/select-shipping-method-dialog.component';
+export * from './components/seller-orders-card/seller-orders-card.component';
+export * from './components/seller-orders-card/seller-orders-card.graphql';
 export * from './components/settle-refund-dialog/settle-refund-dialog.component';
 export * from './components/simple-item-list/simple-item-list.component';
 export * from './order.module';

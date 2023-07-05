@@ -43,6 +43,25 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      * The plugin may define custom [TypeORM database entities](https://typeorm.io/#/entities).
      */
     entities?: Array<Type<any>> | (() => Array<Type<any>>);
+    /**
+     * @description
+     * The plugin should define a valid [semver version string](https://www.npmjs.com/package/semver) to indicate which versions of
+     * Vendure core it is compatible with. Attempting to use a plugin with an incompatible
+     * version of Vendure will result in an error and the server will be unable to bootstrap.
+     *
+     * If a plugin does not define this property, a message will be logged on bootstrap that the plugin is not
+     * guaranteed to be compatible with the current version of Vendure.
+     *
+     * To effectively disable this check for a plugin, you can use an overly-permissive string such as `>0.0.0`.
+     *
+     * @example
+     * ```typescript
+     * compatibility: '^2.0.0'
+     * ```
+     *
+     * @since 2.0.0
+     */
+    compatibility?: string;
 }
 /**
  * @description
@@ -130,7 +149,7 @@ export type PluginConfigurationFn = (
  * @docsCategory plugin
  */
 export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecorator {
-    // tslint:disable-next-line:ban-types
+    // eslint-disable-next-line @typescript-eslint/ban-types
     return (target: Function) => {
         for (const metadataProperty of Object.values(PLUGIN_METADATA)) {
             const property = metadataProperty as keyof VendurePluginMetadata;

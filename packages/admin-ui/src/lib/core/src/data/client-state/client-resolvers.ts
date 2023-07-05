@@ -1,20 +1,7 @@
 import { InMemoryCache } from '@apollo/client/core';
 
-import {
-    GetNetworkStatus,
-    GetUiState,
-    GetUserStatus,
-    LanguageCode,
-    SetActiveChannel,
-    SetAsLoggedIn,
-    SetContentLanguage,
-    SetDisplayUiExtensionPoints,
-    SetUiLanguage,
-    SetUiLocale,
-    SetUiTheme,
-    UpdateUserChannels,
-    UserStatus,
-} from '../../common/generated-types';
+import * as Codegen from '../../common/generated-types';
+import { GetUserStatusQuery, LanguageCode, UserStatus } from '../../common/generated-types';
 import { GET_NEWTORK_STATUS, GET_UI_STATE, GET_USER_STATUS } from '../definitions/client-definitions';
 
 export type ResolverContext = {
@@ -31,21 +18,18 @@ export type ResolverDefinition = {
 
 export const clientResolvers: ResolverDefinition = {
     Mutation: {
-        requestStarted: (_, args, { cache }): number => {
-            return updateRequestsInFlight(cache, 1);
-        },
-        requestCompleted: (_, args, { cache }): number => {
-            return updateRequestsInFlight(cache, -1);
-        },
-        setAsLoggedIn: (_, args: SetAsLoggedIn.Variables, { cache }): GetUserStatus.UserStatus => {
+        requestStarted: (_, args, { cache }): number => updateRequestsInFlight(cache, 1),
+        requestCompleted: (_, args, { cache }): number => updateRequestsInFlight(cache, -1),
+        setAsLoggedIn: (_, args: Codegen.SetAsLoggedInMutationVariables, { cache }): UserStatus => {
             const {
-                input: { username, loginTime, channels, activeChannelId },
+                input: { username, loginTime, channels, activeChannelId, administratorId },
             } = args;
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const permissions = channels.find(c => c.id === activeChannelId)!.permissions;
             const data: { userStatus: UserStatus } = {
                 userStatus: {
                     __typename: 'UserStatus',
+                    administratorId,
                     username,
                     loginTime,
                     isLoggedIn: true,
@@ -57,10 +41,11 @@ export const clientResolvers: ResolverDefinition = {
             cache.writeQuery({ query: GET_USER_STATUS, data });
             return data.userStatus;
         },
-        setAsLoggedOut: (_, args, { cache }): GetUserStatus.UserStatus => {
-            const data: GetUserStatus.Query = {
+        setAsLoggedOut: (_, args, { cache }): UserStatus => {
+            const data: GetUserStatusQuery = {
                 userStatus: {
                     __typename: 'UserStatus',
+                    administratorId: null,
                     username: '',
                     loginTime: '',
                     isLoggedIn: false,
@@ -72,44 +57,59 @@ export const clientResolvers: ResolverDefinition = {
             cache.writeQuery({ query: GET_USER_STATUS, data });
             return data.userStatus;
         },
-        setUiLanguage: (_, args: SetUiLanguage.Variables, { cache }): LanguageCode => {
-            // tslint:disable-next-line:no-non-null-assertion
-            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+        setUiLanguage: (_, args: Codegen.SetUiLanguageMutationVariables, { cache }): LanguageCode => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<Codegen.GetUiStateQuery>({ query: GET_UI_STATE })!;
             const data = updateUiState(previous, 'language', args.languageCode);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.languageCode;
         },
-        setUiLocale: (_, args: SetUiLocale.Variables, { cache }): string | undefined => {
-            // tslint:disable-next-line:no-non-null-assertion
-            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+        setUiLocale: (_, args: Codegen.SetUiLocaleMutationVariables, { cache }): string | undefined => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<Codegen.GetUiStateQuery>({ query: GET_UI_STATE })!;
             const data = updateUiState(previous, 'locale', args.locale);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.locale ?? undefined;
         },
-        setContentLanguage: (_, args: SetContentLanguage.Variables, { cache }): LanguageCode => {
-            // tslint:disable-next-line:no-non-null-assertion
-            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+        setContentLanguage: (
+            _,
+            args: Codegen.SetContentLanguageMutationVariables,
+            { cache },
+        ): LanguageCode => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<Codegen.GetUiStateQuery>({ query: GET_UI_STATE })!;
             const data = updateUiState(previous, 'contentLanguage', args.languageCode);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.languageCode;
         },
-        setUiTheme: (_, args: SetUiTheme.Variables, { cache }): string => {
-            // tslint:disable-next-line:no-non-null-assertion
-            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+        setUiTheme: (_, args: Codegen.SetUiThemeMutationVariables, { cache }): string => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<Codegen.GetUiStateQuery>({ query: GET_UI_STATE })!;
             const data = updateUiState(previous, 'theme', args.theme);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.theme;
         },
-        setDisplayUiExtensionPoints: (_, args: SetDisplayUiExtensionPoints.Variables, { cache }): boolean => {
-            // tslint:disable-next-line:no-non-null-assertion
-            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+        setDisplayUiExtensionPoints: (
+            _,
+            args: Codegen.SetDisplayUiExtensionPointsMutationVariables,
+            { cache },
+        ): boolean => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<Codegen.GetUiStateQuery>({ query: GET_UI_STATE })!;
             const data = updateUiState(previous, 'displayUiExtensionPoints', args.display);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.display;
         },
-        setActiveChannel: (_, args: SetActiveChannel.Variables, { cache }): UserStatus => {
-            // tslint:disable-next-line:no-non-null-assertion
-            const previous = cache.readQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })!;
+        setMainNavExpanded: (_, args: Codegen.SetMainNavExpandedMutationVariables, { cache }): boolean => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<Codegen.GetUiStateQuery>({ query: GET_UI_STATE })!;
+            const data = updateUiState(previous, 'mainNavExpanded', args.expanded);
+            cache.writeQuery({ query: GET_UI_STATE, data });
+            return args.expanded;
+        },
+        setActiveChannel: (_, args: Codegen.SetActiveChannelMutationVariables, { cache }): UserStatus => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<GetUserStatusQuery>({ query: GET_USER_STATUS })!;
             const activeChannel = previous.userStatus.channels.find(c => c.id === args.channelId);
             if (!activeChannel) {
                 throw new Error('setActiveChannel: Could not find Channel with ID ' + args.channelId);
@@ -125,9 +125,9 @@ export const clientResolvers: ResolverDefinition = {
             cache.writeQuery({ query: GET_USER_STATUS, data });
             return data.userStatus;
         },
-        updateUserChannels: (_, args: UpdateUserChannels.Variables, { cache }): UserStatus => {
-            // tslint:disable-next-line:no-non-null-assertion
-            const previous = cache.readQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })!;
+        updateUserChannels: (_, args: Codegen.UpdateUserChannelsMutationVariables, { cache }): UserStatus => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const previous = cache.readQuery<GetUserStatusQuery>({ query: GET_USER_STATUS })!;
             const data = {
                 userStatus: {
                     ...previous.userStatus,
@@ -140,11 +140,11 @@ export const clientResolvers: ResolverDefinition = {
     },
 };
 
-function updateUiState<K extends keyof GetUiState.Query['uiState']>(
-    previous: GetUiState.Query,
+function updateUiState<K extends keyof Codegen.GetUiStateQuery['uiState']>(
+    previous: Codegen.GetUiStateQuery,
     key: K,
-    value: GetUiState.Query['uiState'][K],
-): GetUiState.Query {
+    value: Codegen.GetUiStateQuery['uiState'][K],
+): Codegen.GetUiStateQuery {
     return {
         uiState: {
             ...previous.uiState,
@@ -155,9 +155,9 @@ function updateUiState<K extends keyof GetUiState.Query['uiState']>(
 }
 
 function updateRequestsInFlight(cache: InMemoryCache, increment: 1 | -1): number {
-    const previous = cache.readQuery<GetNetworkStatus.Query>({ query: GET_NEWTORK_STATUS });
+    const previous = cache.readQuery<Codegen.GetNetworkStatusQuery>({ query: GET_NEWTORK_STATUS });
     const inFlightRequests = previous ? previous.networkStatus.inFlightRequests + increment : increment;
-    const data: GetNetworkStatus.Query = {
+    const data: Codegen.GetNetworkStatusQuery = {
         networkStatus: {
             __typename: 'NetworkStatus',
             inFlightRequests,

@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 import fs from 'fs-extra';
 import path from 'path';
 import { HeritageClause } from 'typescript';
@@ -32,6 +32,7 @@ export class TypescriptDocsRenderer {
             markdown += `\n# ${page.title}\n`;
             const declarationsByWeight = page.declarations.sort((a, b) => a.weight - b.weight);
             for (const info of declarationsByWeight) {
+                markdown += '<div class="symbol">\n';
                 switch (info.kind) {
                     case 'interface':
                         markdown += this.renderInterfaceOrClass(info, typeMap, docsUrl);
@@ -54,19 +55,23 @@ export class TypescriptDocsRenderer {
                     default:
                         assertNever(info);
                 }
-                // markdown += '{{< /declaration >}}\n';
+                markdown += '</div>\n';
             }
 
-            const categoryDir = path.join(outputPath, page.category);
-            const indexFile = path.join(categoryDir, '_index.md');
+            const categoryDir = path.join(outputPath, ...page.category);
             if (!fs.existsSync(categoryDir)) {
                 fs.mkdirsSync(categoryDir);
             }
-            if (!fs.existsSync(indexFile)) {
-                const indexFileContent =
-                    generateFrontMatter(page.category, 10, false) + `\n\n# ${page.category}`;
-                fs.writeFileSync(indexFile, indexFileContent);
-                generatedCount++;
+            const pathParts = [];
+            for (const subCategory of page.category) {
+                pathParts.push(subCategory);
+                const indexFile = path.join(outputPath, ...pathParts, '_index.md');
+                if (!fs.existsSync(indexFile)) {
+                    const indexFileContent =
+                        generateFrontMatter(subCategory, 10, false) + `\n\n# ${subCategory}`;
+                    fs.writeFileSync(indexFile, indexFileContent);
+                    generatedCount++;
+                }
             }
 
             fs.writeFileSync(path.join(categoryDir, page.fileName + '.md'), markdown);
@@ -88,19 +93,19 @@ export class TypescriptDocsRenderer {
         output += `\n\n# ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(info);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += '## Signature\n\n';
         output +=
             info.kind === 'interface' ? this.renderInterfaceSignature(info) : this.renderClassSignature(info);
         if (info.extendsClause) {
-            output += `## Extends\n\n`;
+            output += '## Extends\n\n';
             output += `${this.renderHeritageClause(info.extendsClause, knownTypeMap, docsUrl)}\n`;
         }
         if (info.kind === 'class' && info.implementsClause) {
-            output += `## Implements\n\n`;
+            output += '## Implements\n\n';
             output += `${this.renderHeritageClause(info.implementsClause, knownTypeMap, docsUrl)}\n`;
         }
         if (info.members && info.members.length) {
-            output += `## Members\n\n`;
+            output += '## Members\n\n';
             output += `${this.renderMembers(info, knownTypeMap, docsUrl)}\n`;
         }
         return output;
@@ -115,10 +120,10 @@ export class TypescriptDocsRenderer {
         output += `\n\n# ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(typeAliasInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += '## Signature\n\n';
         output += this.renderTypeAliasSignature(typeAliasInfo);
         if (typeAliasInfo.members && typeAliasInfo.members.length) {
-            output += `## Members\n\n`;
+            output += '## Members\n\n';
             output += `${this.renderMembers(typeAliasInfo, knownTypeMap, docsUrl)}\n`;
         }
         return output;
@@ -130,7 +135,7 @@ export class TypescriptDocsRenderer {
         output += `\n\n# ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(enumInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += '## Signature\n\n';
         output += this.renderEnumSignature(enumInfo);
         return output;
     }
@@ -141,10 +146,10 @@ export class TypescriptDocsRenderer {
         output += `\n\n# ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(functionInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
-        output += `## Signature\n\n`;
+        output += '## Signature\n\n';
         output += this.renderFunctionSignature(functionInfo, knownTypeMap);
         if (parameters.length) {
-            output += `## Parameters\n\n`;
+            output += '## Parameters\n\n';
             output += this.renderFunctionParams(parameters, knownTypeMap, docsUrl);
         }
         return output;
@@ -165,15 +170,15 @@ export class TypescriptDocsRenderer {
     private renderInterfaceSignature(interfaceInfo: InterfaceInfo): string {
         const { fullText, members } = interfaceInfo;
         let output = '';
-        output += `\`\`\`TypeScript\n`;
+        output += '```TypeScript\n';
         output += `interface ${fullText} `;
         if (interfaceInfo.extendsClause) {
             output += interfaceInfo.extendsClause.getText() + ' ';
         }
-        output += `{\n`;
-        output += members.map(member => `  ${member.fullText}`).join(`\n`);
-        output += `\n}\n`;
-        output += `\`\`\`\n`;
+        output += '{\n';
+        output += members.map(member => `  ${member.fullText}`).join('\n');
+        output += '\n}\n';
+        output += '```\n';
 
         return output;
     }
@@ -181,7 +186,7 @@ export class TypescriptDocsRenderer {
     private renderClassSignature(classInfo: ClassInfo): string {
         const { fullText, members } = classInfo;
         let output = '';
-        output += `\`\`\`TypeScript\n`;
+        output += '```TypeScript\n';
         output += `class ${fullText} `;
         if (classInfo.extendsClause) {
             output += classInfo.extendsClause.getText() + ' ';
@@ -189,7 +194,7 @@ export class TypescriptDocsRenderer {
         if (classInfo.implementsClause) {
             output += classInfo.implementsClause.getText() + ' ';
         }
-        output += `{\n`;
+        output += '{\n';
         const renderModifiers = (modifiers: string[]) => (modifiers.length ? modifiers.join(' ') + ' ' : '');
         output += members
             .map(member => {
@@ -206,9 +211,9 @@ export class TypescriptDocsRenderer {
                     return `  ${renderModifiers(member.modifiers)}${member.fullText}`;
                 }
             })
-            .join(`\n`);
-        output += `\n}\n`;
-        output += `\`\`\`\n`;
+            .join('\n');
+        output += '\n}\n';
+        output += '```\n';
 
         return output;
     }
@@ -216,36 +221,36 @@ export class TypescriptDocsRenderer {
     private renderTypeAliasSignature(typeAliasInfo: TypeAliasInfo): string {
         const { fullText, members, type } = typeAliasInfo;
         let output = '';
-        output += `\`\`\`TypeScript\n`;
+        output += '```TypeScript\n';
         output += `type ${fullText} = `;
         if (members) {
-            output += `{\n`;
-            output += members.map(member => `  ${member.fullText}`).join(`\n`);
-            output += `\n}\n`;
+            output += '{\n';
+            output += members.map(member => `  ${member.fullText}`).join('\n');
+            output += '\n}\n';
         } else {
-            output += type.getText() + `\n`;
+            output += type.getText() + '\n';
         }
-        output += `\`\`\`\n`;
+        output += '```\n';
         return output;
     }
 
     private renderEnumSignature(enumInfo: EnumInfo): string {
         const { fullText, members } = enumInfo;
         let output = '';
-        output += `\`\`\`TypeScript\n`;
+        output += '```TypeScript\n';
         output += `enum ${fullText} `;
         if (members) {
-            output += `{\n`;
+            output += '{\n';
             output += members
                 .map(member => {
                     let line = member.description ? `  // ${member.description}\n` : '';
                     line += `  ${member.fullText}`;
                     return line;
                 })
-                .join(`\n`);
-            output += `\n}\n`;
+                .join('\n');
+            output += '\n}\n';
         }
-        output += `\`\`\`\n`;
+        output += '```\n';
         return output;
     }
 
@@ -253,9 +258,9 @@ export class TypescriptDocsRenderer {
         const { fullText, parameters, type } = functionInfo;
         const args = parameters.map(p => this.renderParameter(p, p.type)).join(', ');
         let output = '';
-        output += `\`\`\`TypeScript\n`;
+        output += '```TypeScript\n';
         output += `function ${fullText}(${args}): ${type ? type.getText() : 'void'}\n`;
-        output += `\`\`\`\n`;
+        output += '```\n';
         return output;
     }
 
@@ -307,7 +312,7 @@ export class TypescriptDocsRenderer {
                 experimentalParam = 'experimental="true"';
             }
             output += `### ${member.name}\n\n`;
-            output += `{{< member-info kind="${[...member.modifiers, member.kind].join(
+            output += `{{< member-info kind="${[member.kind].join(
                 ' ',
             )}" type="${type}" ${defaultParam} ${sinceParam}${experimentalParam}>}}\n\n`;
             output += `{{< member-description >}}${this.renderDescription(
@@ -340,7 +345,7 @@ export class TypescriptDocsRenderer {
         }
         let experimental = '';
         if (info.experimental) {
-            experimental = ` experimental="true"`;
+            experimental = ' experimental="true"';
         }
         return `{{< generation-info sourceFile="${sourceFile}" sourceLine="${info.sourceLine}" packageName="${info.packageName}"${sinceData}${experimental}>}}\n\n`;
     }

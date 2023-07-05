@@ -1,49 +1,73 @@
-<vdr-action-bar>
-    <vdr-ab-right>
-        <vdr-action-bar-items locationId="tax-category-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateTaxCategory']">
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'settings.create-new-tax-category' | translate }}
-        </a>
-    </vdr-ab-right>
-</vdr-action-bar>
-
-<vdr-data-table [items]="taxCategories$ | async">
-    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column></vdr-dt-column>
-    <ng-template let-taxCategory="item">
-        <td class="left align-middle">{{ taxCategory.name }}</td>
-        <td class="left align-middle">
+<vdr-page-block>
+    <vdr-action-bar>
+        <vdr-ab-left> </vdr-ab-left>
+        <vdr-ab-right>
+            <vdr-action-bar-items locationId="tax-category-list"></vdr-action-bar-items>
+            <a
+                class="btn btn-primary"
+                *vdrIfPermissions="['CreateSettings', 'CreateTaxCategory']"
+                [routerLink]="['./', 'create']"
+            >
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'settings.create-new-tax-category' | translate }}
+            </a>
+        </vdr-ab-right>
+    </vdr-action-bar>
+</vdr-page-block>
+<vdr-data-table-2
+    id="tax-category-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <vdr-bulk-action-menu
+        locationId="tax-category-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    />
+    <vdr-dt2-search
+        [searchTermControl]="searchTermControl"
+        [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+    />
+    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-taxCategory="item">
+            {{ taxCategory.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.created-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('createdAt')"
+    >
+        <ng-template let-taxCategory="item">
+            {{ taxCategory.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'common.updated-at' | translate"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('updatedAt')"
+    >
+        <ng-template let-taxCategory="item">
+            {{ taxCategory.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+        <ng-template let-taxCategory="item">
+            <a class="button-ghost" [routerLink]="['./', taxCategory.id]"
+                ><span>{{ taxCategory.name }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'common.default-tax-category' | translate">
+        <ng-template let-taxCategory="item">
             <vdr-chip *ngIf="taxCategory.isDefault">{{ 'common.default-tax-category' | translate }}</vdr-chip>
-        </td>
-        <td class="right align-middle">
-            <vdr-table-row-action
-                iconShape="edit"
-                [label]="'common.edit' | translate"
-                [linkTo]="['./', taxCategory.id]"
-            ></vdr-table-row-action>
-        </td>
-        <td class="right align-middle">
-            <vdr-dropdown>
-                <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
-                    {{ 'common.actions' | translate }}
-                    <clr-icon shape="caret down"></clr-icon>
-                </button>
-                <vdr-dropdown-menu vdrPosition="bottom-right">
-                    <button
-                        type="button"
-                        class="delete-button"
-                        (click)="deleteTaxCategory(taxCategory)"
-                        [disabled]="!(['DeleteSettings', 'DeleteTaxCategory'] | hasPermission)"
-                        vdrDropdownItem
-                    >
-                        <clr-icon shape="trash" class="is-danger"></clr-icon>
-                        {{ 'common.delete' | translate }}
-                    </button>
-                </vdr-dropdown-menu>
-            </vdr-dropdown>
-        </td>
-    </ng-template>
-</vdr-data-table>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" [sorts]="sorts" />
+</vdr-data-table-2>

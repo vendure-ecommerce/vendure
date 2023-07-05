@@ -1,12 +1,14 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
+    Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
+    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -14,8 +16,11 @@ import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import path from 'path';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
+
+import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
 
 /**
  * Config settings used during development
@@ -56,19 +61,24 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
+
     customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
+        // MultivendorPlugin.init({
+        //     platformFeePercent: 10,
+        //     platformFeeSKU: 'FEE',
+        // }),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
-        // BullMQJobQueuePlugin.init({}),
-        DefaultJobQueuePlugin.init({}),
+        DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
+        BullMQJobQueuePlugin.init({}),
+        // DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -90,17 +100,65 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            // Un-comment to compile a custom admin ui
+            // app: compileUiExtensions({
+            //     outputPath: path.join(__dirname, './custom-admin-ui'),
+            //     extensions: [
+            //         {
+            //             id: 'test-ui-extension',
+            //             extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
+            //             ngModules: [
+            //                 {
+            //                     type: 'lazy',
+            //                     route: 'greetz',
+            //                     ngModuleFileName: 'greeter.module.ts',
+            //                     ngModuleName: 'GreeterModule',
+            //                 },
+            //                 {
+            //                     type: 'shared',
+            //                     ngModuleFileName: 'greeter-shared.module.ts',
+            //                     ngModuleName: 'GreeterSharedModule',
+            //                 },
+            //             ],
+            //         },
+            //         {
+            //             globalStyles: path.join(
+            //                 __dirname,
+            //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
+            //             ),
+            //         },
+            //         {
+            //             id: 'external-ui-extension',
+            //             extensionPath: path.join(__dirname, 'test-plugins/with-external-ui-extension'),
+            //             ngModules: [
+            //                 {
+            //                     type: 'lazy',
+            //                     route: 'greet',
+            //                     ngModuleFileName: 'external-ui-extension.ts',
+            //                     ngModuleName: 'ExternalUiExtensionModule',
+            //                 },
+            //             ],
+            //             staticAssets: [
+            //                 {
+            //                     path: path.join(__dirname, 'test-plugins/with-external-ui-extension/app'),
+            //                     rename: 'external-app',
+            //                 },
+            //             ],
+            //         },
+            //     ],
+            //     devMode: true,
+            // }),
         }),
     ],
 };
 
-function getDbConfig(): ConnectionOptions {
+function getDbConfig(): DataSourceOptions {
     const dbType = process.env.DB || 'mysql';
     switch (dbType) {
         case 'postgres':
             console.log('Using postgres connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'postgres',
                 host: process.env.DB_HOST || 'localhost',
                 port: Number(process.env.DB_PORT) || 5432,
@@ -134,7 +192,7 @@ function getDbConfig(): ConnectionOptions {
                 port: 3306,
                 username: 'root',
                 password: '',
-                database: 'vendure-dev',
+                database: 'vendure2-dev',
             };
     }
 }

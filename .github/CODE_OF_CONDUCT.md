@@ -1,7 +1,7 @@
 # Vendure Code of Conduct
 
 ## Scope
-This code of conduct applies to those who wish to contribute to the Vendure project (any repo under the [vendure-ecommerce](https://github.com/vendure-ecommerce) organization) by way of issues and pull requests. It also applies to official project communications channels such as Slack.
+This code of conduct applies to those who wish to contribute to the Vendure project (any repo under the [vendure-ecommerce](https://github.com/vendure-ecommerce) organization) by way of issues and pull requests. It also applies to official project communications channels such as Discord.
 
 ## Standards
 

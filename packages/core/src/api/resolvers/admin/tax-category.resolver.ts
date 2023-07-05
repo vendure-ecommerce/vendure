@@ -4,9 +4,12 @@ import {
     MutationCreateTaxCategoryArgs,
     MutationDeleteTaxCategoryArgs,
     MutationUpdateTaxCategoryArgs,
+    MutationDeleteTaxCategoriesArgs,
     Permission,
+    QueryTaxCategoriesArgs,
     QueryTaxCategoryArgs,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
@@ -26,8 +29,11 @@ export class TaxCategoryResolver {
         Permission.ReadProduct,
         Permission.ReadTaxCategory,
     )
-    async taxCategories(@Ctx() ctx: RequestContext): Promise<TaxCategory[]> {
-        return this.taxCategoryService.findAll(ctx);
+    async taxCategories(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryTaxCategoriesArgs,
+    ): Promise<PaginatedList<TaxCategory>> {
+        return this.taxCategoryService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
@@ -67,5 +73,15 @@ export class TaxCategoryResolver {
         @Args() args: MutationDeleteTaxCategoryArgs,
     ): Promise<DeletionResponse> {
         return this.taxCategoryService.delete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings, Permission.DeleteTaxCategory)
+    async deleteTaxCategories(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteTaxCategoriesArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.taxCategoryService.delete(ctx, id)));
     }
 }

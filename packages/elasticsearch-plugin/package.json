@@ -1,33 +1,34 @@
 {
-  "name": "@vendure/elasticsearch-plugin",
-  "version": "1.9.6",
-  "license": "MIT",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "files": [
-    "lib/**/*"
-  ],
-  "scripts": {
-    "watch": "tsc -p ./tsconfig.build.json --watch",
-    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
-    "lint": "tslint --fix --project ./",
-    "test": "jest --config ./jest.config.js",
-    "e2e": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --package=elasticsearch-plugin"
-  },
-  "homepage": "https://www.vendure.io/",
-  "funding": "https://github.com/sponsors/michaelbromley",
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@elastic/elasticsearch": "^7.9.1",
-    "deepmerge": "^4.2.2",
-    "fast-deep-equal": "^3.1.3"
-  },
-  "devDependencies": {
-    "@vendure/common": "^1.9.6",
-    "@vendure/core": "^1.9.6",
-    "rimraf": "^3.0.2",
-    "typescript": "4.3.5"
-  }
+    "name": "@vendure/elasticsearch-plugin",
+    "version": "2.0.3",
+    "license": "MIT",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib/**/*"
+    ],
+    "scripts": {
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+        "lint": "eslint --fix .",
+        "test": "vitest --run",
+        "e2e": "cross-env PACKAGE=elasticsearch-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
+        "e2e:watch": "cross-env PACKAGE=elasticsearch-plugin vitest --config ../../e2e-common/vitest.config.ts"
+    },
+    "homepage": "https://www.vendure.io/",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@elastic/elasticsearch": "~7.9.1",
+        "deepmerge": "^4.2.2",
+        "fast-deep-equal": "^3.1.3"
+    },
+    "devDependencies": {
+        "@vendure/common": "^2.0.3",
+        "@vendure/core": "^2.0.3",
+        "rimraf": "^3.0.2",
+        "typescript": "4.9.5"
+    }
 }

@@ -42,14 +42,15 @@ export class RefundStateMachine {
 
     constructor(private configService: ConfigService, private historyService: HistoryService) {}
 
-    getNextStates(refund: Refund): ReadonlyArray<RefundState> {
+    getNextStates(refund: Refund): readonly RefundState[] {
         const fsm = new FSM(this.config, refund.state);
         return fsm.getNextStates();
     }
 
     async transition(ctx: RequestContext, order: Order, refund: Refund, state: RefundState) {
         const fsm = new FSM(this.config, refund.state);
-        await fsm.transitionTo(state, { ctx, order, refund });
+        const result = await fsm.transitionTo(state, { ctx, order, refund });
         refund.state = state;
+        return result;
     }
 }

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+{{- partial "docs/shared" -}}
+<html>
+
+<head>
+    {{ partial "docs/html-head" . }}
+    {{ template "_internal/opengraph.html" . }}
+    {{ template "_internal/twitter_cards.html" . }}
+</head>
+
+<body>
+
+{{ partial "top-bar" (dict "ctx" . "isDocsPage" true "isLandingPage" false) }}
+<main class="mx-auto lg:max-w-screen-2xl lg:grid lg:grid-cols-12 lg:gap-8">
+
+    <aside class="lg:relative lg:col-span-3" x-data="Components.popover(true)" x-init="open = window.innerWidth > 1024">
+        <div class="sticky top-0 flex flex-col lg:h-screen">
+            <div class="flex justify-center items-center px-6 py-4 bg-gray-100">
+                <label for="search" class="sr-only">Search docs (ctrl + k)</label>
+                <input type="text" name="search" id="searchInputTrigger"
+                       class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                       placeholder="Search docs (ctrl+k)">
+                <button class="p-2 ml-2 lg:hidden" @click="toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+            </div>
+            <nav x-show="open"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="duration-100 ease-in"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="book-menu text-sm flex-1 bg-gray-100 overflow-y-auto overflow-x-hidden flex flex-col" role="navigation">
+                <div class="pl-6 flex-1">
+                    {{ if .Site.Params.BookMenuBundle }}
+                    {{ partial "docs/menu-bundle" . }}
+                    {{ else }}
+                    {{ partial "menu-filetree" . }}
+                    {{ end }}
+                </div>
+                <div class="text-sm w-full border-t border-dotted border-gray-200 py-4 text-gray-400 text-center lowercase">
+                    <a href="https://github.com/vendure-ecommerce/vendure/releases/tag/v{{ $.Site.Data.build.version }}">
+                        v{{ $.Site.Data.build.version }}</a>#<a
+                        href="https://github.com/vendure-ecommerce/vendure/commit/{{ $.Site.Data.build.commit }}">{{
+                    $.Site.Data.build.commit }}
+                </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <div class="lg:col-span-7 mx-2">
+        {{ template "main" . }}
+
+        <div class="book-footer">
+            {{ if gt (dateFormat "2006" $.Page.Lastmod) 2018 }}
+            Generated on {{ dateFormat "Jan 2 2006 at 15:04" $.Page.Lastmod }}
+            {{ end }}
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div class="hidden lg:block sticky top-0 mt-2 py-1 pl-4 rounded">
+            {{ if ge (len .TableOfContents) 150 }}
+                <div class="uppercase text-blue-500 tracking-wider text-sm mt-2">Contents</div>
+                {{ template "toc" . }}
+            {{ end }}
+        </div>
+    </div>
+</main>
+
+<div x-data="Components.popover(false)" @click.self="open = true" id="searchOverlay" @keydown.escape.window="open = false">
+    <div x-show="open" x-cloak class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+         aria-modal="true">
+        <div class="items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                 aria-hidden="true"
+                 x-show="open"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+            ></div>
+
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl w-full sm:p-6"
+                 x-show="open"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+                <div class="relative">
+                    <input type="text" name="search" id="searchInput"
+                           class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                           placeholder="Search docs">
+                    <button class="uppercase text-sm font-bold fixed rounded border border-gray-200 text-gray-400 px-2 right-8 top-7"
+                            @click="open = false">
+                        esc
+                    </button>
+                </div>
+                <div id="autocomplete-wrapper" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ template "_internal/google_analytics_async.html" . }}
+</body>
+
+</html>

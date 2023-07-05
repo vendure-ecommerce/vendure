@@ -8,7 +8,11 @@ const outFile = path.join(__dirname, '../package/static/theme.min.css');
 const result = sass.renderSync({
     file: path.join(__dirname, '../src/lib/static/styles/ui-extension-theme.scss'),
     importer,
-    includePaths: [path.join(__dirname, '../src/lib/static/styles')],
+    includePaths: [
+        path.join(__dirname, '../src/lib/static/styles'),
+        path.join(__dirname, '../src/lib/static/fonts'),
+        path.join(__dirname, '../../../node_modules'),
+    ],
     outputStyle: 'compressed',
     outFile,
 });

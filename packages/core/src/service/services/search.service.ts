@@ -30,7 +30,7 @@ export class SearchService {
             return this.override.reindex(ctx);
         }
         if (!process.env.CI) {
-            Logger.warn(`The SearchService should be overridden by an appropriate search plugin.`);
+            Logger.warn('The SearchService should be overridden by an appropriate search plugin.');
         }
         return new Job({
             queueName: 'error',

@@ -4,9 +4,10 @@ import {
     CreateProductVariantInput,
     DataService,
     DeletionResult,
-    FacetWithValues,
+    FacetWithValuesFragment,
     findTranslation,
-    GetProductWithVariants,
+    GetProductDetailQuery,
+    GetProductWithVariantsQuery,
     LanguageCode,
     UpdateProductInput,
     UpdateProductMutation,
@@ -36,7 +37,7 @@ export class ProductDetailService {
     getTaxCategories() {
         return this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.taxCategories)
+            .mapSingle(data => data.taxCategories.items)
             .pipe(shareReplay(1));
     }
 
@@ -53,19 +54,15 @@ export class ProductDetailService {
             mergeMap(([{ createProduct }, optionGroups]) => {
                 const addOptionsToProduct$ = optionGroups.length
                     ? forkJoin(
-                          optionGroups.map(optionGroup => {
-                              return this.dataService.product.addOptionGroupToProduct({
+                          optionGroups.map(optionGroup =>
+                              this.dataService.product.addOptionGroupToProduct({
                                   productId: createProduct.id,
                                   optionGroupId: optionGroup.id,
-                              });
-                          }),
+                              }),
+                          ),
                       )
                     : of([]);
-                return addOptionsToProduct$.pipe(
-                    map(() => {
-                        return { createProduct, optionGroups };
-                    }),
-                );
+                return addOptionsToProduct$.pipe(map(() => ({ createProduct, optionGroups })));
             }),
             mergeMap(({ createProduct, optionGroups }) => {
                 const variants = createVariantsConfig.variants.map(v => {
@@ -86,7 +83,13 @@ export class ProductDetailService {
                     };
                 });
                 const options = optionGroups.map(og => og.options).reduce((flat, o) => [...flat, ...o], []);
-                return this.createProductVariants(createProduct, variants, options, languageCode);
+                return this.createProductVariants(
+                    createProduct,
+                    variants,
+                    options,
+                    languageCode,
+                    createVariantsConfig.stockLocationId,
+                );
             }),
         );
     }
@@ -94,8 +97,8 @@ export class ProductDetailService {
     createProductOptionGroups(groups: Array<{ name: string; values: string[] }>, languageCode: LanguageCode) {
         return groups.length
             ? forkJoin(
-                  groups.map(c => {
-                      return this.dataService.product
+                  groups.map(c =>
+                      this.dataService.product
                           .createProductOptionGroups({
                               code: normalizeString(c.name, '-'),
                               translations: [{ languageCode, name: c.name }],
@@ -104,8 +107,8 @@ export class ProductDetailService {
                                   translations: [{ languageCode, name: v }],
                               })),
                           })
-                          .pipe(map(data => data.createProductOptionGroup));
-                  }),
+                          .pipe(map(data => data.createProductOptionGroup)),
+                  ),
               )
             : of([]);
     }
@@ -115,6 +118,7 @@ export class ProductDetailService {
         variantData: Array<{ price: number; sku: string; stock: number; optionIds: string[] }>,
         options: Array<{ id: string; name: string }>,
         languageCode: LanguageCode,
+        stockLocationId: string,
     ) {
         const variants: CreateProductVariantInput[] = variantData.map(v => {
             const name = options.length
@@ -128,11 +132,16 @@ export class ProductDetailService {
                 productId: product.id,
                 price: v.price,
                 sku: v.sku,
-                stockOnHand: v.stock,
                 translations: [
                     {
                         languageCode,
                         name,
+                    },
+                ],
+                stockLevels: [
+                    {
+                        stockLocationId,
+                        stockOnHand: v.stock,
                     },
                 ],
                 optionIds: v.optionIds,
@@ -147,7 +156,7 @@ export class ProductDetailService {
     }
 
     updateProduct(updateOptions: {
-        product: GetProductWithVariants.Product;
+        product: NonNullable<GetProductDetailQuery['product']>;
         languageCode: LanguageCode;
         autoUpdate: boolean;
         productInput?: UpdateProductInput;
@@ -159,7 +168,7 @@ export class ProductDetailService {
 
         const variants$ = autoUpdate
             ? this.dataService.product
-                  .getProductVariants({}, product.id)
+                  .getProductVariantsForProduct({}, product.id)
                   .mapSingle(({ productVariants }) => productVariants.items)
             : of([]);
 
@@ -216,12 +225,12 @@ export class ProductDetailService {
 
     updateProductOption(
         input: UpdateProductOptionInput & { autoUpdate: boolean },
-        product: GetProductWithVariants.Product,
+        product: NonNullable<GetProductDetailQuery['product']>,
         languageCode: LanguageCode,
     ) {
         const variants$ = input.autoUpdate
             ? this.dataService.product
-                  .getProductVariants({}, product.id)
+                  .getProductVariantsForProduct({}, product.id)
                   .mapSingle(({ productVariants }) => productVariants.items)
             : of([]);
 

@@ -1,5 +1,27 @@
-import { ChangeDetectionStrategy, Component, ContentChild, EventEmitter, Input, Output } from '@angular/core';
-import { GetZones } from '@vendure/admin-ui/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ContentChild,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import {
+    BulkActionLocationId,
+    DataService,
+    GetZoneListQuery,
+    GetZoneMembersDocument,
+    GetZoneMembersQuery,
+    ItemOf,
+    SelectionManager,
+} from '@vendure/admin-ui/core';
+import { BehaviorSubject, combineLatest, merge, Observable, of, Subject, switchMap } from 'rxjs';
+import { map, startWith, take, takeUntil } from 'rxjs/operators';
 
 import { ZoneMemberControlsDirective } from './zone-member-controls.directive';
 import { ZoneMemberListHeaderDirective } from './zone-member-list-header.directive';
@@ -12,50 +34,87 @@ export type ZoneMember = { id: string; name: string; code: string };
     styleUrls: ['./zone-member-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZoneMemberListComponent {
-    @Input() members: ZoneMember[] = [];
+export class ZoneMemberListComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() locationId: BulkActionLocationId;
+    @Input() members?: ZoneMember[];
     @Input() selectedMemberIds: string[] = [];
+    @Input() activeZone: ItemOf<GetZoneListQuery, 'zones'>;
     @Output() selectionChange = new EventEmitter<string[]>();
     @ContentChild(ZoneMemberListHeaderDirective) headerTemplate: ZoneMemberListHeaderDirective;
     @ContentChild(ZoneMemberControlsDirective) controlsTemplate: ZoneMemberControlsDirective;
-    filterTerm = '';
+    members$: Observable<NonNullable<GetZoneMembersQuery['zone']>['members'] | ZoneMember[]>;
+    filterTermControl = new FormControl('');
+    filteredMembers$: Observable<ZoneMember[]>;
+    totalItems$: Observable<number>;
+    currentPage = 1;
+    itemsPerPage = 10;
+    selectionManager = new SelectionManager<ZoneMember>({
+        multiSelect: true,
+        itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: true,
+    });
+    private membersInput$ = new Subject<ZoneMember[]>();
+    private activeZoneInput$ = new BehaviorSubject<ItemOf<GetZoneListQuery, 'zones'> | undefined>(undefined);
+    private destroy$ = new Subject<void>();
+    private refresh$ = new Subject<void>();
 
-    filteredMembers(): ZoneMember[] {
-        if (this.filterTerm !== '') {
-            const term = this.filterTerm.toLocaleLowerCase();
-            return this.members.filter(
-                m => m.name.toLocaleLowerCase().includes(term) || m.code.toLocaleLowerCase().includes(term),
+    constructor(private dataService: DataService) {}
+
+    ngOnInit() {
+        const activeZoneMembers$ = merge(this.activeZoneInput$, this.refresh$).pipe(
+            switchMap(activeZone =>
+                this.activeZone
+                    ? this.dataService
+                          .query(GetZoneMembersDocument, { zoneId: this.activeZone.id })
+                          .mapSingle(({ zone }) => zone?.members ?? [])
+                    : of([]),
+            ),
+        );
+        this.members$ = merge(activeZoneMembers$, this.membersInput$);
+
+        this.members$.pipe(take(1)).subscribe(members => {
+            this.selectionManager.setCurrentItems(
+                members?.filter(m => this.selectedMemberIds.includes(m.id)) ?? [],
             );
-        } else {
-            return this.members;
+        });
+        this.selectionManager.selectionChanges$.pipe(takeUntil(this.destroy$)).subscribe(selection => {
+            this.selectionChange.emit(selection.map(s => s.id));
+        });
+        this.filteredMembers$ = combineLatest(
+            this.members$,
+            this.filterTermControl.valueChanges.pipe(startWith('')),
+        ).pipe(
+            map(([members, filterTerm]) => {
+                if (filterTerm) {
+                    const term = filterTerm?.toLocaleLowerCase() ?? '';
+                    return members.filter(
+                        m =>
+                            m.name.toLocaleLowerCase().includes(term) ||
+                            m.code.toLocaleLowerCase().includes(term),
+                    );
+                } else {
+                    return members;
+                }
+            }),
+        );
+        this.totalItems$ = this.filteredMembers$.pipe(map(members => members.length));
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if ('members' in changes) {
+            this.membersInput$.next(this.members ?? []);
+        }
+        if ('activeZone' in changes) {
+            this.activeZoneInput$.next(this.activeZone);
         }
     }
 
-    areAllSelected(): boolean {
-        if (this.members) {
-            return this.selectedMemberIds.length === this.members.length;
-        } else {
-            return false;
-        }
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
-    toggleSelectAll() {
-        if (this.areAllSelected()) {
-            this.selectionChange.emit([]);
-        } else {
-            this.selectionChange.emit(this.members.map(v => v.id));
-        }
+    refresh() {
+        this.refresh$.next();
     }
-
-    toggleSelectMember({ item: member }: { item: ZoneMember }) {
-        if (this.selectedMemberIds.includes(member.id)) {
-            this.selectionChange.emit(this.selectedMemberIds.filter(id => id !== member.id));
-        } else {
-            this.selectionChange.emit([...this.selectedMemberIds, member.id]);
-        }
-    }
-
-    isMemberSelected = (member: ZoneMember): boolean => {
-        return -1 < this.selectedMemberIds.indexOf(member.id);
-    };
 }

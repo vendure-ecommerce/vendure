@@ -1,40 +1,42 @@
 {
-  "name": "@vendure/asset-server-plugin",
-  "version": "1.9.6",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "files": [
-    "lib/**/*"
-  ],
-  "license": "MIT",
-  "scripts": {
-    "watch": "tsc -p ./tsconfig.build.json --watch",
-    "build": "rimraf lib && tsc -p ./tsconfig.build.json && node build.js",
-    "lint": "tslint --fix --project ./",
-    "test": "jest --config ./jest.config.js",
-    "e2e": "jest --config ../../e2e-common/jest-config.js --package=asset-server-plugin"
-  },
-  "homepage": "https://www.vendure.io/",
-  "funding": "https://github.com/sponsors/michaelbromley",
-  "publishConfig": {
-    "access": "public"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.8",
-    "@types/fs-extra": "^9.0.8",
-    "@types/node-fetch": "^2.5.8",
-    "@types/sharp": "^0.30.4",
-    "@vendure/common": "^1.9.6",
-    "@vendure/core": "^1.9.6",
-    "aws-sdk": "^2.856.0",
-    "express": "^4.17.1",
-    "node-fetch": "^2.6.1",
-    "rimraf": "^3.0.2",
-    "typescript": "4.3.5"
-  },
-  "dependencies": {
-    "file-type": "^16.2.0",
-    "fs-extra": "^10.0.0",
-    "sharp": "~0.31.2"
-  }
+    "name": "@vendure/asset-server-plugin",
+    "version": "2.0.3",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib/**/*"
+    ],
+    "license": "MIT",
+    "scripts": {
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "build": "rimraf lib && tsc -p ./tsconfig.build.json && node build.js",
+        "lint": "eslint --fix .",
+        "test": "vitest --run",
+        "e2e": "cross-env PACKAGE=asset-server-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
+        "e2e:watch": "cross-env PACKAGE=asset-server-plugin vitest --config ../../e2e-common/vitest.config.ts"
+    },
+    "homepage": "https://www.vendure.io/",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@aws-sdk/client-s3": "^3.312.0",
+        "@aws-sdk/lib-storage": "^3.312.0",
+        "@types/express": "^4.17.8",
+        "@types/fs-extra": "^9.0.8",
+        "@types/node-fetch": "^2.5.8",
+        "@types/sharp": "^0.30.4",
+        "@vendure/common": "^2.0.3",
+        "@vendure/core": "^2.0.3",
+        "express": "^4.17.1",
+        "node-fetch": "^2.6.7",
+        "rimraf": "^3.0.2",
+        "typescript": "4.9.5"
+    },
+    "dependencies": {
+        "file-type": "^16.5.3",
+        "fs-extra": "^10.0.0",
+        "sharp": "~0.32.1"
+    }
 }

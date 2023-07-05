@@ -8,29 +8,14 @@ import {
 } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
-import {
-    AssignPromotionToChannel,
-    ChannelFragment,
-    CreateChannel,
-    CreatePromotion,
-    CurrencyCode,
-    DeletePromotion,
-    DeletionResult,
-    ErrorCode,
-    GetAdjustmentOperations,
-    GetPromotion,
-    GetPromotionList,
-    LanguageCode,
-    Promotion,
-    PromotionFragment,
-    RemovePromotionFromChannel,
-    UpdatePromotion,
-} from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { CurrencyCode, DeletionResult, ErrorCode, LanguageCode } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PROMOTIONS_TO_CHANNEL,
     CREATE_CHANNEL,
@@ -40,7 +25,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Promotion resolver', () => {
     const promoCondition = generateTestCondition('promo_condition');
@@ -55,7 +40,7 @@ describe('Promotion resolver', () => {
         },
     });
 
-    const snapshotProps: Array<keyof Promotion.Fragment> = [
+    const snapshotProps: Array<keyof Codegen.PromotionFragment> = [
         'name',
         'actions',
         'conditions',
@@ -64,9 +49,9 @@ describe('Promotion resolver', () => {
         'startsAt',
         'endsAt',
     ];
-    let promotion: Promotion.Fragment;
+    let promotion: Codegen.PromotionFragment;
 
-    const promotionGuard: ErrorResultGuard<PromotionFragment> = createErrorResultGuard(
+    const promotionGuard: ErrorResultGuard<Codegen.PromotionFragment> = createErrorResultGuard(
         input => !!input.couponCode,
     );
 
@@ -85,15 +70,21 @@ describe('Promotion resolver', () => {
 
     it('createPromotion', async () => {
         const { createPromotion } = await adminClient.query<
-            CreatePromotion.Mutation,
-            CreatePromotion.Variables
+            Codegen.CreatePromotionMutation,
+            Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
             input: {
-                name: 'test promotion',
                 enabled: true,
                 couponCode: 'TEST123',
                 startsAt: new Date('2019-10-30T00:00:00.000Z'),
                 endsAt: new Date('2019-12-01T00:00:00.000Z'),
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test promotion',
+                        description: 'a test promotion',
+                    },
+                ],
                 conditions: [
                     {
                         code: promoCondition.code,
@@ -119,14 +110,54 @@ describe('Promotion resolver', () => {
         expect(pick(promotion, snapshotProps)).toMatchSnapshot();
     });
 
-    it('createPromotion return error result with empty conditions and no couponCode', async () => {
+    it('createPromotion with no description', async () => {
         const { createPromotion } = await adminClient.query<
-            CreatePromotion.Mutation,
-            CreatePromotion.Variables
+            Codegen.CreatePromotionMutation,
+            Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
             input: {
-                name: 'bad promotion',
                 enabled: true,
+                couponCode: 'TEST567',
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test promotion no description',
+                        customFields: {},
+                    },
+                ],
+                conditions: [],
+                actions: [
+                    {
+                        code: promoAction.code,
+                        arguments: [
+                            {
+                                name: 'facetValueIds',
+                                value: '["T_1"]',
+                            },
+                        ],
+                    },
+                ],
+            },
+        });
+        promotionGuard.assertSuccess(createPromotion);
+        expect(createPromotion.name).toBe('test promotion no description');
+        expect(createPromotion.description).toBe('');
+        expect(createPromotion.translations[0].description).toBe('');
+    });
+
+    it('createPromotion return error result with empty conditions and no couponCode', async () => {
+        const { createPromotion } = await adminClient.query<
+            Codegen.CreatePromotionMutation,
+            Codegen.CreatePromotionMutationVariables
+        >(CREATE_PROMOTION, {
+            input: {
+                enabled: true,
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'bad promotion',
+                    },
+                ],
                 conditions: [],
                 actions: [
                     {
@@ -151,8 +182,8 @@ describe('Promotion resolver', () => {
 
     it('updatePromotion', async () => {
         const { updatePromotion } = await adminClient.query<
-            UpdatePromotion.Mutation,
-            UpdatePromotion.Variables
+            Codegen.UpdatePromotionMutation,
+            Codegen.UpdatePromotionMutationVariables
         >(UPDATE_PROMOTION, {
             input: {
                 id: promotion.id,
@@ -178,8 +209,8 @@ describe('Promotion resolver', () => {
 
     it('updatePromotion return error result with empty conditions and no couponCode', async () => {
         const { updatePromotion } = await adminClient.query<
-            UpdatePromotion.Mutation,
-            UpdatePromotion.Variables
+            Codegen.UpdatePromotionMutation,
+            Codegen.UpdatePromotionMutationVariables
         >(UPDATE_PROMOTION, {
             input: {
                 id: promotion.id,
@@ -196,27 +227,30 @@ describe('Promotion resolver', () => {
     });
 
     it('promotion', async () => {
-        const result = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
-            id: promotion.id,
-        });
+        const result = await adminClient.query<Codegen.GetPromotionQuery, Codegen.GetPromotionQueryVariables>(
+            GET_PROMOTION,
+            {
+                id: promotion.id,
+            },
+        );
 
         expect(result.promotion!.name).toBe(promotion.name);
     });
 
     it('promotions', async () => {
-        const result = await adminClient.query<GetPromotionList.Query, GetPromotionList.Variables>(
-            GET_PROMOTION_LIST,
-            {},
-        );
+        const result = await adminClient.query<
+            Codegen.GetPromotionListQuery,
+            Codegen.GetPromotionListQueryVariables
+        >(GET_PROMOTION_LIST, {});
 
-        expect(result.promotions.totalItems).toBe(1);
+        expect(result.promotions.totalItems).toBe(2);
         expect(result.promotions.items[0].name).toBe('test promotion');
     });
 
     it('adjustmentOperations', async () => {
         const result = await adminClient.query<
-            GetAdjustmentOperations.Query,
-            GetAdjustmentOperations.Variables
+            Codegen.GetAdjustmentOperationsQuery,
+            Codegen.GetAdjustmentOperationsQueryVariables
         >(GET_ADJUSTMENT_OPERATIONS);
 
         expect(result.promotionActions).toMatchSnapshot();
@@ -225,11 +259,11 @@ describe('Promotion resolver', () => {
 
     describe('channels', () => {
         const SECOND_CHANNEL_TOKEN = 'SECOND_CHANNEL_TOKEN';
-        let secondChannel: ChannelFragment;
+        let secondChannel: Codegen.ChannelFragment;
         beforeAll(async () => {
             const { createChannel } = await adminClient.query<
-                CreateChannel.Mutation,
-                CreateChannel.Variables
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
             >(CREATE_CHANNEL, {
                 input: {
                     code: 'second-channel',
@@ -246,7 +280,7 @@ describe('Promotion resolver', () => {
 
         it('does not list Promotions not in active channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { promotions } = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            const { promotions } = await adminClient.query<Codegen.GetPromotionListQuery>(GET_PROMOTION_LIST);
 
             expect(promotions.totalItems).toBe(0);
             expect(promotions.items).toEqual([]);
@@ -254,12 +288,12 @@ describe('Promotion resolver', () => {
 
         it('does not return Promotion not in active channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { promotion: result } = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
-                GET_PROMOTION,
-                {
-                    id: promotion.id,
-                },
-            );
+            const { promotion: result } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: promotion.id,
+            });
 
             expect(result).toBeNull();
         });
@@ -267,8 +301,8 @@ describe('Promotion resolver', () => {
         it('assignPromotionsToChannel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { assignPromotionsToChannel } = await adminClient.query<
-                AssignPromotionToChannel.Mutation,
-                AssignPromotionToChannel.Variables
+                Codegen.AssignPromotionToChannelMutation,
+                Codegen.AssignPromotionToChannelMutationVariables
             >(ASSIGN_PROMOTIONS_TO_CHANNEL, {
                 input: {
                     channelId: secondChannel.id,
@@ -279,15 +313,15 @@ describe('Promotion resolver', () => {
             expect(assignPromotionsToChannel).toEqual([{ id: promotion.id, name: promotion.name }]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { promotion: result } = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
-                GET_PROMOTION,
-                {
-                    id: promotion.id,
-                },
-            );
+            const { promotion: result } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: promotion.id,
+            });
             expect(result?.id).toBe(promotion.id);
 
-            const { promotions } = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            const { promotions } = await adminClient.query<Codegen.GetPromotionListQuery>(GET_PROMOTION_LIST);
             expect(promotions.totalItems).toBe(1);
             expect(promotions.items.map(pick(['id']))).toEqual([{ id: promotion.id }]);
         });
@@ -295,8 +329,8 @@ describe('Promotion resolver', () => {
         it('removePromotionsFromChannel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { removePromotionsFromChannel } = await adminClient.query<
-                RemovePromotionFromChannel.Mutation,
-                RemovePromotionFromChannel.Variables
+                Codegen.RemovePromotionFromChannelMutation,
+                Codegen.RemovePromotionFromChannelMutationVariables
             >(REMOVE_PROMOTIONS_FROM_CHANNEL, {
                 input: {
                     channelId: secondChannel.id,
@@ -307,52 +341,52 @@ describe('Promotion resolver', () => {
             expect(removePromotionsFromChannel).toEqual([{ id: promotion.id, name: promotion.name }]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { promotion: result } = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
-                GET_PROMOTION,
-                {
-                    id: promotion.id,
-                },
-            );
+            const { promotion: result } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: promotion.id,
+            });
             expect(result).toBeNull();
 
-            const { promotions } = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            const { promotions } = await adminClient.query<Codegen.GetPromotionListQuery>(GET_PROMOTION_LIST);
             expect(promotions.totalItems).toBe(0);
         });
     });
 
     describe('deletion', () => {
-        let allPromotions: GetPromotionList.Items[];
-        let promotionToDelete: GetPromotionList.Items;
+        let allPromotions: Codegen.GetPromotionListQuery['promotions']['items'];
+        let promotionToDelete: Codegen.GetPromotionListQuery['promotions']['items'][number];
 
         beforeAll(async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const result = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            const result = await adminClient.query<Codegen.GetPromotionListQuery>(GET_PROMOTION_LIST);
             allPromotions = result.promotions.items;
         });
 
         it('deletes a promotion', async () => {
             promotionToDelete = allPromotions[0];
-            const result = await adminClient.query<DeletePromotion.Mutation, DeletePromotion.Variables>(
-                DELETE_PROMOTION,
-                { id: promotionToDelete.id },
-            );
+            const result = await adminClient.query<
+                Codegen.DeletePromotionMutation,
+                Codegen.DeletePromotionMutationVariables
+            >(DELETE_PROMOTION, { id: promotionToDelete.id });
 
             expect(result.deletePromotion).toEqual({ result: DeletionResult.DELETED });
         });
 
         it('cannot get a deleted promotion', async () => {
-            const result = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
-                GET_PROMOTION,
-                {
-                    id: promotionToDelete.id,
-                },
-            );
+            const result = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: promotionToDelete.id,
+            });
 
             expect(result.promotion).toBe(null);
         });
 
         it('deleted promotion omitted from list', async () => {
-            const result = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            const result = await adminClient.query<Codegen.GetPromotionListQuery>(GET_PROMOTION_LIST);
 
             expect(result.promotions.items.length).toBe(allPromotions.length - 1);
             expect(result.promotions.items.map(c => c.id).includes(promotionToDelete.id)).toBe(false);
@@ -362,13 +396,16 @@ describe('Promotion resolver', () => {
             'updatePromotion throws for deleted promotion',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
+                    adminClient.query<
+                        Codegen.UpdatePromotionMutation,
+                        Codegen.UpdatePromotionMutationVariables
+                    >(UPDATE_PROMOTION, {
                         input: {
                             id: promotionToDelete.id,
                             enabled: false,
                         },
                     }),
-                `No Promotion with the id '1' could be found`,
+                'No Promotion with the id "1" could be found',
             ),
         );
     });

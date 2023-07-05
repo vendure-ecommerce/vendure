@@ -1,95 +1,35 @@
-import {
-    AddItemToDraftOrderInput,
-    AddItemToDraftOrderMutation,
-    AddItemToDraftOrderMutationVariables,
-    AddManualPayment,
-    AddNoteToOrder,
-    AddNoteToOrderInput,
-    AdjustDraftOrderLineInput,
-    AdjustDraftOrderLineMutation,
-    AdjustDraftOrderLineMutationVariables,
-    ApplyCouponCodeToDraftOrderMutation,
-    ApplyCouponCodeToDraftOrderMutationVariables,
-    CancelOrder,
-    CancelOrderInput,
-    CancelPayment,
-    CreateAddressInput,
-    CreateCustomerInput,
-    CreateDraftOrderMutation,
-    CreateDraftOrderMutationVariables,
-    CreateFulfillment,
-    DeleteDraftOrderMutation,
-    DeleteDraftOrderMutationVariables,
-    DeleteOrderNote,
-    DraftOrderEligibleShippingMethodsQuery,
-    DraftOrderEligibleShippingMethodsQueryVariables,
-    FulfillOrderInput,
-    GetOrder,
-    GetOrderHistory,
-    GetOrderList,
-    GetOrderSummary,
-    HistoryEntryListOptions,
-    ManualPaymentInput,
-    ModifyOrder,
-    ModifyOrderInput,
-    OrderListOptions,
-    RefundOrder,
-    RefundOrderInput,
-    RemoveCouponCodeFromDraftOrderMutation,
-    RemoveCouponCodeFromDraftOrderMutationVariables,
-    RemoveDraftOrderLineMutation,
-    RemoveDraftOrderLineMutationVariables,
-    SetCustomerForDraftOrderMutation,
-    SetCustomerForDraftOrderMutationVariables,
-    SetDraftOrderBillingAddressMutation,
-    SetDraftOrderBillingAddressMutationVariables,
-    SetDraftOrderShippingAddressMutation,
-    SetDraftOrderShippingAddressMutationVariables,
-    SetDraftOrderShippingMethodMutation,
-    SetDraftOrderShippingMethodMutationVariables,
-    SettlePayment,
-    SettleRefund,
-    SettleRefundInput,
-    TransitionFulfillmentToState,
-    TransitionOrderToState,
-    TransitionPaymentToState,
-    UpdateOrderCustomFields,
-    UpdateOrderInput,
-    UpdateOrderNote,
-    UpdateOrderNoteInput,
-} from '../../common/generated-types';
+import * as Codegen from '../../common/generated-types';
 import {
     ADD_ITEM_TO_DRAFT_ORDER,
     ADD_MANUAL_PAYMENT_TO_ORDER,
     ADD_NOTE_TO_ORDER,
     ADJUST_DRAFT_ORDER_LINE,
+    APPLY_COUPON_CODE_TO_DRAFT_ORDER,
     CANCEL_ORDER,
     CANCEL_PAYMENT,
     CREATE_DRAFT_ORDER,
     CREATE_FULFILLMENT,
+    DELETE_DRAFT_ORDER,
     DELETE_ORDER_NOTE,
+    DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS,
     GET_ORDER,
-    GET_ORDERS_LIST,
     GET_ORDER_HISTORY,
-    GET_ORDER_SUMMARY,
+    GET_ORDERS_LIST,
     MODIFY_ORDER,
     REFUND_ORDER,
+    REMOVE_COUPON_CODE_FROM_DRAFT_ORDER,
     REMOVE_DRAFT_ORDER_LINE,
+    SET_BILLING_ADDRESS_FOR_DRAFT_ORDER,
+    SET_CUSTOMER_FOR_DRAFT_ORDER,
+    SET_DRAFT_ORDER_SHIPPING_METHOD,
+    SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER,
     SETTLE_PAYMENT,
     SETTLE_REFUND,
-    SET_CUSTOMER_FOR_DRAFT_ORDER,
     TRANSITION_FULFILLMENT_TO_STATE,
     TRANSITION_ORDER_TO_STATE,
     TRANSITION_PAYMENT_TO_STATE,
     UPDATE_ORDER_CUSTOM_FIELDS,
     UPDATE_ORDER_NOTE,
-    SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER,
-    SET_BILLING_ADDRESS_FOR_DRAFT_ORDER,
-    APPLY_COUPON_CODE_TO_DRAFT_ORDER,
-    REMOVE_COUPON_CODE_FROM_DRAFT_ORDER,
-    DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS,
-    SET_DRAFT_ORDER_SHIPPING_METHOD,
-    DELETE_DRAFT_ORDER,
 } from '../definitions/order-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -97,235 +37,248 @@ import { BaseDataService } from './base-data.service';
 export class OrderDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getOrders(options: OrderListOptions = { take: 10 }) {
-        return this.baseDataService.query<GetOrderList.Query, GetOrderList.Variables>(GET_ORDERS_LIST, {
-            options,
-        });
-    }
-
-    getOrder(id: string) {
-        return this.baseDataService.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id });
-    }
-
-    getOrderHistory(id: string, options?: HistoryEntryListOptions) {
-        return this.baseDataService.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
-            GET_ORDER_HISTORY,
+    getOrders(options: Codegen.OrderListOptions = { take: 10 }) {
+        return this.baseDataService.query<Codegen.GetOrderListQuery, Codegen.GetOrderListQueryVariables>(
+            GET_ORDERS_LIST,
             {
-                id,
                 options,
             },
         );
     }
 
+    getOrder(id: string) {
+        return this.baseDataService.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(GET_ORDER, {
+            id,
+        });
+    }
+
+    getOrderHistory(id: string, options?: Codegen.HistoryEntryListOptions) {
+        return this.baseDataService.query<
+            Codegen.GetOrderHistoryQuery,
+            Codegen.GetOrderHistoryQueryVariables
+        >(GET_ORDER_HISTORY, {
+            id,
+            options,
+        });
+    }
+
     settlePayment(id: string) {
-        return this.baseDataService.mutate<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
+        return this.baseDataService.mutate<
+            Codegen.SettlePaymentMutation,
+            Codegen.SettlePaymentMutationVariables
+        >(SETTLE_PAYMENT, {
             id,
         });
     }
 
     cancelPayment(id: string) {
-        return this.baseDataService.mutate<CancelPayment.Mutation, CancelPayment.Variables>(CANCEL_PAYMENT, {
+        return this.baseDataService.mutate<
+            Codegen.CancelPaymentMutation,
+            Codegen.CancelPaymentMutationVariables
+        >(CANCEL_PAYMENT, {
             id,
         });
     }
 
     transitionPaymentToState(id: string, state: string) {
         return this.baseDataService.mutate<
-            TransitionPaymentToState.Mutation,
-            TransitionPaymentToState.Variables
+            Codegen.TransitionPaymentToStateMutation,
+            Codegen.TransitionPaymentToStateMutationVariables
         >(TRANSITION_PAYMENT_TO_STATE, {
             id,
             state,
         });
     }
 
-    createFulfillment(input: FulfillOrderInput) {
-        return this.baseDataService.mutate<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
-            CREATE_FULFILLMENT,
-            {
-                input,
-            },
-        );
+    createFulfillment(input: Codegen.FulfillOrderInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateFulfillmentMutation,
+            Codegen.CreateFulfillmentMutationVariables
+        >(CREATE_FULFILLMENT, {
+            input,
+        });
     }
 
     transitionFulfillmentToState(id: string, state: string) {
         return this.baseDataService.mutate<
-            TransitionFulfillmentToState.Mutation,
-            TransitionFulfillmentToState.Variables
+            Codegen.TransitionFulfillmentToStateMutation,
+            Codegen.TransitionFulfillmentToStateMutationVariables
         >(TRANSITION_FULFILLMENT_TO_STATE, {
             id,
             state,
         });
     }
 
-    cancelOrder(input: CancelOrderInput) {
-        return this.baseDataService.mutate<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
-            input,
-        });
-    }
-
-    refundOrder(input: RefundOrderInput) {
-        return this.baseDataService.mutate<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
-            input,
-        });
-    }
-
-    settleRefund(input: SettleRefundInput, orderId: string) {
-        return this.baseDataService.mutate<SettleRefund.Mutation, SettleRefund.Variables>(SETTLE_REFUND, {
-            input,
-        });
-    }
-
-    addNoteToOrder(input: AddNoteToOrderInput) {
-        return this.baseDataService.mutate<AddNoteToOrder.Mutation, AddNoteToOrder.Variables>(
-            ADD_NOTE_TO_ORDER,
+    cancelOrder(input: Codegen.CancelOrderInput) {
+        return this.baseDataService.mutate<Codegen.CancelOrderMutation, Codegen.CancelOrderMutationVariables>(
+            CANCEL_ORDER,
             {
                 input,
             },
         );
     }
 
-    updateOrderNote(input: UpdateOrderNoteInput) {
-        return this.baseDataService.mutate<UpdateOrderNote.Mutation, UpdateOrderNote.Variables>(
-            UPDATE_ORDER_NOTE,
+    refundOrder(input: Codegen.RefundOrderInput) {
+        return this.baseDataService.mutate<Codegen.RefundOrderMutation, Codegen.RefundOrderMutationVariables>(
+            REFUND_ORDER,
             {
                 input,
             },
         );
+    }
+
+    settleRefund(input: Codegen.SettleRefundInput, orderId: string) {
+        return this.baseDataService.mutate<
+            Codegen.SettleRefundMutation,
+            Codegen.SettleRefundMutationVariables
+        >(SETTLE_REFUND, {
+            input,
+        });
+    }
+
+    addNoteToOrder(input: Codegen.AddNoteToOrderInput) {
+        return this.baseDataService.mutate<
+            Codegen.AddNoteToOrderMutation,
+            Codegen.AddNoteToOrderMutationVariables
+        >(ADD_NOTE_TO_ORDER, {
+            input,
+        });
+    }
+
+    updateOrderNote(input: Codegen.UpdateOrderNoteInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateOrderNoteMutation,
+            Codegen.UpdateOrderNoteMutationVariables
+        >(UPDATE_ORDER_NOTE, {
+            input,
+        });
     }
 
     deleteOrderNote(id: string) {
-        return this.baseDataService.mutate<DeleteOrderNote.Mutation, DeleteOrderNote.Variables>(
-            DELETE_ORDER_NOTE,
-            {
-                id,
-            },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeleteOrderNoteMutation,
+            Codegen.DeleteOrderNoteMutationVariables
+        >(DELETE_ORDER_NOTE, {
+            id,
+        });
     }
 
     transitionToState(id: string, state: string) {
-        return this.baseDataService.mutate<TransitionOrderToState.Mutation, TransitionOrderToState.Variables>(
-            TRANSITION_ORDER_TO_STATE,
-            {
-                id,
-                state,
-            },
-        );
+        return this.baseDataService.mutate<
+            Codegen.TransitionOrderToStateMutation,
+            Codegen.TransitionOrderToStateMutationVariables
+        >(TRANSITION_ORDER_TO_STATE, {
+            id,
+            state,
+        });
     }
 
-    updateOrderCustomFields(input: UpdateOrderInput) {
+    updateOrderCustomFields(input: Codegen.UpdateOrderInput) {
         return this.baseDataService.mutate<
-            UpdateOrderCustomFields.Mutation,
-            UpdateOrderCustomFields.Variables
+            Codegen.UpdateOrderCustomFieldsMutation,
+            Codegen.UpdateOrderCustomFieldsMutationVariables
         >(UPDATE_ORDER_CUSTOM_FIELDS, {
             input,
         });
     }
 
-    getOrderSummary(start: Date, end: Date) {
-        return this.baseDataService.query<GetOrderSummary.Query, GetOrderSummary.Variables>(
-            GET_ORDER_SUMMARY,
+    modifyOrder(input: Codegen.ModifyOrderInput) {
+        return this.baseDataService.mutate<Codegen.ModifyOrderMutation, Codegen.ModifyOrderMutationVariables>(
+            MODIFY_ORDER,
             {
-                start: start.toISOString(),
-                end: end.toISOString(),
+                input,
             },
         );
     }
 
-    modifyOrder(input: ModifyOrderInput) {
-        return this.baseDataService.mutate<ModifyOrder.Mutation, ModifyOrder.Variables>(MODIFY_ORDER, {
-            input,
-        });
-    }
-
-    addManualPaymentToOrder(input: ManualPaymentInput) {
-        return this.baseDataService.mutate<AddManualPayment.Mutation, AddManualPayment.Variables>(
-            ADD_MANUAL_PAYMENT_TO_ORDER,
-            { input },
-        );
+    addManualPaymentToOrder(input: Codegen.ManualPaymentInput) {
+        return this.baseDataService.mutate<
+            Codegen.AddManualPaymentMutation,
+            Codegen.AddManualPaymentMutationVariables
+        >(ADD_MANUAL_PAYMENT_TO_ORDER, { input });
     }
 
     createDraftOrder() {
-        return this.baseDataService.mutate<CreateDraftOrderMutation>(CREATE_DRAFT_ORDER);
+        return this.baseDataService.mutate<Codegen.CreateDraftOrderMutation>(CREATE_DRAFT_ORDER);
     }
 
     deleteDraftOrder(orderId: string) {
-        return this.baseDataService.mutate<DeleteDraftOrderMutation, DeleteDraftOrderMutationVariables>(
-            DELETE_DRAFT_ORDER,
-            { orderId },
-        );
-    }
-
-    addItemToDraftOrder(orderId: string, input: AddItemToDraftOrderInput) {
-        return this.baseDataService.mutate<AddItemToDraftOrderMutation, AddItemToDraftOrderMutationVariables>(
-            ADD_ITEM_TO_DRAFT_ORDER,
-            { orderId, input },
-        );
-    }
-
-    adjustDraftOrderLine(orderId: string, input: AdjustDraftOrderLineInput) {
         return this.baseDataService.mutate<
-            AdjustDraftOrderLineMutation,
-            AdjustDraftOrderLineMutationVariables
+            Codegen.DeleteDraftOrderMutation,
+            Codegen.DeleteDraftOrderMutationVariables
+        >(DELETE_DRAFT_ORDER, { orderId });
+    }
+
+    addItemToDraftOrder(orderId: string, input: Codegen.AddItemToDraftOrderInput) {
+        return this.baseDataService.mutate<
+            Codegen.AddItemToDraftOrderMutation,
+            Codegen.AddItemToDraftOrderMutationVariables
+        >(ADD_ITEM_TO_DRAFT_ORDER, { orderId, input });
+    }
+
+    adjustDraftOrderLine(orderId: string, input: Codegen.AdjustDraftOrderLineInput) {
+        return this.baseDataService.mutate<
+            Codegen.AdjustDraftOrderLineMutation,
+            Codegen.AdjustDraftOrderLineMutationVariables
         >(ADJUST_DRAFT_ORDER_LINE, { orderId, input });
     }
 
     removeDraftOrderLine(orderId: string, orderLineId: string) {
         return this.baseDataService.mutate<
-            RemoveDraftOrderLineMutation,
-            RemoveDraftOrderLineMutationVariables
+            Codegen.RemoveDraftOrderLineMutation,
+            Codegen.RemoveDraftOrderLineMutationVariables
         >(REMOVE_DRAFT_ORDER_LINE, { orderId, orderLineId });
     }
 
     setCustomerForDraftOrder(
         orderId: string,
-        { customerId, input }: { customerId?: string; input?: CreateCustomerInput },
+        { customerId, input }: { customerId?: string; input?: Codegen.CreateCustomerInput },
     ) {
         return this.baseDataService.mutate<
-            SetCustomerForDraftOrderMutation,
-            SetCustomerForDraftOrderMutationVariables
+            Codegen.SetCustomerForDraftOrderMutation,
+            Codegen.SetCustomerForDraftOrderMutationVariables
         >(SET_CUSTOMER_FOR_DRAFT_ORDER, { orderId, customerId, input });
     }
 
-    setDraftOrderShippingAddress(orderId: string, input: CreateAddressInput) {
+    setDraftOrderShippingAddress(orderId: string, input: Codegen.CreateAddressInput) {
         return this.baseDataService.mutate<
-            SetDraftOrderShippingAddressMutation,
-            SetDraftOrderShippingAddressMutationVariables
+            Codegen.SetDraftOrderShippingAddressMutation,
+            Codegen.SetDraftOrderShippingAddressMutationVariables
         >(SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER, { orderId, input });
     }
 
-    setDraftOrderBillingAddress(orderId: string, input: CreateAddressInput) {
+    setDraftOrderBillingAddress(orderId: string, input: Codegen.CreateAddressInput) {
         return this.baseDataService.mutate<
-            SetDraftOrderBillingAddressMutation,
-            SetDraftOrderBillingAddressMutationVariables
+            Codegen.SetDraftOrderBillingAddressMutation,
+            Codegen.SetDraftOrderBillingAddressMutationVariables
         >(SET_BILLING_ADDRESS_FOR_DRAFT_ORDER, { orderId, input });
     }
 
     applyCouponCodeToDraftOrder(orderId: string, couponCode: string) {
         return this.baseDataService.mutate<
-            ApplyCouponCodeToDraftOrderMutation,
-            ApplyCouponCodeToDraftOrderMutationVariables
+            Codegen.ApplyCouponCodeToDraftOrderMutation,
+            Codegen.ApplyCouponCodeToDraftOrderMutationVariables
         >(APPLY_COUPON_CODE_TO_DRAFT_ORDER, { orderId, couponCode });
     }
 
     removeCouponCodeFromDraftOrder(orderId: string, couponCode: string) {
         return this.baseDataService.mutate<
-            RemoveCouponCodeFromDraftOrderMutation,
-            RemoveCouponCodeFromDraftOrderMutationVariables
+            Codegen.RemoveCouponCodeFromDraftOrderMutation,
+            Codegen.RemoveCouponCodeFromDraftOrderMutationVariables
         >(REMOVE_COUPON_CODE_FROM_DRAFT_ORDER, { orderId, couponCode });
     }
 
     getDraftOrderEligibleShippingMethods(orderId: string) {
         return this.baseDataService.query<
-            DraftOrderEligibleShippingMethodsQuery,
-            DraftOrderEligibleShippingMethodsQueryVariables
+            Codegen.DraftOrderEligibleShippingMethodsQuery,
+            Codegen.DraftOrderEligibleShippingMethodsQueryVariables
         >(DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS, { orderId });
     }
 
     setDraftOrderShippingMethod(orderId: string, shippingMethodId: string) {
         return this.baseDataService.mutate<
-            SetDraftOrderShippingMethodMutation,
-            SetDraftOrderShippingMethodMutationVariables
+            Codegen.SetDraftOrderShippingMethodMutation,
+            Codegen.SetDraftOrderShippingMethodMutationVariables
         >(SET_DRAFT_ORDER_SHIPPING_METHOD, { orderId, shippingMethodId });
     }
 }

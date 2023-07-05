@@ -1,6 +1,6 @@
 import { RequestContext } from '../../api/common/request-context';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 
 import { MergedOrderLine, OrderMergeStrategy, toMergedOrderLine } from './order-merge-strategy';
 

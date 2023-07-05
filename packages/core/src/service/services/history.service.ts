@@ -3,6 +3,7 @@ import { UpdateCustomerInput as UpdateCustomerShopInput } from '@vendure/common/
 import {
     HistoryEntryListOptions,
     HistoryEntryType,
+    OrderLineInput,
     UpdateAddressInput,
     UpdateCustomerInput,
 } from '@vendure/common/lib/generated-types';
@@ -50,9 +51,9 @@ export interface CustomerHistoryEntryData {
     [HistoryEntryType.CUSTOMER_ADDRESS_DELETED]: {
         address: string;
     };
-    [HistoryEntryType.CUSTOMER_PASSWORD_UPDATED]: {};
-    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED]: {};
-    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED]: {};
+    [HistoryEntryType.CUSTOMER_PASSWORD_UPDATED]: Record<string, never>;
+    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED]: Record<string, never>;
+    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED]: Record<string, never>;
     [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED]: {
         oldEmailAddress: string;
         newEmailAddress: string;
@@ -85,7 +86,7 @@ export interface OrderHistoryEntryData {
         fulfillmentId: ID;
     };
     [HistoryEntryType.ORDER_CANCELLATION]: {
-        orderItemIds: ID[];
+        lines: OrderLineInput[];
         shippingCancelled: boolean;
         reason?: string;
     };
@@ -387,7 +388,7 @@ export class HistoryService {
     private async getAdministratorFromContext(ctx: RequestContext): Promise<Administrator | undefined> {
         const administrator = ctx.activeUserId
             ? await this.administratorService.findOneByUserId(ctx, ctx.activeUserId)
-            : undefined;
-        return administrator;
+            : null;
+        return administrator ?? undefined;
     }
 }

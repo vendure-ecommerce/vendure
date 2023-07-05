@@ -9,8 +9,8 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { CustomFieldConfig, GetAvailableCountries, ModalService } from '@vendure/admin-ui/core';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { CustomFieldConfig, GetAvailableCountriesQuery, ModalService } from '@vendure/admin-ui/core';
 import { BehaviorSubject } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
@@ -23,9 +23,9 @@ import { AddressDetailDialogComponent } from '../address-detail-dialog/address-d
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressCardComponent implements OnInit, OnChanges {
-    @Input() addressForm: FormGroup;
+    @Input() addressForm: UntypedFormGroup;
     @Input() customFields: CustomFieldConfig;
-    @Input() availableCountries: GetAvailableCountries.Items[] = [];
+    @Input() availableCountries: GetAvailableCountriesQuery['countries']['items'] = [];
     @Input() isDefaultBilling: string;
     @Input() isDefaultShipping: string;
     @Input() editable = true;
@@ -37,7 +37,7 @@ export class AddressCardComponent implements OnInit, OnChanges {
     constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
 
     ngOnInit(): void {
-        const streetLine1 = this.addressForm.get('streetLine1') as FormControl;
+        const streetLine1 = this.addressForm.get('streetLine1') as UntypedFormControl;
         // Make the address dialog display automatically if there is no address line
         // as is the case when adding a new address.
         if (!streetLine1.value) {

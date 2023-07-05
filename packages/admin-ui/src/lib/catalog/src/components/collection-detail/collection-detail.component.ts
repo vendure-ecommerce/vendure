@@ -6,19 +6,19 @@ import {
     OnInit,
     ViewChild,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, UntypedFormArray, UntypedFormControl, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Asset,
-    BaseDetailComponent,
     Collection,
+    COLLECTION_FRAGMENT,
+    CollectionDetailQueryDocument,
+    CollectionFragment,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreateCollectionInput,
     createUpdatedTranslatable,
-    CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
     findTranslation,
@@ -28,15 +28,25 @@ import {
     ModalService,
     NotificationService,
     Permission,
-    ServerConfigService,
+    TypedBaseDetailComponent,
     unicodePatternValidator,
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { gql } from 'apollo-angular';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
-import { debounceTime, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
+
+export const COLLECTION_DETAIL_QUERY = gql`
+    query CollectionDetailQuery($id: ID!) {
+        collection(id: $id) {
+            ...Collection
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;
 
 @Component({
     selector: 'vdr-collection-detail',
@@ -45,15 +55,26 @@ import { CollectionContentsComponent } from '../collection-contents/collection-c
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionDetailComponent
-    extends BaseDetailComponent<Collection.Fragment>
+    extends TypedBaseDetailComponent<typeof CollectionDetailQueryDocument, 'collection'>
     implements OnInit, OnDestroy
 {
-    customFields: CustomFieldConfig[];
-    detailForm: FormGroup;
+    customFields = this.getCustomFieldConfig('Collection');
+    detailForm = this.formBuilder.group({
+        name: ['', Validators.required],
+        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
+        description: '',
+        visible: false,
+        inheritFilters: true,
+        filters: this.formBuilder.array([]),
+        customFields: this.formBuilder.group(
+            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+        ),
+    });
     assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
     updatedFilters$: Observable<ConfigurableOperationInput[]>;
+    inheritFilters$: Observable<boolean>;
     livePreview = false;
     parentId$: Observable<string | undefined>;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
@@ -61,9 +82,6 @@ export class CollectionDetailComponent
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private formBuilder: FormBuilder,
@@ -71,18 +89,7 @@ export class CollectionDetailComponent
         private modalService: ModalService,
         private localStorageService: LocalStorageService,
     ) {
-        super(route, router, serverConfigService, dataService);
-        this.customFields = this.getCustomFieldConfig('Collection');
-        this.detailForm = this.formBuilder.group({
-            name: ['', Validators.required],
-            slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
-            description: '',
-            visible: false,
-            filters: this.formBuilder.array([]),
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
-        });
+        super();
         this.livePreview = this.localStorageService.get('livePreviewCollectionContents') ?? false;
     }
 
@@ -91,7 +98,9 @@ export class CollectionDetailComponent
         this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
-        const filtersFormArray = this.detailForm.get('filters') as FormArray;
+        const filtersFormArray = this.detailForm.get('filters') as UntypedFormArray;
+        const inheritFiltersControl = this.detailForm.get('inheritFilters') as UntypedFormControl;
+        this.inheritFilters$ = inheritFiltersControl.valueChanges.pipe(distinctUntilChanged());
         this.updatedFilters$ = merge(filtersFormArray.statusChanges, this.filterRemoved$).pipe(
             debounceTime(200),
             filter(() => filtersFormArray.touched),
@@ -136,20 +145,16 @@ export class CollectionDetailComponent
      * If creating a new Collection, automatically generate the slug based on the collection name.
      */
     updateSlug(nameValue: string) {
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(take(1))
-            .subscribe(([entity, languageCode]) => {
-                const slugControl = this.detailForm.get(['slug']);
-                const currentTranslation = findTranslation(entity, languageCode);
-                const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
-                if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
-                    slugControl.setValue(normalizeString(`${nameValue}`, '-'));
-                }
-            });
+        const slugControl = this.detailForm.get(['slug']);
+        const currentTranslation = this.entity ? findTranslation(this.entity, this.languageCode) : undefined;
+        const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
+        if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
+            slugControl.setValue(normalizeString(`${nameValue}`, '-'));
+        }
     }
 
     addFilter(collectionFilter: ConfigurableOperation) {
-        const filtersArray = this.detailForm.get('filters') as FormArray;
+        const filtersArray = this.detailForm.get('filters') as UntypedFormArray;
         const argsHash = collectionFilter.args.reduce(
             (output, arg) => ({
                 ...output,
@@ -170,7 +175,7 @@ export class CollectionDetailComponent
     }
 
     removeFilter(index: number) {
-        const filtersArray = this.detailForm.get('filters') as FormArray;
+        const filtersArray = this.detailForm.get('filters') as UntypedFormArray;
         if (index !== -1) {
             filtersArray.removeAt(index);
             filtersArray.markAsDirty();
@@ -184,38 +189,48 @@ export class CollectionDetailComponent
         if (!this.detailForm.dirty) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(
-                take(1),
-                mergeMap(([category, languageCode]) => {
-                    const input = this.getUpdatedCollection(
-                        category,
-                        this.detailForm,
-                        languageCode,
-                    ) as CreateCollectionInput;
-                    const parentId = this.route.snapshot.paramMap.get('parentId');
-                    if (parentId) {
-                        input.parentId = parentId;
-                    }
-                    return this.dataService.collection.createCollection(input);
-                }),
-            )
-            .subscribe(
-                data => {
-                    this.notificationService.success(_('common.notify-create-success'), {
-                        entity: 'Collection',
-                    });
-                    this.assetChanges = {};
-                    this.detailForm.markAsPristine();
-                    this.changeDetector.markForCheck();
-                    this.router.navigate(['../', data.createCollection.id], { relativeTo: this.route });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-create-error'), {
-                        entity: 'Collection',
-                    });
-                },
-            );
+        const input = this.getUpdatedCollection(
+            {
+                id: '',
+                createdAt: '',
+                updatedAt: '',
+                languageCode: this.languageCode,
+                name: '',
+                slug: '',
+                isPrivate: false,
+                breadcrumbs: [],
+                description: '',
+                featuredAsset: null,
+                assets: [],
+                translations: [],
+                inheritFilters: true,
+                filters: [],
+                parent: {} as any,
+                children: null,
+            },
+            this.detailForm,
+            this.languageCode,
+        ) as CreateCollectionInput;
+        const parentId = this.route.snapshot.paramMap.get('parentId');
+        if (parentId) {
+            input.parentId = parentId;
+        }
+        this.dataService.collection.createCollection(input).subscribe(
+            data => {
+                this.notificationService.success(_('common.notify-create-success'), {
+                    entity: 'Collection',
+                });
+                this.assetChanges = {};
+                this.detailForm.markAsPristine();
+                this.changeDetector.markForCheck();
+                this.router.navigate(['../', data.createCollection.id], { relativeTo: this.route });
+            },
+            err => {
+                this.notificationService.error(_('common.notify-create-error'), {
+                    entity: 'Collection',
+                });
+            },
+        );
     }
 
     save() {
@@ -265,7 +280,7 @@ export class CollectionDetailComponent
     /**
      * Sets the values of the form on changes to the category or current language.
      */
-    protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
+    protected setFormValues(entity: CollectionFragment, languageCode: LanguageCode) {
         const currentTranslation = findTranslation(entity, languageCode);
 
         this.detailForm.patchValue({
@@ -273,9 +288,10 @@ export class CollectionDetailComponent
             slug: currentTranslation ? currentTranslation.slug : '',
             description: currentTranslation ? currentTranslation.description : '',
             visible: !entity.isPrivate,
+            inheritFilters: entity.inheritFilters,
         });
 
-        const formArray = this.detailForm.get('filters') as FormArray;
+        const formArray = this.detailForm.get('filters') as UntypedFormArray;
         if (formArray.length !== entity.filters.length) {
             formArray.clear();
             this.filters = [];
@@ -297,8 +313,8 @@ export class CollectionDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedCollection(
-        category: Collection.Fragment,
-        form: FormGroup,
+        category: CollectionFragment,
+        form: typeof this.detailForm,
         languageCode: LanguageCode,
     ): CreateCollectionInput | UpdateCollectionInput {
         const updatedCategory = createUpdatedTranslatable({
@@ -329,16 +345,12 @@ export class CollectionDetailComponent
         operations: ConfigurableOperation[],
         formValueOperations: any,
     ): ConfigurableOperationInput[] {
-        return operations.map((o, i) => {
-            return {
-                code: o.code,
-                arguments: Object.entries(formValueOperations[i].args).map(([name, value], j) => {
-                    return {
-                        name,
-                        value: encodeConfigArgValue(value),
-                    };
-                }),
-            };
-        });
+        return operations.map((o, i) => ({
+            code: o.code,
+            arguments: Object.entries(formValueOperations[i].args).map(([name, value], j) => ({
+                name,
+                value: encodeConfigArgValue(value),
+            })),
+        }));
     }
 }

@@ -1,6 +1,10 @@
 import { AssetType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Observable, Observer } from 'rxjs';
+import { lastValueFrom, Observable, Observer } from 'rxjs';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+
+import { RelationPaths } from '../api/index';
+import { VendureEntity } from '../entity/base/base.entity';
 
 /**
  * Takes a predicate function and returns a negated version.
@@ -23,7 +27,7 @@ export function foundIn<T>(set: T[], compareBy: keyof T) {
  * Used when performing a "find" operation on an entity which we are sure exists, as in the case that we
  * just successfully created or updated it.
  */
-export function assertFound<T>(promise: Promise<T | undefined>): Promise<T> {
+export function assertFound<T>(promise: Promise<T | undefined | null>): Promise<T> {
     return promise as Promise<T>;
 }
 
@@ -71,7 +75,7 @@ export function normalizeEmailAddress(input: string): string {
 export async function awaitPromiseOrObservable<T>(value: T | Promise<T> | Observable<T>): Promise<T> {
     let result = await value;
     if (result instanceof Observable) {
-        result = await result.toPromise();
+        result = await lastValueFrom(result);
     }
     return result;
 }
@@ -99,16 +103,36 @@ export async function awaitPromiseOrObservable<T>(value: T | Promise<T> | Observ
  */
 export function asyncObservable<T>(work: (observer: Observer<T>) => Promise<T | void>): Observable<T> {
     return new Observable<T>(subscriber => {
-        (async () => {
+        void (async () => {
             try {
                 const result = await work(subscriber);
                 if (result) {
                     subscriber.next(result);
                 }
                 subscriber.complete();
-            } catch (e) {
+            } catch (e: any) {
                 subscriber.error(e);
             }
         })();
     });
+}
+
+export function convertRelationPaths<T extends VendureEntity>(
+    relationPaths?: RelationPaths<T> | null,
+): FindOptionsRelations<T> | undefined {
+    const result: FindOptionsRelations<T> = {};
+    if (relationPaths == null) {
+        return undefined;
+    }
+    for (const path of relationPaths) {
+        const parts = (path as string).split('.');
+        let current: any = result;
+        for (const [i, part] of Object.entries(parts)) {
+            if (!current[part]) {
+                current[part] = +i === parts.length - 1 ? true : {};
+            }
+            current = current[part];
+        }
+    }
+    return result;
 }

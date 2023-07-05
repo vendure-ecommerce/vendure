@@ -8,3 +8,4 @@ src/lib/extensions/modules
 src/lib/extensions/*.generated
 scripts
 /src
+.angular

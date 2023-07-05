@@ -25,19 +25,19 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     }),
     new PermissionDefinition({
         name: 'Owner',
-        description: `Owner means the user owns this entity, e.g. a Customer's own Order`,
+        description: "Owner means the user owns this entity, e.g. a Customer's own Order",
         assignable: false,
         internal: true,
     }),
     new PermissionDefinition({
         name: 'Public',
-        description: `Public means any unauthenticated user may perform the operation`,
+        description: 'Public means any unauthenticated user may perform the operation',
         assignable: false,
         internal: true,
     }),
     new PermissionDefinition({
         name: 'UpdateGlobalSettings',
-        description: `Grants permission to update GlobalSettings`,
+        description: 'Grants permission to update GlobalSettings',
         assignable: true,
         internal: false,
     }),
@@ -66,6 +66,8 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     new CrudPermissionDefinition('Tag'),
     new CrudPermissionDefinition('TaxCategory'),
     new CrudPermissionDefinition('TaxRate'),
+    new CrudPermissionDefinition('Seller'),
+    new CrudPermissionDefinition('StockLocation'),
     new CrudPermissionDefinition('System'),
     new CrudPermissionDefinition('Zone'),
 ];

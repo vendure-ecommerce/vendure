@@ -2,12 +2,13 @@ import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
 import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
+import cookieSession from 'cookie-session';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
 import { TestServerOptions } from './types';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * @description
  * A real Vendure server against which the e2e tests should be run.
@@ -37,7 +38,7 @@ export class TestServer {
             const populateFn = () => this.populateInitialData(this.vendureConfig, options);
             await initializer.populate(populateFn);
             await initializer.destroy();
-        } catch (e) {
+        } catch (e: any) {
             throw e;
         }
         await this.bootstrap();
@@ -61,16 +62,15 @@ export class TestServer {
     async destroy() {
         // allow a grace period of any outstanding async tasks to complete
         await new Promise(resolve => global.setTimeout(resolve, 500));
-        await this.app.close();
+        await this.app?.close();
     }
 
     private getCallerFilename(depth: number): string {
-        let pst: ErrorConstructor['prepareStackTrace'];
         let stack: any;
         let file: any;
         let frame: any;
 
-        pst = Error.prepareStackTrace;
+        const pst = Error.prepareStackTrace;
         Error.prepareStackTrace = (_, _stack) => {
             Error.prepareStackTrace = pst;
             return _stack;
@@ -104,7 +104,10 @@ export class TestServer {
     /**
      * Bootstraps an instance of the Vendure server for testing against.
      */
-    private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
+    private async bootstrapForTesting(
+        this: void,
+        userConfig: Partial<VendureConfig>,
+    ): Promise<INestApplication> {
         const config = await preBootstrapConfig(userConfig);
         Logger.useLogger(config.logger);
         const appModule = await import('@vendure/core/dist/app.module');
@@ -114,6 +117,13 @@ export class TestServer {
                 cors: config.apiOptions.cors,
                 logger: new Logger(),
             });
+            const { tokenMethod } = config.authOptions;
+            const usingCookie =
+                tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
+            if (usingCookie) {
+                const { cookieOptions } = config.authOptions;
+                app.use(cookieSession(cookieOptions));
+            }
             const earlyMiddlewares = config.apiOptions.middleware.filter(mid => mid.beforeListen);
             earlyMiddlewares.forEach(mid => {
                 app.use(mid.route, mid.handler);
@@ -122,7 +132,7 @@ export class TestServer {
             await app.get(JobQueueService).start();
             DefaultLogger.restoreOriginalLogLevel();
             return app;
-        } catch (e) {
+        } catch (e: any) {
             console.log(e);
             throw e;
         }

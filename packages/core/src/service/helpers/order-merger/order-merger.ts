@@ -6,8 +6,8 @@ import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { MergedOrderLine } from '../../../config/order/order-merge-strategy';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
 
 export type OrderWithNoLines = Order & { lines: undefined };
 export type OrderWithEmptyLines = Order & { lines: ArrayLike<OrderLine> & { length: 0 } };

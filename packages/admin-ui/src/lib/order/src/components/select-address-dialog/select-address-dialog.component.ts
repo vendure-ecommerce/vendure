@@ -1,14 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import {
     AddressFragment,
     CreateAddressInput,
-    CreateCustomerInput,
     DataService,
     Dialog,
     GetAvailableCountriesQuery,
-    GetCustomerAddressesQuery,
-    GetCustomerAddressesQueryVariables,
+    GetCustomerAddressesDocument,
     OrderAddressFragment,
 } from '@vendure/admin-ui/core';
 import { pick } from '@vendure/common/lib/pick';
@@ -16,8 +14,6 @@ import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Customer } from '../select-customer-dialog/select-customer-dialog.component';
-
-import { GET_CUSTOMER_ADDRESSES } from './select-address-dialog.graphql';
 
 @Component({
     selector: 'vdr-select-address-dialog',
@@ -31,12 +27,12 @@ export class SelectAddressDialogComponent implements OnInit, Dialog<CreateAddres
     addresses$: Observable<AddressFragment[]>;
     customerId: string | undefined;
     currentAddress: OrderAddressFragment | undefined;
-    addressForm: FormGroup;
+    addressForm: UntypedFormGroup;
     selectedAddress: AddressFragment | undefined;
     useExisting = true;
     createNew = false;
 
-    constructor(private dataService: DataService, private formBuilder: FormBuilder) {}
+    constructor(private dataService: DataService, private formBuilder: UntypedFormBuilder) {}
 
     ngOnInit(): void {
         this.addressForm = this.formBuilder.group({
@@ -53,10 +49,7 @@ export class SelectAddressDialogComponent implements OnInit, Dialog<CreateAddres
         this.useExisting = !!this.customerId;
         this.addresses$ = this.customerId
             ? this.dataService
-                  .query<GetCustomerAddressesQuery, GetCustomerAddressesQueryVariables>(
-                      GET_CUSTOMER_ADDRESSES,
-                      { customerId: this.customerId },
-                  )
+                  .query(GetCustomerAddressesDocument, { customerId: this.customerId })
                   .mapSingle(({ customer }) => customer?.addresses ?? [])
                   .pipe(
                       tap(addresses => {

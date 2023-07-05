@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentMethodQuote } from '@vendure/common/lib/generated-shop-types';
 import {
+    AssignPaymentMethodsToChannelInput,
     ConfigurableOperationDefinition,
     CreatePaymentMethodInput,
     DeletionResponse,
     DeletionResult,
+    Permission,
+    RemovePaymentMethodsFromChannelInput,
     UpdatePaymentMethodInput,
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
@@ -13,23 +16,28 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
-import { UserInputError } from '../../common/error/errors';
+import { ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Translated } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { idsAreEqual } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PaymentMethodEligibilityChecker } from '../../config/payment/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Order } from '../../entity/order/order.entity';
+import { PaymentMethodTranslation } from '../../entity/payment-method/payment-method-translation.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentMethodEvent } from '../../event-bus/events/payment-method-event';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
+import { RoleService } from './role.service';
 
 /**
  * @description
@@ -42,11 +50,14 @@ export class PaymentMethodService {
     constructor(
         private connection: TransactionalConnection,
         private configService: ConfigService,
+        private roleService: RoleService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
         private configArgService: ConfigArgService,
         private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
+        private translatableSaver: TranslatableSaver,
+        private translator: TranslatorService,
     ) {}
 
     findAll(
@@ -57,10 +68,13 @@ export class PaymentMethodService {
         return this.listQueryBuilder
             .build(PaymentMethod, options, { ctx, relations, channelId: ctx.channelId })
             .getManyAndCount()
-            .then(([items, totalItems]) => ({
-                items,
-                totalItems,
-            }));
+            .then(([methods, totalItems]) => {
+                const items = methods.map(m => this.translator.translate(m, ctx));
+                return {
+                    items,
+                    totalItems,
+                };
+            });
     }
 
     findOne(
@@ -68,44 +82,60 @@ export class PaymentMethodService {
         paymentMethodId: ID,
         relations: RelationPaths<PaymentMethod> = [],
     ): Promise<PaymentMethod | undefined> {
-        return this.connection.findOneInChannel(ctx, PaymentMethod, paymentMethodId, ctx.channelId, {
-            relations,
-        });
+        return this.connection
+            .findOneInChannel(ctx, PaymentMethod, paymentMethodId, ctx.channelId, {
+                relations,
+            })
+            .then(paymentMethod => {
+                if (paymentMethod) {
+                    return this.translator.translate(paymentMethod, ctx);
+                }
+            });
     }
 
     async create(ctx: RequestContext, input: CreatePaymentMethodInput): Promise<PaymentMethod> {
-        const paymentMethod = new PaymentMethod(input);
-        paymentMethod.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
-        if (input.checker) {
-            paymentMethod.checker = this.configArgService.parseInput(
-                'PaymentMethodEligibilityChecker',
-                input.checker,
-            );
-        }
-        await this.channelService.assignToCurrentChannel(paymentMethod, ctx);
-        const savedPaymentMethod = await this.connection
-            .getRepository(ctx, PaymentMethod)
-            .save(paymentMethod);
+        const savedPaymentMethod = await this.translatableSaver.create({
+            ctx,
+            input,
+            entityType: PaymentMethod,
+            translationType: PaymentMethodTranslation,
+            beforeSave: async pm => {
+                pm.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
+                if (input.checker) {
+                    pm.checker = this.configArgService.parseInput(
+                        'PaymentMethodEligibilityChecker',
+                        input.checker,
+                    );
+                }
+                await this.channelService.assignToCurrentChannel(pm, ctx);
+            },
+        });
         await this.customFieldRelationService.updateRelations(ctx, PaymentMethod, input, savedPaymentMethod);
         this.eventBus.publish(new PaymentMethodEvent(ctx, savedPaymentMethod, 'created', input));
-        return savedPaymentMethod;
+        return assertFound(this.findOne(ctx, savedPaymentMethod.id));
     }
 
     async update(ctx: RequestContext, input: UpdatePaymentMethodInput): Promise<PaymentMethod> {
-        const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, input.id);
-        const updatedPaymentMethod = patchEntity(paymentMethod, omit(input, ['handler', 'checker']));
-        if (input.checker) {
-            paymentMethod.checker = this.configArgService.parseInput(
-                'PaymentMethodEligibilityChecker',
-                input.checker,
-            );
-        }
-        if (input.checker === null) {
-            paymentMethod.checker = null;
-        }
-        if (input.handler) {
-            paymentMethod.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
-        }
+        const updatedPaymentMethod = await this.translatableSaver.update({
+            ctx,
+            input,
+            entityType: PaymentMethod,
+            translationType: PaymentMethodTranslation,
+            beforeSave: async pm => {
+                if (input.checker) {
+                    pm.checker = this.configArgService.parseInput(
+                        'PaymentMethodEligibilityChecker',
+                        input.checker,
+                    );
+                }
+                if (input.checker === null) {
+                    pm.checker = null;
+                }
+                if (input.handler) {
+                    pm.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
+                }
+            },
+        });
         await this.customFieldRelationService.updateRelations(
             ctx,
             PaymentMethod,
@@ -113,7 +143,8 @@ export class PaymentMethodService {
             updatedPaymentMethod,
         );
         this.eventBus.publish(new PaymentMethodEvent(ctx, updatedPaymentMethod, 'updated', input));
-        return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
+        await this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod, { reload: false });
+        return assertFound(this.findOne(ctx, updatedPaymentMethod.id));
     }
 
     async delete(
@@ -145,7 +176,7 @@ export class PaymentMethodService {
                 return {
                     result: DeletionResult.DELETED,
                 };
-            } catch (e) {
+            } catch (e: any) {
                 return {
                     result: DeletionResult.NOT_DELETED,
                     message: e.message || String(e),
@@ -163,6 +194,59 @@ export class PaymentMethodService {
         }
     }
 
+    async assignPaymentMethodsToChannel(
+        ctx: RequestContext,
+        input: AssignPaymentMethodsToChannelInput,
+    ): Promise<Array<Translated<PaymentMethod>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.UpdatePaymentMethod,
+            Permission.UpdateSettings,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        for (const paymentMethodId of input.paymentMethodIds) {
+            const paymentMethod = await this.connection.findOneInChannel(
+                ctx,
+                PaymentMethod,
+                paymentMethodId,
+                ctx.channelId,
+            );
+            await this.channelService.assignToChannels(ctx, PaymentMethod, paymentMethodId, [
+                input.channelId,
+            ]);
+        }
+        return this.connection
+            .findByIdsInChannel(ctx, PaymentMethod, input.paymentMethodIds, ctx.channelId, {})
+            .then(methods => methods.map(method => this.translator.translate(method, ctx)));
+    }
+
+    async removePaymentMethodsFromChannel(
+        ctx: RequestContext,
+        input: RemovePaymentMethodsFromChannelInput,
+    ): Promise<Array<Translated<PaymentMethod>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.DeletePaymentMethod,
+            Permission.DeleteSettings,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
+            throw new UserInputError('error.items-cannot-be-removed-from-default-channel');
+        }
+        for (const paymentMethodId of input.paymentMethodIds) {
+            const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, paymentMethodId);
+            await this.channelService.removeFromChannels(ctx, PaymentMethod, paymentMethodId, [
+                input.channelId,
+            ]);
+        }
+        return this.connection
+            .findByIdsInChannel(ctx, PaymentMethod, input.paymentMethodIds, ctx.channelId, {})
+            .then(methods => methods.map(method => this.translator.translate(method, ctx)));
+    }
+
     getPaymentMethodEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.configArgService
             .getDefinitions('PaymentMethodEligibilityChecker')
@@ -178,9 +262,9 @@ export class PaymentMethodService {
             .getRepository(ctx, PaymentMethod)
             .find({ where: { enabled: true }, relations: ['channels'] });
         const results: PaymentMethodQuote[] = [];
-        const paymentMethodsInChannel = paymentMethods.filter(p =>
-            p.channels.find(pc => idsAreEqual(pc.id, ctx.channelId)),
-        );
+        const paymentMethodsInChannel = paymentMethods
+            .filter(p => p.channels.find(pc => idsAreEqual(pc.id, ctx.channelId)))
+            .map(p => this.translator.translate(p, ctx));
         for (const method of paymentMethodsInChannel) {
             let isEligible = true;
             let eligibilityMessage: string | undefined;
@@ -195,6 +279,7 @@ export class PaymentMethodService {
                     eligibilityMessage = typeof eligible === 'string' ? eligible : undefined;
                 }
             }
+
             results.push({
                 id: method.id,
                 code: method.code,
@@ -224,7 +309,7 @@ export class PaymentMethodService {
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getOne();
         if (!paymentMethod) {
-            throw new UserInputError(`error.payment-method-not-found`, { method });
+            throw new UserInputError('error.payment-method-not-found', { method });
         }
         const handler = this.configArgService.getByCode('PaymentMethodHandler', paymentMethod.handler.code);
         const checker =

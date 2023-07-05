@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { AdminUiAppConfig, AdminUiAppDevModeConfig } from '@vendure/common/lib/shared-types';
 import { ChildProcess, spawn } from 'child_process';
@@ -7,9 +7,14 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
-import { copyGlobalStyleFile, setupScaffold } from './scaffold';
+import { copyGlobalStyleFile, setBaseHref, setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
-import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions, UiExtensionCompilerProcessArgument } from './types';
+import {
+    Extension,
+    StaticAssetDefinition,
+    UiExtensionCompilerOptions,
+    UiExtensionCompilerProcessArgument,
+} from './types';
 import {
     copyStaticAsset,
     copyUiDevkit,
@@ -31,7 +36,8 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { outputPath, baseHref, devMode, watchPort, extensions, command, additionalProcessArguments } = options;
+    const { outputPath, baseHref, devMode, watchPort, extensions, command, additionalProcessArguments } =
+        options;
     const usingYarn = options.command && options.command === 'npm' ? false : shouldUseYarn();
     if (devMode) {
         return runWatchMode(
@@ -39,16 +45,16 @@ export function compileUiExtensions(
             baseHref || DEFAULT_BASE_HREF,
             watchPort || 4200,
             extensions,
-            usingYarn, 
-            additionalProcessArguments
+            usingYarn,
+            additionalProcessArguments,
         );
     } else {
         return runCompileMode(
-            outputPath, 
-            baseHref || DEFAULT_BASE_HREF, 
-            extensions, 
-            usingYarn, 
-            additionalProcessArguments
+            outputPath,
+            baseHref || DEFAULT_BASE_HREF,
+            extensions,
+            usingYarn,
+            additionalProcessArguments,
         );
     }
 }
@@ -58,7 +64,7 @@ function runCompileMode(
     baseHref: string,
     extensions: Extension[],
     usingYarn: boolean,
-    args?: UiExtensionCompilerProcessArgument[]
+    args?: UiExtensionCompilerProcessArgument[],
 ): AdminUiAppConfig {
     const cmd = usingYarn ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
@@ -66,7 +72,8 @@ function runCompileMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const commandArgs = ['run', 'build', `--outputPath="${distPath}"`, `--base-href=${baseHref}`, ...buildProcessArguments(args)];
+            await setBaseHref(outputPath, baseHref);
+            const commandArgs = ['run', 'build', ...buildProcessArguments(args)];
             if (!usingYarn) {
                 // npm requires `--` before any command line args being passed to a script
                 commandArgs.splice(2, 0, '--');
@@ -99,7 +106,7 @@ function runWatchMode(
     port: number,
     extensions: Extension[],
     usingYarn: boolean,
-    args?: UiExtensionCompilerProcessArgument[]
+    args?: UiExtensionCompilerProcessArgument[],
 ): AdminUiAppDevModeConfig {
     const cmd = usingYarn ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
@@ -111,12 +118,13 @@ function runWatchMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
+            await setBaseHref(outputPath, baseHref);
             const adminUiExtensions = extensions.filter(isAdminUiExtension);
             const normalizedExtensions = normalizeExtensions(adminUiExtensions);
             const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
             const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
             const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
-            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`, ...buildProcessArguments(args)], {
+            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, ...buildProcessArguments(args)], {
                 cwd: outputPath,
                 shell: true,
                 stdio: 'inherit',
@@ -219,7 +227,7 @@ function runWatchMode(
                         }
                     }
                     for (const languageCode of Object.keys(allTranslationFiles)) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         const translationFiles = allTranslationFiles[languageCode as LanguageCode]!;
                         for (const file of translationFiles) {
                             if (filePath.includes(path.normalize(file))) {
@@ -236,7 +244,7 @@ function runWatchMode(
 
     close = () => {
         if (watcher) {
-            watcher.close();
+            void watcher.close();
         }
         if (buildProcess) {
             buildProcess.kill();
@@ -252,11 +260,11 @@ function buildProcessArguments(args?: UiExtensionCompilerProcessArgument[]): str
         if (Array.isArray(arg)) {
             const [key, value] = arg;
 
-            return `${key}=${value}`
+            return `${key}=${value as string}`;
         }
 
-        return arg
-    })
+        return arg;
+    });
 }
 
 function baseHrefToRoute(baseHref: string): string {
