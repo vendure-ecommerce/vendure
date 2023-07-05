@@ -505,7 +505,7 @@ describe('Customer resolver', () => {
             customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.user!.verified).toBe(true);
-            expect(sendEmailFn).toHaveBeenCalledTimes(0);
+            expect(sendEmailFn).toHaveBeenCalledTimes(1);
         });
 
         it('return error result when using an existing, non-deleted emailAddress', async () => {
