@@ -1,7 +1,7 @@
 ---
 title: "AdminUiConfig"
 weight: 10
-date: 2023-06-21T06:23:40.375Z
+date: 2023-07-04T11:02:13.639Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # AdminUiConfig
 
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="216" packageName="@vendure/common">}}
+{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="214" packageName="@vendure/common">}}
 
 This interface describes JSON config file (vendure-ui-config.json) used by the Admin UI.
 The values are loaded at run-time by the Admin UI app, and allow core configuration to be

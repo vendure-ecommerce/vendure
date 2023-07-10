@@ -763,6 +763,7 @@ export const GET_PRODUCTS_WITH_VARIANT_PRICES = gql`
                     id
                     price
                     priceWithTax
+                    currencyCode
                     sku
                     facetValues {
                         id
@@ -981,7 +982,7 @@ export const TRANSITION_PAYMENT_TO_STATE = gql`
 `;
 
 export const GET_PRODUCT_VARIANT_LIST = gql`
-    query GetProductVariantLIST($options: ProductVariantListOptions, $productId: ID) {
+    query GetProductVariantList($options: ProductVariantListOptions, $productId: ID) {
         productVariants(options: $options, productId: $productId) {
             items {
                 id
@@ -989,6 +990,11 @@ export const GET_PRODUCT_VARIANT_LIST = gql`
                 sku
                 price
                 priceWithTax
+                currencyCode
+                prices {
+                    currencyCode
+                    price
+                }
             }
             totalItems
         }

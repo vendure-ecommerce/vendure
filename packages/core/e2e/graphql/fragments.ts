@@ -546,6 +546,8 @@ export const CHANNEL_FRAGMENT = gql`
         code
         token
         currencyCode
+        availableCurrencyCodes
+        defaultCurrencyCode
         defaultLanguageCode
         defaultShippingZone {
             id

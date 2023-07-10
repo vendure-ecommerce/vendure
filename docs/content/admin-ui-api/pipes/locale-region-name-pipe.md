@@ -1,7 +1,7 @@
 ---
 title: "LocaleRegionNamePipe"
 weight: 10
-date: 2023-06-21T06:23:42.793Z
+date: 2023-07-04T11:02:15.669Z
 showtoc: true
 generated: true
 ---

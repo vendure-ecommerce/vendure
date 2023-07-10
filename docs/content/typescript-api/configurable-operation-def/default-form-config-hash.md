@@ -1,7 +1,7 @@
 ---
 title: "DefaultFormConfigHash"
 weight: 10
-date: 2023-06-21T06:23:40.359Z
+date: 2023-07-04T11:02:13.621Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # DefaultFormConfigHash
 
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="160" packageName="@vendure/common">}}
+{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="159" packageName="@vendure/common">}}
 
 Used to define the expected arguments for a given default form input component.
 
@@ -40,7 +40,6 @@ type DefaultFormConfigHash = {
   'textarea-form-input': {
         spellcheck?: boolean;
     };
-  'asset-form-input': Record<string, never>;
   'product-multi-form-input': {
         selectionMode?: 'product' | 'variant';
     };
@@ -123,7 +122,7 @@ type DefaultFormConfigHash = {
 
 ### 'select-form-input'
 
-{{< member-info kind="property" type="{         options?: Array&#60;{ value: string; label?: Array&#60;Omit&#60;LocalizedString, '__typename'&#62;&#62; }&#62;;     }"  >}}
+{{< member-info kind="property" type="{         options?: Array&#60;{ value: string; label?: Array&#60;Omit&#60;LocalizedString, '__typename'&#62;&#62; }&#62;;     }"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -135,19 +134,13 @@ type DefaultFormConfigHash = {
 
 ### 'textarea-form-input'
 
-{{< member-info kind="property" type="{         spellcheck?: boolean;     }"  >}}
-
-{{< member-description >}}{{< /member-description >}}
-
-### 'asset-form-input'
-
-{{< member-info kind="property" type="Record&#60;string, never&#62;"  >}}
+{{< member-info kind="property" type="{         spellcheck?: boolean;     }"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
 ### 'product-multi-form-input'
 
-{{< member-info kind="property" type="{         selectionMode?: 'product' | 'variant';     }"  >}}
+{{< member-info kind="property" type="{         selectionMode?: 'product' | 'variant';     }"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

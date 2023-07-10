@@ -1,7 +1,7 @@
 ---
 title: "UserService"
 weight: 10
-date: 2023-06-21T06:23:40.271Z
+date: 2023-07-04T11:02:13.560Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # UserService
 
-{{< generation-info sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="36" packageName="@vendure/core">}}
+{{< generation-info sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="37" packageName="@vendure/core">}}
 
 Contains methods relating to <a href='/typescript-api/entities/user#user'>User</a> entities.
 
@@ -21,7 +21,7 @@ Contains methods relating to <a href='/typescript-api/entities/user#user'>User</
 
 ```TypeScript
 class UserService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator)
+  constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef)
   async getUserById(ctx: RequestContext, userId: ID) => Promise<User | undefined>;
   async getUserByEmailAddress(ctx: RequestContext, emailAddress: string, userType?: 'administrator' | 'customer') => Promise<User | undefined>;
   async createCustomerUser(ctx: RequestContext, identifier: string, password?: string) => Promise<User | PasswordValidationError>;
@@ -34,7 +34,7 @@ class UserService {
   async resetPasswordByToken(ctx: RequestContext, passwordResetToken: string, password: string) => Promise<
         User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError
     >;
-  async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) => ;
+  async changeUserAndNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) => ;
   async setIdentifierChangeToken(ctx: RequestContext, user: User) => Promise<User>;
   async changeIdentifierByToken(ctx: RequestContext, token: string) => Promise<
         | { user: User; oldIdentifier: string }
@@ -48,7 +48,7 @@ class UserService {
 
 ### constructor
 
-{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, roleService: <a href='/typescript-api/services/role-service#roleservice'>RoleService</a>, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator) => UserService"  >}}
+{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, roleService: <a href='/typescript-api/services/role-service#roleservice'>RoleService</a>, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef) => UserService"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -122,7 +122,7 @@ flow.{{< /member-description >}}
 
 If valid, the User's credentials will be updated with the new password.{{< /member-description >}}
 
-### changeNativeIdentifier
+### changeUserAndNativeIdentifier
 
 {{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>, newIdentifier: string) => "  >}}
 
