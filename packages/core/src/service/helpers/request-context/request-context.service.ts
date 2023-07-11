@@ -39,10 +39,11 @@ export class RequestContextService {
         apiType: ApiType;
         channelOrToken?: Channel | string;
         languageCode?: LanguageCode;
+        currencyCode?: CurrencyCode;
         user?: User;
         activeOrderId?: ID;
     }): Promise<RequestContext> {
-        const { req, apiType, channelOrToken, languageCode, user, activeOrderId } = config;
+        const { req, apiType, channelOrToken, languageCode, currencyCode, user, activeOrderId } = config;
         let channel: Channel;
         if (channelOrToken instanceof Channel) {
             channel = channelOrToken;
@@ -73,6 +74,7 @@ export class RequestContextService {
             apiType,
             channel,
             languageCode,
+            currencyCode,
             session,
             isAuthorized: true,
             authorizedAsOwnerOnly: false,
