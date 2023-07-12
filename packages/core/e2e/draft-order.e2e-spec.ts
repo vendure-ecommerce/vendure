@@ -1,10 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { DefaultLogger, mergeConfig, orderPercentageDiscount } from '@vendure/core';
+import {
+    DefaultLogger,
+    DefaultOrderPlacedStrategy,
+    mergeConfig,
+    Order,
+    orderPercentageDiscount,
+    OrderState,
+    RequestContext,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -12,14 +20,35 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { singleStageRefundablePaymentMethod } from './fixtures/test-payment-methods';
 import { ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { CanceledOrderFragment, OrderWithLinesFragment } from './graphql/generated-e2e-admin-types';
+import {
+    AddManualPaymentDocument,
+    AdminTransitionDocument,
+    CanceledOrderFragment,
+    GetOrderDocument,
+    GetOrderPlacedAtDocument,
+    OrderWithLinesFragment,
+} from './graphql/generated-e2e-admin-types';
 import {
     GetActiveCustomerOrdersQuery,
     TestOrderFragmentFragment,
+    TransitionToStateDocument,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import { CREATE_PROMOTION, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
 import { GET_ACTIVE_CUSTOMER_ORDERS } from './graphql/shop-definitions';
+
+class TestOrderPlacedStrategy extends DefaultOrderPlacedStrategy {
+    static spy = vi.fn();
+    shouldSetAsPlaced(
+        ctx: RequestContext,
+        fromState: OrderState,
+        toState: OrderState,
+        order: Order,
+    ): boolean {
+        TestOrderPlacedStrategy.spy(order);
+        return super.shouldSetAsPlaced(ctx, fromState, toState, order);
+    }
+}
 
 describe('Draft Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -27,6 +56,9 @@ describe('Draft Orders resolver', () => {
             logger: new DefaultLogger(),
             paymentOptions: {
                 paymentMethodHandlers: [singleStageRefundablePaymentMethod],
+            },
+            orderOptions: {
+                orderPlacedStrategy: new TestOrderPlacedStrategy(),
             },
             dbConnectionOptions: {
                 logging: true,
@@ -39,7 +71,7 @@ describe('Draft Orders resolver', () => {
 
     const orderGuard: ErrorResultGuard<
         TestOrderFragmentFragment | CanceledOrderFragment | UpdatedOrderFragment
-    > = createErrorResultGuard(input => !!input.lines);
+    > = createErrorResultGuard(input => !!input.lines || !!input.state);
 
     beforeAll(async () => {
         await server.init({
@@ -332,6 +364,39 @@ describe('Draft Orders resolver', () => {
         expect(setDraftOrderShippingMethod.shippingLines.length).toBe(1);
         expect(setDraftOrderShippingMethod.shippingLines[0].shippingMethod.id).toBe('T_2');
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2105
+    it('sets order as placed when payment is settled', async () => {
+        TestOrderPlacedStrategy.spy.mockClear();
+        expect(TestOrderPlacedStrategy.spy.mock.calls.length).toBe(0);
+
+        const { transitionOrderToState } = await adminClient.query(AdminTransitionDocument, {
+            id: draftOrder.id,
+            state: 'ArrangingPayment',
+        });
+
+        orderGuard.assertSuccess(transitionOrderToState);
+        expect(transitionOrderToState.state).toBe('ArrangingPayment');
+
+        const { addManualPaymentToOrder } = await adminClient.query(AddManualPaymentDocument, {
+            input: {
+                orderId: draftOrder.id,
+                metadata: {},
+                method: singleStageRefundablePaymentMethod.code,
+                transactionId: '12345',
+            },
+        });
+
+        orderGuard.assertSuccess(addManualPaymentToOrder);
+        expect(addManualPaymentToOrder.state).toBe('PaymentSettled');
+
+        const { order } = await adminClient.query(GetOrderPlacedAtDocument, {
+            id: draftOrder.id,
+        });
+        expect(order?.orderPlacedAt).not.toBeNull();
+        expect(TestOrderPlacedStrategy.spy.mock.calls.length).toBe(1);
+        expect(TestOrderPlacedStrategy.spy.mock.calls[0][0].code).toBe(draftOrder.code);
+    });
 });
 
 export const CREATE_DRAFT_ORDER = gql`
@@ -469,4 +534,16 @@ export const SET_DRAFT_ORDER_SHIPPING_METHOD = gql`
         }
     }
     ${ORDER_WITH_LINES_FRAGMENT}
+`;
+
+export const GET_ORDER_PLACED_AT = gql`
+    query GetOrderPlacedAt($id: ID!) {
+        order(id: $id) {
+            id
+            createdAt
+            updatedAt
+            state
+            orderPlacedAt
+        }
+    }
 `;
