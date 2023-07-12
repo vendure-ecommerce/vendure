@@ -459,6 +459,7 @@
     "image-title": "Título",
     "insert-image": "Insertar imagen",
     "link-href": "Enlace href",
+    "link-target": "",
     "link-title": "Título del enlace",
     "remove-link": "Eliminar",
     "set-link": "Establecer enlace"

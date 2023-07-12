@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 import { ModalService } from '../../../../providers/modal/modal.service';
 
 import { ContextMenuService } from './context-menu/context-menu.service';
-import { iframeNode, iframeNodeView } from './custom-nodes';
+import { iframeNode, iframeNodeView, linkMark } from './custom-nodes';
 import { buildInputRules } from './inputrules';
 import { buildKeymap } from './keymap';
 import { customMenuPlugin } from './menu/menu-plugin';
@@ -41,7 +41,7 @@ export class ProsemirrorService {
         nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block')
             .append(getTableNodes() as any)
             .addToEnd('iframe', iframeNode),
-        marks: schema.spec.marks,
+        marks: schema.spec.marks.update('link', linkMark),
     });
     private enabled = true;
     /**

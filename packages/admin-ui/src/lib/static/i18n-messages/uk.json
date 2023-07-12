@@ -459,6 +459,7 @@
     "image-title": "Заголовок",
     "insert-image": "Вставити зображення",
     "link-href": "Посилання",
+    "link-target": "",
     "link-title": "Заголовок посилання",
     "remove-link": "Удалить",
     "set-link": "Встановити посилання"
