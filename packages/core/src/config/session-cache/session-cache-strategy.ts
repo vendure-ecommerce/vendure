@@ -79,12 +79,16 @@ export type CachedSession = {
  *     this.client.on('error', err => Logger.error(err.message, loggerCtx, err.stack));
  *   }
  *
+ *   async destroy() {
+ *     await this.client.quit();
+ *   }
+ *
  *   async get(sessionToken: string): Promise<CachedSession | undefined> {
  *     const retrieved = await this.client.get(this.namespace(sessionToken));
  *     if (retrieved) {
  *       try {
  *         return JSON.parse(retrieved);
- *       } catch (e) {
+ *       } catch (e: any) {
  *         Logger.error(`Could not parse cached session data: ${e.message}`, loggerCtx);
  *       }
  *     }
