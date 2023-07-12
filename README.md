@@ -74,6 +74,15 @@ Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **
 1. Configure the [dev config](./packages/dev-server/dev-config.ts), making sure the connection settings in the `getDbConfig()` function are correct for the database type you will be using.
 2. Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the `getDbConfig()` settings. If you are using SQLite, you can skip this step.
 3. Populate mock data: 
+
+#### redis must be installed
+---
+ Mac OS:
+ ```
+ brew install redis
+ brew services start redis
+ ```
+
    ```bash
     cd packages/dev-server
     DB=<mysql|postgres|sqlite> yarn populate
