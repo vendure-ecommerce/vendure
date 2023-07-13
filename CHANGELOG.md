@@ -3,7 +3,7 @@
 
 #### Fixes
 
-* **admin-ui** Allow target attribute on <a> tags in rich text editor ([8f72e1e](https://github.com/vendure-ecommerce/vendure/commit/8f72e1e)), closes [#2281](https://github.com/vendure-ecommerce/vendure/issues/2281)
+* **admin-ui** Allow target attribute on `<a>` tags in rich text editor ([8f72e1e](https://github.com/vendure-ecommerce/vendure/commit/8f72e1e)), closes [#2281](https://github.com/vendure-ecommerce/vendure/issues/2281)
 * **admin-ui** Display custom fields in StockLocation detail view ([d36ac84](https://github.com/vendure-ecommerce/vendure/commit/d36ac84))
 * **admin-ui** Fix display of Address custom fields in customer detail view ([189e714](https://github.com/vendure-ecommerce/vendure/commit/189e714)), closes [#2272](https://github.com/vendure-ecommerce/vendure/issues/2272)
 * **admin-ui** Fix layout of select customer dropdown items ([3f8a1da](https://github.com/vendure-ecommerce/vendure/commit/3f8a1da))
@@ -14,9 +14,6 @@
 * **core** Correctly update StockLocation custom fields ([1cb676a](https://github.com/vendure-ecommerce/vendure/commit/1cb676a))
 * **core** Fix admin authentication when no native auth in shop API ([8fb9719](https://github.com/vendure-ecommerce/vendure/commit/8fb9719)), closes [#2282](https://github.com/vendure-ecommerce/vendure/issues/2282)
 * **core** Fix draft orders not getting correctly placed ([4d01ab5](https://github.com/vendure-ecommerce/vendure/commit/4d01ab5)), closes [#2105](https://github.com/vendure-ecommerce/vendure/issues/2105)
-
-#### Features
-
 * **core** Add currencyCode option to RequestContextService.create (#2277) ([2f336a7](https://github.com/vendure-ecommerce/vendure/commit/2f336a7)), closes [#2277](https://github.com/vendure-ecommerce/vendure/issues/2277)
 
 ## <small>2.0.3 (2023-07-04)</small>
