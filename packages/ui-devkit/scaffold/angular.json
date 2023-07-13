@@ -40,7 +40,7 @@
               "src/assets",
               "src/i18n-messages",
               {
-                "glob": "logo-*.png",
+                "glob": "logo-*.*",
                 "input": "static-assets",
                 "output": "assets"
               }
