@@ -1,7 +1,12 @@
 {
-  "generatedOn": "2023-07-12T12:33:44.002Z",
-  "lastCommit": "4d01ab53b3d078f4cc2478d764d3dc87d61520da",
+  "generatedOn": "2023-07-13T09:05:05.231Z",
+  "lastCommit": "120a0bbe5a978efc8abdb4074df1645e48dfcdab",
   "translationStatus": {
+    "ar": {
+      "tokenCount": 740,
+      "translatedCount": 0,
+      "percentage": 0
+    },
     "cs": {
       "tokenCount": 740,
       "translatedCount": 545,
@@ -14,7 +19,7 @@
     },
     "en": {
       "tokenCount": 740,
-      "translatedCount": 739,
+      "translatedCount": 740,
       "percentage": 100
     },
     "es": {

@@ -6,6 +6,7 @@
     "authTokenHeaderKey": "vendure-auth-token",
     "defaultLanguage": "en",
     "availableLanguages": [
+        "ar",
         "en",
         "es",
         "zh_Hant",
