@@ -18,11 +18,23 @@ import {
     VALID_AUTH_TOKEN,
 } from './fixtures/test-authentication-strategies';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
-import { CurrentUserFragment, CustomerFragment, HistoryEntryType } from './graphql/generated-e2e-admin-types';
+import {
+    AttemptLoginDocument,
+    CurrentUserFragment,
+    CustomerFragment,
+    HistoryEntryType,
+} from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { RegisterMutation, RegisterMutationVariables } from './graphql/generated-e2e-shop-types';
 import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
 import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
+
+const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard(
+    input => input.identifier != null,
+);
+const customerGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard(
+    input => input.emailAddress != null,
+);
 
 describe('AuthenticationStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -51,13 +63,6 @@ describe('AuthenticationStrategy', () => {
     afterAll(async () => {
         await server.destroy();
     });
-
-    const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard(
-        input => input.identifier != null,
-    );
-    const customerGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard(
-        input => input.emailAddress != null,
-    );
 
     describe('external auth', () => {
         const userData = {
@@ -383,6 +388,40 @@ describe('AuthenticationStrategy', () => {
                 identifier: result2.emailAddress,
             });
         });
+    });
+});
+
+describe('No NativeAuthStrategy on Shop API', () => {
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig(), {
+            authOptions: {
+                shopAuthenticationStrategy: [new TestAuthenticationStrategy()],
+            },
+        }),
+    );
+
+    beforeAll(async () => {
+        await server.init({
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    afterAll(async () => {
+        await server.destroy();
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2282
+    it('can log in to Admin API', async () => {
+        const { login } = await adminClient.query(AttemptLoginDocument, {
+            username: 'superadmin',
+            password: 'superadmin',
+        });
+
+        currentUserGuard.assertSuccess(login);
+        expect(login.identifier).toBe('superadmin');
     });
 });
 
