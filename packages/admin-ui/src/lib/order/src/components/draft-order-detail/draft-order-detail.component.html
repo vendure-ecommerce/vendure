@@ -7,6 +7,7 @@
         </vdr-ab-left>
 
         <vdr-ab-right>
+            <vdr-action-bar-items locationId="draft-order-detail"></vdr-action-bar-items>
             <button
                 class="btn btn-primary"
                 (click)="completeOrder()"
@@ -155,6 +156,11 @@
                 </table>
             </ng-container>
         </vdr-card>
+        <vdr-custom-detail-component-host
+            locationId="draft-order-detail"
+            [entity$]="entity$"
+            [detailForm]="detailForm"
+        ></vdr-custom-detail-component-host>
 
         <vdr-order-custom-fields-card
             [customFieldsConfig]="customFields"
