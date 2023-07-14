@@ -1,7 +1,7 @@
 ---
 title: "FileSizePipe"
 weight: 10
-date: 2023-07-04T11:02:15.630Z
+date: 2023-07-14T16:57:51.328Z
 showtoc: true
 generated: true
 ---

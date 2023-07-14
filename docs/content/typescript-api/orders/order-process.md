@@ -1,7 +1,7 @@
 ---
 title: "OrderProcess"
 weight: 10
-date: 2023-07-04T11:02:11.889Z
+date: 2023-07-14T16:57:49.591Z
 showtoc: true
 generated: true
 ---
@@ -213,7 +213,7 @@ function configureDefaultOrderProcess(options: DefaultOrderProcessOptions): void
 
 # defaultOrderProcess
 
-{{< generation-info sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="469" packageName="@vendure/core" since="2.0.0">}}
+{{< generation-info sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="474" packageName="@vendure/core" since="2.0.0">}}
 
 This is the built-in <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure. A customized version of this process
 can be created using the <a href='/typescript-api/orders/order-process#configuredefaultorderprocess'>configureDefaultOrderProcess</a> function, which allows you to pass in an object

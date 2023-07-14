@@ -1,7 +1,7 @@
 ---
 title: "GuestCheckoutStrategy"
 weight: 10
-date: 2023-07-04T11:02:11.916Z
+date: 2023-07-14T16:57:49.610Z
 showtoc: true
 generated: true
 ---
@@ -49,7 +49,7 @@ interface GuestCheckoutStrategy extends InjectableStrategy {
 
 ### setCustomerForOrder
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => | ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/typescript-api/entities/customer#customer'>Customer</a>&#62;         | Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => | ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/typescript-api/entities/customer#customer'>Customer</a>&#62;         | Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;"  >}}
 
 {{< member-description >}}This method is called when the `setCustomerForOrder` mutation is executed.
 It should return either a Customer object or an ErrorResult.{{< /member-description >}}

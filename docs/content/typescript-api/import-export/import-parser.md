@@ -1,7 +1,7 @@
 ---
 title: "ImportParser"
 weight: 10
-date: 2023-07-04T11:02:12.221Z
+date: 2023-07-14T16:57:49.802Z
 showtoc: true
 generated: true
 ---
@@ -61,7 +61,7 @@ interface ParsedOptionGroup {
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         values: string[];     }&#62;"  >}}
+{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         values: string[];     }&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -92,7 +92,7 @@ interface ParsedFacet {
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         facet: string;         value: string;     }&#62;"  >}}
+{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         facet: string;         value: string;     }&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -174,7 +174,7 @@ interface ParsedProductVariant {
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         optionValues: string[];         customFields: {             [name: string]: string;         };     }&#62;"  >}}
+{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         optionValues: string[];         customFields: {             [name: string]: string;         };     }&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -230,7 +230,7 @@ interface ParsedProduct {
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         slug: string;         description: string;         customFields: {             [name: string]: string;         };     }&#62;"  >}}
+{{< member-info kind="property" type="Array&#60;{         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         slug: string;         description: string;         customFields: {             [name: string]: string;         };     }&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

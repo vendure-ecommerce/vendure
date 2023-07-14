@@ -1,7 +1,7 @@
 ---
 title: "Directives"
 weight: 10
-date: 2023-06-08T15:03:35.190Z
+date: 2023-07-14T16:57:51.265Z
 showtoc: false
 generated: true
 ---

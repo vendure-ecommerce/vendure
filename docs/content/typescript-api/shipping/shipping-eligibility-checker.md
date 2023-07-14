@@ -1,7 +1,7 @@
 ---
 title: "ShippingEligibilityChecker"
 weight: 10
-date: 2023-07-04T11:02:12.059Z
+date: 2023-07-14T16:57:49.704Z
 showtoc: true
 generated: true
 ---
@@ -44,7 +44,7 @@ class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends Conf
 ```
 ## Extends
 
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;     T &#62;
+ * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;     T &#62;
 
 
 ## Members

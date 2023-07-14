@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethodService"
 weight: 10
-date: 2023-07-04T11:02:13.302Z
+date: 2023-07-14T16:57:50.466Z
 showtoc: true
 generated: true
 ---
@@ -109,7 +109,7 @@ class PaymentMethodService {
 
 ### getMethodAndOperations
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, method: string) => Promise&#60;{         paymentMethod: <a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>;         handler: <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>;         checker: <a href='/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> | null;     }&#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, method: string) => Promise&#60;{         paymentMethod: <a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>;         handler: <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>;         checker: <a href='/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> | null;     }&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
