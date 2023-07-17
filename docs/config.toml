@@ -1,4 +1,4 @@
-baseURL = "https://www.vendure.io/"
+baseURL = "https://docs.vendure.io/"
 languageCode = "en-us"
 title = "Vendure headless commerce"
 googleAnalytics = "UA-133911942-1"
