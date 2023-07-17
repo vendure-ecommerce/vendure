@@ -321,7 +321,7 @@
     "start-date": "تاريخ البدء",
     "status": "حالة",
     "tags": "العلامات" ,
-    "theme": "سمة",
+    "theme": "الإضاءة",
     "there-are-unsaved-changes": "هناك تغييرات غير محفوظة. التنقل بعيدًا سيؤدي إلى فقدان هذه التغييرات." ,
     "toggle-all": "تبديل الكل" ,
     "total-items": "{currentStart} - {currentend} من {totalitems}" ,
@@ -420,7 +420,7 @@
     "total-order-value": "القيمة الإجمالية",
     "total-orders": "إجمالي الطلبات" ,
     "widget-resize": "تغيير الحجم",
-    "widget-width": "العرض: {عرض}" ,
+    "widget-width": "العرض: {width}" ,
     "yesterday": "أمس"
   },
   "datetime": {
