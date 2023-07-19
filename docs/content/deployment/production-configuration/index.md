@@ -91,7 +91,9 @@ For this reason you should consider using the UuidIdStrategy for production.
 import { UuidIdStrategy, VendureConfig } from '@vendure/core';
   
 export const config: VendureConfig = {
-  entityIdStrategy: new UuidIdStrategy(),
+  entityOptions: {
+        entityIdStrategy: new UuidIdStrategy(),
+    },
   // ...
 }
 ```
