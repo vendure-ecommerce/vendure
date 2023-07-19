@@ -93,7 +93,7 @@ import { UuidIdStrategy, VendureConfig } from '@vendure/core';
 export const config: VendureConfig = {
   entityOptions: {
         entityIdStrategy: new UuidIdStrategy(),
-    },
+  },
   // ...
 }
 ```
