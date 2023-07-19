@@ -45,3 +45,10 @@
     left: 64px !important;
   }
 
+  .login-wrapper-inner {
+    flex-direction: row-reverse;
+  }
+
+  .login-wrapper-form {
+    direction: rtl;
+  }
