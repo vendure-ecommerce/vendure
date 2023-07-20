@@ -10,22 +10,18 @@
 
 <body>
 
-{{ partial "top-bar" (dict "ctx" . "isDocsPage" true "isLandingPage" false) }}
+{{ partial "top-bar" (dict "ctx" . "isDocsPage" true "section" .Section) }}
 <main class="mx-auto lg:max-w-screen-2xl lg:grid lg:grid-cols-12 lg:gap-8">
 
     <aside class="lg:relative lg:col-span-3" x-data="Components.popover(true)" x-init="open = window.innerWidth > 1024">
         <div class="sticky top-0 flex flex-col lg:h-screen">
-            <div class="flex justify-center items-center px-6 py-4 bg-gray-100">
-                <label for="search" class="sr-only">Search docs (ctrl + k)</label>
-                <input type="text" name="search" id="searchInputTrigger"
-                       class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                       placeholder="Search docs (ctrl+k)">
-                <button class="p-2 ml-2 lg:hidden" @click="toggle">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
-                </button>
-            </div>
+            <button class="p-2 ml-2 lg:hidden" @click="toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+                </svg>
+            </button>
             <nav x-show="open"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0"

@@ -1,33 +1,51 @@
 <div
-    class="z-30 transition-colors top-0"
-    :class="{ 'bg-transparent bg-none absolute w-full': isLandingPage, 'bg-white border-b border-dotted border-blue-200': !isLandingPage }"
-    x-data="{ ...Components.popover(false), isLandingPage: {{ default false .isLandingPage }} }"
+    class="z-30 transition-colors top-0 bg-white border-b border-dotted border-blue-200"
+    x-data="{ ...Components.popover(false) }"
 >
     <div
-        :class="{ 'hidden': isLandingPage }"
         class="absolute w-full h-1 bg-gradient-to-r from-blue-300 via-green-300 to-blue-100"
     ></div>
     {{ partial "announcement-banner" (dict "content" ` 🚨 Announcing
     <a href="https://vendure.io/" class="text-white font-medium underline"
-        >Announcing Vendure v2<span aria-hidden="true">&rarr;</span></a
+    >Announcing Vendure v2<span aria-hidden="true">&rarr;</span></a
     >
     `) }}
     <div class="max-w-screen-2xl mx-auto px-4 py-4 sm:px-6 md:pr-10">
         <div class="flex justify-between items-center md:space-x-10">
-            <div class="flex justify-start lg:w-0 lg:flex-1">
-                <a class="logo flex space-x-4 items-center" href="https://vendure.io" title="back to landing page">
-                    <div>
-                        <img class="w-10" src="/logo.png" alt="Vendure logo" />
+            <div class="justify-start hidden md:flex">
+                <div class="logo flex space-x-2 items-center">
+                    <a href="https://vendure.io" title="back to landing page">
+                        <img class="w-6" src="/logo.png" alt="Vendure logo"/>
+                    </a>
+                    <div class="text-xl mt-0">
+                        <span class="text-blue-500 font-wordmark font-bold">vendure</span>
                     </div>
-                    <div>
-                        <div class="font-wordmark font-bold text-blue-500 text-3xl mt-0">vendure</div>
-                        <div class="text-gray-500">documentation</div>
+                </div>
+            </div>
+            <div class="flex justify-center items-center">
+                <label for="search" class="sr-only">Search docs (ctrl + k)</label>
+                <button id="searchInputTrigger"
+                       class="shadow-sm focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md px-1 py-1 md:border text-gray-400 flex text-sm gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                      <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="hidden md:block text-gray-500 pr-4 whitespace-nowrap">Search docs</span>
+                    <div class="hidden md:flex gap-0.5">
+                        <kbd class="uppercase bg-gray-100 border px-1 py-0.5 text-xs rounded tracking-tighter">ctrl</kbd>
+                        <kbd class="uppercase bg-gray-100 border px-1 py-0.5 text-xs rounded tracking-tighter">k</kbd>
                     </div>
-                </a>
+                </button>
+            </div>
+            <div class="flex-1">
+                <ul role="menu" class="flex gap-4">
+                    <li><a class="px-2 py-1 rounded {{ if (eq .section "guides") }}text-white bg-blue-600{{ else }}text-gray-700{{ end}}" href="/guides/getting-started">Learn</a></li>
+                    <li><a class="px-2 py-1 rounded {{ if (eq .section "reference") }}text-white bg-blue-600{{ else }}text-gray-700{{ end}}" href="/reference/typescript-api/">Reference</a></li>
+                    <li><a class="px-2 py-1 rounded {{ if (eq .section "user-guide") }}text-white bg-blue-600{{ else }}text-gray-700{{ end}}" href="/user-guide/">Manual</a></li>
+                </ul>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="https://vendure.io/community" target="_blank" title="Join our Discord community!">
-                    <img src="/logo/discord-logo.png" class="w-6 h-6" alt="Discord logo" />
+                    <img src="/logo/discord-logo.png" class="w-6 h-6" alt="Discord logo"/>
                 </a>
                 <a href="https://github.com/vendure-ecommerce/vendure" class="">
                     <img

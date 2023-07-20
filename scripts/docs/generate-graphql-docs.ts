@@ -29,7 +29,7 @@ const SCHEMA_FILE = path.join(__dirname, `../../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
 const docsUrl = `/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
-const outputPath = path.join(__dirname, `../../docs/content/graphql-api/${targetApi}`);
+const outputPath = path.join(__dirname, `../../docs/content/reference/graphql-api/${targetApi}`);
 
 const enum FileName {
     ENUM = 'enums',
