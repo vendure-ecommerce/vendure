@@ -1,25 +1,23 @@
 ---
 title: "TypedCustomSingleFieldConfig"
 weight: 10
-date: 2023-07-14T16:57:49.517Z
+date: 2023-07-20T13:56:14.375Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# TypedCustomSingleFieldConfig
-<div class="symbol">
 
+## TypedCustomSingleFieldConfig
 
-# TypedCustomSingleFieldConfig
-
-{{< generation-info sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="55" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="55" packageName="@vendure/core" />
 
 Configures a custom field on an entity in the <a href='/typescript-api/custom-fields/#customfields'>CustomFields</a> config object.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type TypedCustomSingleFieldConfig<T extends CustomFieldType, C extends CustomField> = BaseTypedCustomFieldConfig<T, C> & {
     list?: false;
     defaultValue?: DefaultValueType<T>;
@@ -29,4 +27,3 @@ type TypedCustomSingleFieldConfig<T extends CustomFieldType, C extends CustomFie
     ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
 }
 ```
-</div>

@@ -1,25 +1,23 @@
 ---
 title: "ProductOptionService"
 weight: 10
-date: 2023-07-14T16:57:50.494Z
+date: 2023-07-20T13:56:16.401Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ProductOptionService
-<div class="symbol">
 
+## ProductOptionService
 
-# ProductOptionService
-
-{{< generation-info sourceFile="packages/core/src/service/services/product-option.service.ts" sourceLine="32" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/service/services/product-option.service.ts" sourceLine="32" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/typescript-api/entities/product-option#productoption'>ProductOption</a> entities.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ProductOptionService {
   constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translator: TranslatorService)
   findAll(ctx: RequestContext) => Promise<Array<Translated<ProductOption>>>;
@@ -29,48 +27,39 @@ class ProductOptionService {
   async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
 ```
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, translatableSaver: <a href='/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService) => ProductOptionService"  >}}
+<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, translatableSaver: <a href='/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService) => ProductOptionService"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### findAll
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### findOne
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62; | undefined&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62; | undefined&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### create
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, group: <a href='/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a> | <a href='/typescript-api/common/id#id'>ID</a>, input: CreateGroupOptionInput | CreateProductOptionInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, group: <a href='/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a> | <a href='/typescript-api/common/id#id'>ID</a>, input: CreateGroupOptionInput | CreateProductOptionInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### update
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateProductOptionInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateProductOptionInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### delete
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
 
-{{< member-description >}}Deletes a ProductOption.
+Deletes a ProductOption.
 
 - If the ProductOption is used by any ProductVariants, the deletion will fail.
 - If the ProductOption is used only by soft-deleted ProductVariants, the option will itself
   be soft-deleted.
-- If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.{{< /member-description >}}
-
-
-</div>
+- If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.

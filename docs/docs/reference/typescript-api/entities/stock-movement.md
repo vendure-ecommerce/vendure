@@ -1,26 +1,24 @@
 ---
 title: "StockMovement"
 weight: 10
-date: 2023-07-14T16:57:50.015Z
+date: 2023-07-20T13:56:15.429Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# StockMovement
-<div class="symbol">
 
+## StockMovement
 
-# StockMovement
-
-{{< generation-info sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="19" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="19" packageName="@vendure/core" />
 
 A StockMovement is created whenever stock of a particular ProductVariant goes in
 or out.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class StockMovement extends VendureEntity {
   @Column({ nullable: false, type: 'varchar' }) readonly @Column({ nullable: false, type: 'varchar' })
     readonly type: StockMovementType;
@@ -36,58 +34,47 @@ class StockMovement extends VendureEntity {
     quantity: number;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Members
 
 ### type
 
-{{< member-info kind="property" type="StockMovementType"  >}}
+<MemberInfo kind="property" type="StockMovementType"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### productVariant
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockLocation
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockLocationId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### quantity
 
-{{< member-info kind="property" type="number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="number"   />
 
 
-</div>
-<div class="symbol">
 
 
-# Allocation
+## Allocation
 
-{{< generation-info sourceFile="packages/core/src/entity/stock-movement/allocation.entity.ts" sourceLine="17" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/allocation.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
 An Allocation is created for each ProductVariant in an Order when the checkout is completed
 (as configured by the <a href='/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy'>StockAllocationStrategy</a>. This prevents stock being sold twice.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Allocation extends StockMovement {
   readonly readonly type = StockMovementType.ALLOCATION;
   constructor(input: DeepPartial<Allocation>)
@@ -96,45 +83,36 @@ class Allocation extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>
 
 
-## Members
 
 ### type
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#allocation'>Allocation</a>&#62;) => Allocation"  >}}
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#allocation'>Allocation</a>&#62;) => Allocation"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### orderLine
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
 
 
-</div>
-<div class="symbol">
 
 
-# Cancellation
+## Cancellation
 
-{{< generation-info sourceFile="packages/core/src/entity/stock-movement/cancellation.entity.ts" sourceLine="16" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/cancellation.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 A Cancellation is created when OrderItems from a fulfilled Order are cancelled.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Cancellation extends StockMovement {
   readonly readonly type = StockMovementType.CANCELLATION;
   constructor(input: DeepPartial<Cancellation>)
@@ -142,46 +120,37 @@ class Cancellation extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>
 
 
-## Members
 
 ### type
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>&#62;) => Cancellation"  >}}
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>&#62;) => Cancellation"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### orderLine
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
 
 
-</div>
-<div class="symbol">
 
 
-# Release
+## Release
 
-{{< generation-info sourceFile="packages/core/src/entity/stock-movement/release.entity.ts" sourceLine="17" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/release.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
 A Release is created when OrderItems which have been allocated (but not yet fulfilled)
 are cancelled.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Release extends StockMovement {
   readonly readonly type = StockMovementType.RELEASE;
   constructor(input: DeepPartial<Release>)
@@ -189,45 +158,36 @@ class Release extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>
 
 
-## Members
 
 ### type
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#release'>Release</a>&#62;) => Release"  >}}
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#release'>Release</a>&#62;) => Release"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### orderLine
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
 
 
-</div>
-<div class="symbol">
 
 
-# Sale
+## Sale
 
-{{< generation-info sourceFile="packages/core/src/entity/stock-movement/sale.entity.ts" sourceLine="16" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/sale.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 A Sale is created when OrderItems are fulfilled.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Sale extends StockMovement {
   readonly readonly type = StockMovementType.SALE;
   constructor(input: DeepPartial<Sale>)
@@ -235,68 +195,54 @@ class Sale extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>
 
 
-## Members
 
 ### type
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#sale'>Sale</a>&#62;) => Sale"  >}}
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#sale'>Sale</a>&#62;) => Sale"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### orderLine
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
 
 
-</div>
-<div class="symbol">
 
 
-# StockAdjustment
+## StockAdjustment
 
-{{< generation-info sourceFile="packages/core/src/entity/stock-movement/stock-adjustment.entity.ts" sourceLine="14" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-adjustment.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
 A StockAdjustment is created when the `stockOnHand` level of a ProductVariant is manually adjusted.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class StockAdjustment extends StockMovement {
   readonly readonly type = StockMovementType.ADJUSTMENT;
   constructor(input: DeepPartial<StockAdjustment>)
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>
 
 
-## Members
 
 ### type
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#stockadjustment'>StockAdjustment</a>&#62;) => StockAdjustment"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-movement#stockadjustment'>StockAdjustment</a>&#62;) => StockAdjustment"   />
 
 
-</div>

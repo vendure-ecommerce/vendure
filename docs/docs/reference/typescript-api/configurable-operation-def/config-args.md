@@ -1,19 +1,19 @@
 ---
 title: "ConfigArgs"
 weight: 10
-date: 2023-07-14T16:57:49.421Z
+date: 2023-07-20T13:56:14.170Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ConfigArgs
-<div class="symbol">
 
+## ConfigArgs
 
-# ConfigArgs
-
-{{< generation-info sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="140" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="140" packageName="@vendure/core" />
 
 A object which defines the configurable arguments which may be passed to
 functions in those classes which implement the <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> interface.
@@ -77,20 +77,16 @@ The available components as well as their configuration options can be found in 
 Custom UI components may also be defined via an Admin UI extension using the `registerFormInputComponent()` function
 which is exported from `@vendure/admin-ui/core`.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ConfigArgs = {
   [name: string]: ConfigArgDef<ConfigArgType>;
 }
 ```
 ## Members
 
+
 ### [index]
 
-{{< member-info kind="property" type="ConfigArgDef&#60;<a href='/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="ConfigArgDef&#60;<a href='/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>&#62;"   />
 
 
-</div>

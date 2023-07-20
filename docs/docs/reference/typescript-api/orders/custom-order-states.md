@@ -1,27 +1,24 @@
 ---
 title: "CustomOrderStates"
 weight: 10
-date: 2023-07-14T16:57:50.256Z
+date: 2023-07-20T13:56:15.918Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CustomOrderStates
-<div class="symbol">
 
+## CustomOrderStates
 
-# CustomOrderStates
-
-{{< generation-info sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="11" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="11" packageName="@vendure/core" />
 
 An interface to extend standard <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface CustomOrderStates {
 
 }
 ```
-</div>

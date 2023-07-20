@@ -1,19 +1,19 @@
 ---
 title: "CollectionFilter"
 weight: 10
-date: 2023-07-14T16:57:49.488Z
+date: 2023-07-20T13:56:14.319Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CollectionFilter
-<div class="symbol">
 
+## CollectionFilter
 
-# CollectionFilter
-
-{{< generation-info sourceFile="packages/core/src/config/catalog/collection-filter.ts" sourceLine="64" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/catalog/collection-filter.ts" sourceLine="64" packageName="@vendure/core" />
 
 A CollectionFilter defines a rule which can be used to associate ProductVariants with a Collection.
 The filtering is done by defining the `apply()` function, which receives a TypeORM
@@ -55,32 +55,25 @@ export const skuCollectionFilter = new CollectionFilter({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
   constructor(config: CollectionFilterConfig<T>)
   apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]) => SelectQueryBuilder<ProductVariant>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config: CollectionFilterConfig&#60;T&#62;) => CollectionFilter"  >}}
+<MemberInfo kind="method" type="(config: CollectionFilterConfig&#60;T&#62;) => CollectionFilter"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### apply
 
-{{< member-info kind="method" type="(qb: SelectQueryBuilder&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(qb: SelectQueryBuilder&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"   />
 
 
-</div>

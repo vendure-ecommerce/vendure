@@ -1,19 +1,19 @@
 ---
 title: "ElasticsearchPlugin"
 weight: 10
-date: 2023-07-14T16:57:50.776Z
+date: 2023-07-20T13:56:17.003Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ElasticsearchPlugin
-<div class="symbol">
 
+## ElasticsearchPlugin
 
-# ElasticsearchPlugin
-
-{{< generation-info sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="222" packageName="@vendure/elasticsearch-plugin">}}
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="222" packageName="@vendure/elasticsearch-plugin" />
 
 This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
 engine. This is a drop-in replacement for the DefaultSearchPlugin which exposes many powerful configuration options enabling your storefront
@@ -176,25 +176,19 @@ This `SearchResponsePriceData` type allows you to query data about the range of 
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ElasticsearchPlugin implements OnApplicationBootstrap {
   static init(options: ElasticsearchOptions) => Type<ElasticsearchPlugin>;
 }
 ```
-## Implements
+Implements
 
  * OnApplicationBootstrap
 
 
-## Members
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>&#62;"   />
 
 
-</div>

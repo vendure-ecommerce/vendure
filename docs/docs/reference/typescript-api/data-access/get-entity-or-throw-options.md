@@ -1,25 +1,23 @@
 ---
 title: "GetEntityOrThrowOptions"
 weight: 10
-date: 2023-07-14T16:57:49.798Z
+date: 2023-07-20T13:56:14.972Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# GetEntityOrThrowOptions
-<div class="symbol">
 
+## GetEntityOrThrowOptions
 
-# GetEntityOrThrowOptions
-
-{{< generation-info sourceFile="packages/core/src/connection/types.ts" sourceLine="10" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/connection/types.ts" sourceLine="10" packageName="@vendure/core" />
 
 Options used by the <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getEntityOrThrow` method.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
   channelId?: ID;
   retries?: number;
@@ -27,39 +25,32 @@ interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
   includeSoftDeleted?: boolean;
 }
 ```
-## Extends
+Extends
 
  * FindOneOptions&#60;T&#62;
 
 
-## Members
 
 ### channelId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}An optional channelId to limit results to entities assigned to the given Channel. Should
-only be used when getting entities that implement the <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a> interface.{{< /member-description >}}
-
+An optional channelId to limit results to entities assigned to the given Channel. Should
+only be used when getting entities that implement the <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a> interface.
 ### retries
 
-{{< member-info kind="property" type="number" default="0"  since="1.1.0" >}}
+<MemberInfo kind="property" type="number" default="0"  since="1.1.0"  />
 
-{{< member-description >}}If set to a positive integer, it will retry getting the entity in case it is initially not
-found.{{< /member-description >}}
-
+If set to a positive integer, it will retry getting the entity in case it is initially not
+found.
 ### retryDelay
 
-{{< member-info kind="property" type="number" default="25"  since="1.1.0" >}}
+<MemberInfo kind="property" type="number" default="25"  since="1.1.0"  />
 
-{{< member-description >}}Specifies the delay in ms to wait between retries.{{< /member-description >}}
-
+Specifies the delay in ms to wait between retries.
 ### includeSoftDeleted
 
-{{< member-info kind="property" type="boolean" default="false"  since="1.3.0" >}}
+<MemberInfo kind="property" type="boolean" default="false"  since="1.3.0"  />
 
-{{< member-description >}}If set to `true`, soft-deleted entities will be returned. Otherwise they will
-throw as if they did not exist.{{< /member-description >}}
-
-
-</div>
+If set to `true`, soft-deleted entities will be returned. Otherwise they will
+throw as if they did not exist.

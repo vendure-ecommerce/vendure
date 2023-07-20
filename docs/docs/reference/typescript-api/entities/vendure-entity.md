@@ -1,26 +1,24 @@
 ---
 title: "VendureEntity"
 weight: 10
-date: 2023-07-14T16:57:49.847Z
+date: 2023-07-20T13:56:15.079Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# VendureEntity
-<div class="symbol">
 
+## VendureEntity
 
-# VendureEntity
-
-{{< generation-info sourceFile="packages/core/src/entity/base/base.entity.ts" sourceLine="13" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/base/base.entity.ts" sourceLine="13" packageName="@vendure/core" />
 
 This is the base class from which all entities inherit. The type of
 the `id` property is defined by the <a href='/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class VendureEntity {
   constructor(input?: DeepPartial<VendureEntity>)
   @PrimaryGeneratedId() @PrimaryGeneratedId()
@@ -29,31 +27,24 @@ class VendureEntity {
   @UpdateDateColumn() @UpdateDateColumn() updatedAt: Date;
 }
 ```
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;) => VendureEntity"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;) => VendureEntity"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### id
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### createdAt
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### updatedAt
 
-{{< member-info kind="property" type="Date"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="Date"   />
 
 
-</div>

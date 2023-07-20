@@ -11,7 +11,7 @@ Another way to extend the Admin UI app is to define custom form input components
 
 Let's say you define a custom "intensity" field on the Product entity:
 
-```TypeScript
+```ts
 // project/vendure-config.ts
 
 customFields: {
@@ -27,7 +27,7 @@ By default, the "intensity" field will be displayed as a number input:
 
 But let's say we want to display a range slider instead. Here's how we can do this using our shared extension module combined with the [registerFormInputComponent function]({{< relref "register-form-input-component" >}}):
 
-```TypeScript
+```ts
 // project/ui-extensions/shared.module.ts
 import { NgModule, Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -60,7 +60,7 @@ export class SharedExtensionModule {}
 ```
 The `SharedExtensionModule` is then passed to the `compileUiExtensions()` function as described in the [UI Extensions With Angular guide]({{< relref "using-angular" >}}#4-pass-the-extension-to-the-compileuiextensions-function):
 
-```TypeScript
+```ts
 // project/vendure-config.ts
 AdminUiPlugin.init({
   port: 5001,
@@ -80,7 +80,7 @@ AdminUiPlugin.init({
 
 Once registered, this new slider input can be used in our custom field config:
 
-```TypeScript {hl_lines=[7]}
+```ts {hl_lines=[7]}
 // project/vendure-config.ts
 
 customFields: {
@@ -120,7 +120,7 @@ If you have a custom field of the `relation` type (which allows you to relate en
 
 Here is a simple example taken from the [real-world-vendure](https://github.com/vendure-ecommerce/real-world-vendure/blob/master/src/plugins/reviews/ui/components/featured-review-selector/featured-review-selector.component.ts) repo:
 
-```TypeScript
+```ts
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -187,7 +187,7 @@ They are configured in a very similar way to custom fields, and likewise can use
 
 Here's an example:
 
-```TypeScript {hl_lines=[6,7,8]}
+```ts {hl_lines=[6,7,8]}
 export const orderFixedDiscount = new PromotionOrderAction({
   code: 'order_fixed_discount',
   args: {

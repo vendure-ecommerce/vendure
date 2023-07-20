@@ -1,28 +1,26 @@
 ---
 title: "Job"
 weight: 10
-date: 2023-07-14T16:57:50.160Z
+date: 2023-07-20T13:56:15.705Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Job
-<div class="symbol">
 
+## Job
 
-# Job
-
-{{< generation-info sourceFile="packages/core/src/job-queue/job.ts" sourceLine="37" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="37" packageName="@vendure/core" />
 
 A Job represents a piece of work to be run in the background, i.e. outside the request-response cycle.
 It is intended to be used for long-running work triggered by API requests. Jobs should now generally
 be directly instantiated. Rather, the <a href='/typescript-api/job-queue/#jobqueue'>JobQueue</a> `add()` method should be used to create and
 add a new Job to a queue.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Job<T extends JobData<T> = any> {
   readonly readonly id: number | string | null;
   readonly readonly queueName: string;
@@ -50,184 +48,149 @@ class Job<T extends JobData<T> = any> {
   off(eventType: JobEventType, listener: JobEventListener<T>) => ;
 }
 ```
-## Members
 
 ### id
 
-{{< member-info kind="property" type="number | string | null"  >}}
+<MemberInfo kind="property" type="number | string | null"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### queueName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### retries
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### createdAt
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### name
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### data
 
-{{< member-info kind="property" type="T"  >}}
+<MemberInfo kind="property" type="T"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### state
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/job-state#jobstate'>JobState</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/job-state#jobstate'>JobState</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### progress
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### result
 
-{{< member-info kind="property" type="any"  >}}
+<MemberInfo kind="property" type="any"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### error
 
-{{< member-info kind="property" type="any"  >}}
+<MemberInfo kind="property" type="any"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### isSettled
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### startedAt
 
-{{< member-info kind="property" type="Date | undefined"  >}}
+<MemberInfo kind="property" type="Date | undefined"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### settledAt
 
-{{< member-info kind="property" type="Date | undefined"  >}}
+<MemberInfo kind="property" type="Date | undefined"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### duration
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### attempts
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;T&#62;) => Job"  >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;T&#62;) => Job"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### start
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}Calling this signifies that the job work has started. This method should be
-called in the <a href='/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `next()` method.{{< /member-description >}}
-
+Calling this signifies that the job work has started. This method should be
+called in the <a href='/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `next()` method.
 ### setProgress
 
-{{< member-info kind="method" type="(percent: number) => "  >}}
+<MemberInfo kind="method" type="(percent: number) => "   />
 
-{{< member-description >}}Sets the progress (0 - 100) of the job.{{< /member-description >}}
-
+Sets the progress (0 - 100) of the job.
 ### complete
 
-{{< member-info kind="method" type="(result?: any) => "  >}}
+<MemberInfo kind="method" type="(result?: any) => "   />
 
-{{< member-description >}}Calling this method signifies that the job succeeded. The result
-will be stored in the `Job.result` property.{{< /member-description >}}
-
+Calling this method signifies that the job succeeded. The result
+will be stored in the `Job.result` property.
 ### fail
 
-{{< member-info kind="method" type="(err?: any) => "  >}}
+<MemberInfo kind="method" type="(err?: any) => "   />
 
-{{< member-description >}}Calling this method signifies that the job failed.{{< /member-description >}}
-
+Calling this method signifies that the job failed.
 ### cancel
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### defer
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}Sets a RUNNING job back to PENDING. Should be used when the JobQueue is being
-destroyed before the job has been completed.{{< /member-description >}}
-
+Sets a RUNNING job back to PENDING. Should be used when the JobQueue is being
+destroyed before the job has been completed.
 ### on
 
-{{< member-info kind="method" type="(eventType: <a href='/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "  >}}
+<MemberInfo kind="method" type="(eventType: <a href='/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "   />
 
-{{< member-description >}}Used to register event handlers for job events{{< /member-description >}}
-
+Used to register event handlers for job events
 ### off
 
-{{< member-info kind="method" type="(eventType: <a href='/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(eventType: <a href='/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "   />
 
 
-</div>
-<div class="symbol">
 
 
-# JobEventType
+## JobEventType
 
-{{< generation-info sourceFile="packages/core/src/job-queue/job.ts" sourceLine="15" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="15" packageName="@vendure/core" />
 
 An event raised by a Job.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type JobEventType = 'progress'
 ```
-</div>
-<div class="symbol">
 
 
-# JobEventListener
+## JobEventListener
 
-{{< generation-info sourceFile="packages/core/src/job-queue/job.ts" sourceLine="24" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="24" packageName="@vendure/core" />
 
 The signature of the event handler expected by the `Job.on()` method.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type JobEventListener<T extends JobData<T>> = (job: Job<T>) => void
 ```
-</div>

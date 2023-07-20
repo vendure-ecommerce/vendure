@@ -1,26 +1,24 @@
 ---
 title: "DefaultMoneyStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.538Z
+date: 2023-07-20T13:56:14.421Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# DefaultMoneyStrategy
-<div class="symbol">
 
+## DefaultMoneyStrategy
 
-# DefaultMoneyStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/entity/default-money-strategy.ts" sourceLine="15" packageName="@vendure/core" since="2.0.0">}}
+<GenerationInfo sourceFile="packages/core/src/config/entity/default-money-strategy.ts" sourceLine="15" packageName="@vendure/core" since="2.0.0" />
 
 A <a href='/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a> that stores monetary values as a `int` type in the database.
 The storage configuration and rounding logic replicates the behaviour of Vendure pre-2.0.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class DefaultMoneyStrategy implements MoneyStrategy {
   readonly readonly moneyColumnOptions: ColumnOptions = {
         type: 'int',
@@ -28,24 +26,19 @@ class DefaultMoneyStrategy implements MoneyStrategy {
   round(value: number, quantity:  = 1) => number;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>
 
 
-## Members
 
 ### moneyColumnOptions
 
-{{< member-info kind="property" type="ColumnOptions"  >}}
+<MemberInfo kind="property" type="ColumnOptions"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### round
 
-{{< member-info kind="method" type="(value: number, quantity:  = 1) => number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(value: number, quantity:  = 1) => number"   />
 
 
-</div>

@@ -1,19 +1,19 @@
 ---
 title: "ErrorResultGuard"
 weight: 10
-date: 2023-07-14T16:57:50.805Z
+date: 2023-07-20T13:56:17.064Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ErrorResultGuard
-<div class="symbol">
 
+## ErrorResultGuard
 
-# ErrorResultGuard
-
-{{< generation-info sourceFile="packages/testing/src/error-result-guard.ts" sourceLine="50" packageName="@vendure/testing">}}
+<GenerationInfo sourceFile="packages/testing/src/error-result-guard.ts" sourceLine="50" packageName="@vendure/testing" />
 
 A utility class which is used to assert the success of an operation
 which returns a union type of `SuccessType | ErrorResponse [ | ErrorResponse ]`.
@@ -41,9 +41,7 @@ it('errors when quantity is negative', async () => {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ErrorResultGuard<T> {
   constructor(testFn: (input: T) => boolean)
   isSuccess(input: T | any) => input is T;
@@ -51,33 +49,26 @@ class ErrorResultGuard<T> {
   assertErrorResult(input: T | R) => asserts input is R;
 }
 ```
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(testFn: (input: T) =&#62; boolean) => ErrorResultGuard"  >}}
+<MemberInfo kind="method" type="(testFn: (input: T) =&#62; boolean) => ErrorResultGuard"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### isSuccess
 
-{{< member-info kind="method" type="(input: T | any) => input is T"  >}}
+<MemberInfo kind="method" type="(input: T | any) => input is T"   />
 
-{{< member-description >}}A type guard which returns `true` if the input passes the `testFn` predicate.{{< /member-description >}}
-
+A type guard which returns `true` if the input passes the `testFn` predicate.
 ### assertSuccess
 
-{{< member-info kind="method" type="(input: T | R) => asserts input is T"  >}}
+<MemberInfo kind="method" type="(input: T | R) => asserts input is T"   />
 
-{{< member-description >}}Asserts (using the testing library's `fail()` function) that the input is
-successful, i.e. it passes the `testFn`.{{< /member-description >}}
-
+Asserts (using the testing library's `fail()` function) that the input is
+successful, i.e. it passes the `testFn`.
 ### assertErrorResult
 
-{{< member-info kind="method" type="(input: T | R) => asserts input is R"  >}}
+<MemberInfo kind="method" type="(input: T | R) => asserts input is R"   />
 
-{{< member-description >}}Asserts (using the testing library's `fail()` function) that the input is
-not successful, i.e. it does not pass the `testFn`.{{< /member-description >}}
-
-
-</div>
+Asserts (using the testing library's `fail()` function) that the input is
+not successful, i.e. it does not pass the `testFn`.

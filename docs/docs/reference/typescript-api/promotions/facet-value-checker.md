@@ -1,19 +1,19 @@
 ---
 title: "FacetValueChecker"
 weight: 10
-date: 2023-07-14T16:57:49.683Z
+date: 2023-07-20T13:56:14.714Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# FacetValueChecker
-<div class="symbol">
 
+## FacetValueChecker
 
-# FacetValueChecker
-
-{{< generation-info sourceFile="packages/core/src/config/promotion/utils/facet-value-checker.ts" sourceLine="48" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/utils/facet-value-checker.ts" sourceLine="48" packageName="@vendure/core" />
 
 The FacetValueChecker is a helper class used to determine whether a given OrderLine consists
 of ProductVariants containing the given FacetValues.
@@ -49,29 +49,22 @@ export const hasFacetValues = new PromotionCondition({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class FacetValueChecker {
   constructor(connection: TransactionalConnection)
   async hasFacetValues(orderLine: OrderLine, facetValueIds: ID[], ctx?: RequestContext) => Promise<boolean>;
 }
 ```
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => FacetValueChecker"  >}}
+<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => FacetValueChecker"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### hasFacetValues
 
-{{< member-info kind="method" type="(orderLine: <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>, facetValueIds: <a href='/typescript-api/common/id#id'>ID</a>[], ctx?: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;boolean&#62;"  >}}
+<MemberInfo kind="method" type="(orderLine: <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>, facetValueIds: <a href='/typescript-api/common/id#id'>ID</a>[], ctx?: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;boolean&#62;"   />
 
-{{< member-description >}}Checks a given <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a> against the facetValueIds and returns
+Checks a given <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a> against the facetValueIds and returns
 `true` if the associated <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> & <a href='/typescript-api/entities/product#product'>Product</a> together
-have *all* the specified <a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>s.{{< /member-description >}}
-
-
-</div>
+have *all* the specified <a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>s.

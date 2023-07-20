@@ -1,19 +1,19 @@
 ---
 title: "TestConfig"
 weight: 10
-date: 2023-07-14T16:57:50.802Z
+date: 2023-07-20T13:56:17.055Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# testConfig
-<div class="symbol">
 
+## testConfig
 
-# testConfig
-
-{{< generation-info sourceFile="packages/testing/src/config/test-config.ts" sourceLine="42" packageName="@vendure/testing">}}
+<GenerationInfo sourceFile="packages/testing/src/config/test-config.ts" sourceLine="42" packageName="@vendure/testing" />
 
 A <a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a> object used for e2e tests. This configuration uses sqljs as the database
 and configures some special settings which are optimized for e2e tests:
@@ -34,4 +34,3 @@ You can enable default logging behaviour with the environment variable `LOG`:
 LOG=true yarn e2e
 ```
 
-</div>

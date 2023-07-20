@@ -1,26 +1,24 @@
 ---
 title: "Fulfillment"
 weight: 10
-date: 2023-07-14T16:57:49.880Z
+date: 2023-07-20T13:56:15.157Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Fulfillment
-<div class="symbol">
 
+## Fulfillment
 
-# Fulfillment
-
-{{< generation-info sourceFile="packages/core/src/entity/fulfillment/fulfillment.entity.ts" sourceLine="17" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/fulfillment/fulfillment.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
 This entity represents a fulfillment of an Order or part of it, i.e. which <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>s have been
 delivered to the Customer after successful payment.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Fulfillment extends VendureEntity implements HasCustomFields {
   constructor(input?: DeepPartial<Fulfillment>)
   @Column('varchar') @Column('varchar') state: FulfillmentState;
@@ -36,59 +34,49 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
     customFields: CustomFulfillmentFields;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * HasCustomFields
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### state
 
-{{< member-info kind="property" type="<a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### trackingCode
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### method
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### handlerCode
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### lines
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomFulfillmentFields"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="CustomFulfillmentFields"   />
 
 
-</div>

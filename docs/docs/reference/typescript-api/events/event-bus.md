@@ -1,19 +1,19 @@
 ---
 title: "EventBus"
 weight: 10
-date: 2023-07-14T16:57:50.048Z
+date: 2023-07-20T13:56:15.498Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# EventBus
-<div class="symbol">
 
+## EventBus
 
-# EventBus
-
-{{< generation-info sourceFile="packages/core/src/event-bus/event-bus.ts" sourceLine="57" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/event-bus/event-bus.ts" sourceLine="57" packageName="@vendure/core" />
 
 The EventBus is used to globally publish events which can then be subscribed to.
 
@@ -55,9 +55,7 @@ export class MyPlugin implements OnApplicationBootstrap {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class EventBus implements OnModuleDestroy {
   constructor(transactionSubscriber: TransactionSubscriber)
   publish(event: T) => void;
@@ -65,46 +63,39 @@ class EventBus implements OnModuleDestroy {
   filter(predicate: (event: VendureEvent) => boolean) => Observable<T>;
 }
 ```
-## Implements
+Implements
 
  * OnModuleDestroy
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(transactionSubscriber: TransactionSubscriber) => EventBus"  >}}
+<MemberInfo kind="method" type="(transactionSubscriber: TransactionSubscriber) => EventBus"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### publish
 
-{{< member-info kind="method" type="(event: T) => void"  >}}
+<MemberInfo kind="method" type="(event: T) => void"   />
 
-{{< member-description >}}Publish an event which any subscribers can react to.{{< /member-description >}}
-
+Publish an event which any subscribers can react to.
 ### ofType
 
-{{< member-info kind="method" type="(type: Type&#60;T&#62;) => Observable&#60;T&#62;"  >}}
+<MemberInfo kind="method" type="(type: Type&#60;T&#62;) => Observable&#60;T&#62;"   />
 
-{{< member-description >}}Returns an RxJS Observable stream of events of the given type.
+Returns an RxJS Observable stream of events of the given type.
 If the event contains a <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber
 will only get called after any active database transactions are complete.
 
 This means that the subscriber function can safely access all updated
-data related to the event.{{< /member-description >}}
-
+data related to the event.
 ### filter
 
-{{< member-info kind="method" type="(predicate: (event: <a href='/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a>) =&#62; boolean) => Observable&#60;T&#62;"  >}}
+<MemberInfo kind="method" type="(predicate: (event: <a href='/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a>) =&#62; boolean) => Observable&#60;T&#62;"   />
 
-{{< member-description >}}Returns an RxJS Observable stream of events filtered by a custom predicate.
+Returns an RxJS Observable stream of events filtered by a custom predicate.
 If the event contains a <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber
 will only get called after any active database transactions are complete.
 
 This means that the subscriber function can safely access all updated
-data related to the event.{{< /member-description >}}
-
-
-</div>
+data related to the event.

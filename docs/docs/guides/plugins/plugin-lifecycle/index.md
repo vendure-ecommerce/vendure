@@ -21,7 +21,7 @@ Another hook that is not strictly a lifecycle hook, but which can be useful to k
 
 ## Example
 
-```TypeScript
+```ts
 import { MiddlewareConsumer, NestModule, OnApplicationBootstrap } from '@nestjs/common';
 import { EventBus, PluginCommonModule, VendurePlugin } from '@vendure/core';
 

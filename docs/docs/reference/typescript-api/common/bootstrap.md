@@ -1,19 +1,19 @@
 ---
 title: "Bootstrap"
 weight: 10
-date: 2023-07-14T16:57:49.412Z
+date: 2023-07-20T13:56:14.151Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# bootstrap
-<div class="symbol">
 
+## bootstrap
 
-# bootstrap
-
-{{< generation-info sourceFile="packages/core/src/bootstrap.ts" sourceLine="44" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="44" packageName="@vendure/core" />
 
 Bootstraps the Vendure server. This is the entry point to the application.
 
@@ -28,15 +28,12 @@ bootstrap(config).catch(err => {
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication>
 ```
-## Parameters
+Parameters
 
 ### userConfig
 
-{{< member-info kind="parameter" type="Partial&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" >}}
+<MemberInfo kind="parameter" type="Partial&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
 
-</div>

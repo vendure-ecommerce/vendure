@@ -14,7 +14,7 @@ Custom checkers can be created by defining a [`ShippingEligibilityChecker` objec
 
 For example, you could create a checker which works with a custom "weight" field to only apply to orders below a certain weight:
 
-```TypeScript
+```ts
 import { LanguageCode, ShippingEligibilityChecker } from '@vendure/core';
 
 export const maxWeightChecker = new ShippingEligibilityChecker({
@@ -54,7 +54,7 @@ export const maxWeightChecker = new ShippingEligibilityChecker({
 ```
 Custom checkers are then passed into the VendureConfig [ShippingOptions]({{< relref "shipping-options" >}}) to make them available when setting up new ShippingMethods:
 
-```TypeScript
+```ts
 import { defaultShippingEligibilityChecker, VendureConfig } from '@vendure/core';
 import { maxWeightChecker } from './max-weight-checker';
 
@@ -75,7 +75,7 @@ Custom calculators can be created by defining a [`ShippingCalculator` object]({{
 
 For example, you could create a calculator which consults an external data source (e.g. a spreadsheet, database or 3rd-party API) to find out the cost and estimated delivery time for the order.
 
-```TypeScript
+```ts
 import { LanguageCode, ShippingCalculator } from '@vendure/core';
 import { shippingDataSource } from './shipping-data-source';
 
@@ -111,7 +111,7 @@ export const externalShippingCalculator = new ShippingCalculator({
 
 Custom calculators are then passed into the VendureConfig [ShippingOptions]({{< relref "shipping-options" >}}) to make them available when setting up new ShippingMethods:
 
-```TypeScript
+```ts
 import { defaultShippingCalculator, VendureConfig } from '@vendure/core';
 import { externalShippingCalculator } from './external-shipping-calculator';
 
@@ -153,7 +153,7 @@ Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "f
 
 These states cover the typical workflow for fulfilling orders. However, it is possible to customize the fulfillment workflow by defining a [FulfillmentProcess]({{< relref "fulfillment-process" >}}) and passing it to your VendureConfig:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   // ...
   shippingOptions: {

@@ -26,7 +26,7 @@ This two-step workflow can also be applied to other non-card forms of payment: e
 
 Payment integrations are created by defining a new [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and passing that handler into the [`paymentOptions.paymentMethodHandlers`]({{< relref "payment-options" >}}) array in the VendureConfig.
 
-```TypeScript
+```ts
 import {
   CancelPaymentResult,
   CancelPaymentErrorResult,
@@ -175,7 +175,7 @@ If you need to support an entirely different payment flow than the above, it is 
 
 Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [OrderProcess]({{< relref "order-process" >}}), [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and [OrderPlacedStrategy]({{< relref "order-placed-strategy" >}}).
 
-```TypeScript
+```ts
 // types.ts
 import {
   defaultPaymentProcess,

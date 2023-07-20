@@ -1,19 +1,19 @@
 ---
 title: "TestingLogger"
 weight: 10
-date: 2023-07-14T16:57:50.820Z
+date: 2023-07-20T13:56:17.092Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# TestingLogger
-<div class="symbol">
 
+## TestingLogger
 
-# TestingLogger
-
-{{< generation-info sourceFile="packages/testing/src/testing-logger.ts" sourceLine="55" packageName="@vendure/testing">}}
+<GenerationInfo sourceFile="packages/testing/src/testing-logger.ts" sourceLine="55" packageName="@vendure/testing" />
 
 The TestingLogger can be used in unit tests or e2e tests to make assertions on whether the various
 Logger methods have been called, and which arguments.
@@ -65,9 +65,7 @@ beforeEach(async () => {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class TestingLogger<Spy extends (...args: any[]) => any> implements VendureLogger {
   constructor(createSpyFn: () => Spy)
   debugSpy: Spy;
@@ -82,78 +80,64 @@ class TestingLogger<Spy extends (...args: any[]) => any> implements VendureLogge
   warn(message: string, context?: string) => void;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(createSpyFn: () =&#62; Spy) => TestingLogger"  >}}
+<MemberInfo kind="method" type="(createSpyFn: () =&#62; Spy) => TestingLogger"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### debugSpy
 
-{{< member-info kind="property" type="Spy"  >}}
+<MemberInfo kind="property" type="Spy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### errorSpy
 
-{{< member-info kind="property" type="Spy"  >}}
+<MemberInfo kind="property" type="Spy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### infoSpy
 
-{{< member-info kind="property" type="Spy"  >}}
+<MemberInfo kind="property" type="Spy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### verboseSpy
 
-{{< member-info kind="property" type="Spy"  >}}
+<MemberInfo kind="property" type="Spy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### warnSpy
 
-{{< member-info kind="property" type="Spy"  >}}
+<MemberInfo kind="property" type="Spy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### debug
 
-{{< member-info kind="method" type="(message: string, context?: string) => void"  >}}
+<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### error
 
-{{< member-info kind="method" type="(message: string, context?: string, trace?: string) => void"  >}}
+<MemberInfo kind="method" type="(message: string, context?: string, trace?: string) => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### info
 
-{{< member-info kind="method" type="(message: string, context?: string) => void"  >}}
+<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### verbose
 
-{{< member-info kind="method" type="(message: string, context?: string) => void"  >}}
+<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### warn
 
-{{< member-info kind="method" type="(message: string, context?: string) => void"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
 
 
-</div>

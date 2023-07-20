@@ -18,7 +18,7 @@ Using cookies is the simpler approach for browser-based applications, since the 
 
 2. When using cookie-based sessions, you should set the [`authOptions.cookieOptions.secret` property]({{< relref "cookie-options" >}}#secret) to some secret string which will be used to sign the cookies sent to clients to prevent tampering. This string could be hard-coded in your config file, or (better) reside in an environment variable:
 
-```TypeScript
+```ts
 const config = {
   // ...
   authOptions: {
@@ -45,7 +45,7 @@ The workflow would be as follows:
 
 Here's a simplified example of how that would look:
 
-```TypeScript
+```ts
 const config = {
     // ...
     authOptions: {
@@ -54,7 +54,7 @@ const config = {
 }
 ```
 
-```TypeScript
+```ts
 let token: string;
 
 export async function request(query: string, variables: any) {

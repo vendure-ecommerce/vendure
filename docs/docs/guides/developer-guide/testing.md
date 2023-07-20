@@ -28,7 +28,7 @@ The `@vendure/testing` package gives you some simple but powerful tooling for cr
 
 Create a `vitest.config.js` file in the root of your project:
 
-```TypeScript
+```ts
 import path from 'path';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
@@ -81,7 +81,7 @@ and a `tsconfig.e2e.json` tsconfig file for the tests:
 
 The `@vendure/testing` package uses "initializers" to create the test databases and populate them with initial data. We ship with initializers for `sqljs`, `postgres` and `mysql`. Custom initializers can be created to support running e2e tests against other databases supported by TypeORM. See the [`TestDbInitializer` docs]({{< relref "test-db-initializer" >}}) for more details.
 
-```TypeScript
+```ts
 import {
   MysqlInitializer,
   PostgresInitializer,
@@ -104,7 +104,7 @@ Note re. the `sqliteDataDir`: The first time this test suite is run with the `Sq
 
 The `@vendure/testing` package exports a [`createTestEnvironment` function]({{< relref "create-test-environment" >}}) which is used to set up a Vendure server and GraphQL clients to interact with both the Shop and Admin APIs:
 
-```TypeScript
+```ts
 import { createTestEnvironment, testConfig } from '@vendure/testing';
 import { describe } from 'vitest';
 import { MyPlugin } from '../my-plugin.ts';
@@ -129,7 +129,7 @@ Notice that we pass a [`VendureConfig`]({{< relref "vendure-config" >}}) object 
 
 The [`TestServer`]({{< relref "test-server" >}}) needs to be initialized before it can be used. The `TestServer.init()` method takes an options object which defines how to populate the server:
 
-```TypeScript
+```ts
 import { beforeAll, afterAll } from 'vitest';
 import { myInitialData } from './fixtures/my-initial-data.ts';
 
@@ -159,7 +159,7 @@ An explanation of the options:
 
 Now we are all set up to create a test. Let's test one of the GraphQL queries used by our fictional plugin:
 
-```TypeScript
+```ts
 import gql from 'graphql-tag';
 import { it, expect } from 'vitest';
 

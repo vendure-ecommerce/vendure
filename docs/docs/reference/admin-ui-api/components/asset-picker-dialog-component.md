@@ -1,19 +1,19 @@
 ---
 title: "AssetPickerDialogComponent"
 weight: 10
-date: 2023-07-14T16:57:51.138Z
+date: 2023-07-20T13:56:18.100Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# AssetPickerDialogComponent
-<div class="symbol">
 
+## AssetPickerDialogComponent
 
-# AssetPickerDialogComponent
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/asset-picker-dialog/asset-picker-dialog.component.ts" sourceLine="52" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/asset-picker-dialog/asset-picker-dialog.component.ts" sourceLine="52" packageName="@vendure/admin-ui" />
 
 A dialog which allows the creation and selection of assets.
 
@@ -33,9 +33,7 @@ selectAssets() {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Dialog<Asset[]> {
   assets$: Observable<AssetLike[]>;
   allTags$: Observable<TagFragment[]>;
@@ -62,7 +60,7 @@ class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Di
   createAssets(files: File[]) => ;
 }
 ```
-## Implements
+Implements
 
  * OnInit
  * AfterViewInit
@@ -70,121 +68,99 @@ class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Di
  * <a href='/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;<a href='/typescript-api/entities/asset#asset'>Asset</a>[]&#62;
 
 
-## Members
 
 ### assets$
 
-{{< member-info kind="property" type="Observable&#60;AssetLike[]&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;AssetLike[]&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### allTags$
 
-{{< member-info kind="property" type="Observable&#60;TagFragment[]&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;TagFragment[]&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### paginationConfig
 
-{{< member-info kind="property" type="PaginationInstance"  >}}
+<MemberInfo kind="property" type="PaginationInstance"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### multiSelect
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### initialTags
 
-{{< member-info kind="property" type="string[]"  >}}
+<MemberInfo kind="property" type="string[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### resolveWith
 
-{{< member-info kind="property" type="(result?: <a href='/typescript-api/entities/asset#asset'>Asset</a>[]) =&#62; void"  >}}
+<MemberInfo kind="property" type="(result?: <a href='/typescript-api/entities/asset#asset'>Asset</a>[]) =&#62; void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### selection
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### searchTerm$
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### filterByTags$
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### uploading
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, notificationService: <a href='/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent"  >}}
+<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, notificationService: <a href='/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnInit
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngAfterViewInit
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnDestroy
 
-{{< member-info kind="method" type="() => void"  >}}
+<MemberInfo kind="method" type="() => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### pageChange
 
-{{< member-info kind="method" type="(page: number) => "  >}}
+<MemberInfo kind="method" type="(page: number) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### itemsPerPageChange
 
-{{< member-info kind="method" type="(itemsPerPage: number) => "  >}}
+<MemberInfo kind="method" type="(itemsPerPage: number) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### cancel
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### select
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### createAssets
 
-{{< member-info kind="method" type="(files: File[]) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(files: File[]) => "   />
 
 
-</div>

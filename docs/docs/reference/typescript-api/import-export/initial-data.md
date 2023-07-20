@@ -1,25 +1,23 @@
 ---
 title: "InitialData"
 weight: 10
-date: 2023-07-14T16:57:49.820Z
+date: 2023-07-20T13:56:15.018Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# InitialData
-<div class="symbol">
 
+## InitialData
 
-# InitialData
-
-{{< generation-info sourceFile="packages/core/src/data-import/types.ts" sourceLine="46" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/data-import/types.ts" sourceLine="46" packageName="@vendure/core" />
 
 An object defining initial settings for a new Vendure installation.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface InitialData {
   defaultLanguage: LanguageCode;
   defaultZone: string;
@@ -31,55 +29,44 @@ interface InitialData {
   collections: CollectionDefinition[];
 }
 ```
-## Members
 
 ### defaultLanguage
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### defaultZone
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### roles
 
-{{< member-info kind="property" type="RoleDefinition[]"  >}}
+<MemberInfo kind="property" type="RoleDefinition[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### countries
 
-{{< member-info kind="property" type="CountryDefinition[]"  >}}
+<MemberInfo kind="property" type="CountryDefinition[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### taxRates
 
-{{< member-info kind="property" type="Array&#60;{ name: string; percentage: number }&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;{ name: string; percentage: number }&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### shippingMethods
 
-{{< member-info kind="property" type="Array&#60;{ name: string; price: number }&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;{ name: string; price: number }&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### paymentMethods
 
-{{< member-info kind="property" type="Array&#60;{ name: string; handler: ConfigurableOperationInput }&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;{ name: string; handler: ConfigurableOperationInput }&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### collections
 
-{{< member-info kind="property" type="CollectionDefinition[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="CollectionDefinition[]"   />
 
 
-</div>

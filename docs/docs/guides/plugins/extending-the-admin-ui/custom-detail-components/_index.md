@@ -11,7 +11,7 @@ Any components registered in this way will appear below the main detail form.
 
 Let's imagine that your project has an external content management system (CMS) which is used to store additional details about products. You might want to display some of this information in the product detail page.
 
-```TypeScript
+```ts
 import { NgModule, Component, OnInit } from '@angular/core';
 import { switchMap } from 'rxjs';
 import { FormGroup } from '@angular/forms';

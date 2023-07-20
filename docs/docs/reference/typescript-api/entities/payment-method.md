@@ -1,26 +1,24 @@
 ---
 title: "PaymentMethod"
 weight: 10
-date: 2023-07-14T16:57:49.934Z
+date: 2023-07-20T13:56:15.263Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# PaymentMethod
-<div class="symbol">
 
+## PaymentMethod
 
-# PaymentMethod
-
-{{< generation-info sourceFile="packages/core/src/entity/payment-method/payment-method.entity.ts" sourceLine="21" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/payment-method/payment-method.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 A PaymentMethod is created automatically according to the configured <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>s defined
 in the <a href='/typescript-api/payment/payment-options#paymentoptions'>PaymentOptions</a> config.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PaymentMethod extends VendureEntity implements Translatable, ChannelAware, HasCustomFields {
   constructor(input?: DeepPartial<PaymentMethod>)
   name: LocaleString;
@@ -38,79 +36,66 @@ class PaymentMethod extends VendureEntity implements Translatable, ChannelAware,
     customFields: CustomPaymentMethodFields;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
  * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
  * HasCustomFields
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;) => PaymentMethod"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;) => PaymentMethod"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### name
 
-{{< member-info kind="property" type="LocaleString"  >}}
+<MemberInfo kind="property" type="LocaleString"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### code
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### description
 
-{{< member-info kind="property" type="LocaleString"  >}}
+<MemberInfo kind="property" type="LocaleString"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### enabled
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### checker
 
-{{< member-info kind="property" type="ConfigurableOperation | null"  >}}
+<MemberInfo kind="property" type="ConfigurableOperation | null"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### handler
 
-{{< member-info kind="property" type="ConfigurableOperation"  >}}
+<MemberInfo kind="property" type="ConfigurableOperation"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomPaymentMethodFields"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="CustomPaymentMethodFields"   />
 
 
-</div>

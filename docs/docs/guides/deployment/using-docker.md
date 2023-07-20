@@ -172,7 +172,7 @@ Health checks are built on the [Nestjs Terminus module](https://docs.nestjs.com/
 
 Although the worker is not designed as an HTTP server, it contains a minimal HTTP server specifically to support HTTP health checks. To enable this, you need to call the `startHealthCheckServer()` method after bootstrapping the worker:
 
-```TypeScript
+```ts
 bootstrapWorker(config)
   .then(worker => worker.startJobQueue())
   .then(worker => worker.startHealthCheckServer({ port: 3020 }))

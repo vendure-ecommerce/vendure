@@ -1,26 +1,24 @@
 ---
 title: "OrderModification"
 weight: 10
-date: 2023-07-14T16:57:49.925Z
+date: 2023-07-20T13:56:15.244Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# OrderModification
-<div class="symbol">
 
+## OrderModification
 
-# OrderModification
-
-{{< generation-info sourceFile="packages/core/src/entity/order-modification/order-modification.entity.ts" sourceLine="21" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/order-modification/order-modification.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 An entity which represents a modification to an order which has been placed, and
 then modified afterwards by an administrator.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class OrderModification extends VendureEntity {
   constructor(input?: DeepPartial<OrderModification>)
   @Column() @Column()
@@ -45,78 +43,64 @@ class OrderModification extends VendureEntity {
   @Calculated() isSettled: boolean
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### note
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### order
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### lines
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### surcharges
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### priceChange
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### payment
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/payment#payment'>Payment</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/payment#payment'>Payment</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### refund
 
-{{< member-info kind="property" type="Refund"  >}}
+<MemberInfo kind="property" type="Refund"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### shippingAddressChange
 
-{{< member-info kind="property" type="OrderAddress"  >}}
+<MemberInfo kind="property" type="OrderAddress"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### billingAddressChange
 
-{{< member-info kind="property" type="OrderAddress"  >}}
+<MemberInfo kind="property" type="OrderAddress"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### isSettled
 
-{{< member-info kind="property" type="boolean"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="boolean"   />
 
 
-</div>

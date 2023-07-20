@@ -9,7 +9,7 @@ Custom fields allow you to add your own custom data properties to many of the Ve
 
 They are specified in the VendureConfig:
 
-```TypeScript
+```ts
 const config = {
   // ...
   customFields: {
@@ -83,7 +83,7 @@ For instance, `string` fields will use a `<input type="text">` component, and `b
 
 These defaults can be overridden by using the `ui` property of the custom field config object. For example, if we want a number to be displayed as a currency input:
 
-```TypeScript {hl_lines=[8]}
+```ts {hl_lines=[8]}
 const config = {
   // ...
   customFields: {
@@ -104,7 +104,7 @@ If you want to use a completely custom form input component which is not provide
 
 Here's an example config demonstrating several ways to customize the UI controls for custom fields:
 
-```TypeScript
+```ts
 import { LanguageCode, VendureConfig } from '@vendure/core';
 
 const config: VendureConfig = {
@@ -161,7 +161,7 @@ and the resulting UI:
 
 With a large, complex project, it's common for lots of custom fields to be required. This can get visually noisy in the UI, so Vendure supports tabbed custom fields. Just specify the tab name in the `ui` object, and those fields with the same tab name will be grouped in the UI! The tab name can also be a translation token if you need to support multiple languages.
 
-```TypeScript
+```ts
 const config = {
   // ...
   customFields: {
@@ -181,7 +181,7 @@ const config = {
 
 One common use of custom fields is to support configurable products. Imagine we are selling pens which allow some text to be engraved. To do this we would add a **custom field on the OrderLine**:
 
-```TypeScript
+```ts
 OrderLine: [
   {
     name: 'engravingText',
@@ -223,7 +223,7 @@ mutation {
 
 Furthermore, the values of these OrderLine custom fields can even be used to modify the price. This is done by defining a custom [OrderItemPriceCalculationStrategy]({{< relref "order-item-price-calculation-strategy" >}}):
 
-```TypeScript
+```ts
 import { RequestContext, PriceCalculationResult,
   ProductVariant, OrderItemPriceCalculationStrategy } from '@vendure/core';
 
@@ -255,7 +255,7 @@ access the custom field values on a Product entity.
 
 Attempting to access the custom field will result in a TS compiler error:
 
-```TypeScript {hl_lines=[12,13]}
+```ts {hl_lines=[12,13]}
 import { RequestContext, TransactionalConnection, ID, Product } from '@vendure/core';
 
 export class MyService {
@@ -273,13 +273,13 @@ export class MyService {
 
 The "easy" way to solve this is to assert the `customFields` object as `any`:
 
-```TypeScript
+```ts
 return (product.customFields as any).infoUrl;
 ```
 
 However, this sacrifices type safety. To make our custom fields type-safe we can take advantage of a couple of more advanced TypeScript features - [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces) and [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules). This allows us to extend the built-in `CustomProductFields` interface to add our custom fields to it:
 
-```TypeScript
+```ts
 // types.ts
 
 // Note: we are using deep a import here, rather than importing from `@vendure/core` due to
@@ -298,7 +298,7 @@ declare module '@vendure/core/dist/entity/custom-entity-fields' {
 
 When this file is then imported into our service file (either directly or indirectly), TypeScript will know about our custom fields, and we do not need to do any type assertions.
 
-```TypeScript
+```ts
 return product.customFields.infoUrl;
 // no error, plus TS autocomplete works.
 ```
@@ -319,7 +319,7 @@ For a working example of this setup, see the [real-world-vendure repo](https://g
 
 A default value for the custom field may be specified, and also whether the field may be nullable (or empty). Any fields set to `nullable: false` should have a default value specified.
 
-```TypeScript
+```ts
 Product: [
   {
     name: 'downloadable',
@@ -334,7 +334,7 @@ Product: [
 
 Labels and descriptions can be specified to supply more information about the purpose of the custom field, and also to allow translations to be set. In the Admin UI, the `label` will be used in any forms featuring the custom field, and will fall back to `name` if no label is specified.
 
-```TypeScript
+```ts
 Product: [
   {
     name: 'extendedDescription',
@@ -356,7 +356,7 @@ Product: [
 
 A custom field may hold an array of values by setting the `list` property to `true`:
 
-```TypeScript
+```ts
 Product: [
   {
     name: 'keywords',
@@ -370,7 +370,7 @@ Product: [
 
 Certain custom field types may be configured with validation parameters:
 
-```TypeScript
+```ts
 Product: [
   {
     name: 'partCode',
@@ -400,7 +400,7 @@ In the above examples, attempting to set a custom field value which does not con
 
 For even more control over validation, a `validate` function may be provided to any field type, which will run whenever the value is set via the GraphQL API. This function can even be asynchronous and may use the [Injector]({{< relref "injector" >}}) to access providers. Returning a string or LocalizedString means validation failed.
 
-```TypeScript
+```ts
 Product: [
   {
     name: 'partCode',
@@ -424,7 +424,7 @@ Some custom fields may be used internally in your business logic, or for integra
 -   `readonly: true` means it will be exposed, but cannot be updated via the Admin API. It can only be changed programmatically in plugin code.
 -   `internal: false` - means the field _will_ be exposed via the GraphQL APIs (in this case on the Admin API due to the `public: false` setting). If it was set to `internal: true`, then the field would not be exposed _at all_ in either of the GraphQL APIs, and will not be visible in the Admin UI. Internal custom fields are useful for purely internal implementation details.
 
-```TypeScript
+```ts
 Customer: [
   {
     name: 'externalId',
@@ -440,7 +440,7 @@ Customer: [
 
 It is possible to set up custom fields that hold references to other entities using the `'relation'` type:
 
-```TypeScript
+```ts
 Customer: [
   {
     name: 'avatar',

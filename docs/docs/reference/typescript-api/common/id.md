@@ -1,26 +1,23 @@
 ---
 title: "ID"
 weight: 10
-date: 2023-07-14T16:57:50.657Z
+date: 2023-07-20T13:56:16.733Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ID
-<div class="symbol">
 
+## ID
 
-# ID
-
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="78" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="78" packageName="@vendure/common" />
 
 An entity ID. Depending on the configured <a href='/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>, it will be either
 a `string` or a `number`;
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ID = string | number
 ```
-</div>

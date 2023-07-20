@@ -1,19 +1,19 @@
 ---
 title: "NotificationService"
 weight: 10
-date: 2023-07-14T16:57:51.126Z
+date: 2023-07-20T13:56:18.052Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# NotificationService
-<div class="symbol">
 
+## NotificationService
 
-# NotificationService
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="54" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="54" packageName="@vendure/admin-ui" />
 
 Provides toast notification functionality.
 
@@ -31,9 +31,7 @@ class MyComponent {
   }
 }
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class NotificationService {
   constructor(i18nService: I18nService, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService)
   success(message: string, translationVars?: { [key: string]: string | number }) => void;
@@ -43,73 +41,57 @@ class NotificationService {
   notify(config: ToastConfig) => void;
 }
 ```
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(i18nService: <a href='/typescript-api/common/i18n-service#i18nservice'>I18nService</a>, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => NotificationService"  >}}
+<MemberInfo kind="method" type="(i18nService: <a href='/typescript-api/common/i18n-service#i18nservice'>I18nService</a>, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => NotificationService"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### success
 
-{{< member-info kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"  >}}
+<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
 
-{{< member-description >}}Display a success toast notification{{< /member-description >}}
-
+Display a success toast notification
 ### info
 
-{{< member-info kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"  >}}
+<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
 
-{{< member-description >}}Display an info toast notification{{< /member-description >}}
-
+Display an info toast notification
 ### warning
 
-{{< member-info kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"  >}}
+<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
 
-{{< member-description >}}Display a warning toast notification{{< /member-description >}}
-
+Display a warning toast notification
 ### error
 
-{{< member-info kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"  >}}
+<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
 
-{{< member-description >}}Display an error toast notification{{< /member-description >}}
-
+Display an error toast notification
 ### notify
 
-{{< member-info kind="method" type="(config: <a href='/admin-ui-api/providers/notification-service#toastconfig'>ToastConfig</a>) => void"  >}}
+<MemberInfo kind="method" type="(config: <a href='/admin-ui-api/providers/notification-service#toastconfig'>ToastConfig</a>) => void"   />
 
-{{< member-description >}}Display a toast notification.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Display a toast notification.
 
 
-# NotificationType
+## NotificationType
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="14" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="14" packageName="@vendure/admin-ui" />
 
 The types of notification available.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type NotificationType = 'info' | 'success' | 'error' | 'warning'
 ```
-</div>
-<div class="symbol">
 
 
-# ToastConfig
+## ToastConfig
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="23" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="23" packageName="@vendure/admin-ui" />
 
 Configuration for a toast notification.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ToastConfig {
   message: string;
   translationVars?: { [key: string]: string | number };
@@ -117,31 +99,24 @@ interface ToastConfig {
   duration?: number;
 }
 ```
-## Members
 
 ### message
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### translationVars
 
-{{< member-info kind="property" type="{ [key: string]: string | number }"  >}}
+<MemberInfo kind="property" type="{ [key: string]: string | number }"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### type
 
-{{< member-info kind="property" type="<a href='/admin-ui-api/providers/notification-service#notificationtype'>NotificationType</a>"  >}}
+<MemberInfo kind="property" type="<a href='/admin-ui-api/providers/notification-service#notificationtype'>NotificationType</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### duration
 
-{{< member-info kind="property" type="number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="number"   />
 
 
-</div>

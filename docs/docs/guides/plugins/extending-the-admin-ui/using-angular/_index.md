@@ -27,7 +27,7 @@ npm install @vendure/ui-devkit
 
 Here's a very simple Angular component which displays a greeting:
 
-```TypeScript
+```ts
 // project/ui-extensions/greeter.component.ts
 import { Component } from '@angular/core';
 
@@ -46,7 +46,7 @@ The `<vdr-page-block>` is just a wrapper that sets the layout and max width of y
 
 Next we need to declare an Angular module to house the component:
 
-```TypeScript
+```ts
 // project/ui-extensions/greeter.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -77,7 +77,7 @@ directives and other common functionality that any extension would require.
 
 Now we need to tell the `compileUiExtensions` function where to find the extension, and which file contains the NgModule itself (since a non-trivial UI extension will likely contain multiple files).
 
-```TypeScript
+```ts
 // project/vendure-config.ts
 import path from 'path';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';

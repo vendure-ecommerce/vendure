@@ -1,19 +1,19 @@
 ---
 title: "IfMultichannelDirective"
 weight: 10
-date: 2023-07-14T16:57:51.263Z
+date: 2023-07-20T13:56:18.495Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# IfMultichannelDirective
-<div class="symbol">
 
+## IfMultichannelDirective
 
-# IfMultichannelDirective
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-multichannel.directive.ts" sourceLine="21" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-multichannel.directive.ts" sourceLine="21" packageName="@vendure/admin-ui" />
 
 Structural directive that displays the given element if the Vendure instance has multiple channels
 configured.
@@ -26,25 +26,19 @@ configured.
 </ng-container>
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class IfMultichannelDirective extends IfDirectiveBase<[]> {
   constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, dataService: DataService)
 }
 ```
-## Extends
+Extends
 
  * IfDirectiveBase&#60;[]&#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => IfMultichannelDirective"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => IfMultichannelDirective"   />
 
 
-</div>

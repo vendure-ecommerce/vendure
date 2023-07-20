@@ -23,7 +23,7 @@ This plugin will add a new mutation, `addRandomCat`, to the GraphQL API which al
 
 We need a place to store the url of the cat image, so we will add a custom field to the Product entity. This is done by modifying the VendureConfig object via the plugin's [`configuration` metadata property]({{< relref "vendure-plugin-metadata" >}}#configuration):
 
-```TypeScript
+```ts
 import { VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
@@ -44,7 +44,7 @@ Changing the database schema by `CustomFields` configuration requires a synchron
 
 Now we will create a service which is responsible for making the HTTP call to the random.cat API and returning the URL of a random cat image:
 
-```TypeScript
+```ts
 import http from 'http';
 import { Injectable } from '@nestjs/common';
 
@@ -76,7 +76,7 @@ To use decorators with TypeScript, you must set the "emitDecoratorMetadata" and 
 
 Next, we will define how the GraphQL API should be extended:
 
-```TypeScript
+```ts
 import gql from 'graphql-tag';
 
 const schemaExtension = gql`
@@ -92,7 +92,7 @@ We will use this `schemaExtension` variable in a later step.
 
 Now that we've defined the new mutation, we'll need a resolver function to handle it. To do this, we'll create a new resolver class, following the [Nest GraphQL resolver architecture](https://docs.nestjs.com/graphql/resolvers-map). In short, this will be a class which has the `@Resolver()` decorator and features a method to handle our new mutation.
 
-```TypeScript
+```ts
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Ctx, Allow, ProductService, RequestContext, Transaction } from '@vendure/core';
 import { Permission } from '@vendure/common/lib/generated-types';
@@ -129,7 +129,7 @@ Some explanations of this code are in order:
 
 In the RandomCatResolver we make use of the ProductService. This is one of the built-in services which Vendure uses internally to interact with the database. It can be injected into our resolver only if we first import the [PluginCommonModule]({{< relref "plugin-common-module" >}}), which is a module which exports a number of providers which are usually needed by plugins.
 
-```TypeScript
+```ts
 @VendurePlugin({
   imports: [PluginCommonModule],
   configuration: config => {
@@ -143,7 +143,7 @@ export class RandomCatPlugin {}
 
 In order that our resolver is able to use Nest's dependency injection to inject an instance of `CatFetcher`, we must add it to the `providers` array in our plugin:
 
-```TypeScript
+```ts
 @VendurePlugin({
   imports: [PluginCommonModule],
   providers: [CatFetcher],
@@ -158,7 +158,7 @@ export class RandomCatPlugin {}
 
 Now that we've defined the new mutation and we have a resolver capable of handling it, we just need to tell Vendure to extend the API. This is done with the [`adminApiExtensions` metadata property]({{< relref "vendure-plugin-metadata" >}}#adminapiextensions). If we wanted to extend the Shop API, we'd use the [`shopApiExtensions` metadata property]({{< relref "vendure-plugin-metadata" >}}#shopapiextensions) instead.
 
-```TypeScript
+```ts
 @VendurePlugin({
   imports: [PluginCommonModule],
   providers: [CatFetcher],
@@ -178,7 +178,7 @@ export class RandomCatPlugin {}
 Since Vendure v2.0.0, it is possible for a plugin to specify which versions of Vendure core it is compatible with. This is especially
 important if the plugin is intended to be made publicly available via npm or another package registry.
 
-```TypeScript
+```ts
 @VendurePlugin({
   // imports: [ etc. ]
   compatibility: '^2.0.0'  
@@ -190,7 +190,7 @@ export class RandomCatPlugin {}
 
 Finally, we need to add an instance of our plugin to the config object with which we bootstrap our Vendure server:
 
-```TypeScript
+```ts
 import { bootstrap } from '@vendure/core';
 
 bootstrap({
@@ -235,7 +235,7 @@ which should yield the following response:
 
 ### Full example plugin
 
-```TypeScript
+```ts
 import { Injectable } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import gql from 'graphql-tag';

@@ -1,25 +1,23 @@
 ---
 title: "ActionBarItem"
 weight: 10
-date: 2023-07-14T16:57:51.118Z
+date: 2023-07-20T13:56:18.017Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ActionBarItem
-<div class="symbol">
 
+## ActionBarItem
 
-# ActionBarItem
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="89" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="89" packageName="@vendure/admin-ui" />
 
 A button in the ActionBar area at the top of one of the list or detail views.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ActionBarItem {
   id: string;
   label: string;
@@ -33,67 +31,54 @@ interface ActionBarItem {
   requiresPermission?: string | string[];
 }
 ```
-## Members
 
 ### id
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### label
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### locationId
 
-{{< member-info kind="property" type="<a href='/admin-ui-api/action-bar/action-bar-location-id#actionbarlocationid'>ActionBarLocationId</a>"  >}}
+<MemberInfo kind="property" type="<a href='/admin-ui-api/action-bar/action-bar-location-id#actionbarlocationid'>ActionBarLocationId</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### disabled
 
-{{< member-info kind="property" type="Observable&#60;boolean&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;boolean&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onClick
 
-{{< member-info kind="property" type="(event: MouseEvent, context: <a href='/admin-ui-api/action-bar/on-click-context#onclickcontext'>OnClickContext</a>) =&#62; void"  >}}
+<MemberInfo kind="property" type="(event: MouseEvent, context: <a href='/admin-ui-api/action-bar/on-click-context#onclickcontext'>OnClickContext</a>) =&#62; void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### routerLink
 
-{{< member-info kind="property" type="RouterLinkDefinition"  >}}
+<MemberInfo kind="property" type="RouterLinkDefinition"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### buttonColor
 
-{{< member-info kind="property" type="'primary' | 'success' | 'warning'"  >}}
+<MemberInfo kind="property" type="'primary' | 'success' | 'warning'"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### buttonStyle
 
-{{< member-info kind="property" type="'solid' | 'outline' | 'link'"  >}}
+<MemberInfo kind="property" type="'solid' | 'outline' | 'link'"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### icon
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### requiresPermission
 
-{{< member-info kind="property" type="string | string[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="string | string[]"   />
 
 
-</div>

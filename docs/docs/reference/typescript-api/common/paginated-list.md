@@ -1,26 +1,24 @@
 ---
 title: "PaginatedList"
 weight: 10
-date: 2023-07-14T16:57:50.656Z
+date: 2023-07-20T13:56:16.731Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# PaginatedList
-<div class="symbol">
 
+## PaginatedList
 
-# PaginatedList
-
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="66" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="66" packageName="@vendure/common" />
 
 A type describing the shape of a paginated list response. In Vendure, almost all list queries
 (`products`, `collections`, `orders`, `customers` etc) return an object of this type.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type PaginatedList<T> = {
   items: T[];
   totalItems: number;
@@ -28,17 +26,14 @@ type PaginatedList<T> = {
 ```
 ## Members
 
+
 ### items
 
-{{< member-info kind="property" type="T[]"  >}}
+<MemberInfo kind="property" type="T[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### totalItems
 
-{{< member-info kind="property" type="number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="number"   />
 
 
-</div>

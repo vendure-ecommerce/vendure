@@ -17,7 +17,7 @@ Let's say you have a plugin which adds a new entity to the database called `Prod
 
 The detail component itself is an Angular component which extends the [BaseDetailComponent]({{< relref "base-detail-component" >}}) or [TypedBaseDetailComponent]({{< relref "typed-base-detail-component" >}}) class.
 
-```TypeScript
+```ts
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { TypedBaseDetailComponent, LanguageCode } from '@vendure/admin-ui/core';
@@ -155,7 +155,7 @@ Here is the standard layout for detail views:
 
 The `TypedBaseDetailComponent` expects that the entity detail data is resolved as part of loading the route. The data needs to be loaded in a very specific object shape:
 
-```TypeScript
+```ts
 interface DetailResolveData {
     detail: {
         entity: Observable<Entity>;
@@ -165,7 +165,7 @@ interface DetailResolveData {
 
 Here's how the routing would look for a typical list & detail view:
 
-```TypeScript
+```ts
 import { inject, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DataService, SharedModule } from '@vendure/admin-ui/core';

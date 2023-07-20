@@ -11,7 +11,7 @@ Once you have defined some custom routes in a lazy extension module, you need so
 
 Let's add a new section to the Admin UI main nav bar containing a link to the "greeter" module from the [Using Angular]({{< relref "../using-angular" >}}) example:
 
-```TypeScript
+```ts
 // project/ui-extensions/greeter-shared.module.ts
 import { NgModule } from '@angular/core';
 import { SharedModule, addNavMenuSection } from '@vendure/admin-ui/core';
@@ -39,7 +39,7 @@ export class GreeterSharedModule {}
 
 Now we must also register this new module with the compiler:
 
-```TypeScript
+```ts
 // project/vendure-config.ts
 
 ngModules: [
@@ -71,7 +71,7 @@ This is done by setting the `id` property to that of an existing nav menu sectio
 
 You can add your own tabs to any of the Admin UI's list or detail pages using the [registerPageTab]({{< relref "register-page-tab" >}}) function. For example, to add a new tab to the product detail page for displaying product reviews:
 
-```TypeScript
+```ts
 import { NgModule } from '@angular/core';
 import { SharedModule, registerPageTab } from '@vendure/admin-ui/core';
 

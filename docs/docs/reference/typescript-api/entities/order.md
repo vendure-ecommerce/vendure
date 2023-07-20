@@ -1,19 +1,19 @@
 ---
 title: "Order"
 weight: 10
-date: 2023-07-14T16:57:49.888Z
+date: 2023-07-20T13:56:15.177Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Order
-<div class="symbol">
 
+## Order
 
-# Order
-
-{{< generation-info sourceFile="packages/core/src/entity/order/order.entity.ts" sourceLine="43" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/order/order.entity.ts" sourceLine="43" packageName="@vendure/core" />
 
 An Order is created whenever a <a href='/typescript-api/entities/customer#customer'>Customer</a> adds an item to the cart. It contains all the
 information required to fulfill an order: which <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s in what quantities;
@@ -22,9 +22,7 @@ the shipping address and price; any applicable promotions; payments etc.
 An Order exists in a well-defined state according to the <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a> type. A state machine
 is used to govern the transition from one state to another.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Order extends VendureEntity implements ChannelAware, HasCustomFields {
   constructor(input?: DeepPartial<Order>)
   @Column('varchar', { default: OrderType.Regular }) @Column('varchar', { default: OrderType.Regular })
@@ -140,236 +138,199 @@ class Order extends VendureEntity implements ChannelAware, HasCustomFields {
   @Calculated({ relations: ['lines'] }) taxSummary: OrderTaxSummary[]
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
  * HasCustomFields
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order#order'>Order</a>&#62;) => Order"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order#order'>Order</a>&#62;) => Order"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### type
 
-{{< member-info kind="property" type="OrderType"  >}}
+<MemberInfo kind="property" type="OrderType"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### sellerOrders
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### aggregateOrder
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### aggregateOrderId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### code
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}A unique code for the Order, generated according to the
+A unique code for the Order, generated according to the
 <a href='/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a>. This should be used as an order reference
-for Customers, rather than the Order's id.{{< /member-description >}}
-
+for Customers, rather than the Order's id.
 ### state
 
-{{< member-info kind="property" type="<a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### active
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}Whether the Order is considered "active", meaning that the
+Whether the Order is considered "active", meaning that the
 Customer can still make changes to it and has not yet completed
 the checkout process.
-This is governed by the <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.{{< /member-description >}}
-
+This is governed by the <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.
 ### orderPlacedAt
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}The date & time that the Order was placed, i.e. the Customer
+The date & time that the Order was placed, i.e. the Customer
 completed the checkout and the Order is no longer "active".
-This is governed by the <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.{{< /member-description >}}
-
+This is governed by the <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.
 ### customer
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/customer#customer'>Customer</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/customer#customer'>Customer</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customerId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### lines
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### surcharges
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
 
-{{< member-description >}}Surcharges are arbitrary modifications to the Order total which are neither
+Surcharges are arbitrary modifications to the Order total which are neither
 ProductVariants nor discounts resulting from applied Promotions. For example,
 one-off discounts based on customer interaction, or surcharges based on payment
-methods.{{< /member-description >}}
-
+methods.
 ### couponCodes
 
-{{< member-info kind="property" type="string[]"  >}}
+<MemberInfo kind="property" type="string[]"   />
 
-{{< member-description >}}An array of all coupon codes applied to the Order.{{< /member-description >}}
-
+An array of all coupon codes applied to the Order.
 ### promotions
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/promotion#promotion'>Promotion</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/promotion#promotion'>Promotion</a>[]"   />
 
-{{< member-description >}}Promotions applied to the order. Only gets populated after the payment process has completed,
-i.e. the Order is no longer active.{{< /member-description >}}
-
+Promotions applied to the order. Only gets populated after the payment process has completed,
+i.e. the Order is no longer active.
 ### shippingAddress
 
-{{< member-info kind="property" type="OrderAddress"  >}}
+<MemberInfo kind="property" type="OrderAddress"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### billingAddress
 
-{{< member-info kind="property" type="OrderAddress"  >}}
+<MemberInfo kind="property" type="OrderAddress"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### payments
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/payment#payment'>Payment</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/payment#payment'>Payment</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### fulfillments
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### currencyCode
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomOrderFields"  >}}
+<MemberInfo kind="property" type="CustomOrderFields"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### taxZoneId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### modifications
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### subTotal
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
+The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
 discounts which have been prorated (proportionally distributed) amongst the OrderItems.
 To get a total of all OrderLines which does not account for prorated discounts, use the
-sum of <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>'s `discountedLinePrice` values.{{< /member-description >}}
-
+sum of <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>'s `discountedLinePrice` values.
 ### subTotalWithTax
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}Same as subTotal, but inclusive of tax.{{< /member-description >}}
-
+Same as subTotal, but inclusive of tax.
 ### shippingLines
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>[]"   />
 
-{{< member-description >}}The shipping charges applied to this order.{{< /member-description >}}
-
+The shipping charges applied to this order.
 ### shipping
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The total of all the `shippingLines`.{{< /member-description >}}
-
+The total of all the `shippingLines`.
 ### shippingWithTax
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### discounts
 
-{{< member-info kind="property" type="Discount[]"  >}}
+<MemberInfo kind="property" type="Discount[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### total
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}Equal to `subTotal` plus `shipping`{{< /member-description >}}
-
+Equal to `subTotal` plus `shipping`
 ### totalWithTax
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The final payable amount. Equal to `subTotalWithTax` plus `shippingWithTax`.{{< /member-description >}}
-
+The final payable amount. Equal to `subTotalWithTax` plus `shippingWithTax`.
 ### totalQuantity
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### taxSummary
 
-{{< member-info kind="property" type="OrderTaxSummary[]"  >}}
+<MemberInfo kind="property" type="OrderTaxSummary[]"   />
 
-{{< member-description >}}A summary of the taxes being applied to this Order.{{< /member-description >}}
-
-
-</div>
+A summary of the taxes being applied to this Order.

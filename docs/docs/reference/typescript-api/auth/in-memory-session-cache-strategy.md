@@ -1,19 +1,19 @@
 ---
 title: "InMemorySessionCacheStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.685Z
+date: 2023-07-20T13:56:14.717Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# InMemorySessionCacheStrategy
-<div class="symbol">
 
+## InMemorySessionCacheStrategy
 
-# InMemorySessionCacheStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/session-cache/in-memory-session-cache-strategy.ts" sourceLine="16" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/in-memory-session-cache-strategy.ts" sourceLine="16" packageName="@vendure/core" />
 
 Caches session in memory, using a LRU cache implementation. Not suitable for
 multi-server setups since the cache will be local to each instance, reducing
@@ -24,9 +24,7 @@ session to be evicted (removed) from the cache.
 The cache size can be configured by passing a different number to the constructor
 function.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class InMemorySessionCacheStrategy implements SessionCacheStrategy {
   constructor(cacheSize?: number)
   delete(sessionToken: string) => ;
@@ -35,42 +33,34 @@ class InMemorySessionCacheStrategy implements SessionCacheStrategy {
   clear() => ;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(cacheSize?: number) => InMemorySessionCacheStrategy"  >}}
+<MemberInfo kind="method" type="(cacheSize?: number) => InMemorySessionCacheStrategy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### delete
 
-{{< member-info kind="method" type="(sessionToken: string) => "  >}}
+<MemberInfo kind="method" type="(sessionToken: string) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### get
 
-{{< member-info kind="method" type="(sessionToken: string) => "  >}}
+<MemberInfo kind="method" type="(sessionToken: string) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### set
 
-{{< member-info kind="method" type="(session: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => "  >}}
+<MemberInfo kind="method" type="(session: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### clear
 
-{{< member-info kind="method" type="() => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="() => "   />
 
 
-</div>

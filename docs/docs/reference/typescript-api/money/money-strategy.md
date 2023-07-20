@@ -1,19 +1,19 @@
 ---
 title: "MoneyStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.540Z
+date: 2023-07-20T13:56:14.425Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# MoneyStrategy
-<div class="symbol">
 
+## MoneyStrategy
 
-# MoneyStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="40" packageName="@vendure/core" since="2.0.0">}}
+<GenerationInfo sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="40" packageName="@vendure/core" since="2.0.0" />
 
 The MoneyStrategy defines how monetary values are stored and manipulated. The MoneyStrategy
 is defined in <a href='/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>:
@@ -46,32 +46,28 @@ In certain use-cases, it may be required that fractions of a cent or penny be su
 the solution would be to define a custom MoneyStrategy which uses a non-integer data type for storing
 the value in the database, and defines a `round()` implementation which allows decimal places to be kept.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface MoneyStrategy extends InjectableStrategy {
   readonly moneyColumnOptions: ColumnOptions;
   round(value: number, quantity?: number): number;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
 
 
-## Members
 
 ### moneyColumnOptions
 
-{{< member-info kind="property" type="ColumnOptions"  >}}
+<MemberInfo kind="property" type="ColumnOptions"   />
 
-{{< member-description >}}Defines the TypeORM column used to store monetary values.{{< /member-description >}}
-
+Defines the TypeORM column used to store monetary values.
 ### round
 
-{{< member-info kind="method" type="(value: number, quantity?: number) => number"  >}}
+<MemberInfo kind="method" type="(value: number, quantity?: number) => number"   />
 
-{{< member-description >}}Defines the logic used to round monetary values. For instance, the default behavior
+Defines the logic used to round monetary values. For instance, the default behavior
 in the <a href='/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a> is to round the value, then multiply.
 
 ```TypeScript
@@ -83,7 +79,4 @@ multiplied. In this case you can define a custom strategy with logic like this:
 
 ```TypeScript
 return Math.round(value * quantity);
-```{{< /member-description >}}
-
-
-</div>
+```

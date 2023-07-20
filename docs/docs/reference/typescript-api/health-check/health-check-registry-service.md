@@ -1,19 +1,19 @@
 ---
 title: "HealthCheckRegistryService"
 weight: 10
-date: 2023-07-14T16:57:50.128Z
+date: 2023-07-20T13:56:15.631Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# HealthCheckRegistryService
-<div class="symbol">
 
+## HealthCheckRegistryService
 
-# HealthCheckRegistryService
-
-{{< generation-info sourceFile="packages/core/src/health-check/health-check-registry.service.ts" sourceLine="47" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/health-check/health-check-registry.service.ts" sourceLine="47" packageName="@vendure/core" />
 
 This service is used to register health indicator functions to be included in the
 health check. Health checks can be used by automated services such as Kubernetes
@@ -56,22 +56,16 @@ export class MyPlugin {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class HealthCheckRegistryService {
   registerIndicatorFunction(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => ;
 }
 ```
-## Members
 
 ### registerIndicatorFunction
 
-{{< member-info kind="method" type="(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => "  >}}
+<MemberInfo kind="method" type="(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => "   />
 
-{{< member-description >}}Registers one or more `HealthIndicatorFunctions` (see [Nestjs docs](https://docs.nestjs.com/recipes/terminus#setting-up-a-healthcheck))
+Registers one or more `HealthIndicatorFunctions` (see [Nestjs docs](https://docs.nestjs.com/recipes/terminus#setting-up-a-healthcheck))
 to be added to the health check endpoint.
-The indicator will also appear in the Admin UI's "system status" view.{{< /member-description >}}
-
-
-</div>
+The indicator will also appear in the Admin UI's "system status" view.

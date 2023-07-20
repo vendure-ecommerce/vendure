@@ -1,19 +1,19 @@
 ---
 title: "CustomFields"
 weight: 10
-date: 2023-07-14T16:57:49.518Z
+date: 2023-07-20T13:56:14.378Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CustomFields
-<div class="symbol">
 
+## CustomFields
 
-# CustomFields
-
-{{< generation-info sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="205" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="205" packageName="@vendure/core" />
 
 Most entities can have additional fields added to them by defining an array of <a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>
 objects on against the corresponding key.
@@ -99,9 +99,7 @@ bootstrap({
 })
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface CustomFields {
   Address?: CustomFieldConfig[];
   Administrator?: CustomFieldConfig[];
@@ -132,169 +130,139 @@ interface CustomFields {
   Zone?: CustomFieldConfig[];
 }
 ```
-## Members
 
 ### Address
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Administrator
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Asset
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Channel
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Collection
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Customer
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### CustomerGroup
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Facet
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### FacetValue
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Fulfillment
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### GlobalSettings
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Order
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### OrderLine
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### PaymentMethod
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Product
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ProductOption
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ProductOptionGroup
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ProductVariant
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Promotion
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Region
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Seller
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ShippingMethod
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### StockLocation
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### TaxCategory
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### TaxRate
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### User
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### Zone
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
 
-</div>

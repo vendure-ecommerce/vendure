@@ -1,19 +1,19 @@
 ---
 title: "StripePlugin"
 weight: 10
-date: 2023-07-14T16:57:50.798Z
+date: 2023-07-20T13:56:17.047Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# StripePlugin
-<div class="symbol">
 
+## StripePlugin
 
-# StripePlugin
-
-{{< generation-info sourceFile="packages/payments-plugin/src/stripe/stripe.plugin.ts" sourceLine="159" packageName="@vendure/payments-plugin">}}
+<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/stripe.plugin.ts" sourceLine="159" packageName="@vendure/payments-plugin" />
 
 Plugin to enable payments through [Stripe](https://stripe.com/docs) via the Payment Intents API.
 
@@ -157,42 +157,32 @@ under "Test in a local environment".
    ```
 4. The Stripe CLI will create a webhook signing secret you can then use in your config of the StripePlugin.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class StripePlugin {
   static static options: StripePluginOptions;
   static init(options: StripePluginOptions) => Type<StripePlugin>;
 }
 ```
-## Members
 
 ### options
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripeplugin'>StripePlugin</a>&#62;"  >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripeplugin'>StripePlugin</a>&#62;"   />
 
-{{< member-description >}}Initialize the Stripe payment plugin{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Initialize the Stripe payment plugin
 
 
-# StripePluginOptions
+## StripePluginOptions
 
-{{< generation-info sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="21" packageName="@vendure/payments-plugin">}}
+<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="21" packageName="@vendure/payments-plugin" />
 
 Configuration options for the Stripe payments plugin.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface StripePluginOptions {
   storeCustomersInStripe?: boolean;
   metadata?: (
@@ -202,22 +192,17 @@ interface StripePluginOptions {
     ) => Stripe.MetadataParam | Promise<Stripe.MetadataParam>;
 }
 ```
-## Members
 
 ### storeCustomersInStripe
 
-{{< member-info kind="property" type="boolean" default="false"  >}}
+<MemberInfo kind="property" type="boolean" default="false"   />
 
-{{< member-description >}}If set to `true`, a [Customer](https://stripe.com/docs/api/customers) object will be created in Stripe - if
+If set to `true`, a [Customer](https://stripe.com/docs/api/customers) object will be created in Stripe - if
 it doesn't already exist - for authenticated users, which prevents payment methods attached to other Customers
 to be used with the same PaymentIntent. This is done by adding a custom field to the Customer entity to store
-the Stripe customer ID, so switching this on will require a database migration / synchronization.{{< /member-description >}}
-
+the Stripe customer ID, so switching this on will require a database migration / synchronization.
 ### metadata
 
-{{< member-info kind="property" type="(         injector: <a href='/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;"  since="1.9.7" >}}
+<MemberInfo kind="property" type="(         injector: <a href='/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;"  since="1.9.7"  />
 
-{{< member-description >}}Attach extra metadata to Stripe payment intent{{< /member-description >}}
-
-
-</div>
+Attach extra metadata to Stripe payment intent

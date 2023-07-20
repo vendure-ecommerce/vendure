@@ -1,27 +1,25 @@
 ---
 title: "Promotion Condition"
 weight: 10
-date: 2023-07-14T16:57:49.678Z
+date: 2023-07-20T13:56:14.701Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# promotion-condition
-<div class="symbol">
 
+## PromotionCondition
 
-# PromotionCondition
-
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="66" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="66" packageName="@vendure/core" />
 
 PromotionConditions are used to create <a href='/typescript-api/entities/promotion#promotion'>Promotion</a>s. The purpose of a PromotionCondition
 is to check the order against a particular predicate function (the `check` function) and to return
 `true` if the Order satisfies the condition, or `false` if it does not.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PromotionCondition<T extends ConfigArgs = ConfigArgs, C extends string = string, R extends CheckPromotionConditionResult = any> extends ConfigurableOperationDef<T> {
   readonly readonly priorityValue: number;
   code: C
@@ -29,93 +27,76 @@ class PromotionCondition<T extends ConfigArgs = ConfigArgs, C extends string = s
   async check(ctx: RequestContext, order: Order, args: ConfigArg[], promotion: Promotion) => Promise<R>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
 
 
-## Members
 
 ### priorityValue
 
-{{< member-info kind="property" type="number" default="0"  >}}
+<MemberInfo kind="property" type="number" default="0"   />
 
-{{< member-description >}}Used to determine the order of application of multiple Promotions
+Used to determine the order of application of multiple Promotions
 on the same Order. See the <a href='/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
-more information.{{< /member-description >}}
-
+more information.
 ### code
 
-{{< member-info kind="property" type="C"  >}}
+<MemberInfo kind="property" type="C"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/promotions/promotion-condition#promotionconditionconfig'>PromotionConditionConfig</a>&#60;T, C, R&#62;) => PromotionCondition"  >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-condition#promotionconditionconfig'>PromotionConditionConfig</a>&#60;T, C, R&#62;) => PromotionCondition"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### check
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>, args: ConfigArg[], promotion: <a href='/typescript-api/entities/promotion#promotion'>Promotion</a>) => Promise&#60;R&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>, args: ConfigArg[], promotion: <a href='/typescript-api/entities/promotion#promotion'>Promotion</a>) => Promise&#60;R&#62;"   />
 
-{{< member-description >}}This is the function which contains the conditional logic to decide whether
-a Promotion should apply to an Order. See <a href='/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+This is the function which contains the conditional logic to decide whether
+a Promotion should apply to an Order. See <a href='/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>.
 
 
-# PromotionConditionConfig
+## PromotionConditionConfig
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="46" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="46" packageName="@vendure/core" />
 
 This object is used to configure a PromotionCondition.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface PromotionConditionConfig<T extends ConfigArgs, C extends string, R extends CheckPromotionConditionResult> extends ConfigurableOperationDefOptions<T> {
   code: C;
   check: CheckPromotionConditionFn<T, R>;
   priorityValue?: number;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;
 
 
-## Members
 
 ### code
 
-{{< member-info kind="property" type="C"  >}}
+<MemberInfo kind="property" type="C"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### check
 
-{{< member-info kind="property" type="<a href='/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>&#60;T, R&#62;"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>&#60;T, R&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### priorityValue
 
-{{< member-info kind="property" type="number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="number"   />
 
 
-</div>
-<div class="symbol">
 
 
-# CheckPromotionConditionFn
+## CheckPromotionConditionFn
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="31" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="31" packageName="@vendure/core" />
 
 A function which checks whether or not a given <a href='/typescript-api/entities/order#order'>Order</a> satisfies the <a href='/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>.
 
@@ -126,9 +107,7 @@ The function should return either a `boolean` or and plain object type:
 * `{ [key: string]: any; }`: The condition is satisfied, apply PromotionActions
 _and_ pass this object into the PromotionAction's `state` argument.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type CheckPromotionConditionFn<T extends ConfigArgs, R extends CheckPromotionConditionResult> = (
     ctx: RequestContext,
     order: Order,
@@ -136,4 +115,3 @@ type CheckPromotionConditionFn<T extends ConfigArgs, R extends CheckPromotionCon
     promotion: Promotion,
 ) => R | Promise<R>
 ```
-</div>

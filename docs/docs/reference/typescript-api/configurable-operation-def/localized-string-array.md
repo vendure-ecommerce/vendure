@@ -1,19 +1,19 @@
 ---
 title: "LocalizedStringArray"
 weight: 10
-date: 2023-07-14T16:57:49.418Z
+date: 2023-07-20T13:56:14.167Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# LocalizedStringArray
-<div class="symbol">
 
+## LocalizedStringArray
 
-# LocalizedStringArray
-
-{{< generation-info sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="43" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="43" packageName="@vendure/core" />
 
 An array of string values in a given <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>, used to define human-readable string values.
 The `ui` property can be used in conjunction with the Vendure Admin UI to specify a custom form input
@@ -29,9 +29,6 @@ const title: LocalizedStringArray = [
 ]
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type LocalizedStringArray = Array<Omit<LocalizedString, '__typename'>>
 ```
-</div>

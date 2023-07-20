@@ -1,48 +1,41 @@
 ---
 title: "BcryptPasswordHashingStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.477Z
+date: 2023-07-20T13:56:14.282Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# BcryptPasswordHashingStrategy
-<div class="symbol">
 
+## BcryptPasswordHashingStrategy
 
-# BcryptPasswordHashingStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/auth/bcrypt-password-hashing-strategy.ts" sourceLine="12" packageName="@vendure/core" since="1.3.0">}}
+<GenerationInfo sourceFile="packages/core/src/config/auth/bcrypt-password-hashing-strategy.ts" sourceLine="12" packageName="@vendure/core" since="1.3.0" />
 
 A hashing strategy which uses bcrypt (https://en.wikipedia.org/wiki/Bcrypt) to hash plaintext password strings.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class BcryptPasswordHashingStrategy implements PasswordHashingStrategy {
   hash(plaintext: string) => Promise<string>;
   check(plaintext: string, hash: string) => Promise<boolean>;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/auth/password-hashing-strategy#passwordhashingstrategy'>PasswordHashingStrategy</a>
 
 
-## Members
 
 ### hash
 
-{{< member-info kind="method" type="(plaintext: string) => Promise&#60;string&#62;"  >}}
+<MemberInfo kind="method" type="(plaintext: string) => Promise&#60;string&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### check
 
-{{< member-info kind="method" type="(plaintext: string, hash: string) => Promise&#60;boolean&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(plaintext: string, hash: string) => Promise&#60;boolean&#62;"   />
 
 
-</div>

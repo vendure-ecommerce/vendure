@@ -1,19 +1,19 @@
 ---
 title: "AdminUiPlugin"
 weight: 10
-date: 2023-07-14T16:57:50.678Z
+date: 2023-07-20T13:56:16.789Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# AdminUiPlugin
-<div class="symbol">
 
+## AdminUiPlugin
 
-# AdminUiPlugin
-
-{{< generation-info sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="125" packageName="@vendure/admin-ui-plugin">}}
+<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="125" packageName="@vendure/admin-ui-plugin" />
 
 This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
 
@@ -61,39 +61,31 @@ const config: VendureConfig = {
 };
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class AdminUiPlugin implements NestModule {
   constructor(configService: ConfigService, processContext: ProcessContext)
   static init(options: AdminUiPluginOptions) => Type<AdminUiPlugin>;
   async configure(consumer: MiddlewareConsumer) => ;
 }
 ```
-## Implements
+Implements
 
  * NestModule
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(configService: ConfigService, processContext: <a href='/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AdminUiPlugin"  >}}
+<MemberInfo kind="method" type="(configService: ConfigService, processContext: <a href='/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AdminUiPlugin"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/admin-ui-plugin/admin-ui-plugin-options#adminuipluginoptions'>AdminUiPluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>&#62;"  >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/admin-ui-plugin/admin-ui-plugin-options#adminuipluginoptions'>AdminUiPluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>&#62;"   />
 
-{{< member-description >}}Set the plugin options{{< /member-description >}}
-
+Set the plugin options
 ### configure
 
-{{< member-info kind="method" type="(consumer: MiddlewareConsumer) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
 
 
-</div>

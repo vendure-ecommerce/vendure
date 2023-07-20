@@ -1,19 +1,19 @@
 ---
 title: "ImageTransformMode"
 weight: 10
-date: 2023-07-14T16:57:50.705Z
+date: 2023-07-20T13:56:16.857Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ImageTransformMode
-<div class="symbol">
 
+## ImageTransformMode
 
-# ImageTransformMode
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="21" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="21" packageName="@vendure/asset-server-plugin" />
 
 Specifies the way in which an asset preview image will be resized to fit in the
 proscribed dimensions:
@@ -22,9 +22,6 @@ proscribed dimensions:
 * resize: Preserving aspect ratio, resizes the image to be as large as possible
 while ensuring its dimensions are less than or equal to both those specified.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ImageTransformMode = 'crop' | 'resize'
 ```
-</div>

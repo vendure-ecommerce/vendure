@@ -9,7 +9,7 @@ Your plugin may be defining new queries & mutations which require new permission
 
 For example, let's imagine you are creating a plugin which exposes a new mutation that can be used by remote services to sync your inventory. First of all we will define the new permission:
 
-```TypeScript
+```ts
 // sync-permission.ts
 import { PermissionDefinition } from '@vendure/core';
 
@@ -21,7 +21,7 @@ export const sync = new PermissionDefinition({
 
 This permission can then be used in conjuction with the [@Allow() decorator]({{< relref "allow-decorator">}}) to limit access to the mutation:
 
-```TypeScript
+```ts
 // inventory-sync.resolver.ts
 import { Allow } from '@vendure/core';
 import { Mutation, Resolver } from '@nestjs/graphql';
@@ -40,7 +40,7 @@ export class InventorySyncResolver {
 
 Finally, the `sync` PermissionDefinition must be passed into the VendureConfig so that Vendure knows about this new custom permission:
 
-```TypeScript {hl_lines=[21]}
+```ts {hl_lines=[21]}
 // inventory-sync.plugin.ts
 import gql from 'graphql-tag';
 import { VendurePlugin } from '@vendure/core';

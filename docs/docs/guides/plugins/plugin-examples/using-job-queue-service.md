@@ -8,7 +8,7 @@ showtoc: true
 
 If your plugin involves long-running tasks, you can take advantage of the [job queue system]({{< relref "/guides/developer-guide/job-queue" >}}) that comes with Vendure. This example defines a mutation that can be used to transcode and link a video to a Product's customFields.
 
-```TypeScript
+```ts
 // product-video.resolver.ts
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext } from '@vendure/core'
@@ -30,7 +30,7 @@ class ProductVideoResolver {
 }
 ```
 The resolver just defines how to handle the new `addVideoToProduct` mutation, delegating the actual work to the `ProductVideoService`:
-```TypeScript
+```ts
 // product-video.service.ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JobQueue, JobQueueService, ID, Product, TransactionalConnection } from '@vendure/core';
@@ -78,7 +78,7 @@ class ProductVideoService implements OnModuleInit {
 ```
 The `ProductVideoService` is in charge of setting up the JobQueue and adding jobs to that queue. Calling 
 
-```TypeScript
+```ts
 productVideoService.transcodeForProduct(id, url);
 ```
 
@@ -89,7 +89,7 @@ will add a transcoding job to the queue.
 what context you are in. This can be done with the [ProcessContext]({{< relref "process-context" >}}) provider.
 {{< /alert >}}
 
-```TypeScript
+```ts
 // product-video.plugin.ts
 import gql from 'graphql-tag';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
@@ -125,7 +125,7 @@ When creating a new job via `JobQueue.add()`, it is possible to subscribe to upd
 
 In the video transcoding example above, we could modify the `transcodeForProduct()` call to look like this:
 
-```TypeScript
+```ts
 import { of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
@@ -154,7 +154,7 @@ class ProductVideoService implements OnModuleInit {
 
 If you prefer to work with Promises rather than Rxjs Observables, you can also convert the updates to a promise:
 
-```TypeScript
+```ts
 const job = await this.jobQueue.add({ productId, videoUrl }, { retries: 2 });
     
 return job.updates().toPromise()

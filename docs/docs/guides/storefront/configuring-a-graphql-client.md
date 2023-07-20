@@ -12,7 +12,7 @@ This guide provides examples of how to set up popular GraphQL clients to work wi
 
 Here's an example configuration for [Apollo Client](https://www.apollographql.com/docs/react/) with a React app.
 
-```TypeScript
+```ts
 import {
   ApolloClient,
   ApolloLink, 

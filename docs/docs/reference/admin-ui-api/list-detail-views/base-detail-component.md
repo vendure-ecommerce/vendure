@@ -1,19 +1,19 @@
 ---
 title: "BaseDetailComponent"
 weight: 10
-date: 2023-07-14T16:57:51.024Z
+date: 2023-07-20T13:56:17.714Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# BaseDetailComponent
-<div class="symbol">
 
+## BaseDetailComponent
 
-# BaseDetailComponent
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="56" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="56" packageName="@vendure/admin-ui" />
 
 A base class for entity detail views. It should be used in conjunction with the
 <a href='/admin-ui-api/list-detail-views/base-entity-resolver#baseentityresolver'>BaseEntityResolver</a>.
@@ -51,9 +51,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<MyEntityFragmen
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> implements DeactivateAware {
   entity$: Observable<Entity>;
   availableLanguages$: Observable<LanguageCode[]>;
@@ -75,120 +73,99 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
   protected setQueryParam(key: string, value: any) => ;
 }
 ```
-## Implements
+Implements
 
  * DeactivateAware
 
 
-## Members
 
 ### entity$
 
-{{< member-info kind="property" type="Observable&#60;Entity&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;Entity&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### availableLanguages$
 
-{{< member-info kind="property" type="Observable&#60;<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### languageCode$
 
-{{< member-info kind="property" type="Observable&#60;<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### languageCode
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### isNew$
 
-{{< member-info kind="property" type="Observable&#60;boolean&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;boolean&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### id
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### detailForm
 
-{{< member-info kind="property" type="UntypedFormGroup"  >}}
+<MemberInfo kind="property" type="UntypedFormGroup"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### destroy$
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => BaseDetailComponent"  >}}
+<MemberInfo kind="method" type="(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => BaseDetailComponent"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### setUpStreams
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### destroy
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### setLanguage
 
-{{< member-info kind="method" type="(code: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => "  >}}
+<MemberInfo kind="method" type="(code: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### canDeactivate
 
-{{< member-info kind="method" type="() => boolean"  >}}
+<MemberInfo kind="method" type="() => boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### setFormValues
 
-{{< member-info kind="method" type="(entity: Entity, languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => void"  >}}
+<MemberInfo kind="method" type="(entity: Entity, languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### setCustomFieldFormValues
 
-{{< member-info kind="method" type="(customFields: <a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[], formGroup: AbstractControl | null, entity: T, currentTranslation?: TranslationOf&#60;T&#62;) => "  >}}
+<MemberInfo kind="method" type="(customFields: <a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[], formGroup: AbstractControl | null, entity: T, currentTranslation?: TranslationOf&#60;T&#62;) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### getCustomFieldConfig
 
-{{< member-info kind="method" type="(key: Exclude&#60;keyof <a href='/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62;) => <a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"  >}}
+<MemberInfo kind="method" type="(key: Exclude&#60;keyof <a href='/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62;) => <a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### setQueryParam
 
-{{< member-info kind="method" type="(key: string, value: any) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(key: string, value: any) => "   />
 
 
-</div>

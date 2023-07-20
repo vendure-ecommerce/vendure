@@ -1,19 +1,19 @@
 ---
 title: "TaxZoneStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.715Z
+date: 2023-07-20T13:56:14.800Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# TaxZoneStrategy
-<div class="symbol">
 
+## TaxZoneStrategy
 
-# TaxZoneStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/tax/tax-zone-strategy.ts" sourceLine="21" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/tax/tax-zone-strategy.ts" sourceLine="21" packageName="@vendure/core" />
 
 Defines how the active <a href='/typescript-api/entities/zone#zone'>Zone</a> is determined for the purposes of calculating taxes.
 
@@ -27,9 +27,7 @@ This strategy is used in 2 scenarios:
 Note that this method is called very often in a typical user session, so any work it performs should be designed with as little
 performance impact as possible.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface TaxZoneStrategy extends InjectableStrategy {
   determineTaxZone(
         ctx: RequestContext,
@@ -39,18 +37,14 @@ interface TaxZoneStrategy extends InjectableStrategy {
     ): Zone | Promise<Zone> | undefined;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
 
 
-## Members
 
 ### determineTaxZone
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zones: <a href='/typescript-api/entities/zone#zone'>Zone</a>[], channel: <a href='/typescript-api/entities/channel#channel'>Channel</a>, order?: <a href='/typescript-api/entities/order#order'>Order</a>) => <a href='/typescript-api/entities/zone#zone'>Zone</a> | Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62; | undefined"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zones: <a href='/typescript-api/entities/zone#zone'>Zone</a>[], channel: <a href='/typescript-api/entities/channel#channel'>Channel</a>, order?: <a href='/typescript-api/entities/order#order'>Order</a>) => <a href='/typescript-api/entities/zone#zone'>Zone</a> | Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62; | undefined"   />
 
 
-</div>

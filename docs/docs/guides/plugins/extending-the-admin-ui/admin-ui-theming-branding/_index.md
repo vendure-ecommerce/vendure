@@ -10,7 +10,7 @@ The Vendure Admin UI can be themed to your company's style and branding.
 
 The `AdminUiPlugin` allows you to specify your "brand" name, and allows you to control whether to display the Vendure name and version in the UI. Specifying a brand name will also set it as the title of the Admin UI in the browser.
 
-```TypeScript
+```ts
 // vendure-config.ts
 import path from 'path';
 import { VendureConfig } from '@vendure/core';
@@ -36,7 +36,7 @@ You can replace the Vendure logos and favicon with your own brand logo:
 
 1. Install `@vendure/ui-devkit`
 2. Configure the AdminUiPlugin to compile a custom build featuring your logos:
-    ```TypeScript
+    ```ts
     import path from 'path';
     import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
     import { VendureConfig } from '@vendure/core';
@@ -80,7 +80,7 @@ Much of the visual styling of the Admin UI can be customized by providing your o
     ```
    To get an idea of which custom properties are available for theming, take a look at the source of the [Default theme](https://github.com/vendure-ecommerce/vendure/tree/master/packages/admin-ui/src/lib/static/styles/theme/default.scss) and the [Dark theme](https://github.com/vendure-ecommerce/vendure/tree/master/packages/admin-ui/src/lib/static/styles/theme/dark.scss)
 3. Set this as a globalStyles extension:   
-    ```TypeScript
+    ```ts
     import path from 'path';
     import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
     import { VendureConfig } from '@vendure/core';
@@ -110,7 +110,7 @@ Some customizable styles in [Clarity](https://clarity.design/), Admin UI's Desig
     $clr-header-height: 4rem;
     ```
 3. Set this as a sassVariableOverrides extension:
-    ```TypeScript
+    ```ts
     import path from 'path';
     import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
     import { VendureConfig } from '@vendure/core';

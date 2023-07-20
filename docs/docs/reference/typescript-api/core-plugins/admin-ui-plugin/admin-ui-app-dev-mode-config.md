@@ -1,25 +1,23 @@
 ---
 title: "AdminUiAppDevModeConfig"
 weight: 10
-date: 2023-07-14T16:57:50.674Z
+date: 2023-07-20T13:56:16.776Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# AdminUiAppDevModeConfig
-<div class="symbol">
 
+## AdminUiAppDevModeConfig
 
-# AdminUiAppDevModeConfig
-
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="359" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="359" packageName="@vendure/common" />
 
 Information about the Admin UI app dev server.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface AdminUiAppDevModeConfig {
   sourcePath: string;
   port: number;
@@ -27,31 +25,24 @@ interface AdminUiAppDevModeConfig {
   compile: () => Promise<void>;
 }
 ```
-## Members
 
 ### sourcePath
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The path to the uncompiled UI app source files. This path should contain the `vendure-ui-config.json` file.{{< /member-description >}}
-
+The path to the uncompiled UI app source files. This path should contain the `vendure-ui-config.json` file.
 ### port
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The port on which the dev server is listening. Overrides the value set by `AdminUiOptions.port`.{{< /member-description >}}
-
+The port on which the dev server is listening. Overrides the value set by `AdminUiOptions.port`.
 ### route
 
-{{< member-info kind="property" type="string" default="'admin'"  >}}
+<MemberInfo kind="property" type="string" default="'admin'"   />
 
-{{< member-description >}}Specifies the url route to the Admin UI app.{{< /member-description >}}
-
+Specifies the url route to the Admin UI app.
 ### compile
 
-{{< member-info kind="property" type="() =&#62; Promise&#60;void&#62;"  >}}
+<MemberInfo kind="property" type="() =&#62; Promise&#60;void&#62;"   />
 
-{{< member-description >}}The function which will be invoked to start the app compilation process.{{< /member-description >}}
-
-
-</div>
+The function which will be invoked to start the app compilation process.

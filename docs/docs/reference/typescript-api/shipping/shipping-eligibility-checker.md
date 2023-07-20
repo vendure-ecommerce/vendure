@@ -1,19 +1,19 @@
 ---
 title: "ShippingEligibilityChecker"
 weight: 10
-date: 2023-07-14T16:57:49.704Z
+date: 2023-07-20T13:56:14.769Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ShippingEligibilityChecker
-<div class="symbol">
 
+## ShippingEligibilityChecker
 
-# ShippingEligibilityChecker
-
-{{< generation-info sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="49" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="49" packageName="@vendure/core" />
 
 The ShippingEligibilityChecker class is used to check whether an order qualifies for a
 given <a href='/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>.
@@ -33,27 +33,21 @@ const minOrderTotalEligibilityChecker = new ShippingEligibilityChecker({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<
     T
 > {
   constructor(config: ShippingEligibilityCheckerConfig<T>)
 }
 ```
-## Extends
+Extends
 
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;     T &#62;
+ * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;     T &#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker"   />
 
 
-</div>

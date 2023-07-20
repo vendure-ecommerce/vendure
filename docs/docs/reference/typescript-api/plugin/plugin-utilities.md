@@ -1,19 +1,19 @@
 ---
 title: "Plugin Utilities"
 weight: 10
-date: 2023-07-14T16:57:50.208Z
+date: 2023-07-20T13:56:15.811Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Plugin Utilities
-<div class="symbol">
 
+## createProxyHandler
 
-# createProxyHandler
-
-{{< generation-info sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="37" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="37" packageName="@vendure/core" />
 
 Creates a proxy middleware which proxies the given route to the given port.
 Useful for plugins which start their own servers but should be accessible
@@ -42,30 +42,24 @@ via the main Vendure url.
 export class MyPlugin {}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function createProxyHandler(options: ProxyOptions): RequestHandler
 ```
-## Parameters
+Parameters
 
 ### options
 
-{{< member-info kind="parameter" type="<a href='/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>" >}}
-
-</div>
-<div class="symbol">
+<MemberInfo kind="parameter" type="<a href='/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>" />
 
 
-# ProxyOptions
 
-{{< generation-info sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="76" packageName="@vendure/core">}}
+## ProxyOptions
+
+<GenerationInfo sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="76" packageName="@vendure/core" />
 
 Options to configure proxy middleware via <a href='/typescript-api/plugin/plugin-utilities#createproxyhandler'>createProxyHandler</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ProxyOptions {
   label: string;
   route: string;
@@ -74,38 +68,30 @@ interface ProxyOptions {
   basePath?: string;
 }
 ```
-## Members
 
 ### label
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}A human-readable label for the service which is being proxied. Used to
-generate more informative logs.{{< /member-description >}}
-
+A human-readable label for the service which is being proxied. Used to
+generate more informative logs.
 ### route
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The route of the Vendure server which will act as the proxy url.{{< /member-description >}}
-
+The route of the Vendure server which will act as the proxy url.
 ### port
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The port on which the service being proxied is running.{{< /member-description >}}
-
+The port on which the service being proxied is running.
 ### hostname
 
-{{< member-info kind="property" type="string" default="'localhost'"  >}}
+<MemberInfo kind="property" type="string" default="'localhost'"   />
 
-{{< member-description >}}The hostname of the server on which the service being proxied is running.{{< /member-description >}}
-
+The hostname of the server on which the service being proxied is running.
 ### basePath
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}An optional base path on the proxied server.{{< /member-description >}}
-
-
-</div>
+An optional base path on the proxied server.

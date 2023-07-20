@@ -1,19 +1,19 @@
 ---
 title: "S3AssetStorageStrategy"
 weight: 10
-date: 2023-07-14T16:57:50.691Z
+date: 2023-07-20T13:56:16.825Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# S3AssetStorageStrategy
-<div class="symbol">
 
+## S3AssetStorageStrategy
 
-# S3AssetStorageStrategy
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="155" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="155" packageName="@vendure/asset-server-plugin" />
 
 An <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> which uses [Amazon S3](https://aws.amazon.com/s3/) object storage service.
 To us this strategy you must first have access to an AWS account.
@@ -31,9 +31,7 @@ npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
 This strategy will also work with any S3-compatible object storage solutions, such as [MinIO](https://min.io/).
 See the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage'>configureS3AssetStorage</a> for an example with MinIO.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class S3AssetStorageStrategy implements AssetStorageStrategy {
   constructor(s3Config: S3Config, toAbsoluteUrl: (request: Request, identifier: string) => string)
   async init() => ;
@@ -46,81 +44,66 @@ class S3AssetStorageStrategy implements AssetStorageStrategy {
   async fileExists(fileName: string) => ;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(s3Config: <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>, toAbsoluteUrl: (request: Request, identifier: string) =&#62; string) => S3AssetStorageStrategy"  >}}
+<MemberInfo kind="method" type="(s3Config: <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>, toAbsoluteUrl: (request: Request, identifier: string) =&#62; string) => S3AssetStorageStrategy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### destroy
 
-{{< member-info kind="property" type="(() =&#62; void | Promise&#60;void&#62;) | undefined"  >}}
+<MemberInfo kind="property" type="(() =&#62; void | Promise&#60;void&#62;) | undefined"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### writeFileFromBuffer
 
-{{< member-info kind="method" type="(fileName: string, data: Buffer) => "  >}}
+<MemberInfo kind="method" type="(fileName: string, data: Buffer) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### writeFileFromStream
 
-{{< member-info kind="method" type="(fileName: string, data: Readable) => "  >}}
+<MemberInfo kind="method" type="(fileName: string, data: Readable) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### readFileToBuffer
 
-{{< member-info kind="method" type="(identifier: string) => "  >}}
+<MemberInfo kind="method" type="(identifier: string) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### readFileToStream
 
-{{< member-info kind="method" type="(identifier: string) => "  >}}
+<MemberInfo kind="method" type="(identifier: string) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### deleteFile
 
-{{< member-info kind="method" type="(identifier: string) => "  >}}
+<MemberInfo kind="method" type="(identifier: string) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### fileExists
 
-{{< member-info kind="method" type="(fileName: string) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(fileName: string) => "   />
 
 
-</div>
-<div class="symbol">
 
 
-# S3Config
+## S3Config
 
-{{< generation-info sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="19" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="19" packageName="@vendure/asset-server-plugin" />
 
 Configuration for connecting to AWS S3.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface S3Config {
   credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider;
   bucket: string;
@@ -128,49 +111,42 @@ interface S3Config {
   nativeS3UploadConfiguration?: any;
 }
 ```
-## Members
 
 ### credentials
 
-{{< member-info kind="property" type="AwsCredentialIdentity | AwsCredentialIdentityProvider"  >}}
+<MemberInfo kind="property" type="AwsCredentialIdentity | AwsCredentialIdentityProvider"   />
 
-{{< member-description >}}The credentials used to access your s3 account. You can supply either the access key ID & secret, or you can make use of a
+The credentials used to access your s3 account. You can supply either the access key ID & secret, or you can make use of a
 [shared credentials file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
 To use a shared credentials file, import the `fromIni()` function from the "@aws-sdk/credential-provider-ini" or "@aws-sdk/credential-providers" package and supply
-the profile name (e.g. `{ profile: 'default' }`) as its argument.{{< /member-description >}}
-
+the profile name (e.g. `{ profile: 'default' }`) as its argument.
 ### bucket
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The S3 bucket in which to store the assets. If it does not exist, it will be created on startup.{{< /member-description >}}
-
+The S3 bucket in which to store the assets. If it does not exist, it will be created on startup.
 ### nativeS3Configuration
 
-{{< member-info kind="property" type="any"  >}}
+<MemberInfo kind="property" type="any"   />
 
-{{< member-description >}}Configuration object passed directly to the AWS SDK.
+Configuration object passed directly to the AWS SDK.
 S3.Types.ClientConfiguration can be used after importing aws-sdk.
-Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.{{< /member-description >}}
-
+Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
 ### nativeS3UploadConfiguration
 
-{{< member-info kind="property" type="any"  >}}
+<MemberInfo kind="property" type="any"   />
 
-{{< member-description >}}Configuration object passed directly to the AWS SDK.
+Configuration object passed directly to the AWS SDK.
 ManagedUpload.ManagedUploadOptions can be used after importing aws-sdk.
-Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.{{< /member-description >}}
+Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
 
 
-</div>
-<div class="symbol">
+## configureS3AssetStorage
 
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="119" packageName="@vendure/asset-server-plugin" />
 
-# configureS3AssetStorage
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="119" packageName="@vendure/asset-server-plugin">}}
-
-Returns a configured instance of the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>`storageStrategyFactory` property.
+Returns a configured instance of the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>
+`storageStrategyFactory` property.
 
 Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
 
@@ -236,15 +212,12 @@ plugins: [
 }),
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function configureS3AssetStorage(s3Config: S3Config): void
 ```
-## Parameters
+Parameters
 
 ### s3Config
 
-{{< member-info kind="parameter" type="<a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>" >}}
+<MemberInfo kind="parameter" type="<a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>" />
 
-</div>

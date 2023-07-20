@@ -1,19 +1,19 @@
 ---
 title: "LocaleDatePipe"
 weight: 10
-date: 2023-07-14T16:57:51.336Z
+date: 2023-07-20T13:56:18.723Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# LocaleDatePipe
-<div class="symbol">
 
+## LocaleDatePipe
 
-# LocaleDatePipe
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-date.pipe.ts" sourceLine="19" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-date.pipe.ts" sourceLine="19" packageName="@vendure/admin-ui" />
 
 A replacement of the Angular DatePipe which makes use of the Intl API
 to format dates according to the selected UI language.
@@ -24,37 +24,30 @@ to format dates according to the selected UI language.
 {{ order.orderPlacedAt | localeDate }}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
   constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
   transform(value: unknown, args: unknown[]) => unknown;
 }
 ```
-## Extends
+Extends
 
  * LocaleBasePipe
 
 
-## Implements
+Implements
 
  * PipeTransform
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(dataService?: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleDatePipe"  >}}
+<MemberInfo kind="method" type="(dataService?: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleDatePipe"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### transform
 
-{{< member-info kind="method" type="(value: unknown, args: unknown[]) => unknown"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(value: unknown, args: unknown[]) => unknown"   />
 
 
-</div>

@@ -1,25 +1,23 @@
 ---
 title: "LogLevel"
 weight: 10
-date: 2023-07-14T16:57:49.565Z
+date: 2023-07-20T13:56:14.471Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# LogLevel
-<div class="symbol">
 
+## LogLevel
 
-# LogLevel
-
-{{< generation-info sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="9" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="9" packageName="@vendure/core" />
 
 An enum of valid logging levels.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 enum LogLevel {
   // Log Errors only. These are usually indicative of some potentially
 serious issue, so should be acted upon.
@@ -36,4 +34,3 @@ all errors. In production this would probably generate too much noise.
   Debug = 4
 }
 ```
-</div>

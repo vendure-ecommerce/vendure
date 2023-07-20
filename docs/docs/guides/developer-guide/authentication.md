@@ -17,7 +17,7 @@ See the [Managing Sessions guide]({{< relref "managing-sessions" >}}) for how to
 
 This is done via the [`VendureConfig.authOptions` object]({{< relref "auth-options" >}}#shopauthenticationstrategy):
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   authOptions: {
       shopAuthenticationStrategy: [
@@ -47,7 +47,7 @@ This example demonstrates how to implement a Google login flow.
 
 In your storefront, you need to integrate the Google sign-in button as described in ["Integrating Google Sign-In into your web app"](https://developers.google.com/identity/sign-in/web/sign-in). Successful authentication will result in a `onSignIn` function being called in your app. It will look something like this:
 
-```TypeScript
+```ts
 function onSignIn(googleUser) {
   graphQlQuery(
     `mutation Authenticate($token: String!) {
@@ -75,7 +75,7 @@ Google.
 
 To do this you'll need to install the `google-auth-library` npm package as described in the ["Authenticate with a backend server" guide](https://developers.google.com/identity/sign-in/web/backend-auth).
 
-```TypeScript
+```ts
 import {
  AuthenticationStrategy,
   ExternalAuthenticationService,
@@ -222,7 +222,7 @@ export const FBLoginButton = () => {
 };
 ```
 
-```TypeScript
+```ts
 import {
   AuthenticationStrategy,
   ExternalAuthenticationService,
@@ -356,7 +356,7 @@ vendureLoginButton.addEventListener('click', () => {
 
 We also need to tell the Admin UI application about the custom login URL, since we have no need for the default "username/password" login form. This can be done by setting the [`loginUrl` property]({{< relref "admin-ui-config" >}}#loginurl) in the AdminUiConfig:
 
-```TypeScript
+```ts
 // vendure-config.ts
 plugins: [
   AdminUiPlugin.init({
@@ -372,7 +372,7 @@ plugins: [
 
 The backend part is very similar to the Google authentication example (they both use the OpenID Connect standard), so we'll not duplicate the explanatory comments here:
 
-```TypeScript
+```ts
 import { HttpService } from '@nestjs/common';
 import {
     AuthenticationStrategy,

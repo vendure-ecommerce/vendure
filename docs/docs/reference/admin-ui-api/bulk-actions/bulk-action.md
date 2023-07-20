@@ -1,27 +1,25 @@
 ---
 title: "BulkAction"
 weight: 10
-date: 2023-07-14T16:57:51.079Z
+date: 2023-07-20T13:56:17.883Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# BulkAction
-<div class="symbol">
 
+## BulkAction
 
-# BulkAction
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="99" packageName="@vendure/admin-ui" since="1.8.0">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="99" packageName="@vendure/admin-ui" since="1.8.0" />
 
 Configures a bulk action which can be performed on all selected items in a list view.
 
 For a full example, see the <a href='/admin-ui-api/bulk-actions/register-bulk-action#registerbulkaction'>registerBulkAction</a> docs.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface BulkAction<ItemType = any, ComponentType = any> {
   location: BulkActionLocationId;
   label: string;
@@ -35,57 +33,50 @@ interface BulkAction<ItemType = any, ComponentType = any> {
   requiresPermission?: string | ((userPermissions: string[]) => boolean);
 }
 ```
-## Members
 
 ### location
 
-{{< member-info kind="property" type="<a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionlocationid'>BulkActionLocationId</a>"  >}}
+<MemberInfo kind="property" type="<a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionlocationid'>BulkActionLocationId</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### label
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### getTranslationVars
 
-{{< member-info kind="property" type="(         context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"  >}}
+<MemberInfo kind="property" type="(         context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"   />
 
-{{< member-description >}}An optional function that should resolve to a map of translation variables which can be
-used when translating the `label` string.{{< /member-description >}}
-
+An optional function that should resolve to a map of translation variables which can be
+used when translating the `label` string.
 ### icon
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}A valid [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/) icon shape, e.g.
-"cog", "user", "info-standard".{{< /member-description >}}
-
+A valid [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/) icon shape, e.g.
+"cog", "user", "info-standard".
 ### iconClass
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}A class to be added to the icon element. Examples:
+A class to be added to the icon element. Examples:
 
 - is-success
 - is-danger
 - is-warning
 - is-info
-- is-highlight{{< /member-description >}}
-
+- is-highlight
 ### onClick
 
-{{< member-info kind="property" type="(context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionclickcontext'>BulkActionClickContext</a>&#60;ItemType, ComponentType&#62;) =&#62; void"  >}}
+<MemberInfo kind="property" type="(context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionclickcontext'>BulkActionClickContext</a>&#60;ItemType, ComponentType&#62;) =&#62; void"   />
 
-{{< member-description >}}Defines the logic that executes when the bulk action button is clicked.{{< /member-description >}}
-
+Defines the logic that executes when the bulk action button is clicked.
 ### isVisible
 
-{{< member-info kind="property" type="(context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;) =&#62; boolean | Promise&#60;boolean&#62;"  >}}
+<MemberInfo kind="property" type="(context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;) =&#62; boolean | Promise&#60;boolean&#62;"   />
 
-{{< member-description >}}A function that determines whether this bulk action item should be displayed in the menu.
+A function that determines whether this bulk action item should be displayed in the menu.
 If not defined, the item will always be displayed.
 
 This function will be invoked each time the selection is changed, so try to avoid expensive code
@@ -106,13 +97,12 @@ registerBulkAction({
     .toPromise(),
   // ...
 });
-```{{< /member-description >}}
-
+```
 ### requiresPermission
 
-{{< member-info kind="property" type="string | ((userPermissions: string[]) =&#62; boolean)"  >}}
+<MemberInfo kind="property" type="string | ((userPermissions: string[]) =&#62; boolean)"   />
 
-{{< member-description >}}Control the display of this item based on the user permissions.
+Control the display of this item based on the user permissions.
 
 *Example*
 
@@ -127,22 +117,16 @@ registerBulkAction({
     userPermissions.includes(Permission.UpdateProduct),
   // ...
 })
-```{{< /member-description >}}
+```
 
 
-</div>
-<div class="symbol">
+## BulkActionLocationId
 
-
-# BulkActionLocationId
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="12" packageName="@vendure/admin-ui" since="1.8.0">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="12" packageName="@vendure/admin-ui" since="1.8.0" />
 
 A valid location of a list view that supports the bulk actions API.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type BulkActionLocationId = | 'product-list'
     | 'facet-list'
     | 'collection-list'
@@ -164,20 +148,16 @@ type BulkActionLocationId = | 'product-list'
     | 'zone-members-list'
     | string
 ```
-</div>
-<div class="symbol">
 
 
-# BulkActionFunctionContext
+## BulkActionFunctionContext
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="43" packageName="@vendure/admin-ui" since="1.8.0">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="43" packageName="@vendure/admin-ui" since="1.8.0" />
 
 This is the argument which gets passed to the `getTranslationVars` and `isVisible` functions
 of the BulkAction definition.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface BulkActionFunctionContext<ItemType, ComponentType> {
   selection: ItemType[];
   hostComponent: ComponentType;
@@ -185,73 +165,58 @@ interface BulkActionFunctionContext<ItemType, ComponentType> {
   route: ActivatedRoute;
 }
 ```
-## Members
 
 ### selection
 
-{{< member-info kind="property" type="ItemType[]"  >}}
+<MemberInfo kind="property" type="ItemType[]"   />
 
-{{< member-description >}}An array of the selected items from the list.{{< /member-description >}}
-
+An array of the selected items from the list.
 ### hostComponent
 
-{{< member-info kind="property" type="ComponentType"  >}}
+<MemberInfo kind="property" type="ComponentType"   />
 
-{{< member-description >}}The component instance that is hosting the list view. For instance,
+The component instance that is hosting the list view. For instance,
 `ProductListComponent`. This can be used to call methods on the instance,
 e.g. calling `hostComponent.refresh()` to force a list refresh after
-deleting the selected items.{{< /member-description >}}
-
+deleting the selected items.
 ### injector
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/injector#injector'>Injector</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/injector#injector'>Injector</a>"   />
 
-{{< member-description >}}The Angular [Injector](https://angular.io/api/core/Injector) which can be used
-to get service instances which might be needed in the click handler.{{< /member-description >}}
-
+The Angular [Injector](https://angular.io/api/core/Injector) which can be used
+to get service instances which might be needed in the click handler.
 ### route
 
-{{< member-info kind="property" type="ActivatedRoute"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="ActivatedRoute"   />
 
 
-</div>
-<div class="symbol">
 
 
-# BulkActionClickContext
+## BulkActionClickContext
 
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="74" packageName="@vendure/admin-ui" since="1.8.0">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="74" packageName="@vendure/admin-ui" since="1.8.0" />
 
 This is the argument which gets passed to the `onClick` function of a BulkAction.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface BulkActionClickContext<ItemType, ComponentType> extends BulkActionFunctionContext<ItemType, ComponentType> {
   clearSelection: () => void;
   event: MouseEvent;
 }
 ```
-## Extends
+Extends
 
  * <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;
 
 
-## Members
 
 ### clearSelection
 
-{{< member-info kind="property" type="() =&#62; void"  >}}
+<MemberInfo kind="property" type="() =&#62; void"   />
 
-{{< member-description >}}Clears the selection in the active list view.{{< /member-description >}}
-
+Clears the selection in the active list view.
 ### event
 
-{{< member-info kind="property" type="MouseEvent"  >}}
+<MemberInfo kind="property" type="MouseEvent"   />
 
-{{< member-description >}}The click event itself.{{< /member-description >}}
-
-
-</div>
+The click event itself.

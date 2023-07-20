@@ -19,7 +19,7 @@ The [createAssets mutation]({{< relref "/reference/graphql-api/admin/mutations" 
 
 Here's an example of how a file upload would look using the `apollo-upload-client` package:
 
-```TypeScript
+```ts
 import { gql, useMutation } from "@apollo/client";
 
 const MUTATION = gql`
@@ -63,7 +63,7 @@ How about if you want to implement a custom mutation for file uploads? Let's tak
 
 Let's define a custom field to associate the avatar Asset with the Customer:
 
-```TypeScript
+```ts
 import { Asset } from '@vendure/core';
 
 const config = {
@@ -87,7 +87,7 @@ In a later step, we will refactor this config to encapsulate it in a plugin.
 
 Next, we will define the schema for the mutation:
 
-```TypeScript
+```ts
 // api-extensions.ts
 import gql from 'graphql-tag';
 
@@ -101,7 +101,7 @@ extend type Mutation {
 
 The resolver will make use of the built-in [AssetService]({{< relref "asset-service" >}}) to handle the processing of the uploaded file into an Asset.
 
-```TypeScript
+```ts
 // customer-avatar.resolver.ts
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Asset } from '@vendure/common/lib/generated-types';
@@ -156,7 +156,7 @@ export class CustomerAvatarResolver {
 
 We can group all of this together into a plugin:
 
-```TypeScript
+```ts
 import { Asset, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 import { shopApiExtensions } from './api-extensions';
@@ -185,7 +185,7 @@ export class CustomerAvatarPlugin {}
 
 In our storefront, we would then upload a Customer's avatar like this:
 
-```TypeScript
+```ts
 import { gql, useMutation } from "@apollo/client";
 
 const MUTATION = gql`

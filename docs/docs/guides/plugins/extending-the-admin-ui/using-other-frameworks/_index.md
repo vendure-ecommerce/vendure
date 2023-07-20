@@ -42,7 +42,7 @@ In this example, we will work with the following folder structure, and use Creat
 
 Here's the Angular code needed to tell the compiler where to find your extension:
 
-```TypeScript
+```ts
 // ui-extension/modules/react-extension.module.ts
 
 import { NgModule } from '@angular/core';
@@ -83,7 +83,7 @@ Note: If you are using **Create React App**, you should additionally update your
 
 Next we will define an [AdminUiExtension]({{< relref "admin-ui-extension" >}}) object which is passed to the `compileUiExtensions()` function in your Vendure config:
 
-```TypeScript
+```ts
 // vendure-config.ts
 import path from 'path';
 import { VendureConfig } from '@vendure/core';
@@ -156,7 +156,7 @@ The `@vendure/admin-ui` package (which will be installed alongside the ui-devkit
 
 If you have a build step (as in our Create React App example), you can import it into your app like this:
 
-```TypeScript
+```ts
 // src/ui-extension/react-app/src/App.tsx
 import '@vendure/admin-ui/static/theme.min.css';
 ```
@@ -181,7 +181,7 @@ The `@vendure/ui-devkit` package provides a number of helper methods which allow
 
 The UiDevkitClient uses the browser's [postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) to communicate between the Admin UI app and your extension. For security reasons this communication channel is restricted to a specific domain (where your extension app will be running from). To configure this, use the [setTargetOrigin]({{< relref "ui-devkit-client" >}}#settargetorigin) function:
 
-```TypeScript
+```ts
 import { setTargetOrigin } from '@vendure/ui-devkit';
 
 setTargetOrigin('http://my-domain.com');
@@ -192,7 +192,7 @@ If this is mis-configured you will see an error along the lines of "Failed to ex
 
 For apps with a build step, you can use these functions like this:
 
-```TypeScript
+```ts
 import { graphQlMutation, notify } from '@vendure/ui-devkit';
 
 // somewhere in your component

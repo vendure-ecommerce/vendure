@@ -1,26 +1,24 @@
 ---
 title: "NavMenuSection"
 weight: 10
-date: 2023-07-14T16:57:51.113Z
+date: 2023-07-20T13:56:17.997Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# NavMenuSection
-<div class="symbol">
 
+## NavMenuSection
 
-# NavMenuSection
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="56" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="56" packageName="@vendure/admin-ui" />
 
 A NavMenuSection is a grouping of links in the main
 (left-hand side) nav bar.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface NavMenuSection {
   id: string;
   label: string;
@@ -32,55 +30,44 @@ interface NavMenuSection {
   collapsedByDefault?: boolean;
 }
 ```
-## Members
 
 ### id
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### label
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### items
 
-{{< member-info kind="property" type="<a href='/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### icon
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### displayMode
 
-{{< member-info kind="property" type="'regular' | 'settings'"  >}}
+<MemberInfo kind="property" type="'regular' | 'settings'"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### requiresPermission
 
-{{< member-info kind="property" type="string | ((userPermissions: string[]) =&#62; boolean)"  >}}
+<MemberInfo kind="property" type="string | ((userPermissions: string[]) =&#62; boolean)"   />
 
-{{< member-description >}}Control the display of this item based on the user permissions.{{< /member-description >}}
-
+Control the display of this item based on the user permissions.
 ### collapsible
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### collapsedByDefault
 
-{{< member-info kind="property" type="boolean"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="boolean"   />
 
 
-</div>

@@ -1,19 +1,19 @@
 ---
 title: "ShippingCalculator"
 weight: 10
-date: 2023-07-14T16:57:49.700Z
+date: 2023-07-20T13:56:14.756Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ShippingCalculator
-<div class="symbol">
 
+## ShippingCalculator
 
-# ShippingCalculator
-
-{{< generation-info sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="48" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="48" packageName="@vendure/core" />
 
 The ShippingCalculator is used by a <a href='/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> to calculate the price of shipping on a given <a href='/typescript-api/entities/order#order'>Order</a>.
 
@@ -43,40 +43,31 @@ const flatRateCalculator = new ShippingCalculator({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
   constructor(config: ShippingCalculatorConfig<T>)
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config: ShippingCalculatorConfig&#60;T&#62;) => ShippingCalculator"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(config: ShippingCalculatorConfig&#60;T&#62;) => ShippingCalculator"   />
 
 
-</div>
-<div class="symbol">
 
 
-# ShippingCalculationResult
+## ShippingCalculationResult
 
-{{< generation-info sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="74" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="74" packageName="@vendure/core" />
 
 The return value of the <a href='/typescript-api/shipping/shipping-calculator#calculateshippingfn'>CalculateShippingFn</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ShippingCalculationResult {
   price: number;
   priceIncludesTax: boolean;
@@ -84,51 +75,41 @@ interface ShippingCalculationResult {
   metadata?: Record<string, any>;
 }
 ```
-## Members
 
 ### price
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The shipping price without any taxes.{{< /member-description >}}
-
+The shipping price without any taxes.
 ### priceIncludesTax
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}Whether or not the given price already includes taxes.{{< /member-description >}}
-
+Whether or not the given price already includes taxes.
 ### taxRate
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The tax rate applied to the shipping price.{{< /member-description >}}
-
+The tax rate applied to the shipping price.
 ### metadata
 
-{{< member-info kind="property" type="Record&#60;string, any&#62;"  >}}
+<MemberInfo kind="property" type="Record&#60;string, any&#62;"   />
 
-{{< member-description >}}Arbitrary metadata may be returned from the calculation function. This can be used
+Arbitrary metadata may be returned from the calculation function. This can be used
 e.g. to return data on estimated delivery times or any other data which may be
-needed in the storefront application when listing eligible shipping methods.{{< /member-description >}}
+needed in the storefront application when listing eligible shipping methods.
 
 
-</div>
-<div class="symbol">
+## CalculateShippingFn
 
-
-# CalculateShippingFn
-
-{{< generation-info sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="114" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="114" packageName="@vendure/core" />
 
 A function which implements the specific shipping calculation logic. It takes an <a href='/typescript-api/entities/order#order'>Order</a> and
 an arguments object and should return the shipping price as an integer in cents.
 
 Should return a <a href='/typescript-api/shipping/shipping-calculator#shippingcalculationresult'>ShippingCalculationResult</a> object.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type CalculateShippingFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
@@ -136,4 +117,3 @@ type CalculateShippingFn<T extends ConfigArgs> = (
     method: ShippingMethod
 ) => CalculateShippingFnResult
 ```
-</div>

@@ -1,19 +1,19 @@
 ---
 title: "SharpAssetPreviewStrategy"
 weight: 10
-date: 2023-07-14T16:57:50.699Z
+date: 2023-07-20T13:56:16.848Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# SharpAssetPreviewStrategy
-<div class="symbol">
 
+## SharpAssetPreviewStrategy
 
-# SharpAssetPreviewStrategy
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="95" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="95" packageName="@vendure/asset-server-plugin" />
 
 This <a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
@@ -35,49 +35,39 @@ AssetServerPlugin.init({
 }),
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
   constructor(config?: SharpAssetPreviewConfig)
   async generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer) => Promise<Buffer>;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config?: <a href='/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy"  >}}
+<MemberInfo kind="method" type="(config?: <a href='/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### generatePreviewImage
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
 
 
-</div>
-<div class="symbol">
 
 
-# SharpAssetPreviewConfig
+## SharpAssetPreviewConfig
 
-{{< generation-info sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="17" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="17" packageName="@vendure/asset-server-plugin" />
 
 This <a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
 overlay will be generated.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface SharpAssetPreviewConfig {
   maxHeight?: number;
   maxWidth?: number;
@@ -88,49 +78,39 @@ interface SharpAssetPreviewConfig {
   avifOptions?: sharp.AvifOptions;
 }
 ```
-## Members
 
 ### maxHeight
 
-{{< member-info kind="property" type="number" default="1600"  >}}
+<MemberInfo kind="property" type="number" default="1600"   />
 
-{{< member-description >}}The max height in pixels of a generated preview image.{{< /member-description >}}
-
+The max height in pixels of a generated preview image.
 ### maxWidth
 
-{{< member-info kind="property" type="number" default="1600"  >}}
+<MemberInfo kind="property" type="number" default="1600"   />
 
-{{< member-description >}}The max width in pixels of a generated preview image.{{< /member-description >}}
-
+The max width in pixels of a generated preview image.
 ### jpegOptions
 
-{{< member-info kind="property" type="sharp.JpegOptions"  since="1.7.0" >}}
+<MemberInfo kind="property" type="sharp.JpegOptions"  since="1.7.0"  />
 
-{{< member-description >}}Set Sharp's options for encoding jpeg files: https://sharp.pixelplumbing.com/api-output#jpeg{{< /member-description >}}
-
+Set Sharp's options for encoding jpeg files: https://sharp.pixelplumbing.com/api-output#jpeg
 ### pngOptions
 
-{{< member-info kind="property" type="sharp.PngOptions"  since="1.7.0" >}}
+<MemberInfo kind="property" type="sharp.PngOptions"  since="1.7.0"  />
 
-{{< member-description >}}Set Sharp's options for encoding png files: https://sharp.pixelplumbing.com/api-output#png{{< /member-description >}}
-
+Set Sharp's options for encoding png files: https://sharp.pixelplumbing.com/api-output#png
 ### webpOptions
 
-{{< member-info kind="property" type="sharp.WebpOptions"  since="1.7.0" >}}
+<MemberInfo kind="property" type="sharp.WebpOptions"  since="1.7.0"  />
 
-{{< member-description >}}Set Sharp's options for encoding webp files: https://sharp.pixelplumbing.com/api-output#webp{{< /member-description >}}
-
+Set Sharp's options for encoding webp files: https://sharp.pixelplumbing.com/api-output#webp
 ### gifOptions
 
-{{< member-info kind="property" type="sharp.GifOptions"  since="1.7.0" >}}
+<MemberInfo kind="property" type="sharp.GifOptions"  since="1.7.0"  />
 
-{{< member-description >}}Set Sharp's options for encoding gif files: https://sharp.pixelplumbing.com/api-output#gif{{< /member-description >}}
-
+Set Sharp's options for encoding gif files: https://sharp.pixelplumbing.com/api-output#gif
 ### avifOptions
 
-{{< member-info kind="property" type="sharp.AvifOptions"  since="1.7.0" >}}
+<MemberInfo kind="property" type="sharp.AvifOptions"  since="1.7.0"  />
 
-{{< member-description >}}Set Sharp's options for encoding avif files: https://sharp.pixelplumbing.com/api-output#avif{{< /member-description >}}
-
-
-</div>
+Set Sharp's options for encoding avif files: https://sharp.pixelplumbing.com/api-output#avif

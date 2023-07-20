@@ -1,50 +1,42 @@
 ---
 title: "FulfillmentTransitionData"
 weight: 10
-date: 2023-07-14T16:57:50.235Z
+date: 2023-07-20T13:56:15.877Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# FulfillmentTransitionData
-<div class="symbol">
 
+## FulfillmentTransitionData
 
-# FulfillmentTransitionData
-
-{{< generation-info sourceFile="packages/core/src/service/helpers/fulfillment-state-machine/fulfillment-state.ts" sourceLine="42" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/service/helpers/fulfillment-state-machine/fulfillment-state.ts" sourceLine="42" packageName="@vendure/core" />
 
 The data which is passed to the state transition handlers of the FulfillmentStateMachine.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface FulfillmentTransitionData {
   ctx: RequestContext;
   orders: Order[];
   fulfillment: Fulfillment;
 }
 ```
-## Members
 
 ### ctx
 
-{{< member-info kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### orders
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### fulfillment
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>"   />
 
 
-</div>

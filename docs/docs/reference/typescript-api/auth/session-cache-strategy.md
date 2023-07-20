@@ -1,19 +1,19 @@
 ---
 title: "SessionCacheStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.690Z
+date: 2023-07-20T13:56:14.730Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# SessionCacheStrategy
-<div class="symbol">
 
+## SessionCacheStrategy
 
-# SessionCacheStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="147" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="147" packageName="@vendure/core" />
 
 This strategy defines how sessions get cached. Since most requests will need the Session
 object for permissions data, it can become a bottleneck to go to the database and do a multi-join
@@ -111,9 +111,7 @@ export class RedisSessionCachePlugin {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface SessionCacheStrategy extends InjectableStrategy {
   set(session: CachedSession): void | Promise<void>;
   get(sessionToken: string): CachedSession | undefined | Promise<CachedSession | undefined>;
@@ -121,54 +119,44 @@ interface SessionCacheStrategy extends InjectableStrategy {
   clear(): void | Promise<void>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
 
 
-## Members
 
 ### set
 
-{{< member-info kind="method" type="(session: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => void | Promise&#60;void&#62;"  >}}
+<MemberInfo kind="method" type="(session: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => void | Promise&#60;void&#62;"   />
 
-{{< member-description >}}Store the session in the cache. When caching a session, the data
+Store the session in the cache. When caching a session, the data
 should not be modified apart from performing any transforms needed to
-get it into a state to be stored, e.g. JSON.stringify().{{< /member-description >}}
-
+get it into a state to be stored, e.g. JSON.stringify().
 ### get
 
-{{< member-info kind="method" type="(sessionToken: string) => <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined | Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined&#62;"  >}}
+<MemberInfo kind="method" type="(sessionToken: string) => <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined | Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined&#62;"   />
 
-{{< member-description >}}Retrieve the session from the cache{{< /member-description >}}
-
+Retrieve the session from the cache
 ### delete
 
-{{< member-info kind="method" type="(sessionToken: string) => void | Promise&#60;void&#62;"  >}}
+<MemberInfo kind="method" type="(sessionToken: string) => void | Promise&#60;void&#62;"   />
 
-{{< member-description >}}Delete a session from the cache{{< /member-description >}}
-
+Delete a session from the cache
 ### clear
 
-{{< member-info kind="method" type="() => void | Promise&#60;void&#62;"  >}}
+<MemberInfo kind="method" type="() => void | Promise&#60;void&#62;"   />
 
-{{< member-description >}}Clear the entire cache{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Clear the entire cache
 
 
-# CachedSessionUser
+## CachedSessionUser
 
-{{< generation-info sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="14" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="14" packageName="@vendure/core" />
 
 A simplified representation of the User associated with the
 current Session.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type CachedSessionUser = {
   id: ID;
   identifier: string;
@@ -178,45 +166,37 @@ type CachedSessionUser = {
 ```
 ## Members
 
+
 ### id
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### identifier
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### verified
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channelPermissions
 
-{{< member-info kind="property" type="UserChannelPermissions[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="UserChannelPermissions[]"   />
 
 
-</div>
-<div class="symbol">
 
 
-# CachedSession
+## CachedSession
 
-{{< generation-info sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="29" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="29" packageName="@vendure/core" />
 
 A simplified representation of a Session which is easy to
 store.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type CachedSession = {
   cacheExpiry: number;
   id: ID;
@@ -230,55 +210,46 @@ type CachedSession = {
 ```
 ## Members
 
+
 ### cacheExpiry
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The timestamp after which this cache entry is considered stale and
+The timestamp after which this cache entry is considered stale and
 a fresh copy of the data will be set. Based on the `sessionCacheTTL`
-option.{{< /member-description >}}
-
+option.
 ### id
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### token
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### expires
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### activeOrderId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### authenticationStrategy
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### user
 
-{{< member-info kind="property" type="<a href='/typescript-api/auth/session-cache-strategy#cachedsessionuser'>CachedSessionUser</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/auth/session-cache-strategy#cachedsessionuser'>CachedSessionUser</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### activeChannelId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
 
-</div>

@@ -12,7 +12,7 @@ Extension to the GraphQL API consists of two parts:
 
 The Shop API and Admin APIs can be extended independently:
 
-```TypeScript {hl_lines=["16-22"]}
+```ts {hl_lines=["16-22"]}
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import gql from 'graphql-tag';
 import { TopSellersResolver } from './top-products.resolver';
@@ -44,7 +44,7 @@ There are a number of ways the GraphQL APIs can be modified by a plugin.
 
 This example adds a new query to the GraphQL Admin API. It also demonstrates how [Nest's dependency injection](https://docs.nestjs.com/providers) can be used to encapsulate and inject services within the plugin module.
  
-```TypeScript
+```ts
 // top-sellers.resolver.ts
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext } from '@vendure/core'
@@ -65,7 +65,7 @@ class TopSellersResolver {
   **Note:** The `@Ctx` decorator gives you access to [the `RequestContext`]({{< relref "request-context" >}}), which is an object containing useful information about the current request - active user, current channel etc.
 {{< /alert >}}
 
-```TypeScript
+```ts
 // top-sellers.service.ts
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '@vendure/core';
@@ -80,7 +80,7 @@ class TopSellersService {
 
 The GraphQL schema is extended with the `topSellers` query (the query name should match the name of the corresponding resolver method):
 
-```TypeScript
+```ts
 // top-sellers.plugin.ts
 import gql from 'graphql-tag';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
@@ -113,7 +113,7 @@ extend type Mutation {
 
 If you have [defined a new database entity]({{< relref "defining-db-entity" >}}), it is likely that you'll want to expose this entity in your GraphQL API. To do so, you'll need to define a corresponding GraphQL type:
 
-```TypeScript
+```ts
 import gql from 'graphql-tag';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { ReviewsResolver } from './reviews.resolver';
@@ -150,7 +150,7 @@ export class ReviewsPlugin {}
 
 Let's say you want to add a new field, "availability" to the ProductVariant type, to allow the storefront to display some indication of whether a variant is available to purchase. First you define a resolver function:
 
-```TypeScript
+```ts
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext, ProductVariant } from '@vendure/core';
 
@@ -172,7 +172,7 @@ export class ProductVariantEntityResolver {
 
 Then in the plugin metadata, we extend the ProductVariant type and pass the resolver:
 
-```TypeScript
+```ts
 import gql from 'graphql-tag';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { ProductVariantEntityResolver } from './product-variant-entity.resolver'
@@ -194,7 +194,7 @@ export class AvailabilityPlugin {}
 
 It is also possible to override an existing built-in resolver function with one of your own. To do so, you need to define a resolver with the same name as the query or mutation you wish to override. When that query or mutation is then executed, your code, rather than the default Vendure resolver, will handle it.
 
-```TypeScript
+```ts
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext } from '@vendure/core'
 
@@ -219,7 +219,7 @@ class OverrideExampleResolver {
 
 The same can be done for resolving fields:
 
-```TypeScript
+```ts
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext, Product } from '@vendure/core';
 
@@ -267,7 +267,7 @@ In this example, the resolver which handles the `myCustomMutation` operation wil
 
 In order to implement a `__resolveType` function as part of your plugin, you need to create a dedicated Resolver class with a single field resolver method which will look like this:
 
-```TypeScript
+```ts
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext, ProductVariant } from '@vendure/core';
 
@@ -284,7 +284,7 @@ export class MyCustomMutationResultResolver {
 
 This resolver is then passed in to your plugin metadata like any other resolver:
 
-```TypeScript
+```ts
 @VendurePlugin({
   imports: [PluginCommonModule],
   shopApiExtensions: {
@@ -299,7 +299,7 @@ export class MyPlugin {}
 
 By default, Vendure bundles `DateTime` and a `JSON` custom scalars (from the [graphql-scalars library](https://github.com/Urigo/graphql-scalars)). From v1.7.0, you can also define your own custom scalars for use in your schema extensions:
 
-```TypeScript
+```ts
 import { GraphQLScalarType} from 'graphql';
 import { GraphQLEmailAddress } from 'graphql-scalars';
 

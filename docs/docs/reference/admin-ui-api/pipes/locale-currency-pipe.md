@@ -1,19 +1,19 @@
 ---
 title: "LocaleCurrencyPipe"
 weight: 10
-date: 2023-07-14T16:57:51.334Z
+date: 2023-07-20T13:56:18.713Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# LocaleCurrencyPipe
-<div class="symbol">
 
+## LocaleCurrencyPipe
 
-# LocaleCurrencyPipe
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-currency.pipe.ts" sourceLine="19" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-currency.pipe.ts" sourceLine="19" packageName="@vendure/admin-ui" />
 
 Formats a Vendure monetary value (in cents) into the correct format for the configured currency and display
 locale.
@@ -24,37 +24,30 @@ locale.
 {{ variant.priceWithTax | localeCurrency }}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform {
   constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
   transform(value: unknown, args: unknown[]) => string | unknown;
 }
 ```
-## Extends
+Extends
 
  * LocaleBasePipe
 
 
-## Implements
+Implements
 
  * PipeTransform
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(dataService?: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyPipe"  >}}
+<MemberInfo kind="method" type="(dataService?: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyPipe"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### transform
 
-{{< member-info kind="method" type="(value: unknown, args: unknown[]) => string | unknown"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(value: unknown, args: unknown[]) => string | unknown"   />
 
 
-</div>

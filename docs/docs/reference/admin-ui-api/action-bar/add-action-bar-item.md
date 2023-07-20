@@ -1,22 +1,22 @@
 ---
 title: "AddActionBarItem"
 weight: 10
-date: 2023-07-14T16:57:51.125Z
+date: 2023-07-20T13:56:18.048Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# addActionBarItem
-<div class="symbol">
 
+## addActionBarItem
 
-# addActionBarItem
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="120" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="120" packageName="@vendure/admin-ui" />
 
 Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
-be determined by inspecting the DOM and finding the <vdr-action-bar> element and its
+be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
 `data-location-id` attribute.
 
 This should be used in the NgModule `providers` array of your ui extension module.
@@ -38,15 +38,12 @@ This should be used in the NgModule `providers` array of your ui extension modul
 export class MyUiExtensionModule {}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function addActionBarItem(config: ActionBarItem): Provider
 ```
-## Parameters
+Parameters
 
 ### config
 
-{{< member-info kind="parameter" type="<a href='/admin-ui-api/action-bar/action-bar-item#actionbaritem'>ActionBarItem</a>" >}}
+<MemberInfo kind="parameter" type="<a href='/admin-ui-api/action-bar/action-bar-item#actionbaritem'>ActionBarItem</a>" />
 
-</div>

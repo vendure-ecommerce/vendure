@@ -1,19 +1,19 @@
 ---
 title: "TypeORMHealthCheckStrategy"
 weight: 10
-date: 2023-07-14T16:57:50.131Z
+date: 2023-07-20T13:56:15.640Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# TypeORMHealthCheckStrategy
-<div class="symbol">
 
+## TypeORMHealthCheckStrategy
 
-# TypeORMHealthCheckStrategy
-
-{{< generation-info sourceFile="packages/core/src/health-check/typeorm-health-check-strategy.ts" sourceLine="36" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/health-check/typeorm-health-check-strategy.ts" sourceLine="36" packageName="@vendure/core" />
 
 A <a href='/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> used to check the health of the database. This health
 check is included by default, but can be customized by explicitly adding it to the
@@ -35,39 +35,31 @@ export const config = {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class TypeORMHealthCheckStrategy implements HealthCheckStrategy {
   constructor(options?: TypeORMHealthCheckOptions)
   async init(injector: Injector) => ;
   getHealthIndicator() => HealthIndicatorFunction;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(options?: TypeORMHealthCheckOptions) => TypeORMHealthCheckStrategy"  >}}
+<MemberInfo kind="method" type="(options?: TypeORMHealthCheckOptions) => TypeORMHealthCheckStrategy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "  >}}
+<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### getHealthIndicator
 
-{{< member-info kind="method" type="() => HealthIndicatorFunction"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="() => HealthIndicatorFunction"   />
 
 
-</div>

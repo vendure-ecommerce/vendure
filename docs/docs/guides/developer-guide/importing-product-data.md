@@ -86,7 +86,7 @@ Use of language codes has to be consistent throughout the file. You don't have t
 
 As well as product data, other initialization data can be populated using the [`InitialData` object]({{< relref "initial-data" >}}). **This format is intentionally limited**; more advanced requirements (e.g. setting up ShippingMethods that use custom checkers & calculators) should be carried out via scripts which interact with the [Admin GraphQL API]({{< relref "/reference/graphql-api/admin" >}}).
 
-```TypeScript
+```ts
 import { InitialData, LanguageCode } from '@vendure/core';
 
 export const initialData: InitialData = {
@@ -181,7 +181,7 @@ export const initialData: InitialData = {
 ### The `populate()` function
 The `@vendure/core` package exposes a [`populate()` function]({{< relref "populate" >}}) which can be used along with the data formats described above to populate your Vendure server:
 
-```TypeScript
+```ts
 // populate-server.ts
 import { bootstrap, DefaultJobQueuePlugin } from '@vendure/core';
 import { populate } from '@vendure/core/cli';

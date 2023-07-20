@@ -1,19 +1,19 @@
 ---
 title: "DropdownComponent"
 weight: 10
-date: 2023-07-14T16:57:51.220Z
+date: 2023-07-20T13:56:18.353Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# DropdownComponent
-<div class="symbol">
 
+## DropdownComponent
 
-# DropdownComponent
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/dropdown/dropdown.component.ts" sourceLine="28" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/dropdown/dropdown.component.ts" sourceLine="28" packageName="@vendure/admin-ui" />
 
 Used for building dropdown menus.
 
@@ -38,9 +38,7 @@ Used for building dropdown menus.
 </vdr-dropdown>
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class DropdownComponent {
   isOpen = false;
   public public trigger: ElementRef;
@@ -51,49 +49,39 @@ class DropdownComponent {
   setTriggerElement(elementRef: ElementRef) => ;
 }
 ```
-## Members
 
 ### isOpen
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### trigger
 
-{{< member-info kind="property" type="ElementRef"  >}}
+<MemberInfo kind="property" type="ElementRef"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### manualToggle
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onClick
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### toggleOpen
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onOpenChange
 
-{{< member-info kind="method" type="(callback: (isOpen: boolean) =&#62; void) => "  >}}
+<MemberInfo kind="method" type="(callback: (isOpen: boolean) =&#62; void) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### setTriggerElement
 
-{{< member-info kind="method" type="(elementRef: ElementRef) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(elementRef: ElementRef) => "   />
 
 
-</div>

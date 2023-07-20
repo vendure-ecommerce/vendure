@@ -15,7 +15,7 @@ Usually, the Admin UI is served from the Vendure server via the AdminUiPlugin. H
 
 The AdminUiPlugin not only serves the Admin UI app, but also provides a `metricSummary` query which is used to display the order metrics on the dashboard. If you wish to deploy the Admin UI app stand-alone (not served by the AdminUiPlugin), but still want to display the metrics on the dashboard, you'll need to include the AdminUiPlugin in your server's plugins array, but do not call `init()`:
 
-```TypeScript
+```ts
 import { AdminUiPlugin } from '\@vendure/admin-ui-plugin';
 
 const config: VendureConfig = {
@@ -52,7 +52,7 @@ This example is for Vercel, and assumes:
     }
     ```
 
-```TypeScript
+```ts
 // compile.ts
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import { DEFAULT_BASE_HREF } from '@vendure/ui-devkit/compiler/constants';

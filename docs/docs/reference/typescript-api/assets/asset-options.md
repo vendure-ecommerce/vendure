@@ -1,27 +1,25 @@
 ---
 title: "AssetOptions"
 weight: 10
-date: 2023-07-14T16:57:49.751Z
+date: 2023-07-20T13:56:14.871Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# AssetOptions
-<div class="symbol">
 
+## AssetOptions
 
-# AssetOptions
-
-{{< generation-info sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="605" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="605" packageName="@vendure/core" />
 
 The AssetOptions define how assets (images and other files) are named and stored, and how preview images are generated.
 
 **Note**: If you are using the `AssetServerPlugin`, it is not necessary to configure these options.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface AssetOptions {
   assetNamingStrategy?: AssetNamingStrategy;
   assetStorageStrategy?: AssetStorageStrategy;
@@ -30,40 +28,32 @@ interface AssetOptions {
   uploadMaxFileSize?: number;
 }
 ```
-## Members
 
 ### assetNamingStrategy
 
-{{< member-info kind="property" type="<a href='/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a>" default="<a href='/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a>" default="<a href='/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a>"   />
 
-{{< member-description >}}Defines how asset files and preview images are named before being saved.{{< /member-description >}}
-
+Defines how asset files and preview images are named before being saved.
 ### assetStorageStrategy
 
-{{< member-info kind="property" type="<a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>" default="NoAssetStorageStrategy"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>" default="NoAssetStorageStrategy"   />
 
-{{< member-description >}}Defines the strategy used for storing uploaded binary files.{{< /member-description >}}
-
+Defines the strategy used for storing uploaded binary files.
 ### assetPreviewStrategy
 
-{{< member-info kind="property" type="<a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a>" default="NoAssetPreviewStrategy"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a>" default="NoAssetPreviewStrategy"   />
 
-{{< member-description >}}Defines the strategy used for creating preview images of uploaded assets.{{< /member-description >}}
-
+Defines the strategy used for creating preview images of uploaded assets.
 ### permittedFileTypes
 
-{{< member-info kind="property" type="string[]" default="image, audio, video MIME types plus PDFs"  >}}
+<MemberInfo kind="property" type="string[]" default="image, audio, video MIME types plus PDFs"   />
 
-{{< member-description >}}An array of the permitted file types that may be uploaded as Assets. Each entry
+An array of the permitted file types that may be uploaded as Assets. Each entry
 should be in the form of a valid
 [unique file type specifier](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#Unique_file_type_specifiers)
-i.e. either a file extension (".pdf") or a mime type ("image/*", "audio/mpeg" etc.).{{< /member-description >}}
-
+i.e. either a file extension (".pdf") or a mime type ("image/*", "audio/mpeg" etc.).
 ### uploadMaxFileSize
 
-{{< member-info kind="property" type="number" default="20971520"  >}}
+<MemberInfo kind="property" type="number" default="20971520"   />
 
-{{< member-description >}}The max file size in bytes for uploaded assets.{{< /member-description >}}
-
-
-</div>
+The max file size in bytes for uploaded assets.

@@ -1,58 +1,48 @@
 ---
 title: "Email Plugin Types"
 weight: 10
-date: 2023-07-14T16:57:50.737Z
+date: 2023-07-20T13:56:16.934Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Email Plugin Types
-<div class="symbol">
 
+## EventWithContext
 
-# EventWithContext
-
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="21" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="21" packageName="@vendure/email-plugin" />
 
 A VendureEvent which also includes a `ctx` property containing the current
 <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, which is used to determine the channel and language
 to use when generating the email.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type EventWithContext = VendureEvent & { ctx: RequestContext }
 ```
-</div>
-<div class="symbol">
 
 
-# EventWithAsyncData
+## EventWithAsyncData
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="31" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="31" packageName="@vendure/email-plugin" />
 
 A VendureEvent with a <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> and a `data` property which contains the
 value resolved from the <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>`.loadData()` callback.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type EventWithAsyncData<Event extends EventWithContext, R> = Event & { data: R }
 ```
-</div>
-<div class="symbol">
 
 
-# EmailDetails
+## EmailDetails
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="248" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="248" packageName="@vendure/email-plugin" />
 
 The final, generated email details to be sent.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialized'> {
   from: string;
   recipient: string;
@@ -64,184 +54,144 @@ interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialize
   replyTo?: string;
 }
 ```
-## Members
 
 ### from
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### recipient
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### subject
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### body
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### attachments
 
-{{< member-info kind="property" type="Array&#60;Type extends 'serialized' ? SerializedAttachment : Attachment&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;Type extends 'serialized' ? SerializedAttachment : Attachment&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### cc
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### bcc
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### replyTo
 
-{{< member-info kind="property" type="string"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="string"   />
 
 
-</div>
-<div class="symbol">
 
 
-# LoadDataFn
+## LoadDataFn
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="282" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="282" packageName="@vendure/email-plugin" />
 
 A function used to load async data for use by an <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type LoadDataFn<Event extends EventWithContext, R> = (context: {
     event: Event;
     injector: Injector;
 }) => Promise<R>
 ```
-</div>
-<div class="symbol">
 
 
-# EmailAttachment
+## EmailAttachment
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="301" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="301" packageName="@vendure/email-plugin" />
 
 An object defining a file attachment for an email. Based on the object described
 [here in the Nodemailer docs](https://nodemailer.com/message/attachments/), but
 only uses the `path` property to define a filesystem path or a URL pointing to
 the attachment file.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string }
 ```
-</div>
-<div class="symbol">
 
 
-# SetTemplateVarsFn
+## SetTemplateVarsFn
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="410" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="410" packageName="@vendure/email-plugin" />
 
 A function used to define template variables available to email templates.
 See <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.setTemplateVars().
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type SetTemplateVarsFn<Event> = (
     event: Event,
     globals: { [key: string]: any },
 ) => { [key: string]: any }
 ```
-</div>
-<div class="symbol">
 
 
-# SetAttachmentsFn
+## SetAttachmentsFn
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="424" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="424" packageName="@vendure/email-plugin" />
 
 A function used to define attachments to be sent with the email.
 See https://nodemailer.com/message/attachments/ for more information about
 how attachments work in Nodemailer.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>
 ```
-</div>
-<div class="symbol">
 
 
-# OptionalAddressFields
+## OptionalAddressFields
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="434" packageName="@vendure/email-plugin" since="1.1.0">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="434" packageName="@vendure/email-plugin" since="1.1.0" />
 
 Optional address-related fields for sending the email.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface OptionalAddressFields {
   cc?: string;
   bcc?: string;
   replyTo?: string;
 }
 ```
-## Members
 
 ### cc
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}Comma separated list of recipients email addresses that will appear on the _Cc:_ field{{< /member-description >}}
-
+Comma separated list of recipients email addresses that will appear on the _Cc:_ field
 ### bcc
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}Comma separated list of recipients email addresses that will appear on the _Bcc:_ field{{< /member-description >}}
-
+Comma separated list of recipients email addresses that will appear on the _Bcc:_ field
 ### replyTo
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}An email address that will appear on the _Reply-To:_ field{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+An email address that will appear on the _Reply-To:_ field
 
 
-# SetOptionalAddressFieldsFn
+## SetOptionalAddressFieldsFn
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="460" packageName="@vendure/email-plugin" since="1.1.0">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="460" packageName="@vendure/email-plugin" since="1.1.0" />
 
 A function used to set the <a href='/typescript-api/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>
 ```
-</div>

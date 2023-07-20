@@ -1,27 +1,25 @@
 ---
 title: "AdminUiConfig"
 weight: 10
-date: 2023-07-14T16:57:50.664Z
+date: 2023-07-20T13:56:16.750Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# AdminUiConfig
-<div class="symbol">
 
+## AdminUiConfig
 
-# AdminUiConfig
-
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="214" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="214" packageName="@vendure/common" />
 
 This interface describes JSON config file (vendure-ui-config.json) used by the Admin UI.
 The values are loaded at run-time by the Admin UI app, and allow core configuration to be
 managed without the need to re-build the application.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface AdminUiConfig {
   apiHost: string | 'auto';
   apiPort: number | 'auto';
@@ -39,115 +37,91 @@ interface AdminUiConfig {
   cancellationReasons?: string[];
 }
 ```
-## Members
 
 ### apiHost
 
-{{< member-info kind="property" type="string | 'auto'" default="'http://localhost'"  >}}
+<MemberInfo kind="property" type="string | 'auto'" default="'http://localhost'"   />
 
-{{< member-description >}}The hostname of the Vendure server which the admin UI will be making API calls
+The hostname of the Vendure server which the admin UI will be making API calls
 to. If set to "auto", the Admin UI app will determine the hostname from the
-current location (i.e. `window.location.hostname`).{{< /member-description >}}
-
+current location (i.e. `window.location.hostname`).
 ### apiPort
 
-{{< member-info kind="property" type="number | 'auto'" default="3000"  >}}
+<MemberInfo kind="property" type="number | 'auto'" default="3000"   />
 
-{{< member-description >}}The port of the Vendure server which the admin UI will be making API calls
+The port of the Vendure server which the admin UI will be making API calls
 to. If set to "auto", the Admin UI app will determine the port from the
-current location (i.e. `window.location.port`).{{< /member-description >}}
-
+current location (i.e. `window.location.port`).
 ### adminApiPath
 
-{{< member-info kind="property" type="string" default="'admin-api'"  >}}
+<MemberInfo kind="property" type="string" default="'admin-api'"   />
 
-{{< member-description >}}The path to the GraphQL Admin API.{{< /member-description >}}
-
+The path to the GraphQL Admin API.
 ### tokenMethod
 
-{{< member-info kind="property" type="'cookie' | 'bearer'" default="'cookie'"  >}}
+<MemberInfo kind="property" type="'cookie' | 'bearer'" default="'cookie'"   />
 
-{{< member-description >}}Whether to use cookies or bearer tokens to track sessions.
+Whether to use cookies or bearer tokens to track sessions.
 Should match the setting of in the server's `tokenMethod` config
-option.{{< /member-description >}}
-
+option.
 ### authTokenHeaderKey
 
-{{< member-info kind="property" type="string" default="'vendure-auth-token'"  >}}
+<MemberInfo kind="property" type="string" default="'vendure-auth-token'"   />
 
-{{< member-description >}}The header used when using the 'bearer' auth method. Should match the
+The header used when using the 'bearer' auth method. Should match the
 setting of the server's `authOptions.authTokenHeaderKey` config
-option.{{< /member-description >}}
-
-### channelTokenKey
-
-{{< member-info kind="property" type="string" default="'vendure-token'"  >}}
-
-{{< member-description >}}The name of the header which contains the channel token. Should match the
-setting of the server's `apiOptions.channelTokenKey` config option.{{< /member-description >}}
-
+option.
 ### defaultLanguage
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>" default="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>" default="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"   />
 
-{{< member-description >}}The default language for the Admin UI. Must be one of the
-items specified in the `availableLanguages` property.{{< /member-description >}}
-
+The default language for the Admin UI. Must be one of the
+items specified in the `availableLanguages` property.
 ### defaultLocale
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The default locale for the Admin UI. The locale affects the formatting of
+The default locale for the Admin UI. The locale affects the formatting of
 currencies & dates.
 
-If not set, the browser default locale will be used.{{< /member-description >}}
-
+If not set, the browser default locale will be used.
 ### availableLanguages
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]"   />
 
-{{< member-description >}}An array of languages for which translations exist for the Admin UI.{{< /member-description >}}
-
+An array of languages for which translations exist for the Admin UI.
 ### loginUrl
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}If you are using an external <a href='/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a> for the Admin API, you can configure
+If you are using an external <a href='/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a> for the Admin API, you can configure
 a custom URL for the login page with this option. On logging out or redirecting an unauthenticated
 user, the Admin UI app will redirect the user to this URL rather than the default username/password
-screen.{{< /member-description >}}
-
+screen.
 ### brand
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The custom brand name.{{< /member-description >}}
-
+The custom brand name.
 ### hideVendureBranding
 
-{{< member-info kind="property" type="boolean" default="false"  >}}
+<MemberInfo kind="property" type="boolean" default="false"   />
 
-{{< member-description >}}Option to hide vendure branding.{{< /member-description >}}
-
+Option to hide vendure branding.
 ### hideVersion
 
-{{< member-info kind="property" type="boolean" default="false"  >}}
+<MemberInfo kind="property" type="boolean" default="false"   />
 
-{{< member-description >}}Option to hide version.{{< /member-description >}}
-
+Option to hide version.
 ### loginImageUrl
 
-{{< member-info kind="property" type="string"  since="1.9.0" >}}
+<MemberInfo kind="property" type="string"  since="1.9.0"  />
 
-{{< member-description >}}A url of a custom image to be used on the login screen, to override the images provided by Vendure's login image server.{{< /member-description >}}
-
+A url of a custom image to be used on the login screen, to override the images provided by Vendure's login image server.
 ### cancellationReasons
 
-{{< member-info kind="property" type="string[]" default="['order.cancel-reason-customer-request', 'order.cancel-reason-not-available']"  since="1.5.0" >}}
+<MemberInfo kind="property" type="string[]" default="['order.cancel-reason-customer-request', 'order.cancel-reason-not-available']"  since="1.5.0"  />
 
-{{< member-description >}}Allows you to provide default reasons for a refund or cancellation. This will be used in the
+Allows you to provide default reasons for a refund or cancellation. This will be used in the
 refund/cancel dialog. The values can be literal strings (e.g. "Not in stock") or translation
-tokens (see [Adding Admin UI Translations](/docs/plugins/extending-the-admin-ui/adding-ui-translations/)).{{< /member-description >}}
-
-
-</div>
+tokens (see [Adding Admin UI Translations](/docs/plugins/extending-the-admin-ui/adding-ui-translations/)).

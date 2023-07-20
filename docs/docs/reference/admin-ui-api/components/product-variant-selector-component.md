@@ -1,19 +1,19 @@
 ---
 title: "ProductVariantSelectorComponent"
 weight: 10
-date: 2023-07-14T16:57:51.242Z
+date: 2023-07-20T13:56:18.431Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ProductVariantSelectorComponent
-<div class="symbol">
 
+## ProductVariantSelectorComponent
 
-# ProductVariantSelectorComponent
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/product-variant-selector/product-variant-selector.component.ts" sourceLine="21" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/product-variant-selector/product-variant-selector.component.ts" sourceLine="21" packageName="@vendure/admin-ui" />
 
 A component for selecting product variants via an autocomplete-style select input.
 
@@ -24,9 +24,7 @@ A component for selecting product variants via an autocomplete-style select inpu
   (productSelected)="selectResult($event)"></vdr-product-selector>
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ProductVariantSelectorComponent implements OnInit {
   searchInput$ = new Subject<string>();
   searchLoading = false;
@@ -37,54 +35,44 @@ class ProductVariantSelectorComponent implements OnInit {
   selectResult(product?: ProductSelectorSearchQuery['search']['items'][number]) => ;
 }
 ```
-## Implements
+Implements
 
  * OnInit
 
 
-## Members
 
 ### searchInput$
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### searchLoading
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### searchResults$
 
-{{< member-info kind="property" type="Observable&#60;ProductSelectorSearchQuery['search']['items']&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;ProductSelectorSearchQuery['search']['items']&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### productSelected
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent"  >}}
+<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnInit
 
-{{< member-info kind="method" type="() => void"  >}}
+<MemberInfo kind="method" type="() => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### selectResult
 
-{{< member-info kind="method" type="(product?: ProductSelectorSearchQuery['search']['items'][number]) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(product?: ProductSelectorSearchQuery['search']['items'][number]) => "   />
 
 
-</div>

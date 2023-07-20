@@ -1,19 +1,19 @@
 ---
 title: "PluginCommonModule"
 weight: 10
-date: 2023-07-14T16:57:50.208Z
+date: 2023-07-20T13:56:15.810Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# PluginCommonModule
-<div class="symbol">
 
+## PluginCommonModule
 
-# PluginCommonModule
-
-{{< generation-info sourceFile="packages/core/src/plugin/plugin-common.module.ts" sourceLine="30" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/plugin/plugin-common.module.ts" sourceLine="30" packageName="@vendure/core" />
 
 This module provides the common services, configuration, and event bus capabilities
 required by a typical plugin. It should be imported into plugins to avoid having to
@@ -27,11 +27,8 @@ The PluginCommonModule exports:
 * `JobQueueModule`, allowing the injection of the <a href='/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>.
 * `HealthCheckModule`, allowing the injection of the <a href='/typescript-api/health-check/health-check-registry-service#healthcheckregistryservice'>HealthCheckRegistryService</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PluginCommonModule {
 
 }
 ```
-</div>

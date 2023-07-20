@@ -1,25 +1,23 @@
 ---
 title: "CurrencyCode"
 weight: 10
-date: 2023-07-14T16:57:50.654Z
+date: 2023-07-20T13:56:16.724Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CurrencyCode
-<div class="symbol">
 
+## CurrencyCode
 
-# CurrencyCode
-
-{{< generation-info sourceFile="packages/common/src/generated-types.ts" sourceLine="949" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="949" packageName="@vendure/common" />
 
 ISO 4217 currency code
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 enum CurrencyCode {
   AED = 'AED'
   AFN = 'AFN'
@@ -180,4 +178,3 @@ enum CurrencyCode {
   ZWL = 'ZWL'
 }
 ```
-</div>

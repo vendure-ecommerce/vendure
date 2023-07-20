@@ -1,19 +1,19 @@
 ---
 title: "DefaultSearchPlugin"
 weight: 10
-date: 2023-07-14T16:57:50.203Z
+date: 2023-07-20T13:56:15.797Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# DefaultSearchPlugin
-<div class="symbol">
 
+## DefaultSearchPlugin
 
-# DefaultSearchPlugin
-
-{{< generation-info sourceFile="packages/core/src/plugin/default-search-plugin/default-search-plugin.ts" sourceLine="69" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/plugin/default-search-plugin/default-search-plugin.ts" sourceLine="69" packageName="@vendure/core" />
 
 The DefaultSearchPlugin provides a full-text Product search based on the full-text searching capabilities of the
 underlying database.
@@ -43,33 +43,26 @@ export const config: VendureConfig = {
 };
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicationShutdown {
   static static options: DefaultSearchPluginInitOptions = {};
   static init(options: DefaultSearchPluginInitOptions) => Type<DefaultSearchPlugin>;
 }
 ```
-## Implements
+Implements
 
  * OnApplicationBootstrap
  * OnApplicationShutdown
 
 
-## Members
 
 ### options
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/default-search-plugin/#defaultsearchplugin'>DefaultSearchPlugin</a>&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/default-search-plugin/#defaultsearchplugin'>DefaultSearchPlugin</a>&#62;"   />
 
 
-</div>

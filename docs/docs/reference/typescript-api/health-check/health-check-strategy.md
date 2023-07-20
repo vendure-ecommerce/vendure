@@ -1,19 +1,19 @@
 ---
 title: "HealthCheckStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.708Z
+date: 2023-07-20T13:56:14.780Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# HealthCheckStrategy
-<div class="symbol">
 
+## HealthCheckStrategy
 
-# HealthCheckStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/system/health-check-strategy.ts" sourceLine="42" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/system/health-check-strategy.ts" sourceLine="42" packageName="@vendure/core" />
 
 This strategy defines health checks which are included as part of the
 `/health` endpoint. They should only be used to monitor _critical_ systems
@@ -47,26 +47,20 @@ export const config = {
 };
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface HealthCheckStrategy extends InjectableStrategy {
   getHealthIndicator(): HealthIndicatorFunction;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
 
 
-## Members
 
 ### getHealthIndicator
 
-{{< member-info kind="method" type="() => HealthIndicatorFunction"  >}}
+<MemberInfo kind="method" type="() => HealthIndicatorFunction"   />
 
-{{< member-description >}}Should return a `HealthIndicatorFunction`, as defined by the
-[NestJS Terminus module](https://docs.nestjs.com/recipes/terminus).{{< /member-description >}}
-
-
-</div>
+Should return a `HealthIndicatorFunction`, as defined by the
+[NestJS Terminus module](https://docs.nestjs.com/recipes/terminus).

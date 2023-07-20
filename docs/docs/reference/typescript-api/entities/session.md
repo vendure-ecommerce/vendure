@@ -1,26 +1,24 @@
 ---
 title: "Session"
 weight: 10
-date: 2023-07-14T16:57:49.992Z
+date: 2023-07-20T13:56:15.380Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Session
-<div class="symbol">
 
+## Session
 
-# Session
-
-{{< generation-info sourceFile="packages/core/src/entity/session/session.entity.ts" sourceLine="18" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/session/session.entity.ts" sourceLine="18" packageName="@vendure/core" />
 
 A Session is created when a user makes a request to restricted API operations. A Session can be an <a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>
 in the case of un-authenticated users, otherwise it is an <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Session extends VendureEntity {
   @Index({ unique: true }) @Column() @Index({ unique: true })
     @Column()
@@ -39,54 +37,44 @@ class Session extends VendureEntity {
     activeChannel: Channel | null;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Members
 
 ### token
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### expires
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### invalidated
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### activeOrderId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### activeOrder
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a> | null"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a> | null"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### activeChannelId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### activeChannel
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a> | null"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a> | null"   />
 
 
-</div>

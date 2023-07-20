@@ -1,60 +1,52 @@
 ---
 title: "Promotion Action"
 weight: 10
-date: 2023-07-14T16:57:49.669Z
+date: 2023-07-20T13:56:14.678Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# promotion-action
-<div class="symbol">
 
+## PromotionAction
 
-# PromotionAction
-
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="247" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="247" packageName="@vendure/core" />
 
 An abstract class which is extended by <a href='/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>, <a href='/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a>,
 and <a href='/typescript-api/promotions/promotion-action#promotionshippingaction'>PromotionShippingAction</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] | undefined = any> extends ConfigurableOperationDef<T> {
   readonly readonly priorityValue: number;
   constructor(config: PromotionActionConfig<T, U>)
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
 
 
-## Members
 
 ### priorityValue
 
-{{< member-info kind="property" type="number" default="0"  >}}
+<MemberInfo kind="property" type="number" default="0"   />
 
-{{< member-description >}}Used to determine the order of application of multiple Promotions
+Used to determine the order of application of multiple Promotions
 on the same Order. See the <a href='/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
-more information.{{< /member-description >}}
-
+more information.
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;) => PromotionAction"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;) => PromotionAction"   />
 
 
-</div>
-<div class="symbol">
 
 
-# PromotionItemAction
+## PromotionItemAction
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="320" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="320" packageName="@vendure/core" />
 
 Represents a PromotionAction which applies to individual <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>s.
 
@@ -72,34 +64,27 @@ const itemPercentageDiscount = new PromotionItemAction({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PromotionItemAction<T extends ConfigArgs = ConfigArgs, U extends Array<PromotionCondition<any>> = []> extends PromotionAction<T, U> {
   constructor(config: PromotionItemActionConfig<T, U>)
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionitemactionconfig'>PromotionItemActionConfig</a>&#60;T, U&#62;) => PromotionItemAction"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionitemactionconfig'>PromotionItemActionConfig</a>&#60;T, U&#62;) => PromotionItemAction"   />
 
 
-</div>
-<div class="symbol">
 
 
-# PromotionOrderAction
+## PromotionOrderAction
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="375" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="375" packageName="@vendure/core" />
 
 Represents a PromotionAction which applies to the <a href='/typescript-api/entities/order#order'>Order</a> as a whole.
 
@@ -117,72 +102,56 @@ const orderPercentageDiscount = new PromotionOrderAction({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PromotionOrderAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] = []> extends PromotionAction<T, U> {
   constructor(config: PromotionOrderActionConfig<T, U>)
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionorderactionconfig'>PromotionOrderActionConfig</a>&#60;T, U&#62;) => PromotionOrderAction"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionorderactionconfig'>PromotionOrderActionConfig</a>&#60;T, U&#62;) => PromotionOrderAction"   />
 
 
-</div>
-<div class="symbol">
 
 
-# PromotionShippingAction
+## PromotionShippingAction
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="417" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="417" packageName="@vendure/core" />
 
 Represents a PromotionAction which applies to the shipping cost of an Order.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PromotionShippingAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] = []> extends PromotionAction<T, U> {
   constructor(config: PromotionShippingActionConfig<T, U>)
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionshippingactionconfig'>PromotionShippingActionConfig</a>&#60;T, U&#62;) => PromotionShippingAction"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionshippingactionconfig'>PromotionShippingActionConfig</a>&#60;T, U&#62;) => PromotionShippingAction"   />
 
 
-</div>
-<div class="symbol">
 
 
-# ExecutePromotionItemActionFn
+## ExecutePromotionItemActionFn
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="72" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="72" packageName="@vendure/core" />
 
 The function which is used by a PromotionItemAction to calculate the
 discount on the OrderLine.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ExecutePromotionItemActionFn<T extends ConfigArgs, U extends Array<PromotionCondition<any>>> = (
     ctx: RequestContext,
     orderLine: OrderLine,
@@ -191,20 +160,16 @@ type ExecutePromotionItemActionFn<T extends ConfigArgs, U extends Array<Promotio
     promotion: Promotion,
 ) => number | Promise<number>
 ```
-</div>
-<div class="symbol">
 
 
-# ExecutePromotionOrderActionFn
+## ExecutePromotionOrderActionFn
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="88" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="88" packageName="@vendure/core" />
 
 The function which is used by a PromotionOrderAction to calculate the
 discount on the Order.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ExecutePromotionOrderActionFn<T extends ConfigArgs, U extends Array<PromotionCondition<any>>> = (
     ctx: RequestContext,
     order: Order,
@@ -213,20 +178,16 @@ type ExecutePromotionOrderActionFn<T extends ConfigArgs, U extends Array<Promoti
     promotion: Promotion,
 ) => number | Promise<number>
 ```
-</div>
-<div class="symbol">
 
 
-# ExecutePromotionShippingActionFn
+## ExecutePromotionShippingActionFn
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="104" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="104" packageName="@vendure/core" />
 
 The function which is used by a PromotionOrderAction to calculate the
 discount on the Order.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ExecutePromotionShippingActionFn<T extends ConfigArgs, U extends Array<PromotionCondition<any>>> = (
     ctx: RequestContext,
     shippingLine: ShippingLine,
@@ -236,19 +197,15 @@ type ExecutePromotionShippingActionFn<T extends ConfigArgs, U extends Array<Prom
     promotion: Promotion,
 ) => number | Promise<number>
 ```
-</div>
-<div class="symbol">
 
 
-# PromotionActionSideEffectFn
+## PromotionActionSideEffectFn
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="125" packageName="@vendure/core" since="1.8.0" experimental="true">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="125" packageName="@vendure/core" since="1.8.0" experimental="true" />
 
 The signature of a PromotionAction's side-effect functions `onActivate` and `onDeactivate`.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type PromotionActionSideEffectFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
@@ -256,19 +213,15 @@ type PromotionActionSideEffectFn<T extends ConfigArgs> = (
     promotion: Promotion,
 ) => void | Promise<void>
 ```
-</div>
-<div class="symbol">
 
 
-# PromotionActionConfig
+## PromotionActionConfig
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="139" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="139" packageName="@vendure/core" />
 
 Configuration for all types of <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionCondition<any>> | undefined> extends ConfigurableOperationDefOptions<T> {
   priorityValue?: number;
   conditions?: U extends undefined ? undefined : ConditionTuple<Exclude<U, undefined>>;
@@ -276,147 +229,119 @@ interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionC
   onDeactivate?: PromotionActionSideEffectFn<T>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;
 
 
-## Members
 
 ### priorityValue
 
-{{< member-info kind="property" type="number" default="0"  >}}
+<MemberInfo kind="property" type="number" default="0"   />
 
-{{< member-description >}}Used to determine the order of application of multiple Promotions
+Used to determine the order of application of multiple Promotions
 on the same Order. See the <a href='/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
-more information.{{< /member-description >}}
-
+more information.
 ### conditions
 
-{{< member-info kind="property" type="U extends undefined ? undefined : ConditionTuple&#60;Exclude&#60;U, undefined&#62;&#62;"  >}}
+<MemberInfo kind="property" type="U extends undefined ? undefined : ConditionTuple&#60;Exclude&#60;U, undefined&#62;&#62;"   />
 
-{{< member-description >}}Allows PromotionActions to define one or more PromotionConditions as dependencies. Having a PromotionCondition
+Allows PromotionActions to define one or more PromotionConditions as dependencies. Having a PromotionCondition
 as a dependency has the following consequences:
 1. A Promotion using this PromotionAction is only valid if it also contains all PromotionConditions
 on which it depends.
 2. The `execute()` function will receive a statically-typed `state` argument which will contain
-the return values of the PromotionConditions' `check()` function.{{< /member-description >}}
-
+the return values of the PromotionConditions' `check()` function.
 ### onActivate
 
-{{< member-info kind="property" type="<a href='/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true">}}
+<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
 
-{{< member-description >}}An optional side effect function which is invoked when the promotion
+An optional side effect function which is invoked when the promotion
 becomes active. It can be used for things like adding a free gift to the order
 or other side effects that are unrelated to price calculations.
 
 If used, make sure to use the corresponding `onDeactivate` function to clean up
-or reverse any side effects as needed.{{< /member-description >}}
-
+or reverse any side effects as needed.
 ### onDeactivate
 
-{{< member-info kind="property" type="<a href='/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true">}}
+<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
 
-{{< member-description >}}Used to reverse or clean up any side effects executed as part of the `onActivate` function.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Used to reverse or clean up any side effects executed as part of the `onActivate` function.
 
 
-# PromotionItemActionConfig
+## PromotionItemActionConfig
 
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="193" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="193" packageName="@vendure/core" />
 
 Configuration for a <a href='/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface PromotionItemActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
   execute: ExecutePromotionItemActionFn<T, U>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;
 
 
-## Members
 
 ### execute
 
-{{< member-info kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionitemactionfn'>ExecutePromotionItemActionFn</a>&#60;T, U&#62;"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionitemactionfn'>ExecutePromotionItemActionFn</a>&#60;T, U&#62;"   />
 
-{{< member-description >}}The function which contains the promotion calculation logic.
+The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
-the OrderLine, i.e. the number should be negative.{{< /member-description >}}
+the OrderLine, i.e. the number should be negative.
 
 
-</div>
-<div class="symbol">
+## PromotionOrderActionConfig
 
-
-# PromotionOrderActionConfig
-
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="210" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="210" packageName="@vendure/core" />
 
 
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface PromotionOrderActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
   execute: ExecutePromotionOrderActionFn<T, U>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;
 
 
-## Members
 
 ### execute
 
-{{< member-info kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionorderactionfn'>ExecutePromotionOrderActionFn</a>&#60;T, U&#62;"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionorderactionfn'>ExecutePromotionOrderActionFn</a>&#60;T, U&#62;"   />
 
-{{< member-description >}}The function which contains the promotion calculation logic.
+The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
-the Order, i.e. the number should be negative.{{< /member-description >}}
+the Order, i.e. the number should be negative.
 
 
-</div>
-<div class="symbol">
+## PromotionShippingActionConfig
 
-
-# PromotionShippingActionConfig
-
-{{< generation-info sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="227" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="227" packageName="@vendure/core" />
 
 
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface PromotionShippingActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
   execute: ExecutePromotionShippingActionFn<T, U>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;
 
 
-## Members
 
 ### execute
 
-{{< member-info kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionshippingactionfn'>ExecutePromotionShippingActionFn</a>&#60;T, U&#62;"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionshippingactionfn'>ExecutePromotionShippingActionFn</a>&#60;T, U&#62;"   />
 
-{{< member-description >}}The function which contains the promotion calculation logic.
+The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
-the Shipping, i.e. the number should be negative.{{< /member-description >}}
-
-
-</div>
+the Shipping, i.e. the number should be negative.

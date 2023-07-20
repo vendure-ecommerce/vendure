@@ -1,19 +1,19 @@
 ---
 title: "MolliePlugin"
 weight: 10
-date: 2023-07-14T16:57:50.795Z
+date: 2023-07-20T13:56:17.038Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# MolliePlugin
-<div class="symbol">
 
+## MolliePlugin
 
-# MolliePlugin
-
-{{< generation-info sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="151" packageName="@vendure/payments-plugin">}}
+<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="151" packageName="@vendure/payments-plugin" />
 
 Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
 This plugin uses the Order API from Mollie, not the Payments API.
@@ -122,64 +122,49 @@ Make sure you capture a payment within 28 days, because this is the Klarna expir
 If you don't want this behaviour (Authorized first), you can set 'autoCapture=true' on the payment method. This option will immediately
 capture the payment after a customer authorizes the payment.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class MolliePlugin {
   static static options: MolliePluginOptions;
   static init(options: MolliePluginOptions) => typeof MolliePlugin;
 }
 ```
-## Members
 
 ### options
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>"  >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>"   />
 
-{{< member-description >}}Initialize the mollie payment plugin{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Initialize the mollie payment plugin
 
 
-# MolliePluginOptions
+## MolliePluginOptions
 
-{{< generation-info sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="17" packageName="@vendure/payments-plugin">}}
+<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="17" packageName="@vendure/payments-plugin" />
 
 Configuration options for the Mollie payments plugin.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface MolliePluginOptions {
   vendureHost: string;
   useDynamicRedirectUrl?: boolean;
 }
 ```
-## Members
 
 ### vendureHost
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The host of your Vendure server, e.g. `'https://my-vendure.io'`.
-This is used by Mollie to send webhook events to the Vendure server{{< /member-description >}}
-
+The host of your Vendure server, e.g. `'https://my-vendure.io'`.
+This is used by Mollie to send webhook events to the Vendure server
 ### useDynamicRedirectUrl
 
-{{< member-info kind="property" type="boolean" default="false"  since="2.0.0" >}}
+<MemberInfo kind="property" type="boolean" default="false"  since="2.0.0"  />
 
-{{< member-description >}}For backwards compatibility, by default set to false.
+For backwards compatibility, by default set to false.
 This option will be deprecated in a future version.
 When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation
-instead of being configured in the Payment Method.{{< /member-description >}}
-
-
-</div>
+instead of being configured in the Payment Method.

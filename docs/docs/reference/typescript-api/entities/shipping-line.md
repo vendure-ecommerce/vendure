@@ -1,27 +1,25 @@
 ---
 title: "ShippingLine"
 weight: 10
-date: 2023-07-14T16:57:49.995Z
+date: 2023-07-20T13:56:15.386Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ShippingLine
-<div class="symbol">
 
+## ShippingLine
 
-# ShippingLine
-
-{{< generation-info sourceFile="packages/core/src/entity/shipping-line/shipping-line.entity.ts" sourceLine="23" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/shipping-line/shipping-line.entity.ts" sourceLine="23" packageName="@vendure/core" />
 
 A ShippingLine is created when a <a href='/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> is applied to an <a href='/typescript-api/entities/order#order'>Order</a>.
 It contains information about the price of the shipping method, any discounts that were
 applied, and the resulting tax on the shipping method.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ShippingLine extends VendureEntity {
   constructor(input?: DeepPartial<ShippingLine>)
   @EntityId() @EntityId()
@@ -50,108 +48,89 @@ class ShippingLine extends VendureEntity {
   clearAdjustments() => ;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>&#62;) => ShippingLine"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>&#62;) => ShippingLine"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### shippingMethodId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a> | null"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a> | null"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### shippingMethod
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### order
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### listPrice
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### listPriceIncludesTax
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### adjustments
 
-{{< member-info kind="property" type="Adjustment[]"  >}}
+<MemberInfo kind="property" type="Adjustment[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### taxLines
 
-{{< member-info kind="property" type="TaxLine[]"  >}}
+<MemberInfo kind="property" type="TaxLine[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### price
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### priceWithTax
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### discountedPrice
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### discountedPriceWithTax
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### taxRate
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### discounts
 
-{{< member-info kind="property" type="Discount[]"  >}}
+<MemberInfo kind="property" type="Discount[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### addAdjustment
 
-{{< member-info kind="method" type="(adjustment: Adjustment) => "  >}}
+<MemberInfo kind="method" type="(adjustment: Adjustment) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### clearAdjustments
 
-{{< member-info kind="method" type="() => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="() => "   />
 
 
-</div>

@@ -1,19 +1,19 @@
 ---
 title: "EntityHydrator"
 weight: 10
-date: 2023-07-14T16:57:50.226Z
+date: 2023-07-20T13:56:15.853Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# EntityHydrator
-<div class="symbol">
 
+## EntityHydrator
 
-# EntityHydrator
-
-{{< generation-info sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="53" packageName="@vendure/core" since="1.3.0">}}
+<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="53" packageName="@vendure/core" since="1.3.0" />
 
 This is a helper class which is used to "hydrate" entity instances, which means to populate them
 with the specified relations. This is useful when writing plugin code which receives an entity
@@ -49,27 +49,23 @@ await this.entityHydrator
   .hydrate(ctx, customer, { relations: ['customFields.avatar' ]});
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class EntityHydrator {
   constructor(connection: TransactionalConnection, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
   async hydrate(ctx: RequestContext, target: Entity, options: HydrateOptions<Entity>) => Promise<Entity>;
 }
 ```
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: TranslatorService) => EntityHydrator"  >}}
+<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: TranslatorService) => EntityHydrator"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### hydrate
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, target: Entity, options: <a href='/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>&#60;Entity&#62;) => Promise&#60;Entity&#62;"  since="1.3.0" >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, target: Entity, options: <a href='/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>&#60;Entity&#62;) => Promise&#60;Entity&#62;"  since="1.3.0"  />
 
-{{< member-description >}}Hydrates (joins) the specified relations to the target entity instance. This method
+Hydrates (joins) the specified relations to the target entity instance. This method
 mutates the `target` entity.
 
 *Example*
@@ -83,7 +79,4 @@ await this.entityHydrator.hydrate(ctx, product, {
   ],
   applyProductVariantPrices: true,
 });
-```{{< /member-description >}}
-
-
-</div>
+```

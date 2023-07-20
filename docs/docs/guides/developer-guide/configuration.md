@@ -17,7 +17,7 @@ Since the `VendureConfig` is just a JavaScript object, it can be managed and man
 
 Environment variables can be used when you don't want to hard-code certain values which may change, e.g. depending on whether running locally, in staging or in production:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   apiOptions: {
     hostname: process.env.HOSTNAME,
@@ -29,7 +29,7 @@ export const config: VendureConfig = {
 
 They are also useful so that sensitive credentials do not need to be hard-coded and committed to source control:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   dbConnectionOptions: {
     type: 'postgres',
@@ -45,7 +45,7 @@ export const config: VendureConfig = {
 
 If the config object grows too large, you can split it across several files. For example, the `plugins` array in a real-world project can easily grow quite big:
 
-```TypeScript
+```ts
 // vendure-config-plugins.ts
 
 export const plugins: VendureConfig['plugins'] = [
@@ -66,7 +66,7 @@ export const plugins: VendureConfig['plugins'] = [
 ];
 ```
 
-```TypeScript
+```ts
 // vendure-config.ts
 
 import { plugins } from 'vendure-config-plugins';
@@ -91,7 +91,7 @@ The [`VendureConfig.apiOptions`]({{< relref "api-options" >}}) object is used to
 
 Example:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   apiOptions: {
     hostname: 'localhost',
@@ -114,7 +114,7 @@ The database connection is configured with the `VendureConfig.dbConnectionOption
 
 Example:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   dbConnectionOptions: {
     type: 'postgres',
@@ -138,7 +138,7 @@ The username and default password of the superadmin user can also be specified h
 
 Example:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   authOptions: {
     tokenMethod: 'cookie',

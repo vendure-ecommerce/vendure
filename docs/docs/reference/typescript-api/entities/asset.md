@@ -1,26 +1,24 @@
 ---
 title: "Asset"
 weight: 10
-date: 2023-07-14T16:57:49.833Z
+date: 2023-07-20T13:56:15.047Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Asset
-<div class="symbol">
 
+## Asset
 
-# Asset
-
-{{< generation-info sourceFile="packages/core/src/entity/asset/asset.entity.ts" sourceLine="19" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/asset/asset.entity.ts" sourceLine="19" packageName="@vendure/core" />
 
 An Asset represents a file such as an image which can be associated with certain other entities
 such as Products.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFields {
   constructor(input?: DeepPartial<Asset>)
   @Column() @Column() name: string;
@@ -43,97 +41,81 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
     customFields: CustomAssetFields;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#taggable'>Taggable</a>
  * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
  * HasCustomFields
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### name
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### type
 
-{{< member-info kind="property" type="AssetType"  >}}
+<MemberInfo kind="property" type="AssetType"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### mimeType
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### width
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### height
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### fileSize
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### source
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### preview
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### focalPoint
 
-{{< member-info kind="property" type="{ x: number; y: number }"  >}}
+<MemberInfo kind="property" type="{ x: number; y: number }"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### tags
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/tag#tag'>Tag</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/tag#tag'>Tag</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomAssetFields"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="CustomAssetFields"   />
 
 
-</div>

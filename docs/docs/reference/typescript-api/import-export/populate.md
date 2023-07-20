@@ -1,19 +1,19 @@
 ---
 title: "Populate"
 weight: 10
-date: 2023-07-14T16:57:49.413Z
+date: 2023-07-20T13:56:14.155Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# populate
-<div class="symbol">
 
+## populate
 
-# populate
-
-{{< generation-info sourceFile="packages/core/src/cli/populate.ts" sourceLine="51" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/cli/populate.ts" sourceLine="51" packageName="@vendure/core" />
 
 Populates the Vendure server with some initial data and (optionally) product data from
 a supplied CSV file. The format of the CSV file is described in the section
@@ -54,27 +54,24 @@ populate(
 );
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function populate<T extends INestApplicationContext>(bootstrapFn: () => Promise<T | undefined>, initialDataPathOrObject: string | object, productsCsvPath?: string, channelOrToken?: string | import('@vendure/core').Channel): Promise<T>
 ```
-## Parameters
+Parameters
 
 ### bootstrapFn
 
-{{< member-info kind="parameter" type="() =&#62; Promise&#60;T | undefined&#62;" >}}
+<MemberInfo kind="parameter" type="() =&#62; Promise&#60;T | undefined&#62;" />
 
 ### initialDataPathOrObject
 
-{{< member-info kind="parameter" type="string | object" >}}
+<MemberInfo kind="parameter" type="string | object" />
 
 ### productsCsvPath
 
-{{< member-info kind="parameter" type="string" >}}
+<MemberInfo kind="parameter" type="string" />
 
 ### channelOrToken
 
-{{< member-info kind="parameter" type="string | import('@vendure/core').<a href='/typescript-api/entities/channel#channel'>Channel</a>" >}}
+<MemberInfo kind="parameter" type="string | import('@vendure/core').<a href='/typescript-api/entities/channel#channel'>Channel</a>" />
 
-</div>

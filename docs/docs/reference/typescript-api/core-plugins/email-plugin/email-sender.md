@@ -1,19 +1,19 @@
 ---
 title: "EmailSender"
 weight: 10
-date: 2023-07-14T16:57:50.718Z
+date: 2023-07-20T13:56:16.896Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# EmailSender
-<div class="symbol">
 
+## EmailSender
 
-# EmailSender
-
-{{< generation-info sourceFile="packages/email-plugin/src/email-sender.ts" sourceLine="45" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/email-sender.ts" sourceLine="45" packageName="@vendure/email-plugin" />
 
 An EmailSender is responsible for sending the email, e.g. via an SMTP connection
 or using some other mail-sending API. By default, the EmailPlugin uses the
@@ -50,56 +50,43 @@ const config: VendureConfig = {
 };
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface EmailSender extends InjectableStrategy {
   send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
 
 
-## Members
 
 ### send
 
-{{< member-info kind="property" type="(email: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) =&#62; void | Promise&#60;void&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="(email: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) =&#62; void | Promise&#60;void&#62;"   />
 
 
-</div>
-<div class="symbol">
 
 
-# NodemailerEmailSender
+## NodemailerEmailSender
 
-{{< generation-info sourceFile="packages/email-plugin/src/nodemailer-email-sender.ts" sourceLine="38" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/nodemailer-email-sender.ts" sourceLine="38" packageName="@vendure/email-plugin" />
 
 Uses the configured transport to send the generated email.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class NodemailerEmailSender implements EmailSender {
   async send(email: EmailDetails, options: EmailTransportOptions) => ;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a>
 
 
-## Members
 
 ### send
 
-{{< member-info kind="method" type="(email: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(email: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) => "   />
 
 
-</div>

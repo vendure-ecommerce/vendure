@@ -1,19 +1,19 @@
 ---
 title: "Allow Decorator"
 weight: 10
-date: 2023-07-14T16:57:49.407Z
+date: 2023-07-20T13:56:14.140Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Allow Decorator
-<div class="symbol">
 
+## Allow
 
-# Allow
-
-{{< generation-info sourceFile="packages/core/src/api/decorators/allow.decorator.ts" sourceLine="38" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/api/decorators/allow.decorator.ts" sourceLine="38" packageName="@vendure/core" />
 
 Attaches metadata to the resolver defining which permissions are required to execute the
 operation, using one or more <a href='/typescript-api/common/permission#permission'>Permission</a> values.
@@ -43,4 +43,3 @@ For more information see [Understanding Permission.Owner](/docs/typescript-api/c
  }
 ```
 
-</div>

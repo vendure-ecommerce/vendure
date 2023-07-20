@@ -1,19 +1,19 @@
 ---
 title: "Custom Template Loader"
 weight: 10
-date: 2023-07-14T16:57:50.756Z
+date: 2023-07-20T13:56:16.967Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Custom Template Loader
-<div class="symbol">
 
+## TemplateLoader
 
-# TemplateLoader
-
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="390" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="390" packageName="@vendure/email-plugin" />
 
 Load an email template based on the given request context, type and template name
 and return the template as a string.
@@ -37,27 +37,20 @@ EmailPlugin.init({
 })
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface TemplateLoader {
   loadTemplate(injector: Injector, ctx: RequestContext, input: LoadTemplateInput): Promise<string>;
   loadPartials?(): Promise<Partial[]>;
 }
 ```
-## Members
 
 ### loadTemplate
 
-{{< member-info kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: LoadTemplateInput) => Promise&#60;string&#62;"  >}}
+<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: LoadTemplateInput) => Promise&#60;string&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### loadPartials
 
-{{< member-info kind="method" type="() => Promise&#60;Partial[]&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="() => Promise&#60;Partial[]&#62;"   />
 
 
-</div>

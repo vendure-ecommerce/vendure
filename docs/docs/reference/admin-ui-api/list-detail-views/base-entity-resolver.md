@@ -1,19 +1,19 @@
 ---
 title: "BaseEntityResolver"
 weight: 10
-date: 2023-07-14T16:57:51.047Z
+date: 2023-07-20T13:56:17.779Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# BaseEntityResolver
-<div class="symbol">
 
+## BaseEntityResolver
 
-# BaseEntityResolver
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/base-entity-resolver.ts" sourceLine="49" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-entity-resolver.ts" sourceLine="49" packageName="@vendure/admin-ui" />
 
 A base resolver for an entity detail route. Resolves to an observable of the given entity, or a "blank"
 version if the route id equals "create". Should be used together with details views which extend the
@@ -42,20 +42,14 @@ export class MyEntityResolver extends BaseEntityResolver<MyEntityFragment> {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class BaseEntityResolver<T> {
   constructor(router: Router, emptyEntity: T, entityStream: (id: string) => Observable<T | null | undefined>)
 }
 ```
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(router: Router, emptyEntity: T, entityStream: (id: string) =&#62; Observable&#60;T | null | undefined&#62;) => BaseEntityResolver"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(router: Router, emptyEntity: T, entityStream: (id: string) =&#62; Observable&#60;T | null | undefined&#62;) => BaseEntityResolver"   />
 
 
-</div>

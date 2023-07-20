@@ -107,7 +107,7 @@ function toHash(title: string): string {
 }
 
 function absOutputPath(outputPath: string): string {
-    return path.join(__dirname, '../../docs/content/reference/', outputPath);
+    return path.join(__dirname, '../../docs/docs/reference/', outputPath);
 }
 
 function getSourceFilePaths(sourceDirs: string[], excludePatterns: RegExp[] = []): string[] {

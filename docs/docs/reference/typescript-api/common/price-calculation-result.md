@@ -1,26 +1,24 @@
 ---
 title: "PriceCalculationResult"
 weight: 10
-date: 2023-07-14T16:57:49.454Z
+date: 2023-07-20T13:56:14.236Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# PriceCalculationResult
-<div class="symbol">
 
+## PriceCalculationResult
 
-# PriceCalculationResult
-
-{{< generation-info sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="171" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="171" packageName="@vendure/core" />
 
 The result of the price calculation from the <a href='/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a> or the
 <a href='/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type PriceCalculationResult = {
   price: number;
   priceIncludesTax: boolean;
@@ -28,17 +26,14 @@ type PriceCalculationResult = {
 ```
 ## Members
 
+
 ### price
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### priceIncludesTax
 
-{{< member-info kind="property" type="boolean"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="boolean"   />
 
 
-</div>

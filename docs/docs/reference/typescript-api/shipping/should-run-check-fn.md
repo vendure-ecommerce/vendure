@@ -1,19 +1,19 @@
 ---
 title: "ShouldRunCheckFn"
 weight: 10
-date: 2023-07-14T16:57:49.706Z
+date: 2023-07-20T13:56:14.774Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ShouldRunCheckFn
-<div class="symbol">
 
+## ShouldRunCheckFn
 
-# ShouldRunCheckFn
-
-{{< generation-info sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="143" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="143" packageName="@vendure/core" />
 
 An optional method which is used to decide whether to run the `check()` function.
 Returns a JSON-compatible object which is cached and compared between calls.
@@ -40,9 +40,7 @@ const optimizedChecker = new ShippingEligibilityChecker({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ShouldRunCheckFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
@@ -50,4 +48,3 @@ type ShouldRunCheckFn<T extends ConfigArgs> = (
     method: ShippingMethod
 ) => Json | Promise<Json>
 ```
-</div>

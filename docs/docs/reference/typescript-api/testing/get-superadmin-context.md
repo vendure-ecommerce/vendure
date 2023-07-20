@@ -1,32 +1,29 @@
 ---
 title: "GetSuperadminContext"
 weight: 10
-date: 2023-07-14T16:57:50.829Z
+date: 2023-07-20T13:56:17.107Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# getSuperadminContext
-<div class="symbol">
 
+## getSuperadminContext
 
-# getSuperadminContext
-
-{{< generation-info sourceFile="packages/testing/src/utils/get-superadmin-context.ts" sourceLine="11" packageName="@vendure/testing">}}
+<GenerationInfo sourceFile="packages/testing/src/utils/get-superadmin-context.ts" sourceLine="11" packageName="@vendure/testing" />
 
 Creates a <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> configured for the default Channel with the activeUser set
 as the superadmin user. Useful for populating data.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function getSuperadminContext(app: INestApplicationContext): Promise<RequestContext>
 ```
-## Parameters
+Parameters
 
 ### app
 
-{{< member-info kind="parameter" type="INestApplicationContext" >}}
+<MemberInfo kind="parameter" type="INestApplicationContext" />
 
-</div>

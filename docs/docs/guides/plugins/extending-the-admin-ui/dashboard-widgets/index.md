@@ -20,7 +20,7 @@ To notify administrators about new reviews that need approval, we'll create a da
 
 A dashboard widget is an Angular component. This example features a simplified UI, just to illustrate the overall strucutre:
 
-```TypeScript
+```ts
 import { Component, NgModule, OnInit } from '@angular/core';
 import { DataService, SharedModule } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
@@ -80,7 +80,7 @@ Note that we also need to define an `NgModule` for this component. This is becau
 
 Our widget now needs to be registered as part of a [shared module]({{< relref "extending-the-admin-ui" >}}#lazy-vs-shared-modules):
 
-```TypeScript
+```ts
 import { NgModule } from '@angular/core';
 import { registerDashboardWidget } from '@vendure/admin-ui/core';
 import { reviewPermission } from '../constants';
@@ -114,7 +114,7 @@ Once registered, the reviews widget will be available to select by administrator
 
 While administrators can customize which widgets they want to display on the dashboard, and the layout of those widgets, you can also set a default layout:
 
-```TypeScript
+```ts
 import { NgModule } from '@angular/core';
 import { registerDashboardWidget, setDashboardWidgetLayout } from '@vendure/admin-ui/core';
 import { reviewPermission } from '../constants';
@@ -148,7 +148,7 @@ Sometimes you may wish to alter the permissions settings of the default widgets 
 For example, the "order summary" widget has a default permission requirement of "ReadOrder". If you want to limit the availability to e.g. the SuperAdmin role, you can do so
 by overriding the definition like this:
 
-```TypeScript
+```ts
 import { NgModule } from '@angular/core';
 import { registerDashboardWidget } from '@vendure/admin-ui/core';
 import { OrderSummaryWidgetComponent } from '@vendure/admin-ui/dashboard';

@@ -55,7 +55,7 @@ The taxes on shipping is calculated by the [ShippingCalculator]({{< relref "ship
 
 This example shows the configuration properties related to taxes:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   taxOptions: {
     taxZoneStrategy: new DefaultTaxZoneStrategy(),

@@ -1,25 +1,23 @@
 ---
 title: "InspectableJobQueueStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.553Z
+date: 2023-07-20T13:56:14.450Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# InspectableJobQueueStrategy
-<div class="symbol">
 
+## InspectableJobQueueStrategy
 
-# InspectableJobQueueStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/job-queue/inspectable-job-queue-strategy.ts" sourceLine="14" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/job-queue/inspectable-job-queue-strategy.ts" sourceLine="14" packageName="@vendure/core" />
 
 Defines a job queue strategy that can be inspected using the default admin ui
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface InspectableJobQueueStrategy extends JobQueueStrategy {
   findOne(id: ID): Promise<Job | undefined>;
   findMany(options?: JobListOptions): Promise<PaginatedList<Job>>;
@@ -28,46 +26,38 @@ interface InspectableJobQueueStrategy extends JobQueueStrategy {
   cancelJob(jobId: ID): Promise<Job | undefined>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>
 
 
-## Members
 
 ### findOne
 
-{{< member-info kind="method" type="(id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"  >}}
+<MemberInfo kind="method" type="(id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
-{{< member-description >}}Returns a job by its id.{{< /member-description >}}
-
+Returns a job by its id.
 ### findMany
 
-{{< member-info kind="method" type="(options?: JobListOptions) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;"  >}}
+<MemberInfo kind="method" type="(options?: JobListOptions) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;"   />
 
-{{< member-description >}}Returns a list of jobs according to the specified options.{{< /member-description >}}
-
+Returns a list of jobs according to the specified options.
 ### findManyById
 
-{{< member-info kind="method" type="(ids: <a href='/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>[]&#62;"  >}}
+<MemberInfo kind="method" type="(ids: <a href='/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>[]&#62;"   />
 
-{{< member-description >}}Returns an array of jobs for the given ids.{{< /member-description >}}
-
+Returns an array of jobs for the given ids.
 ### removeSettledJobs
 
-{{< member-info kind="method" type="(queueNames?: string[], olderThan?: Date) => Promise&#60;number&#62;"  >}}
+<MemberInfo kind="method" type="(queueNames?: string[], olderThan?: Date) => Promise&#60;number&#62;"   />
 
-{{< member-description >}}Remove all settled jobs in the specified queues older than the given date.
+Remove all settled jobs in the specified queues older than the given date.
 If no queueName is passed, all queues will be considered. If no olderThan
 date is passed, all jobs older than the current time will be removed.
 
-Returns a promise of the number of jobs removed.{{< /member-description >}}
-
+Returns a promise of the number of jobs removed.
 ### cancelJob
 
-{{< member-info kind="method" type="(jobId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(jobId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 
-</div>

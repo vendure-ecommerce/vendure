@@ -1,19 +1,19 @@
 ---
 title: "Helpers"
 weight: 10
-date: 2023-07-14T16:57:51.349Z
+date: 2023-07-20T13:56:18.777Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# helpers
-<div class="symbol">
 
+## setBranding
 
-# setBranding
-
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/helpers.ts" sourceLine="26" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/helpers.ts" sourceLine="26" packageName="@vendure/ui-devkit" />
 
 A helper function to simplify the process of setting custom branding images.
 
@@ -34,15 +34,12 @@ compileUiExtensions({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function setBranding(options: BrandingOptions): StaticAssetExtension
 ```
-## Parameters
+Parameters
 
 ### options
 
-{{< member-info kind="parameter" type="BrandingOptions" >}}
+<MemberInfo kind="parameter" type="BrandingOptions" />
 
-</div>

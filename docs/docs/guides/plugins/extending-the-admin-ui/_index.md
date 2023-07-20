@@ -36,7 +36,7 @@ As a rule, modules defining new routes should be lazily loaded (so that the code
 
 When you are developing your Admin UI extension, you can set the `devMode` option to `true` which will compile the Admin UI app in development mode, and recompile and auto-refresh the browser on any changes to your extension source files.
 
-```TypeScript
+```ts
 // vendure-config.ts
 plugins: [
   AdminUiPlugin.init({
@@ -56,7 +56,7 @@ plugins: [
 
 Although the examples so far all use the `compileUiExtensions` function in conjunction with the AdminUiPlugin, it is also possible to use it on its own:
 
-```TypeScript
+```ts
 // compile-admin-ui.ts
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import * as path from 'path';
@@ -78,7 +78,7 @@ yarn ts-node compile-admin-ui.ts
 
 Once complete, the production-ready app bundle will be output to `admin-ui/dist`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
 
-```TypeScript
+```ts
 // project/vendure-config.ts
 plugins: [
   AdminUiPlugin.init({

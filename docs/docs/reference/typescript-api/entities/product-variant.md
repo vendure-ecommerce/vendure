@@ -1,28 +1,26 @@
 ---
 title: "ProductVariant"
 weight: 10
-date: 2023-07-14T16:57:49.956Z
+date: 2023-07-20T13:56:15.309Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ProductVariant
-<div class="symbol">
 
+## ProductVariant
 
-# ProductVariant
-
-{{< generation-info sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="37" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="37" packageName="@vendure/core" />
 
 A ProductVariant represents a single stock keeping unit (SKU) in the store's inventory.
 Whereas a <a href='/typescript-api/entities/product#product'>Product</a> is a "container" of variants, the variant itself holds the
 data on price, tax category etc. When one adds items to their cart, they are adding
 ProductVariants, not Products.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ProductVariant extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable, ChannelAware {
   constructor(input?: DeepPartial<ProductVariant>)
   @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
@@ -92,12 +90,12 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     channels: Channel[];
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
  * HasCustomFields
@@ -105,177 +103,146 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
  * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;) => ProductVariant"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;) => ProductVariant"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### deletedAt
 
-{{< member-info kind="property" type="Date | null"  >}}
+<MemberInfo kind="property" type="Date | null"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### name
 
-{{< member-info kind="property" type="LocaleString"  >}}
+<MemberInfo kind="property" type="LocaleString"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### enabled
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### sku
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### listPrice
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### listPriceIncludesTax
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### currencyCode
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### price
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### priceWithTax
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### taxRateApplied
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### featuredAsset
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### assets
 
-{{< member-info kind="property" type="ProductVariantAsset[]"  >}}
+<MemberInfo kind="property" type="ProductVariantAsset[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### taxCategory
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### productVariantPrices
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### product
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/product#product'>Product</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/product#product'>Product</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### productId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### outOfStockThreshold
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}Specifies the value of stockOnHand at which the ProductVariant is considered
-out of stock.{{< /member-description >}}
-
+Specifies the value of stockOnHand at which the ProductVariant is considered
+out of stock.
 ### useGlobalOutOfStockThreshold
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}When true, the `outOfStockThreshold` value will be taken from the GlobalSettings and the
-value set on this ProductVariant will be ignored.{{< /member-description >}}
-
+When true, the `outOfStockThreshold` value will be taken from the GlobalSettings and the
+value set on this ProductVariant will be ignored.
 ### trackInventory
 
-{{< member-info kind="property" type="GlobalFlag"  >}}
+<MemberInfo kind="property" type="GlobalFlag"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockLevels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockMovements
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### options
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### facetValues
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomProductVariantFields"  >}}
+<MemberInfo kind="property" type="CustomProductVariantFields"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### collections
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
-</div>

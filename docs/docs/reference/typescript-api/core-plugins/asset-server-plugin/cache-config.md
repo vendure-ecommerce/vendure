@@ -1,25 +1,23 @@
 ---
 title: "CacheConfig"
 weight: 10
-date: 2023-07-14T16:57:50.707Z
+date: 2023-07-20T13:56:16.863Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CacheConfig
-<div class="symbol">
 
+## CacheConfig
 
-# CacheConfig
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="52" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="52" packageName="@vendure/asset-server-plugin" />
 
 A configuration option for the Cache-Control header in the AssetServerPlugin asset response.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type CacheConfig = {
   maxAge: number;
   restriction?: 'public' | 'private';
@@ -27,18 +25,15 @@ type CacheConfig = {
 ```
 ## Members
 
+
 ### maxAge
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The max-age=N response directive indicates that the response remains fresh until N seconds after the response is generated.{{< /member-description >}}
-
+The max-age=N response directive indicates that the response remains fresh until N seconds after the response is generated.
 ### restriction
 
-{{< member-info kind="property" type="'public' | 'private'"  >}}
+<MemberInfo kind="property" type="'public' | 'private'"   />
 
-{{< member-description >}}The `private` response directive indicates that the response can be stored only in a private cache (e.g. local caches in browsers).
-The `public` response directive indicates that the response can be stored in a shared cache.{{< /member-description >}}
-
-
-</div>
+The `private` response directive indicates that the response can be stored only in a private cache (e.g. local caches in browsers).
+The `public` response directive indicates that the response can be stored in a shared cache.

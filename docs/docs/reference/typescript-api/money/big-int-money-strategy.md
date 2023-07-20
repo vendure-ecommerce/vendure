@@ -1,19 +1,19 @@
 ---
 title: "BigIntMoneyStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.537Z
+date: 2023-07-20T13:56:14.416Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# BigIntMoneyStrategy
-<div class="symbol">
 
+## BigIntMoneyStrategy
 
-# BigIntMoneyStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/entity/bigint-money-strategy.ts" sourceLine="18" packageName="@vendure/core" since="2.0.0">}}
+<GenerationInfo sourceFile="packages/core/src/config/entity/bigint-money-strategy.ts" sourceLine="18" packageName="@vendure/core" since="2.0.0" />
 
 A <a href='/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a> that stores monetary values as a `bigint` type in the database, which
 allows values up to ~9 quadrillion to be stored (limited by JavaScript's `MAX_SAFE_INTEGER` limit).
@@ -21,9 +21,7 @@ allows values up to ~9 quadrillion to be stored (limited by JavaScript's `MAX_SA
 This strategy also slightly differs in the way rounding is performed, with rounding being done _after_
 multiplying the unit price, rather than before (as is the case with the <a href='/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class BigIntMoneyStrategy implements MoneyStrategy {
   readonly readonly moneyColumnOptions: ColumnOptions = {
         type: 'bigint',
@@ -49,24 +47,19 @@ class BigIntMoneyStrategy implements MoneyStrategy {
   round(value: number, quantity:  = 1) => number;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>
 
 
-## Members
 
 ### moneyColumnOptions
 
-{{< member-info kind="property" type="ColumnOptions"  >}}
+<MemberInfo kind="property" type="ColumnOptions"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### round
 
-{{< member-info kind="method" type="(value: number, quantity:  = 1) => number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(value: number, quantity:  = 1) => number"   />
 
 
-</div>

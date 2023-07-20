@@ -1,50 +1,42 @@
 ---
 title: "WorkerHealthCheckConfig"
 weight: 10
-date: 2023-07-14T16:57:50.652Z
+date: 2023-07-20T13:56:16.721Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# WorkerHealthCheckConfig
-<div class="symbol">
 
+## WorkerHealthCheckConfig
 
-# WorkerHealthCheckConfig
-
-{{< generation-info sourceFile="packages/core/src/worker/worker-health.service.ts" sourceLine="14" packageName="@vendure/core" since="1.2.0">}}
+<GenerationInfo sourceFile="packages/core/src/worker/worker-health.service.ts" sourceLine="14" packageName="@vendure/core" since="1.2.0" />
 
 Specifies the configuration for the Worker's HTTP health check endpoint.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface WorkerHealthCheckConfig {
   port: number;
   hostname?: string;
   route?: string;
 }
 ```
-## Members
 
 ### port
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The port on which the worker will listen{{< /member-description >}}
-
+The port on which the worker will listen
 ### hostname
 
-{{< member-info kind="property" type="string" default="'localhost'"  >}}
+<MemberInfo kind="property" type="string" default="'localhost'"   />
 
-{{< member-description >}}The hostname{{< /member-description >}}
-
+The hostname
 ### route
 
-{{< member-info kind="property" type="string" default="'/health'"  >}}
+<MemberInfo kind="property" type="string" default="'/health'"   />
 
-{{< member-description >}}The route at which the health check is available.{{< /member-description >}}
-
-
-</div>
+The route at which the health check is available.

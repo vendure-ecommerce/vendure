@@ -1,50 +1,46 @@
 ---
 title: "ConfigurableOperationDefOptions"
 weight: 10
-date: 2023-07-14T16:57:49.422Z
+date: 2023-07-20T13:56:14.173Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ConfigurableOperationDefOptions
-<div class="symbol">
 
+## ConfigurableOperationDefOptions
 
-# ConfigurableOperationDefOptions
-
-{{< generation-info sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="230" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="230" packageName="@vendure/core" />
 
 Common configuration options used when creating a new instance of a
 <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends InjectableStrategy {
   code: string;
   args: T;
   description: LocalizedStringArray;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
 
 
-## Members
 
 ### code
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}A unique code used to identify this operation.{{< /member-description >}}
-
+A unique code used to identify this operation.
 ### args
 
-{{< member-info kind="property" type="T"  >}}
+<MemberInfo kind="property" type="T"   />
 
-{{< member-description >}}Optional provider-specific arguments which, when specified, are
+Optional provider-specific arguments which, when specified, are
 editable in the admin-ui. For example, args could be used to store an API key
 for a payment provider service.
 
@@ -56,13 +52,9 @@ args: {
 }
 ```
 
-See <a href='/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a> for available configuration options.{{< /member-description >}}
-
+See <a href='/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a> for available configuration options.
 ### description
 
-{{< member-info kind="property" type="<a href='/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
 
-{{< member-description >}}A human-readable description for the operation method.{{< /member-description >}}
-
-
-</div>
+A human-readable description for the operation method.

@@ -66,7 +66,7 @@ In order to correctly split the Order later, we need to assign each added OrderL
 
 The following logic will run any time the `addItemToOrder` mutation is executed from our storefront:
 
-```TypeScript
+```ts
 export class MultivendorSellerStrategy implements OrderSellerStrategy {
   // other properties omitted for brevity   
     
@@ -96,7 +96,7 @@ When it comes time to choose a ShippingMethod for the Order, we need to ensure t
 
 Here's how we do it in the example plugin:
 
-```TypeScript
+```ts
 export const multivendorShippingEligibilityChecker = new ShippingEligibilityChecker({
   // other properties omitted for brevity   
     
@@ -140,7 +140,7 @@ Now we need a way to assign the correct method to each line in an Order. This is
 
 We will again be relying on the `sellerChannelId` property of the OrderLines to determine which ShippingMethod to assign to each line. Here's how we do it in the example plugin:
 
-```TypeScript
+```ts
 export class MultivendorShippingLineAssignmentStrategy implements ShippingLineAssignmentStrategy {
   // other properties omitted for brevity   
     

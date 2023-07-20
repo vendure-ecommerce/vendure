@@ -13,7 +13,7 @@ If you need lower-level access to database changes that you get with the [Vendur
 
 The simplest way to register a subscriber is to pass it to the `dbConnectionOptions.subscribers` array:
 
-```TypeScript
+```ts
 import { Product, VendureConfig } from '@vendure/core';
 import { EntitySubscriberInterface, EventSubscriber, UpdateEvent } from 'typeorm';
 
@@ -44,7 +44,7 @@ If you need to make use of providers in your subscriber class, you'll need to us
 
 By defining the subscriber as an injectable provider, and passing it to a Vendure plugin, you can take advantage of Nest's dependency injection inside the subscriber methods.
 
-```TypeScript
+```ts
 import {
   PluginCommonModule,
   Product,

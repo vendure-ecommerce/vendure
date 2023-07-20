@@ -14,7 +14,7 @@ Keep sensitive information or context-dependent settings in environment variable
 
 The default `@vendure/create` project scaffold makes use of environment variables already. For example:
 
-```TypeScript
+```ts
 const IS_DEV = process.env.APP_ENV === 'dev';
 ```
 
@@ -28,7 +28,7 @@ If you are using [Docker or Kubernetes]({{< relref "using-docker" >}}), they inc
 
 Ensure you set the superadmin credentials to something other than the default of `superadmin:superadmin`. Use your hosting platform's environment variables to set a **strong** password for the Superadmin account.
 
-```TypeScript
+```ts
 import { VendureConfig } from '@vendure/core';
 
 export const config: VendureConfig = {
@@ -59,7 +59,7 @@ yarn add @vendure/harden-plugin
 
 Then add it to your VendureConfig:
 
-```TypeScript
+```ts
 import { VendureConfig } from '@vendure/core';
 import { HardenPlugin } from '@vendure/harden-plugin';
 
@@ -87,7 +87,7 @@ By default, Vendure uses auto-increment integer IDs as entity primary keys. Whil
 
 For this reason you should consider using the UuidIdStrategy for production.
 
-```TypeScript
+```ts
 import { UuidIdStrategy, VendureConfig } from '@vendure/core';
   
 export const config: VendureConfig = {

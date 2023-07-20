@@ -9,7 +9,7 @@ The VendureConfig object defines all aspects of how a Vendure server works. A pl
 
 This example shows how to modify the VendureConfig, in this case by adding a custom field to allow product ratings.
 
-```TypeScript
+```ts
 // my-plugin.ts
 import { VendurePlugin } from '@vendure/core';
 

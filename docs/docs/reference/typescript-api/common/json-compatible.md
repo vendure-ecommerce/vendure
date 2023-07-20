@@ -1,26 +1,24 @@
 ---
 title: "JsonCompatible"
 weight: 10
-date: 2023-07-14T16:57:50.655Z
+date: 2023-07-20T13:56:16.730Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# JsonCompatible
-<div class="symbol">
 
+## JsonCompatible
 
-# JsonCompatible
-
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="51" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="51" packageName="@vendure/common" />
 
 A type representing JSON-compatible values.
 From https://github.com/microsoft/TypeScript/issues/1897#issuecomment-580962081
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type JsonCompatible<T> = {
     [P in keyof T]: T[P] extends Json
         ? T[P]
@@ -29,4 +27,3 @@ type JsonCompatible<T> = {
         : JsonCompatible<T[P]>;
 }
 ```
-</div>

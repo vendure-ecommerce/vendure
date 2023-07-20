@@ -1,35 +1,32 @@
 ---
 title: "RoundMoney"
 weight: 10
-date: 2023-07-14T16:57:49.451Z
+date: 2023-07-20T13:56:14.227Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# roundMoney
-<div class="symbol">
 
+## roundMoney
 
-# roundMoney
-
-{{< generation-info sourceFile="packages/core/src/common/round-money.ts" sourceLine="13" packageName="@vendure/core" since="2.0.0">}}
+<GenerationInfo sourceFile="packages/core/src/common/round-money.ts" sourceLine="13" packageName="@vendure/core" since="2.0.0" />
 
 Rounds a monetary value according to the configured <a href='/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function roundMoney(value: number, quantity:  = 1): number
 ```
-## Parameters
+Parameters
 
 ### value
 
-{{< member-info kind="parameter" type="number" >}}
+<MemberInfo kind="parameter" type="number" />
 
 ### quantity
 
-{{< member-info kind="parameter" type="" >}}
+<MemberInfo kind="parameter" type="" />
 
-</div>

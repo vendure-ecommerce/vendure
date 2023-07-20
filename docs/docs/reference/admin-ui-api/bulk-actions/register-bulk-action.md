@@ -1,19 +1,19 @@
 ---
 title: "RegisterBulkAction"
 weight: 10
-date: 2023-07-14T16:57:51.088Z
+date: 2023-07-20T13:56:17.913Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# registerBulkAction
-<div class="symbol">
 
+## registerBulkAction
 
-# registerBulkAction
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/register-bulk-action.ts" sourceLine="56" packageName="@vendure/admin-ui" since="1.8.0">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/register-bulk-action.ts" sourceLine="56" packageName="@vendure/admin-ui" since="1.8.0" />
 
 Registers a custom <a href='/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a> which can be invoked from the bulk action menu
 of any supported list view.
@@ -62,15 +62,12 @@ import { ModalService, registerBulkAction, SharedModule } from '@vendure/admin-u
 export class MyUiExtensionModule {}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function registerBulkAction(bulkAction: BulkAction): FactoryProvider
 ```
-## Parameters
+Parameters
 
 ### bulkAction
 
-{{< member-info kind="parameter" type="<a href='/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a>" >}}
+<MemberInfo kind="parameter" type="<a href='/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a>" />
 
-</div>

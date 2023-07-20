@@ -15,7 +15,7 @@ Vendure ships with a [defaultOrderProcess]({{< relref "order-process" >}}#defaul
 
 This can be done by creating a custom version of the default process using the [configureDefaultOrderProcess]({{< relref "order-process" >}}#configuredefaultorderprocess) function, and then passing it to the [`OrderOptions.process`]({{< relref "order-options" >}}#process) config property.
 
-```TypeScript
+```ts
 import { configureDefaultOrderProcess, VendureConfig } from '\@vendure/core';
 
 const myCustomOrderProcess = configureDefaultOrderProcess({
@@ -56,7 +56,7 @@ AddingItems -> ValidatingCustomer -> ArrangingPayment
 
 Here's how we would define the new state:
 
-```TypeScript
+```ts
 // customer-validation-process.ts
 import { OrderProcess } from '@vendure/core';
 
@@ -80,7 +80,7 @@ This object means:
 
 And then add this configuration to our main VendureConfig:
 
-```TypeScript
+```ts
 // vendure-config.ts
 import { defaultOrderProcess, VendureConfig } from '@vendure/core';
 import { customerValidationProcess } from './customer-validation-process';
@@ -96,7 +96,7 @@ export const config: VendureConfig = {
 Note that we also include the `defaultOrderProcess` in the array, otherwise we will lose all the default states and transitions.
 
  To add multiple new States you need to extend the generic type like this:
- ```TypeScript
+ ```ts
 import { OrderProcess } from '@vendure/core';
 
 export const customerValidationProcess: OrderProcess<'ValidatingCustomer'|'AnotherState'> = {...}
@@ -109,7 +109,7 @@ Now we have defined our new `ValidatingCustomer` state, but there is as yet noth
 
 This allows us to perform our custom logic and potentially prevent the transition from occurring. We will also assume that we have a provider named `TaxIdService` available which contains the logic to validate a tax ID.
 
-```TypeScript
+```ts
 // customer-validation-process.ts
 
 // We declare this in the outer scope and can then use it 
@@ -152,7 +152,7 @@ const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
 
 To make your custom states compatible with standard services you should declare your new states in the following way:
 
-```TypeScript
+```ts
 // types.ts
 import { CustomOrderStates } from '@vendure/core';
 

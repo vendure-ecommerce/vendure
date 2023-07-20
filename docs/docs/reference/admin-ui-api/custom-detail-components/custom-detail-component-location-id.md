@@ -1,25 +1,23 @@
 ---
 title: "CustomDetailComponentLocationId"
 weight: 10
-date: 2023-07-14T16:57:51.071Z
+date: 2023-07-20T13:56:17.857Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CustomDetailComponentLocationId
-<div class="symbol">
 
+## CustomDetailComponentLocationId
 
-# CustomDetailComponentLocationId
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="111" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="111" packageName="@vendure/admin-ui" />
 
 The valid locations for embedding a <a href='/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type CustomDetailComponentLocationId = | 'administrator-profile'
     | 'administrator-detail'
     | 'channel-detail'
@@ -27,7 +25,6 @@ type CustomDetailComponentLocationId = | 'administrator-profile'
     | 'country-detail'
     | 'customer-detail'
     | 'customer-group-detail'
-    | 'draft-order-detail'
     | 'facet-detail'
     | 'global-settings-detail'
     | 'order-detail'
@@ -42,4 +39,3 @@ type CustomDetailComponentLocationId = | 'administrator-profile'
     | 'tax-rate-detail'
     | 'zone-detail'
 ```
-</div>

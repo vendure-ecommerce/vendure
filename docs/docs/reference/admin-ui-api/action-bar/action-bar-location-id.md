@@ -1,25 +1,22 @@
 ---
 title: "ActionBarLocationId"
 weight: 10
-date: 2023-07-14T16:57:51.071Z
+date: 2023-07-20T13:56:17.856Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ActionBarLocationId
-<div class="symbol">
 
+## ActionBarLocationId
 
-# ActionBarLocationId
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="103" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="103" packageName="@vendure/admin-ui" />
 
 The valid locationIds for registering action bar items.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ActionBarLocationId = PageLocationId
 ```
-</div>

@@ -1,19 +1,19 @@
 ---
 title: "PaymentMethodHandler"
 weight: 10
-date: 2023-07-14T16:57:49.665Z
+date: 2023-07-20T13:56:14.671Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# PaymentMethodHandler
-<div class="symbol">
 
+## PaymentMethodHandler
 
-# PaymentMethodHandler
-
-{{< generation-info sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="354" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="354" packageName="@vendure/core" />
 
 A PaymentMethodHandler contains the code which is used to generate a Payment when a call to the
 `addPaymentToOrder` mutation is made. It contains any necessary steps of interfacing with a
@@ -68,25 +68,19 @@ export const examplePaymentHandler = new PaymentMethodHandler({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
   constructor(config: PaymentMethodConfigOptions<T>)
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(config: <a href='/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a>&#60;T&#62;) => PaymentMethodHandler"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(config: <a href='/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a>&#60;T&#62;) => PaymentMethodHandler"   />
 
 
-</div>

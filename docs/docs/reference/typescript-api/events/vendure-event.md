@@ -1,43 +1,36 @@
 ---
 title: "VendureEvent"
 weight: 10
-date: 2023-07-14T16:57:50.127Z
+date: 2023-07-20T13:56:15.629Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# VendureEvent
-<div class="symbol">
 
+## VendureEvent
 
-# VendureEvent
-
-{{< generation-info sourceFile="packages/core/src/event-bus/vendure-event.ts" sourceLine="7" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/event-bus/vendure-event.ts" sourceLine="7" packageName="@vendure/core" />
 
 The base class for all events used by the EventBus system.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class VendureEvent {
   public readonly public readonly createdAt: Date;
   constructor()
 }
 ```
-## Members
 
 ### createdAt
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="() => VendureEvent"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="() => VendureEvent"   />
 
 
-</div>

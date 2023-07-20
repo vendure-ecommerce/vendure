@@ -1,19 +1,19 @@
 ---
 title: "BullMQJobQueuePlugin"
 weight: 10
-date: 2023-07-14T16:57:50.785Z
+date: 2023-07-20T13:56:17.019Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# BullMQJobQueuePlugin
-<div class="symbol">
 
+## BullMQJobQueuePlugin
 
-# BullMQJobQueuePlugin
-
-{{< generation-info sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="102" packageName="@vendure/job-queue-plugin">}}
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="102" packageName="@vendure/job-queue-plugin" />
 
 This plugin is a drop-in replacement of the DefaultJobQueuePlugin, which implements a push-based
 job queue strategy built on top of the popular [BullMQ](https://github.com/taskforcesh/bullmq) library.
@@ -105,27 +105,20 @@ const config: VendureConfig = {
 };
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class BullMQJobQueuePlugin {
   static static options: BullMQPluginOptions;
   static init(options: BullMQPluginOptions) => ;
 }
 ```
-## Members
 
 ### options
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>) => "  >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>) => "   />
 
-{{< member-description >}}Configures the plugin.{{< /member-description >}}
-
-
-</div>
+Configures the plugin.

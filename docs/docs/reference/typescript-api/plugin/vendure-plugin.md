@@ -1,19 +1,19 @@
 ---
 title: "VendurePlugin"
 weight: 10
-date: 2023-07-14T16:57:50.216Z
+date: 2023-07-20T13:56:15.826Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# VendurePlugin
-<div class="symbol">
 
+## VendurePlugin
 
-# VendurePlugin
-
-{{< generation-info sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="151" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="151" packageName="@vendure/core" />
 
 The VendurePlugin decorator is a means of configuring and/or extending the functionality of the Vendure server. A Vendure plugin is
 a [Nestjs Module](https://docs.nestjs.com/modules), with optional additional metadata defining things like extensions to the GraphQL API, custom
@@ -47,15 +47,12 @@ export class ProductsController {
 export class RestPlugin {}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecorator
 ```
-## Parameters
+Parameters
 
 ### pluginMetadata
 
-{{< member-info kind="parameter" type="<a href='/typescript-api/plugin/vendure-plugin-metadata#vendurepluginmetadata'>VendurePluginMetadata</a>" >}}
+<MemberInfo kind="parameter" type="<a href='/typescript-api/plugin/vendure-plugin-metadata#vendurepluginmetadata'>VendurePluginMetadata</a>" />
 
-</div>

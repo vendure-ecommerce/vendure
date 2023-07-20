@@ -1,26 +1,24 @@
 ---
 title: "VendureConfig"
 weight: 10
-date: 2023-07-14T16:57:49.771Z
+date: 2023-07-20T13:56:14.916Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# VendureConfig
-<div class="symbol">
 
+## VendureConfig
 
-# VendureConfig
-
-{{< generation-info sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1012" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1012" packageName="@vendure/core" />
 
 All possible configuration options are defined by the
 [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface VendureConfig {
   apiOptions: ApiOptions;
   assetOptions?: AssetOptions;
@@ -44,136 +42,113 @@ interface VendureConfig {
   systemOptions?: SystemOptions;
 }
 ```
-## Members
 
 ### apiOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>"   />
 
-{{< member-description >}}Configuration for the GraphQL APIs, including hostname, port, CORS settings,
-middleware etc.{{< /member-description >}}
-
+Configuration for the GraphQL APIs, including hostname, port, CORS settings,
+middleware etc.
 ### assetOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/assets/asset-options#assetoptions'>AssetOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/assets/asset-options#assetoptions'>AssetOptions</a>"   />
 
-{{< member-description >}}Configuration for the handling of Assets.{{< /member-description >}}
-
+Configuration for the handling of Assets.
 ### authOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/auth/auth-options#authoptions'>AuthOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/auth/auth-options#authoptions'>AuthOptions</a>"   />
 
-{{< member-description >}}Configuration for authorization.{{< /member-description >}}
-
+Configuration for authorization.
 ### catalogOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/products-stock/catalog-options#catalogoptions'>CatalogOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/products-stock/catalog-options#catalogoptions'>CatalogOptions</a>"   />
 
-{{< member-description >}}Configuration for Products and Collections.{{< /member-description >}}
-
+Configuration for Products and Collections.
 ### customFields
 
-{{< member-info kind="property" type="<a href='/typescript-api/custom-fields/#customfields'>CustomFields</a>" default="{}"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/custom-fields/#customfields'>CustomFields</a>" default="{}"   />
 
-{{< member-description >}}Defines custom fields which can be used to extend the built-in entities.{{< /member-description >}}
-
+Defines custom fields which can be used to extend the built-in entities.
 ### dbConnectionOptions
 
-{{< member-info kind="property" type="DataSourceOptions"  >}}
+<MemberInfo kind="property" type="DataSourceOptions"   />
 
-{{< member-description >}}The connection options used by TypeORM to connect to the database.
+The connection options used by TypeORM to connect to the database.
 See the [TypeORM documentation](https://typeorm.io/#/connection-options) for a
-full description of all available options.{{< /member-description >}}
-
+full description of all available options.
 ### defaultChannelToken
 
-{{< member-info kind="property" type="string | null" default="null"  >}}
+<MemberInfo kind="property" type="string | null" default="null"   />
 
-{{< member-description >}}The token for the default channel. If not specified, a token
-will be randomly generated.{{< /member-description >}}
-
+The token for the default channel. If not specified, a token
+will be randomly generated.
 ### defaultLanguageCode
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>" default="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>" default="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"   />
 
-{{< member-description >}}The default languageCode of the app.{{< /member-description >}}
-
+The default languageCode of the app.
 ### entityIdStrategy
 
-{{< member-info kind="property" type="<a href='/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;" default="<a href='/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;" default="<a href='/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>"   />
 
-{{< member-description >}}Defines the strategy used for both storing the primary keys of entities
+Defines the strategy used for both storing the primary keys of entities
 in the database, and the encoding & decoding of those ids when exposing
 entities via the API. The default uses a simple auto-increment integer
-strategy.{{< /member-description >}}
-
+strategy.
 ### entityOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### importExportOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/import-export/import-export-options#importexportoptions'>ImportExportOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/import-export/import-export-options#importexportoptions'>ImportExportOptions</a>"   />
 
-{{< member-description >}}Configuration settings for data import and export.{{< /member-description >}}
-
+Configuration settings for data import and export.
 ### orderOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/orders/order-options#orderoptions'>OrderOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/orders/order-options#orderoptions'>OrderOptions</a>"   />
 
-{{< member-description >}}Configuration settings governing how orders are handled.{{< /member-description >}}
-
+Configuration settings governing how orders are handled.
 ### paymentOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/payment/payment-options#paymentoptions'>PaymentOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/payment/payment-options#paymentoptions'>PaymentOptions</a>"   />
 
-{{< member-description >}}Configures available payment processing methods.{{< /member-description >}}
-
+Configures available payment processing methods.
 ### plugins
 
-{{< member-info kind="property" type="Array&#60;DynamicModule | Type&#60;any&#62;&#62;" default="[]"  >}}
+<MemberInfo kind="property" type="Array&#60;DynamicModule | Type&#60;any&#62;&#62;" default="[]"   />
 
-{{< member-description >}}An array of plugins.{{< /member-description >}}
-
+An array of plugins.
 ### promotionOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/promotions/promotion-options#promotionoptions'>PromotionOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-options#promotionoptions'>PromotionOptions</a>"   />
 
-{{< member-description >}}Configures the Conditions and Actions available when creating Promotions.{{< /member-description >}}
-
+Configures the Conditions and Actions available when creating Promotions.
 ### shippingOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/shipping/shipping-options#shippingoptions'>ShippingOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/shipping/shipping-options#shippingoptions'>ShippingOptions</a>"   />
 
-{{< member-description >}}Configures the available checkers and calculators for ShippingMethods.{{< /member-description >}}
-
+Configures the available checkers and calculators for ShippingMethods.
 ### logger
 
-{{< member-info kind="property" type="<a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>" default="<a href='/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>" default="<a href='/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a>"   />
 
-{{< member-description >}}Provide a logging service which implements the <a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> interface.
+Provide a logging service which implements the <a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> interface.
 Note that the logging of SQL queries is controlled separately by the
-`dbConnectionOptions.logging` property.{{< /member-description >}}
-
+`dbConnectionOptions.logging` property.
 ### taxOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/tax/tax-options#taxoptions'>TaxOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/tax/tax-options#taxoptions'>TaxOptions</a>"   />
 
-{{< member-description >}}Configures how taxes are calculated on products.{{< /member-description >}}
-
+Configures how taxes are calculated on products.
 ### jobQueueOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/job-queue/job-queue-options#jobqueueoptions'>JobQueueOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/job-queue/job-queue-options#jobqueueoptions'>JobQueueOptions</a>"   />
 
-{{< member-description >}}Configures how the job queue is persisted and processed.{{< /member-description >}}
-
+Configures how the job queue is persisted and processed.
 ### systemOptions
 
-{{< member-info kind="property" type="<a href='/typescript-api/configuration/system-options#systemoptions'>SystemOptions</a>"  since="1.6.0" >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/configuration/system-options#systemoptions'>SystemOptions</a>"  since="1.6.0"  />
 
-{{< member-description >}}Configures system options{{< /member-description >}}
-
-
-</div>
+Configures system options

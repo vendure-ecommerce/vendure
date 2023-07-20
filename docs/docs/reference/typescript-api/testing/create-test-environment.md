@@ -1,19 +1,19 @@
 ---
 title: "CreateTestEnvironment"
 weight: 10
-date: 2023-07-14T16:57:50.804Z
+date: 2023-07-20T13:56:17.061Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# createTestEnvironment
-<div class="symbol">
 
+## createTestEnvironment
 
-# createTestEnvironment
-
-{{< generation-info sourceFile="packages/testing/src/create-test-environment.ts" sourceLine="60" packageName="@vendure/testing">}}
+<GenerationInfo sourceFile="packages/testing/src/create-test-environment.ts" sourceLine="60" packageName="@vendure/testing" />
 
 Configures a <a href='/typescript-api/testing/test-server#testserver'>TestServer</a> and a <a href='/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a> for each of the GraphQL APIs
 for use in end-to-end tests. Returns a <a href='/typescript-api/testing/test-environment#testenvironment'>TestEnvironment</a> object.
@@ -42,15 +42,12 @@ describe('some feature to test', () => {
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function createTestEnvironment(config: Required<VendureConfig>): TestEnvironment
 ```
-## Parameters
+Parameters
 
 ### config
 
-{{< member-info kind="parameter" type="Required&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" >}}
+<MemberInfo kind="parameter" type="Required&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
 
-</div>

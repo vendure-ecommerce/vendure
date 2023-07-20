@@ -20,7 +20,7 @@ The main tasks will be:
 The first item - creation of the schema - can be automatically handled by TypeORM's `synchronize` feature. Switching it on for the initial
 run will automatically create the schema. This can be done by using an environment variable:
 
-```TypeScript {hl_lines=[5]}
+```ts {hl_lines=[5]}
 export const config: VendureConfig = {
   // ...
   dbConnectionOptions: {

@@ -37,7 +37,7 @@ Vendure comes with some built-in actions, but you can also create your own actio
 To create a custom condition, you need to define a new [`PromotionCondition` object]({{< relref "promotion-condition" >}}).
 Here is an annotated example of one of the built-in PromotionsConditions:
 
-```TypeScript
+```ts
 import { LanguageCode, PromotionCondition } from '@vendure/core';
 
 export const minimumOrderAmount = new PromotionCondition({
@@ -84,7 +84,7 @@ export const minimumOrderAmount = new PromotionCondition({
 
 Custom PromotionConditions are then passed into the VendureConfig [PromotionOptions]({{< relref "promotion-options" >}}) to make them available when setting up Promotions:
 
-```TypeScript
+```ts
 import { defaultPromotionConditions, VendureConfig } from '@vendure/core';
 import { minimumOrderAmount } from './minimum-order-amount';
 
@@ -111,7 +111,7 @@ Their implementations are similar, with the difference being the arguments passe
 
 Here's an example of a simple PromotionOrderAction.
 
-```TypeScript
+```ts
 import { LanguageCode, PromotionOrderAction } from '@vendure/core';
 
 export const orderPercentageDiscount = new PromotionOrderAction({
@@ -143,7 +143,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
 
 Custom PromotionActions are then passed into the VendureConfig [PromotionOptions]({{< relref "promotion-options" >}}) to make them available when setting up Promotions:
 
-```TypeScript
+```ts
 import { defaultPromotionActions, VendureConfig } from '@vendure/core';
 import { orderPercentageDiscount } from './order-percentage-discount';
 
@@ -164,7 +164,7 @@ Vendure v1.8 introduces a new **side effect API** to PromotionActions, which all
 
 A primary use-case of this API is to add a free gift to the Order. Here's an example of a plugin which implements a "free gift" action:
 
-```TypeScript
+```ts
 import {
   ID, idsAreEqual, isGraphQlErrorResult, LanguageCode,
   Logger, OrderLine, OrderService, PromotionItemAction, VendurePlugin,
@@ -265,7 +265,7 @@ In this scenario, we would have to repeat the logic for checking the Order conte
 
 Instead, we can say that the PromotionAction _depends_ on the PromotionCondition:
 
-```TypeScript {hl_lines=[8,10]}
+```ts {hl_lines=[8,10]}
 export const buy1Get1FreeAction = new PromotionItemAction({
   code: 'buy_1_get_1_free',
   description: [{
@@ -289,7 +289,7 @@ In the above code, we are stating that this PromotionAction _depends_ on the `bu
 
 In turn, the `buyXGetYFreeCondition` can return a _state object_ with the type `{ [key: string]: any; }` instead of just a `true` boolean value. This state object is then passed to the PromotionConditions which depend on it, as part of the last argument (`state`).
 
-```TypeScript {hl_lines=[15]}
+```ts {hl_lines=[15]}
 export const buyXGetYFreeCondition = new PromotionCondition({
   code: 'buy_x_get_y_free',
   description: [{

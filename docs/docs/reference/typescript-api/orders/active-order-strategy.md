@@ -1,19 +1,19 @@
 ---
 title: "ActiveOrderStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.577Z
+date: 2023-07-20T13:56:14.496Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ActiveOrderStrategy
-<div class="symbol">
 
+## ActiveOrderStrategy
 
-# ActiveOrderStrategy
-
-{{< generation-info sourceFile="packages/core/src/config/order/active-order-strategy.ts" sourceLine="127" packageName="@vendure/core" since="1.9.0">}}
+<GenerationInfo sourceFile="packages/core/src/config/order/active-order-strategy.ts" sourceLine="127" packageName="@vendure/core" since="1.9.0" />
 
 This strategy is used to determine the active Order for all order-related operations in
 the Shop API. By default, all the Shop API operations that relate to the active Order (e.g.
@@ -130,9 +130,7 @@ export const config = {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ActiveOrderStrategy<InputType extends Record<string, any> | void = void> extends InjectableStrategy {
   readonly name: string;
   defineInputType?: () => DocumentNode;
@@ -140,25 +138,23 @@ interface ActiveOrderStrategy<InputType extends Record<string, any> | void = voi
   determineActiveOrder(ctx: RequestContext, input: InputType): Promise<Order | undefined>;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
 
 
-## Members
 
 ### name
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The name of the strategy, e.g. "orderByToken", which will also be used as the
-field name in the ActiveOrderInput type.{{< /member-description >}}
-
+The name of the strategy, e.g. "orderByToken", which will also be used as the
+field name in the ActiveOrderInput type.
 ### defineInputType
 
-{{< member-info kind="property" type="() =&#62; DocumentNode"  >}}
+<MemberInfo kind="property" type="() =&#62; DocumentNode"   />
 
-{{< member-description >}}Defines the type of the GraphQL Input object expected by the `activeOrderInput`
+Defines the type of the GraphQL Input object expected by the `activeOrderInput`
 input argument.
 
 *Example*
@@ -189,27 +185,22 @@ activeOrder(activeOrderInput: {
 ```
 
 **Note:** if more than one graphql `input` type is being defined (as in a nested input type), then
-the _first_ input will be assumed to be the top-level input.{{< /member-description >}}
-
+the _first_ input will be assumed to be the top-level input.
 ### createActiveOrder
 
-{{< member-info kind="property" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) =&#62; Promise&#60;<a href='/typescript-api/entities/order#order'>Order</a>&#62;"  >}}
+<MemberInfo kind="property" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) =&#62; Promise&#60;<a href='/typescript-api/entities/order#order'>Order</a>&#62;"   />
 
-{{< member-description >}}Certain mutations such as `addItemToOrder` can automatically create a new Order if one does not exist.
+Certain mutations such as `addItemToOrder` can automatically create a new Order if one does not exist.
 In these cases, this method will be called to create the new Order.
 
 If automatic creation of an Order does not make sense in your strategy, then leave this method
-undefined. You'll then need to take care of creating an order manually by defining a custom mutation.{{< /member-description >}}
-
+undefined. You'll then need to take care of creating an order manually by defining a custom mutation.
 ### determineActiveOrder
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) => Promise&#60;<a href='/typescript-api/entities/order#order'>Order</a> | undefined&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) => Promise&#60;<a href='/typescript-api/entities/order#order'>Order</a> | undefined&#62;"   />
 
-{{< member-description >}}This method is used to determine the active Order based on the current RequestContext in addition to any
+This method is used to determine the active Order based on the current RequestContext in addition to any
 input values provided, as defined by the `defineInputType` method of this strategy.
 
 Note that this method is invoked frequently, so you should aim to keep it efficient. The returned Order,
-for example, does not need to have its various relations joined.{{< /member-description >}}
-
-
-</div>
+for example, does not need to have its various relations joined.

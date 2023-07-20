@@ -1,25 +1,23 @@
 ---
 title: "OrderHistoryEntry"
 weight: 10
-date: 2023-07-14T16:57:49.887Z
+date: 2023-07-20T13:56:15.172Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# OrderHistoryEntry
-<div class="symbol">
 
+## OrderHistoryEntry
 
-# OrderHistoryEntry
-
-{{< generation-info sourceFile="packages/core/src/entity/history-entry/order-history-entry.entity.ts" sourceLine="14" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/history-entry/order-history-entry.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
 Represents an event in the history of a particular <a href='/typescript-api/entities/order#order'>Order</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class OrderHistoryEntry extends HistoryEntry {
   constructor(input: DeepPartial<OrderHistoryEntry>)
   @Index() @ManyToOne(type => Order, { onDelete: 'CASCADE' }) @Index()
@@ -27,24 +25,19 @@ class OrderHistoryEntry extends HistoryEntry {
     order: Order;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;) => OrderHistoryEntry"  >}}
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;) => OrderHistoryEntry"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### order
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
 
 
-</div>

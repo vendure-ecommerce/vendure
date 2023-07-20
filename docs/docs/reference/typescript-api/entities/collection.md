@@ -1,25 +1,23 @@
 ---
 title: "Collection"
 weight: 10
-date: 2023-07-14T16:57:49.856Z
+date: 2023-07-20T13:56:15.098Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Collection
-<div class="symbol">
 
+## Collection
 
-# Collection
-
-{{< generation-info sourceFile="packages/core/src/entity/collection/collection.entity.ts" sourceLine="35" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/collection/collection.entity.ts" sourceLine="35" packageName="@vendure/core" />
 
 A Collection is a grouping of <a href='/typescript-api/entities/product#product'>Product</a>s based on various configurable criteria.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Collection extends VendureEntity implements Translatable, HasCustomFields, ChannelAware, Orderable {
   constructor(input?: DeepPartial<Collection>)
   @Column({ default: false }) @Column({ default: false })
@@ -56,12 +54,12 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
     channels: Channel[];
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
  * HasCustomFields
@@ -69,115 +67,94 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
  * <a href='/typescript-api/entities/interfaces#orderable'>Orderable</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### isRoot
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### position
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### isPrivate
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### name
 
-{{< member-info kind="property" type="LocaleString"  >}}
+<MemberInfo kind="property" type="LocaleString"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### description
 
-{{< member-info kind="property" type="LocaleString"  >}}
+<MemberInfo kind="property" type="LocaleString"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### slug
 
-{{< member-info kind="property" type="LocaleString"  >}}
+<MemberInfo kind="property" type="LocaleString"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### featuredAsset
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### assets
 
-{{< member-info kind="property" type="CollectionAsset[]"  >}}
+<MemberInfo kind="property" type="CollectionAsset[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### filters
 
-{{< member-info kind="property" type="ConfigurableOperation[]"  >}}
+<MemberInfo kind="property" type="ConfigurableOperation[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### inheritFilters
 
-{{< member-info kind="property" type="boolean"  since="2.0.0" >}}
+<MemberInfo kind="property" type="boolean"  since="2.0.0"  />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### productVariants
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomCollectionFields"  >}}
+<MemberInfo kind="property" type="CustomCollectionFields"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### children
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### parent
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### parentId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
-</div>

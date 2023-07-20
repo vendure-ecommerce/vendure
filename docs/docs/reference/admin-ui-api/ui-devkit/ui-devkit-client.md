@@ -1,43 +1,39 @@
 ---
 title: "UiDevkitClient"
 weight: 10
-date: 2023-07-14T16:57:51.346Z
+date: 2023-07-20T13:56:18.764Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# UiDevkitClient
-<div class="symbol">
 
+## setTargetOrigin
 
-# setTargetOrigin
-
-{{< generation-info sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="24" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="24" packageName="@vendure/ui-devkit" />
 
 Set the [window.postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)
 `targetOrigin`. The Vendure ui-devkit uses the postMessage API to
 enable cross-frame and cross-origin communication between the ui extension code and the Admin UI
 app. The `targetOrigin` is a security feature intended to provide control over where messages are sent.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function setTargetOrigin(value: string): void
 ```
-## Parameters
+Parameters
 
 ### value
 
-{{< member-info kind="parameter" type="string" >}}
-
-</div>
-<div class="symbol">
+<MemberInfo kind="parameter" type="string" />
 
 
-# getActivatedRoute
 
-{{< generation-info sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="43" packageName="@vendure/ui-devkit">}}
+## getActivatedRoute
+
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="43" packageName="@vendure/ui-devkit" />
 
 Retrieves information about the current route of the host application, since it is not possible
 to otherwise get this information from within the child iframe.
@@ -51,18 +47,14 @@ const route = await getActivatedRoute();
 const slug = route.params.slug;
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function getActivatedRoute(): Promise<ActiveRouteData>
 ```
-</div>
-<div class="symbol">
 
 
-# graphQlQuery
+## graphQlQuery
 
-{{< generation-info sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="70" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="70" packageName="@vendure/ui-devkit" />
 
 Perform a GraphQL query and returns either an Observable or a Promise of the result.
 
@@ -83,35 +75,31 @@ const productList = await graphQlQuery(`
   }).then(data => data.products);
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function graphQlQuery<T, V extends { [key: string]: any }>(document: string, variables?: { [key: string]: any }, fetchPolicy?: WatchQueryFetchPolicy): {
     then: Promise<T>['then'];
     stream: Observable<T>;
 }
 ```
-## Parameters
+Parameters
 
 ### document
 
-{{< member-info kind="parameter" type="string" >}}
+<MemberInfo kind="parameter" type="string" />
 
 ### variables
 
-{{< member-info kind="parameter" type="{ [key: string]: any }" >}}
+<MemberInfo kind="parameter" type="{ [key: string]: any }" />
 
 ### fetchPolicy
 
-{{< member-info kind="parameter" type="WatchQueryFetchPolicy" >}}
-
-</div>
-<div class="symbol">
+<MemberInfo kind="parameter" type="WatchQueryFetchPolicy" />
 
 
-# graphQlMutation
 
-{{< generation-info sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="112" packageName="@vendure/ui-devkit">}}
+## graphQlMutation
+
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="112" packageName="@vendure/ui-devkit" />
 
 Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
 
@@ -132,31 +120,27 @@ const disableProduct = (id: string) => {
 }
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function graphQlMutation<T, V extends { [key: string]: any }>(document: string, variables?: { [key: string]: any }): {
     then: Promise<T>['then'];
     stream: Observable<T>;
 }
 ```
-## Parameters
+Parameters
 
 ### document
 
-{{< member-info kind="parameter" type="string" >}}
+<MemberInfo kind="parameter" type="string" />
 
 ### variables
 
-{{< member-info kind="parameter" type="{ [key: string]: any }" >}}
-
-</div>
-<div class="symbol">
+<MemberInfo kind="parameter" type="{ [key: string]: any }" />
 
 
-# notify
 
-{{< generation-info sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="147" packageName="@vendure/ui-devkit">}}
+## notify
+
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="147" packageName="@vendure/ui-devkit" />
 
 Display a toast notification.
 
@@ -171,15 +155,12 @@ notify({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function notify(options: NotificationMessage['data']): void
 ```
-## Parameters
+Parameters
 
 ### options
 
-{{< member-info kind="parameter" type="NotificationMessage['data']" >}}
+<MemberInfo kind="parameter" type="NotificationMessage['data']" />
 
-</div>

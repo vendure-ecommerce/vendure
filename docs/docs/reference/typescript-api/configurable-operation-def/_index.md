@@ -1,19 +1,19 @@
 ---
 title: "ConfigurableOperationDef"
 weight: 10
-date: 2023-07-14T16:57:49.424Z
+date: 2023-07-20T13:56:14.177Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ConfigurableOperationDef
-<div class="symbol">
 
+## ConfigurableOperationDef
 
-# ConfigurableOperationDef
-
-{{< generation-info sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="335" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="335" packageName="@vendure/core" />
 
 A ConfigurableOperationDef is a special type of object used extensively by Vendure to define
 code blocks which have arguments which are configurable at run-time by the administrator.
@@ -88,9 +88,7 @@ export const customShippingCalculator = new ShippingCalculator({
 });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
   code: string
   args: T
@@ -102,62 +100,51 @@ class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
   protected argsArrayToHash(args: ConfigArg[]) => ConfigArgValues<T>;
 }
 ```
-## Members
 
 ### code
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### args
 
-{{< member-info kind="property" type="T"  >}}
+<MemberInfo kind="property" type="T"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### description
 
-{{< member-info kind="property" type="<a href='/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;) => ConfigurableOperationDef"  >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;) => ConfigurableOperationDef"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "  >}}
+<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### destroy
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### toGraphQlType
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => ConfigurableOperationDefinition"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => ConfigurableOperationDefinition"   />
 
-{{< member-description >}}Convert a ConfigurableOperationDef into a ConfigurableOperationDefinition object, typically
-so that it can be sent via the API.{{< /member-description >}}
-
+Convert a ConfigurableOperationDef into a ConfigurableOperationDefinition object, typically
+so that it can be sent via the API.
 ### argsArrayToHash
 
-{{< member-info kind="method" type="(args: ConfigArg[]) => ConfigArgValues&#60;T&#62;"  >}}
+<MemberInfo kind="method" type="(args: ConfigArg[]) => ConfigArgValues&#60;T&#62;"   />
 
-{{< member-description >}}Coverts an array of ConfigArgs into a hash object:
+Coverts an array of ConfigArgs into a hash object:
 
 from:
 `[{ name: 'foo', type: 'string', value: 'bar'}]`
 
 to:
-`{ foo: 'bar' }`{{< /member-description >}}
-
-
-</div>
+`{ foo: 'bar' }`

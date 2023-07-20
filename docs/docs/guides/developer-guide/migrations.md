@@ -22,7 +22,7 @@ Vendure exposes a some helper function which wrap around the underlying [TypeORM
 
 To run and revert migrations, ensure that the `dbConnectionOptions.migrations` option is set in your VendureConfig:
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   // ...
   dbConnectionOptions: {
@@ -54,7 +54,7 @@ The [`revertLastMigration` function]({{< relref "revert-last-migration" >}}) wil
 
 Here is an example script (which ships with projects generated with `@vendure/create`) which provides a command-line program for managing migrations:
 
-```TypeScript
+```ts
 // migrations.ts
 import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';
 import program from 'commander';
@@ -93,7 +93,7 @@ ts-node migration.ts generate my-migration
 
 This will generate a new migration in the directory specified by the `dbConnectionOptions.migrations` option:
 
-```TypeScript
+```ts
 dbConnectionOptions: {
   migrations: [path.join(__dirname, '../migrations/*.ts')],
 }

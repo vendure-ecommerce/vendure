@@ -1,19 +1,19 @@
 ---
 title: "DataTableComponent"
 weight: 10
-date: 2023-07-14T16:57:51.164Z
+date: 2023-07-20T13:56:18.169Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# DataTableComponent
-<div class="symbol">
 
+## DataTableComponent
 
-# DataTableComponent
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table/data-table.component.ts" sourceLine="86" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table/data-table.component.ts" sourceLine="86" packageName="@vendure/admin-ui" />
 
 A table for displaying PaginatedList results. It is designed to be used inside components which
 extend the <a href='/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> class.
@@ -73,9 +73,7 @@ extend the <a href='/admin-ui-api/list-detail-views/base-list-component#baselist
 </vdr-data-table>
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDestroy {
   @Input() @Input() items: T[];
   @Input() @Input() itemsPerPage: number;
@@ -105,7 +103,7 @@ class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDe
   onRowClick(item: T, event: MouseEvent) => ;
 }
 ```
-## Implements
+Implements
 
  * AfterContentInit
  * OnChanges
@@ -113,163 +111,134 @@ class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDe
  * OnDestroy
 
 
-## Members
 
 ### items
 
-{{< member-info kind="property" type="T[]"  >}}
+<MemberInfo kind="property" type="T[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### itemsPerPage
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### currentPage
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### totalItems
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### emptyStateLabel
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### selectionManager
 
-{{< member-info kind="property" type="SelectionManager&#60;T&#62;"  >}}
+<MemberInfo kind="property" type="SelectionManager&#60;T&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### pageChange
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### itemsPerPageChange
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### allSelected
 
-{{< member-info kind="property" type="boolean"  >}}
+<MemberInfo kind="property" type="boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### isRowSelectedFn
 
-{{< member-info kind="property" type="(item: T) =&#62; boolean"  >}}
+<MemberInfo kind="property" type="(item: T) =&#62; boolean"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### allSelectChange
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### rowSelectChange
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### columns
 
-{{< member-info kind="property" type="QueryList&#60;DataTableColumnComponent&#62;"  >}}
+<MemberInfo kind="property" type="QueryList&#60;DataTableColumnComponent&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### templateRefs
 
-{{< member-info kind="property" type="QueryList&#60;TemplateRef&#60;any&#62;&#62;"  >}}
+<MemberInfo kind="property" type="QueryList&#60;TemplateRef&#60;any&#62;&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### rowTemplate
 
-{{< member-info kind="property" type="TemplateRef&#60;any&#62;"  >}}
+<MemberInfo kind="property" type="TemplateRef&#60;any&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### currentStart
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### currentEnd
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### disableSelect
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(changeDetectorRef: ChangeDetectorRef) => DataTableComponent"  >}}
+<MemberInfo kind="method" type="(changeDetectorRef: ChangeDetectorRef) => DataTableComponent"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnInit
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnChanges
 
-{{< member-info kind="method" type="(changes: SimpleChanges) => "  >}}
+<MemberInfo kind="method" type="(changes: SimpleChanges) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnDestroy
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngAfterContentInit
 
-{{< member-info kind="method" type="() => void"  >}}
+<MemberInfo kind="method" type="() => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### trackByFn
 
-{{< member-info kind="method" type="(index: number, item: any) => "  >}}
+<MemberInfo kind="method" type="(index: number, item: any) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onToggleAllClick
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onRowClick
 
-{{< member-info kind="method" type="(item: T, event: MouseEvent) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(item: T, event: MouseEvent) => "   />
 
 
-</div>

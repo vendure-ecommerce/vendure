@@ -1,26 +1,24 @@
 ---
 title: "CustomerGroup"
 weight: 10
-date: 2023-07-14T16:57:49.870Z
+date: 2023-07-20T13:56:15.131Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CustomerGroup
-<div class="symbol">
 
+## CustomerGroup
 
-# CustomerGroup
-
-{{< generation-info sourceFile="packages/core/src/entity/customer-group/customer-group.entity.ts" sourceLine="16" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/customer-group/customer-group.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 A grouping of <a href='/typescript-api/entities/customer#customer'>Customer</a>s which enables features such as group-based promotions
 or tax rules.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class CustomerGroup extends VendureEntity implements HasCustomFields {
   constructor(input?: DeepPartial<CustomerGroup>)
   @Column() @Column() name: string;
@@ -30,41 +28,34 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
     customFields: CustomCustomerGroupFields;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * HasCustomFields
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>&#62;) => CustomerGroup"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>&#62;) => CustomerGroup"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### name
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customers
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/customer#customer'>Customer</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/customer#customer'>Customer</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomCustomerGroupFields"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="CustomCustomerGroupFields"   />
 
 
-</div>

@@ -18,7 +18,7 @@ This type of error occurs when something goes unexpectedly wrong during the proc
 
 Internally, these situations are handled by throwing an Error:
 
-```TypeScript
+```ts
 const customer = await this.findOneByUserId(ctx, user.id);
 // in this case, the customer *should always* be found, and if
 // not then something unknown has gone wrong...

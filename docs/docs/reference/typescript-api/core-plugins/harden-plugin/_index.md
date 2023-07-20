@@ -1,19 +1,19 @@
 ---
 title: "HardenPlugin"
 weight: 10
-date: 2023-07-14T16:57:50.829Z
+date: 2023-07-20T13:56:17.110Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# HardenPlugin
-<div class="symbol">
 
+## HardenPlugin
 
-# HardenPlugin
-
-{{< generation-info sourceFile="packages/harden-plugin/src/harden.plugin.ts" sourceLine="146" packageName="@vendure/harden-plugin">}}
+<GenerationInfo sourceFile="packages/harden-plugin/src/harden.plugin.ts" sourceLine="146" packageName="@vendure/harden-plugin" />
 
 The HardenPlugin hardens the Shop and Admin GraphQL APIs against attacks and abuse.
 
@@ -151,27 +151,20 @@ debug 16/12/22, 14:12 - [HardenPlugin] Query.products: ProductList!        child
 verbose 16/12/22, 14:12 - [HardenPlugin] Query complexity [ProductList]: 35
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class HardenPlugin {
   static static options: HardenPluginOptions;
   static init(options: HardenPluginOptions) => ;
 }
 ```
-## Members
 
 ### options
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>) => "   />
 
 
-</div>

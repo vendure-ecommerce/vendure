@@ -1,19 +1,19 @@
 ---
 title: "AddNavMenuItem"
 weight: 10
-date: 2023-07-14T16:57:51.124Z
+date: 2023-07-20T13:56:18.043Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# addNavMenuItem
-<div class="symbol">
 
+## addNavMenuItem
 
-# addNavMenuItem
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="84" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="84" packageName="@vendure/admin-ui" />
 
 Add a menu item to an existing section specified by `sectionId`. The id of the section
 can be found by inspecting the DOM and finding the `data-section-id` attribute.
@@ -41,23 +41,20 @@ This should be used in the NgModule `providers` array of your ui extension modul
 export class MyUiExtensionModule {}
 ``
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function addNavMenuItem(config: NavMenuItem, sectionId: string, before?: string): Provider
 ```
-## Parameters
+Parameters
 
 ### config
 
-{{< member-info kind="parameter" type="<a href='/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>" >}}
+<MemberInfo kind="parameter" type="<a href='/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>" />
 
 ### sectionId
 
-{{< member-info kind="parameter" type="string" >}}
+<MemberInfo kind="parameter" type="string" />
 
 ### before
 
-{{< member-info kind="parameter" type="string" >}}
+<MemberInfo kind="parameter" type="string" />
 
-</div>

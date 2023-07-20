@@ -1,19 +1,19 @@
 ---
 title: "ImageTransformPreset"
 weight: 10
-date: 2023-07-14T16:57:50.705Z
+date: 2023-07-20T13:56:16.859Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ImageTransformPreset
-<div class="symbol">
 
+## ImageTransformPreset
 
-# ImageTransformPreset
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="39" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="39" packageName="@vendure/asset-server-plugin" />
 
 A configuration option for an image size preset for the AssetServerPlugin.
 
@@ -27,9 +27,7 @@ is equivalent to:
 
 `http://localhost:3000/assets/some-asset.jpg?w=50&h=50&mode=crop`
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ImageTransformPreset {
   name: string;
   width: number;
@@ -37,31 +35,24 @@ interface ImageTransformPreset {
   mode: ImageTransformMode;
 }
 ```
-## Members
 
 ### name
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### width
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### height
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### mode
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/asset-server-plugin/image-transform-mode#imagetransformmode'>ImageTransformMode</a>"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/asset-server-plugin/image-transform-mode#imagetransformmode'>ImageTransformMode</a>"   />
 
 
-</div>

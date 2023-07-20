@@ -1,25 +1,23 @@
 ---
 title: "SessionService"
 weight: 10
-date: 2023-07-14T16:57:50.576Z
+date: 2023-07-20T13:56:16.558Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# SessionService
-<div class="symbol">
 
+## SessionService
 
-# SessionService
-
-{{< generation-info sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="28" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="28" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/typescript-api/entities/session#session'>Session</a> entities.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class SessionService implements EntitySubscriberInterface {
   constructor(connection: TransactionalConnection, configService: ConfigService, orderService: OrderService)
   async createNewAuthenticatedSession(ctx: RequestContext, user: User, authenticationStrategyName: string) => Promise<AuthenticatedSession>;
@@ -33,73 +31,60 @@ class SessionService implements EntitySubscriberInterface {
   async deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID) => Promise<void>;
 }
 ```
-## Implements
+Implements
 
  * EntitySubscriberInterface
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderService: <a href='/typescript-api/services/order-service#orderservice'>OrderService</a>) => SessionService"  >}}
+<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderService: <a href='/typescript-api/services/order-service#orderservice'>OrderService</a>) => SessionService"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### createNewAuthenticatedSession
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>, authenticationStrategyName: string) => Promise&#60;<a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>, authenticationStrategyName: string) => Promise&#60;<a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>&#62;"   />
 
-{{< member-description >}}Creates a new <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>. To be used after successful authentication.{{< /member-description >}}
-
+Creates a new <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>. To be used after successful authentication.
 ### createAnonymousSession
 
-{{< member-info kind="method" type="() => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"  >}}
+<MemberInfo kind="method" type="() => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"   />
 
-{{< member-description >}}Create an <a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a> and caches it using the configured <a href='/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>,
-and returns the cached session object.{{< /member-description >}}
-
+Create an <a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a> and caches it using the configured <a href='/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>,
+and returns the cached session object.
 ### getSessionFromToken
 
-{{< member-info kind="method" type="(sessionToken: string) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined&#62;"  >}}
+<MemberInfo kind="method" type="(sessionToken: string) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined&#62;"   />
 
-{{< member-description >}}Returns the cached session object matching the given session token.{{< /member-description >}}
-
+Returns the cached session object matching the given session token.
 ### serializeSession
 
-{{< member-info kind="method" type="(session: <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> | <a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>) => <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>"  >}}
+<MemberInfo kind="method" type="(session: <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> | <a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>) => <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>"   />
 
-{{< member-description >}}Serializes a <a href='/typescript-api/entities/session#session'>Session</a> instance into a simplified plain object suitable for caching.{{< /member-description >}}
-
+Serializes a <a href='/typescript-api/entities/session#session'>Session</a> instance into a simplified plain object suitable for caching.
 ### setActiveOrder
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, serializedSession: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, serializedSession: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"   />
 
-{{< member-description >}}Sets the `activeOrder` on the given cached session object and updates the cache.{{< /member-description >}}
-
+Sets the `activeOrder` on the given cached session object and updates the cache.
 ### unsetActiveOrder
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, serializedSession: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, serializedSession: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"   />
 
-{{< member-description >}}Clears the `activeOrder` on the given cached session object and updates the cache.{{< /member-description >}}
-
+Clears the `activeOrder` on the given cached session object and updates the cache.
 ### setActiveChannel
 
-{{< member-info kind="method" type="(serializedSession: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>, channel: <a href='/typescript-api/entities/channel#channel'>Channel</a>) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"  >}}
+<MemberInfo kind="method" type="(serializedSession: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>, channel: <a href='/typescript-api/entities/channel#channel'>Channel</a>) => Promise&#60;<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>&#62;"   />
 
-{{< member-description >}}Sets the `activeChannel` on the given cached session object and updates the cache.{{< /member-description >}}
-
+Sets the `activeChannel` on the given cached session object and updates the cache.
 ### deleteSessionsByUser
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>) => Promise&#60;void&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>) => Promise&#60;void&#62;"   />
 
-{{< member-description >}}Deletes all existing sessions for the given user.{{< /member-description >}}
-
+Deletes all existing sessions for the given user.
 ### deleteSessionsByActiveOrderId
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, activeOrderId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, activeOrderId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;"   />
 
-{{< member-description >}}Deletes all existing sessions with the given activeOrder.{{< /member-description >}}
-
-
-</div>
+Deletes all existing sessions with the given activeOrder.

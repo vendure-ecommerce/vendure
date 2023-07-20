@@ -1,19 +1,19 @@
 ---
 title: "CustomFieldType"
 weight: 10
-date: 2023-07-14T16:57:50.657Z
+date: 2023-07-20T13:56:16.734Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# CustomFieldType
-<div class="symbol">
 
+## CustomFieldType
 
-# CustomFieldType
-
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="102" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="102" packageName="@vendure/common" />
 
 A data type for a custom field. The CustomFieldType determines the data types used in the generated
 database columns and GraphQL fields as follows (key: m = MySQL, p = Postgres, s = SQLite):
@@ -33,9 +33,7 @@ relation     | many-to-one / many-to-many relation   | As specified in config
 Additionally, the CustomFieldType also dictates which [configuration options](/docs/typescript-api/custom-fields/#configuration-options)
 are available for that custom field.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type CustomFieldType = | 'string'
     | 'localeString'
     | 'int'
@@ -46,4 +44,3 @@ type CustomFieldType = | 'string'
     | 'text'
     | 'localeText'
 ```
-</div>

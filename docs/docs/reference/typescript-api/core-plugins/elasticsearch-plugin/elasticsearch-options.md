@@ -1,25 +1,23 @@
 ---
 title: "ElasticsearchOptions"
 weight: 10
-date: 2023-07-14T16:57:50.758Z
+date: 2023-07-20T13:56:16.974Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ElasticsearchOptions
-<div class="symbol">
 
+## ElasticsearchOptions
 
-# ElasticsearchOptions
-
-{{< generation-info sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="22" packageName="@vendure/elasticsearch-plugin">}}
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="22" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration options for the <a href='/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ElasticsearchOptions {
   host?: string;
   port?: number;
@@ -48,52 +46,45 @@ interface ElasticsearchOptions {
   extendSearchSortType?: string[];
 }
 ```
-## Members
 
 ### host
 
-{{< member-info kind="property" type="string" default="'http://localhost'"  >}}
+<MemberInfo kind="property" type="string" default="'http://localhost'"   />
 
-{{< member-description >}}The host of the Elasticsearch server. May also be specified in `clientOptions.node`.{{< /member-description >}}
-
+The host of the Elasticsearch server. May also be specified in `clientOptions.node`.
 ### port
 
-{{< member-info kind="property" type="number" default="9200"  >}}
+<MemberInfo kind="property" type="number" default="9200"   />
 
-{{< member-description >}}The port of the Elasticsearch server. May also be specified in `clientOptions.node`.{{< /member-description >}}
-
+The port of the Elasticsearch server. May also be specified in `clientOptions.node`.
 ### connectionAttempts
 
-{{< member-info kind="property" type="number" default="10"  >}}
+<MemberInfo kind="property" type="number" default="10"   />
 
-{{< member-description >}}Maximum amount of attempts made to connect to the ElasticSearch server on startup.{{< /member-description >}}
-
+Maximum amount of attempts made to connect to the ElasticSearch server on startup.
 ### connectionAttemptInterval
 
-{{< member-info kind="property" type="number" default="5000"  >}}
+<MemberInfo kind="property" type="number" default="5000"   />
 
-{{< member-description >}}Interval in milliseconds between attempts to connect to the ElasticSearch server on startup.{{< /member-description >}}
-
+Interval in milliseconds between attempts to connect to the ElasticSearch server on startup.
 ### clientOptions
 
-{{< member-info kind="property" type="ClientOptions"  >}}
+<MemberInfo kind="property" type="ClientOptions"   />
 
-{{< member-description >}}Options to pass directly to the
+Options to pass directly to the
 [Elasticsearch Node.js client](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/index.html). For example, to
 set authentication or other more advanced options.
-Note that if the `node` or `nodes` option is specified, it will override the values provided in the `host` and `port` options.{{< /member-description >}}
-
+Note that if the `node` or `nodes` option is specified, it will override the values provided in the `host` and `port` options.
 ### indexPrefix
 
-{{< member-info kind="property" type="string" default="'vendure-'"  >}}
+<MemberInfo kind="property" type="string" default="'vendure-'"   />
 
-{{< member-description >}}Prefix for the indices created by the plugin.{{< /member-description >}}
-
+Prefix for the indices created by the plugin.
 ### indexSettings
 
-{{< member-info kind="property" type="object" default="{}"  since="1.2.0" >}}
+<MemberInfo kind="property" type="object" default="{}"  since="1.2.0"  />
 
-{{< member-description >}}[These options](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index-modules.html#index-modules-settings)
+[These options](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index-modules.html#index-modules-settings)
 are directly passed to index settings. To apply some settings indices will be recreated.
 
 *Example*
@@ -121,13 +112,12 @@ indexSettings: {
 },
 ```
 A more complete example can be found in the discussion thread
-[How to make elastic plugin to search by substring with stemming](https://github.com/vendure-ecommerce/vendure/discussions/1066).{{< /member-description >}}
-
+[How to make elastic plugin to search by substring with stemming](https://github.com/vendure-ecommerce/vendure/discussions/1066).
 ### indexMappingProperties
 
-{{< member-info kind="property" type="{         [indexName: string]: object;     }" default="{}"  since="1.2.0" >}}
+<MemberInfo kind="property" type="{         [indexName: string]: object;     }" default="{}"  since="1.2.0"  />
 
-{{< member-description >}}This option allow to redefine or define new properties in mapping. More about elastic
+This option allow to redefine or define new properties in mapping. More about elastic
 [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
 After changing this option indices will be recreated.
 
@@ -166,25 +156,22 @@ indexMappingProperties: {
     type: 'integer',
   }
 }
-```{{< /member-description >}}
-
+```
 ### batchSize
 
-{{< member-info kind="property" type="number" default="2000"  >}}
+<MemberInfo kind="property" type="number" default="2000"   />
 
-{{< member-description >}}Batch size for bulk operations (e.g. when rebuilding the indices).{{< /member-description >}}
-
+Batch size for bulk operations (e.g. when rebuilding the indices).
 ### searchConfig
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>"   />
 
-{{< member-description >}}Configuration of the internal Elasticsearch query.{{< /member-description >}}
-
+Configuration of the internal Elasticsearch query.
 ### customProductMappings
 
-{{< member-info kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product#product'>Product</a>, <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"  >}}
+<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product#product'>Product</a>, <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
 
-{{< member-description >}}Custom mappings may be defined which will add the defined data to the
+Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
 adding a new `customMappings`, `customProductMappings` & `customProductVariantMappings` fields.
 
@@ -242,13 +229,12 @@ query SearchProducts($input: SearchInput!) {
         }
     }
 }
-```{{< /member-description >}}
-
+```
 ### customProductVariantMappings
 
-{{< member-info kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"  >}}
+<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
 
-{{< member-description >}}This config option defines custom mappings which are accessible when the "groupByProduct"
+This config option defines custom mappings which are accessible when the "groupByProduct"
 input options is set to `false`. In addition, custom product mappings can be accessed by using
 the `customProductMappings` field, which is always available.
 
@@ -272,26 +258,24 @@ query SearchProducts($input: SearchInput!) {
         }
     }
 }
-```{{< /member-description >}}
-
+```
 ### bufferUpdates
 
-{{< member-info kind="property" type="boolean" default="false"  since="1.3.0" >}}
+<MemberInfo kind="property" type="boolean" default="false"  since="1.3.0"  />
 
-{{< member-description >}}If set to `true`, updates to Products, ProductVariants and Collections will not immediately
+If set to `true`, updates to Products, ProductVariants and Collections will not immediately
 trigger an update to the search index. Instead, all these changes will be buffered and will
 only be run via a call to the `runPendingSearchIndexUpdates` mutation in the Admin API.
 
 This is very useful for installations with a large number of ProductVariants and/or
 Collections, as the buffering allows better control over when these expensive jobs are run,
 and also performs optimizations to minimize the amount of work that needs to be performed by
-the worker.{{< /member-description >}}
-
+the worker.
 ### hydrateProductRelations
 
-{{< member-info kind="property" type="Array&#60;<a href='/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/typescript-api/entities/product#product'>Product</a>&#62;&#62;" default="[]"  since="1.3.0" >}}
+<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/typescript-api/entities/product#product'>Product</a>&#62;&#62;" default="[]"  since="1.3.0"  />
 
-{{< member-description >}}Additional product relations that will be fetched from DB while reindexing. This can be used
+Additional product relations that will be fetched from DB while reindexing. This can be used
 in combination with `customProductMappings` to ensure that the required relations are joined
 before the `product` object is passed to the `valueFn`.
 
@@ -309,20 +293,18 @@ before the `product` object is passed to the `valueFn`.
     }
   }
 }
-```{{< /member-description >}}
-
+```
 ### hydrateProductVariantRelations
 
-{{< member-info kind="property" type="Array&#60;<a href='/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;" default="[]"  since="1.3.0" >}}
+<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;" default="[]"  since="1.3.0"  />
 
-{{< member-description >}}Additional variant relations that will be fetched from DB while reindexing. See
-`hydrateProductRelations` for more explanation and a usage example.{{< /member-description >}}
-
+Additional variant relations that will be fetched from DB while reindexing. See
+`hydrateProductRelations` for more explanation and a usage example.
 ### extendSearchInputType
 
-{{< member-info kind="property" type="{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }" default="{}"  since="1.3.0" >}}
+<MemberInfo kind="property" type="{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }" default="{}"  since="1.3.0"  />
 
-{{< member-description >}}Allows the `SearchInput` type to be extended with new input fields. This allows arbitrary
+Allows the `SearchInput` type to be extended with new input fields. This allows arbitrary
 data to be passed in, which can then be used e.g. in the `mapQuery()` function or
 custom `scriptFields` functions.
 
@@ -352,13 +334,12 @@ query {
     }
   }
 }
-```{{< /member-description >}}
-
+```
 ### extendSearchSortType
 
-{{< member-info kind="property" type="string[]" default="[]"  since="1.4.0" >}}
+<MemberInfo kind="property" type="string[]" default="[]"  since="1.4.0"  />
 
-{{< member-description >}}Adds a list of sort parameters. This is mostly important to make the
+Adds a list of sort parameters. This is mostly important to make the
 correct sort order values available inside `input` parameter of the `mapSort` option.
 
 *Example*
@@ -375,22 +356,16 @@ will extend the `SearchResultSortParameter` input type like this:
 extend input SearchResultSortParameter {
      distance: SortOrder
 }
-```{{< /member-description >}}
+```
 
 
-</div>
-<div class="symbol">
+## SearchConfig
 
-
-# SearchConfig
-
-{{< generation-info sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="377" packageName="@vendure/elasticsearch-plugin">}}
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="377" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration options for the internal Elasticsearch query which is generated when performing a search.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface SearchConfig {
   facetValueMaxSize?: number;
   collectionMaxSize?: number;
@@ -409,51 +384,45 @@ interface SearchConfig {
   mapSort?: (sort: ElasticSearchSortInput, input: ElasticSearchInput) => ElasticSearchSortInput;
 }
 ```
-## Members
 
 ### facetValueMaxSize
 
-{{< member-info kind="property" type="number" default="50"  >}}
+<MemberInfo kind="property" type="number" default="50"   />
 
-{{< member-description >}}The maximum number of FacetValues to return from the search query. Internally, this
-value sets the "size" property of an Elasticsearch aggregation.{{< /member-description >}}
-
+The maximum number of FacetValues to return from the search query. Internally, this
+value sets the "size" property of an Elasticsearch aggregation.
 ### collectionMaxSize
 
-{{< member-info kind="property" type="number" default="50"  since="1.1.0" >}}
+<MemberInfo kind="property" type="number" default="50"  since="1.1.0"  />
 
-{{< member-description >}}The maximum number of Collections to return from the search query. Internally, this
-value sets the "size" property of an Elasticsearch aggregation.{{< /member-description >}}
-
+The maximum number of Collections to return from the search query. Internally, this
+value sets the "size" property of an Elasticsearch aggregation.
 ### totalItemsMaxSize
 
-{{< member-info kind="property" type="number | boolean" default="10000"  since="1.2.0" >}}
+<MemberInfo kind="property" type="number | boolean" default="10000"  since="1.2.0"  />
 
-{{< member-description >}}The maximum number of totalItems to return from the search query. Internally, this
+The maximum number of totalItems to return from the search query. Internally, this
 value sets the "track_total_hits" property of an Elasticsearch query.
 If this parameter is set to "True", accurate count of totalItems will be returned.
 If this parameter is set to "False", totalItems will be returned as 0.
-If this parameter is set to integer, accurate count of totalItems will be returned not bigger than integer.{{< /member-description >}}
-
+If this parameter is set to integer, accurate count of totalItems will be returned not bigger than integer.
 ### multiMatchType
 
-{{< member-info kind="property" type="'best_fields' | 'most_fields' | 'cross_fields' | 'phrase' | 'phrase_prefix' | 'bool_prefix'" default="'best_fields'"  >}}
+<MemberInfo kind="property" type="'best_fields' | 'most_fields' | 'cross_fields' | 'phrase' | 'phrase_prefix' | 'bool_prefix'" default="'best_fields'"   />
 
-{{< member-description >}}Defines the
+Defines the
 [multi match type](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#multi-match-types)
-used when matching against a search term.{{< /member-description >}}
-
+used when matching against a search term.
 ### boostFields
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#boostfieldsconfig'>BoostFieldsConfig</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#boostfieldsconfig'>BoostFieldsConfig</a>"   />
 
-{{< member-description >}}Set custom boost values for particular fields when matching against a search term.{{< /member-description >}}
-
+Set custom boost values for particular fields when matching against a search term.
 ### priceRangeBucketInterval
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}The interval used to group search results into buckets according to price range. For example, setting this to
+The interval used to group search results into buckets according to price range. For example, setting this to
 `2000` will group into buckets every $20.00:
 
 ```JSON
@@ -484,13 +453,12 @@ used when matching against a search term.{{< /member-description >}}
     }
   }
 }
-```{{< /member-description >}}
-
+```
 ### mapQuery
 
-{{< member-info kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"  >}}
+<MemberInfo kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"   />
 
-{{< member-description >}}This config option allows the the modification of the whole (already built) search query. This allows
+This config option allows the the modification of the whole (already built) search query. This allows
 for e.g. wildcard / fuzzy searches on the index.
 
 *Example*
@@ -524,13 +492,12 @@ mapQuery: (query, input, searchConfig, channelId, enabledOnly){
 
   return query;
 }
-```{{< /member-description >}}
-
+```
 ### scriptFields
 
-{{< member-info kind="property" type="{ [fieldName: string]: CustomScriptMapping&#60;[ElasticSearchInput]&#62; }"  since="1.3.0" >}}
+<MemberInfo kind="property" type="{ [fieldName: string]: CustomScriptMapping&#60;[ElasticSearchInput]&#62; }"  since="1.3.0"  />
 
-{{< member-description >}}Sets `script_fields` inside the elasticsearch body which allows returning a script evaluation for each hit.
+Sets `script_fields` inside the elasticsearch body which allows returning a script evaluation for each hit.
 
 The script field definition consists of three properties:
 
@@ -586,13 +553,12 @@ searchConfig: {
     }
   }
 }
-```{{< /member-description >}}
-
+```
 ### mapSort
 
-{{< member-info kind="property" type="(sort: ElasticSearchSortInput, input: ElasticSearchInput) =&#62; ElasticSearchSortInput" default="{}"  since="1.4.0" >}}
+<MemberInfo kind="property" type="(sort: ElasticSearchSortInput, input: ElasticSearchInput) =&#62; ElasticSearchSortInput" default="{}"  since="1.4.0"  />
 
-{{< member-description >}}Allows extending the `sort` input of the elasticsearch body as covered in
+Allows extending the `sort` input of the elasticsearch body as covered in
 [Elasticsearch sort docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html)
 
 The `sort` input parameter contains the ElasticSearchSortInput generated for the default sort parameters "name" and "price".
@@ -666,25 +632,19 @@ searchConfig: {
          ];
      }
 }
-```{{< /member-description >}}
+```
 
 
-</div>
-<div class="symbol">
+## BoostFieldsConfig
 
-
-# BoostFieldsConfig
-
-{{< generation-info sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="662" packageName="@vendure/elasticsearch-plugin">}}
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="662" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration for [boosting](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#field-boost)
 the scores of given fields when performing a search against a term.
 
 Boosting a field acts as a score multiplier for matches against that field.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface BoostFieldsConfig {
   productName?: number;
   productVariantName?: number;
@@ -692,31 +652,24 @@ interface BoostFieldsConfig {
   sku?: number;
 }
 ```
-## Members
 
 ### productName
 
-{{< member-info kind="property" type="number" default="1"  >}}
+<MemberInfo kind="property" type="number" default="1"   />
 
-{{< member-description >}}Defines the boost factor for the productName field.{{< /member-description >}}
-
+Defines the boost factor for the productName field.
 ### productVariantName
 
-{{< member-info kind="property" type="number" default="1"  >}}
+<MemberInfo kind="property" type="number" default="1"   />
 
-{{< member-description >}}Defines the boost factor for the productVariantName field.{{< /member-description >}}
-
+Defines the boost factor for the productVariantName field.
 ### description
 
-{{< member-info kind="property" type="number" default="1"  >}}
+<MemberInfo kind="property" type="number" default="1"   />
 
-{{< member-description >}}Defines the boost factor for the description field.{{< /member-description >}}
-
+Defines the boost factor for the description field.
 ### sku
 
-{{< member-info kind="property" type="number" default="1"  >}}
+<MemberInfo kind="property" type="number" default="1"   />
 
-{{< member-description >}}Defines the boost factor for the sku field.{{< /member-description >}}
-
-
-</div>
+Defines the boost factor for the sku field.

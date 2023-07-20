@@ -1,28 +1,26 @@
 ---
 title: "LanguageCode"
 weight: 10
-date: 2023-07-14T16:57:50.654Z
+date: 2023-07-20T13:56:16.727Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# LanguageCode
-<div class="symbol">
 
+## LanguageCode
 
-# LanguageCode
-
-{{< generation-info sourceFile="packages/common/src/generated-types.ts" sourceLine="2090" packageName="@vendure/common">}}
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2090" packageName="@vendure/common" />
 
 Languages in the form of a ISO 639-1 language code with optional
 region or script modifier (e.g. de_AT). The selection available is based
 on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
 and includes the major spoken languages of the world and any widely-used variants.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 enum LanguageCode {
   af = 'af'
   ak = 'ak'
@@ -183,4 +181,3 @@ enum LanguageCode {
   zu = 'zu'
 }
 ```
-</div>

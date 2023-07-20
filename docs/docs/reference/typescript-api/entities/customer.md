@@ -1,27 +1,25 @@
 ---
 title: "Customer"
 weight: 10
-date: 2023-07-14T16:57:49.864Z
+date: 2023-07-20T13:56:15.121Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Customer
-<div class="symbol">
 
+## Customer
 
-# Customer
-
-{{< generation-info sourceFile="packages/core/src/entity/customer/customer.entity.ts" sourceLine="22" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/customer/customer.entity.ts" sourceLine="22" packageName="@vendure/core" />
 
 This entity represents a customer of the store, typically an individual person. A Customer can be
 a guest, in which case it has no associated <a href='/typescript-api/entities/user#user'>User</a>. Customers with registered account will
 have an associated User entity.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Customer extends VendureEntity implements ChannelAware, HasCustomFields, SoftDeletable {
   constructor(input?: DeepPartial<Customer>)
   @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
@@ -51,97 +49,81 @@ class Customer extends VendureEntity implements ChannelAware, HasCustomFields, S
     channels: Channel[];
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
  * HasCustomFields
  * <a href='/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/customer#customer'>Customer</a>&#62;) => Customer"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/customer#customer'>Customer</a>&#62;) => Customer"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### deletedAt
 
-{{< member-info kind="property" type="Date | null"  >}}
+<MemberInfo kind="property" type="Date | null"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### title
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### firstName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### lastName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### phoneNumber
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### emailAddress
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### groups
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### addresses
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/address#address'>Address</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/address#address'>Address</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### orders
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### user
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/user#user'>User</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/user#user'>User</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomCustomerFields"  >}}
+<MemberInfo kind="property" type="CustomCustomerFields"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
-</div>

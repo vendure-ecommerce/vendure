@@ -14,7 +14,7 @@ You can also define a custom Angular component to render any timeline entry usin
 Following the example used in the HistoryService docs, we can define a component to render the tax ID verification
 entry in our Customer timeline:
 
-```TypeScript
+```ts
 import { Component, NgModule } from '@angular/core';
 import {
   CustomerFragment,

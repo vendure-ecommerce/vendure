@@ -1,19 +1,19 @@
 ---
 title: "AdminUiExtension"
 weight: 10
-date: 2023-07-14T16:57:51.350Z
+date: 2023-07-20T13:56:18.780Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# AdminUiExtension
-<div class="symbol">
 
+## AdminUiExtension
 
-# AdminUiExtension
-
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="98" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="98" packageName="@vendure/ui-devkit" />
 
 Defines extensions to the Admin UI application by specifying additional
 Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
@@ -22,9 +22,7 @@ into the application.
 See [Extending the Admin UI](/docs/plugins/extending-the-admin-ui/) for
 detailed instructions.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface AdminUiExtension extends Partial<TranslationExtension>,
         Partial<StaticAssetExtension>,
         Partial<GlobalStylesExtension> {
@@ -35,41 +33,37 @@ interface AdminUiExtension extends Partial<TranslationExtension>,
   exclude?: string[];
 }
 ```
-## Extends
+Extends
 
  * Partial&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#translationextension'>TranslationExtension</a>&#62;
  * Partial&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension'>StaticAssetExtension</a>&#62;
  * Partial&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension'>GlobalStylesExtension</a>&#62;
 
 
-## Members
 
 ### id
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}An optional ID for the extension module. Only used internally for generating
-import paths to your module. If not specified, a unique hash will be used as the id.{{< /member-description >}}
-
+An optional ID for the extension module. Only used internally for generating
+import paths to your module. If not specified, a unique hash will be used as the id.
 ### extensionPath
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The path to the directory containing the extension module(s). The entire contents of this directory
+The path to the directory containing the extension module(s). The entire contents of this directory
 will be copied into the Admin UI app, including all TypeScript source files, html templates,
-scss style sheets etc.{{< /member-description >}}
-
+scss style sheets etc.
 ### ngModules
 
-{{< member-info kind="property" type="Array&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;"   />
 
-{{< member-description >}}One or more Angular modules which extend the default Admin UI.{{< /member-description >}}
-
+One or more Angular modules which extend the default Admin UI.
 ### pathAlias
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}An optional alias for the module so it can be referenced by other UI extension modules.
+An optional alias for the module so it can be referenced by other UI extension modules.
 
 By default, Angular modules declared in an AdminUiExtension do not have access to code outside the directory
 defined by the `extensionPath`. A scenario in which that can be useful though is in a monorepo codebase where
@@ -151,47 +145,39 @@ import { CommonSharedUiModule, CommonUiComponent } from '@common-ui-module/ui-sh
   ],
 })
 export class SampleUiExtensionModule {}
-```{{< /member-description >}}
-
+```
 ### exclude
 
-{{< member-info kind="property" type="string[]"  >}}
+<MemberInfo kind="property" type="string[]"   />
 
-{{< member-description >}}Optional array specifying filenames or [glob](https://github.com/isaacs/node-glob) patterns that should
+Optional array specifying filenames or [glob](https://github.com/isaacs/node-glob) patterns that should
 be skipped when copying the directory defined by `extensionPath`.
 
 *Example*
 
 ```ts
 exclude: ['**/*.spec.ts']
-```{{< /member-description >}}
+```
 
 
-</div>
-<div class="symbol">
+## TranslationExtension
 
-
-# TranslationExtension
-
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="18" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="18" packageName="@vendure/ui-devkit" />
 
 Defines extensions to the Admin UI translations. Can be used as a stand-alone extension definition which only adds translations
 without adding new UI functionality, or as part of a full <a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension'>AdminUiExtension</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface TranslationExtension {
   translations: { [languageCode in LanguageCode]?: string };
 }
 ```
-## Members
 
 ### translations
 
-{{< member-info kind="property" type="{ [languageCode in <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }"  >}}
+<MemberInfo kind="property" type="{ [languageCode in <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }"   />
 
-{{< member-description >}}Optional object defining any translation files for the Admin UI. The value should be an object with
+Optional object defining any translation files for the Admin UI. The value should be an object with
 the key as a 2-character [ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
 and the value being a [glob](https://github.com/isaacs/node-glob) for any relevant
 translation files in JSON format.
@@ -203,161 +189,121 @@ translations: {
   en: path.join(__dirname, 'translations/*.en.json'),
   de: path.join(__dirname, 'translations/*.de.json'),
 }
-```{{< /member-description >}}
+```
 
 
-</div>
-<div class="symbol">
+## StaticAssetExtension
 
-
-# StaticAssetExtension
-
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="44" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="44" packageName="@vendure/ui-devkit" />
 
 Defines extensions which copy static assets to the custom Admin UI application source asset directory.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface StaticAssetExtension {
   staticAssets: StaticAssetDefinition[];
 }
 ```
-## Members
 
 ### staticAssets
 
-{{< member-info kind="property" type="<a href='/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]"   />
 
-{{< member-description >}}Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
-directory.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
+directory.
 
 
-# GlobalStylesExtension
+## GlobalStylesExtension
 
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="60" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="60" packageName="@vendure/ui-devkit" />
 
 Defines extensions which add global styles to the custom Admin UI application.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface GlobalStylesExtension {
   globalStyles: string[] | string;
 }
 ```
-## Members
 
 ### globalStyles
 
-{{< member-info kind="property" type="string[] | string"  >}}
+<MemberInfo kind="property" type="string[] | string"   />
 
-{{< member-description >}}Specifies a path (or array of paths) to global style files (css or Sass) which will be
-incorporated into the Admin UI app global stylesheet.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Specifies a path (or array of paths) to global style files (css or Sass) which will be
+incorporated into the Admin UI app global stylesheet.
 
 
-# SassVariableOverridesExtension
+## SassVariableOverridesExtension
 
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="76" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="76" packageName="@vendure/ui-devkit" />
 
 Defines an extension which allows overriding Clarity Design System's Sass variables used in styles on the Admin UI.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface SassVariableOverridesExtension {
   sassVariableOverrides: string;
 }
 ```
-## Members
 
 ### sassVariableOverrides
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}Specifies a path to a Sass style file containing variable declarations, which will take precedence over
-default values defined in Clarity.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Specifies a path to a Sass style file containing variable declarations, which will take precedence over
+default values defined in Clarity.
 
 
-# StaticAssetDefinition
+## StaticAssetDefinition
 
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="231" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="231" packageName="@vendure/ui-devkit" />
 
 A static asset can be provided as a path to the asset, or as an object containing a path and a new
 name, which will cause the compiler to copy and then rename the asset.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type StaticAssetDefinition = string | { path: string; rename: string }
 ```
-</div>
-<div class="symbol">
 
 
-# AdminUiExtensionSharedModule
+## AdminUiExtensionSharedModule
 
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="240" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="240" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface AdminUiExtensionSharedModule {
   type: 'shared';
   ngModuleFileName: string;
   ngModuleName: string;
 }
 ```
-## Members
 
 ### type
 
-{{< member-info kind="property" type="'shared'"  >}}
+<MemberInfo kind="property" type="'shared'"   />
 
-{{< member-description >}}Shared modules are directly imported into the main AppModule of the Admin UI
+Shared modules are directly imported into the main AppModule of the Admin UI
 and should be used to declare custom form components and define custom
-navigation items.{{< /member-description >}}
-
+navigation items.
 ### ngModuleFileName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The name of the file containing the extension module class.{{< /member-description >}}
-
+The name of the file containing the extension module class.
 ### ngModuleName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The name of the extension module class.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+The name of the extension module class.
 
 
-# AdminUiExtensionLazyModule
+## AdminUiExtensionLazyModule
 
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="267" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="267" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface AdminUiExtensionLazyModule {
   type: 'lazy';
   route: string;
@@ -365,34 +311,27 @@ interface AdminUiExtensionLazyModule {
   ngModuleName: string;
 }
 ```
-## Members
 
 ### type
 
-{{< member-info kind="property" type="'lazy'"  >}}
+<MemberInfo kind="property" type="'lazy'"   />
 
-{{< member-description >}}Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
-modules which define new views for the Admin UI.{{< /member-description >}}
-
+Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
+modules which define new views for the Admin UI.
 ### route
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The route specifies the route at which the module will be lazy-loaded. E.g. a value
+The route specifies the route at which the module will be lazy-loaded. E.g. a value
 of `'foo'` will cause the module to lazy-load when the `/extensions/foo` route
-is activated.{{< /member-description >}}
-
+is activated.
 ### ngModuleFileName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The name of the file containing the extension module class.{{< /member-description >}}
-
+The name of the file containing the extension module class.
 ### ngModuleName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The name of the extension module class.{{< /member-description >}}
-
-
-</div>
+The name of the extension module class.

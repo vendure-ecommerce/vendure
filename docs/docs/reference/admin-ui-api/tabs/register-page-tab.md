@@ -1,19 +1,19 @@
 ---
 title: "RegisterPageTab"
 weight: 10
-date: 2023-07-14T16:57:51.138Z
+date: 2023-07-20T13:56:18.097Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# registerPageTab
-<div class="symbol">
 
+## registerPageTab
 
-# registerPageTab
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/page/page.service.ts" sourceLine="78" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/page/page.service.ts" sourceLine="78" packageName="@vendure/admin-ui" />
 
 Add a tab to an existing list or detail page.
 
@@ -34,15 +34,12 @@ Add a tab to an existing list or detail page.
 export class MyUiExtensionModule {}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function registerPageTab(config: PageTabConfig): Provider
 ```
-## Parameters
+Parameters
 
 ### config
 
-{{< member-info kind="parameter" type="<a href='/admin-ui-api/tabs/page-tab-config#pagetabconfig'>PageTabConfig</a>" >}}
+<MemberInfo kind="parameter" type="<a href='/admin-ui-api/tabs/page-tab-config#pagetabconfig'>PageTabConfig</a>" />
 
-</div>

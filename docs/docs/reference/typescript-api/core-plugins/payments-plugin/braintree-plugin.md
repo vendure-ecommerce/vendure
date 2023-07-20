@@ -1,19 +1,19 @@
 ---
 title: "BraintreePlugin"
 weight: 10
-date: 2023-07-14T16:57:50.790Z
+date: 2023-07-20T13:56:17.029Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# BraintreePlugin
-<div class="symbol">
 
+## BraintreePlugin
 
-# BraintreePlugin
-
-{{< generation-info sourceFile="packages/payments-plugin/src/braintree/braintree.plugin.ts" sourceLine="241" packageName="@vendure/payments-plugin">}}
+<GenerationInfo sourceFile="packages/payments-plugin/src/braintree/braintree.plugin.ts" sourceLine="241" packageName="@vendure/payments-plugin" />
 
 This plugin enables payments to be processed by [Braintree](https://www.braintreepayments.com/), a popular payment provider.
 
@@ -242,73 +242,60 @@ const { addPaymentToOrder } = await graphQlClient.query(gql`
   );
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class BraintreePlugin {
   static static options: BraintreePluginOptions = {};
   static init(options: BraintreePluginOptions) => Type<BraintreePlugin>;
 }
 ```
-## Members
 
 ### options
 
-{{< member-info kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;"   />
 
 
-</div>
-<div class="symbol">
 
 
-# BraintreePluginOptions
+## BraintreePluginOptions
 
-{{< generation-info sourceFile="packages/payments-plugin/src/braintree/types.ts" sourceLine="25" packageName="@vendure/payments-plugin">}}
+<GenerationInfo sourceFile="packages/payments-plugin/src/braintree/types.ts" sourceLine="25" packageName="@vendure/payments-plugin" />
 
 Options for the Braintree plugin.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface BraintreePluginOptions {
   environment?: Environment;
   storeCustomersInBraintree?: boolean;
   extractMetadata?: (transaction: Transaction) => PaymentMetadata;
 }
 ```
-## Members
 
 ### environment
 
-{{< member-info kind="property" type="Environment" default="Environment.Sandbox"  >}}
+<MemberInfo kind="property" type="Environment" default="Environment.Sandbox"   />
 
-{{< member-description >}}The Braintree environment being targeted, e.g. sandbox or production.{{< /member-description >}}
-
+The Braintree environment being targeted, e.g. sandbox or production.
 ### storeCustomersInBraintree
 
-{{< member-info kind="property" type="boolean" default="false"  >}}
+<MemberInfo kind="property" type="boolean" default="false"   />
 
-{{< member-description >}}If set to `true`, a [Customer](https://developer.paypal.com/braintree/docs/guides/customers) object
+If set to `true`, a [Customer](https://developer.paypal.com/braintree/docs/guides/customers) object
 will be created in Braintree, which allows the secure storage ("vaulting") of previously-used payment methods.
 This is done by adding a custom field to the Customer entity to store the Braintree customer ID,
 so switching this on will require a database migration / synchronization.
 
 Since v1.8, it is possible to override vaulting on a per-payment basis by passing `includeCustomerId: false` to the
-`generateBraintreeClientToken` mutation.{{< /member-description >}}
-
+`generateBraintreeClientToken` mutation.
 ### extractMetadata
 
-{{< member-info kind="property" type="(transaction: <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata"  since="1.7.0" >}}
+<MemberInfo kind="property" type="(transaction: <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata"  since="1.7.0"  />
 
-{{< member-description >}}Allows you to configure exactly what information from the Braintree
+Allows you to configure exactly what information from the Braintree
 [Transaction object](https://developer.paypal.com/braintree/docs/reference/response/transaction#result-object) (which is returned by the
 `transaction.sale()` method of the SDK) should be persisted to the resulting Payment entity metadata.
 
@@ -356,7 +343,4 @@ const metadata = {
     }
   }
 }
-```{{< /member-description >}}
-
-
-</div>
+```

@@ -1,27 +1,25 @@
 ---
 title: "Administrator"
 weight: 10
-date: 2023-07-14T16:57:49.829Z
+date: 2023-07-20T13:56:15.037Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Administrator
-<div class="symbol">
 
+## Administrator
 
-# Administrator
-
-{{< generation-info sourceFile="packages/core/src/entity/administrator/administrator.entity.ts" sourceLine="18" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/administrator/administrator.entity.ts" sourceLine="18" packageName="@vendure/core" />
 
 An administrative user who has access to the Admin UI and Admin API. The
 specific permissions of the Administrator are determined by the assigned
 <a href='/typescript-api/entities/role#role'>Role</a>s.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Administrator extends VendureEntity implements SoftDeletable, HasCustomFields {
   constructor(input?: DeepPartial<Administrator>)
   @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
@@ -37,60 +35,50 @@ class Administrator extends VendureEntity implements SoftDeletable, HasCustomFie
     customFields: CustomAdministratorFields;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a>
  * HasCustomFields
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Administrator"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Administrator"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### deletedAt
 
-{{< member-info kind="property" type="Date | null"  >}}
+<MemberInfo kind="property" type="Date | null"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### firstName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### lastName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### emailAddress
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### user
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/user#user'>User</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/user#user'>User</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### customFields
 
-{{< member-info kind="property" type="CustomAdministratorFields"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="CustomAdministratorFields"   />
 
 
-</div>

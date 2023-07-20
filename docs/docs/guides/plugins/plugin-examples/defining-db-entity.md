@@ -7,7 +7,7 @@ showtoc: true
 
 This example shows how new [TypeORM database entities](https://typeorm.io/entities) can be defined by plugins.
 
-```TypeScript
+```ts
 // product-review.entity.ts
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { VendureEntity } from '@vendure/core';
@@ -33,7 +33,7 @@ class ProductReview extends VendureEntity {
 
 The new entity is then passed to the `entities` array of the VendurePlugin metadata:
 
-```TypeScript {hl_lines=[6]}
+```ts {hl_lines=[6]}
 // reviews-plugin.ts
 import { VendurePlugin } from '@vendure/core';
 import { ProductReview } from './product-review.entity';

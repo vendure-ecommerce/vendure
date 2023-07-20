@@ -1,25 +1,22 @@
 ---
 title: "UiExtensionCompilerProcessArgument"
 weight: 10
-date: 2023-07-14T16:57:51.361Z
+date: 2023-07-20T13:56:18.819Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# UiExtensionCompilerProcessArgument
-<div class="symbol">
 
+## UiExtensionCompilerProcessArgument
 
-# UiExtensionCompilerProcessArgument
-
-{{< generation-info sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="299" packageName="@vendure/ui-devkit">}}
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="299" packageName="@vendure/ui-devkit" />
 
 Argument to configure process (watch or compile)
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type UiExtensionCompilerProcessArgument = string | [string, any]
 ```
-</div>

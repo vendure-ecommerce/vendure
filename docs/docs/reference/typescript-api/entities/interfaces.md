@@ -1,140 +1,106 @@
 ---
 title: "Interfaces"
 weight: 10
-date: 2023-07-14T16:57:49.451Z
+date: 2023-07-20T13:56:14.231Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# interfaces
-<div class="symbol">
 
+## ChannelAware
 
-# ChannelAware
-
-{{< generation-info sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="17" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="17" packageName="@vendure/core" />
 
 Entities which can be assigned to Channels should implement this interface.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface ChannelAware {
   channels: Channel[];
 }
 ```
-## Members
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
-</div>
-<div class="symbol">
 
 
-# SoftDeletable
+## SoftDeletable
 
-{{< generation-info sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="28" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="28" packageName="@vendure/core" />
 
 Entities which can be soft deleted should implement this interface.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface SoftDeletable {
   deletedAt: Date | null;
 }
 ```
-## Members
 
 ### deletedAt
 
-{{< member-info kind="property" type="Date | null"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="Date | null"   />
 
 
-</div>
-<div class="symbol">
 
 
-# Orderable
+## Orderable
 
-{{< generation-info sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="39" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="39" packageName="@vendure/core" />
 
 Entities which can be ordered relative to their siblings in a list.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface Orderable {
   position: number;
 }
 ```
-## Members
 
 ### position
 
-{{< member-info kind="property" type="number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="number"   />
 
 
-</div>
-<div class="symbol">
 
 
-# Taggable
+## Taggable
 
-{{< generation-info sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="50" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="50" packageName="@vendure/core" />
 
 Entities which can have Tags applied to them.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface Taggable {
   tags: Tag[];
 }
 ```
-## Members
 
 ### tags
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/tag#tag'>Tag</a>[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/tag#tag'>Tag</a>[]"   />
 
 
-</div>
-<div class="symbol">
 
 
-# Translatable
+## Translatable
 
-{{< generation-info sourceFile="packages/core/src/common/types/locale-types.ts" sourceLine="29" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/types/locale-types.ts" sourceLine="29" packageName="@vendure/core" />
 
 Entities which have localizable string properties should implement this type.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface Translatable {
   translations: Array<Translation<VendureEntity>>;
 }
 ```
-## Members
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;"   />
 
 
-</div>

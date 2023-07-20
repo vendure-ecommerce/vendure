@@ -1,25 +1,23 @@
 ---
 title: "LocalAssetStorageStrategy"
 weight: 10
-date: 2023-07-14T16:57:50.683Z
+date: 2023-07-20T13:56:16.802Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# LocalAssetStorageStrategy
-<div class="symbol">
 
+## LocalAssetStorageStrategy
 
-# LocalAssetStorageStrategy
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/local-asset-storage-strategy.ts" sourceLine="15" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/local-asset-storage-strategy.ts" sourceLine="15" packageName="@vendure/asset-server-plugin" />
 
 A persistence strategy which saves files to the local file system.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class LocalAssetStorageStrategy implements AssetStorageStrategy {
   toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;
   constructor(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string)
@@ -31,60 +29,49 @@ class LocalAssetStorageStrategy implements AssetStorageStrategy {
   deleteFile(identifier: string) => Promise<void>;
 }
 ```
-## Implements
+Implements
 
  * <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>
 
 
-## Members
 
 ### toAbsoluteUrl
 
-{{< member-info kind="property" type="((reqest: Request, identifier: string) =&#62; string) | undefined"  >}}
+<MemberInfo kind="property" type="((reqest: Request, identifier: string) =&#62; string) | undefined"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) =&#62; string) => LocalAssetStorageStrategy"  >}}
+<MemberInfo kind="method" type="(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) =&#62; string) => LocalAssetStorageStrategy"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### writeFileFromStream
 
-{{< member-info kind="method" type="(fileName: string, data: ReadStream) => Promise&#60;string&#62;"  >}}
+<MemberInfo kind="method" type="(fileName: string, data: ReadStream) => Promise&#60;string&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### writeFileFromBuffer
 
-{{< member-info kind="method" type="(fileName: string, data: Buffer) => Promise&#60;string&#62;"  >}}
+<MemberInfo kind="method" type="(fileName: string, data: Buffer) => Promise&#60;string&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### fileExists
 
-{{< member-info kind="method" type="(fileName: string) => Promise&#60;boolean&#62;"  >}}
+<MemberInfo kind="method" type="(fileName: string) => Promise&#60;boolean&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### readFileToBuffer
 
-{{< member-info kind="method" type="(identifier: string) => Promise&#60;Buffer&#62;"  >}}
+<MemberInfo kind="method" type="(identifier: string) => Promise&#60;Buffer&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### readFileToStream
 
-{{< member-info kind="method" type="(identifier: string) => Promise&#60;Stream&#62;"  >}}
+<MemberInfo kind="method" type="(identifier: string) => Promise&#60;Stream&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### deleteFile
 
-{{< member-info kind="method" type="(identifier: string) => Promise&#60;void&#62;"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(identifier: string) => Promise&#60;void&#62;"   />
 
 
-</div>

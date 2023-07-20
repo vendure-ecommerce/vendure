@@ -1,38 +1,35 @@
 ---
 title: "InjectableStrategy"
 weight: 10
-date: 2023-07-14T16:57:49.458Z
+date: 2023-07-20T13:56:14.244Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# InjectableStrategy
-<div class="symbol">
 
+## InjectableStrategy
 
-# InjectableStrategy
-
-{{< generation-info sourceFile="packages/core/src/common/types/injectable-strategy.ts" sourceLine="10" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/common/types/injectable-strategy.ts" sourceLine="10" packageName="@vendure/core" />
 
 This interface defines the setup and teardown hooks available to the
 various strategies used to configure Vendure.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface InjectableStrategy {
   init?: (injector: Injector) => void | Promise<void>;
   destroy?: () => void | Promise<void>;
 }
 ```
-## Members
 
 ### init
 
-{{< member-info kind="property" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) =&#62; void | Promise&#60;void&#62;"  >}}
+<MemberInfo kind="property" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) =&#62; void | Promise&#60;void&#62;"   />
 
-{{< member-description >}}Defines setup logic to be run during application bootstrap. Receives
+Defines setup logic to be run during application bootstrap. Receives
 the <a href='/typescript-api/common/injector#injector'>Injector</a> as an argument, which allows application providers
 to be used as part of the setup. This hook will be called on both the
 main server and the worker processes.
@@ -44,13 +41,9 @@ async init(injector: Injector) {
   const myService = injector.get(MyService);
   await myService.doSomething();
 }
-```{{< /member-description >}}
-
+```
 ### destroy
 
-{{< member-info kind="property" type="() =&#62; void | Promise&#60;void&#62;"  >}}
+<MemberInfo kind="property" type="() =&#62; void | Promise&#60;void&#62;"   />
 
-{{< member-description >}}Defines teardown logic to be run before application shutdown.{{< /member-description >}}
-
-
-</div>
+Defines teardown logic to be run before application shutdown.

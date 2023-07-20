@@ -1,19 +1,19 @@
 ---
 title: "ChipComponent"
 weight: 10
-date: 2023-07-14T16:57:51.149Z
+date: 2023-07-20T13:56:18.125Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ChipComponent
-<div class="symbol">
 
+## ChipComponent
 
-# ChipComponent
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/chip/chip.component.ts" sourceLine="16" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/chip/chip.component.ts" sourceLine="16" packageName="@vendure/admin-ui" />
 
 A chip component for displaying a label with an optional action icon.
 
@@ -26,9 +26,7 @@ A chip component for displaying a label with an optional action icon.
 {{ item.value }}</vdr-chip>
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class ChipComponent {
   @Input() @Input() icon: string;
   @Input() @Input() invert = false;
@@ -37,38 +35,30 @@ class ChipComponent {
   @Output() @Output() iconClick = new EventEmitter<MouseEvent>();
 }
 ```
-## Members
 
 ### icon
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The icon should be the name of one of the available Clarity icons: https://clarity.design/foundation/icons/shapes/{{< /member-description >}}
-
+The icon should be the name of one of the available Clarity icons: https://clarity.design/foundation/icons/shapes/
 ### invert
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### colorFrom
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}If set, the chip will have an auto-generated background
-color based on the string value passed in.{{< /member-description >}}
-
+If set, the chip will have an auto-generated background
+color based on the string value passed in.
 ### colorType
 
-{{< member-info kind="property" type="'error' | 'success' | 'warning'"  >}}
+<MemberInfo kind="property" type="'error' | 'success' | 'warning'"   />
 
-{{< member-description >}}The color of the chip can also be one of the standard status colors.{{< /member-description >}}
-
+The color of the chip can also be one of the standard status colors.
 ### iconClick
 
-{{< member-info kind="property" type=""  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type=""   />
 
 
-</div>

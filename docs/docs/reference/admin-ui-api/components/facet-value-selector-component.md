@@ -1,19 +1,19 @@
 ---
 title: "FacetValueSelectorComponent"
 weight: 10
-date: 2023-07-14T16:57:51.224Z
+date: 2023-07-20T13:56:18.369Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# FacetValueSelectorComponent
-<div class="symbol">
 
+## FacetValueSelectorComponent
 
-# FacetValueSelectorComponent
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/shared/components/facet-value-selector/facet-value-selector.component.ts" sourceLine="42" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/facet-value-selector/facet-value-selector.component.ts" sourceLine="42" packageName="@vendure/admin-ui" />
 
 A form control for selecting facet values.
 
@@ -36,9 +36,7 @@ this.facets = this.dataService
   .mapSingle(data => data.facets.items);
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Output() @Output() selectedValuesChange = new EventEmitter<FacetValueFragment[]>();
   @Input() @Input() readonly = false;
@@ -62,134 +60,111 @@ class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAcce
   writeValue(obj: string | FacetValueFragment[] | Array<string | number> | null) => void;
 }
 ```
-## Implements
+Implements
 
  * OnInit
  * OnDestroy
  * ControlValueAccessor
 
 
-## Members
 
 ### selectedValuesChange
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### readonly
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### transformControlValueAccessorValue
 
-{{< member-info kind="property" type="(value: FacetValueFragment[]) =&#62; any[]"  >}}
+<MemberInfo kind="property" type="(value: FacetValueFragment[]) =&#62; any[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### searchInput$
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### searchLoading
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### searchResults$
 
-{{< member-info kind="property" type="Observable&#60;FacetValueFragment[]&#62;"  >}}
+<MemberInfo kind="property" type="Observable&#60;FacetValueFragment[]&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### selectedIds$
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onChangeFn
 
-{{< member-info kind="property" type="(val: any) =&#62; void"  >}}
+<MemberInfo kind="property" type="(val: any) =&#62; void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onTouchFn
 
-{{< member-info kind="property" type="() =&#62; void"  >}}
+<MemberInfo kind="property" type="() =&#62; void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### disabled
 
-{{< member-info kind="property" type=""  >}}
+<MemberInfo kind="property" type=""   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### value
 
-{{< member-info kind="property" type="Array&#60;string | FacetValueFragment&#62;"  >}}
+<MemberInfo kind="property" type="Array&#60;string | FacetValueFragment&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### constructor
 
-{{< member-info kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent"  >}}
+<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnInit
 
-{{< member-info kind="method" type="() => void"  >}}
+<MemberInfo kind="method" type="() => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### ngOnDestroy
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onChange
 
-{{< member-info kind="method" type="(selected: FacetValueFragment[]) => "  >}}
+<MemberInfo kind="method" type="(selected: FacetValueFragment[]) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### registerOnChange
 
-{{< member-info kind="method" type="(fn: any) => "  >}}
+<MemberInfo kind="method" type="(fn: any) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### registerOnTouched
 
-{{< member-info kind="method" type="(fn: any) => "  >}}
+<MemberInfo kind="method" type="(fn: any) => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### setDisabledState
 
-{{< member-info kind="method" type="(isDisabled: boolean) => void"  >}}
+<MemberInfo kind="method" type="(isDisabled: boolean) => void"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### focus
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### writeValue
 
-{{< member-info kind="method" type="(obj: string | FacetValueFragment[] | Array&#60;string | number&#62; | null) => void"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(obj: string | FacetValueFragment[] | Array&#60;string | number&#62; | null) => void"   />
 
 
-</div>

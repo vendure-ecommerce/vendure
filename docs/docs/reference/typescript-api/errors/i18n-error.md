@@ -1,19 +1,19 @@
 ---
 title: "I18nError"
 weight: 10
-date: 2023-07-14T16:57:50.132Z
+date: 2023-07-20T13:56:15.644Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# I18nError
-<div class="symbol">
 
+## I18nError
 
-# I18nError
-
-{{< generation-info sourceFile="packages/core/src/i18n/i18n-error.ts" sourceLine="18" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/i18n/i18n-error.ts" sourceLine="18" packageName="@vendure/core" />
 
 All errors thrown in the Vendure server must use or extend this error class. This allows the
 error message to be translated before being served to the client.
@@ -24,25 +24,19 @@ a key defined in the `i18n/messages/<languageCode>.json` files.
 Note that this class should not be directly used in code, but should be extended by
 a more specific Error class.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class I18nError extends ApolloError {
   constructor(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: LogLevel = LogLevel.Warn)
 }
 ```
-## Extends
+Extends
 
  * ApolloError
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: <a href='/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Warn) => I18nError"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: <a href='/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Warn) => I18nError"   />
 
 
-</div>

@@ -11,7 +11,7 @@ Put another way, the Worker executes jobs registered with the [JobQueueService](
 
 The worker is started by calling the [`bootstrapWorker()`]({{< relref "bootstrap-worker" >}}) function with the same configuration as is passed to the main server `bootstrap()`:
 
-```TypeScript
+```ts
 import { bootstrapWorker } from '@vendure/core';
 import { config } from './vendure-config';
 
@@ -34,7 +34,7 @@ The Worker is a [NestJS standalone application](https://docs.nestjs.com/standalo
 It is possible to run multiple workers in parallel to better handle heavy loads. Using the [JobQueueOptions.activeQueues]({{< relref "job-queue-options" >}}#activequeues) configuration, it is even possible to have particular workers dedicated to one or more specific types of jobs.
 For example, if your application does video transcoding, you might want to set up a dedicated worker just for that task:
 
-```TypeScript
+```ts
 import { bootstrapWorker, mergeConfig } from '@vendure/core';
 import { config } from './vendure-config';
 
@@ -56,7 +56,7 @@ bootstrapWorker(videoWorkerConfig)
 
 It is possible to run jobs from the Job Queue on the main server. This is mainly used for testing and automated tasks, and is not advised for production use, since it negates the benefits of running long tasks off of the main process. To do so, you need to manually start the JobQueueService:
 
-```TypeScript
+```ts
 import { bootstrap, JobQueueService } from '@vendure/core';
 import { config } from './vendure-config';
 
@@ -76,7 +76,7 @@ If you are authoring a [Vendure plugin]({{< relref "/guides/plugins" >}}) to imp
 
 Sometimes your code may need to be aware of whether it is being run as part of a server or worker process. In this case you can inject the [ProcessContext]({{< relref "process-context" >}}) provider and query it like this:
 
-```TypeScript
+```ts
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ProcessContext } from '@vendure/core';
 

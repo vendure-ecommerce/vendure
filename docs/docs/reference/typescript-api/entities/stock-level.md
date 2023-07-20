@@ -1,26 +1,24 @@
 ---
 title: "StockLevel"
 weight: 10
-date: 2023-07-14T16:57:50.009Z
+date: 2023-07-20T13:56:15.414Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# StockLevel
-<div class="symbol">
 
+## StockLevel
 
-# StockLevel
-
-{{< generation-info sourceFile="packages/core/src/entity/stock-level/stock-level.entity.ts" sourceLine="16" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/stock-level/stock-level.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 A StockLevel represents the number of a particular <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which are available
 at a particular <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class StockLevel extends VendureEntity {
   constructor(input: DeepPartial<StockLevel>)
   @Index() @ManyToOne(type => ProductVariant, productVariant => productVariant.stockLevels, { onDelete: 'CASCADE' }) @Index()
@@ -39,54 +37,44 @@ class StockLevel extends VendureEntity {
     stockAllocated: number;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;) => StockLevel"  >}}
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;) => StockLevel"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### productVariant
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### productVariantId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockLocation
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockLocationId
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockOnHand
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### stockAllocated
 
-{{< member-info kind="property" type="number"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="number"   />
 
 
-</div>

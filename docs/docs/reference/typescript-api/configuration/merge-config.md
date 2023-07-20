@@ -1,19 +1,19 @@
 ---
 title: "MergeConfig"
 weight: 10
-date: 2023-07-14T16:57:49.576Z
+date: 2023-07-20T13:56:14.494Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# mergeConfig
-<div class="symbol">
 
+## mergeConfig
 
-# mergeConfig
-
-{{< generation-info sourceFile="packages/core/src/config/merge-config.ts" sourceLine="30" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/config/merge-config.ts" sourceLine="30" packageName="@vendure/core" />
 
 Performs a deep merge of two VendureConfig objects. Unlike `Object.assign()` the `target` object is
 not mutated, instead the function returns a new object which is the result of deeply merging the
@@ -36,23 +36,20 @@ const result = mergeConfig(defaultConfig, {
 };
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function mergeConfig<T extends VendureConfig>(target: T, source: PartialVendureConfig, depth:  = 0): T
 ```
-## Parameters
+Parameters
 
 ### target
 
-{{< member-info kind="parameter" type="T" >}}
+<MemberInfo kind="parameter" type="T" />
 
 ### source
 
-{{< member-info kind="parameter" type="PartialVendureConfig" >}}
+<MemberInfo kind="parameter" type="PartialVendureConfig" />
 
 ### depth
 
-{{< member-info kind="parameter" type="" >}}
+<MemberInfo kind="parameter" type="" />
 
-</div>

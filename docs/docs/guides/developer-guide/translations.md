@@ -10,7 +10,7 @@ While Vendure is only using `error`, `errorResult` and `message` resource keys y
 
 ## Translatable Error
 This example shows how to create a custom translatable error
-```typescript
+```ts
 /**
  * Custom error class
  */

@@ -1,19 +1,19 @@
 ---
 title: "Api Decorator"
 weight: 10
-date: 2023-07-14T16:57:49.409Z
+date: 2023-07-20T13:56:14.144Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Api Decorator
-<div class="symbol">
 
+## Api
 
-# Api
-
-{{< generation-info sourceFile="packages/core/src/api/decorators/api.decorator.ts" sourceLine="26" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/api/decorators/api.decorator.ts" sourceLine="26" packageName="@vendure/core" />
 
 Resolver param decorator which returns which Api the request came though.
 This is useful because sometimes the same resolver will have different behaviour
@@ -32,4 +32,3 @@ Returns a string of type <a href='/typescript-api/request/api-type#apitype'>ApiT
  }
 ```
 
-</div>

@@ -1,19 +1,19 @@
 ---
 title: "BootstrapWorker"
 weight: 10
-date: 2023-07-14T16:57:49.413Z
+date: 2023-07-20T13:56:14.153Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# bootstrapWorker
-<div class="symbol">
 
+## bootstrapWorker
 
-# bootstrapWorker
-
-{{< generation-info sourceFile="packages/core/src/bootstrap.ts" sourceLine="102" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="102" packageName="@vendure/core" />
 
 Bootstraps a Vendure worker. Resolves to a <a href='/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a> object containing a reference to the underlying
 NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
@@ -35,15 +35,12 @@ bootstrapWorker(config)
   });
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<VendureWorker>
 ```
-## Parameters
+Parameters
 
 ### userConfig
 
-{{< member-info kind="parameter" type="Partial&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" >}}
+<MemberInfo kind="parameter" type="Partial&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
 
-</div>

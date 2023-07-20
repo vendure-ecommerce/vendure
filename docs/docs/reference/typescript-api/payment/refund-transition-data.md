@@ -1,50 +1,42 @@
 ---
 title: "RefundTransitionData"
 weight: 10
-date: 2023-07-14T16:57:50.261Z
+date: 2023-07-20T13:56:15.931Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# RefundTransitionData
-<div class="symbol">
 
+## RefundTransitionData
 
-# RefundTransitionData
-
-{{< generation-info sourceFile="packages/core/src/service/helpers/refund-state-machine/refund-state.ts" sourceLine="33" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/service/helpers/refund-state-machine/refund-state.ts" sourceLine="33" packageName="@vendure/core" />
 
 The data which is passed to the state transition handlers of the RefundStateMachine.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface RefundTransitionData {
   ctx: RequestContext;
   order: Order;
   refund: Refund;
 }
 ```
-## Members
 
 ### ctx
 
-{{< member-info kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### order
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### refund
 
-{{< member-info kind="property" type="Refund"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="Refund"   />
 
 
-</div>

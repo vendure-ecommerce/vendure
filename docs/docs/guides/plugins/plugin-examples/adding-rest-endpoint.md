@@ -6,7 +6,7 @@ showtoc: true
 # Adding a REST endpoint
 
 This plugin adds a single REST endpoint at `http://localhost:3000/products` which returns a list of all Products. Find out more about [Nestjs REST Controllers](https://docs.nestjs.com/controllers).
-```TypeScript
+```ts
 // products.controller.ts
 import { Controller, Get } from '@nestjs/common';
 import { Ctx, ProductService, RequestContext } from '@vendure/core'; 
@@ -21,7 +21,7 @@ export class ProductsController {
   }
 }
 ```
-```TypeScript
+```ts
 // rest.plugin.ts
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { ProductsController } from './products.controller';
@@ -43,7 +43,7 @@ Side note: since this uses no Vendure-specific metadata, it could also be writte
 
 You can use the [Allow decorator]({{< relref "allow-decorator" >}}) to declare the permissions required to access a REST endpoint:
 
-```TypeScript {hl_lines=[8]}
+```ts {hl_lines=[8]}
 import { Controller, Get } from '@nestjs/common';
 import { Allow, Permission, Ctx, ProductService, RequestContext } from '@vendure/core'; 
 

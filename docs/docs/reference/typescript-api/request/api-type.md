@@ -1,25 +1,22 @@
 ---
 title: "ApiType"
 weight: 10
-date: 2023-07-14T16:57:49.370Z
+date: 2023-07-20T13:56:14.066Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# ApiType
-<div class="symbol">
 
+## ApiType
 
-# ApiType
-
-{{< generation-info sourceFile="packages/core/src/api/common/get-api-type.ts" sourceLine="9" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/api/common/get-api-type.ts" sourceLine="9" packageName="@vendure/core" />
 
 Which of the GraphQL APIs the current request came via.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type ApiType = 'admin' | 'shop' | 'custom'
 ```
-</div>

@@ -1,19 +1,19 @@
 ---
 title: "HashedAssetNamingStrategy"
 weight: 10
-date: 2023-07-14T16:57:50.681Z
+date: 2023-07-20T13:56:16.794Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# HashedAssetNamingStrategy
-<div class="symbol">
 
+## HashedAssetNamingStrategy
 
-# HashedAssetNamingStrategy
-
-{{< generation-info sourceFile="packages/asset-server-plugin/src/hashed-asset-naming-strategy.ts" sourceLine="20" packageName="@vendure/asset-server-plugin">}}
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/hashed-asset-naming-strategy.ts" sourceLine="20" packageName="@vendure/asset-server-plugin" />
 
 An extension of the <a href='/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a> which prefixes file names with
 the type (`'source'` or `'preview'`) as well as a 2-character sub-directory based on
@@ -26,32 +26,25 @@ number of files can lead to performance issues when reading and writing to that 
 With this strategy, even with 200,000 total assets stored, each directory would
 only contain less than 800 files.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class HashedAssetNamingStrategy extends DefaultAssetNamingStrategy {
   generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
   generatePreviewFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a>
 
 
-## Members
 
 ### generateSourceFileName
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"  >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### generatePreviewFileName
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
 
 
-</div>

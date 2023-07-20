@@ -1,59 +1,49 @@
 ---
 title: "Types"
 weight: 10
-date: 2023-07-14T16:57:50.171Z
+date: 2023-07-20T13:56:15.734Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# types
-<div class="symbol">
 
+## BackoffStrategy
 
-# BackoffStrategy
-
-{{< generation-info sourceFile="packages/core/src/job-queue/polling-job-queue-strategy.ts" sourceLine="22" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/polling-job-queue-strategy.ts" sourceLine="22" packageName="@vendure/core" />
 
 Defines the backoff strategy used when retrying failed jobs. Returns the delay in
 ms that should pass before the failed job is retried.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job) => number
 ```
-</div>
-<div class="symbol">
 
 
-# JobUpdate
+## JobUpdate
 
-{{< generation-info sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="22" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="22" packageName="@vendure/core" />
 
 Job update status as returned from the <a href='/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>'s `update()` method.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type JobUpdate<T extends JobData<T>> = Pick<
     Job<T>,
     'id' | 'state' | 'progress' | 'result' | 'error' | 'data'
 >
 ```
-</div>
-<div class="symbol">
 
 
-# JobUpdateOptions
+## JobUpdateOptions
 
-{{< generation-info sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="34" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="34" packageName="@vendure/core" />
 
 Job update options, that you can specify by calling {@link SubscribableJob.updates updates()} method.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type JobUpdateOptions = {
   pollInterval?: number;
   timeoutMs?: number;
@@ -62,87 +52,69 @@ type JobUpdateOptions = {
 ```
 ## Members
 
+
 ### pollInterval
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### timeoutMs
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### errorOnFail
 
-{{< member-info kind="property" type="boolean"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="boolean"   />
 
 
-</div>
-<div class="symbol">
 
 
-# CreateQueueOptions
+## CreateQueueOptions
 
-{{< generation-info sourceFile="packages/core/src/job-queue/types.ts" sourceLine="13" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="13" packageName="@vendure/core" />
 
 Used to configure a new <a href='/typescript-api/job-queue/#jobqueue'>JobQueue</a> instance.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface CreateQueueOptions<T extends JobData<T>> {
   name: string;
   process: (job: Job<T>) => Promise<any>;
 }
 ```
-## Members
 
 ### name
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}The name of the queue, e.g. "image processing", "re-indexing" etc.{{< /member-description >}}
-
+The name of the queue, e.g. "image processing", "re-indexing" etc.
 ### process
 
-{{< member-info kind="property" type="(job: <a href='/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;) =&#62; Promise&#60;any&#62;"  >}}
+<MemberInfo kind="property" type="(job: <a href='/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;) =&#62; Promise&#60;any&#62;"   />
 
-{{< member-description >}}Defines the work to be done for each job in the queue. The returned promise
-should resolve when the job is complete, or be rejected in case of an error.{{< /member-description >}}
-
-
-</div>
-<div class="symbol">
+Defines the work to be done for each job in the queue. The returned promise
+should resolve when the job is complete, or be rejected in case of an error.
 
 
-# JobData
+## JobData
 
-{{< generation-info sourceFile="packages/core/src/job-queue/types.ts" sourceLine="35" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="35" packageName="@vendure/core" />
 
-A JSON-serializable data type which provides a <a href='/typescript-api/job-queue/job#job'>Job</a>with the data it needs to be processed.
+A JSON-serializable data type which provides a <a href='/typescript-api/job-queue/job#job'>Job</a>
+with the data it needs to be processed.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type JobData<T> = JsonCompatible<T>
 ```
-</div>
-<div class="symbol">
 
 
-# JobConfig
+## JobConfig
 
-{{< generation-info sourceFile="packages/core/src/job-queue/types.ts" sourceLine="44" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="44" packageName="@vendure/core" />
 
 Used to instantiate a new <a href='/typescript-api/job-queue/job#job'>Job</a>
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface JobConfig<T extends JobData<T>> {
   queueName: string;
   data: T;
@@ -158,79 +130,64 @@ interface JobConfig<T extends JobData<T>> {
   settledAt?: Date;
 }
 ```
-## Members
 
 ### queueName
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### data
 
-{{< member-info kind="property" type="T"  >}}
+<MemberInfo kind="property" type="T"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### retries
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### attempts
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### id
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### state
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/job-state#jobstate'>JobState</a>"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/job-state#jobstate'>JobState</a>"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### progress
 
-{{< member-info kind="property" type="number"  >}}
+<MemberInfo kind="property" type="number"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### result
 
-{{< member-info kind="property" type="any"  >}}
+<MemberInfo kind="property" type="any"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### error
 
-{{< member-info kind="property" type="any"  >}}
+<MemberInfo kind="property" type="any"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### createdAt
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### startedAt
 
-{{< member-info kind="property" type="Date"  >}}
+<MemberInfo kind="property" type="Date"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### settledAt
 
-{{< member-info kind="property" type="Date"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="Date"   />
 
 
-</div>

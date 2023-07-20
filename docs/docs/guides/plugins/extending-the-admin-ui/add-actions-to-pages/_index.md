@@ -12,7 +12,7 @@ It may not always make sense to navigate to your extension view from the main na
 
 ### ActionBar Example
 
-```TypeScript
+```ts
 import { NgModule } from '@angular/core';
 import { SharedModule, addActionBarItem } from '@vendure/admin-ui/core';
 
@@ -46,7 +46,7 @@ The context object provides access to the DataService, which allows you to perfo
 
 Here's an example of how to use the onClick property to perform a GraphQL mutation when the ActionBar button is clicked:
 
-```TypeScript
+```ts
 addActionBarItem({
     id: 'myButtonId',
     label: 'My Button Label',
@@ -93,7 +93,7 @@ Use cases for bulk actions include things like:
 
 A bulk action must be provided to a [ui-extension shared module]({{< relref "extending-the-admin-ui" >}}#lazy-vs-shared-modules) using the [`registerBulkAction` function]({{< relref "register-bulk-action" >}})
 
-```TypeScript
+```ts
 import { NgModule } from '@angular/core';
 import { ModalService, registerBulkAction, SharedModule } from '@vendure/admin-ui/core';
 
@@ -142,7 +142,7 @@ Sometimes a bulk action only makes sense in certain circumstances. For example, 
 
 We can conditionally control the display of a bulk action with the `isVisible` function, which should return a Promise resolving to a boolean:
 
-```TypeScript
+```ts
 import { registerBulkAction, DataService } from '@vendure/admin-ui/core';
 
 registerBulkAction({

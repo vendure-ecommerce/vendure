@@ -63,7 +63,7 @@ The Admin UI ships with language files only for English and Spanish as of versio
     
     And the config code to register the translation file:
     
-    ```TypeScript
+    ```ts
     // vendure-config.ts
     import path from 'path';
     import { VendureConfig } from '@vendure/core';
@@ -96,7 +96,7 @@ The Admin UI ships with language files only for English and Spanish as of versio
 
 You can also create translations for your own UI extensions, in much the same way as outlined above in "Adding a new language". Your translations can be split over several files, since the `translations` config object can take a glob, e.g.:
 
-```TypeScript
+```ts
 translations: {
   de: path.join(__dirname, 'ui-extensions/my-extension/**/*.de.json'),
 }

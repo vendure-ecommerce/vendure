@@ -1,19 +1,19 @@
 ---
 title: "AddNavMenuSection"
 weight: 10
-date: 2023-07-14T16:57:51.123Z
+date: 2023-07-20T13:56:18.037Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# addNavMenuSection
-<div class="symbol">
 
+## addNavMenuSection
 
-# addNavMenuSection
-
-{{< generation-info sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="44" packageName="@vendure/admin-ui">}}
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="44" packageName="@vendure/admin-ui" />
 
 Add a section to the main nav menu. Providing the `before` argument will
 move the section before any existing section with the specified id. If
@@ -40,19 +40,16 @@ This should be used in the NgModule `providers` array of your ui extension modul
 export class MyUiExtensionModule {}
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 function addNavMenuSection(config: NavMenuSection, before?: string): Provider
 ```
-## Parameters
+Parameters
 
 ### config
 
-{{< member-info kind="parameter" type="<a href='/admin-ui-api/nav-menu/nav-menu-section#navmenusection'>NavMenuSection</a>" >}}
+<MemberInfo kind="parameter" type="<a href='/admin-ui-api/nav-menu/nav-menu-section#navmenusection'>NavMenuSection</a>" />
 
 ### before
 
-{{< member-info kind="parameter" type="string" >}}
+<MemberInfo kind="parameter" type="string" />
 
-</div>

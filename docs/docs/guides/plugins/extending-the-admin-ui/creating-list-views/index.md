@@ -44,7 +44,7 @@ The list component itself is an Angular component which extends the [BaseListCom
 
 This example assumes you have set up your project to use [GraphQL Code Generator](https://the-guild.dev/graphql/codegen) with the [TypedDocumentNode plugin](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
 
-```TypeScript
+```ts
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TypedBaseListComponent } from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';

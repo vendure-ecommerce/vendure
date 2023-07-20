@@ -7,7 +7,7 @@ showtoc: true
 
 It is possible to create stand-alone scripts that can be run from the command-line by using the [bootstrapWorker function]({{< relref "bootstrap-worker" >}}). This can be useful for a variety of use-cases such as running cron jobs or importing data.
 
-```TypeScript
+```ts
 // run-sync.ts
 
 import { bootstrapWorker, Logger } from '@vendure/core';

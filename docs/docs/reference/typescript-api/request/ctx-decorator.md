@@ -1,19 +1,19 @@
 ---
 title: "Ctx Decorator"
 weight: 10
-date: 2023-07-14T16:57:49.410Z
+date: 2023-07-20T13:56:14.147Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Ctx Decorator
-<div class="symbol">
 
+## Ctx
 
-# Ctx
-
-{{< generation-info sourceFile="packages/core/src/api/decorators/request-context.decorator.ts" sourceLine="21" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/api/decorators/request-context.decorator.ts" sourceLine="21" packageName="@vendure/core" />
 
 Resolver param decorator which extracts the <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> from the incoming
 request object.
@@ -27,4 +27,3 @@ request object.
  }
 ```
 
-</div>

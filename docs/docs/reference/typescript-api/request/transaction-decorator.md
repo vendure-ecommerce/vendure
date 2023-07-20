@@ -1,19 +1,19 @@
 ---
 title: "Transaction Decorator"
 weight: 10
-date: 2023-07-14T16:57:49.411Z
+date: 2023-07-20T13:56:14.148Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Transaction Decorator
-<div class="symbol">
 
+## Transaction
 
-# Transaction
-
-{{< generation-info sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="77" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="77" packageName="@vendure/core" />
 
 Runs the decorated method in a TypeORM transaction. It works by creating a transactional
 QueryRunner which gets attached to the RequestContext object. When the RequestContext
@@ -40,13 +40,11 @@ async myMutation(@Ctx() ctx: RequestContext) {
 }
 ```
 
-</div>
-<div class="symbol">
 
 
-# TransactionMode
+## TransactionMode
 
-{{< generation-info sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="32" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="32" packageName="@vendure/core" />
 
 The Transaction decorator can handle transactions automatically (which is the default) or be set to
 "manual" mode, where the <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `.startTransaction()` and `.commitOpenTransaction()`
@@ -69,26 +67,19 @@ async myMutation(@Ctx() ctx: RequestContext) {
 Note that even in manual mode, a rollback will be automatically performed in
 the case that an uncaught error is thrown within the resolver.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type TransactionMode = 'auto' | 'manual'
 ```
-</div>
-<div class="symbol">
 
 
-# TransactionIsolationLevel
+## TransactionIsolationLevel
 
-{{< generation-info sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="45" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="45" packageName="@vendure/core" />
 
 Transactions can be run at different isolation levels. The default is undefined, which
 falls back to the default of your database. See the documentation of your database for more
 information on available isolation levels.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 type TransactionIsolationLevel = 'READ UNCOMMITTED' | 'READ COMMITTED' | 'REPEATABLE READ' | 'SERIALIZABLE'
 ```
-</div>

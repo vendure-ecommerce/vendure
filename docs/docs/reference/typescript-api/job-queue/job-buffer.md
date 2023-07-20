@@ -1,19 +1,19 @@
 ---
 title: "JobBuffer"
 weight: 10
-date: 2023-07-14T16:57:50.149Z
+date: 2023-07-20T13:56:15.680Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# JobBuffer
-<div class="symbol">
 
+## JobBuffer
 
-# JobBuffer
-
-{{< generation-info sourceFile="packages/core/src/job-queue/job-buffer/job-buffer.ts" sourceLine="83" packageName="@vendure/core" since="1.3.0">}}
+<GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/job-buffer.ts" sourceLine="83" packageName="@vendure/core" since="1.3.0" />
 
 A JobBuffer is used to temporarily prevent jobs from being sent to the job queue for processing.
 Instead, it collects certain jobs (as specified by the `collect()` method), and stores them.
@@ -91,38 +91,30 @@ await this.jobQueueService.flush(collectionBuffer);
 await this.jobQueueService.removeBuffer(collectionBuffer);
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 interface JobBuffer<Data extends JobData<Data> = object> {
   readonly id: string;
   collect(job: Job<Data>): boolean | Promise<boolean>;
   reduce(collectedJobs: Array<Job<Data>>): Array<Job<Data>> | Promise<Array<Job<Data>>>;
 }
 ```
-## Members
 
 ### id
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### collect
 
-{{< member-info kind="method" type="(job: <a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => boolean | Promise&#60;boolean&#62;"  >}}
+<MemberInfo kind="method" type="(job: <a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => boolean | Promise&#60;boolean&#62;"   />
 
-{{< member-description >}}This method is called whenever a job is added to the job queue. If it returns `true`, then
+This method is called whenever a job is added to the job queue. If it returns `true`, then
 the job will be _buffered_ and _not_ added to the job queue. If it returns `false`, the job
-will be added to the job queue as normal.{{< /member-description >}}
-
+will be added to the job queue as normal.
 ### reduce
 
-{{< member-info kind="method" type="(collectedJobs: Array&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;) => Array&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62; | Promise&#60;Array&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;&#62;"  >}}
+<MemberInfo kind="method" type="(collectedJobs: Array&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;) => Array&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62; | Promise&#60;Array&#60;<a href='/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;&#62;"   />
 
-{{< member-description >}}This method is called whenever the buffer gets flushed via a call to `JobQueueService.flush()`.
+This method is called whenever the buffer gets flushed via a call to `JobQueueService.flush()`.
 It allows logic to be run on the buffered jobs which enables optimizations such as
-aggregating and de-duplicating the work of many jobs into one job.{{< /member-description >}}
-
-
-</div>
+aggregating and de-duplicating the work of many jobs into one job.

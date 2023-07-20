@@ -1,19 +1,19 @@
 ---
 title: "Relations Decorator"
 weight: 10
-date: 2023-07-14T16:57:49.409Z
+date: 2023-07-20T13:56:14.146Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Relations Decorator
-<div class="symbol">
 
+## Relations
 
-# Relations
-
-{{< generation-info sourceFile="packages/core/src/api/decorators/relations.decorator.ts" sourceLine="134" packageName="@vendure/core" since="1.6.0">}}
+<GenerationInfo sourceFile="packages/core/src/api/decorators/relations.decorator.ts" sourceLine="134" packageName="@vendure/core" since="1.6.0" />
 
 Resolver param decorator which returns an array of relation paths which can be passed through
 to the TypeORM data layer in order to join only the required relations. This works by inspecting
@@ -120,4 +120,3 @@ PaginatedList query rather than a simple array.
 @Relations({ entity: Collection, omit: ['productVariant'] }) relations: RelationPaths<Collection>,
 ```
 
-</div>

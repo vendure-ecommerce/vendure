@@ -1,19 +1,19 @@
 ---
 title: "EmailPlugin"
 weight: 10
-date: 2023-07-14T16:57:50.733Z
+date: 2023-07-20T13:56:16.925Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# EmailPlugin
-<div class="symbol">
 
+## EmailPlugin
 
-# EmailPlugin
-
-{{< generation-info sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="277" packageName="@vendure/email-plugin">}}
+<GenerationInfo sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="277" packageName="@vendure/email-plugin" />
 
 The EmailPlugin creates and sends transactional emails based on Vendure events. By default, it uses an [MJML](https://mjml.io/)-based
 email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
@@ -250,41 +250,33 @@ const config: VendureConfig = {
 };
 ```
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
   static init(options: EmailPluginOptions | EmailPluginDevModeOptions) => Type<EmailPlugin>;
   async onApplicationShutdown() => ;
   configure(consumer: MiddlewareConsumer) => ;
 }
 ```
-## Implements
+Implements
 
  * OnApplicationBootstrap
  * OnApplicationShutdown
  * NestModule
 
 
-## Members
 
 ### init
 
-{{< member-info kind="method" type="(options: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a> | <a href='/typescript-api/core-plugins/email-plugin/email-plugin-options#emailplugindevmodeoptions'>EmailPluginDevModeOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/email-plugin/#emailplugin'>EmailPlugin</a>&#62;"  >}}
+<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a> | <a href='/typescript-api/core-plugins/email-plugin/email-plugin-options#emailplugindevmodeoptions'>EmailPluginDevModeOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/email-plugin/#emailplugin'>EmailPlugin</a>&#62;"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### onApplicationShutdown
 
-{{< member-info kind="method" type="() => "  >}}
+<MemberInfo kind="method" type="() => "   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### configure
 
-{{< member-info kind="method" type="(consumer: MiddlewareConsumer) => "  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
 
 
-</div>

@@ -1,26 +1,24 @@
 ---
 title: "Role"
 weight: 10
-date: 2023-07-14T16:57:49.985Z
+date: 2023-07-20T13:56:15.362Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
-# Role
-<div class="symbol">
 
+## Role
 
-# Role
-
-{{< generation-info sourceFile="packages/core/src/entity/role/role.entity.ts" sourceLine="16" packageName="@vendure/core">}}
+<GenerationInfo sourceFile="packages/core/src/entity/role/role.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 A Role represents a collection of permissions which determine the authorization
 level of a <a href='/typescript-api/entities/user#user'>User</a> on a given set of <a href='/typescript-api/entities/channel#channel'>Channel</a>s.
 
-## Signature
-
-```TypeScript
+```ts title="Signature"
 class Role extends VendureEntity implements ChannelAware {
   constructor(input?: DeepPartial<Role>)
   @Column() @Column() code: string;
@@ -31,47 +29,39 @@ class Role extends VendureEntity implements ChannelAware {
     channels: Channel[];
 }
 ```
-## Extends
+Extends
 
  * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
 
 
-## Implements
+Implements
 
  * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
 
 
-## Members
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/role#role'>Role</a>&#62;) => Role"  >}}
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/role#role'>Role</a>&#62;) => Role"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### code
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### description
 
-{{< member-info kind="property" type="string"  >}}
+<MemberInfo kind="property" type="string"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### permissions
 
-{{< member-info kind="property" type="<a href='/typescript-api/common/permission#permission'>Permission</a>[]"  >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/common/permission#permission'>Permission</a>[]"   />
 
-{{< member-description >}}{{< /member-description >}}
 
 ### channels
 
-{{< member-info kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"  >}}
-
-{{< member-description >}}{{< /member-description >}}
+<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
-</div>
