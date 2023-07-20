@@ -142,7 +142,7 @@ Instead, this information is now located at `ProductVariant.stockLevels`, which 
 
 If you are using the `@vendure/ui-devkit` package to generate custom ui extensions, here are the breaking changes to be aware of:
 
-- As part of the major refresh to the Admin UI app, certain layout elements had be changed which can cause your custom routes to look bad. Wrapping all your custom pages in <vdr-page-block> (or <div class="page-block"> if not built with Angular components) will improve things. There will soon be a comprehensive guide published on how to create seamless ui extensions that look just like the built-in screens.
+- As part of the major refresh to the Admin UI app, certain layout elements had be changed which can cause your custom routes to look bad. Wrapping all your custom pages in `<vdr-page-block>` (or `<div class="page-block">` if not built with Angular components) will improve things. There will soon be a comprehensive guide published on how to create seamless ui extensions that look just like the built-in screens.
 - If you use any of the scoped method of the Admin UI `DataService`, you might find that some no longer exist. They are now deprecated and will eventually be removed. Use the `dataService.query()` and `dataService.mutation()` methods only, passing your own GraphQL documents:
    ```ts
     // Old way
