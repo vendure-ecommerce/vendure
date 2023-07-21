@@ -116,12 +116,22 @@ const config = {
                 typesenseServerConfig: {
                     nodes: [
                         {
-                            host: 'localhost',
-                            port: 8108,
-                            protocol: 'http',
+                            host: 'gly437ru8znh5oaep-1.a1.typesense.net',
+                            port: 443,
+                            protocol: 'https',
+                        },
+                        {
+                            host: 'gly437ru8znh5oaep-2.a1.typesense.net',
+                            port: 443,
+                            protocol: 'https',
+                        },
+                        {
+                            host: 'gly437ru8znh5oaep-3.a1.typesense.net',
+                            port: 443,
+                            protocol: 'https',
                         },
                     ],
-                    apiKey: 'aw83i8h208hnLQI',
+                    apiKey: 'gm6HqoeTBT7W1zcGPiUHDWhasQlPMzI7',
                 },
 
                 // Optional: Typesense search parameters: https://typesense.org/docs/0.24.0/api/search.html#search-parameters

@@ -1,12 +1,12 @@
 {
   "index_name": "vendure-docs",
   "start_urls": [
-    "http://host.docker.internal:3000/"
+    "https://vendure-docs-beta.netlify.app/"
   ],
   "sitemap_urls": [
-    "http://host.docker.internal:3000/sitemap.xml"
+    "https://vendure-docs-beta.netlify.app/sitemap.xml"
   ],
-  "allowed_domains":["host.docker.internal"],
+  "allowed_domains":["vendure-docs-beta.netlify.app"],
   "sitemap_alternate_links": true,
   "stop_urls": [],
   "selectors": {
