@@ -6,6 +6,7 @@ import {
     Order,
     OrderService,
     PaymentMethod,
+    PaymentMethodService,
     RequestContext,
     RequestContextService,
     TransactionalConnection,
@@ -27,6 +28,7 @@ const noPaymentIntentErrorMessage = 'No payment intent in the event payload';
 export class StripeController {
     constructor(
         private connection: TransactionalConnection,
+        private paymentMethodService: PaymentMethodService,
         private orderService: OrderService,
         private stripeService: StripeService,
         private requestContextService: RequestContextService,
@@ -124,10 +126,9 @@ export class StripeController {
     }
 
     private async getPaymentMethod(ctx: RequestContext): Promise<PaymentMethod> {
-        const method = (await this.connection.getRepository(ctx, PaymentMethod).find()).find(
+        const method = (await this.paymentMethodService.findAll(ctx)).items.find(
             m => m.handler.code === stripePaymentMethodHandler.code,
         );
-
         if (!method) {
             throw new InternalServerError(`[${loggerCtx}] Could not find Stripe PaymentMethod`);
         }
