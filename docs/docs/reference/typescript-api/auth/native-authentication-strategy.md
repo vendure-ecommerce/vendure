@@ -1,7 +1,7 @@
 ---
 title: "NativeAuthenticationStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.075Z
+date: 2023-07-21T15:46:14.924Z
 showtoc: true
 generated: true
 ---
@@ -28,7 +28,7 @@ class NativeAuthenticationStrategy implements AuthenticationStrategy<NativeAuthe
   async verifyUserPassword(ctx: RequestContext, userId: ID, password: string) => Promise<boolean>;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>&#60;NativeAuthenticationData&#62;</code>
+* Implements: <code><a href='/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>&#60;NativeAuthenticationData&#62;</code>
 
 
 
@@ -41,7 +41,7 @@ class NativeAuthenticationStrategy implements AuthenticationStrategy<NativeAuthe
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### defineInputType
@@ -51,12 +51,12 @@ class NativeAuthenticationStrategy implements AuthenticationStrategy<NativeAuthe
 
 ### authenticate
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: NativeAuthenticationData) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a> | false&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: NativeAuthenticationData) => Promise&#60;<a href='/reference/typescript-api/entities/user#user'>User</a> | false&#62;"   />
 
 
 ### verifyUserPassword
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/reference/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean&#62;"   />
 
 
 

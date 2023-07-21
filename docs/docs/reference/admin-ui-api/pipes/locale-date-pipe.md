@@ -1,7 +1,7 @@
 ---
 title: "LocaleDatePipe"
 weight: 10
-date: 2023-07-21T07:17:04.792Z
+date: 2023-07-21T15:46:19.591Z
 showtoc: true
 generated: true
 ---
@@ -41,7 +41,7 @@ class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService?: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleDatePipe"   />
+<MemberInfo kind="method" type="(dataService?: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleDatePipe"   />
 
 
 ### transform

@@ -1,7 +1,7 @@
 ---
 title: "PollingJobQueueStrategy"
 weight: 10
-date: 2023-07-21T07:17:01.424Z
+date: 2023-07-21T15:46:16.720Z
 showtoc: true
 generated: true
 ---
@@ -15,11 +15,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/polling-job-queue-strategy.ts" sourceLine="192" packageName="@vendure/core" />
 
-This class allows easier implementation of <a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> in a polling style.
-Instead of providing <a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `start()` you should provide a `next` method.
+This class allows easier implementation of <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> in a polling style.
+Instead of providing <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `start()` you should provide a `next` method.
 
 This class should be extended by any strategy which does not support a push-based system
-to notify on new jobs. It is used by the <a href='/docs/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a> and <a href='/docs/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>.
+to notify on new jobs. It is used by the <a href='/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a> and <a href='/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>.
 
 ```ts title="Signature"
 class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
@@ -56,12 +56,12 @@ class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
 
 ### setRetries
 
-<MemberInfo kind="property" type="(queueName: string, job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"   />
+<MemberInfo kind="property" type="(queueName: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"   />
 
 
 ### backOffStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>"   />
 
 
 ### constructor
@@ -81,34 +81,34 @@ class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
 
 ### start
 
-<MemberInfo kind="method" type="(queueName: string, process: (job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => "   />
+<MemberInfo kind="method" type="(queueName: string, process: (job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => "   />
 
 
 ### stop
 
-<MemberInfo kind="method" type="(queueName: string, process: (job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => "   />
+<MemberInfo kind="method" type="(queueName: string, process: (job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => "   />
 
 
 ### cancelJob
 
-<MemberInfo kind="method" type="(jobId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(jobId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 
 ### next
 
-<MemberInfo kind="method" type="(queueName: string) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(queueName: string) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 Should return the next job in the given queue. The implementation is
 responsible for returning the correct job according to the time of
 creation.
 ### update
 
-<MemberInfo kind="method" type="(job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;void&#62;"   />
 
 Update the job details in the store.
 ### findOne
 
-<MemberInfo kind="method" type="(id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 Returns a job by its id.
 

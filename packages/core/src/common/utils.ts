@@ -87,7 +87,7 @@ export async function awaitPromiseOrObservable<T>(value: T | Promise<T> | Observ
  * an Observable but also want to work with async (Promise-returning) code.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Controller()
  * export class MyWorkerController {
  *

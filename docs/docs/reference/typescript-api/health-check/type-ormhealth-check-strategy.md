@@ -1,7 +1,7 @@
 ---
 title: "TypeORMHealthCheckStrategy"
 weight: 10
-date: 2023-07-21T07:17:01.343Z
+date: 2023-07-21T15:46:16.604Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/health-check/typeorm-health-check-strategy.ts" sourceLine="36" packageName="@vendure/core" />
 
-A <a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> used to check the health of the database. This health
+A <a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> used to check the health of the database. This health
 check is included by default, but can be customized by explicitly adding it to the
 `systemOptions.healthChecks` array:
 
@@ -42,7 +42,7 @@ class TypeORMHealthCheckStrategy implements HealthCheckStrategy {
   getHealthIndicator() => HealthIndicatorFunction;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a></code>
 
 
 
@@ -55,7 +55,7 @@ class TypeORMHealthCheckStrategy implements HealthCheckStrategy {
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### getHealthIndicator

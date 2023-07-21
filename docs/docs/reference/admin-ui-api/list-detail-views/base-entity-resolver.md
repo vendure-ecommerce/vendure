@@ -1,7 +1,7 @@
 ---
 title: "BaseEntityResolver"
 weight: 10
-date: 2023-07-21T07:17:03.944Z
+date: 2023-07-21T15:46:18.961Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 A base resolver for an entity detail route. Resolves to an observable of the given entity, or a "blank"
 version if the route id equals "create". Should be used together with details views which extend the
-<a href='/docs/reference/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a>.
+<a href='/reference/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a>.
 
 *Example*
 

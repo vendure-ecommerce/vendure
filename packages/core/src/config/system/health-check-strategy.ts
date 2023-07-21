@@ -21,7 +21,7 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  *
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { HttpHealthCheckStrategy, TypeORMHealthCheckStrategy } from '\@vendure/core';
  * import { MyCustomHealthCheckStrategy } from './config/custom-health-check-strategy';
  *

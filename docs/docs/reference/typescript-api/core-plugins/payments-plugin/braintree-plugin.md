@@ -1,7 +1,7 @@
 ---
 title: "BraintreePlugin"
 weight: 10
-date: 2023-07-21T07:17:02.879Z
+date: 2023-07-21T15:46:18.218Z
 showtoc: true
 generated: true
 ---
@@ -253,12 +253,12 @@ class BraintreePlugin {
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;"   />
 
 
 
@@ -300,7 +300,7 @@ Since v1.8, it is possible to override vaulting on a per-payment basis by passin
 `generateBraintreeClientToken` mutation.
 ### extractMetadata
 
-<MemberInfo kind="property" type="(transaction: <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata"  since="1.7.0"  />
+<MemberInfo kind="property" type="(transaction: <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata"  since="1.7.0"  />
 
 Allows you to configure exactly what information from the Braintree
 [Transaction object](https://developer.paypal.com/braintree/docs/reference/response/transaction#result-object) (which is returned by the

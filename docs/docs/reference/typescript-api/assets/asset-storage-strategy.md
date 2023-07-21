@@ -1,7 +1,7 @@
 ---
 title: "AssetStorageStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.048Z
+date: 2023-07-21T15:46:14.890Z
 showtoc: true
 generated: true
 ---
@@ -29,7 +29,7 @@ interface AssetStorageStrategy extends InjectableStrategy {
   toAbsoluteUrl?(request: Request, identifier: string): string;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 

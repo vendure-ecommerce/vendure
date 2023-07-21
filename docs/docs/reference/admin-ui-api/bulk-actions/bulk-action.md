@@ -1,7 +1,7 @@
 ---
 title: "BulkAction"
 weight: 10
-date: 2023-07-21T07:17:04.036Z
+date: 2023-07-21T15:46:19.043Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 Configures a bulk action which can be performed on all selected items in a list view.
 
-For a full example, see the <a href='/docs/reference/admin-ui-api/bulk-actions/register-bulk-action#registerbulkaction'>registerBulkAction</a> docs.
+For a full example, see the <a href='/reference/admin-ui-api/bulk-actions/register-bulk-action#registerbulkaction'>registerBulkAction</a> docs.
 
 ```ts title="Signature"
 interface BulkAction<ItemType = any, ComponentType = any> {
@@ -38,7 +38,7 @@ interface BulkAction<ItemType = any, ComponentType = any> {
 
 ### location
 
-<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionlocationid'>BulkActionLocationId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionlocationid'>BulkActionLocationId</a>"   />
 
 
 ### label
@@ -48,7 +48,7 @@ interface BulkAction<ItemType = any, ComponentType = any> {
 
 ### getTranslationVars
 
-<MemberInfo kind="property" type="(         context: <a href='/docs/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"   />
+<MemberInfo kind="property" type="(         context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"   />
 
 An optional function that should resolve to a map of translation variables which can be
 used when translating the `label` string.
@@ -71,12 +71,12 @@ A class to be added to the icon element. Examples:
 - is-highlight
 ### onClick
 
-<MemberInfo kind="property" type="(context: <a href='/docs/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionclickcontext'>BulkActionClickContext</a>&#60;ItemType, ComponentType&#62;) =&#62; void"   />
+<MemberInfo kind="property" type="(context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionclickcontext'>BulkActionClickContext</a>&#60;ItemType, ComponentType&#62;) =&#62; void"   />
 
 Defines the logic that executes when the bulk action button is clicked.
 ### isVisible
 
-<MemberInfo kind="property" type="(context: <a href='/docs/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;) =&#62; boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="property" type="(context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;) =&#62; boolean | Promise&#60;boolean&#62;"   />
 
 A function that determines whether this bulk action item should be displayed in the menu.
 If not defined, the item will always be displayed.
@@ -188,7 +188,7 @@ e.g. calling `hostComponent.refresh()` to force a list refresh after
 deleting the selected items.
 ### injector
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/injector#injector'>Injector</a>"   />
 
 The Angular [Injector](https://angular.io/api/core/Injector) which can be used
 to get service instances which might be needed in the click handler.
@@ -214,7 +214,7 @@ interface BulkActionClickContext<ItemType, ComponentType> extends BulkActionFunc
   event: MouseEvent;
 }
 ```
-* Extends: <code><a href='/docs/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;</code>
+* Extends: <code><a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;</code>
 
 
 

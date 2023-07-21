@@ -1,7 +1,7 @@
 ---
 title: "JobQueueService"
 weight: 10
-date: 2023-07-21T07:17:01.382Z
+date: 2023-07-21T15:46:16.655Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/job-queue.service.ts" sourceLine="48" packageName="@vendure/core" />
 
-The JobQueueService is used to create new <a href='/docs/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> instances and access
+The JobQueueService is used to create new <a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> instances and access
 existing jobs.
 
 *Example*
@@ -72,9 +72,9 @@ class JobQueueService implements OnModuleDestroy {
 
 ### createQueue
 
-<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/job-queue/types#createqueueoptions'>CreateQueueOptions</a>&#60;Data&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a>&#60;Data&#62;&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/job-queue/types#createqueueoptions'>CreateQueueOptions</a>&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a>&#60;Data&#62;&#62;"   />
 
-Configures and creates a new <a href='/docs/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> instance.
+Configures and creates a new <a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> instance.
 ### start
 
 <MemberInfo kind="method" type="() => Promise&#60;void&#62;"   />
@@ -82,19 +82,19 @@ Configures and creates a new <a href='/docs/reference/typescript-api/job-queue/#
 
 ### addBuffer
 
-<MemberInfo kind="method" type="(buffer: <a href='/docs/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62;) => "  since="1.3.0"  />
+<MemberInfo kind="method" type="(buffer: <a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62;) => "  since="1.3.0"  />
 
-Adds a <a href='/docs/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>, which will make it active and begin collecting
+Adds a <a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>, which will make it active and begin collecting
 jobs to buffer.
 ### removeBuffer
 
-<MemberInfo kind="method" type="(buffer: <a href='/docs/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62;) => "  since="1.3.0"  />
+<MemberInfo kind="method" type="(buffer: <a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62;) => "  since="1.3.0"  />
 
-Removes a <a href='/docs/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>, prevent it from collecting and buffering any
+Removes a <a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>, prevent it from collecting and buffering any
 subsequent jobs.
 ### bufferSize
 
-<MemberInfo kind="method" type="(forBuffers: Array&#60;<a href='/docs/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62; | string&#62;) => Promise&#60;{ [bufferId: string]: number }&#62;"  since="1.3.0"  />
+<MemberInfo kind="method" type="(forBuffers: Array&#60;<a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62; | string&#62;) => Promise&#60;{ [bufferId: string]: number }&#62;"  since="1.3.0"  />
 
 Returns an object containing the number of buffered jobs arranged by bufferId. This
 can be used to decide whether a particular buffer has any jobs to flush.
@@ -111,7 +111,7 @@ const sizes = await this.jobQueueService.bufferSize('buffer-1', 'buffer-2');
 ```
 ### flush
 
-<MemberInfo kind="method" type="(forBuffers: Array&#60;<a href='/docs/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62; | string&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;"  since="1.3.0"  />
+<MemberInfo kind="method" type="(forBuffers: Array&#60;<a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>&#60;any&#62; | string&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;"  since="1.3.0"  />
 
 Flushes the specified buffers, which means that the buffer is cleared and the jobs get
 sent to the job queue for processing. Before sending the jobs to the job queue,

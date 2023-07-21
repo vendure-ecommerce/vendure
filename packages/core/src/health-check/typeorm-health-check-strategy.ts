@@ -17,7 +17,7 @@ export interface TypeORMHealthCheckOptions {
  * `systemOptions.healthChecks` array:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { TypeORMHealthCheckStrategy } from '\@vendure/core';
  *
  * export const config = {

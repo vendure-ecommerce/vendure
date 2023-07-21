@@ -32,7 +32,7 @@ import { StripePluginOptions } from './types';
  * ## Setup
  *
  * 1. Add the plugin to your VendureConfig `plugins` array:
- *     ```TypeScript
+ *     ```ts
  *     import { StripePlugin } from '\@vendure/payments-plugin/package/stripe';
  *
  *     // ...
@@ -64,7 +64,7 @@ import { StripePluginOptions } from './types';
  * The high-level workflow is:
  * 1. Create a "payment intent" on the server by executing the `createStripePaymentIntent` mutation which is exposed by this plugin.
  * 2. Use the returned client secret to instantiate the Stripe Payment Element:
- *    ```TypeScript
+ *    ```ts
  *    import { Elements } from '\@stripe/react-stripe-js';
  *    import { loadStripe, Stripe } from '\@stripe/stripe-js';
  *    import { CheckoutForm } from './CheckoutForm';
@@ -88,7 +88,7 @@ import { StripePluginOptions } from './types';
  *      );
  *    }
  *    ```
- *    ```TypeScript
+ *    ```ts
  *    // CheckoutForm.tsx
  *    import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
  *    import { FormEvent } from 'react';

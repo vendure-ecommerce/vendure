@@ -30,7 +30,7 @@ export interface CollectionFilterConfig<T extends ConfigArgs> extends Configurab
  * Here's a simple example of a custom CollectionFilter:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { CollectionFilter, LanguageCode } from '\@vendure/core';
  *
  * export const skuCollectionFilter = new CollectionFilter({

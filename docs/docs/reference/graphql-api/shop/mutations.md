@@ -1,7 +1,7 @@
 ---
 title: "Mutations"
 weight: 2
-date: 2023-07-21T09:48:20.380Z
+date: 2023-07-21T15:33:42.677Z
 showtoc: true
 generated: true
 ---
@@ -11,8 +11,6 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-# Mutations
-
 
 ## addItemToOrder
 <div class="graphql-code-block">
@@ -21,7 +19,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">addItemToOrder(productVariantId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!, quantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
+<div class="graphql-code-line ">addItemToOrder(productVariantId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!, quantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!): <a href="/reference/graphql-api/shop/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -34,7 +32,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">addPaymentToOrder(input: <a href="/docs/reference/graphql-api/shop/input-types#paymentinput">PaymentInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#addpaymenttoorderresult">AddPaymentToOrderResult</a>!</div>
+<div class="graphql-code-line ">addPaymentToOrder(input: <a href="/reference/graphql-api/shop/input-types#paymentinput">PaymentInput</a>!): <a href="/reference/graphql-api/shop/object-types#addpaymenttoorderresult">AddPaymentToOrderResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -47,7 +45,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">adjustOrderLine(orderLineId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!, quantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
+<div class="graphql-code-line ">adjustOrderLine(orderLineId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!, quantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!): <a href="/reference/graphql-api/shop/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -60,7 +58,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">applyCouponCode(couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#applycouponcoderesult">ApplyCouponCodeResult</a>!</div>
+<div class="graphql-code-line ">applyCouponCode(couponCode: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#applycouponcoderesult">ApplyCouponCodeResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -73,7 +71,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">authenticate(input: <a href="/docs/reference/graphql-api/shop/input-types#authenticationinput">AuthenticationInput</a>!, rememberMe: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/shop/object-types#authenticationresult">AuthenticationResult</a>!</div>
+<div class="graphql-code-line ">authenticate(input: <a href="/reference/graphql-api/shop/input-types#authenticationinput">AuthenticationInput</a>!, rememberMe: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>): <a href="/reference/graphql-api/shop/object-types#authenticationresult">AuthenticationResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -86,7 +84,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">createCustomerAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#address">Address</a>!</div>
+<div class="graphql-code-line ">createCustomerAddress(input: <a href="/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/reference/graphql-api/shop/object-types#address">Address</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -99,7 +97,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">deleteCustomerAddress(id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/shop/object-types#success">Success</a>!</div>
+<div class="graphql-code-line ">deleteCustomerAddress(id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/reference/graphql-api/shop/object-types#success">Success</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -112,7 +110,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">login(username: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, rememberMe: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/shop/object-types#nativeauthenticationresult">NativeAuthenticationResult</a>!</div>
+<div class="graphql-code-line ">login(username: <a href="/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/reference/graphql-api/shop/object-types#string">String</a>!, rememberMe: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>): <a href="/reference/graphql-api/shop/object-types#nativeauthenticationresult">NativeAuthenticationResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -125,7 +123,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">logout: <a href="/docs/reference/graphql-api/shop/object-types#success">Success</a>!</div>
+<div class="graphql-code-line ">logout: <a href="/reference/graphql-api/shop/object-types#success">Success</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -138,7 +136,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">refreshCustomerVerification(emailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#refreshcustomerverificationresult">RefreshCustomerVerificationResult</a>!</div>
+<div class="graphql-code-line ">refreshCustomerVerification(emailAddress: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#refreshcustomerverificationresult">RefreshCustomerVerificationResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -177,7 +175,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">registerCustomerAccount(input: <a href="/docs/reference/graphql-api/shop/input-types#registercustomerinput">RegisterCustomerInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#registercustomeraccountresult">RegisterCustomerAccountResult</a>!</div>
+<div class="graphql-code-line ">registerCustomerAccount(input: <a href="/reference/graphql-api/shop/input-types#registercustomerinput">RegisterCustomerInput</a>!): <a href="/reference/graphql-api/shop/object-types#registercustomeraccountresult">RegisterCustomerAccountResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -190,7 +188,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">removeAllOrderLines: <a href="/docs/reference/graphql-api/shop/object-types#removeorderitemsresult">RemoveOrderItemsResult</a>!</div>
+<div class="graphql-code-line ">removeAllOrderLines: <a href="/reference/graphql-api/shop/object-types#removeorderitemsresult">RemoveOrderItemsResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -203,7 +201,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">removeCouponCode(couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#order">Order</a></div>
+<div class="graphql-code-line ">removeCouponCode(couponCode: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#order">Order</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -216,7 +214,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">removeOrderLine(orderLineId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/shop/object-types#removeorderitemsresult">RemoveOrderItemsResult</a>!</div>
+<div class="graphql-code-line ">removeOrderLine(orderLineId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/reference/graphql-api/shop/object-types#removeorderitemsresult">RemoveOrderItemsResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -229,7 +227,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">requestPasswordReset(emailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#requestpasswordresetresult">RequestPasswordResetResult</a></div>
+<div class="graphql-code-line ">requestPasswordReset(emailAddress: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#requestpasswordresetresult">RequestPasswordResetResult</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -248,7 +246,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">requestUpdateCustomerEmailAddress(password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, newEmailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#requestupdatecustomeremailaddressresult">RequestUpdateCustomerEmailAddressResult</a>!</div>
+<div class="graphql-code-line ">requestUpdateCustomerEmailAddress(password: <a href="/reference/graphql-api/shop/object-types#string">String</a>!, newEmailAddress: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#requestupdatecustomeremailaddressresult">RequestUpdateCustomerEmailAddressResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -261,7 +259,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">resetPassword(token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#resetpasswordresult">ResetPasswordResult</a>!</div>
+<div class="graphql-code-line ">resetPassword(token: <a href="/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#resetpasswordresult">ResetPasswordResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -274,7 +272,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">setCustomerForOrder(input: <a href="/docs/reference/graphql-api/shop/input-types#createcustomerinput">CreateCustomerInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#setcustomerfororderresult">SetCustomerForOrderResult</a>!</div>
+<div class="graphql-code-line ">setCustomerForOrder(input: <a href="/reference/graphql-api/shop/input-types#createcustomerinput">CreateCustomerInput</a>!): <a href="/reference/graphql-api/shop/object-types#setcustomerfororderresult">SetCustomerForOrderResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -287,7 +285,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">setOrderBillingAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
+<div class="graphql-code-line ">setOrderBillingAddress(input: <a href="/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -300,7 +298,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">setOrderCustomFields(input: <a href="/docs/reference/graphql-api/shop/input-types#updateorderinput">UpdateOrderInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
+<div class="graphql-code-line ">setOrderCustomFields(input: <a href="/reference/graphql-api/shop/input-types#updateorderinput">UpdateOrderInput</a>!): <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -313,7 +311,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">setOrderShippingAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
+<div class="graphql-code-line ">setOrderShippingAddress(input: <a href="/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -332,7 +330,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">setOrderShippingMethod(shippingMethodId: [<a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!]!): <a href="/docs/reference/graphql-api/shop/object-types#setordershippingmethodresult">SetOrderShippingMethodResult</a>!</div>
+<div class="graphql-code-line ">setOrderShippingMethod(shippingMethodId: [<a href="/reference/graphql-api/shop/object-types#id">ID</a>!]!): <a href="/reference/graphql-api/shop/object-types#setordershippingmethodresult">SetOrderShippingMethodResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -345,7 +343,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">transitionOrderToState(state: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#transitionordertostateresult">TransitionOrderToStateResult</a></div>
+<div class="graphql-code-line ">transitionOrderToState(state: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#transitionordertostateresult">TransitionOrderToStateResult</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -358,7 +356,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">updateCustomer(input: <a href="/docs/reference/graphql-api/shop/input-types#updatecustomerinput">UpdateCustomerInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#customer">Customer</a>!</div>
+<div class="graphql-code-line ">updateCustomer(input: <a href="/reference/graphql-api/shop/input-types#updatecustomerinput">UpdateCustomerInput</a>!): <a href="/reference/graphql-api/shop/object-types#customer">Customer</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -371,7 +369,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">updateCustomerAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#updateaddressinput">UpdateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#address">Address</a>!</div>
+<div class="graphql-code-line ">updateCustomerAddress(input: <a href="/reference/graphql-api/shop/input-types#updateaddressinput">UpdateAddressInput</a>!): <a href="/reference/graphql-api/shop/object-types#address">Address</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -386,7 +384,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">updateCustomerEmailAddress(token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updatecustomeremailaddressresult">UpdateCustomerEmailAddressResult</a>!</div>
+<div class="graphql-code-line ">updateCustomerEmailAddress(token: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#updatecustomeremailaddressresult">UpdateCustomerEmailAddressResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -399,7 +397,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">updateCustomerPassword(currentPassword: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, newPassword: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updatecustomerpasswordresult">UpdateCustomerPasswordResult</a>!</div>
+<div class="graphql-code-line ">updateCustomerPassword(currentPassword: <a href="/reference/graphql-api/shop/object-types#string">String</a>!, newPassword: <a href="/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/reference/graphql-api/shop/object-types#updatecustomerpasswordresult">UpdateCustomerPasswordResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -418,7 +416,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
-<div class="graphql-code-line ">verifyCustomerAccount(token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>): <a href="/docs/reference/graphql-api/shop/object-types#verifycustomeraccountresult">VerifyCustomerAccountResult</a>!</div>
+<div class="graphql-code-line ">verifyCustomerAccount(token: <a href="/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/reference/graphql-api/shop/object-types#string">String</a>): <a href="/reference/graphql-api/shop/object-types#verifycustomeraccountresult">VerifyCustomerAccountResult</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

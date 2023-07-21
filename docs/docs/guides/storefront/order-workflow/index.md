@@ -35,7 +35,7 @@ In this section, we'll cover some examples of how these operations would look in
 
 First, let's define a fragment for our Order that we can re-use in subsequent operations:
 
-```GraphQL
+```graphql
 fragment ActiveOrder on Order {
   id
   code
@@ -63,7 +63,7 @@ fragment ActiveOrder on Order {
 
 Then we can add an item to the Order:
 
-```GraphQL
+```graphql
 mutation AddItemToOrder($productVariantId: ID! $quantity: Int!){
   addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
     ... ActiveOrder
@@ -77,7 +77,7 @@ mutation AddItemToOrder($productVariantId: ID! $quantity: Int!){
 
 To remove an item from the order
 
-```GraphQL
+```graphql
 mutation RemoveItemFromOrder($orderLineId: ID!){
   removeOrderLine(orderLineId: $orderLineId) {
     ... ActiveOrder
@@ -91,7 +91,7 @@ mutation RemoveItemFromOrder($orderLineId: ID!){
 
 To alter the quantity of an existing OrderLine
 
-```GraphQL
+```graphql
 mutation AdjustOrderLine($orderLineId: ID! $quantity: Int!){
   adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {
     ... ActiveOrder
@@ -105,7 +105,7 @@ mutation AdjustOrderLine($orderLineId: ID! $quantity: Int!){
 
 At any time we can query the contents of the active Order:
 
-```GraphQL
+```graphql
 query ActiveOrder {
   activeOrder {
     ... ActiveOrder
@@ -117,7 +117,7 @@ query ActiveOrder {
 
 During the checkout process, we'll need to make sure a Customer is assigned to the Order. If the Customer is already signed in, then this can be skipped since Vendure will have already assigned them. If not, then you'd execute:
 
-```GraphQL
+```graphql
 mutation SetCustomerForOrder($input: CreateCustomerInput!){
   setCustomerForOrder(input: $input) {
     ... ActiveOrder
@@ -131,7 +131,7 @@ mutation SetCustomerForOrder($input: CreateCustomerInput!){
 
 Then we need to set the shipping address:
 
-```GraphQL
+```graphql
 mutation SetShippingAddress($input: CreateAddressInput!){
   setOrderShippingAddress(input: $input) {
     ... ActiveOrder
@@ -145,7 +145,7 @@ mutation SetShippingAddress($input: CreateAddressInput!){
 
 Once the shipping address is set, we can find out which ShippingMethods can be used on this Order:
 
-```GraphQL
+```graphql
 query GetShippingMethods{
   eligibleShippingMethods {
     id
@@ -159,7 +159,7 @@ query GetShippingMethods{
 
 The Customer can then choose one of the available ShippingMethods, and we then set it on the Order:
 
-```GraphQL
+```graphql
 mutation SetShippingMethod($shippingMethodId: ID!){
   setOrderShippingMethod(shippingMethodId: $shippingMethodId) {
     ... ActiveOrder
@@ -173,7 +173,7 @@ mutation SetShippingMethod($shippingMethodId: ID!){
 
 We can now do the same for PaymentMethods:
 
-```GraphQL
+```graphql
 query GetPaymentMethods{
   eligiblePaymentMethods {
     id
@@ -188,7 +188,7 @@ query GetPaymentMethods{
 
 Once the customer is ready to pay, we need to transition the Order to the `ArrangingPayment` state. In this state, no further modifications are permitted. If you _do_ need to modify the Order contents, you can always transition back to the `AddingItems` state:
 
-```GraphQL
+```graphql
 mutation TransitionOrder($state: String!){
   transitionOrderToState(state: $state) {
     ... ActiveOrder
@@ -202,7 +202,7 @@ mutation TransitionOrder($state: String!){
 
 Finally, add a Payment to the Order:
 
-```GraphQL
+```graphql
 mutation AddPayment($input: PaymentInput!){
   addPaymentToOrder(input: $input) {
     ... ActiveOrder
@@ -216,7 +216,7 @@ mutation AddPayment($input: PaymentInput!){
 
 If the Payment is successful, the Order will now be complete. You can forward the Customer to a confirmation page using the Order's `code`:
 
-```GraphQL
+```graphql
 query OrderByCode($code: String!) {
   orderByCode(code: $code) {
     ...ActiveOrder

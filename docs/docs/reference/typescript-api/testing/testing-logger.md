@@ -1,7 +1,7 @@
 ---
 title: "TestingLogger"
 weight: 10
-date: 2023-07-21T07:17:02.960Z
+date: 2023-07-21T15:46:18.298Z
 showtoc: true
 generated: true
 ---
@@ -80,7 +80,7 @@ class TestingLogger<Spy extends (...args: any[]) => any> implements VendureLogge
   warn(message: string, context?: string) => void;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a></code>
+* Implements: <code><a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a></code>
 
 
 

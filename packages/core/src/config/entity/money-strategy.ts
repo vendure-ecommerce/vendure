@@ -8,7 +8,7 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * is defined in {@link EntityOptions}:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const config: VendureConfig = {
  *   entityOptions: {
  *     moneyStrategy: new MyCustomMoneyStrategy(),
@@ -49,14 +49,14 @@ export interface MoneyStrategy extends InjectableStrategy {
      * Defines the logic used to round monetary values. For instance, the default behavior
      * in the {@link DefaultMoneyStrategy} is to round the value, then multiply.
      *
-     * ```TypeScript
+     * ```ts
      * return Math.round(value) * quantity;
      * ```
      *
      * However, it may be desirable to instead round only _after_ the unit amount has been
      * multiplied. In this case you can define a custom strategy with logic like this:
      *
-     * ```TypeScript
+     * ```ts
      * return Math.round(value * quantity);
      * ```
      */

@@ -1,7 +1,7 @@
 ---
 title: "OrderByCodeAccessStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.334Z
+date: 2023-07-21T15:46:15.266Z
 showtoc: true
 generated: true
 ---
@@ -39,7 +39,7 @@ interface OrderByCodeAccessStrategy extends InjectableStrategy {
   canAccessOrder(ctx: RequestContext, order: Order): boolean | Promise<boolean>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -47,7 +47,7 @@ interface OrderByCodeAccessStrategy extends InjectableStrategy {
 
 ### canAccessOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
 
 Gives or denies permission to access the requested Order
 
@@ -69,7 +69,7 @@ class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
   canAccessOrder(ctx: RequestContext, order: Order) => boolean;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/orders/order-by-code-access-strategy#orderbycodeaccessstrategy'>OrderByCodeAccessStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/orders/order-by-code-access-strategy#orderbycodeaccessstrategy'>OrderByCodeAccessStrategy</a></code>
 
 
 
@@ -82,7 +82,7 @@ class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
 
 ### canAccessOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean"   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "SharpAssetPreviewStrategy"
 weight: 10
-date: 2023-07-21T07:17:02.620Z
+date: 2023-07-21T15:46:17.985Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="95" packageName="@vendure/asset-server-plugin" />
 
-This <a href='/docs/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
+This <a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
 overlay will be generated.
 
@@ -41,7 +41,7 @@ class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
   async generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer) => Promise<Buffer>;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a></code>
 
 
 
@@ -49,12 +49,12 @@ class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(config?: <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy"   />
+<MemberInfo kind="method" type="(config?: <a href='/reference/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy"   />
 
 
 ### generatePreviewImage
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
 
 
 
@@ -66,7 +66,7 @@ class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="17" packageName="@vendure/asset-server-plugin" />
 
-This <a href='/docs/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
+This <a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
 overlay will be generated.
 

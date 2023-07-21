@@ -1,7 +1,7 @@
 ---
 title: "TimeAgoPipe"
 weight: 10
-date: 2023-07-21T07:17:04.814Z
+date: 2023-07-21T15:46:19.605Z
 showtoc: true
 generated: true
 ---
@@ -37,7 +37,7 @@ class TimeAgoPipe implements PipeTransform {
 
 ### constructor
 
-<MemberInfo kind="method" type="(i18nService: <a href='/docs/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>) => TimeAgoPipe"   />
+<MemberInfo kind="method" type="(i18nService: <a href='/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>) => TimeAgoPipe"   />
 
 
 ### transform

@@ -1,7 +1,7 @@
 ---
 title: "ShippingCalculator"
 weight: 10
-date: 2023-07-21T07:17:00.491Z
+date: 2023-07-21T15:46:15.470Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="48" packageName="@vendure/core" />
 
-The ShippingCalculator is used by a <a href='/docs/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> to calculate the price of shipping on a given <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>.
+The ShippingCalculator is used by a <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> to calculate the price of shipping on a given <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 
 *Example*
 
@@ -48,7 +48,7 @@ class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Configurable
   constructor(config: ShippingCalculatorConfig<T>)
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
 
@@ -68,7 +68,7 @@ class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="74" packageName="@vendure/core" />
 
-The return value of the <a href='/docs/reference/typescript-api/shipping/shipping-calculator#calculateshippingfn'>CalculateShippingFn</a>.
+The return value of the <a href='/reference/typescript-api/shipping/shipping-calculator#calculateshippingfn'>CalculateShippingFn</a>.
 
 ```ts title="Signature"
 interface ShippingCalculationResult {
@@ -112,10 +112,10 @@ needed in the storefront application when listing eligible shipping methods.
 
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="114" packageName="@vendure/core" />
 
-A function which implements the specific shipping calculation logic. It takes an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> and
+A function which implements the specific shipping calculation logic. It takes an <a href='/reference/typescript-api/entities/order#order'>Order</a> and
 an arguments object and should return the shipping price as an integer in cents.
 
-Should return a <a href='/docs/reference/typescript-api/shipping/shipping-calculator#shippingcalculationresult'>ShippingCalculationResult</a> object.
+Should return a <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculationresult'>ShippingCalculationResult</a> object.
 
 ```ts title="Signature"
 type CalculateShippingFn<T extends ConfigArgs> = (

@@ -79,7 +79,7 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  * will be passed through to the `createFulfillment` method as the last argument.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * let shipomatic;
  *
  * export const shipomaticFulfillmentHandler = new FulfillmentHandler({

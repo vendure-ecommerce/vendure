@@ -1,7 +1,7 @@
 ---
 title: "TaxZoneStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.531Z
+date: 2023-07-21T15:46:15.513Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/tax/tax-zone-strategy.ts" sourceLine="21" packageName="@vendure/core" />
 
-Defines how the active <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> is determined for the purposes of calculating taxes.
+Defines how the active <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> is determined for the purposes of calculating taxes.
 
 This strategy is used in 2 scenarios:
 
@@ -37,7 +37,7 @@ interface TaxZoneStrategy extends InjectableStrategy {
     ): Zone | Promise<Zone> | undefined;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -45,7 +45,7 @@ interface TaxZoneStrategy extends InjectableStrategy {
 
 ### determineTaxZone
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zones: <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>[], channel: <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>, order?: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> | Promise&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62; | undefined"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zones: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>[], channel: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>, order?: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> | Promise&#60;<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>&#62; | undefined"   />
 
 
 

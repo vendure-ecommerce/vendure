@@ -8,7 +8,7 @@ import { REQUEST_CONTEXT_KEY, REQUEST_CONTEXT_MAP_KEY } from '../../common/const
  * request object.
  *
  * @example
- * ```TypeScript
+ * ```ts
  *  \@Query()
  *  getAdministrators(\@Ctx() ctx: RequestContext) {
  *      // ...

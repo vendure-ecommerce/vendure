@@ -1,7 +1,7 @@
 ---
 title: "Channel"
 weight: 10
-date: 2023-07-21T07:17:00.809Z
+date: 2023-07-21T15:46:15.928Z
 showtoc: true
 generated: true
 ---
@@ -67,7 +67,7 @@ class Channel extends VendureEntity {
   @Column() @Column() pricesIncludeTax: boolean;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -75,7 +75,7 @@ class Channel extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>&#62;) => Channel"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>&#62;) => Channel"   />
 
 
 ### code
@@ -95,42 +95,42 @@ class Channel extends VendureEntity {
 
 ### seller
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/seller#seller'>Seller</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/seller#seller'>Seller</a>"   />
 
 
 ### sellerId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### defaultLanguageCode
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
 
 
 ### availableLanguageCodes
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]"   />
 
 
 ### defaultTaxZone
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
 
 
 ### defaultShippingZone
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
 
 
 ### defaultCurrencyCode
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
 
 
 ### availableCurrencyCodes
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>[]"   />
 
 
 ### trackInventory

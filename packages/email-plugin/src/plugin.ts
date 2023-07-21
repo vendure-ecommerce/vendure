@@ -140,7 +140,7 @@ import {
  *
  * The `defaultEmailHandlers` array defines the default handlers such as for handling new account registration, order confirmation, password reset
  * etc. These defaults can be extended by adding custom templates for languages other than the default, or even completely new types of emails
- * which respond to any of the available [VendureEvents](/docs/typescript-api/events/).
+ * which respond to any of the available [VendureEvents](/reference/typescript-api/events/).
  *
  * A good way to learn how to create your own email handlers is to take a look at the
  * [source code of the default handlers](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/default-email-handlers.ts).
@@ -148,7 +148,7 @@ import {
  *
  * It is also possible to modify the default handlers:
  *
- * ```TypeScript
+ * ```ts
  * // Rather than importing `defaultEmailHandlers`, you can
  * // import the handlers individually
  * import {
@@ -228,7 +228,7 @@ import {
  * file transport (See {@link FileTransportOptions}) and outputs emails as rendered HTML files in the directory specified by the
  * `outputPath` property.
  *
- * ```TypeScript
+ * ```ts
  * EmailPlugin.init({
  *   devMode: true,
  *   route: 'mailbox',
@@ -249,7 +249,7 @@ import {
  * send detailed information from the SMTP transporter to the configured logger (defaults to console). For maximum detail combine
  * this with a detail log level in the configured VendureLogger:
  *
- * ```TypeScript
+ * ```ts
  * const config: VendureConfig = {
  *   logger: new DefaultLogger({ level: LogLevel.Debug })
  *   // ...

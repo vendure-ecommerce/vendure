@@ -1,7 +1,7 @@
 ---
 title: "ShippingOptions"
 weight: 10
-date: 2023-07-21T07:17:00.627Z
+date: 2023-07-21T15:46:15.628Z
 showtoc: true
 generated: true
 ---
@@ -32,36 +32,36 @@ interface ShippingOptions {
 
 ### shippingEligibilityCheckers
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a>&#60;any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a>&#60;any&#62;&#62;"   />
 
 An array of available ShippingEligibilityCheckers for use in configuring ShippingMethods
 ### shippingCalculators
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>&#60;any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>&#60;any&#62;&#62;"   />
 
 An array of available ShippingCalculators for use in configuring ShippingMethods
 ### shippingLineAssignmentStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a>"  since="2.0.0"  />
 
-This strategy is used to assign a given <a href='/docs/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a> to one or more <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s of the Order.
+This strategy is used to assign a given <a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a> to one or more <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s of the Order.
 This allows you to set multiple shipping methods for a single order, each assigned a different subset of
 OrderLines.
 ### customFulfillmentProcess
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a>&#60;any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a>&#60;any&#62;&#62;"   />
 
 Allows the definition of custom states and transition logic for the fulfillment process state machine.
-Takes an array of objects implementing the <a href='/docs/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> interface.
+Takes an array of objects implementing the <a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> interface.
 ### process
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a>&#60;any&#62;&#62;" default="<a href='/docs/reference/typescript-api/fulfillment/fulfillment-process#defaultfulfillmentprocess'>defaultFulfillmentProcess</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a>&#60;any&#62;&#62;" default="<a href='/reference/typescript-api/fulfillment/fulfillment-process#defaultfulfillmentprocess'>defaultFulfillmentProcess</a>"  since="2.0.0"  />
 
 Allows the definition of custom states and transition logic for the fulfillment process state machine.
-Takes an array of objects implementing the <a href='/docs/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> interface.
+Takes an array of objects implementing the <a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> interface.
 ### fulfillmentHandlers
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler'>FulfillmentHandler</a>&#60;any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler'>FulfillmentHandler</a>&#60;any&#62;&#62;"   />
 
 An array of available FulfillmentHandlers.
 

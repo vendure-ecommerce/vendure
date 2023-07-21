@@ -55,7 +55,7 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      * To effectively disable this check for a plugin, you can use an overly-permissive string such as `>0.0.0`.
      *
      * @example
-     * ```typescript
+     * ```ts
      * compatibility: '^2.0.0'
      * ```
      *
@@ -77,7 +77,7 @@ export interface APIExtensionDefinition {
      * Extensions to the schema.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const schema = gql`extend type SearchReindexResponse {
      *     timeTaken: Int!
      *     indexedItemCount: Int!
@@ -123,7 +123,7 @@ export type PluginConfigurationFn = (
  * entirely new types. Database entities and resolvers can also be defined to handle the extended GraphQL types.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { Controller, Get } from '\@nestjs/common';
  * import { Ctx, PluginCommonModule, ProductService, RequestContext, VendurePlugin } from '\@vendure/core';
  *

@@ -1,7 +1,7 @@
 ---
 title: "HydrateOptions"
 weight: 10
-date: 2023-07-21T07:17:01.515Z
+date: 2023-07-21T15:46:16.833Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator-types.ts" sourceLine="12" packageName="@vendure/core" since="1.3.0" />
 
 Options used to control which relations of the entity get hydrated
-when using the <a href='/docs/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a> helper.
+when using the <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a> helper.
 
 ```ts title="Signature"
 interface HydrateOptions<Entity extends VendureEntity> {
@@ -29,7 +29,7 @@ interface HydrateOptions<Entity extends VendureEntity> {
 
 ### relations
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;Entity&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;Entity&#62;&#62;"   />
 
 Defines the relations to hydrate, using strings with dot notation to indicate
 nested joins. If the entity already has a particular relation available, that relation

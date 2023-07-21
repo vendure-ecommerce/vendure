@@ -1,7 +1,7 @@
 ---
 title: "GuestCheckoutStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.320Z
+date: 2023-07-21T15:46:15.248Z
 showtoc: true
 generated: true
 ---
@@ -38,7 +38,7 @@ interface GuestCheckoutStrategy extends InjectableStrategy {
         | Promise<ErrorResultUnion<SetCustomerForOrderResult, Customer>>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -46,7 +46,7 @@ interface GuestCheckoutStrategy extends InjectableStrategy {
 
 ### setCustomerForOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => | ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;         | Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => | ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;         | Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;"   />
 
 This method is called when the `setCustomerForOrder` mutation is executed.
 It should return either a Customer object or an ErrorResult.

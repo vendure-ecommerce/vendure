@@ -1,7 +1,7 @@
 ---
 title: "HttpHealthCheckStrategy"
 weight: 10
-date: 2023-07-21T07:17:01.339Z
+date: 2023-07-21T15:46:16.599Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/health-check/http-health-check-strategy.ts" sourceLine="36" packageName="@vendure/core" />
 
-A <a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> used to check health by pinging a url. Internally it uses
+A <a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> used to check health by pinging a url. Internally it uses
 the [NestJS HttpHealthIndicator](https://docs.nestjs.com/recipes/terminus#http-healthcheck).
 
 *Example*
@@ -41,7 +41,7 @@ class HttpHealthCheckStrategy implements HealthCheckStrategy {
   getHealthIndicator() => HealthIndicatorFunction;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a></code>
 
 
 
@@ -54,7 +54,7 @@ class HttpHealthCheckStrategy implements HealthCheckStrategy {
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### getHealthIndicator

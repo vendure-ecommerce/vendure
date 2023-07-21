@@ -2315,7 +2315,7 @@ export type PaymentMethodTranslation = {
  * based on the activeUserId of the current session. As a result, the resolver code looks like this:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Query()
  * \@Allow(Permission.Owner)
  * async activeCustomer(\@Ctx() ctx: RequestContext): Promise<Customer | undefined> {

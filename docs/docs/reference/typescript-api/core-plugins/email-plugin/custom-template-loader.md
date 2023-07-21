@@ -1,7 +1,7 @@
 ---
 title: "Custom Template Loader"
 weight: 10
-date: 2023-07-21T07:17:02.782Z
+date: 2023-07-21T15:46:18.138Z
 showtoc: true
 generated: true
 ---
@@ -48,7 +48,7 @@ interface TemplateLoader {
 
 ### loadTemplate
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: LoadTemplateInput) => Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: LoadTemplateInput) => Promise&#60;string&#62;"   />
 
 
 ### loadPartials

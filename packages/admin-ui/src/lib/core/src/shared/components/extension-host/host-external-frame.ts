@@ -13,7 +13,7 @@ export interface ExternalFrameOptions extends ExtensionHostOptions {
  * host an external URL from the Admin UI using the {@link ExtensionHostComponent}
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *     imports: [
  *         RouterModule.forChild([

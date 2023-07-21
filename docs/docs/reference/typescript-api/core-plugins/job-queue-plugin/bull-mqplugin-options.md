@@ -1,7 +1,7 @@
 ---
 title: "BullMQPluginOptions"
 weight: 10
-date: 2023-07-21T07:17:02.867Z
+date: 2023-07-21T15:46:18.210Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/types.ts" sourceLine="14" packageName="@vendure/job-queue-plugin" since="1.2.0" />
 
-Configuration options for the <a href='/docs/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin#bullmqjobqueueplugin'>BullMQJobQueuePlugin</a>.
+Configuration options for the <a href='/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin#bullmqjobqueueplugin'>BullMQJobQueuePlugin</a>.
 
 ```ts title="Signature"
 interface BullMQPluginOptions {
@@ -53,7 +53,7 @@ Worker instance.
 See the [BullMQ WorkerOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.workeroptions.md)
 ### setRetries
 
-<MemberInfo kind="property" type="(queueName: string, job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"  since="1.3.0"  />
+<MemberInfo kind="property" type="(queueName: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"  since="1.3.0"  />
 
 When a job is added to the JobQueue using `JobQueue.add()`, the calling
 code may specify the number of retries in case of failure. This option allows
@@ -75,7 +75,7 @@ setRetries: (queueName, job) => {
  ```
 ### setBackoff
 
-<MemberInfo kind="property" type="(queueName: string, job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; <a href='/docs/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#backoffoptions'>BackoffOptions</a> | undefined" default="'exponential', 1000"  since="1.3.0"  />
+<MemberInfo kind="property" type="(queueName: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; <a href='/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#backoffoptions'>BackoffOptions</a> | undefined" default="'exponential', 1000"  since="1.3.0"  />
 
 This allows you to specify the backoff settings when a failed job gets retried.
 In other words, this determines how much time should pass before attempting to

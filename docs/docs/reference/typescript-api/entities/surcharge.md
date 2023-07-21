@@ -1,7 +1,7 @@
 ---
 title: "Surcharge"
 weight: 10
-date: 2023-07-21T07:17:01.166Z
+date: 2023-07-21T15:46:16.350Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/surcharge/surcharge.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
-A Surcharge represents an arbitrary extra item on an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> which is not
+A Surcharge represents an arbitrary extra item on an <a href='/reference/typescript-api/entities/order#order'>Order</a> which is not
 a ProductVariant. It can be used to e.g. represent payment-related surcharges.
 
 ```ts title="Signature"
@@ -42,7 +42,7 @@ class Surcharge extends VendureEntity {
   @Calculated() taxRate: number
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -50,7 +50,7 @@ class Surcharge extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>&#62;) => Surcharge"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>&#62;) => Surcharge"   />
 
 
 ### description
@@ -80,12 +80,12 @@ class Surcharge extends VendureEntity {
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### orderModification
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>"   />
 
 
 ### price

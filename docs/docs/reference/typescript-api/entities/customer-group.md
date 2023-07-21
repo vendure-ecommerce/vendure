@@ -1,7 +1,7 @@
 ---
 title: "CustomerGroup"
 weight: 10
-date: 2023-07-21T07:17:00.849Z
+date: 2023-07-21T15:46:15.978Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/customer-group/customer-group.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-A grouping of <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>s which enables features such as group-based promotions
+A grouping of <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>s which enables features such as group-based promotions
 or tax rules.
 
 ```ts title="Signature"
@@ -28,7 +28,7 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
     customFields: CustomCustomerGroupFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 * Implements: <code>HasCustomFields</code>
@@ -39,7 +39,7 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>&#62;) => CustomerGroup"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>&#62;) => CustomerGroup"   />
 
 
 ### name
@@ -49,7 +49,7 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
 
 ### customers
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>[]"   />
 
 
 ### customFields

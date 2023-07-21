@@ -1,7 +1,7 @@
 ---
 title: "Fulfillment"
 weight: 10
-date: 2023-07-21T07:17:00.870Z
+date: 2023-07-21T15:46:16.012Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/fulfillment/fulfillment.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
-This entity represents a fulfillment of an Order or part of it, i.e. which <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s have been
+This entity represents a fulfillment of an Order or part of it, i.e. which <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s have been
 delivered to the Customer after successful payment.
 
 ```ts title="Signature"
@@ -34,7 +34,7 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
     customFields: CustomFulfillmentFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 * Implements: <code>HasCustomFields</code>
@@ -45,12 +45,12 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment"   />
 
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>"   />
 
 
 ### trackingCode
@@ -70,7 +70,7 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]"   />
 
 
 ### customFields

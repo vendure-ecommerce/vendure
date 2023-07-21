@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntryComponent"
 weight: 10
-date: 2023-07-21T07:17:04.067Z
+date: 2023-07-21T15:46:19.075Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 This interface should be implemented by components intended to display a history entry in the
 Order or Customer history timeline. If the component needs access to the Order or Customer object itself,
-you should implement <a href='/docs/reference/admin-ui-api/custom-history-entry-components/order-history-entry-component#orderhistoryentrycomponent'>OrderHistoryEntryComponent</a> or <a href='/docs/reference/admin-ui-api/custom-history-entry-components/customer-history-entry-component#customerhistoryentrycomponent'>CustomerHistoryEntryComponent</a> respectively.
+you should implement <a href='/reference/admin-ui-api/custom-history-entry-components/order-history-entry-component#orderhistoryentrycomponent'>OrderHistoryEntryComponent</a> or <a href='/reference/admin-ui-api/custom-history-entry-components/customer-history-entry-component#customerhistoryentrycomponent'>CustomerHistoryEntryComponent</a> respectively.
 
 ```ts title="Signature"
 interface HistoryEntryComponent {

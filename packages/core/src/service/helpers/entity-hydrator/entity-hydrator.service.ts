@@ -20,7 +20,7 @@ import { HydrateOptions } from './entity-hydrator-types';
  * and you need to ensure that one or more relations are present.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const product = await this.productVariantService
  *   .getProductForVariant(ctx, variantId);
  *
@@ -39,7 +39,7 @@ import { HydrateOptions } from './entity-hydrator-types';
  * Custom field relations may also be hydrated:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const customer = await this.customerService
  *   .findOne(ctx, id);
  *
@@ -64,7 +64,7 @@ export class EntityHydrator {
      * mutates the `target` entity.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * await this.entityHydrator.hydrate(ctx, product, {
      *   relations: [
      *     'variants.stockMovements'

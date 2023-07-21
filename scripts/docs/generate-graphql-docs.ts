@@ -27,7 +27,7 @@ const targetApi: TargetApi = getTargetApiFromArgs();
 // The path to the introspection schema json file
 const SCHEMA_FILE = path.join(__dirname, `../../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
-const docsUrl = `/docs/reference/graphql-api/${targetApi}/`;
+const docsUrl = `/reference/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
 const outputPath = path.join(__dirname, `../../docs/docs/reference/graphql-api/${targetApi}`);
 
@@ -48,11 +48,11 @@ generateGraphqlDocs(outputPath);
 
 function generateGraphqlDocs(hugoOutputPath: string) {
     const timeStart = +new Date();
-    let queriesOutput = generateFrontMatter('Queries', 1) + '\n\n# Queries\n\n';
-    let mutationsOutput = generateFrontMatter('Mutations', 2) + '\n\n# Mutations\n\n';
-    let objectTypesOutput = generateFrontMatter('Types', 3) + '\n\n# Types\n\n';
-    let inputTypesOutput = generateFrontMatter('Input Objects', 4) + '\n\n# Input Objects\n\n';
-    let enumsOutput = generateFrontMatter('Enums', 5) + '\n\n# Enums\n\n';
+    let queriesOutput = generateFrontMatter('Queries', 1) + '\n\n';
+    let mutationsOutput = generateFrontMatter('Mutations', 2) + '\n\n';
+    let objectTypesOutput = generateFrontMatter('Types', 3) + '\n\n';
+    let inputTypesOutput = generateFrontMatter('Input Objects', 4) + '\n\n';
+    let enumsOutput = generateFrontMatter('Enums', 5) + '\n\n';
     const sortByName = (a: { name: string }, b: { name: string }) => (a.name < b.name ? -1 : 1);
     const sortedTypes = Object.values(schema.getTypeMap()).sort(sortByName);
     for (const type of sortedTypes) {

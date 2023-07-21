@@ -1,7 +1,7 @@
 ---
 title: "Address"
 weight: 10
-date: 2023-07-21T07:17:00.761Z
+date: 2023-07-21T15:46:15.848Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/address/address.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-Represents a <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>'s address.
+Represents a <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>'s address.
 
 ```ts title="Signature"
 class Address extends VendureEntity implements HasCustomFields {
@@ -46,7 +46,7 @@ class Address extends VendureEntity implements HasCustomFields {
     customFields: CustomAddressFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 * Implements: <code>HasCustomFields</code>
@@ -57,12 +57,12 @@ class Address extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/address#address'>Address</a>&#62;) => Address"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/address#address'>Address</a>&#62;) => Address"   />
 
 
 ### customer
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>"   />
 
 
 ### fullName
@@ -102,7 +102,7 @@ class Address extends VendureEntity implements HasCustomFields {
 
 ### country
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/country#country'>Country</a>"   />
 
 
 ### phoneNumber

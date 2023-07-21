@@ -1,7 +1,7 @@
 ---
 title: "Default Inputs"
 weight: 10
-date: 2023-07-21T07:17:04.580Z
+date: 2023-07-21T15:46:19.482Z
 showtoc: true
 generated: true
 ---
@@ -25,7 +25,7 @@ class BooleanFormInputComponent implements FormInputComponent {
   config: DefaultFormComponentConfig<'boolean-form-input'>;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -33,7 +33,7 @@ class BooleanFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -73,7 +73,7 @@ class HtmlEditorFormInputComponent extends BaseCodeEditorFormInputComponent impl
 * Extends: <code>BaseCodeEditorFormInputComponent</code>
 
 
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>AfterViewInit</code>, <code>OnInit</code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>AfterViewInit</code>, <code>OnInit</code>
 
 
 
@@ -81,7 +81,7 @@ class HtmlEditorFormInputComponent extends BaseCodeEditorFormInputComponent impl
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### constructor
@@ -116,7 +116,7 @@ class JsonEditorFormInputComponent extends BaseCodeEditorFormInputComponent impl
 * Extends: <code>BaseCodeEditorFormInputComponent</code>
 
 
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>AfterViewInit</code>, <code>OnInit</code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>AfterViewInit</code>, <code>OnInit</code>
 
 
 
@@ -124,7 +124,7 @@ class JsonEditorFormInputComponent extends BaseCodeEditorFormInputComponent impl
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### constructor
@@ -161,7 +161,7 @@ class CombinationModeFormInputComponent implements FormInputComponent, OnInit {
   setCombinationModeOr() => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
 
 
 
@@ -169,7 +169,7 @@ class CombinationModeFormInputComponent implements FormInputComponent, OnInit {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -233,7 +233,7 @@ class CurrencyFormInputComponent implements FormInputComponent {
   constructor(dataService: DataService)
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -241,7 +241,7 @@ class CurrencyFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -256,7 +256,7 @@ class CurrencyFormInputComponent implements FormInputComponent {
 
 ### currencyCode$
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/docs/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>&#62;"   />
+<MemberInfo kind="property" type="Observable&#60;<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>&#62;"   />
 
 
 ### config
@@ -266,7 +266,7 @@ class CurrencyFormInputComponent implements FormInputComponent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => CurrencyFormInputComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => CurrencyFormInputComponent"   />
 
 
 
@@ -294,7 +294,7 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
   compareWith(o1: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>, o2: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
 
 
 
@@ -302,7 +302,7 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -327,7 +327,7 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => CustomerGroupFormInputComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => CustomerGroupFormInputComponent"   />
 
 
 ### ngOnInit
@@ -367,7 +367,7 @@ class DateFormInputComponent implements FormInputComponent {
   yearRange: void
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -375,7 +375,7 @@ class DateFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -437,7 +437,7 @@ class FacetValueFormInputComponent implements FormInputComponent {
     };
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -445,7 +445,7 @@ class FacetValueFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### isListInput
@@ -497,7 +497,7 @@ class NumberFormInputComponent implements FormInputComponent {
   step: void
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -505,7 +505,7 @@ class NumberFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -567,7 +567,7 @@ class PasswordFormInputComponent implements FormInputComponent {
   config: InputComponentConfig;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -575,7 +575,7 @@ class PasswordFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -619,7 +619,7 @@ class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
   removeProductVariant(id: string) => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
 
 
 
@@ -627,7 +627,7 @@ class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### isListInput
@@ -657,7 +657,7 @@ class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductSelectorFormInputComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductSelectorFormInputComponent"   />
 
 
 ### ngOnInit
@@ -686,7 +686,7 @@ class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
 
 The default input component for `relation` type custom fields. Allows the selection
 of a ProductVariant, Product, Customer or Asset. For other entity types, a custom
-implementation will need to be defined. See <a href='/docs/reference/admin-ui-api/custom-input-components/register-form-input-component#registerforminputcomponent'>registerFormInputComponent</a>.
+implementation will need to be defined. See <a href='/reference/admin-ui-api/custom-input-components/register-form-input-component#registerforminputcomponent'>registerFormInputComponent</a>.
 
 ```ts title="Signature"
 class RelationFormInputComponent implements FormInputComponent {
@@ -696,7 +696,7 @@ class RelationFormInputComponent implements FormInputComponent {
   config: RelationCustomFieldConfig;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -704,7 +704,7 @@ class RelationFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -731,7 +731,7 @@ class RelationFormInputComponent implements FormInputComponent {
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/dynamic-form-inputs/rich-text-form-input/rich-text-form-input.component.ts" sourceLine="14" packageName="@vendure/admin-ui" />
 
-Uses the <a href='/docs/reference/admin-ui-api/components/rich-text-editor-component#richtexteditorcomponent'>RichTextEditorComponent</a> as in input for `text` type fields.
+Uses the <a href='/reference/admin-ui-api/components/rich-text-editor-component#richtexteditorcomponent'>RichTextEditorComponent</a> as in input for `text` type fields.
 
 ```ts title="Signature"
 class RichTextFormInputComponent implements FormInputComponent {
@@ -741,7 +741,7 @@ class RichTextFormInputComponent implements FormInputComponent {
   config: DefaultFormComponentConfig<'rich-text-form-input'>;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -749,7 +749,7 @@ class RichTextFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -792,7 +792,7 @@ class SelectFormInputComponent implements FormInputComponent, OnInit {
   trackByFn(index: number, item: any) => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
 
 
 
@@ -800,7 +800,7 @@ class SelectFormInputComponent implements FormInputComponent, OnInit {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -820,7 +820,7 @@ class SelectFormInputComponent implements FormInputComponent, OnInit {
 
 ### uiLanguage$
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
+<MemberInfo kind="property" type="Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
 
 
 ### options
@@ -830,7 +830,7 @@ class SelectFormInputComponent implements FormInputComponent, OnInit {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => SelectFormInputComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => SelectFormInputComponent"   />
 
 
 ### ngOnInit
@@ -864,7 +864,7 @@ class TextFormInputComponent implements FormInputComponent {
   suffix: void
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -872,7 +872,7 @@ class TextFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly
@@ -920,7 +920,7 @@ class TextareaFormInputComponent implements FormInputComponent {
   spellcheck: boolean
 }
 ```
-* Implements: <code><a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
+* Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
 
 
 
@@ -928,7 +928,7 @@ class TextareaFormInputComponent implements FormInputComponent {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/default-form-component-id#defaultformcomponentid'>DefaultFormComponentId</a>"   />
 
 
 ### readonly

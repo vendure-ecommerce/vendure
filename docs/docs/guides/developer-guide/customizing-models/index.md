@@ -36,7 +36,7 @@ With the example config above, the following will occur:
 
 The values of the custom fields can then be set and queried via the GraphQL APIs:
 
-```GraphQL
+```graphql
 mutation {
   updateProduct(input: {
     id: 1
@@ -198,7 +198,7 @@ OrderLine: [
 
 Once defined, the [addItemToOrder mutation]({{< relref "/reference/graphql-api/shop/mutations" >}}#additemtoorder) will have a third argument available, which accepts values for the custom field defined above:
 
-```GraphQL
+```graphql
 mutation {
   addItemToOrder(
     productVariantId: "42"
@@ -458,7 +458,7 @@ Customer: [
 
 In this example, we set up a many-to-one relationship from Customer to Asset, allowing us to specify an avatar image for each Customer. Relation custom fields are unique in that the input and output names are not the same - the input will expect an ID and will be named `'<field name>Id'` or `'<field name>Ids'` for list types.
 
-```GraphQL
+```graphql
 mutation {
   updateCustomer(input: {
     id: 1

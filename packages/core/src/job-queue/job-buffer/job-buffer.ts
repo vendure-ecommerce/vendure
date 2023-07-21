@@ -17,7 +17,7 @@ import { JobData } from '../types';
  * work.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * // This is a buffer which will collect all the
  * // 'apply-collection-filters' jobs and buffer them.
  * export class CollectionJobBuffer implements JobBuffer<ApplyCollectionFiltersJobData> {
@@ -63,7 +63,7 @@ import { JobData } from '../types';
  * `reduce()` method and sent to the job queue.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const collectionBuffer = new CollectionJobBuffer();
  *
  * await this.jobQueueService.addBuffer(collectionBuffer);

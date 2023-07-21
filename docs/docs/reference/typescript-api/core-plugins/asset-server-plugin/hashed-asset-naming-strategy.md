@@ -1,7 +1,7 @@
 ---
 title: "HashedAssetNamingStrategy"
 weight: 10
-date: 2023-07-21T07:17:02.569Z
+date: 2023-07-21T15:46:17.923Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/hashed-asset-naming-strategy.ts" sourceLine="20" packageName="@vendure/asset-server-plugin" />
 
-An extension of the <a href='/docs/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a> which prefixes file names with
+An extension of the <a href='/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a> which prefixes file names with
 the type (`'source'` or `'preview'`) as well as a 2-character sub-directory based on
 the md5 hash of the original file name.
 
@@ -32,7 +32,7 @@ class HashedAssetNamingStrategy extends DefaultAssetNamingStrategy {
   generatePreviewFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a></code>
 
 
 
@@ -40,12 +40,12 @@ class HashedAssetNamingStrategy extends DefaultAssetNamingStrategy {
 
 ### generateSourceFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
 
 
 ### generatePreviewFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
 
 
 

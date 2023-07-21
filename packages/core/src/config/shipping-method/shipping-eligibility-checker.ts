@@ -46,9 +46,9 @@ export interface ShippingEligibilityCheckerConfig<T extends ConfigArgs>
  * @docsCategory shipping
  * @docsPage ShippingEligibilityChecker
  */
-export class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<
-    T
-> {
+export class ShippingEligibilityChecker<
+    T extends ConfigArgs = ConfigArgs,
+> extends ConfigurableOperationDef<T> {
     private readonly checkFn: CheckShippingEligibilityCheckerFn<T>;
     private readonly shouldRunCheckFn?: ShouldRunCheckFn<T>;
     private shouldRunCheckCache = new TtlCache({ cacheSize: 5000, ttl: 1000 * 60 * 60 * 5 });
@@ -65,7 +65,12 @@ export class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> exten
      *
      * @internal
      */
-    async check(ctx: RequestContext, order: Order, args: ConfigArg[], method: ShippingMethod): Promise<boolean> {
+    async check(
+        ctx: RequestContext,
+        order: Order,
+        args: ConfigArg[],
+        method: ShippingMethod,
+    ): Promise<boolean> {
         const shouldRunCheck = await this.shouldRunCheck(ctx, order, args, method);
         return shouldRunCheck ? this.checkFn(ctx, order, this.argsArrayToHash(args), method) : true;
     }
@@ -74,11 +79,21 @@ export class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> exten
      * Determines whether the check function needs to be run, based on the presence and
      * result of any defined `shouldRunCheckFn`.
      */
-    private async shouldRunCheck(ctx: RequestContext, order: Order, args: ConfigArg[], method: ShippingMethod): Promise<boolean> {
+    private async shouldRunCheck(
+        ctx: RequestContext,
+        order: Order,
+        args: ConfigArg[],
+        method: ShippingMethod,
+    ): Promise<boolean> {
         if (typeof this.shouldRunCheckFn === 'function') {
             const cacheKey = ctx.session?.id;
             if (cacheKey) {
-                const checkResult = await this.shouldRunCheckFn(ctx, order, this.argsArrayToHash(args), method);
+                const checkResult = await this.shouldRunCheckFn(
+                    ctx,
+                    order,
+                    this.argsArrayToHash(args),
+                    method,
+                );
                 const checkResultHash = createHash('sha1')
                     .update(JSON.stringify(checkResult))
                     .digest('base64');
@@ -109,7 +124,7 @@ export type CheckShippingEligibilityCheckerFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-    method: ShippingMethod
+    method: ShippingMethod,
 ) => boolean | Promise<boolean>;
 
 /**
@@ -122,7 +137,7 @@ export type CheckShippingEligibilityCheckerFn<T extends ConfigArgs> = (
  * the `check()` function is expensive and should be kept to an absolute minimum.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const optimizedChecker = new ShippingEligibilityChecker({
  *   code: 'example',
  *   description: [],
@@ -144,5 +159,5 @@ export type ShouldRunCheckFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-    method: ShippingMethod
+    method: ShippingMethod,
 ) => Json | Promise<Json>;

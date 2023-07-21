@@ -103,7 +103,7 @@ export class TopSellersPlugin {}
 
 New mutations are defined in the same way, except that the `@Mutation()` decorator is used in the resolver, and the schema Mutation type is extended:
 
-```GraphQL
+```graphql
 extend type Mutation { 
     myCustomProductMutation(id: ID!): Product!
 }
@@ -244,7 +244,7 @@ When dealing with operations that return a GraphQL union type, there is an extra
 
 Union types are commonly returned from mutations in the Vendure APIs. For more detail on this see the section on [ErrorResults]({{< relref "error-handling" >}}#expected-errors-errorresults). For example: 
 
-```GraphQL
+```graphql
 type MyCustomErrorResult implements ErrorResult {
   errorCode: ErrorCode!
   message: String!

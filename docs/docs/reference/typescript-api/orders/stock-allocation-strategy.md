@@ -1,7 +1,7 @@
 ---
 title: "StockAllocationStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.375Z
+date: 2023-07-21T15:46:15.330Z
 showtoc: true
 generated: true
 ---
@@ -28,7 +28,7 @@ interface StockAllocationStrategy extends InjectableStrategy {
     ): boolean | Promise<boolean>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -36,7 +36,7 @@ interface StockAllocationStrategy extends InjectableStrategy {
 
 ### shouldAllocateStock
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
 
 This method is called whenever an Order transitions from one state to another.
 If it resolves to `true`, then stock will be allocated for this order.

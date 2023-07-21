@@ -1,7 +1,7 @@
 ---
 title: "OrderMergeStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.367Z
+date: 2023-07-21T15:46:15.316Z
 showtoc: true
 generated: true
 ---
@@ -26,7 +26,7 @@ interface OrderMergeStrategy extends InjectableStrategy {
   merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): MergedOrderLine[];
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -34,7 +34,7 @@ interface OrderMergeStrategy extends InjectableStrategy {
 
 ### merge
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/reference/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
 
 Merges the lines of the guest Order with those of the existing Order which is associated
 with the active customer.
@@ -47,7 +47,7 @@ with the active customer.
 
 <GenerationInfo sourceFile="packages/core/src/config/order/order-merge-strategy.ts" sourceLine="15" packageName="@vendure/core" />
 
-The result of the <a href='/docs/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a> `merge` method.
+The result of the <a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a> `merge` method.
 
 ```ts title="Signature"
 interface MergedOrderLine {
@@ -61,7 +61,7 @@ interface MergedOrderLine {
 
 ### orderLineId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### quantity

@@ -1,7 +1,7 @@
 ---
 title: "Transport Options"
 weight: 10
-date: 2023-07-21T07:17:02.760Z
+date: 2023-07-21T15:46:18.123Z
 showtoc: true
 generated: true
 ---
@@ -54,7 +54,7 @@ interface SMTPTransportOptions extends SMTPTransport.Options {
 
 <MemberInfo kind="property" type="boolean" default="false"   />
 
-If true, uses the configured <a href='/docs/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> to log messages from Nodemailer as it interacts with
+If true, uses the configured <a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> to log messages from Nodemailer as it interacts with
 the SMTP server.
 
 
@@ -197,7 +197,7 @@ interface FileTransportOptions {
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="237" packageName="@vendure/email-plugin" />
 
 Does nothing with the generated email. Intended for use in testing where we don't care about the email transport,
-or when using a custom <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a> which does not require transport options.
+or when using a custom <a href='/reference/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a> which does not require transport options.
 
 ```ts title="Signature"
 interface NoopTransportOptions {
@@ -239,7 +239,7 @@ interface TestingTransportOptions {
 
 ### onSend
 
-<MemberInfo kind="property" type="(details: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>) =&#62; void"   />
+<MemberInfo kind="property" type="(details: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>) =&#62; void"   />
 
 Callback to be invoked when an email would be sent.
 

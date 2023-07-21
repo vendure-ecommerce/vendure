@@ -23,7 +23,7 @@ import {
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   providers: [
@@ -63,7 +63,7 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   providers: [
@@ -95,13 +95,13 @@ export function addNavMenuItem(config: NavMenuItem, sectionId: string, before?: 
 /**
  * @description
  * Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
- * be determined by inspecting the DOM and finding the <vdr-action-bar> element and its
+ * be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
  * `data-location-id` attribute.
  *
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   providers: [
@@ -187,7 +187,7 @@ export class NavBuilderService {
 
     /**
      * Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
-     * be determined by inspecting the DOM and finding the <vdr-action-bar> element and its
+     * be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
      * `data-location-id` attribute.
      */
     addActionBarItem(config: ActionBarItem) {

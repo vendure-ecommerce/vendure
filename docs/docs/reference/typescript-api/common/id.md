@@ -1,7 +1,7 @@
 ---
 title: "ID"
 weight: 10
-date: 2023-07-21T07:17:02.480Z
+date: 2023-07-21T15:46:17.850Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="78" packageName="@vendure/common" />
 
-An entity ID. Depending on the configured <a href='/docs/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>, it will be either
+An entity ID. Depending on the configured <a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>, it will be either
 a `string` or a `number`;
 
 ```ts title="Signature"

@@ -1,7 +1,7 @@
 ---
 title: "TestDbInitializer"
 weight: 10
-date: 2023-07-21T07:17:02.930Z
+date: 2023-07-21T15:46:18.268Z
 showtoc: true
 generated: true
 ---
@@ -19,7 +19,7 @@ Defines how the e2e TestService sets up a particular DB to run a single test sui
 The `@vendure/testing` package ships with initializers for sql.js, MySQL & Postgres.
 
 Custom initializers can be created by implementing this interface and registering
-it with the <a href='/docs/reference/typescript-api/testing/register-initializer#registerinitializer'>registerInitializer</a> function:
+it with the <a href='/reference/typescript-api/testing/register-initializer#registerinitializer'>registerInitializer</a> function:
 
 *Example*
 

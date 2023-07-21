@@ -26,7 +26,7 @@ export interface JobBufferStorageStrategy extends InjectableStrategy {
      * If the array is empty, sizes will be returned for _all_ bufferIds.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const sizes = await myJobBufferStrategy.bufferSize(['buffer-1', 'buffer-2']);
      *
      * // sizes = { 'buffer-1': 12, 'buffer-2': 3 }
@@ -41,7 +41,7 @@ export interface JobBufferStorageStrategy extends InjectableStrategy {
      * arranged by bufferId
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const result = await myJobBufferStrategy.flush(['buffer-1', 'buffer-2']);
      *
      * // result = {

@@ -1,7 +1,7 @@
 ---
 title: "JobBuffer"
 weight: 10
-date: 2023-07-21T07:17:01.377Z
+date: 2023-07-21T15:46:16.648Z
 showtoc: true
 generated: true
 ---
@@ -18,7 +18,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 A JobBuffer is used to temporarily prevent jobs from being sent to the job queue for processing.
 Instead, it collects certain jobs (as specified by the `collect()` method), and stores them.
 
-How these buffered jobs are stored is determined by the configured <a href='/docs/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>.
+How these buffered jobs are stored is determined by the configured <a href='/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>.
 
 The JobBuffer can be thought of as a kind of "interceptor" of jobs. That is, when a JobBuffer is active,
 it sits in between calls to `JobQueue.add()` and the actual adding of the job to the queue.
@@ -69,7 +69,7 @@ export class CollectionJobBuffer implements JobBuffer<ApplyCollectionFiltersJobD
 }
 ```
 
-A JobBuffer is used by adding it to the <a href='/docs/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, at which point it will become active
+A JobBuffer is used by adding it to the <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, at which point it will become active
 and start collecting jobs.
 
 At some later point, the buffer can be flushed, causing the buffered jobs to be passed through the
@@ -108,14 +108,14 @@ interface JobBuffer<Data extends JobData<Data> = object> {
 
 ### collect
 
-<MemberInfo kind="method" type="(job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => boolean | Promise&#60;boolean&#62;"   />
 
 This method is called whenever a job is added to the job queue. If it returns `true`, then
 the job will be _buffered_ and _not_ added to the job queue. If it returns `false`, the job
 will be added to the job queue as normal.
 ### reduce
 
-<MemberInfo kind="method" type="(collectedJobs: Array&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;) => Array&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62; | Promise&#60;Array&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type="(collectedJobs: Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;) => Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62; | Promise&#60;Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;&#62;"   />
 
 This method is called whenever the buffer gets flushed via a call to `JobQueueService.flush()`.
 It allows logic to be run on the buffered jobs which enables optimizations such as

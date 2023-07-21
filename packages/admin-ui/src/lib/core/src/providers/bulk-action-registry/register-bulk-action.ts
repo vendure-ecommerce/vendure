@@ -16,7 +16,7 @@ import { BulkAction } from './bulk-action-types';
  * translation via a custom service which integrates with the translation service's API.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { NgModule } from '\@angular/core';
  * import { ModalService, registerBulkAction, SharedModule } from '\@vendure/admin-ui/core';
  *

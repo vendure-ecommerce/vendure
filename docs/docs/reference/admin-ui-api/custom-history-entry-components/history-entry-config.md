@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntryConfig"
 weight: 10
-date: 2023-07-21T07:17:04.083Z
+date: 2023-07-21T15:46:19.088Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/custom-history-entry-component/history-entry-component-types.ts" sourceLine="75" packageName="@vendure/admin-ui" since="1.9.0" />
 
-Configuration for registering a custom <a href='/docs/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a>.
+Configuration for registering a custom <a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a>.
 
 ```ts title="Signature"
 interface HistoryEntryConfig {
@@ -33,7 +33,7 @@ interface HistoryEntryConfig {
 The type should correspond to the custom HistoryEntryType string.
 ### component
 
-<MemberInfo kind="property" type="Type&#60;<a href='/docs/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a>&#62;"   />
+<MemberInfo kind="property" type="Type&#60;<a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a>&#62;"   />
 
 The component to be rendered for this history entry type.
 

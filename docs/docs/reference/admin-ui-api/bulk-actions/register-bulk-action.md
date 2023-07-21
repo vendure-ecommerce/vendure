@@ -1,7 +1,7 @@
 ---
 title: "RegisterBulkAction"
 weight: 10
-date: 2023-07-21T07:17:04.054Z
+date: 2023-07-21T15:46:19.063Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/register-bulk-action.ts" sourceLine="56" packageName="@vendure/admin-ui" since="1.8.0" />
 
-Registers a custom <a href='/docs/reference/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a> which can be invoked from the bulk action menu
+Registers a custom <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a> which can be invoked from the bulk action menu
 of any supported list view.
 
 This allows you to provide custom functionality that can operate on any of the selected
@@ -69,5 +69,5 @@ Parameters
 
 ### bulkAction
 
-<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a>" />
+<MemberInfo kind="parameter" type="<a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a>" />
 

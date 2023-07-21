@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethod"
 weight: 10
-date: 2023-07-21T07:17:00.973Z
+date: 2023-07-21T15:46:16.139Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/payment-method/payment-method.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
-A PaymentMethod is created automatically according to the configured <a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>s defined
-in the <a href='/docs/reference/typescript-api/payment/payment-options#paymentoptions'>PaymentOptions</a> config.
+A PaymentMethod is created automatically according to the configured <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>s defined
+in the <a href='/reference/typescript-api/payment/payment-options#paymentoptions'>PaymentOptions</a> config.
 
 ```ts title="Signature"
 class PaymentMethod extends VendureEntity implements Translatable, ChannelAware, HasCustomFields {
@@ -36,10 +36,10 @@ class PaymentMethod extends VendureEntity implements Translatable, ChannelAware,
     customFields: CustomPaymentMethodFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>
 
 
 
@@ -47,7 +47,7 @@ class PaymentMethod extends VendureEntity implements Translatable, ChannelAware,
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;) => PaymentMethod"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;) => PaymentMethod"   />
 
 
 ### name
@@ -67,7 +67,7 @@ class PaymentMethod extends VendureEntity implements Translatable, ChannelAware,
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;&#62;"   />
 
 
 ### enabled
@@ -87,7 +87,7 @@ class PaymentMethod extends VendureEntity implements Translatable, ChannelAware,
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 ### customFields

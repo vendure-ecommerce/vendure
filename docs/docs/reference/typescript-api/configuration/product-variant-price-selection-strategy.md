@@ -1,7 +1,7 @@
 ---
 title: "ProductVariantPriceSelectionStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.104Z
+date: 2023-07-21T15:46:14.960Z
 showtoc: true
 generated: true
 ---
@@ -25,7 +25,7 @@ interface ProductVariantPriceSelectionStrategy extends InjectableStrategy {
     ): ProductVariantPrice | undefined | Promise<ProductVariantPrice | undefined>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -33,7 +33,7 @@ interface ProductVariantPriceSelectionStrategy extends InjectableStrategy {
 
 ### selectPrice
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, prices: <a href='/docs/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]) => <a href='/docs/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a> | undefined | Promise&#60;<a href='/docs/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, prices: <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]) => <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a> | undefined | Promise&#60;<a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a> | undefined&#62;"   />
 
 
 
@@ -54,7 +54,7 @@ class DefaultProductVariantPriceSelectionStrategy implements ProductVariantPrice
   selectPrice(ctx: RequestContext, prices: ProductVariantPrice[]) => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/configuration/product-variant-price-selection-strategy#productvariantpriceselectionstrategy'>ProductVariantPriceSelectionStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/configuration/product-variant-price-selection-strategy#productvariantpriceselectionstrategy'>ProductVariantPriceSelectionStrategy</a></code>
 
 
 
@@ -62,7 +62,7 @@ class DefaultProductVariantPriceSelectionStrategy implements ProductVariantPrice
 
 ### selectPrice
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, prices: <a href='/docs/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, prices: <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]) => "   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "MolliePlugin"
 weight: 10
-date: 2023-07-21T07:17:02.890Z
+date: 2023-07-21T15:46:18.229Z
 showtoc: true
 generated: true
 ---
@@ -133,12 +133,12 @@ class MolliePlugin {
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/docs/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>"   />
+<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>"   />
 
 Initialize the mollie payment plugin
 

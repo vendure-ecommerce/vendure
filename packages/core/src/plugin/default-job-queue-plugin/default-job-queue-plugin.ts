@@ -50,7 +50,7 @@ export interface DefaultJobQueueOptions {
      * the job being added.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * setRetries: (queueName, job) => {
      *   if (queueName === 'send-email') {
      *     // Override the default number of retries
@@ -81,11 +81,11 @@ export interface DefaultJobQueueOptions {
 /**
  * @description
  * A plugin which configures Vendure to use the SQL database to persist the JobQueue jobs using the {@link SqlJobQueueStrategy}. If you add this
- * plugin to an existing Vendure installation, you'll need to run a [database migration](/docs/developer-guide/migrations), since this
+ * plugin to an existing Vendure installation, you'll need to run a [database migration](/guides/developer-guide/migrations), since this
  * plugin will add a new "job_record" table to the database.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { DefaultJobQueuePlugin, VendureConfig } from '\@vendure/core';
  *
  * export const config: VendureConfig = {
@@ -107,7 +107,7 @@ export interface DefaultJobQueueOptions {
  * a pollInterval based on the queue name:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * export const config: VendureConfig = {
  *   plugins: [
  *     DefaultJobQueuePlugin.init({
@@ -136,7 +136,7 @@ export interface DefaultJobQueueOptions {
  * exponential backoff may be used which progressively increases the delay between each subsequent retry.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * export const config: VendureConfig = {
  *   plugins: [
  *     DefaultJobQueuePlugin.init({

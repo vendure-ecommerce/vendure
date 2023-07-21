@@ -1,7 +1,7 @@
 ---
 title: "DefaultGuestCheckoutStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.268Z
+date: 2023-07-21T15:46:15.189Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="64" packageName="@vendure/core" since="2.0.0" />
 
-The default implementation of the <a href='/docs/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a>. This strategy allows
+The default implementation of the <a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a>. This strategy allows
 guest checkouts by default, but can be configured to disallow them.
 
 *Example*
@@ -41,7 +41,7 @@ class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
   async setCustomerForOrder(ctx: RequestContext, order: Order, input: CreateCustomerInput) => Promise<ErrorResultUnion<SetCustomerForOrderResult, Customer>>;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a></code>
 
 
 
@@ -49,17 +49,17 @@ class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(options?: <a href='/docs/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategyoptions'>DefaultGuestCheckoutStrategyOptions</a>) => DefaultGuestCheckoutStrategy"   />
+<MemberInfo kind="method" type="(options?: <a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategyoptions'>DefaultGuestCheckoutStrategyOptions</a>) => DefaultGuestCheckoutStrategy"   />
 
 
 ### setCustomerForOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;"   />
 
 
 
@@ -71,7 +71,7 @@ class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="20" packageName="@vendure/core" since="2.0.0" />
 
-Options available for the <a href='/docs/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy'>DefaultGuestCheckoutStrategy</a>.
+Options available for the <a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy'>DefaultGuestCheckoutStrategy</a>.
 
 ```ts title="Signature"
 interface DefaultGuestCheckoutStrategyOptions {

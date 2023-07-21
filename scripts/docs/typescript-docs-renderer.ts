@@ -62,7 +62,7 @@ export class TypescriptDocsRenderer {
             const pathParts = [];
             for (const subCategory of page.category) {
                 pathParts.push(subCategory);
-                const indexFile = path.join(outputPath, ...pathParts, '_index.md');
+                const indexFile = path.join(outputPath, ...pathParts, 'index.md');
                 if (!fs.existsSync(indexFile)) {
                     const indexFileContent =
                         generateFrontMatter(subCategory, 10, false) + `\n\n# ${subCategory}`;

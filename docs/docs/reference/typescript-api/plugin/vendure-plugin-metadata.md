@@ -1,7 +1,7 @@
 ---
 title: "VendurePluginMetadata"
 weight: 10
-date: 2023-07-21T07:17:01.493Z
+date: 2023-07-21T15:46:16.803Z
 showtoc: true
 generated: true
 ---
@@ -37,18 +37,18 @@ interface VendurePluginMetadata extends ModuleMetadata {
 
 ### configuration
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/plugin/vendure-plugin-metadata#pluginconfigurationfn'>PluginConfigurationFn</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#pluginconfigurationfn'>PluginConfigurationFn</a>"   />
 
-A function which can modify the <a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a> object before the server bootstraps.
+A function which can modify the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a> object before the server bootstraps.
 ### shopApiExtensions
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>"   />
 
 The plugin may extend the default Vendure GraphQL shop api by providing extended
 schema definitions and any required resolvers.
 ### adminApiExtensions
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>"   />
 
 The plugin may extend the default Vendure GraphQL admin api by providing extended
 schema definitions and any required resolvers.
@@ -132,7 +132,7 @@ Read more about defining custom scalars in the
 
 <GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="112" packageName="@vendure/core" />
 
-This method is called before the app bootstraps and should be used to perform any needed modifications to the <a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
+This method is called before the app bootstraps and should be used to perform any needed modifications to the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
 
 ```ts title="Signature"
 type PluginConfigurationFn = (

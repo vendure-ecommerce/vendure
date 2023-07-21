@@ -70,7 +70,7 @@ import {
  *
  * ### 1. Create a new handler
  *
- * ```TypeScript
+ * ```ts
  * import { EmailEventListener } from `\@vendure/email-plugin`;
  * import { QuoteRequestedEvent } from `./events`;
  *
@@ -110,7 +110,7 @@ import {
  *
  * Finally, you need to register the handler with the EmailPlugin:
  *
- * ```TypeScript {hl_lines=[8]}
+ * ```ts {hl_lines=[8]}
  * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
  * import { quoteRequestedHandler } from './plugins/quote-plugin';
  *
@@ -244,7 +244,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * errors may result if using the DefaultJobQueuePlugin with certain DBs such as MySQL/MariaDB.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const testAttachmentHandler = new EmailEventListener('activate-voucher')
      *   .on(ActivateVoucherEvent)
      *   // ... omitted some steps for brevity
@@ -286,7 +286,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * added to the `event` as the `data` property.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * new EmailEventListener('order-confirmation')
      *   .on(OrderStateTransitionEvent)
      *   .filter(event => event.toState === 'PaymentSettled' && !!event.order.customer)

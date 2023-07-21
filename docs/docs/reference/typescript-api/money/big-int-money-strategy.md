@@ -1,7 +1,7 @@
 ---
 title: "BigIntMoneyStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.180Z
+date: 2023-07-21T15:46:15.060Z
 showtoc: true
 generated: true
 ---
@@ -15,11 +15,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/entity/bigint-money-strategy.ts" sourceLine="18" packageName="@vendure/core" since="2.0.0" />
 
-A <a href='/docs/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a> that stores monetary values as a `bigint` type in the database, which
+A <a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a> that stores monetary values as a `bigint` type in the database, which
 allows values up to ~9 quadrillion to be stored (limited by JavaScript's `MAX_SAFE_INTEGER` limit).
 
 This strategy also slightly differs in the way rounding is performed, with rounding being done _after_
-multiplying the unit price, rather than before (as is the case with the <a href='/docs/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>.
+multiplying the unit price, rather than before (as is the case with the <a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>.
 
 ```ts title="Signature"
 class BigIntMoneyStrategy implements MoneyStrategy {
@@ -47,7 +47,7 @@ class BigIntMoneyStrategy implements MoneyStrategy {
   round(value: number, quantity:  = 1) => number;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a></code>
 
 
 

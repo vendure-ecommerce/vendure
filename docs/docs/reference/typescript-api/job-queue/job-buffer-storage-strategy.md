@@ -1,7 +1,7 @@
 ---
 title: "JobBufferStorageStrategy"
 weight: 10
-date: 2023-07-21T07:17:01.372Z
+date: 2023-07-21T15:46:16.642Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/job-buffer-storage-strategy.ts" sourceLine="12" packageName="@vendure/core" since="1.3.0" />
 
 This strategy defines where to store jobs that have been collected by a
-<a href='/docs/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>.
+<a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>.
 
 ```ts title="Signature"
 interface JobBufferStorageStrategy extends InjectableStrategy {
@@ -25,7 +25,7 @@ interface JobBufferStorageStrategy extends InjectableStrategy {
   flush(bufferIds?: string[]): Promise<{ [bufferId: string]: Job[] }>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -33,7 +33,7 @@ interface JobBufferStorageStrategy extends InjectableStrategy {
 
 ### add
 
-<MemberInfo kind="method" type="(bufferId: string, job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#62;"   />
+<MemberInfo kind="method" type="(bufferId: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;"   />
 
 Persist a job to the storage medium. The storage format should
 take into account the `bufferId` argument, as it is necessary to be
@@ -56,7 +56,7 @@ const sizes = await myJobBufferStrategy.bufferSize(['buffer-1', 'buffer-2']);
 ```
 ### flush
 
-<MemberInfo kind="method" type="(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>[] }&#62;"   />
+<MemberInfo kind="method" type="(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>[] }&#62;"   />
 
 Clears all jobs from the storage medium which match the specified bufferIds (if the
 array is empty, clear for _all_ bufferIds), and returns those jobs in an object

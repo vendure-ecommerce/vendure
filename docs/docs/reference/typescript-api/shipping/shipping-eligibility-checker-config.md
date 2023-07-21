@@ -1,7 +1,7 @@
 ---
 title: "ShippingEligibilityCheckerConfig"
 weight: 10
-date: 2023-07-21T07:17:00.498Z
+date: 2023-07-21T15:46:15.477Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="22" packageName="@vendure/core" />
 
-Configuration passed into the constructor of a <a href='/docs/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a> to
+Configuration passed into the constructor of a <a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a> to
 configure its behavior.
 
 ```ts title="Signature"
@@ -24,7 +24,7 @@ interface ShippingEligibilityCheckerConfig<T extends ConfigArgs> extends Configu
   shouldRunCheck?: ShouldRunCheckFn<T>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
 
 
 
@@ -32,12 +32,12 @@ interface ShippingEligibilityCheckerConfig<T extends ConfigArgs> extends Configu
 
 ### check
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/shipping/check-shipping-eligibility-checker-fn#checkshippingeligibilitycheckerfn'>CheckShippingEligibilityCheckerFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/shipping/check-shipping-eligibility-checker-fn#checkshippingeligibilitycheckerfn'>CheckShippingEligibilityCheckerFn</a>&#60;T&#62;"   />
 
 
 ### shouldRunCheck
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/shipping/should-run-check-fn#shouldruncheckfn'>ShouldRunCheckFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/shipping/should-run-check-fn#shouldruncheckfn'>ShouldRunCheckFn</a>&#60;T&#62;"   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "NavMenuItem"
 weight: 10
-date: 2023-07-21T07:17:04.113Z
+date: 2023-07-21T15:46:19.121Z
 showtoc: true
 generated: true
 ---
@@ -64,7 +64,7 @@ interface NavMenuItem {
 
 ### statusBadge
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/docs/reference/admin-ui-api/nav-menu/navigation-types#navmenubadge'>NavMenuBadge</a>&#62;"   />
+<MemberInfo kind="property" type="Observable&#60;<a href='/reference/admin-ui-api/nav-menu/navigation-types#navmenubadge'>NavMenuBadge</a>&#62;"   />
 
 
 

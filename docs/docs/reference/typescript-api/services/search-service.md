@@ -1,7 +1,7 @@
 ---
 title: "SearchService"
 weight: 10
-date: 2023-07-21T07:17:02.250Z
+date: 2023-07-21T15:46:17.638Z
 showtoc: true
 generated: true
 ---
@@ -29,13 +29,13 @@ class SearchService {
 
 ### adopt
 
-<MemberInfo kind="method" type="(override: Pick&#60;<a href='/docs/reference/typescript-api/services/search-service#searchservice'>SearchService</a>, 'reindex'&#62;) => "   />
+<MemberInfo kind="method" type="(override: Pick&#60;<a href='/reference/typescript-api/services/search-service#searchservice'>SearchService</a>, 'reindex'&#62;) => "   />
 
 Adopt a concrete search service implementation to pass through the
 calls to.
 ### reindex
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;"   />
 
 
 

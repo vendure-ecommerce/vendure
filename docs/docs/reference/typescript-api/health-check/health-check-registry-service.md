@@ -1,7 +1,7 @@
 ---
 title: "HealthCheckRegistryService"
 weight: 10
-date: 2023-07-21T07:17:01.335Z
+date: 2023-07-21T15:46:16.596Z
 showtoc: true
 generated: true
 ---
@@ -29,11 +29,11 @@ service to add a check for that dependency to the Vendure health check.
 
 
 Since v1.6.0, the preferred way to implement a custom health check is by creating a new
-<a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> and then passing it to the `systemOptions.healthChecks` array.
-See the <a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> docs for an example configuration.
+<a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> and then passing it to the `systemOptions.healthChecks` array.
+See the <a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> docs for an example configuration.
 
 The alternative way to register a health check is by injecting this service directly into your
-plugin module. To use it in your plugin, you'll need to import the <a href='/docs/reference/typescript-api/plugin/plugin-common-module#plugincommonmodule'>PluginCommonModule</a>:
+plugin module. To use it in your plugin, you'll need to import the <a href='/reference/typescript-api/plugin/plugin-common-module#plugincommonmodule'>PluginCommonModule</a>:
 
 *Example*
 

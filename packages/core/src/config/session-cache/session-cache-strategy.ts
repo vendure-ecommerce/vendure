@@ -59,7 +59,7 @@ export type CachedSession = {
  * [ioredis package](https://www.npmjs.com/package/ioredis) as a dependency.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { CachedSession, Logger, SessionCacheStrategy, VendurePlugin } from '\@vendure/core';
  * import { Redis, RedisOptions } from 'ioredis';
  *

@@ -1,7 +1,7 @@
 ---
 title: "NoopSessionCacheStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.467Z
+date: 2023-07-21T15:46:15.438Z
 showtoc: true
 generated: true
 ---
@@ -26,7 +26,7 @@ class NoopSessionCacheStrategy implements SessionCacheStrategy {
   set(session: CachedSession) => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a></code>
 
 
 
@@ -49,7 +49,7 @@ class NoopSessionCacheStrategy implements SessionCacheStrategy {
 
 ### set
 
-<MemberInfo kind="method" type="(session: <a href='/docs/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => "   />
+<MemberInfo kind="method" type="(session: <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => "   />
 
 
 

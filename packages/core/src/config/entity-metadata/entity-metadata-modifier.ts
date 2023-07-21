@@ -12,7 +12,7 @@ import { MetadataArgsStorage } from 'typeorm/metadata-args/MetadataArgsStorage';
  * {{% /alert %}}
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { Index } from 'typeorm';
  * import { EntityMetadataModifier, ProductVariant } from '\@vendure/core';
  *
@@ -24,7 +24,7 @@ import { MetadataArgsStorage } from 'typeorm/metadata-args/MetadataArgsStorage';
  * ```
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { Column } from 'typeorm';
  * import { EntityMetadataModifier, ProductTranslation } from '\@vendure/core';
  *

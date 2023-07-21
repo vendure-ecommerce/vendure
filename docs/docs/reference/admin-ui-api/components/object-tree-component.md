@@ -1,7 +1,7 @@
 ---
 title: "ObjectTreeComponent"
 weight: 10
-date: 2023-07-21T07:17:04.482Z
+date: 2023-07-21T15:46:19.427Z
 showtoc: true
 generated: true
 ---
@@ -74,7 +74,7 @@ class ObjectTreeComponent implements OnChanges {
 
 ### constructor
 
-<MemberInfo kind="method" type="(parent: <a href='/docs/reference/admin-ui-api/components/object-tree-component#objecttreecomponent'>ObjectTreeComponent</a>) => ObjectTreeComponent"   />
+<MemberInfo kind="method" type="(parent: <a href='/reference/admin-ui-api/components/object-tree-component#objecttreecomponent'>ObjectTreeComponent</a>) => ObjectTreeComponent"   />
 
 
 ### ngOnChanges

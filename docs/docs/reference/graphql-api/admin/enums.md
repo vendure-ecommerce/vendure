@@ -1,7 +1,7 @@
 ---
 title: "Enums"
 weight: 5
-date: 2023-07-21T09:48:22.063Z
+date: 2023-07-21T15:33:44.314Z
 showtoc: true
 generated: true
 ---
@@ -10,8 +10,6 @@ import MemberInfo from '@site/src/components/MemberInfo';
 import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
-
-# Enums
 
 
 ## AdjustmentType

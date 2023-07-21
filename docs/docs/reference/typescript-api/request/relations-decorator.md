@@ -1,7 +1,7 @@
 ---
 title: "Relations Decorator"
 weight: 10
-date: 2023-07-21T07:16:59.911Z
+date: 2023-07-21T15:46:14.710Z
 showtoc: true
 generated: true
 ---
@@ -68,7 +68,7 @@ then the value of `relations` will be
 ['customer', 'lines'']
 ```
 The `'customer'` comes from the fact that the query is nesting the "customer" object, and the `'lines'` is taken
-from the `Order` entity's `totalQuantity` property, which uses <a href='/docs/reference/typescript-api/data-access/calculated#calculated'>Calculated</a> decorator and defines those relations as dependencies
+from the `Order` entity's `totalQuantity` property, which uses <a href='/reference/typescript-api/data-access/calculated#calculated'>Calculated</a> decorator and defines those relations as dependencies
 for deriving the calculated value.
 
 ## Depth

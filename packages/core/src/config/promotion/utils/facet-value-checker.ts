@@ -14,7 +14,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
  * of ProductVariants containing the given FacetValues.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { FacetValueChecker, LanguageCode, PromotionCondition, TransactionalConnection } from '\@vendure/core';
  *
  * let facetValueChecker: FacetValueChecker;

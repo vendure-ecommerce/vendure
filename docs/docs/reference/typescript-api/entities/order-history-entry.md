@@ -1,7 +1,7 @@
 ---
 title: "OrderHistoryEntry"
 weight: 10
-date: 2023-07-21T07:17:00.882Z
+date: 2023-07-21T15:46:16.031Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/history-entry/order-history-entry.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-Represents an event in the history of a particular <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>.
+Represents an event in the history of a particular <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 
 ```ts title="Signature"
 class OrderHistoryEntry extends HistoryEntry {
@@ -25,7 +25,7 @@ class OrderHistoryEntry extends HistoryEntry {
     order: Order;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a></code>
 
 
 
@@ -33,12 +33,12 @@ class OrderHistoryEntry extends HistoryEntry {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;) => OrderHistoryEntry"   />
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;) => OrderHistoryEntry"   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 

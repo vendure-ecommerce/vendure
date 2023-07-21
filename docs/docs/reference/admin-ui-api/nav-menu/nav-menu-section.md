@@ -1,7 +1,7 @@
 ---
 title: "NavMenuSection"
 weight: 10
-date: 2023-07-21T07:17:04.127Z
+date: 2023-07-21T15:46:19.133Z
 showtoc: true
 generated: true
 ---
@@ -45,7 +45,7 @@ interface NavMenuSection {
 
 ### items
 
-<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]"   />
 
 
 ### icon

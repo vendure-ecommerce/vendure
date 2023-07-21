@@ -1,7 +1,7 @@
 ---
 title: "HardenPluginOptions"
 weight: 10
-date: 2023-07-21T07:17:02.993Z
+date: 2023-07-21T15:46:18.330Z
 showtoc: true
 generated: true
 ---
@@ -46,7 +46,7 @@ A query which exceeds the maximum score will result in an error.
 <MemberInfo kind="property" type="ComplexityEstimator[]"   />
 
 An array of custom estimator functions for calculating the complexity of a query. By default,
-the plugin will use the <a href='/docs/reference/typescript-api/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a> which is specifically
+the plugin will use the <a href='/reference/typescript-api/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a> which is specifically
 tuned to accurately estimate Vendure queries.
 ### logComplexityScore
 

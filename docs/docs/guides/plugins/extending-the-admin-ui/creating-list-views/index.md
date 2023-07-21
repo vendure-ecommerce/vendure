@@ -17,7 +17,7 @@ Let's say you have a plugin which adds a new entity to the database called `Prod
 
 To use the standardized list component, you need to make sure your plugin exposes this list in the GraphQL API following the [PaginatedList interface]({{< relref "paginated-list" >}}):
 
-```GraphQL
+```graphql
 type ProductReview implements Node {
   id: ID!
   createdAt: DateTime!

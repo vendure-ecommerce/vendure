@@ -1,7 +1,7 @@
 ---
 title: "PageTabConfig"
 weight: 10
-date: 2023-07-21T07:17:04.178Z
+date: 2023-07-21T15:46:19.190Z
 showtoc: true
 generated: true
 ---
@@ -33,7 +33,7 @@ interface PageTabConfig {
 
 ### location
 
-<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/action-bar/page-location-id#pagelocationid'>PageLocationId</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/action-bar/page-location-id#pagelocationid'>PageLocationId</a>"   />
 
 A valid location representing a list or detail page.
 ### tabIcon
@@ -61,7 +61,7 @@ The name of the tab to display in the UI.
 The priority of the tab. Tabs with a lower priority will be displayed first.
 ### component
 
-<MemberInfo kind="property" type="Type&#60;any&#62; | ReturnType&#60;typeof <a href='/docs/reference/admin-ui-api/list-detail-views/detail-component-with-resolver#detailcomponentwithresolver'>detailComponentWithResolver</a>&#62;"   />
+<MemberInfo kind="property" type="Type&#60;any&#62; | ReturnType&#60;typeof <a href='/reference/admin-ui-api/list-detail-views/detail-component-with-resolver#detailcomponentwithresolver'>detailComponentWithResolver</a>&#62;"   />
 
 The component to render at the route of the tab.
 ### routeConfig

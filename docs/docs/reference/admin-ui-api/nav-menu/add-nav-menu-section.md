@@ -1,7 +1,7 @@
 ---
 title: "AddNavMenuSection"
 weight: 10
-date: 2023-07-21T07:17:04.152Z
+date: 2023-07-21T15:46:19.162Z
 showtoc: true
 generated: true
 ---
@@ -47,7 +47,7 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/nav-menu/nav-menu-section#navmenusection'>NavMenuSection</a>" />
+<MemberInfo kind="parameter" type="<a href='/reference/admin-ui-api/nav-menu/nav-menu-section#navmenusection'>NavMenuSection</a>" />
 
 ### before
 

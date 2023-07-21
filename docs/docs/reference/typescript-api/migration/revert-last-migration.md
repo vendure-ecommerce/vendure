@@ -1,7 +1,7 @@
 ---
 title: "RevertLastMigration"
 weight: 10
-date: 2023-07-21T07:17:01.445Z
+date: 2023-07-21T15:46:16.747Z
 showtoc: true
 generated: true
 ---
@@ -25,5 +25,5 @@ Parameters
 
 ### userConfig
 
-<MemberInfo kind="parameter" type="Partial&#60;<a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
+<MemberInfo kind="parameter" type="Partial&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
 

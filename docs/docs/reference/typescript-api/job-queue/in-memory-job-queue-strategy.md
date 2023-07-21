@@ -1,7 +1,7 @@
 ---
 title: "InMemoryJobQueueStrategy"
 weight: 10
-date: 2023-07-21T07:17:01.355Z
+date: 2023-07-21T15:46:16.620Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/in-memory-job-queue-strategy.ts" sourceLine="42" packageName="@vendure/core" />
 
-An in-memory <a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>. This is the default strategy if not using a dedicated
-JobQueue plugin (e.g. <a href='/docs/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>). Not recommended for production, since
+An in-memory <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>. This is the default strategy if not using a dedicated
+JobQueue plugin (e.g. <a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>). Not recommended for production, since
 the queue will be cleared when the server stops, and can only be used when the JobQueueService is
 started from the main server process:
 
@@ -47,10 +47,10 @@ class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements Inspec
   async removeSettledJobs(queueNames: string[] = [], olderThan?: Date) => Promise<number>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy'>PollingJobQueueStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy'>PollingJobQueueStrategy</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/job-queue/inspectable-job-queue-strategy#inspectablejobqueuestrategy'>InspectableJobQueueStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/job-queue/inspectable-job-queue-strategy#inspectablejobqueuestrategy'>InspectableJobQueueStrategy</a></code>
 
 
 
@@ -63,12 +63,12 @@ class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements Inspec
 
 ### unsettledJobs
 
-<MemberInfo kind="property" type="{ [queueName: string]: Array&#60;{ job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>; updatedAt: Date }&#62; }"   />
+<MemberInfo kind="property" type="{ [queueName: string]: Array&#60;{ job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>; updatedAt: Date }&#62; }"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### destroy
@@ -78,32 +78,32 @@ class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements Inspec
 
 ### add
 
-<MemberInfo kind="method" type="(job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;"   />
+<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;"   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 
 ### findMany
 
-<MemberInfo kind="method" type="(options?: JobListOptions) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(options?: JobListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;"   />
 
 
 ### findManyById
 
-<MemberInfo kind="method" type="(ids: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ids: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;"   />
 
 
 ### next
 
-<MemberInfo kind="method" type="(queueName: string, waitingJobs: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>[] = []) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(queueName: string, waitingJobs: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>[] = []) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;void&#62;"   />
 
 
 ### removeSettledJobs

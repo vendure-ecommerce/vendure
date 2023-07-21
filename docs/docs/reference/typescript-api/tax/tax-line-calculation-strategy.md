@@ -1,7 +1,7 @@
 ---
 title: "TaxLineCalculationStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.522Z
+date: 2023-07-21T15:46:15.506Z
 showtoc: true
 generated: true
 ---
@@ -16,8 +16,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/tax/tax-line-calculation-strategy.ts" sourceLine="22" packageName="@vendure/core" />
 
 This strategy defines how the TaxLines on OrderItems are calculated. By default,
-the <a href='/docs/reference/typescript-api/tax/default-tax-line-calculation-strategy#defaulttaxlinecalculationstrategy'>DefaultTaxLineCalculationStrategy</a> is used, which directly applies
-a single TaxLine based on the applicable <a href='/docs/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>.
+the <a href='/reference/typescript-api/tax/default-tax-line-calculation-strategy#defaulttaxlinecalculationstrategy'>DefaultTaxLineCalculationStrategy</a> is used, which directly applies
+a single TaxLine based on the applicable <a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>.
 
 However, custom strategies may use any suitable method for calculating TaxLines.
 For example, a third-party tax API or a lookup of a custom tax table may be used.
@@ -27,7 +27,7 @@ interface TaxLineCalculationStrategy extends InjectableStrategy {
   calculate(args: CalculateTaxLinesArgs): TaxLine[] | Promise<TaxLine[]>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -35,7 +35,7 @@ interface TaxLineCalculationStrategy extends InjectableStrategy {
 
 ### calculate
 
-<MemberInfo kind="method" type="(args: <a href='/docs/reference/typescript-api/tax/tax-line-calculation-strategy#calculatetaxlinesargs'>CalculateTaxLinesArgs</a>) => TaxLine[] | Promise&#60;TaxLine[]&#62;"   />
+<MemberInfo kind="method" type="(args: <a href='/reference/typescript-api/tax/tax-line-calculation-strategy#calculatetaxlinesargs'>CalculateTaxLinesArgs</a>) => TaxLine[] | Promise&#60;TaxLine[]&#62;"   />
 
 This method is called when calculating the Order prices. Since it will be called
 whenever an Order is modified in some way (adding/removing items, applying promotions,
@@ -66,22 +66,22 @@ interface CalculateTaxLinesArgs {
 
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### orderLine
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
 
 
 ### applicableTaxRate
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>"   />
 
 
 

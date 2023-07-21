@@ -1,7 +1,7 @@
 ---
 title: "PriceCalculationResult"
 weight: 10
-date: 2023-07-21T07:17:00.004Z
+date: 2023-07-21T15:46:14.849Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="171" packageName="@vendure/core" />
 
-The result of the price calculation from the <a href='/docs/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a> or the
-<a href='/docs/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.
+The result of the price calculation from the <a href='/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a> or the
+<a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.
 
 ```ts title="Signature"
 type PriceCalculationResult = {

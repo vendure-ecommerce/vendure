@@ -1,7 +1,7 @@
 ---
 title: "Asset"
 weight: 10
-date: 2023-07-21T07:17:00.777Z
+date: 2023-07-21T15:46:15.881Z
 showtoc: true
 generated: true
 ---
@@ -41,10 +41,10 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
     customFields: CustomAssetFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#taggable'>Taggable</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#taggable'>Taggable</a></code>, <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>
 
 
 
@@ -52,7 +52,7 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset"   />
 
 
 ### name
@@ -102,12 +102,12 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
 
 ### tags
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 ### customFields

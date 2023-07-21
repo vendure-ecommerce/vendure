@@ -1,7 +1,7 @@
 ---
 title: "IfPermissionsDirective"
 weight: 10
-date: 2023-07-21T07:17:04.575Z
+date: 2023-07-21T15:46:19.479Z
 showtoc: true
 generated: true
 ---
@@ -33,7 +33,7 @@ class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>>
   constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, dataService: DataService, changeDetectorRef: ChangeDetectorRef)
 }
 ```
-* Extends: <code>IfDirectiveBase&#60;Array&#60;<a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>[] | null&#62;&#62;</code>
+* Extends: <code>IfDirectiveBase&#60;Array&#60;<a href='/reference/typescript-api/common/permission#permission'>Permission</a>[] | null&#62;&#62;</code>
 
 
 
@@ -41,7 +41,7 @@ class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>>
 
 ### constructor
 
-<MemberInfo kind="method" type="(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => IfPermissionsDirective"   />
+<MemberInfo kind="method" type="(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => IfPermissionsDirective"   />
 
 
 

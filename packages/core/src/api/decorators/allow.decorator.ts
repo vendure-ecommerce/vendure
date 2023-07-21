@@ -21,10 +21,10 @@ export const PERMISSIONS_METADATA_KEY = '__permissions__';
  * to give access to certain resources to potentially un-authenticated users. For this reason, any operation decorated with this permission
  * will always have an anonymous session created if no session is currently in progress.
  *
- * For more information see [Understanding Permission.Owner](/docs/typescript-api/common/permission/#understanding-permissionowner).
+ * For more information see [Understanding Permission.Owner](/reference/typescript-api/common/permission/#understanding-permissionowner).
  *
  * @example
- * ```TypeScript
+ * ```ts
  *  \@Allow(Permission.SuperAdmin)
  *  \@Query()
  *  getAdministrators() {

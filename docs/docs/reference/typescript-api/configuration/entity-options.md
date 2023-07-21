@@ -1,7 +1,7 @@
 ---
 title: "EntityOptions"
 weight: 10
-date: 2023-07-21T07:17:00.190Z
+date: 2023-07-21T15:46:15.074Z
 showtoc: true
 generated: true
 ---
@@ -32,7 +32,7 @@ interface EntityOptions {
 
 ### entityIdStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;" default="<a href='/docs/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>"  since="1.3.0"  />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;" default="<a href='/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>"  since="1.3.0"  />
 
 Defines the strategy used for both storing the primary keys of entities
 in the database, and the encoding & decoding of those ids when exposing
@@ -47,7 +47,7 @@ a fresh database.
 {{% /alert %}}
 ### moneyStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>" default="<a href='/docs/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>" default="<a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>"  since="2.0.0"  />
 
 Defines the strategy used to store and round monetary values.
 ### channelCacheTtl
@@ -76,12 +76,12 @@ refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
 smaller value here will prevent data inconsistencies between instances.
 ### metadataModifiers
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>[]" default="[]"  since="1.6.0"  />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>[]" default="[]"  since="1.6.0"  />
 
 Allows the metadata of the built-in TypeORM entities to be manipulated. This allows you
 to do things like altering data types, adding indices etc. This is an advanced feature
 which should be used with some caution as it will result in DB schema changes. For examples
-see <a href='/docs/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>.
+see <a href='/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>.
 
 
 </div>

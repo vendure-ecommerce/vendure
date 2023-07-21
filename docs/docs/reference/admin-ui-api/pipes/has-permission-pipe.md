@@ -1,7 +1,7 @@
 ---
 title: "HasPermissionPipe"
 weight: 10
-date: 2023-07-21T07:17:04.767Z
+date: 2023-07-21T15:46:19.579Z
 showtoc: true
 generated: true
 ---
@@ -39,7 +39,7 @@ class HasPermissionPipe implements PipeTransform, OnDestroy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => HasPermissionPipe"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => HasPermissionPipe"   />
 
 
 ### transform

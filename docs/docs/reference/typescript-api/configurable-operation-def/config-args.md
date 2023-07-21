@@ -1,7 +1,7 @@
 ---
 title: "ConfigArgs"
 weight: 10
-date: 2023-07-21T07:16:59.937Z
+date: 2023-07-21T15:46:14.747Z
 showtoc: true
 generated: true
 ---
@@ -16,10 +16,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="140" packageName="@vendure/core" />
 
 A object which defines the configurable arguments which may be passed to
-functions in those classes which implement the <a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> interface.
+functions in those classes which implement the <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> interface.
 
 ## Data types
-Each argument has a data type, which must be one of <a href='/docs/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>.
+Each argument has a data type, which must be one of <a href='/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>.
 
 *Example*
 
@@ -73,7 +73,7 @@ When not set, a default input component is used appropriate to the data type.
   },
 }
 ```
-The available components as well as their configuration options can be found in the <a href='/docs/reference/typescript-api/configurable-operation-def/default-form-config-hash#defaultformconfighash'>DefaultFormConfigHash</a> docs.
+The available components as well as their configuration options can be found in the <a href='/reference/typescript-api/configurable-operation-def/default-form-config-hash#defaultformconfighash'>DefaultFormConfigHash</a> docs.
 Custom UI components may also be defined via an Admin UI extension using the `registerFormInputComponent()` function
 which is exported from `@vendure/admin-ui/core`.
 
@@ -87,7 +87,7 @@ type ConfigArgs = {
 
 ### [index]
 
-<MemberInfo kind="property" type="ConfigArgDef&#60;<a href='/docs/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>&#62;"   />
+<MemberInfo kind="property" type="ConfigArgDef&#60;<a href='/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>&#62;"   />
 
 
 

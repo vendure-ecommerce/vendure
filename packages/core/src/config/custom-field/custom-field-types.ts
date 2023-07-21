@@ -141,7 +141,7 @@ export type CustomFieldConfig =
  *
  * The `LocalizedString` type looks like this:
  *
- * ```TypeScript
+ * ```ts
  * type LocalizedString = {
  *   languageCode: LanguageCode;
  *   value: string;
@@ -184,7 +184,7 @@ export type CustomFieldConfig =
  *     Can be omitted if it is the same, which is usually the case.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * bootstrap({
  *     // ...
  *     customFields: {

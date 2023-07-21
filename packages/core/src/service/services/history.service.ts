@@ -157,7 +157,7 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  * First of all we'd extend the GraphQL `HistoryEntryType` enum for our new type as part of a plugin
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { PluginCommonModule, VendurePlugin } from '\@vendure/core';
  * import { VerificationService } from './verification.service';
  *
@@ -180,7 +180,7 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  * and [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules) features.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * // types.ts
  * import { CustomerHistoryEntryData } from '\@vendure/core';
  *
@@ -204,7 +204,7 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  * Now that we have our types set up, we can use the HistoryService to add a new HistoryEntry in a type-safe manner:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * // verification.service.ts
  * import { Injectable } from '\@nestjs/common';
  * import { RequestContext } from '\@vendure/core';

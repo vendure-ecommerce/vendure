@@ -1,7 +1,7 @@
 ---
 title: "PasswordHashingStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.085Z
+date: 2023-07-21T15:46:14.933Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/auth/password-hashing-strategy.ts" sourceLine="10" packageName="@vendure/core" since="1.3.0" />
 
-Defines how user passwords get hashed when using the <a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
+Defines how user passwords get hashed when using the <a href='/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
 
 ```ts title="Signature"
 interface PasswordHashingStrategy extends InjectableStrategy {
@@ -23,7 +23,7 @@ interface PasswordHashingStrategy extends InjectableStrategy {
   check(plaintext: string, hash: string): Promise<boolean>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 

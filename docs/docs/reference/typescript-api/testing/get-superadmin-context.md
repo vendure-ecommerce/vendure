@@ -1,7 +1,7 @@
 ---
 title: "GetSuperadminContext"
 weight: 10
-date: 2023-07-21T07:17:02.979Z
+date: 2023-07-21T15:46:18.319Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/testing/src/utils/get-superadmin-context.ts" sourceLine="11" packageName="@vendure/testing" />
 
-Creates a <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> configured for the default Channel with the activeUser set
+Creates a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> configured for the default Channel with the activeUser set
 as the superadmin user. Useful for populating data.
 
 ```ts title="Signature"

@@ -1,7 +1,7 @@
 ---
 title: "DurationPipe"
 weight: 10
-date: 2023-07-21T07:17:04.757Z
+date: 2023-07-21T15:46:19.572Z
 showtoc: true
 generated: true
 ---
@@ -38,7 +38,7 @@ class DurationPipe implements PipeTransform {
 
 ### constructor
 
-<MemberInfo kind="method" type="(i18nService: <a href='/docs/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>) => DurationPipe"   />
+<MemberInfo kind="method" type="(i18nService: <a href='/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>) => DurationPipe"   />
 
 
 ### transform

@@ -1,7 +1,7 @@
 ---
 title: "JobQueueOptions"
 weight: 10
-date: 2023-07-21T07:17:00.647Z
+date: 2023-07-21T15:46:15.665Z
 showtoc: true
 generated: true
 ---
@@ -30,12 +30,12 @@ interface JobQueueOptions {
 
 ### jobQueueStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>" default="<a href='/docs/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>" default="<a href='/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>"   />
 
 Defines how the jobs in the queue are persisted and accessed.
 ### jobBufferStorageStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>"   />
 
 
 ### activeQueues

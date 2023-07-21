@@ -1,7 +1,7 @@
 ---
 title: "ChangedPriceHandlingStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.260Z
+date: 2023-07-21T15:46:15.178Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ interface ChangedPriceHandlingStrategy extends InjectableStrategy {
     ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -39,11 +39,11 @@ interface ChangedPriceHandlingStrategy extends InjectableStrategy {
 
 ### handlePriceChange
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, current: <a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>, orderLine: <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, current: <a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
 
 This method is called when adding to or adjusting OrderLines, if the latest price
 (as determined by the ProductVariant price, potentially modified by the configured
-<a href='/docs/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>) differs from the initial price at the time
+<a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>) differs from the initial price at the time
 that the OrderLine was created.
 
 

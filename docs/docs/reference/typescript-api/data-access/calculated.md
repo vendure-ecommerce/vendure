@@ -1,7 +1,7 @@
 ---
 title: "Calculated"
 weight: 10
-date: 2023-07-21T07:16:59.930Z
+date: 2023-07-21T15:46:14.738Z
 showtoc: true
 generated: true
 ---
@@ -26,7 +26,7 @@ Parameters
 
 ### queryInstruction
 
-<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/data-access/calculated#calculatedcolumnqueryinstruction'>CalculatedColumnQueryInstruction</a>" />
+<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/data-access/calculated#calculatedcolumnqueryinstruction'>CalculatedColumnQueryInstruction</a>" />
 
 
 
@@ -34,7 +34,7 @@ Parameters
 
 <GenerationInfo sourceFile="packages/core/src/common/calculated-decorator.ts" sourceLine="17" packageName="@vendure/core" />
 
-Optional metadata used to tell the <a href='/docs/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a> & <a href='/docs/reference/typescript-api/request/relations-decorator#relations'>Relations</a> decorator how to deal with
+Optional metadata used to tell the <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a> & <a href='/reference/typescript-api/request/relations-decorator#relations'>Relations</a> decorator how to deal with
 calculated columns when sorting, filtering and deriving required relations from GraphQL operations.
 
 ```ts title="Signature"

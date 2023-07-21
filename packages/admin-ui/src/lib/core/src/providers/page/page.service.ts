@@ -59,7 +59,7 @@ export interface PageTabConfig {
  * Add a tab to an existing list or detail page.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   providers: [

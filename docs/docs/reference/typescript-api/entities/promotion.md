@@ -1,7 +1,7 @@
 ---
 title: "Promotion"
 weight: 10
-date: 2023-07-21T07:17:01.042Z
+date: 2023-07-21T15:46:16.215Z
 showtoc: true
 generated: true
 ---
@@ -18,8 +18,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 A Promotion is used to define a set of conditions under which promotions actions (typically discounts)
 will be applied to an Order.
 
-Each assigned <a href='/docs/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a> is checked against the Order, and if they all return `true`,
-then each assign <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a> / <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a> is applied to the Order.
+Each assigned <a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a> is checked against the Order, and if they all return `true`,
+then each assign <a href='/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a> is applied to the Order.
 
 ```ts title="Signature"
 class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable, HasCustomFields, Translatable {
@@ -60,7 +60,7 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 * Extends: <code>AdjustmentSource</code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code><a href='/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>, <code><a href='/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>
 
 
 
@@ -73,7 +73,7 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62; &#38; {             promotionConditions?: Array&#60;<a href='/docs/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;;             promotionActions?: Array&#60;<a href='/docs/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;;         }) => Promotion"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62; &#38; {             promotionConditions?: Array&#60;<a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;;             promotionActions?: Array&#60;<a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;;         }) => Promotion"   />
 
 
 ### deletedAt
@@ -113,7 +113,7 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62;&#62;"   />
 
 
 ### enabled
@@ -123,7 +123,7 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 ### customFields
@@ -159,22 +159,22 @@ If Promotion 2 is evaluated prior to Promotion 1, then it can trigger the 10% di
 if the subsequent application of Promotion 1 brings the order total down to way below $50.
 ### apply
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, args: ApplyOrderActionArgs | ApplyOrderItemActionArgs | ApplyShippingActionArgs, state?: PromotionState) => Promise&#60;Adjustment | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, args: ApplyOrderActionArgs | ApplyOrderItemActionArgs | ApplyShippingActionArgs, state?: PromotionState) => Promise&#60;Adjustment | undefined&#62;"   />
 
 
 ### test
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;PromotionTestResult&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;PromotionTestResult&#62;"   />
 
 
 ### activate
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => "   />
 
 
 ### deactivate
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => "   />
 
 
 

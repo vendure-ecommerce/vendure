@@ -1,7 +1,7 @@
 ---
 title: "AssetOptions"
 weight: 10
-date: 2023-07-21T07:17:00.612Z
+date: 2023-07-21T15:46:15.603Z
 showtoc: true
 generated: true
 ---
@@ -33,17 +33,17 @@ interface AssetOptions {
 
 ### assetNamingStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a>" default="<a href='/docs/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a>" default="<a href='/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a>"   />
 
 Defines how asset files and preview images are named before being saved.
 ### assetStorageStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>" default="NoAssetStorageStrategy"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>" default="NoAssetStorageStrategy"   />
 
 Defines the strategy used for storing uploaded binary files.
 ### assetPreviewStrategy
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a>" default="NoAssetPreviewStrategy"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a>" default="NoAssetPreviewStrategy"   />
 
 Defines the strategy used for creating preview images of uploaded assets.
 ### permittedFileTypes

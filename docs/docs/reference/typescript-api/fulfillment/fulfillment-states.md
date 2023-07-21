@@ -1,7 +1,7 @@
 ---
 title: "FulfillmentStates"
 weight: 10
-date: 2023-07-21T07:17:01.538Z
+date: 2023-07-21T15:46:16.857Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/fulfillment-state-machine/fulfillment-state.ts" sourceLine="19" packageName="@vendure/core" />
 
-An interface to extend standard <a href='/docs/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>.
+An interface to extend standard <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>.
 
 ```ts title="Signature"
 interface FulfillmentStates {

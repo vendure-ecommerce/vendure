@@ -205,7 +205,7 @@ bootstrap({
 
 Once we have started the Vendure server with the new config, we should be able to send the following GraphQL query to the Admin API:
 
-```GraphQL
+```graphql
 mutation {
   addRandomCat(id: "1") {
     id

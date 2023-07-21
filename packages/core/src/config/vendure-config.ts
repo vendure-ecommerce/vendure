@@ -197,7 +197,7 @@ export interface ApiOptions {
      * will not work.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * {
      *   introspection: process.env.NODE_ENV !== 'production'
      * }

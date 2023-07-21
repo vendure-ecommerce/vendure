@@ -1,7 +1,7 @@
 ---
 title: "DefaultLogger"
 weight: 10
-date: 2023-07-21T07:17:00.226Z
+date: 2023-07-21T15:46:15.124Z
 showtoc: true
 generated: true
 ---
@@ -41,7 +41,7 @@ class DefaultLogger implements VendureLogger {
   debug(message: string, context?: string) => void;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a></code>
+* Implements: <code><a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a></code>
 
 
 
@@ -49,7 +49,7 @@ class DefaultLogger implements VendureLogger {
 
 ### constructor
 
-<MemberInfo kind="method" type="(options?: { level?: <a href='/docs/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a>; timestamp?: boolean }) => DefaultLogger"   />
+<MemberInfo kind="method" type="(options?: { level?: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a>; timestamp?: boolean }) => DefaultLogger"   />
 
 
 ### setDefaultContext

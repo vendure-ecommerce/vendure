@@ -1,7 +1,7 @@
 ---
 title: "Types"
 weight: 3
-date: 2023-07-21T09:48:20.380Z
+date: 2023-07-21T15:33:42.677Z
 showtoc: true
 generated: true
 ---
@@ -11,15 +11,13 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-# Types
-
 
 ## ActiveOrderResult
 
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">ActiveOrderResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a></div>
 
 </div>
 
@@ -28,7 +26,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">AddPaymentToOrderResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#orderpaymentstateerror">OrderPaymentStateError</a> | <a href="/docs/reference/graphql-api/shop/object-types#ineligiblepaymentmethoderror">IneligiblePaymentMethodError</a> | <a href="/docs/reference/graphql-api/shop/object-types#paymentfailederror">PaymentFailedError</a> | <a href="/docs/reference/graphql-api/shop/object-types#paymentdeclinederror">PaymentDeclinedError</a> | <a href="/docs/reference/graphql-api/shop/object-types#orderstatetransitionerror">OrderStateTransitionError</a> | <a href="/docs/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#orderpaymentstateerror">OrderPaymentStateError</a> | <a href="/reference/graphql-api/shop/object-types#ineligiblepaymentmethoderror">IneligiblePaymentMethodError</a> | <a href="/reference/graphql-api/shop/object-types#paymentfailederror">PaymentFailedError</a> | <a href="/reference/graphql-api/shop/object-types#paymentdeclinederror">PaymentDeclinedError</a> | <a href="/reference/graphql-api/shop/object-types#orderstatetransitionerror">OrderStateTransitionError</a> | <a href="/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a></div>
 
 </div>
 
@@ -37,35 +35,35 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Address</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">fullName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">fullName: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">company: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">company: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">streetLine1: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">streetLine1: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">streetLine2: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">streetLine2: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">city: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">city: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">province: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">province: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">postalCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">postalCode: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">country: <a href="/docs/reference/graphql-api/shop/object-types#country">Country</a>!</div>
+<div class="graphql-code-line ">country: <a href="/reference/graphql-api/shop/object-types#country">Country</a>!</div>
 
-<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">phoneNumber: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">defaultShippingAddress: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">defaultShippingAddress: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">defaultBillingAddress: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">defaultBillingAddress: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -76,15 +74,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Adjustment</span>
  &#123;</div>
-<div class="graphql-code-line ">adjustmentSource: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">adjustmentSource: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/enums#adjustmenttype">AdjustmentType</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/enums#adjustmenttype">AdjustmentType</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">amount: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">amount: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">data: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">data: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -98,9 +96,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">AlreadyLoggedInError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -111,7 +109,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">ApplyCouponCodeResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#couponcodeexpirederror">CouponCodeExpiredError</a> | <a href="/docs/reference/graphql-api/shop/object-types#couponcodeinvaliderror">CouponCodeInvalidError</a> | <a href="/docs/reference/graphql-api/shop/object-types#couponcodelimiterror">CouponCodeLimitError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#couponcodeexpirederror">CouponCodeExpiredError</a> | <a href="/reference/graphql-api/shop/object-types#couponcodeinvaliderror">CouponCodeInvalidError</a> | <a href="/reference/graphql-api/shop/object-types#couponcodelimiterror">CouponCodeLimitError</a></div>
 
 </div>
 
@@ -120,33 +118,33 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Asset</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/enums#assettype">AssetType</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/enums#assettype">AssetType</a>!</div>
 
-<div class="graphql-code-line ">fileSize: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">fileSize: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">mimeType: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">mimeType: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">width: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">width: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">height: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">height: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">source: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">source: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">preview: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">preview: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">focalPoint: <a href="/docs/reference/graphql-api/shop/object-types#coordinate">Coordinate</a></div>
+<div class="graphql-code-line ">focalPoint: <a href="/reference/graphql-api/shop/object-types#coordinate">Coordinate</a></div>
 
-<div class="graphql-code-line ">tags: [<a href="/docs/reference/graphql-api/shop/object-types#tag">Tag</a>!]!</div>
+<div class="graphql-code-line ">tags: [<a href="/reference/graphql-api/shop/object-types#tag">Tag</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -157,9 +155,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">AssetList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -170,13 +168,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">AuthenticationMethod</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">strategy: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">strategy: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -187,7 +185,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">AuthenticationResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/docs/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/docs/reference/graphql-api/shop/object-types#notverifiederror">NotVerifiedError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/reference/graphql-api/shop/object-types#notverifiederror">NotVerifiedError</a></div>
 
 </div>
 
@@ -207,23 +205,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">BooleanCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -234,45 +232,45 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Channel</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">token: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">defaultTaxZone: <a href="/docs/reference/graphql-api/shop/object-types#zone">Zone</a></div>
+<div class="graphql-code-line ">defaultTaxZone: <a href="/reference/graphql-api/shop/object-types#zone">Zone</a></div>
 
-<div class="graphql-code-line ">defaultShippingZone: <a href="/docs/reference/graphql-api/shop/object-types#zone">Zone</a></div>
+<div class="graphql-code-line ">defaultShippingZone: <a href="/reference/graphql-api/shop/object-types#zone">Zone</a></div>
 
-<div class="graphql-code-line ">defaultLanguageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">defaultLanguageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">availableLanguageCodes: [<a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!]</div>
+<div class="graphql-code-line ">availableLanguageCodes: [<a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!]</div>
 
-<div class="graphql-code-line ">currencyCode: <a href="/docs/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
+<div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
 
-<div class="graphql-code-line ">defaultCurrencyCode: <a href="/docs/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
+<div class="graphql-code-line ">defaultCurrencyCode: <a href="/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
 
-<div class="graphql-code-line ">availableCurrencyCodes: [<a href="/docs/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!]!</div>
-
-<div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Not yet used - will be implemented in a future release.</div>
-<div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">trackInventory: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">availableCurrencyCodes: [<a href="/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Not yet used - will be implemented in a future release.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">outOfStockThreshold: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">trackInventory: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">pricesIncludeTax: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Not yet used - will be implemented in a future release.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">outOfStockThreshold: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">seller: <a href="/docs/reference/graphql-api/shop/object-types#seller">Seller</a></div>
+<div class="graphql-code-line ">pricesIncludeTax: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">seller: <a href="/reference/graphql-api/shop/object-types#seller">Seller</a></div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -283,41 +281,41 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Collection</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a></div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a></div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">slug: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">breadcrumbs: [<a href="/docs/reference/graphql-api/shop/object-types#collectionbreadcrumb">CollectionBreadcrumb</a>!]!</div>
+<div class="graphql-code-line ">breadcrumbs: [<a href="/reference/graphql-api/shop/object-types#collectionbreadcrumb">CollectionBreadcrumb</a>!]!</div>
 
-<div class="graphql-code-line ">position: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">position: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">featuredAsset: <a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a></div>
+<div class="graphql-code-line ">featuredAsset: <a href="/reference/graphql-api/shop/object-types#asset">Asset</a></div>
 
-<div class="graphql-code-line ">assets: [<a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
+<div class="graphql-code-line ">assets: [<a href="/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
 
-<div class="graphql-code-line ">parent: <a href="/docs/reference/graphql-api/shop/object-types#collection">Collection</a></div>
+<div class="graphql-code-line ">parent: <a href="/reference/graphql-api/shop/object-types#collection">Collection</a></div>
 
-<div class="graphql-code-line ">parentId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">parentId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">children: [<a href="/docs/reference/graphql-api/shop/object-types#collection">Collection</a>!]</div>
+<div class="graphql-code-line ">children: [<a href="/reference/graphql-api/shop/object-types#collection">Collection</a>!]</div>
 
-<div class="graphql-code-line ">filters: [<a href="/docs/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!]!</div>
+<div class="graphql-code-line ">filters: [<a href="/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!]!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#collectiontranslation">CollectionTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#collectiontranslation">CollectionTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">productVariants(options: <a href="/docs/reference/graphql-api/shop/input-types#productvariantlistoptions">ProductVariantListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#productvariantlist">ProductVariantList</a>!</div>
+<div class="graphql-code-line ">productVariants(options: <a href="/reference/graphql-api/shop/input-types#productvariantlistoptions">ProductVariantListOptions</a>): <a href="/reference/graphql-api/shop/object-types#productvariantlist">ProductVariantList</a>!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -328,11 +326,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CollectionBreadcrumb</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">slug: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -343,9 +341,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CollectionList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#collection">Collection</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#collection">Collection</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -361,9 +359,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CollectionResult</span>
  &#123;</div>
-<div class="graphql-code-line ">collection: <a href="/docs/reference/graphql-api/shop/object-types#collection">Collection</a>!</div>
+<div class="graphql-code-line ">collection: <a href="/reference/graphql-api/shop/object-types#collection">Collection</a>!</div>
 
-<div class="graphql-code-line ">count: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">count: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -374,19 +372,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CollectionTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">slug: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -397,9 +395,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ConfigArg</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">value: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">value: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -410,21 +408,21 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ConfigArgDefinition</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">required: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">required: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">defaultValue: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">defaultValue: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
-<div class="graphql-code-line ">label: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">label: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -435,9 +433,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ConfigurableOperation</span>
  &#123;</div>
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">args: [<a href="/docs/reference/graphql-api/shop/object-types#configarg">ConfigArg</a>!]!</div>
+<div class="graphql-code-line ">args: [<a href="/reference/graphql-api/shop/object-types#configarg">ConfigArg</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -448,11 +446,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ConfigurableOperationDefinition</span>
  &#123;</div>
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">args: [<a href="/docs/reference/graphql-api/shop/object-types#configargdefinition">ConfigArgDefinition</a>!]!</div>
+<div class="graphql-code-line ">args: [<a href="/reference/graphql-api/shop/object-types#configargdefinition">ConfigArgDefinition</a>!]!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -463,9 +461,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Coordinate</span>
  &#123;</div>
-<div class="graphql-code-line ">x: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">x: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
-<div class="graphql-code-line ">y: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">y: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -476,29 +474,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Country</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">enabled: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">parent: <a href="/docs/reference/graphql-api/shop/object-types#region">Region</a></div>
+<div class="graphql-code-line ">parent: <a href="/reference/graphql-api/shop/object-types#region">Region</a></div>
 
-<div class="graphql-code-line ">parentId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a></div>
+<div class="graphql-code-line ">parentId: <a href="/reference/graphql-api/shop/object-types#id">ID</a></div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#regiontranslation">RegionTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#regiontranslation">RegionTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -509,9 +507,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CountryList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#country">Country</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#country">Country</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -525,11 +523,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CouponCodeExpiredError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">couponCode: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -543,11 +541,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CouponCodeInvalidError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">couponCode: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -561,13 +559,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CouponCodeLimitError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">couponCode: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">limit: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">limit: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -578,11 +576,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CurrentUser</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">identifier: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">identifier: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">channels: [<a href="/docs/reference/graphql-api/shop/object-types#currentuserchannel">CurrentUserChannel</a>!]!</div>
+<div class="graphql-code-line ">channels: [<a href="/reference/graphql-api/shop/object-types#currentuserchannel">CurrentUserChannel</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -593,13 +591,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CurrentUserChannel</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">token: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">permissions: [<a href="/docs/reference/graphql-api/shop/enums#permission">Permission</a>!]!</div>
+<div class="graphql-code-line ">permissions: [<a href="/reference/graphql-api/shop/enums#permission">Permission</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -610,7 +608,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">CustomFieldConfig</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#stringcustomfieldconfig">StringCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#localestringcustomfieldconfig">LocaleStringCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#intcustomfieldconfig">IntCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#floatcustomfieldconfig">FloatCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#booleancustomfieldconfig">BooleanCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#datetimecustomfieldconfig">DateTimeCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#relationcustomfieldconfig">RelationCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#textcustomfieldconfig">TextCustomFieldConfig</a> | <a href="/docs/reference/graphql-api/shop/object-types#localetextcustomfieldconfig">LocaleTextCustomFieldConfig</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#stringcustomfieldconfig">StringCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#localestringcustomfieldconfig">LocaleStringCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#intcustomfieldconfig">IntCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#floatcustomfieldconfig">FloatCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#booleancustomfieldconfig">BooleanCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#datetimecustomfieldconfig">DateTimeCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#relationcustomfieldconfig">RelationCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#textcustomfieldconfig">TextCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#localetextcustomfieldconfig">LocaleTextCustomFieldConfig</a></div>
 
 </div>
 
@@ -619,29 +617,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Customer</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">title: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">title: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">firstName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">firstName: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">lastName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">lastName: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">phoneNumber: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">emailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">emailAddress: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">addresses: [<a href="/docs/reference/graphql-api/shop/object-types#address">Address</a>!]</div>
+<div class="graphql-code-line ">addresses: [<a href="/reference/graphql-api/shop/object-types#address">Address</a>!]</div>
 
-<div class="graphql-code-line ">orders(options: <a href="/docs/reference/graphql-api/shop/input-types#orderlistoptions">OrderListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#orderlist">OrderList</a>!</div>
+<div class="graphql-code-line ">orders(options: <a href="/reference/graphql-api/shop/input-types#orderlistoptions">OrderListOptions</a>): <a href="/reference/graphql-api/shop/object-types#orderlist">OrderList</a>!</div>
 
-<div class="graphql-code-line ">user: <a href="/docs/reference/graphql-api/shop/object-types#user">User</a></div>
+<div class="graphql-code-line ">user: <a href="/reference/graphql-api/shop/object-types#user">User</a></div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -652,17 +650,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CustomerGroup</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">customers(options: <a href="/docs/reference/graphql-api/shop/input-types#customerlistoptions">CustomerListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#customerlist">CustomerList</a>!</div>
+<div class="graphql-code-line ">customers(options: <a href="/reference/graphql-api/shop/input-types#customerlistoptions">CustomerListOptions</a>): <a href="/reference/graphql-api/shop/object-types#customerlist">CustomerList</a>!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -673,9 +671,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CustomerList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#customer">Customer</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#customer">Customer</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -702,29 +700,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">DateTimeCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">min: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">max: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">max: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">step: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">step: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -735,9 +733,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">DeletionResponse</span>
  &#123;</div>
-<div class="graphql-code-line ">result: <a href="/docs/reference/graphql-api/shop/enums#deletionresult">DeletionResult</a>!</div>
+<div class="graphql-code-line ">result: <a href="/reference/graphql-api/shop/enums#deletionresult">DeletionResult</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -748,15 +746,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Discount</span>
  &#123;</div>
-<div class="graphql-code-line ">adjustmentSource: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">adjustmentSource: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/enums#adjustmenttype">AdjustmentType</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/enums#adjustmenttype">AdjustmentType</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">amount: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">amount: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">amountWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">amountWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -770,9 +768,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">EmailAddressConflictError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -783,23 +781,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Facet</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">values: [<a href="/docs/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!]!</div>
+<div class="graphql-code-line ">values: [<a href="/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!]!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#facettranslation">FacetTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#facettranslation">FacetTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -810,9 +808,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FacetList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#facet">Facet</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#facet">Facet</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -823,15 +821,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FacetTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -842,23 +840,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FacetValue</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">facet: <a href="/docs/reference/graphql-api/shop/object-types#facet">Facet</a>!</div>
+<div class="graphql-code-line ">facet: <a href="/reference/graphql-api/shop/object-types#facet">Facet</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#facetvaluetranslation">FacetValueTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#facetvaluetranslation">FacetValueTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -874,9 +872,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FacetValueResult</span>
  &#123;</div>
-<div class="graphql-code-line ">facetValue: <a href="/docs/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!</div>
+<div class="graphql-code-line ">facetValue: <a href="/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!</div>
 
-<div class="graphql-code-line ">count: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">count: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -887,15 +885,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FacetValueTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -917,29 +915,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FloatCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">min: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
+<div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#float">Float</a></div>
 
-<div class="graphql-code-line ">max: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
+<div class="graphql-code-line ">max: <a href="/reference/graphql-api/shop/object-types#float">Float</a></div>
 
-<div class="graphql-code-line ">step: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
+<div class="graphql-code-line ">step: <a href="/reference/graphql-api/shop/object-types#float">Float</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -950,23 +948,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Fulfillment</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">lines: [<a href="/docs/reference/graphql-api/shop/object-types#fulfillmentline">FulfillmentLine</a>!]!</div>
+<div class="graphql-code-line ">lines: [<a href="/reference/graphql-api/shop/object-types#fulfillmentline">FulfillmentLine</a>!]!</div>
 
-<div class="graphql-code-line ">summary: [<a href="/docs/reference/graphql-api/shop/object-types#fulfillmentline">FulfillmentLine</a>!]!</div>
+<div class="graphql-code-line ">summary: [<a href="/reference/graphql-api/shop/object-types#fulfillmentline">FulfillmentLine</a>!]!</div>
 
-<div class="graphql-code-line ">state: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">state: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">method: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">method: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">trackingCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">trackingCode: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -977,15 +975,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FulfillmentLine</span>
  &#123;</div>
-<div class="graphql-code-line ">orderLine: <a href="/docs/reference/graphql-api/shop/object-types#orderline">OrderLine</a>!</div>
+<div class="graphql-code-line ">orderLine: <a href="/reference/graphql-api/shop/object-types#orderline">OrderLine</a>!</div>
 
-<div class="graphql-code-line ">orderLineId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">orderLineId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">quantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">fulfillment: <a href="/docs/reference/graphql-api/shop/object-types#fulfillment">Fulfillment</a>!</div>
+<div class="graphql-code-line ">fulfillment: <a href="/reference/graphql-api/shop/object-types#fulfillment">Fulfillment</a>!</div>
 
-<div class="graphql-code-line ">fulfillmentId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">fulfillmentId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -999,11 +997,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">GuestCheckoutError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">errorDetail: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">errorDetail: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1014,15 +1012,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">HistoryEntry</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/enums#historyentrytype">HistoryEntryType</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/enums#historyentrytype">HistoryEntryType</a>!</div>
 
-<div class="graphql-code-line ">data: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a>!</div>
+<div class="graphql-code-line ">data: <a href="/reference/graphql-api/shop/object-types#json">JSON</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1033,9 +1031,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">HistoryEntryList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#historyentry">HistoryEntry</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#historyentry">HistoryEntry</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1062,9 +1060,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">IdentifierChangeTokenExpiredError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1080,9 +1078,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">IdentifierChangeTokenInvalidError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1096,11 +1094,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">IneligiblePaymentMethodError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">eligibilityCheckerMessage: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">eligibilityCheckerMessage: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1114,9 +1112,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">IneligibleShippingMethodError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1130,13 +1128,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">InsufficientStockError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">quantityAvailable: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">quantityAvailable: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">order: <a href="/docs/reference/graphql-api/shop/object-types#order">Order</a>!</div>
+<div class="graphql-code-line ">order: <a href="/reference/graphql-api/shop/object-types#order">Order</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1158,29 +1156,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">IntCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">min: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">max: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">max: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">step: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">step: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1194,11 +1192,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">InvalidCredentialsError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">authenticationError: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">authenticationError: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1220,27 +1218,27 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">LocaleStringCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">length: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">length: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">pattern: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">pattern: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1251,23 +1249,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">LocaleTextCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1278,9 +1276,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">LocalizedString</span>
  &#123;</div>
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">value: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">value: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1294,9 +1292,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">MissingPasswordError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1321,9 +1319,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">NativeAuthStrategyError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1334,7 +1332,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">NativeAuthenticationResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/docs/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/docs/reference/graphql-api/shop/object-types#notverifiederror">NotVerifiedError</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/reference/graphql-api/shop/object-types#notverifiederror">NotVerifiedError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -1346,9 +1344,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">NegativeQuantityError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1364,9 +1362,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">NoActiveOrderError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1382,9 +1380,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">NotVerifiedError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1395,40 +1393,40 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Order</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/enums#ordertype">OrderType</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/enums#ordertype">OrderType</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The date & time that the Order was placed, i.e. the Customer</div>
 
 <div class="graphql-code-line comment">completed the checkout and the Order is no longer "active"</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">orderPlacedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
+<div class="graphql-code-line ">orderPlacedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">A unique code for the Order</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">state: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">state: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">An order is active as long as the payment process has not been completed</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">active: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">active: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">customer: <a href="/docs/reference/graphql-api/shop/object-types#customer">Customer</a></div>
+<div class="graphql-code-line ">customer: <a href="/reference/graphql-api/shop/object-types#customer">Customer</a></div>
 
-<div class="graphql-code-line ">shippingAddress: <a href="/docs/reference/graphql-api/shop/object-types#orderaddress">OrderAddress</a></div>
+<div class="graphql-code-line ">shippingAddress: <a href="/reference/graphql-api/shop/object-types#orderaddress">OrderAddress</a></div>
 
-<div class="graphql-code-line ">billingAddress: <a href="/docs/reference/graphql-api/shop/object-types#orderaddress">OrderAddress</a></div>
+<div class="graphql-code-line ">billingAddress: <a href="/reference/graphql-api/shop/object-types#orderaddress">OrderAddress</a></div>
 
-<div class="graphql-code-line ">lines: [<a href="/docs/reference/graphql-api/shop/object-types#orderline">OrderLine</a>!]!</div>
+<div class="graphql-code-line ">lines: [<a href="/reference/graphql-api/shop/object-types#orderline">OrderLine</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Surcharges are arbitrary modifications to the Order total which are neither</div>
@@ -1439,25 +1437,25 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line comment">methods.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">surcharges: [<a href="/docs/reference/graphql-api/shop/object-types#surcharge">Surcharge</a>!]!</div>
+<div class="graphql-code-line ">surcharges: [<a href="/reference/graphql-api/shop/object-types#surcharge">Surcharge</a>!]!</div>
 
-<div class="graphql-code-line ">discounts: [<a href="/docs/reference/graphql-api/shop/object-types#discount">Discount</a>!]!</div>
+<div class="graphql-code-line ">discounts: [<a href="/reference/graphql-api/shop/object-types#discount">Discount</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">An array of all coupon codes applied to the Order</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">couponCodes: [<a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!]!</div>
+<div class="graphql-code-line ">couponCodes: [<a href="/reference/graphql-api/shop/object-types#string">String</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Promotions applied to the order. Only gets populated after the payment process has completed.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">promotions: [<a href="/docs/reference/graphql-api/shop/object-types#promotion">Promotion</a>!]!</div>
+<div class="graphql-code-line ">promotions: [<a href="/reference/graphql-api/shop/object-types#promotion">Promotion</a>!]!</div>
 
-<div class="graphql-code-line ">payments: [<a href="/docs/reference/graphql-api/shop/object-types#payment">Payment</a>!]</div>
+<div class="graphql-code-line ">payments: [<a href="/reference/graphql-api/shop/object-types#payment">Payment</a>!]</div>
 
-<div class="graphql-code-line ">fulfillments: [<a href="/docs/reference/graphql-api/shop/object-types#fulfillment">Fulfillment</a>!]</div>
+<div class="graphql-code-line ">fulfillments: [<a href="/reference/graphql-api/shop/object-types#fulfillment">Fulfillment</a>!]</div>
 
-<div class="graphql-code-line ">totalQuantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalQuantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level</div>
@@ -1468,39 +1466,39 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line comment">sum of <code>OrderLine.discountedLinePrice</code> values.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">subTotal: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">subTotal: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Same as subTotal, but inclusive of tax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">subTotalWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">subTotalWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">currencyCode: <a href="/docs/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
+<div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
 
-<div class="graphql-code-line ">shippingLines: [<a href="/docs/reference/graphql-api/shop/object-types#shippingline">ShippingLine</a>!]!</div>
+<div class="graphql-code-line ">shippingLines: [<a href="/reference/graphql-api/shop/object-types#shippingline">ShippingLine</a>!]!</div>
 
-<div class="graphql-code-line ">shipping: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">shipping: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">shippingWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">shippingWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Equal to subTotal plus shipping</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">total: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">total: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The final payable amount. Equal to subTotalWithTax plus shippingWithTax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">totalWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">totalWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">A summary of the taxes being applied to this Order</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">taxSummary: [<a href="/docs/reference/graphql-api/shop/object-types#ordertaxsummary">OrderTaxSummary</a>!]!</div>
+<div class="graphql-code-line ">taxSummary: [<a href="/reference/graphql-api/shop/object-types#ordertaxsummary">OrderTaxSummary</a>!]!</div>
 
-<div class="graphql-code-line ">history(options: <a href="/docs/reference/graphql-api/shop/input-types#historyentrylistoptions">HistoryEntryListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#historyentrylist">HistoryEntryList</a>!</div>
+<div class="graphql-code-line ">history(options: <a href="/reference/graphql-api/shop/input-types#historyentrylistoptions">HistoryEntryListOptions</a>): <a href="/reference/graphql-api/shop/object-types#historyentrylist">HistoryEntryList</a>!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1511,27 +1509,27 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">OrderAddress</span>
  &#123;</div>
-<div class="graphql-code-line ">fullName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">fullName: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">company: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">company: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">streetLine1: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">streetLine1: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">streetLine2: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">streetLine2: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">city: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">city: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">province: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">province: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">postalCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">postalCode: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">country: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">country: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">countryCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">countryCode: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">phoneNumber: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1545,11 +1543,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">OrderLimitError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">maxItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">maxItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1560,35 +1558,35 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">OrderLine</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">productVariant: <a href="/docs/reference/graphql-api/shop/object-types#productvariant">ProductVariant</a>!</div>
+<div class="graphql-code-line ">productVariant: <a href="/reference/graphql-api/shop/object-types#productvariant">ProductVariant</a>!</div>
 
-<div class="graphql-code-line ">featuredAsset: <a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a></div>
+<div class="graphql-code-line ">featuredAsset: <a href="/reference/graphql-api/shop/object-types#asset">Asset</a></div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The price of a single unit, excluding tax and discounts</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">unitPrice: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">unitPrice: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The price of a single unit, including tax but excluding discounts</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">unitPriceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">unitPriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Non-zero if the unitPrice has changed since it was initially added to Order</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">unitPriceChangeSinceAdded: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">unitPriceChangeSinceAdded: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Non-zero if the unitPriceWithTax has changed since it was initially added to Order</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">unitPriceWithTaxChangeSinceAdded: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">unitPriceWithTaxChangeSinceAdded: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The price of a single unit including discounts, excluding tax.</div>
@@ -1603,12 +1601,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line comment">about the internal handling of distributed Order-level discounts.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">discountedUnitPrice: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">discountedUnitPrice: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The price of a single unit including discounts and tax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">discountedUnitPriceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">discountedUnitPriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)</div>
@@ -1617,41 +1615,41 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line comment">and refund calculations.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">proratedUnitPrice: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">proratedUnitPrice: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The proratedUnitPrice including tax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">proratedUnitPriceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">proratedUnitPriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">quantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The quantity at the time the Order was placed</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">orderPlacedQuantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">orderPlacedQuantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">taxRate: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">taxRate: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The total price of the line excluding tax and discounts.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">linePrice: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">linePrice: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The total price of the line including tax but excluding discounts.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">linePriceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">linePriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The price of the line including discounts, excluding tax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">discountedLinePrice: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">discountedLinePrice: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The price of the line including discounts and tax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">discountedLinePriceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">discountedLinePriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)</div>
@@ -1660,27 +1658,27 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line comment">and refund calculations.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">proratedLinePrice: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">proratedLinePrice: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The proratedLinePrice including tax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">proratedLinePriceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">proratedLinePriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The total tax on this line</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">lineTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">lineTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">discounts: [<a href="/docs/reference/graphql-api/shop/object-types#discount">Discount</a>!]!</div>
+<div class="graphql-code-line ">discounts: [<a href="/reference/graphql-api/shop/object-types#discount">Discount</a>!]!</div>
 
-<div class="graphql-code-line ">taxLines: [<a href="/docs/reference/graphql-api/shop/object-types#taxline">TaxLine</a>!]!</div>
+<div class="graphql-code-line ">taxLines: [<a href="/reference/graphql-api/shop/object-types#taxline">TaxLine</a>!]!</div>
 
-<div class="graphql-code-line ">order: <a href="/docs/reference/graphql-api/shop/object-types#order">Order</a>!</div>
+<div class="graphql-code-line ">order: <a href="/reference/graphql-api/shop/object-types#order">Order</a>!</div>
 
-<div class="graphql-code-line ">fulfillmentLines: [<a href="/docs/reference/graphql-api/shop/object-types#fulfillmentline">FulfillmentLine</a>!]</div>
+<div class="graphql-code-line ">fulfillmentLines: [<a href="/reference/graphql-api/shop/object-types#fulfillmentline">FulfillmentLine</a>!]</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1691,9 +1689,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">OrderList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#order">Order</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#order">Order</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1707,9 +1705,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">OrderModificationError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1723,9 +1721,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">OrderPaymentStateError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1739,15 +1737,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">OrderStateTransitionError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">transitionError: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">transitionError: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">fromState: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">fromState: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">toState: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">toState: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1766,22 +1764,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">A description of this tax</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The taxRate as a percentage</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">taxRate: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">taxRate: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The total net price of OrderLines to which this taxRate applies</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">taxBase: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">taxBase: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">The total tax being applied to the Order at this taxRate</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">taxTotal: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">taxTotal: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1795,9 +1793,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PasswordAlreadySetError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1813,9 +1811,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PasswordResetTokenExpiredError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1831,9 +1829,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PasswordResetTokenInvalidError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1847,11 +1845,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PasswordValidationError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">validationErrorMessage: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">validationErrorMessage: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1862,25 +1860,25 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Payment</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">method: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">method: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">amount: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">amount: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">state: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">state: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">transactionId: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">transactionId: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">errorMessage: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">errorMessage: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">refunds: [<a href="/docs/reference/graphql-api/shop/object-types#refund">Refund</a>!]!</div>
+<div class="graphql-code-line ">refunds: [<a href="/reference/graphql-api/shop/object-types#refund">Refund</a>!]!</div>
 
-<div class="graphql-code-line ">metadata: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">metadata: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1894,11 +1892,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PaymentDeclinedError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">paymentErrorMessage: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">paymentErrorMessage: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1912,11 +1910,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PaymentFailedError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">paymentErrorMessage: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">paymentErrorMessage: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1927,27 +1925,27 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PaymentMethod</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">enabled: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">checker: <a href="/docs/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a></div>
+<div class="graphql-code-line ">checker: <a href="/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a></div>
 
-<div class="graphql-code-line ">handler: <a href="/docs/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!</div>
+<div class="graphql-code-line ">handler: <a href="/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#paymentmethodtranslation">PaymentMethodTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#paymentmethodtranslation">PaymentMethodTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1958,19 +1956,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PaymentMethodQuote</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">isEligible: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">isEligible: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">eligibilityMessage: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">eligibilityMessage: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1981,17 +1979,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PaymentMethodTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2005,9 +2003,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PriceRange</span>
  &#123;</div>
-<div class="graphql-code-line ">min: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">max: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">max: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2018,43 +2016,43 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Product</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">slug: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">featuredAsset: <a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a></div>
+<div class="graphql-code-line ">featuredAsset: <a href="/reference/graphql-api/shop/object-types#asset">Asset</a></div>
 
-<div class="graphql-code-line ">assets: [<a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
+<div class="graphql-code-line ">assets: [<a href="/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Returns all ProductVariants</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">variants: [<a href="/docs/reference/graphql-api/shop/object-types#productvariant">ProductVariant</a>!]!</div>
+<div class="graphql-code-line ">variants: [<a href="/reference/graphql-api/shop/object-types#productvariant">ProductVariant</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Returns a paginated, sortable, filterable list of ProductVariants</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">variantList(options: <a href="/docs/reference/graphql-api/shop/input-types#productvariantlistoptions">ProductVariantListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#productvariantlist">ProductVariantList</a>!</div>
+<div class="graphql-code-line ">variantList(options: <a href="/reference/graphql-api/shop/input-types#productvariantlistoptions">ProductVariantListOptions</a>): <a href="/reference/graphql-api/shop/object-types#productvariantlist">ProductVariantList</a>!</div>
 
-<div class="graphql-code-line ">optionGroups: [<a href="/docs/reference/graphql-api/shop/object-types#productoptiongroup">ProductOptionGroup</a>!]!</div>
+<div class="graphql-code-line ">optionGroups: [<a href="/reference/graphql-api/shop/object-types#productoptiongroup">ProductOptionGroup</a>!]!</div>
 
-<div class="graphql-code-line ">facetValues: [<a href="/docs/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!]!</div>
+<div class="graphql-code-line ">facetValues: [<a href="/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!]!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#producttranslation">ProductTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#producttranslation">ProductTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">collections: [<a href="/docs/reference/graphql-api/shop/object-types#collection">Collection</a>!]!</div>
+<div class="graphql-code-line ">collections: [<a href="/reference/graphql-api/shop/object-types#collection">Collection</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2065,9 +2063,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#product">Product</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#product">Product</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2078,25 +2076,25 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductOption</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">groupId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">groupId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">group: <a href="/docs/reference/graphql-api/shop/object-types#productoptiongroup">ProductOptionGroup</a>!</div>
+<div class="graphql-code-line ">group: <a href="/reference/graphql-api/shop/object-types#productoptiongroup">ProductOptionGroup</a>!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#productoptiontranslation">ProductOptionTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#productoptiontranslation">ProductOptionTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2107,23 +2105,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductOptionGroup</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">options: [<a href="/docs/reference/graphql-api/shop/object-types#productoption">ProductOption</a>!]!</div>
+<div class="graphql-code-line ">options: [<a href="/reference/graphql-api/shop/object-types#productoption">ProductOption</a>!]!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#productoptiongrouptranslation">ProductOptionGroupTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#productoptiongrouptranslation">ProductOptionGroupTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2134,15 +2132,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductOptionGroupTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2153,15 +2151,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductOptionTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2172,19 +2170,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">slug: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2195,45 +2193,45 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductVariant</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">product: <a href="/docs/reference/graphql-api/shop/object-types#product">Product</a>!</div>
+<div class="graphql-code-line ">product: <a href="/reference/graphql-api/shop/object-types#product">Product</a>!</div>
 
-<div class="graphql-code-line ">productId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">productId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">sku: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">sku: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">featuredAsset: <a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a></div>
+<div class="graphql-code-line ">featuredAsset: <a href="/reference/graphql-api/shop/object-types#asset">Asset</a></div>
 
-<div class="graphql-code-line ">assets: [<a href="/docs/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
+<div class="graphql-code-line ">assets: [<a href="/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
 
-<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">currencyCode: <a href="/docs/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
+<div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
 
-<div class="graphql-code-line ">priceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">priceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">stockLevel: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">stockLevel: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">taxRateApplied: <a href="/docs/reference/graphql-api/shop/object-types#taxrate">TaxRate</a>!</div>
+<div class="graphql-code-line ">taxRateApplied: <a href="/reference/graphql-api/shop/object-types#taxrate">TaxRate</a>!</div>
 
-<div class="graphql-code-line ">taxCategory: <a href="/docs/reference/graphql-api/shop/object-types#taxcategory">TaxCategory</a>!</div>
+<div class="graphql-code-line ">taxCategory: <a href="/reference/graphql-api/shop/object-types#taxcategory">TaxCategory</a>!</div>
 
-<div class="graphql-code-line ">options: [<a href="/docs/reference/graphql-api/shop/object-types#productoption">ProductOption</a>!]!</div>
+<div class="graphql-code-line ">options: [<a href="/reference/graphql-api/shop/object-types#productoption">ProductOption</a>!]!</div>
 
-<div class="graphql-code-line ">facetValues: [<a href="/docs/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!]!</div>
+<div class="graphql-code-line ">facetValues: [<a href="/reference/graphql-api/shop/object-types#facetvalue">FacetValue</a>!]!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#productvarianttranslation">ProductVariantTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#productvarianttranslation">ProductVariantTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2244,9 +2242,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductVariantList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#productvariant">ProductVariant</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#productvariant">ProductVariant</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2257,15 +2255,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProductVariantTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2276,33 +2274,33 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Promotion</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">startsAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
+<div class="graphql-code-line ">startsAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
 
-<div class="graphql-code-line ">endsAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
+<div class="graphql-code-line ">endsAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
 
-<div class="graphql-code-line ">couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">couponCode: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">perCustomerUsageLimit: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">perCustomerUsageLimit: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">enabled: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">conditions: [<a href="/docs/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!]!</div>
+<div class="graphql-code-line ">conditions: [<a href="/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!]!</div>
 
-<div class="graphql-code-line ">actions: [<a href="/docs/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!]!</div>
+<div class="graphql-code-line ">actions: [<a href="/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!]!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#promotiontranslation">PromotionTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#promotiontranslation">PromotionTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2313,9 +2311,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PromotionList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#promotion">Promotion</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#promotion">Promotion</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2326,17 +2324,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PromotionTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2347,29 +2345,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Province</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">enabled: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">parent: <a href="/docs/reference/graphql-api/shop/object-types#region">Region</a></div>
+<div class="graphql-code-line ">parent: <a href="/reference/graphql-api/shop/object-types#region">Region</a></div>
 
-<div class="graphql-code-line ">parentId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a></div>
+<div class="graphql-code-line ">parentId: <a href="/reference/graphql-api/shop/object-types#id">ID</a></div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#regiontranslation">RegionTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#regiontranslation">RegionTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2380,9 +2378,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ProvinceList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#province">Province</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#province">Province</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2393,7 +2391,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">RefreshCustomerVerificationResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -2402,33 +2400,33 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Refund</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">items: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">items: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">shipping: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">shipping: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">adjustment: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">adjustment: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">total: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">total: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">method: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">method: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">state: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">state: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">transactionId: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">transactionId: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">reason: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">reason: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">lines: [<a href="/docs/reference/graphql-api/shop/object-types#refundline">RefundLine</a>!]!</div>
+<div class="graphql-code-line ">lines: [<a href="/reference/graphql-api/shop/object-types#refundline">RefundLine</a>!]!</div>
 
-<div class="graphql-code-line ">paymentId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">paymentId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">metadata: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">metadata: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2439,15 +2437,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">RefundLine</span>
  &#123;</div>
-<div class="graphql-code-line ">orderLine: <a href="/docs/reference/graphql-api/shop/object-types#orderline">OrderLine</a>!</div>
+<div class="graphql-code-line ">orderLine: <a href="/reference/graphql-api/shop/object-types#orderline">OrderLine</a>!</div>
 
-<div class="graphql-code-line ">orderLineId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">orderLineId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">quantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">refund: <a href="/docs/reference/graphql-api/shop/object-types#refund">Refund</a>!</div>
+<div class="graphql-code-line ">refund: <a href="/reference/graphql-api/shop/object-types#refund">Refund</a>!</div>
 
-<div class="graphql-code-line ">refundId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">refundId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2458,15 +2456,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">RegionTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2477,7 +2475,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">RegisterCustomerAccountResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/docs/reference/graphql-api/shop/object-types#missingpassworderror">MissingPasswordError</a> | <a href="/docs/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/reference/graphql-api/shop/object-types#missingpassworderror">MissingPasswordError</a> | <a href="/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -2486,27 +2484,27 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">RelationCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">entity: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">entity: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">scalarFields: [<a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!]!</div>
+<div class="graphql-code-line ">scalarFields: [<a href="/reference/graphql-api/shop/object-types#string">String</a>!]!</div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2517,7 +2515,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">RemoveOrderItemsResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#ordermodificationerror">OrderModificationError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#ordermodificationerror">OrderModificationError</a></div>
 
 </div>
 
@@ -2526,7 +2524,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">RequestPasswordResetResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -2535,7 +2533,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">RequestUpdateCustomerEmailAddressResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/docs/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/docs/reference/graphql-api/shop/object-types#emailaddressconflicterror">EmailAddressConflictError</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/reference/graphql-api/shop/object-types#emailaddressconflicterror">EmailAddressConflictError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -2544,7 +2542,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">ResetPasswordResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/docs/reference/graphql-api/shop/object-types#passwordresettokeninvaliderror">PasswordResetTokenInvalidError</a> | <a href="/docs/reference/graphql-api/shop/object-types#passwordresettokenexpirederror">PasswordResetTokenExpiredError</a> | <a href="/docs/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a> | <a href="/docs/reference/graphql-api/shop/object-types#notverifiederror">NotVerifiedError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/reference/graphql-api/shop/object-types#passwordresettokeninvaliderror">PasswordResetTokenInvalidError</a> | <a href="/reference/graphql-api/shop/object-types#passwordresettokenexpirederror">PasswordResetTokenExpiredError</a> | <a href="/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a> | <a href="/reference/graphql-api/shop/object-types#notverifiederror">NotVerifiedError</a></div>
 
 </div>
 
@@ -2553,19 +2551,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Role</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">permissions: [<a href="/docs/reference/graphql-api/shop/enums#permission">Permission</a>!]!</div>
+<div class="graphql-code-line ">permissions: [<a href="/reference/graphql-api/shop/enums#permission">Permission</a>!]!</div>
 
-<div class="graphql-code-line ">channels: [<a href="/docs/reference/graphql-api/shop/object-types#channel">Channel</a>!]!</div>
+<div class="graphql-code-line ">channels: [<a href="/reference/graphql-api/shop/object-types#channel">Channel</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2576,9 +2574,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">RoleList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#role">Role</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#role">Role</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2589,7 +2587,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">SearchReindexResponse</span>
  &#123;</div>
-<div class="graphql-code-line ">success: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">success: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2600,13 +2598,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">SearchResponse</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#searchresult">SearchResult</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#searchresult">SearchResult</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
-<div class="graphql-code-line ">facetValues: [<a href="/docs/reference/graphql-api/shop/object-types#facetvalueresult">FacetValueResult</a>!]!</div>
+<div class="graphql-code-line ">facetValues: [<a href="/reference/graphql-api/shop/object-types#facetvalueresult">FacetValueResult</a>!]!</div>
 
-<div class="graphql-code-line ">collections: [<a href="/docs/reference/graphql-api/shop/object-types#collectionresult">CollectionResult</a>!]!</div>
+<div class="graphql-code-line ">collections: [<a href="/reference/graphql-api/shop/object-types#collectionresult">CollectionResult</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2617,43 +2615,43 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">SearchResult</span>
  &#123;</div>
-<div class="graphql-code-line ">sku: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">sku: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">slug: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">productId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">productId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">productName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">productName: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">productAsset: <a href="/docs/reference/graphql-api/shop/object-types#searchresultasset">SearchResultAsset</a></div>
+<div class="graphql-code-line ">productAsset: <a href="/reference/graphql-api/shop/object-types#searchresultasset">SearchResultAsset</a></div>
 
-<div class="graphql-code-line ">productVariantId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">productVariantId: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">productVariantName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">productVariantName: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">productVariantAsset: <a href="/docs/reference/graphql-api/shop/object-types#searchresultasset">SearchResultAsset</a></div>
+<div class="graphql-code-line ">productVariantAsset: <a href="/reference/graphql-api/shop/object-types#searchresultasset">SearchResultAsset</a></div>
 
-<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/object-types#searchresultprice">SearchResultPrice</a>!</div>
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/shop/object-types#searchresultprice">SearchResultPrice</a>!</div>
 
-<div class="graphql-code-line ">priceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#searchresultprice">SearchResultPrice</a>!</div>
+<div class="graphql-code-line ">priceWithTax: <a href="/reference/graphql-api/shop/object-types#searchresultprice">SearchResultPrice</a>!</div>
 
-<div class="graphql-code-line ">currencyCode: <a href="/docs/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
+<div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/shop/enums#currencycode">CurrencyCode</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">facetIds: [<a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!]!</div>
+<div class="graphql-code-line ">facetIds: [<a href="/reference/graphql-api/shop/object-types#id">ID</a>!]!</div>
 
-<div class="graphql-code-line ">facetValueIds: [<a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!]!</div>
+<div class="graphql-code-line ">facetValueIds: [<a href="/reference/graphql-api/shop/object-types#id">ID</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">An array of ids of the Collections in which this result appears</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">collectionIds: [<a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!]!</div>
+<div class="graphql-code-line ">collectionIds: [<a href="/reference/graphql-api/shop/object-types#id">ID</a>!]!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">A relevance score for the result. Differs between database implementations</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">score: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">score: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2664,11 +2662,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">SearchResultAsset</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">preview: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">preview: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">focalPoint: <a href="/docs/reference/graphql-api/shop/object-types#coordinate">Coordinate</a></div>
+<div class="graphql-code-line ">focalPoint: <a href="/reference/graphql-api/shop/object-types#coordinate">Coordinate</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2682,7 +2680,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">SearchResultPrice</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#pricerange">PriceRange</a> | <a href="/docs/reference/graphql-api/shop/object-types#singleprice">SinglePrice</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#pricerange">PriceRange</a> | <a href="/reference/graphql-api/shop/object-types#singleprice">SinglePrice</a></div>
 
 </div>
 
@@ -2691,15 +2689,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Seller</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2710,7 +2708,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">SetCustomerForOrderResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#alreadyloggedinerror">AlreadyLoggedInError</a> | <a href="/docs/reference/graphql-api/shop/object-types#emailaddressconflicterror">EmailAddressConflictError</a> | <a href="/docs/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a> | <a href="/docs/reference/graphql-api/shop/object-types#guestcheckouterror">GuestCheckoutError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#alreadyloggedinerror">AlreadyLoggedInError</a> | <a href="/reference/graphql-api/shop/object-types#emailaddressconflicterror">EmailAddressConflictError</a> | <a href="/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a> | <a href="/reference/graphql-api/shop/object-types#guestcheckouterror">GuestCheckoutError</a></div>
 
 </div>
 
@@ -2719,7 +2717,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">SetOrderShippingMethodResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#ordermodificationerror">OrderModificationError</a> | <a href="/docs/reference/graphql-api/shop/object-types#ineligibleshippingmethoderror">IneligibleShippingMethodError</a> | <a href="/docs/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#ordermodificationerror">OrderModificationError</a> | <a href="/reference/graphql-api/shop/object-types#ineligibleshippingmethoderror">IneligibleShippingMethodError</a> | <a href="/reference/graphql-api/shop/object-types#noactiveordererror">NoActiveOrderError</a></div>
 
 </div>
 
@@ -2728,19 +2726,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ShippingLine</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">shippingMethod: <a href="/docs/reference/graphql-api/shop/object-types#shippingmethod">ShippingMethod</a>!</div>
+<div class="graphql-code-line ">shippingMethod: <a href="/reference/graphql-api/shop/object-types#shippingmethod">ShippingMethod</a>!</div>
 
-<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">priceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">priceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">discountedPrice: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">discountedPrice: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">discountedPriceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">discountedPriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">discounts: [<a href="/docs/reference/graphql-api/shop/object-types#discount">Discount</a>!]!</div>
+<div class="graphql-code-line ">discounts: [<a href="/reference/graphql-api/shop/object-types#discount">Discount</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2751,29 +2749,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ShippingMethod</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">fulfillmentHandlerCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">fulfillmentHandlerCode: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">checker: <a href="/docs/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!</div>
+<div class="graphql-code-line ">checker: <a href="/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!</div>
 
-<div class="graphql-code-line ">calculator: <a href="/docs/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!</div>
+<div class="graphql-code-line ">calculator: <a href="/reference/graphql-api/shop/object-types#configurableoperation">ConfigurableOperation</a>!</div>
 
-<div class="graphql-code-line ">translations: [<a href="/docs/reference/graphql-api/shop/object-types#shippingmethodtranslation">ShippingMethodTranslation</a>!]!</div>
+<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#shippingmethodtranslation">ShippingMethodTranslation</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2784,9 +2782,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ShippingMethodList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#shippingmethod">ShippingMethod</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#shippingmethod">ShippingMethod</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2797,24 +2795,24 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ShippingMethodQuote</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">priceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">priceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">metadata: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">metadata: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2825,17 +2823,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ShippingMethodTranslation</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/enums#languagecode">LanguageCode</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2849,7 +2847,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">SinglePrice</span>
  &#123;</div>
-<div class="graphql-code-line ">value: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">value: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2871,29 +2869,29 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">StringCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">length: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+<div class="graphql-code-line ">length: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">pattern: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">pattern: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">options: [<a href="/docs/reference/graphql-api/shop/object-types#stringfieldoption">StringFieldOption</a>!]</div>
+<div class="graphql-code-line ">options: [<a href="/reference/graphql-api/shop/object-types#stringfieldoption">StringFieldOption</a>!]</div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2904,9 +2902,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">StringFieldOption</span>
  &#123;</div>
-<div class="graphql-code-line ">value: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">value: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2920,7 +2918,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Success</span>
  &#123;</div>
-<div class="graphql-code-line ">success: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">success: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2931,23 +2929,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Surcharge</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">sku: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+<div class="graphql-code-line ">sku: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
-<div class="graphql-code-line ">taxLines: [<a href="/docs/reference/graphql-api/shop/object-types#taxline">TaxLine</a>!]!</div>
+<div class="graphql-code-line ">taxLines: [<a href="/reference/graphql-api/shop/object-types#taxline">TaxLine</a>!]!</div>
 
-<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">priceWithTax: <a href="/docs/reference/graphql-api/shop/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">priceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
-<div class="graphql-code-line ">taxRate: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">taxRate: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2958,13 +2956,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Tag</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">value: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">value: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2975,9 +2973,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">TagList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#tag">Tag</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#tag">Tag</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2988,17 +2986,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">TaxCategory</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">isDefault: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">isDefault: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3009,9 +3007,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">TaxLine</span>
  &#123;</div>
-<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">taxRate: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">taxRate: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3022,25 +3020,25 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">TaxRate</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">enabled: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">value: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+<div class="graphql-code-line ">value: <a href="/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
-<div class="graphql-code-line ">category: <a href="/docs/reference/graphql-api/shop/object-types#taxcategory">TaxCategory</a>!</div>
+<div class="graphql-code-line ">category: <a href="/reference/graphql-api/shop/object-types#taxcategory">TaxCategory</a>!</div>
 
-<div class="graphql-code-line ">zone: <a href="/docs/reference/graphql-api/shop/object-types#zone">Zone</a>!</div>
+<div class="graphql-code-line ">zone: <a href="/reference/graphql-api/shop/object-types#zone">Zone</a>!</div>
 
-<div class="graphql-code-line ">customerGroup: <a href="/docs/reference/graphql-api/shop/object-types#customergroup">CustomerGroup</a></div>
+<div class="graphql-code-line ">customerGroup: <a href="/reference/graphql-api/shop/object-types#customergroup">CustomerGroup</a></div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3051,9 +3049,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">TaxRateList</span>
  &#123;</div>
-<div class="graphql-code-line ">items: [<a href="/docs/reference/graphql-api/shop/object-types#taxrate">TaxRate</a>!]!</div>
+<div class="graphql-code-line ">items: [<a href="/reference/graphql-api/shop/object-types#taxrate">TaxRate</a>!]!</div>
 
-<div class="graphql-code-line ">totalItems: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">totalItems: <a href="/reference/graphql-api/shop/object-types#int">Int</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3064,23 +3062,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">TextCustomFieldConfig</span>
  &#123;</div>
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">list: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">label: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">description: [<a href="/docs/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
 
-<div class="graphql-code-line ">readonly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">internal: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">nullable: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-<div class="graphql-code-line ">ui: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3091,7 +3089,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">TransitionOrderToStateResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#orderstatetransitionerror">OrderStateTransitionError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#orderstatetransitionerror">OrderStateTransitionError</a></div>
 
 </div>
 
@@ -3100,7 +3098,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">UpdateCustomerEmailAddressResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/docs/reference/graphql-api/shop/object-types#identifierchangetokeninvaliderror">IdentifierChangeTokenInvalidError</a> | <a href="/docs/reference/graphql-api/shop/object-types#identifierchangetokenexpirederror">IdentifierChangeTokenExpiredError</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/reference/graphql-api/shop/object-types#identifierchangetokeninvaliderror">IdentifierChangeTokenInvalidError</a> | <a href="/reference/graphql-api/shop/object-types#identifierchangetokenexpirederror">IdentifierChangeTokenExpiredError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -3109,7 +3107,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">UpdateCustomerPasswordResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/docs/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/docs/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#success">Success</a> | <a href="/reference/graphql-api/shop/object-types#invalidcredentialserror">InvalidCredentialsError</a> | <a href="/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -3118,7 +3116,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">UpdateOrderItemsResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/docs/reference/graphql-api/shop/object-types#ordermodificationerror">OrderModificationError</a> | <a href="/docs/reference/graphql-api/shop/object-types#orderlimiterror">OrderLimitError</a> | <a href="/docs/reference/graphql-api/shop/object-types#negativequantityerror">NegativeQuantityError</a> | <a href="/docs/reference/graphql-api/shop/object-types#insufficientstockerror">InsufficientStockError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#order">Order</a> | <a href="/reference/graphql-api/shop/object-types#ordermodificationerror">OrderModificationError</a> | <a href="/reference/graphql-api/shop/object-types#orderlimiterror">OrderLimitError</a> | <a href="/reference/graphql-api/shop/object-types#negativequantityerror">NegativeQuantityError</a> | <a href="/reference/graphql-api/shop/object-types#insufficientstockerror">InsufficientStockError</a></div>
 
 </div>
 
@@ -3138,23 +3136,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">User</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">identifier: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">identifier: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">verified: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+<div class="graphql-code-line ">verified: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-<div class="graphql-code-line ">roles: [<a href="/docs/reference/graphql-api/shop/object-types#role">Role</a>!]!</div>
+<div class="graphql-code-line ">roles: [<a href="/reference/graphql-api/shop/object-types#role">Role</a>!]!</div>
 
-<div class="graphql-code-line ">lastLogin: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
+<div class="graphql-code-line ">lastLogin: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
 
-<div class="graphql-code-line ">authenticationMethods: [<a href="/docs/reference/graphql-api/shop/object-types#authenticationmethod">AuthenticationMethod</a>!]!</div>
+<div class="graphql-code-line ">authenticationMethods: [<a href="/reference/graphql-api/shop/object-types#authenticationmethod">AuthenticationMethod</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3170,9 +3168,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">VerificationTokenExpiredError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3188,9 +3186,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">VerificationTokenInvalidError</span>
  &#123;</div>
-<div class="graphql-code-line ">errorCode: <a href="/docs/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/shop/enums#errorcode">ErrorCode</a>!</div>
 
-<div class="graphql-code-line ">message: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3201,7 +3199,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">VerifyCustomerAccountResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/docs/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/docs/reference/graphql-api/shop/object-types#verificationtokeninvaliderror">VerificationTokenInvalidError</a> | <a href="/docs/reference/graphql-api/shop/object-types#verificationtokenexpirederror">VerificationTokenExpiredError</a> | <a href="/docs/reference/graphql-api/shop/object-types#missingpassworderror">MissingPasswordError</a> | <a href="/docs/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/docs/reference/graphql-api/shop/object-types#passwordalreadyseterror">PasswordAlreadySetError</a> | <a href="/docs/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a> | <a href="/reference/graphql-api/shop/object-types#verificationtokeninvaliderror">VerificationTokenInvalidError</a> | <a href="/reference/graphql-api/shop/object-types#verificationtokenexpirederror">VerificationTokenExpiredError</a> | <a href="/reference/graphql-api/shop/object-types#missingpassworderror">MissingPasswordError</a> | <a href="/reference/graphql-api/shop/object-types#passwordvalidationerror">PasswordValidationError</a> | <a href="/reference/graphql-api/shop/object-types#passwordalreadyseterror">PasswordAlreadySetError</a> | <a href="/reference/graphql-api/shop/object-types#nativeauthstrategyerror">NativeAuthStrategyError</a></div>
 
 </div>
 
@@ -3210,17 +3208,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Zone</span>
  &#123;</div>
-<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-<div class="graphql-code-line ">members: [<a href="/docs/reference/graphql-api/shop/object-types#region">Region</a>!]!</div>
+<div class="graphql-code-line ">members: [<a href="/reference/graphql-api/shop/object-types#region">Region</a>!]!</div>
 
-<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

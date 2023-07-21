@@ -9,7 +9,7 @@ let currentContext: ProcessContextType = 'server';
  * is being executed in the context of the main Vendure server or the worker.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { Injectable, OnApplicationBootstrap } from '\@nestjs/common';
  * import { ProcessContext } from '\@vendure/core';
  *

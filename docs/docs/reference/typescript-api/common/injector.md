@@ -1,7 +1,7 @@
 ---
 title: "Injector"
 weight: 10
-date: 2023-07-21T07:16:59.980Z
+date: 2023-07-21T15:46:14.809Z
 showtoc: true
 generated: true
 ---

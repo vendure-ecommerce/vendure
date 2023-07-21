@@ -1,7 +1,7 @@
 ---
 title: "StockDisplayStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.131Z
+date: 2023-07-21T15:46:14.997Z
 showtoc: true
 generated: true
 ---
@@ -29,7 +29,7 @@ interface StockDisplayStrategy extends InjectableStrategy {
     ): string | Promise<string>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -37,7 +37,7 @@ interface StockDisplayStrategy extends InjectableStrategy {
 
 ### getStockLevel
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, saleableStockLevel: number) => string | Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, saleableStockLevel: number) => string | Promise&#60;string&#62;"   />
 
 Returns a string representing the stock level, which will be used directly
 in the GraphQL `ProductVariant.stockLevel` field.

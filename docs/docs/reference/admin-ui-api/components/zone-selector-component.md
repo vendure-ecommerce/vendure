@@ -1,7 +1,7 @@
 ---
 title: "ZoneSelectorComponent"
 weight: 10
-date: 2023-07-21T07:17:04.550Z
+date: 2023-07-21T15:46:19.462Z
 showtoc: true
 generated: true
 ---
@@ -57,7 +57,7 @@ class ZoneSelectorComponent implements ControlValueAccessor {
 
 ### transformControlValueAccessorValue
 
-<MemberInfo kind="property" type="(value: <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> | undefined) =&#62; any"   />
+<MemberInfo kind="property" type="(value: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> | undefined) =&#62; any"   />
 
 
 ### selectedId$
@@ -82,7 +82,7 @@ class ZoneSelectorComponent implements ControlValueAccessor {
 
 ### value
 
-<MemberInfo kind="property" type="string | <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="property" type="string | <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
 
 
 ### zones$
@@ -92,12 +92,12 @@ class ZoneSelectorComponent implements ControlValueAccessor {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => ZoneSelectorComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => ZoneSelectorComponent"   />
 
 
 ### onChange
 
-<MemberInfo kind="method" type="(selected: <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>) => "   />
+<MemberInfo kind="method" type="(selected: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>) => "   />
 
 
 ### registerOnChange
@@ -122,7 +122,7 @@ class ZoneSelectorComponent implements ControlValueAccessor {
 
 ### writeValue
 
-<MemberInfo kind="method" type="(obj: string | <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> | null) => void"   />
+<MemberInfo kind="method" type="(obj: string | <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> | null) => void"   />
 
 
 

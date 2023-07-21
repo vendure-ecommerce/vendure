@@ -1,7 +1,7 @@
 ---
 title: "Middleware"
 weight: 10
-date: 2023-07-21T07:17:00.006Z
+date: 2023-07-21T15:46:14.852Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="208" packageName="@vendure/core" />
 
-Defines API middleware, set in the <a href='/docs/reference/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>. Middleware can be either
+Defines API middleware, set in the <a href='/reference/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>. Middleware can be either
 [Express middleware](https://expressjs.com/en/guide/using-middleware.html) or [NestJS middleware](https://docs.nestjs.com/middleware).
 
 ## Increasing the maximum request body size limit

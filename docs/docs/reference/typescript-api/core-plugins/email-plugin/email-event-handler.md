@@ -1,7 +1,7 @@
 ---
 title: "EmailEventHandler"
 weight: 10
-date: 2023-07-21T07:17:02.679Z
+date: 2023-07-21T15:46:18.046Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 The EmailEventHandler defines how the EmailPlugin will respond to a given event.
 
-A handler is created by creating a new <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-listener#emaileventlistener'>EmailEventListener</a> and calling the `.on()` method
+A handler is created by creating a new <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-listener#emaileventlistener'>EmailEventListener</a> and calling the `.on()` method
 to specify which event to respond to.
 
 *Example*
@@ -44,7 +44,7 @@ By default, the handler will respond to all events on all channels and use the s
 and body template. Where the server is intended to support multiple languages, the `.addTemplate()` method may be used
 to define the subject and body template for specific language and channel combinations.
 
-The language is determined by looking at the `languageCode` property of the event's `ctx` (<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) object.
+The language is determined by looking at the `languageCode` property of the event's `ctx` (<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) object.
 
 *Example*
 
@@ -61,7 +61,7 @@ const extendedConfirmationHandler = confirmationHandler
 ## Defining a custom handler
 
 Let's say you have a plugin which defines a new event type, `QuoteRequestedEvent`. In your plugin you have defined a mutation
-which is executed when the customer requests a quote in your storefront, and in your resolver, you use the <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a> to publish a
+which is executed when the customer requests a quote in your storefront, and in your resolver, you use the <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a> to publish a
 new `QuoteRequestedEvent`.
 
 You now want to email the customer with their quote. Here are the steps you would take to set this up:
@@ -145,18 +145,18 @@ class EmailEventHandler<T extends string = string, Event extends EventWithContex
 
 ### constructor
 
-<MemberInfo kind="method" type="(listener: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-listener#emaileventlistener'>EmailEventListener</a>&#60;T&#62;, event: Type&#60;Event&#62;) => EmailEventHandler"   />
+<MemberInfo kind="method" type="(listener: <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-listener#emaileventlistener'>EmailEventListener</a>&#60;T&#62;, event: Type&#60;Event&#62;) => EmailEventHandler"   />
 
 
 ### filter
 
-<MemberInfo kind="method" type="(filterFn: (event: Event) =&#62; boolean) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(filterFn: (event: Event) =&#62; boolean) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 Defines a predicate function which is used to determine whether the event will trigger an email.
 Multiple filter functions may be defined.
 ### setRecipient
 
-<MemberInfo kind="method" type="(setRecipientFn: (event: Event) =&#62; string) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(setRecipientFn: (event: Event) =&#62; string) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 A function which defines how the recipient email address should be extracted from the incoming event.
 
@@ -165,35 +165,35 @@ Or with a formatted name (includes unicode support): `'Ноде Майлер <fo
 Or a comma-separated list of addresses: `'foobar@example.com, "Ноде Майлер" <bar@example.com>'`
 ### setLanguageCode
 
-<MemberInfo kind="method" type="(setLanguageCodeFn: (event: Event) =&#62; <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a> | undefined) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"  since="1.8.0"  />
+<MemberInfo kind="method" type="(setLanguageCodeFn: (event: Event) =&#62; <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a> | undefined) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"  since="1.8.0"  />
 
 A function which allows to override the language of the email. If not defined, the language from the context will be used.
 ### setTemplateVars
 
-<MemberInfo kind="method" type="(templateVarsFn: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#settemplatevarsfn'>SetTemplateVarsFn</a>&#60;Event&#62;) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(templateVarsFn: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#settemplatevarsfn'>SetTemplateVarsFn</a>&#60;Event&#62;) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 A function which returns an object hash of variables which will be made available to the Handlebars template
 and subject line for interpolation.
 ### setSubject
 
-<MemberInfo kind="method" type="(defaultSubject: string) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(defaultSubject: string) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 Sets the default subject of the email. The subject string may use Handlebars variables defined by the
 setTemplateVars() method.
 ### setFrom
 
-<MemberInfo kind="method" type="(from: string) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(from: string) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 Sets the default from field of the email. The from string may use Handlebars variables defined by the
 setTemplateVars() method.
 ### setOptionalAddressFields
 
-<MemberInfo kind="method" type="(optionalAddressFieldsFn: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#setoptionaladdressfieldsfn'>SetOptionalAddressFieldsFn</a>&#60;Event&#62;) => "  since="1.1.0"  />
+<MemberInfo kind="method" type="(optionalAddressFieldsFn: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#setoptionaladdressfieldsfn'>SetOptionalAddressFieldsFn</a>&#60;Event&#62;) => "  since="1.1.0"  />
 
-A function which allows <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a> to be specified such as "cc" and "bcc".
+A function which allows <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a> to be specified such as "cc" and "bcc".
 ### setAttachments
 
-<MemberInfo kind="method" type="(setAttachmentsFn: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#setattachmentsfn'>SetAttachmentsFn</a>&#60;Event&#62;) => "   />
+<MemberInfo kind="method" type="(setAttachmentsFn: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#setattachmentsfn'>SetAttachmentsFn</a>&#60;Event&#62;) => "   />
 
 Defines one or more files to be attached to the email. An attachment can be specified
 as either a `path` (to a file or URL) or as `content` which can be a string, Buffer or Stream.
@@ -221,18 +221,18 @@ const testAttachmentHandler = new EmailEventListener('activate-voucher')
 ```
 ### addTemplate
 
-<MemberInfo kind="method" type="(config: EmailTemplateConfig) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(config: EmailTemplateConfig) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 Add configuration for another template other than the default `"body.hbs"`. Use this method to define specific
 templates for channels or languageCodes other than the default.
 ### loadData
 
-<MemberInfo kind="method" type="(loadDataFn: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#loaddatafn'>LoadDataFn</a>&#60;Event, R&#62;) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler-with-async-data#emaileventhandlerwithasyncdata'>EmailEventHandlerWithAsyncData</a>&#60;R, T, Event, <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#eventwithasyncdata'>EventWithAsyncData</a>&#60;Event, R&#62;&#62;"   />
+<MemberInfo kind="method" type="(loadDataFn: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#loaddatafn'>LoadDataFn</a>&#60;Event, R&#62;) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler-with-async-data#emaileventhandlerwithasyncdata'>EmailEventHandlerWithAsyncData</a>&#60;R, T, Event, <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#eventwithasyncdata'>EventWithAsyncData</a>&#60;Event, R&#62;&#62;"   />
 
 Allows data to be loaded asynchronously which can then be used as template variables.
 The `loadDataFn` has access to the event, the TypeORM `Connection` object, and an
 `inject()` function which can be used to inject any of the providers exported
-by the <a href='/docs/reference/typescript-api/plugin/plugin-common-module#plugincommonmodule'>PluginCommonModule</a>. The return value of the `loadDataFn` will be
+by the <a href='/reference/typescript-api/plugin/plugin-common-module#plugincommonmodule'>PluginCommonModule</a>. The return value of the `loadDataFn` will be
 added to the `event` as the `data` property.
 
 *Example*
@@ -252,7 +252,7 @@ new EmailEventListener('order-confirmation')
 ```
 ### setMockEvent
 
-<MemberInfo kind="method" type="(event: Omit&#60;Event, 'ctx' | 'data'&#62;) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(event: Omit&#60;Event, 'ctx' | 'data'&#62;) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 Optionally define a mock Event which is used by the dev mode mailbox app for generating mock emails
 from this handler, which is useful when developing the email templates.

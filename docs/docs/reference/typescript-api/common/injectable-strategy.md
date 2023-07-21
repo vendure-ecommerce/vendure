@@ -1,7 +1,7 @@
 ---
 title: "InjectableStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.013Z
+date: 2023-07-21T15:46:14.859Z
 showtoc: true
 generated: true
 ---
@@ -29,10 +29,10 @@ interface InjectableStrategy {
 
 ### init
 
-<MemberInfo kind="property" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) =&#62; void | Promise&#60;void&#62;"   />
+<MemberInfo kind="property" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) =&#62; void | Promise&#60;void&#62;"   />
 
 Defines setup logic to be run during application bootstrap. Receives
-the <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a> as an argument, which allows application providers
+the <a href='/reference/typescript-api/common/injector#injector'>Injector</a> as an argument, which allows application providers
 to be used as part of the setup. This hook will be called on both the
 main server and the worker processes.
 

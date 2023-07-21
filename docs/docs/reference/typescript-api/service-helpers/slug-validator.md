@@ -1,7 +1,7 @@
 ---
 title: "SlugValidator"
 weight: 10
-date: 2023-07-21T07:17:01.606Z
+date: 2023-07-21T15:46:16.939Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/service/helpers/slug-validator/slug-validator.ts" sourceLine="44" packageName="@vendure/core" />
 
 Used to validate slugs to ensure they are URL-safe and unique. Designed to be used with translatable
-entities such as <a href='/docs/reference/typescript-api/entities/product#product'>Product</a> and <a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>.
+entities such as <a href='/reference/typescript-api/entities/product#product'>Product</a> and <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>.
 
 ```ts title="Signature"
 class SlugValidator {
@@ -29,12 +29,12 @@ class SlugValidator {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => SlugValidator"   />
+<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => SlugValidator"   />
 
 
 ### validateSlugs
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: T, translationEntity: Type&#60;E&#62;) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: T, translationEntity: Type&#60;E&#62;) => Promise&#60;T&#62;"   />
 
 
 
@@ -63,12 +63,12 @@ type InputWithSlug = {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a> | null"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a> | null"   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         id?: <a href='/docs/reference/typescript-api/common/id#id'>ID</a> | null;         languageCode: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         slug?: string | null;     }&#62; | null"   />
+<MemberInfo kind="property" type="Array&#60;{         id?: <a href='/reference/typescript-api/common/id#id'>ID</a> | null;         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         slug?: string | null;     }&#62; | null"   />
 
 
 

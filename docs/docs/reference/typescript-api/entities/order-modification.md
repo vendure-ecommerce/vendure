@@ -1,7 +1,7 @@
 ---
 title: "OrderModification"
 weight: 10
-date: 2023-07-21T07:17:00.953Z
+date: 2023-07-21T15:46:16.118Z
 showtoc: true
 generated: true
 ---
@@ -43,7 +43,7 @@ class OrderModification extends VendureEntity {
   @Calculated() isSettled: boolean
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -51,7 +51,7 @@ class OrderModification extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification"   />
 
 
 ### note
@@ -61,17 +61,17 @@ class OrderModification extends VendureEntity {
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]"   />
 
 
 ### surcharges
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
 
 
 ### priceChange
@@ -81,7 +81,7 @@ class OrderModification extends VendureEntity {
 
 ### payment
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/payment#payment'>Payment</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>"   />
 
 
 ### refund

@@ -1,7 +1,7 @@
 ---
 title: "EventBus"
 weight: 10
-date: 2023-07-21T07:17:01.208Z
+date: 2023-07-21T15:46:16.403Z
 showtoc: true
 generated: true
 ---
@@ -19,9 +19,9 @@ The EventBus is used to globally publish events which can then be subscribed to.
 
 Events are published whenever certain actions take place within the Vendure server, for example:
 
-* when a Product is updated (<a href='/docs/reference/typescript-api/events/event-types#productevent'>ProductEvent</a>)
-* when an Order transitions state (<a href='/docs/reference/typescript-api/events/event-types#orderstatetransitionevent'>OrderStateTransitionEvent</a>)
-* when a Customer registers a new account (<a href='/docs/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a>)
+* when a Product is updated (<a href='/reference/typescript-api/events/event-types#productevent'>ProductEvent</a>)
+* when an Order transitions state (<a href='/reference/typescript-api/events/event-types#orderstatetransitionevent'>OrderStateTransitionEvent</a>)
+* when a Customer registers a new account (<a href='/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a>)
 
 Using the EventBus it is possible to subscribe to an take action when these events occur.
 This is done with the `.ofType()` method, which takes an event type and returns an rxjs observable
@@ -84,17 +84,17 @@ Publish an event which any subscribers can react to.
 <MemberInfo kind="method" type="(type: Type&#60;T&#62;) => Observable&#60;T&#62;"   />
 
 Returns an RxJS Observable stream of events of the given type.
-If the event contains a <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber
+If the event contains a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber
 will only get called after any active database transactions are complete.
 
 This means that the subscriber function can safely access all updated
 data related to the event.
 ### filter
 
-<MemberInfo kind="method" type="(predicate: (event: <a href='/docs/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a>) =&#62; boolean) => Observable&#60;T&#62;"   />
+<MemberInfo kind="method" type="(predicate: (event: <a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a>) =&#62; boolean) => Observable&#60;T&#62;"   />
 
 Returns an RxJS Observable stream of events filtered by a custom predicate.
-If the event contains a <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber
+If the event contains a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber
 will only get called after any active database transactions are complete.
 
 This means that the subscriber function can safely access all updated

@@ -1,7 +1,7 @@
 ---
 title: "FacetValueSelectorComponent"
 weight: 10
-date: 2023-07-21T07:17:04.451Z
+date: 2023-07-21T15:46:19.401Z
 showtoc: true
 generated: true
 ---
@@ -123,7 +123,7 @@ class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAcce
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent"   />
 
 
 ### ngOnInit

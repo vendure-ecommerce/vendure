@@ -145,7 +145,7 @@ Once the PaymentMethodHandler is defined as above, you can use it to create a ne
 ## Payment flow
 
 1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/reference/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.
-    ```GraphQL
+    ```graphql
     mutation {
         addPaymentToOrder(input: {
             method: "my-payment-method",

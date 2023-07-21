@@ -1,7 +1,7 @@
 ---
 title: "DefaultOrderItemPriceCalculationStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.275Z
+date: 2023-07-21T15:46:15.198Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-item-price-calculation-strategy.ts" sourceLine="14" packageName="@vendure/core" />
 
-The default <a href='/docs/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>, which simply passes through the price of
+The default <a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>, which simply passes through the price of
 the ProductVariant without performing any calculations
 
 ```ts title="Signature"
@@ -23,7 +23,7 @@ class DefaultOrderItemPriceCalculationStrategy implements OrderItemPriceCalculat
   calculateUnitPrice(ctx: RequestContext, productVariant: ProductVariant) => PriceCalculationResult | Promise<PriceCalculationResult>;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a></code>
 
 
 
@@ -31,7 +31,7 @@ class DefaultOrderItemPriceCalculationStrategy implements OrderItemPriceCalculat
 
 ### calculateUnitPrice
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>) => <a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>) => <a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
 
 
 

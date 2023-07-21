@@ -1,7 +1,7 @@
 ---
 title: "EmailPluginOptions"
 weight: 10
-date: 2023-07-21T07:17:02.746Z
+date: 2023-07-21T15:46:18.109Z
 showtoc: true
 generated: true
 ---
@@ -44,20 +44,20 @@ The path to the location of the email templates. In a default Vendure installati
 the templates are installed to `<project root>/vendure/email/templates`.
 ### templateLoader
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/email-plugin/custom-template-loader#templateloader'>TemplateLoader</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/email-plugin/custom-template-loader#templateloader'>TemplateLoader</a>"  since="2.0.0"  />
 
 An optional TemplateLoader which can be used to load templates from a custom location or async service.
 The default uses the FileBasedTemplateLoader which loads templates from `<project root>/vendure/email/templates`
 ### transport
 
-<MemberInfo kind="property" type="| <a href='/docs/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/docs/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/docs/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)"   />
+<MemberInfo kind="property" type="| <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)"   />
 
 Configures how the emails are sent.
 ### handlers
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;string, any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;string, any&#62;&#62;"   />
 
-An array of <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>s which define which Vendure events will trigger
+An array of <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>s which define which Vendure events will trigger
 emails, and how those emails are generated.
 ### globalTemplateVars
 
@@ -68,13 +68,13 @@ the storefront URL could be defined here and then used in the "email address ver
 email.
 ### emailSender
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a>" default="<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-sender#nodemaileremailsender'>NodemailerEmailSender</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a>" default="<a href='/reference/typescript-api/core-plugins/email-plugin/email-sender#nodemaileremailsender'>NodemailerEmailSender</a>"   />
 
 An optional allowed EmailSender, used to allow custom implementations of the send functionality
 while still utilizing the existing emailPlugin functionality.
 ### emailGenerator
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-generator#emailgenerator'>EmailGenerator</a>" default="<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-generator#handlebarsmjmlgenerator'>HandlebarsMjmlGenerator</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/email-plugin/email-generator#emailgenerator'>EmailGenerator</a>" default="<a href='/reference/typescript-api/core-plugins/email-plugin/email-generator#handlebarsmjmlgenerator'>HandlebarsMjmlGenerator</a>"   />
 
 An optional allowed EmailGenerator, used to allow custom email generation functionality to
 better match with custom email sending functionality.
@@ -96,7 +96,7 @@ interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'transport'
   route: string;
 }
 ```
-* Extends: <code>Omit&#60;<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a>, 'transport'&#62;</code>
+* Extends: <code>Omit&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a>, 'transport'&#62;</code>
 
 
 

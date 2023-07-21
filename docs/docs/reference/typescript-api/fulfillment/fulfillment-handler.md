@@ -1,7 +1,7 @@
 ---
 title: "FulfillmentHandler"
 weight: 10
-date: 2023-07-21T07:17:00.205Z
+date: 2023-07-21T15:46:15.095Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="150" packageName="@vendure/core" />
 
-A FulfillmentHandler is used when creating a new <a href='/docs/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>. When the `addFulfillmentToOrder` mutation
+A FulfillmentHandler is used when creating a new <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>. When the `addFulfillmentToOrder` mutation
 is executed, the specified handler will be used and it's `createFulfillment` method is called. This method
 may perform async tasks such as calling a 3rd-party shipping API to register a new shipment and receive
 a tracking code. This data can then be returned and will be incorporated into the created Fulfillment.
@@ -94,7 +94,7 @@ class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends Configurable
   constructor(config: FulfillmentHandlerConfig<T>)
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
 
@@ -102,7 +102,7 @@ class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandlerconfig'>FulfillmentHandlerConfig</a>&#60;T&#62;) => FulfillmentHandler"   />
+<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandlerconfig'>FulfillmentHandlerConfig</a>&#60;T&#62;) => FulfillmentHandler"   />
 
 
 
@@ -114,7 +114,7 @@ class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 <GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="49" packageName="@vendure/core" />
 
-The configuration object used to instantiate a <a href='/docs/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler'>FulfillmentHandler</a>.
+The configuration object used to instantiate a <a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler'>FulfillmentHandler</a>.
 
 ```ts title="Signature"
 interface FulfillmentHandlerConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
@@ -122,7 +122,7 @@ interface FulfillmentHandlerConfig<T extends ConfigArgs> extends ConfigurableOpe
   onFulfillmentTransition?: OnTransitionStartFn<FulfillmentState, FulfillmentTransitionData>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
 
 
 
@@ -130,7 +130,7 @@ interface FulfillmentHandlerConfig<T extends ConfigArgs> extends ConfigurableOpe
 
 ### createFulfillment
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/fulfillment/fulfillment-handler#createfulfillmentfn'>CreateFulfillmentFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/fulfillment/fulfillment-handler#createfulfillmentfn'>CreateFulfillmentFn</a>&#60;T&#62;"   />
 
 Invoked when the `addFulfillmentToOrder` mutation is executed with this handler selected.
 
@@ -138,7 +138,7 @@ If an Error is thrown from within this function, no Fulfillment is created and t
 result will be returned.
 ### onFulfillmentTransition
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;<a href='/docs/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, <a href='/docs/reference/typescript-api/fulfillment/fulfillment-transition-data#fulfillmenttransitiondata'>FulfillmentTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, <a href='/reference/typescript-api/fulfillment/fulfillment-transition-data#fulfillmenttransitiondata'>FulfillmentTransitionData</a>&#62;"   />
 
 This allows the handler to intercept state transitions of the created Fulfillment. This works much in the
 same way as the {@link CustomFulfillmentProcess} `onTransitionStart` method (i.e. returning `false` or

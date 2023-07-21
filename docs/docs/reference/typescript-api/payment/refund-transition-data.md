@@ -1,7 +1,7 @@
 ---
 title: "RefundTransitionData"
 weight: 10
-date: 2023-07-21T07:17:01.597Z
+date: 2023-07-21T15:46:16.926Z
 showtoc: true
 generated: true
 ---
@@ -29,12 +29,12 @@ interface RefundTransitionData {
 
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### refund

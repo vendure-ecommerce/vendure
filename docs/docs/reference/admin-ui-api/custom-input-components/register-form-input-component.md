@@ -1,7 +1,7 @@
 ---
 title: "RegisterFormInputComponent"
 weight: 10
-date: 2023-07-21T07:17:04.747Z
+date: 2023-07-21T15:46:19.566Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/dynamic-form-inputs/register-dynamic-input-components.ts" sourceLine="96" packageName="@vendure/admin-ui" />
 
 Registers a custom FormInputComponent which can be used to control the argument inputs
-of a <a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (e.g. CollectionFilter, ShippingMethod etc) or for
+of a <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (e.g. CollectionFilter, ShippingMethod etc) or for
 a custom field.
 
 *Example*
@@ -51,7 +51,7 @@ const config = {
 }
 ```
 
-or with an argument of a <a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>:
+or with an argument of a <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>:
 
 *Example*
 
@@ -72,5 +72,5 @@ Parameters
 
 ### component
 
-<MemberInfo kind="parameter" type="Type&#60;<a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a>&#62;" />
+<MemberInfo kind="parameter" type="Type&#60;<a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a>&#62;" />
 

@@ -85,7 +85,7 @@ import { BullMQPluginOptions } from './types';
  * You can change the concurrency in the `workerOptions` passed to the `init()` method:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const config: VendureConfig = {
  *   plugins: [
  *     BullMQJobQueuePlugin.init({

@@ -17,7 +17,7 @@ export interface HttpHealthCheckOptions {
  * the [NestJS HttpHealthIndicator](https://docs.nestjs.com/recipes/terminus#http-healthcheck).
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { HttpHealthCheckStrategy, TypeORMHealthCheckStrategy } from '\@vendure/core';
  *
  * export const config = {

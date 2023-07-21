@@ -1,7 +1,7 @@
 ---
 title: "CustomOrderStates"
 weight: 10
-date: 2023-07-21T07:17:01.584Z
+date: 2023-07-21T15:46:16.910Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="11" packageName="@vendure/core" />
 
-An interface to extend standard <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>.
+An interface to extend standard <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>.
 
 ```ts title="Signature"
 interface CustomOrderStates {

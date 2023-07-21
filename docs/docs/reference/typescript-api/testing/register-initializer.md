@@ -1,7 +1,7 @@
 ---
 title: "RegisterInitializer"
 weight: 10
-date: 2023-07-21T07:17:02.926Z
+date: 2023-07-21T15:46:18.266Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/testing/src/initializers/initializers.ts" sourceLine="16" packageName="@vendure/testing" />
 
-Registers a <a href='/docs/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a> for the given database type. Should be called before invoking
-<a href='/docs/reference/typescript-api/testing/create-test-environment#createtestenvironment'>createTestEnvironment</a>.
+Registers a <a href='/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a> for the given database type. Should be called before invoking
+<a href='/reference/typescript-api/testing/create-test-environment#createtestenvironment'>createTestEnvironment</a>.
 
 ```ts title="Signature"
 function registerInitializer(type: DataSourceOptions['type'], initializer: TestDbInitializer<any>): void
@@ -29,5 +29,5 @@ Parameters
 
 ### initializer
 
-<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a>&#60;any&#62;" />
+<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a>&#60;any&#62;" />
 

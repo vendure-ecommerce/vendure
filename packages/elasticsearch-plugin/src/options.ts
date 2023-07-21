@@ -70,7 +70,7 @@ export interface ElasticsearchOptions {
      * are directly passed to index settings. To apply some settings indices will be recreated.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * // Configuring an English stemmer
      * indexSettings: {
      *   analysis: {
@@ -107,7 +107,7 @@ export interface ElasticsearchOptions {
      * After changing this option indices will be recreated.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * // Configuring custom analyzer for the `productName` field.
      * indexMappingProperties: {
      *   productName: {
@@ -127,7 +127,7 @@ export interface ElasticsearchOptions {
      * need to prefix the name with `'product-<name>'` or `'variant-<name>'` respectively, e.g.:
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * customProductMappings: {
      *    variantCount: {
      *        graphQlType: 'Int!',
@@ -179,7 +179,7 @@ export interface ElasticsearchOptions {
      * the `customProductVariantMappings` field, which is always available.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * customProductMappings: {
      *    variantCount: {
      *        graphQlType: 'Int!',
@@ -276,7 +276,7 @@ export interface ElasticsearchOptions {
      * before the `product` object is passed to the `valueFn`.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * {
      *   hydrateProductRelations: ['assets.asset'],
      *   customProductMappings: {
@@ -310,7 +310,7 @@ export interface ElasticsearchOptions {
      * custom `scriptFields` functions.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * extendSearchInputType: {
      *   longitude: 'Float',
      *   latitude: 'Float',
@@ -348,7 +348,7 @@ export interface ElasticsearchOptions {
      * correct sort order values available inside `input` parameter of the `mapSort` option.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * extendSearchSortType: ["distance"]
      * ```
      *
@@ -468,7 +468,7 @@ export interface SearchConfig {
      * for e.g. wildcard / fuzzy searches on the index.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * mapQuery: (query, input, searchConfig, channelId, enabledOnly){
      *   if(query.bool.must){
      *     delete query.bool.must;
@@ -522,7 +522,7 @@ export interface SearchConfig {
      * [Elasticsearch script fields docs](https://www.elastic.co/guide/en/elasticsearch/reference/7.15/search-fields.html#script-fields)
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * extendSearchInputType: {
      *   latitude: 'Float',
      *   longitude: 'Float',

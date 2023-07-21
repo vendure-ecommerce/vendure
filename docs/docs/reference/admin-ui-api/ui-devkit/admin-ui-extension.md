@@ -1,7 +1,7 @@
 ---
 title: "AdminUiExtension"
 weight: 10
-date: 2023-07-21T07:17:04.835Z
+date: 2023-07-21T15:46:19.618Z
 showtoc: true
 generated: true
 ---
@@ -19,7 +19,7 @@ Defines extensions to the Admin UI application by specifying additional
 Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
 into the application.
 
-See [Extending the Admin UI](/docs/plugins/extending-the-admin-ui/) for
+See [Extending the Admin UI](/guides/plugins/extending-the-admin-ui/) for
 detailed instructions.
 
 ```ts title="Signature"
@@ -33,7 +33,7 @@ interface AdminUiExtension extends Partial<TranslationExtension>,
   exclude?: string[];
 }
 ```
-* Extends: <code>Partial&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#translationextension'>TranslationExtension</a>&#62;</code>, <code>Partial&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension'>StaticAssetExtension</a>&#62;</code>, <code>Partial&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension'>GlobalStylesExtension</a>&#62;</code>
+* Extends: <code>Partial&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#translationextension'>TranslationExtension</a>&#62;</code>, <code>Partial&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension'>StaticAssetExtension</a>&#62;</code>, <code>Partial&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension'>GlobalStylesExtension</a>&#62;</code>
 
 
 
@@ -54,7 +54,7 @@ will be copied into the Admin UI app, including all TypeScript source files, htm
 scss style sheets etc.
 ### ngModules
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;"   />
 
 One or more Angular modules which extend the default Admin UI.
 ### pathAlias
@@ -166,7 +166,7 @@ exclude: ['**/*.spec.ts']
 <GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="18" packageName="@vendure/ui-devkit" />
 
 Defines extensions to the Admin UI translations. Can be used as a stand-alone extension definition which only adds translations
-without adding new UI functionality, or as part of a full <a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension'>AdminUiExtension</a>.
+without adding new UI functionality, or as part of a full <a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension'>AdminUiExtension</a>.
 
 ```ts title="Signature"
 interface TranslationExtension {
@@ -178,7 +178,7 @@ interface TranslationExtension {
 
 ### translations
 
-<MemberInfo kind="property" type="{ [languageCode in <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }"   />
+<MemberInfo kind="property" type="{ [languageCode in <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }"   />
 
 Optional object defining any translation files for the Admin UI. The value should be an object with
 the key as a 2-character [ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
@@ -214,7 +214,7 @@ interface StaticAssetExtension {
 
 ### staticAssets
 
-<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]"   />
 
 Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
 directory.

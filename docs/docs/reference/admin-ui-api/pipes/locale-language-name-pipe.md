@@ -1,7 +1,7 @@
 ---
 title: "LocaleLanguageNamePipe"
 weight: 10
-date: 2023-07-21T07:17:04.798Z
+date: 2023-07-21T15:46:19.596Z
 showtoc: true
 generated: true
 ---
@@ -40,7 +40,7 @@ class LocaleLanguageNamePipe extends LocaleBasePipe implements PipeTransform {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService?: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleLanguageNamePipe"   />
+<MemberInfo kind="method" type="(dataService?: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleLanguageNamePipe"   />
 
 
 ### transform

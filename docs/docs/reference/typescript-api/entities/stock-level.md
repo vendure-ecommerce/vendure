@@ -1,7 +1,7 @@
 ---
 title: "StockLevel"
 weight: 10
-date: 2023-07-21T07:17:01.126Z
+date: 2023-07-21T15:46:16.314Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/stock-level/stock-level.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-A StockLevel represents the number of a particular <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which are available
-at a particular <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
+A StockLevel represents the number of a particular <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which are available
+at a particular <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
 
 ```ts title="Signature"
 class StockLevel extends VendureEntity {
@@ -37,7 +37,7 @@ class StockLevel extends VendureEntity {
     stockAllocated: number;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -45,27 +45,27 @@ class StockLevel extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;) => StockLevel"   />
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;) => StockLevel"   />
 
 
 ### productVariant
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
 
 
 ### productVariantId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### stockLocation
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
 
 
 ### stockLocationId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### stockOnHand

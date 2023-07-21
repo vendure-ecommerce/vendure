@@ -1,7 +1,7 @@
 ---
 title: "Error Types"
 weight: 10
-date: 2023-07-21T07:16:59.955Z
+date: 2023-07-21T15:46:14.766Z
 showtoc: true
 generated: true
 ---
@@ -22,7 +22,7 @@ class InternalServerError extends I18nError {
   constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
+* Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
 
@@ -49,7 +49,7 @@ class UserInputError extends I18nError {
   constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
+* Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
 
@@ -76,7 +76,7 @@ class IllegalOperationError extends I18nError {
   constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
+* Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
 
@@ -103,7 +103,7 @@ class UnauthorizedError extends I18nError {
   constructor()
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
+* Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
 
@@ -131,7 +131,7 @@ class ForbiddenError extends I18nError {
   constructor(logLevel: LogLevel = LogLevel.Error)
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
+* Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
 
@@ -139,7 +139,7 @@ class ForbiddenError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(logLevel: <a href='/docs/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Error) => ForbiddenError"   />
+<MemberInfo kind="method" type="(logLevel: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Error) => ForbiddenError"   />
 
 
 
@@ -151,7 +151,7 @@ class ForbiddenError extends I18nError {
 
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="81" packageName="@vendure/core" />
 
-This error should be thrown when a <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a> cannot be found based on the provided
+This error should be thrown when a <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> cannot be found based on the provided
 channel token.
 
 ```ts title="Signature"
@@ -159,7 +159,7 @@ class ChannelNotFoundError extends I18nError {
   constructor(token: string)
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
+* Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
 
@@ -187,7 +187,7 @@ class EntityNotFoundError extends I18nError {
   constructor(entityName: keyof typeof coreEntitiesMap | string, id: ID)
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
+* Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
 
@@ -195,7 +195,7 @@ class EntityNotFoundError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(entityName: keyof typeof coreEntitiesMap | string, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => EntityNotFoundError"   />
+<MemberInfo kind="method" type="(entityName: keyof typeof coreEntitiesMap | string, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => EntityNotFoundError"   />
 
 
 

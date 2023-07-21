@@ -1,7 +1,7 @@
 ---
 title: "DatetimePickerComponent"
 weight: 10
-date: 2023-07-21T07:17:04.384Z
+date: 2023-07-21T15:46:19.343Z
 showtoc: true
 generated: true
 ---
@@ -105,7 +105,7 @@ The maximum date as an ISO string
 Sets the readonly state
 ### dropdownComponent
 
-<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/components/dropdown-component#dropdowncomponent'>DropdownComponent</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/components/dropdown-component#dropdowncomponent'>DropdownComponent</a>"   />
 
 
 ### datetimeInput

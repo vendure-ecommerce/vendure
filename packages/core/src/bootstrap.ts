@@ -31,7 +31,7 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  * Bootstraps the Vendure server. This is the entry point to the application.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { bootstrap } from '\@vendure/core';
  * import { config } from './vendure-config';
  *
@@ -86,7 +86,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
  * Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}).
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { bootstrapWorker } from '\@vendure/core';
  * import { config } from './vendure-config';
  *

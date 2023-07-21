@@ -1,7 +1,7 @@
 ---
 title: "AddActionBarItem"
 weight: 10
-date: 2023-07-21T07:17:04.158Z
+date: 2023-07-21T15:46:19.168Z
 showtoc: true
 generated: true
 ---
@@ -45,5 +45,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/action-bar/action-bar-item#actionbaritem'>ActionBarItem</a>" />
+<MemberInfo kind="parameter" type="<a href='/reference/admin-ui-api/action-bar/action-bar-item#actionbaritem'>ActionBarItem</a>" />
 

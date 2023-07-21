@@ -65,7 +65,7 @@ export class DataService {
      * they type of result returned, e.g. stream of values, single value etc.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const result$ = this.dataService.query(gql`
      *   query MyQuery($id: ID!) {
      *     product(id: $id) {
@@ -91,7 +91,7 @@ export class DataService {
      * Perform a GraphQL mutation.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const result$ = this.dataService.mutate(gql`
      *   mutation MyMutation($Codegen.UpdateEntityInput!) {
      *     updateEntity(input: $input) {

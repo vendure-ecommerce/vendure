@@ -1,7 +1,7 @@
 ---
 title: "CurrencyInputComponent"
 weight: 10
-date: 2023-07-21T07:17:04.237Z
+date: 2023-07-21T15:46:19.239Z
 showtoc: true
 generated: true
 ---
@@ -115,7 +115,7 @@ class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges,
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent"   />
 
 
 ### ngOnInit

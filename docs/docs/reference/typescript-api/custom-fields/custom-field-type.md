@@ -1,7 +1,7 @@
 ---
 title: "CustomFieldType"
 weight: 10
-date: 2023-07-21T07:17:02.483Z
+date: 2023-07-21T15:46:17.851Z
 showtoc: true
 generated: true
 ---
@@ -30,7 +30,7 @@ boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
 datetime     | datetime (m,s), timestamp (p)         | DateTime
 relation     | many-to-one / many-to-many relation   | As specified in config
 
-Additionally, the CustomFieldType also dictates which [configuration options](/docs/typescript-api/custom-fields/#configuration-options)
+Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#configuration-options)
 are available for that custom field.
 
 ```ts title="Signature"

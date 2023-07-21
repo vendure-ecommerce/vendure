@@ -61,7 +61,7 @@ This type of error represents a well-defined result of (typically) a GraphQL mut
 
 ErrorResults all implement the `ErrorResult` interface:
 
-```GraphQL
+```graphql
 interface ErrorResult {
   errorCode: ErrorCode!
   message: String!
@@ -70,7 +70,7 @@ interface ErrorResult {
 
 Some ErrorResults add other relevant fields to the type:
 
-```GraphQL
+```graphql
 "Returned if there is an error in transitioning the Order state"
 type OrderStateTransitionError implements ErrorResult {
   errorCode: ErrorCode!
@@ -83,7 +83,7 @@ type OrderStateTransitionError implements ErrorResult {
 
 Operations that may return ErrorResults use a GraphQL `union` as their return type:
 
-```GraphQL
+```graphql
 type Mutation {
   "Applies the given coupon code to the active Order"
   applyCouponCode(couponCode: String!): ApplyCouponCodeResult!
@@ -99,7 +99,7 @@ union ApplyCouponCodeResult = Order
 
 When performing an operation of a query or mutation which returns a union, you will need to use the [GraphQL conditional fragment](https://graphql.org/learn/schema/#union-types) to select the desired fields:
 
-```GraphQL
+```graphql
 mutation ApplyCoupon($code: String!) {
   applyCouponCode(couponCode: $code) {
     ...on Order {

@@ -1,7 +1,7 @@
 ---
 title: "DefaultAssetNamingStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.038Z
+date: 2023-07-21T15:46:14.878Z
 showtoc: true
 generated: true
 ---
@@ -24,7 +24,7 @@ class DefaultAssetNamingStrategy implements AssetNamingStrategy {
   generatePreviewFileName(ctx: RequestContext, sourceFileName: string, conflictFileName?: string) => string;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a></code>
 
 
 
@@ -32,12 +32,12 @@ class DefaultAssetNamingStrategy implements AssetNamingStrategy {
 
 ### generateSourceFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
 
 
 ### generatePreviewFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sourceFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sourceFileName: string, conflictFileName?: string) => string"   />
 
 
 

@@ -41,7 +41,7 @@ The `search` query is intended to be used for keyword searching, facet-based fil
 
 A common requirement is to make product listing pages filterable based on facets. Using the `search` query, you can select a summary of all Facets and FacetValues which apply to the current results:
 
-```GraphQL
+```graphql
 query SearchProducts {
   search(input: {
     collectionSlug: "shoes"
@@ -63,7 +63,7 @@ query SearchProducts {
 ```
 The FacetValue data can be then used to create a facet filter UI, allowing the customer to select which facets to filter for. The result set can then be filtered using the `facetValueFilters` input field:
 
-```GraphQL
+```graphql
 query SearchProducts {
   search(input: {
     collectionSlug: "shoes"

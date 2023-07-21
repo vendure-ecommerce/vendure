@@ -41,7 +41,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  *
  * The DefaultSearchPlugin is bundled with the `\@vendure/core` package. If you are not using an alternative search
  * plugin, then make sure this one is used, otherwise you will not be able to search products via the
- * [`search` query](/docs/graphql-api/shop/queries#search).
+ * [`search` query](/reference/graphql-api/shop/queries#search).
  *
  * {{% alert "warning" %}}
  * Note that the quality of the fulltext search capabilities varies depending on the underlying database being used. For example,

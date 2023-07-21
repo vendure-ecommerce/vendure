@@ -1,7 +1,7 @@
 ---
 title: "TaxRate"
 weight: 10
-date: 2023-07-21T07:17:01.182Z
+date: 2023-07-21T15:46:16.369Z
 showtoc: true
 generated: true
 ---
@@ -15,11 +15,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/tax-rate/tax-rate.entity.ts" sourceLine="25" packageName="@vendure/core" />
 
-A TaxRate defines the rate of tax to apply to a <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> based on three factors:
+A TaxRate defines the rate of tax to apply to a <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> based on three factors:
 
-1. the ProductVariant's <a href='/docs/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>
-2. the applicable <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> ("applicable" being defined by the configured <a href='/docs/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy'>TaxZoneStrategy</a>)
-3. the <a href='/docs/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a> of the current Customer
+1. the ProductVariant's <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>
+2. the applicable <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> ("applicable" being defined by the configured <a href='/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy'>TaxZoneStrategy</a>)
+3. the <a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a> of the current Customer
 
 ```ts title="Signature"
 class TaxRate extends VendureEntity implements HasCustomFields {
@@ -46,7 +46,7 @@ class TaxRate extends VendureEntity implements HasCustomFields {
   test(zone: Zone, taxCategory: TaxCategory) => boolean;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 * Implements: <code>HasCustomFields</code>
@@ -57,7 +57,7 @@ class TaxRate extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>&#62;) => TaxRate"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>&#62;) => TaxRate"   />
 
 
 ### name
@@ -77,17 +77,17 @@ class TaxRate extends VendureEntity implements HasCustomFields {
 
 ### category
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
 
 
 ### zone
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
 
 
 ### customerGroup
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>"   />
 
 
 ### customFields
@@ -122,7 +122,7 @@ class TaxRate extends VendureEntity implements HasCustomFields {
 
 ### test
 
-<MemberInfo kind="method" type="(zone: <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>, taxCategory: <a href='/docs/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>) => boolean"   />
+<MemberInfo kind="method" type="(zone: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, taxCategory: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>) => boolean"   />
 
 
 

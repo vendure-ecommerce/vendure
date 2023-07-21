@@ -1,7 +1,7 @@
 ---
 title: "TestEnvironment"
 weight: 10
-date: 2023-07-21T07:17:02.909Z
+date: 2023-07-21T15:46:18.249Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/testing/src/create-test-environment.ts" sourceLine="13" packageName="@vendure/testing" />
 
-The return value of <a href='/docs/reference/typescript-api/testing/create-test-environment#createtestenvironment'>createTestEnvironment</a>, containing the test server
+The return value of <a href='/reference/typescript-api/testing/create-test-environment#createtestenvironment'>createTestEnvironment</a>, containing the test server
 and clients for the Shop API and Admin API.
 
 ```ts title="Signature"
@@ -30,17 +30,17 @@ interface TestEnvironment {
 
 ### server
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/testing/test-server#testserver'>TestServer</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/testing/test-server#testserver'>TestServer</a>"   />
 
 A Vendure server instance against which GraphQL requests can be made.
 ### adminClient
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>"   />
 
 A GraphQL client configured for the Admin API.
 ### shopClient
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>"   />
 
 A GraphQL client configured for the Shop API.
 

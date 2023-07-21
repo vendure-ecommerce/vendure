@@ -1,7 +1,7 @@
 ---
 title: "ShippingLine"
 weight: 10
-date: 2023-07-21T07:17:01.096Z
+date: 2023-07-21T15:46:16.282Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/shipping-line/shipping-line.entity.ts" sourceLine="23" packageName="@vendure/core" />
 
-A ShippingLine is created when a <a href='/docs/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> is applied to an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>.
+A ShippingLine is created when a <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> is applied to an <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 It contains information about the price of the shipping method, any discounts that were
 applied, and the resulting tax on the shipping method.
 
@@ -48,7 +48,7 @@ class ShippingLine extends VendureEntity {
   clearAdjustments() => ;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -56,22 +56,22 @@ class ShippingLine extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>&#62;) => ShippingLine"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>&#62;) => ShippingLine"   />
 
 
 ### shippingMethodId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a> | null"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a> | null"   />
 
 
 ### shippingMethod
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>"   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### listPrice

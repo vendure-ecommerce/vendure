@@ -1,7 +1,7 @@
 ---
 title: "FacetValueChecker"
 weight: 10
-date: 2023-07-21T07:17:00.457Z
+date: 2023-07-21T15:46:15.426Z
 showtoc: true
 generated: true
 ---
@@ -60,16 +60,16 @@ class FacetValueChecker {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => FacetValueChecker"   />
+<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => FacetValueChecker"   />
 
 
 ### hasFacetValues
 
-<MemberInfo kind="method" type="(orderLine: <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, facetValueIds: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>[], ctx?: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, facetValueIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;boolean&#62;"   />
 
-Checks a given <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> against the facetValueIds and returns
-`true` if the associated <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> & <a href='/docs/reference/typescript-api/entities/product#product'>Product</a> together
-have *all* the specified <a href='/docs/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>s.
+Checks a given <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> against the facetValueIds and returns
+`true` if the associated <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> & <a href='/reference/typescript-api/entities/product#product'>Product</a> together
+have *all* the specified <a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>s.
 
 
 </div>

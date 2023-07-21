@@ -1,7 +1,7 @@
 ---
 title: "ListQueryBuilder"
 weight: 10
-date: 2023-07-21T07:17:01.544Z
+date: 2023-07-21T15:46:16.864Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="199" packageName="@vendure/core" />
 
-This helper class is used when fetching entities the database from queries which return a <a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
+This helper class is used when fetching entities the database from queries which return a <a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
 These queries all follow the same format:
 
 In the GraphQL definition, they return a type which implements the `Node` interface, and the query returns a
@@ -95,12 +95,12 @@ class ListQueryBuilder implements OnApplicationBootstrap {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService) => ListQueryBuilder"   />
+<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService) => ListQueryBuilder"   />
 
 
 ### build
 
-<MemberInfo kind="method" type="(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/docs/reference/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;"   />
+<MemberInfo kind="method" type="(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/reference/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;"   />
 
 Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
 
@@ -136,7 +136,7 @@ type ExtendedListQueryOptions<T extends VendureEntity> = {
 
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### where
@@ -157,7 +157,7 @@ Allows you to specify the alias used for the entity `T` in the generated SQL que
 Defaults to the entity class name lower-cased, i.e. `ProductVariant` -> `'productvariant'`.
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 When a RequestContext is passed, then the query will be
 executed as part of any outer transaction.

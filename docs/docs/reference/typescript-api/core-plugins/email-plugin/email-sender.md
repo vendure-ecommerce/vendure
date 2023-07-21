@@ -1,7 +1,7 @@
 ---
 title: "EmailSender"
 weight: 10
-date: 2023-07-21T07:17:02.672Z
+date: 2023-07-21T15:46:18.038Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 An EmailSender is responsible for sending the email, e.g. via an SMTP connection
 or using some other mail-sending API. By default, the EmailPlugin uses the
-<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-sender#nodemaileremailsender'>NodemailerEmailSender</a>, but it is also possible to supply a custom implementation:
+<a href='/reference/typescript-api/core-plugins/email-plugin/email-sender#nodemaileremailsender'>NodemailerEmailSender</a>, but it is also possible to supply a custom implementation:
 
 *Example*
 
@@ -55,7 +55,7 @@ interface EmailSender extends InjectableStrategy {
   send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
 
@@ -63,7 +63,7 @@ interface EmailSender extends InjectableStrategy {
 
 ### send
 
-<MemberInfo kind="property" type="(email: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) =&#62; void | Promise&#60;void&#62;"   />
+<MemberInfo kind="property" type="(email: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) =&#62; void | Promise&#60;void&#62;"   />
 
 
 
@@ -82,7 +82,7 @@ class NodemailerEmailSender implements EmailSender {
   async send(email: EmailDetails, options: EmailTransportOptions) => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a></code>
+* Implements: <code><a href='/reference/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a></code>
 
 
 
@@ -90,7 +90,7 @@ class NodemailerEmailSender implements EmailSender {
 
 ### send
 
-<MemberInfo kind="method" type="(email: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) => "   />
+<MemberInfo kind="method" type="(email: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) => "   />
 
 
 

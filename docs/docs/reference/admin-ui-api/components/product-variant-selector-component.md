@@ -1,7 +1,7 @@
 ---
 title: "ProductVariantSelectorComponent"
 weight: 10
-date: 2023-07-21T07:17:04.508Z
+date: 2023-07-21T15:46:19.443Z
 showtoc: true
 generated: true
 ---
@@ -63,7 +63,7 @@ class ProductVariantSelectorComponent implements OnInit {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent"   />
 
 
 ### ngOnInit

@@ -1,7 +1,7 @@
 ---
 title: "DefaultPaymentProcess"
 weight: 10
-date: 2023-07-21T07:17:00.381Z
+date: 2023-07-21T15:46:15.335Z
 showtoc: true
 generated: true
 ---
@@ -15,5 +15,5 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/default-payment-process.ts" sourceLine="26" packageName="@vendure/core" />
 
-The default <a href='/docs/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>
+The default <a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>
 

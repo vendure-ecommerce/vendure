@@ -44,7 +44,7 @@ export interface DefaultSearchPluginInitOptions {
      * such as {@link MysqlSearchStrategy}, {@link PostgresSearchStrategy} or {@link SqliteSearchStrategy}.
      *
      * @example
-     * ```Typescript
+     * ```ts
      * export class MySearchStrategy implements SearchStrategy {
      *     private readonly minTermLength = 2;
      *     private connection: TransactionalConnection;

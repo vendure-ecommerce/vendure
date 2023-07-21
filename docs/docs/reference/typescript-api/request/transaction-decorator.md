@@ -1,7 +1,7 @@
 ---
 title: "Transaction Decorator"
 weight: 10
-date: 2023-07-21T07:16:59.915Z
+date: 2023-07-21T15:46:14.715Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 Runs the decorated method in a TypeORM transaction. It works by creating a transactional
 QueryRunner which gets attached to the RequestContext object. When the RequestContext
-is the passed to the <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getRepository()` method, this
+is the passed to the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getRepository()` method, this
 QueryRunner is used to execute the queries within this transaction.
 
 Essentially, the entire resolver function is wrapped in a try-catch block which commits the
@@ -47,7 +47,7 @@ async myMutation(@Ctx() ctx: RequestContext) {
 <GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="32" packageName="@vendure/core" />
 
 The Transaction decorator can handle transactions automatically (which is the default) or be set to
-"manual" mode, where the <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `.startTransaction()` and `.commitOpenTransaction()`
+"manual" mode, where the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `.startTransaction()` and `.commitOpenTransaction()`
 methods must them be used.
 
 *Example*

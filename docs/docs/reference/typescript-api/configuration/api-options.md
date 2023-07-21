@@ -1,7 +1,7 @@
 ---
 title: "ApiOptions"
 weight: 10
-date: 2023-07-21T07:17:00.538Z
+date: 2023-07-21T15:46:15.518Z
 showtoc: true
 generated: true
 ---
@@ -124,7 +124,7 @@ the request header or as a query string.
 Set the CORS handling for the server. See the [express CORS docs](https://github.com/expressjs/cors#configuration-options).
 ### middleware
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/middleware#middleware'>Middleware</a>[]" default="[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/middleware#middleware'>Middleware</a>[]" default="[]"   />
 
 Custom Express or NestJS middleware for the server.
 ### apolloServerPlugins

@@ -1,7 +1,7 @@
 ---
 title: "Tag"
 weight: 10
-date: 2023-07-21T07:17:01.174Z
+date: 2023-07-21T15:46:16.360Z
 showtoc: true
 generated: true
 ---
@@ -25,7 +25,7 @@ class Tag extends VendureEntity {
     value: string;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -33,7 +33,7 @@ class Tag extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/tag#tag'>Tag</a>&#62;) => Tag"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/tag#tag'>Tag</a>&#62;) => Tag"   />
 
 
 ### value

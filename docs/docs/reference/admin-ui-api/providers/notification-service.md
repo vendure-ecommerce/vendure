@@ -1,7 +1,7 @@
 ---
 title: "NotificationService"
 weight: 10
-date: 2023-07-21T07:17:04.160Z
+date: 2023-07-21T15:46:19.171Z
 showtoc: true
 generated: true
 ---
@@ -46,7 +46,7 @@ class NotificationService {
 
 ### constructor
 
-<MemberInfo kind="method" type="(i18nService: <a href='/docs/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => NotificationService"   />
+<MemberInfo kind="method" type="(i18nService: <a href='/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => NotificationService"   />
 
 
 ### success
@@ -71,7 +71,7 @@ Display a warning toast notification
 Display an error toast notification
 ### notify
 
-<MemberInfo kind="method" type="(config: <a href='/docs/reference/admin-ui-api/providers/notification-service#toastconfig'>ToastConfig</a>) => void"   />
+<MemberInfo kind="method" type="(config: <a href='/reference/admin-ui-api/providers/notification-service#toastconfig'>ToastConfig</a>) => void"   />
 
 Display a toast notification.
 
@@ -119,7 +119,7 @@ interface ToastConfig {
 
 ### type
 
-<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/providers/notification-service#notificationtype'>NotificationType</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/providers/notification-service#notificationtype'>NotificationType</a>"   />
 
 
 ### duration

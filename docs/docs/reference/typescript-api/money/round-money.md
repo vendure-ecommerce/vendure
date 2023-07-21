@@ -1,7 +1,7 @@
 ---
 title: "RoundMoney"
 weight: 10
-date: 2023-07-21T07:16:59.994Z
+date: 2023-07-21T15:46:14.836Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/common/round-money.ts" sourceLine="13" packageName="@vendure/core" since="2.0.0" />
 
-Rounds a monetary value according to the configured <a href='/docs/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>.
+Rounds a monetary value according to the configured <a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>.
 
 ```ts title="Signature"
 function roundMoney(value: number, quantity:  = 1): number

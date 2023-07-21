@@ -1,7 +1,7 @@
 ---
 title: "AdminUiConfig"
 weight: 10
-date: 2023-07-21T07:17:02.503Z
+date: 2023-07-21T15:46:17.870Z
 showtoc: true
 generated: true
 ---
@@ -75,7 +75,7 @@ setting of the server's `authOptions.authTokenHeaderKey` config
 option.
 ### defaultLanguage
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>" default="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>" default="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"   />
 
 The default language for the Admin UI. Must be one of the
 items specified in the `availableLanguages` property.
@@ -89,14 +89,14 @@ currencies & dates.
 If not set, the browser default locale will be used.
 ### availableLanguages
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]"   />
 
 An array of languages for which translations exist for the Admin UI.
 ### loginUrl
 
 <MemberInfo kind="property" type="string"   />
 
-If you are using an external <a href='/docs/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a> for the Admin API, you can configure
+If you are using an external <a href='/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a> for the Admin API, you can configure
 a custom URL for the login page with this option. On logging out or redirecting an unauthenticated
 user, the Admin UI app will redirect the user to this URL rather than the default username/password
 screen.
@@ -126,7 +126,7 @@ A url of a custom image to be used on the login screen, to override the images p
 
 Allows you to provide default reasons for a refund or cancellation. This will be used in the
 refund/cancel dialog. The values can be literal strings (e.g. "Not in stock") or translation
-tokens (see [Adding Admin UI Translations](/docs/plugins/extending-the-admin-ui/adding-ui-translations/)).
+tokens (see [Adding Admin UI Translations](/guides/plugins/extending-the-admin-ui/adding-ui-translations/)).
 
 
 </div>

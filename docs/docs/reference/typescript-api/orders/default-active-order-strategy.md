@@ -1,7 +1,7 @@
 ---
 title: "DefaultActiveOrderStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.263Z
+date: 2023-07-21T15:46:15.183Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-active-order-strategy.ts" sourceLine="18" packageName="@vendure/core" since="1.9.0" />
 
-The default <a href='/docs/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a>, which uses the current <a href='/docs/reference/typescript-api/entities/session#session'>Session</a> to determine
+The default <a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a>, which uses the current <a href='/reference/typescript-api/entities/session#session'>Session</a> to determine
 the active Order, and requires no additional input in the Shop API since it is based on the
 session which is part of the RequestContext.
 
@@ -27,7 +27,7 @@ class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
   async determineActiveOrder(ctx: RequestContext) => ;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a></code>
 
 
 
@@ -40,17 +40,17 @@ class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### createActiveOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
 
 
 ### determineActiveOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
 
 
 

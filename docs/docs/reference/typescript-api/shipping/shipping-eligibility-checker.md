@@ -1,7 +1,7 @@
 ---
 title: "ShippingEligibilityChecker"
 weight: 10
-date: 2023-07-21T07:17:00.501Z
+date: 2023-07-21T15:46:15.482Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="49" packageName="@vendure/core" />
 
 The ShippingEligibilityChecker class is used to check whether an order qualifies for a
-given <a href='/docs/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>.
+given <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>.
 
 *Example*
 
@@ -38,7 +38,7 @@ class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends Conf
   constructor(config: ShippingEligibilityCheckerConfig<T>)
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
 
@@ -46,7 +46,7 @@ class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends Conf
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker"   />
+<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker"   />
 
 
 

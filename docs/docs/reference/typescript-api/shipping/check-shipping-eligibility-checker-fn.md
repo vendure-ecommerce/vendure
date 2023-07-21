@@ -1,7 +1,7 @@
 ---
 title: "CheckShippingEligibilityCheckerFn"
 weight: 10
-date: 2023-07-21T07:17:00.504Z
+date: 2023-07-21T15:46:15.485Z
 showtoc: true
 generated: true
 ---
@@ -15,13 +15,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="123" packageName="@vendure/core" />
 
-A function which implements logic to determine whether a given <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> is eligible for
+A function which implements logic to determine whether a given <a href='/reference/typescript-api/entities/order#order'>Order</a> is eligible for
 a particular shipping method. Once a ShippingMethod has been assigned to an Order, this
 function will be called on every change to the Order (e.g. updating quantities, adding/removing
 items etc).
 
 If the code running in this function is expensive, then consider also defining
-a <a href='/docs/reference/typescript-api/shipping/should-run-check-fn#shouldruncheckfn'>ShouldRunCheckFn</a> to avoid unnecessary calls.
+a <a href='/reference/typescript-api/shipping/should-run-check-fn#shouldruncheckfn'>ShouldRunCheckFn</a> to avoid unnecessary calls.
 
 ```ts title="Signature"
 type CheckShippingEligibilityCheckerFn<T extends ConfigArgs> = (

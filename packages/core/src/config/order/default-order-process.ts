@@ -136,7 +136,7 @@ export interface DefaultOrderProcessOptions {
  * Used to configure a customized instance of the default {@link OrderProcess} that ships with Vendure.
  * Using this function allows you to turn off certain checks and constraints that are enabled by default.
  *
- * ```TypeScript
+ * ```ts
  * import { configureDefaultOrderProcess, VendureConfig } from '\@vendure/core';
  *
  * const myCustomOrderProcess = configureDefaultOrderProcess({

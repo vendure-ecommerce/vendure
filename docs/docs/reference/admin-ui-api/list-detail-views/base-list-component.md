@@ -1,7 +1,7 @@
 ---
 title: "BaseListComponent"
 weight: 10
-date: 2023-07-21T07:17:03.947Z
+date: 2023-07-21T15:46:18.964Z
 showtoc: true
 generated: true
 ---
@@ -18,7 +18,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 This is a base class which implements the logic required to fetch and manipulate
 a list of data from a query which returns a PaginatedList type.
 
-It is normally used in combination with the <a href='/docs/reference/admin-ui-api/components/data-table2component#datatable2component'>DataTable2Component</a>.
+It is normally used in combination with the <a href='/reference/admin-ui-api/components/data-table2component#datatable2component'>DataTable2Component</a>.
 
 ```ts title="Signature"
 class BaseListComponent<ResultType, ItemType, VariableType extends Record<string, any> = any> implements OnInit, OnDestroy {

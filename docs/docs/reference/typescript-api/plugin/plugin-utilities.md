@@ -1,7 +1,7 @@
 ---
 title: "Plugin Utilities"
 weight: 10
-date: 2023-07-21T07:17:01.488Z
+date: 2023-07-21T15:46:16.796Z
 showtoc: true
 generated: true
 ---
@@ -49,7 +49,7 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>" />
+<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>" />
 
 
 
@@ -57,7 +57,7 @@ Parameters
 
 <GenerationInfo sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="76" packageName="@vendure/core" />
 
-Options to configure proxy middleware via <a href='/docs/reference/typescript-api/plugin/plugin-utilities#createproxyhandler'>createProxyHandler</a>.
+Options to configure proxy middleware via <a href='/reference/typescript-api/plugin/plugin-utilities#createproxyhandler'>createProxyHandler</a>.
 
 ```ts title="Signature"
 interface ProxyOptions {

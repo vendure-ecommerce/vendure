@@ -6,7 +6,7 @@ export interface DashboardWidgetConfig {
     /**
      * Used to specify the widget component. Supports both eager- and lazy-loading.
      * @example
-     * ```TypeScript
+     * ```ts
      * // eager-loading
      * loadComponent: () => MyWidgetComponent,
      *

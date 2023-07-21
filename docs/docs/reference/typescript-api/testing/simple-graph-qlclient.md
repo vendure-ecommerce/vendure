@@ -1,7 +1,7 @@
 ---
 title: "SimpleGraphQLClient"
 weight: 10
-date: 2023-07-21T07:17:02.936Z
+date: 2023-07-21T15:46:18.274Z
 showtoc: true
 generated: true
 ---
@@ -41,7 +41,7 @@ class SimpleGraphQLClient {
 
 ### constructor
 
-<MemberInfo kind="method" type="(vendureConfig: Required&#60;<a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;, apiUrl: string = '') => SimpleGraphQLClient"   />
+<MemberInfo kind="method" type="(vendureConfig: Required&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;, apiUrl: string = '') => SimpleGraphQLClient"   />
 
 
 ### setAuthToken

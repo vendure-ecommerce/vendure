@@ -63,7 +63,7 @@ export class JobQueue<Data extends JobData<Data> = object> {
      * calling code to subscribe to updates to the Job:
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries: 2 });
      * return job.updates().pipe(
      *   map(update => {
@@ -83,7 +83,7 @@ export class JobQueue<Data extends JobData<Data> = object> {
      * `progress` changes, you can convert to a Promise like this:
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries: 2 });
      * return job.updates().toPromise()
      *   .then(update => update.result),

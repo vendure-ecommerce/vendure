@@ -1,7 +1,7 @@
 ---
 title: "AuthenticationMethod"
 weight: 10
-date: 2023-07-21T07:17:00.794Z
+date: 2023-07-21T15:46:15.904Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/authentication-method/authentication-method.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-An AuthenticationMethod represents the means by which a <a href='/docs/reference/typescript-api/entities/user#user'>User</a> is authenticated. There are two kinds:
-<a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> and <a href='/docs/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>.
+An AuthenticationMethod represents the means by which a <a href='/reference/typescript-api/entities/user#user'>User</a> is authenticated. There are two kinds:
+<a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> and <a href='/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>.
 
 ```ts title="Signature"
 class AuthenticationMethod extends VendureEntity {
@@ -25,7 +25,7 @@ class AuthenticationMethod extends VendureEntity {
     user: User;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -33,7 +33,7 @@ class AuthenticationMethod extends VendureEntity {
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/user#user'>User</a>"   />
 
 
 
@@ -59,7 +59,7 @@ class ExternalAuthenticationMethod extends AuthenticationMethod {
     metadata: any;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a></code>
 
 
 
@@ -67,7 +67,7 @@ class ExternalAuthenticationMethod extends AuthenticationMethod {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>&#62;) => ExternalAuthenticationMethod"   />
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>&#62;) => ExternalAuthenticationMethod"   />
 
 
 ### strategy
@@ -113,7 +113,7 @@ class NativeAuthenticationMethod extends AuthenticationMethod {
     pendingIdentifier: string | null;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a></code>
 
 
 
@@ -121,7 +121,7 @@ class NativeAuthenticationMethod extends AuthenticationMethod {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>&#62;) => NativeAuthenticationMethod"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>&#62;) => NativeAuthenticationMethod"   />
 
 
 ### identifier

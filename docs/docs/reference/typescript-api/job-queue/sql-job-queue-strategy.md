@@ -1,7 +1,7 @@
 ---
 title: "SqlJobQueueStrategy"
 weight: 10
-date: 2023-07-21T07:17:01.462Z
+date: 2023-07-21T15:46:16.762Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/sql-job-queue-strategy.ts" sourceLine="22" packageName="@vendure/core" />
 
-A <a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> which uses the configured SQL database to persist jobs in the queue.
-This strategy is used by the <a href='/docs/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>.
+A <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> which uses the configured SQL database to persist jobs in the queue.
+This strategy is used by the <a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>.
 
 ```ts title="Signature"
 class SqlJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
@@ -31,10 +31,10 @@ class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Inspectable
   async removeSettledJobs(queueNames: string[] = [], olderThan?: Date) => ;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy'>PollingJobQueueStrategy</a></code>
+* Extends: <code><a href='/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy'>PollingJobQueueStrategy</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/job-queue/inspectable-job-queue-strategy#inspectablejobqueuestrategy'>InspectableJobQueueStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/job-queue/inspectable-job-queue-strategy#inspectablejobqueuestrategy'>InspectableJobQueueStrategy</a></code>
 
 
 
@@ -42,7 +42,7 @@ class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Inspectable
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### destroy
@@ -52,32 +52,32 @@ class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Inspectable
 
 ### add
 
-<MemberInfo kind="method" type="(job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;"   />
+<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;"   />
 
 
 ### next
 
-<MemberInfo kind="method" type="(queueName: string) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(queueName: string) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;any&#62;) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;any&#62;) => Promise&#60;void&#62;"   />
 
 
 ### findMany
 
-<MemberInfo kind="method" type="(options?: JobListOptions) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(options?: JobListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;"   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
 
 
 ### findManyById
 
-<MemberInfo kind="method" type="(ids: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ids: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;"   />
 
 
 ### removeSettledJobs

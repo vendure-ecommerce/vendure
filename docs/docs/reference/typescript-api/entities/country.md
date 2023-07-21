@@ -1,7 +1,7 @@
 ---
 title: "Country"
 weight: 10
-date: 2023-07-21T07:17:01.058Z
+date: 2023-07-21T15:46:16.238Z
 showtoc: true
 generated: true
 ---
@@ -15,9 +15,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/region/country.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-A country to which is available when creating / updating an <a href='/docs/reference/typescript-api/entities/address#address'>Address</a>. Countries are
-grouped together into <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>s which are in turn used to determine applicable shipping
-and taxes for an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>.
+A country to which is available when creating / updating an <a href='/reference/typescript-api/entities/address#address'>Address</a>. Countries are
+grouped together into <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>s which are in turn used to determine applicable shipping
+and taxes for an <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 
 ```ts title="Signature"
 class Country extends Region {
@@ -25,7 +25,7 @@ class Country extends Region {
   readonly readonly type: RegionType = 'country';
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/region#region'>Region</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/region#region'>Region</a></code>
 
 
 
@@ -33,7 +33,7 @@ class Country extends Region {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62;) => Country"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/country#country'>Country</a>&#62;) => Country"   />
 
 
 ### type

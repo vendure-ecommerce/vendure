@@ -1,7 +1,7 @@
 ---
 title: "Administrator"
 weight: 10
-date: 2023-07-21T07:17:00.770Z
+date: 2023-07-21T15:46:15.867Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 An administrative user who has access to the Admin UI and Admin API. The
 specific permissions of the Administrator are determined by the assigned
-<a href='/docs/reference/typescript-api/entities/role#role'>Role</a>s.
+<a href='/reference/typescript-api/entities/role#role'>Role</a>s.
 
 ```ts title="Signature"
 class Administrator extends VendureEntity implements SoftDeletable, HasCustomFields {
@@ -35,10 +35,10 @@ class Administrator extends VendureEntity implements SoftDeletable, HasCustomFie
     customFields: CustomAdministratorFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>
 
 
 
@@ -46,7 +46,7 @@ class Administrator extends VendureEntity implements SoftDeletable, HasCustomFie
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Administrator"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Administrator"   />
 
 
 ### deletedAt
@@ -71,7 +71,7 @@ class Administrator extends VendureEntity implements SoftDeletable, HasCustomFie
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/user#user'>User</a>"   />
 
 
 ### customFields

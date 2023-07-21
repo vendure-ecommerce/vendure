@@ -1,7 +1,7 @@
 ---
 title: "Interfaces"
 weight: 10
-date: 2023-07-21T07:16:59.997Z
+date: 2023-07-21T15:46:14.840Z
 showtoc: true
 generated: true
 ---
@@ -27,7 +27,7 @@ interface ChannelAware {
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 
@@ -99,7 +99,7 @@ interface Taggable {
 
 ### tags
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
 
 
 
@@ -123,7 +123,7 @@ interface Translatable {
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;"   />
 
 
 

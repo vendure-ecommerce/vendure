@@ -94,7 +94,7 @@ export type ID = string | number;
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
  * relation     | many-to-one / many-to-many relation   | As specified in config
  *
- * Additionally, the CustomFieldType also dictates which [configuration options](/docs/typescript-api/custom-fields/#configuration-options)
+ * Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#configuration-options)
  * are available for that custom field.
  *
  * @docsCategory custom-fields
@@ -321,7 +321,7 @@ export interface AdminUiConfig {
      * @description
      * Allows you to provide default reasons for a refund or cancellation. This will be used in the
      * refund/cancel dialog. The values can be literal strings (e.g. "Not in stock") or translation
-     * tokens (see [Adding Admin UI Translations](/docs/plugins/extending-the-admin-ui/adding-ui-translations/)).
+     * tokens (see [Adding Admin UI Translations](/guides/plugins/extending-the-admin-ui/adding-ui-translations/)).
      *
      * @since 1.5.0
      * @default ['order.cancel-reason-customer-request', 'order.cancel-reason-not-available']

@@ -1,7 +1,7 @@
 ---
 title: "VendurePlugin"
 weight: 10
-date: 2023-07-21T07:17:01.501Z
+date: 2023-07-21T15:46:16.812Z
 showtoc: true
 generated: true
 ---
@@ -54,5 +54,5 @@ Parameters
 
 ### pluginMetadata
 
-<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/plugin/vendure-plugin-metadata#vendurepluginmetadata'>VendurePluginMetadata</a>" />
+<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#vendurepluginmetadata'>VendurePluginMetadata</a>" />
 

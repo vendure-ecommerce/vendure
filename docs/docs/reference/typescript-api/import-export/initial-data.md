@@ -1,7 +1,7 @@
 ---
 title: "InitialData"
 weight: 10
-date: 2023-07-21T07:17:00.755Z
+date: 2023-07-21T15:46:15.836Z
 showtoc: true
 generated: true
 ---
@@ -34,7 +34,7 @@ interface InitialData {
 
 ### defaultLanguage
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
 
 
 ### defaultZone

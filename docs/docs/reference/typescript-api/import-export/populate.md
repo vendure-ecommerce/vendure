@@ -1,7 +1,7 @@
 ---
 title: "Populate"
 weight: 10
-date: 2023-07-21T07:16:59.923Z
+date: 2023-07-21T15:46:14.729Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 Populates the Vendure server with some initial data and (optionally) product data from
 a supplied CSV file. The format of the CSV file is described in the section
-[Importing Product Data](/docs/developer-guide/importing-product-data).
+[Importing Product Data](/guides/developer-guide/importing-product-data).
 
 If the `channelOrToken` argument is provided, all ChannelAware entities (Products, ProductVariants,
 Assets, ShippingMethods, PaymentMethods etc.) will be assigned to the specified Channel.
@@ -25,9 +25,9 @@ The argument can be either a Channel object or a valid channel `token`.
 
 Internally the `populate()` function does the following:
 
-1. Uses the <a href='/docs/reference/typescript-api/import-export/populator#populator'>Populator</a> to populate the <a href='/docs/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
-2. If `productsCsvPath` is provided, uses <a href='/docs/reference/typescript-api/import-export/importer#importer'>Importer</a> to populate Product data.
-3. Uses {@Populator} to populate collections specified in the <a href='/docs/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
+1. Uses the <a href='/reference/typescript-api/import-export/populator#populator'>Populator</a> to populate the <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
+2. If `productsCsvPath` is provided, uses <a href='/reference/typescript-api/import-export/importer#importer'>Importer</a> to populate Product data.
+3. Uses {@Populator} to populate collections specified in the <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
 
 *Example*
 
@@ -73,5 +73,5 @@ Parameters
 
 ### channelOrToken
 
-<MemberInfo kind="parameter" type="string | import('@vendure/core').<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>" />
+<MemberInfo kind="parameter" type="string | import('@vendure/core').<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>" />
 

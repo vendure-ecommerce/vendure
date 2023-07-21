@@ -32,7 +32,7 @@ import { DataService } from '../../../data/providers/data.service';
  * like this:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * this.facets = this.dataService
  *   .facet.getAllFacets()
  *   .mapSingle(data => data.facets.items);

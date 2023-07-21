@@ -1,7 +1,7 @@
 ---
 title: "ShippingMethod"
 weight: 10
-date: 2023-07-21T07:17:01.113Z
+date: 2023-07-21T15:46:16.297Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/shipping-method/shipping-method.entity.ts" sourceLine="33" packageName="@vendure/core" />
 
-A ShippingMethod is used to apply a shipping price to an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>. It is composed of a
-<a href='/docs/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a> and a <a href='/docs/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>. For a given Order,
+A ShippingMethod is used to apply a shipping price to an <a href='/reference/typescript-api/entities/order#order'>Order</a>. It is composed of a
+<a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a> and a <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>. For a given Order,
 the `checker` is used to determine whether this ShippingMethod can be used. If yes, then
 the ShippingMethod can be applied and the `calculator` is used to determine the price of
 shipping.
@@ -44,10 +44,10 @@ class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletabl
   async test(ctx: RequestContext, order: Order) => Promise<boolean>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code><a href='/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>, <code><a href='/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>
 
 
 
@@ -55,7 +55,7 @@ class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletabl
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>&#62;) => ShippingMethod"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>&#62;) => ShippingMethod"   />
 
 
 ### deletedAt
@@ -95,12 +95,12 @@ class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletabl
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>&#62;&#62;"   />
 
 
 ### customFields
@@ -110,12 +110,12 @@ class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletabl
 
 ### apply
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/docs/reference/typescript-api/shipping/shipping-calculator#shippingcalculationresult'>ShippingCalculationResult</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculationresult'>ShippingCalculationResult</a> | undefined&#62;"   />
 
 
 ### test
 
-<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;boolean&#62;"   />
 
 
 

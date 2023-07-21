@@ -1,7 +1,7 @@
 ---
 title: "Collection"
 weight: 10
-date: 2023-07-21T07:17:00.825Z
+date: 2023-07-21T15:46:15.943Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/collection/collection.entity.ts" sourceLine="35" packageName="@vendure/core" />
 
-A Collection is a grouping of <a href='/docs/reference/typescript-api/entities/product#product'>Product</a>s based on various configurable criteria.
+A Collection is a grouping of <a href='/reference/typescript-api/entities/product#product'>Product</a>s based on various configurable criteria.
 
 ```ts title="Signature"
 class Collection extends VendureEntity implements Translatable, HasCustomFields, ChannelAware, Orderable {
@@ -54,10 +54,10 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
     channels: Channel[];
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#orderable'>Orderable</a></code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>, <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code><a href='/reference/typescript-api/entities/interfaces#orderable'>Orderable</a></code>
 
 
 
@@ -65,7 +65,7 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection"   />
 
 
 ### isRoot
@@ -100,12 +100,12 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;"   />
 
 
 ### featuredAsset
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
 
 
 ### assets
@@ -125,7 +125,7 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
 
 ### productVariants
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"   />
 
 
 ### customFields
@@ -135,22 +135,22 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
 
 ### children
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]"   />
 
 
 ### parent
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>"   />
 
 
 ### parentId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 

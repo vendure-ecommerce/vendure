@@ -1,7 +1,7 @@
 ---
 title: "OrderableAsset"
 weight: 10
-date: 2023-07-21T07:17:00.787Z
+date: 2023-07-21T15:46:15.897Z
 showtoc: true
 generated: true
 ---
@@ -33,10 +33,10 @@ class OrderableAsset extends VendureEntity implements Orderable {
     position: number;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#orderable'>Orderable</a></code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#orderable'>Orderable</a></code>
 
 
 
@@ -44,17 +44,17 @@ class OrderableAsset extends VendureEntity implements Orderable {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/orderable-asset#orderableasset'>OrderableAsset</a>&#62;) => OrderableAsset"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/orderable-asset#orderableasset'>OrderableAsset</a>&#62;) => OrderableAsset"   />
 
 
 ### assetId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### asset
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
 
 
 ### position

@@ -1,7 +1,7 @@
 ---
 title: "ConfigArgType"
 weight: 10
-date: 2023-07-21T07:17:02.485Z
+date: 2023-07-21T15:46:17.853Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="125" packageName="@vendure/common" />
 
-Certain entities (those which implement <a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>) allow arbitrary
+Certain entities (those which implement <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>) allow arbitrary
 configuration arguments to be specified which can then be set in the admin-ui and used in
 the business logic of the app. These are the valid data types of such arguments.
 The data type influences:

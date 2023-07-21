@@ -1,7 +1,7 @@
 ---
 title: "StockLocation"
 weight: 10
-date: 2023-07-21T07:17:01.134Z
+date: 2023-07-21T15:46:16.322Z
 showtoc: true
 generated: true
 ---
@@ -17,9 +17,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 A StockLocation represents a physical location where stock is held. For example, a warehouse or a shop.
 
-When the stock of a <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> is adjusted, the adjustment is applied to a specific StockLocation,
+When the stock of a <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> is adjusted, the adjustment is applied to a specific StockLocation,
 and the stockOnHand of that ProductVariant is updated accordingly. When there are multiple StockLocations
-configured, the <a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a> is used to determine which StockLocation should be used for
+configured, the <a href='/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a> is used to determine which StockLocation should be used for
 a given operation.
 
 ```ts title="Signature"
@@ -36,10 +36,10 @@ class StockLocation extends VendureEntity implements HasCustomFields, ChannelAwa
     channels: Channel[];
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>
+* Implements: <code>HasCustomFields</code>, <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>
 
 
 
@@ -47,7 +47,7 @@ class StockLocation extends VendureEntity implements HasCustomFields, ChannelAwa
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>&#62;) => StockLocation"   />
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>&#62;) => StockLocation"   />
 
 
 ### name
@@ -67,7 +67,7 @@ class StockLocation extends VendureEntity implements HasCustomFields, ChannelAwa
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 

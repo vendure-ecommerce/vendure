@@ -1,7 +1,7 @@
 ---
 title: "ElasticsearchOptions"
 weight: 10
-date: 2023-07-21T07:17:02.787Z
+date: 2023-07-21T15:46:18.143Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="22" packageName="@vendure/elasticsearch-plugin" />
 
-Configuration options for the <a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>.
+Configuration options for the <a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>.
 
 ```ts title="Signature"
 interface ElasticsearchOptions {
@@ -166,12 +166,12 @@ indexMappingProperties: {
 Batch size for bulk operations (e.g. when rebuilding the indices).
 ### searchConfig
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>"   />
 
 Configuration of the internal Elasticsearch query.
 ### customProductMappings
 
-<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/docs/reference/typescript-api/entities/product#product'>Product</a>, <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
+<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
 
 Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
@@ -234,7 +234,7 @@ query SearchProducts($input: SearchInput!) {
 ```
 ### customProductVariantMappings
 
-<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
+<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
 
 This config option defines custom mappings which are accessible when the "groupByProduct"
 input options is set to `false`. In addition, custom product mappings can be accessed by using
@@ -275,7 +275,7 @@ and also performs optimizations to minimize the amount of work that needs to be 
 the worker.
 ### hydrateProductRelations
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/docs/reference/typescript-api/entities/product#product'>Product</a>&#62;&#62;" default="[]"  since="1.3.0"  />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/reference/typescript-api/entities/product#product'>Product</a>&#62;&#62;" default="[]"  since="1.3.0"  />
 
 Additional product relations that will be fetched from DB while reindexing. This can be used
 in combination with `customProductMappings` to ensure that the required relations are joined
@@ -298,7 +298,7 @@ before the `product` object is passed to the `valueFn`.
 ```
 ### hydrateProductVariantRelations
 
-<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;" default="[]"  since="1.3.0"  />
+<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;" default="[]"  since="1.3.0"  />
 
 Additional variant relations that will be fetched from DB while reindexing. See
 `hydrateProductRelations` for more explanation and a usage example.
@@ -422,7 +422,7 @@ Defines the
 used when matching against a search term.
 ### boostFields
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#boostfieldsconfig'>BoostFieldsConfig</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#boostfieldsconfig'>BoostFieldsConfig</a>"   />
 
 Set custom boost values for particular fields when matching against a search term.
 ### priceRangeBucketInterval
@@ -463,7 +463,7 @@ The interval used to group search results into buckets according to price range.
 ```
 ### mapQuery
 
-<MemberInfo kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"   />
+<MemberInfo kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"   />
 
 This config option allows the the modification of the whole (already built) search query. This allows
 for e.g. wildcard / fuzzy searches on the index.

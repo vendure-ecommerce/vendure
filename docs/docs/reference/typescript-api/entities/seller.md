@@ -1,7 +1,7 @@
 ---
 title: "Seller"
 weight: 10
-date: 2023-07-21T07:17:01.078Z
+date: 2023-07-21T15:46:16.262Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/seller/seller.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-A Seller represents the person or organization who is selling the goods on a given <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>.
+A Seller represents the person or organization who is selling the goods on a given <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>.
 By default, a single-channel Vendure installation will have a single default Seller.
 
 ```ts title="Signature"
@@ -28,10 +28,10 @@ class Seller extends VendureEntity implements SoftDeletable, HasCustomFields {
     customFields: CustomSellerFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code>HasCustomFields</code>
 
 
 
@@ -39,7 +39,7 @@ class Seller extends VendureEntity implements SoftDeletable, HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/seller#seller'>Seller</a>&#62;) => Seller"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/seller#seller'>Seller</a>&#62;) => Seller"   />
 
 
 ### deletedAt

@@ -53,7 +53,7 @@ export const defaultFormInputs = [
  * a custom field.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   declarations: [MyCustomFieldControl],
@@ -67,7 +67,7 @@ export const defaultFormInputs = [
  * This input component can then be used in a custom field:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const config = {
  *   // ...
  *   customFields: {
@@ -85,7 +85,7 @@ export const defaultFormInputs = [
  * or with an argument of a {@link ConfigurableOperationDef}:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * args: {
  *   rrp: { type: 'int', ui: { component: 'my-custom-input' } },
  * }

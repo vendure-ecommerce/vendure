@@ -1,7 +1,7 @@
 ---
 title: "TestServerOptions"
 weight: 10
-date: 2023-07-21T07:17:02.974Z
+date: 2023-07-21T15:46:18.313Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/testing/src/types.ts" sourceLine="14" packageName="@vendure/testing" />
 
-Configuration options used to initialize an instance of the <a href='/docs/reference/typescript-api/testing/test-server#testserver'>TestServer</a>.
+Configuration options used to initialize an instance of the <a href='/reference/typescript-api/testing/test-server#testserver'>TestServer</a>.
 
 ```ts title="Signature"
 interface TestServerOptions {
@@ -35,7 +35,7 @@ interface TestServerOptions {
 The path to an optional CSV file containing product data to import.
 ### initialData
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>"   />
 
 An object containing non-product data which is used to populate the database.
 ### customerCount

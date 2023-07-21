@@ -58,7 +58,7 @@ export interface S3Config {
  * ```
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { AssetServerPlugin, configureS3AssetStorage } from '\@vendure/asset-server-plugin';
  * import { DefaultAssetNamingStrategy } from '\@vendure/core';
  * import { fromEnv } from '\@aws-sdk/credential-providers';
@@ -85,7 +85,7 @@ export interface S3Config {
  * Reference: [How to use AWS SDK for Javascript with MinIO Server](https://docs.min.io/docs/how-to-use-aws-sdk-for-javascript-with-minio-server.html)
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { AssetServerPlugin, configureS3AssetStorage } from '\@vendure/asset-server-plugin';
  * import { DefaultAssetNamingStrategy } from '\@vendure/core';
  *

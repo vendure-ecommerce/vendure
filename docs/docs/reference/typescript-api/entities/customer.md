@@ -1,7 +1,7 @@
 ---
 title: "Customer"
 weight: 10
-date: 2023-07-21T07:17:00.838Z
+date: 2023-07-21T15:46:15.962Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/customer/customer.entity.ts" sourceLine="22" packageName="@vendure/core" />
 
 This entity represents a customer of the store, typically an individual person. A Customer can be
-a guest, in which case it has no associated <a href='/docs/reference/typescript-api/entities/user#user'>User</a>. Customers with registered account will
+a guest, in which case it has no associated <a href='/reference/typescript-api/entities/user#user'>User</a>. Customers with registered account will
 have an associated User entity.
 
 ```ts title="Signature"
@@ -49,10 +49,10 @@ class Customer extends VendureEntity implements ChannelAware, HasCustomFields, S
     channels: Channel[];
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>, <code><a href='/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>
 
 
 
@@ -60,7 +60,7 @@ class Customer extends VendureEntity implements ChannelAware, HasCustomFields, S
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;) => Customer"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;) => Customer"   />
 
 
 ### deletedAt
@@ -95,22 +95,22 @@ class Customer extends VendureEntity implements ChannelAware, HasCustomFields, S
 
 ### groups
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>[]"   />
 
 
 ### addresses
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/address#address'>Address</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/address#address'>Address</a>[]"   />
 
 
 ### orders
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>[]"   />
 
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/user#user'>User</a>"   />
 
 
 ### customFields
@@ -120,7 +120,7 @@ class Customer extends VendureEntity implements ChannelAware, HasCustomFields, S
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 

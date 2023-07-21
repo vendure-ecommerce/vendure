@@ -1,7 +1,7 @@
 ---
 title: "Role"
 weight: 10
-date: 2023-07-21T07:17:01.071Z
+date: 2023-07-21T15:46:16.255Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/role/role.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 A Role represents a collection of permissions which determine the authorization
-level of a <a href='/docs/reference/typescript-api/entities/user#user'>User</a> on a given set of <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>s.
+level of a <a href='/reference/typescript-api/entities/user#user'>User</a> on a given set of <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>s.
 
 ```ts title="Signature"
 class Role extends VendureEntity implements ChannelAware {
@@ -29,10 +29,10 @@ class Role extends VendureEntity implements ChannelAware {
     channels: Channel[];
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>
 
 
 
@@ -40,7 +40,7 @@ class Role extends VendureEntity implements ChannelAware {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Role"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Role"   />
 
 
 ### code
@@ -55,12 +55,12 @@ class Role extends VendureEntity implements ChannelAware {
 
 ### permissions
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]"   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 

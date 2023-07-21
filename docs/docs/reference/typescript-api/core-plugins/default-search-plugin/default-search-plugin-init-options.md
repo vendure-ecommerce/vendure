@@ -1,7 +1,7 @@
 ---
 title: "DefaultSearchPluginInitOptions"
 weight: 10
-date: 2023-07-21T07:17:01.480Z
+date: 2023-07-21T15:46:16.784Z
 showtoc: true
 generated: true
 ---

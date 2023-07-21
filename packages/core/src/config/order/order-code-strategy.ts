@@ -9,7 +9,7 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * existing system to generate a code:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * class MyOrderCodeStrategy implements OrderCodeStrategy {
  *   // Some imaginary service which calls out to an existing external
  *   // order management system.

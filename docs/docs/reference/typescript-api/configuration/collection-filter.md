@@ -1,7 +1,7 @@
 ---
 title: "CollectionFilter"
 weight: 10
-date: 2023-07-21T07:17:00.096Z
+date: 2023-07-21T15:46:14.945Z
 showtoc: true
 generated: true
 ---
@@ -61,7 +61,7 @@ class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOp
   apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]) => SelectQueryBuilder<ProductVariant>;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
 
@@ -74,7 +74,7 @@ class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOp
 
 ### apply
 
-<MemberInfo kind="method" type="(qb: SelectQueryBuilder&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"   />
+<MemberInfo kind="method" type="(qb: SelectQueryBuilder&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"   />
 
 
 

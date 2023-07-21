@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntry"
 weight: 10
-date: 2023-07-21T07:17:00.878Z
+date: 2023-07-21T15:46:16.025Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/history-entry/history-entry.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-An abstract entity representing an entry in the history of an Order (<a href='/docs/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>)
-or a Customer (<a href='/docs/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>).
+An abstract entity representing an entry in the history of an Order (<a href='/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>)
+or a Customer (<a href='/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>).
 
 ```ts title="Signature"
 class HistoryEntry extends VendureEntity {
@@ -31,7 +31,7 @@ class HistoryEntry extends VendureEntity {
     data: any;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 
@@ -39,7 +39,7 @@ class HistoryEntry extends VendureEntity {
 
 ### administrator
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>"   />
 
 
 ### type

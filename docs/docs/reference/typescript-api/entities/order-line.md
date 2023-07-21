@@ -1,7 +1,7 @@
 ---
 title: "OrderLine"
 weight: 10
-date: 2023-07-21T07:17:00.913Z
+date: 2023-07-21T15:46:16.067Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/order-line/order-line.entity.ts" sourceLine="29" packageName="@vendure/core" />
 
-A single line on an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> which contains information about the <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and
+A single line on an <a href='/reference/typescript-api/entities/order#order'>Order</a> which contains information about the <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and
 quantity ordered, as well as the price and tax information.
 
 ```ts title="Signature"
@@ -87,7 +87,7 @@ class OrderLine extends VendureEntity implements HasCustomFields {
   clearAdjustments(type?: AdjustmentType) => ;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
 * Implements: <code>HasCustomFields</code>
@@ -98,53 +98,53 @@ class OrderLine extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>&#62;) => OrderLine"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>&#62;) => OrderLine"   />
 
 
 ### sellerChannel
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>"   />
 
-The <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a> of the <a href='/docs/reference/typescript-api/entities/seller#seller'>Seller</a> for a multivendor setup.
+The <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> of the <a href='/reference/typescript-api/entities/seller#seller'>Seller</a> for a multivendor setup.
 ### sellerChannelId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### shippingLine
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>"   />
 
-The <a href='/docs/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a> to which this line has been assigned.
-This is determined by the configured <a href='/docs/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a>.
+The <a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a> to which this line has been assigned.
+This is determined by the configured <a href='/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a>.
 ### shippingLineId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### productVariant
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
 
-The <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which is being ordered.
+The <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which is being ordered.
 ### productVariantId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### taxCategory
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
 
 
 ### featuredAsset
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### quantity
@@ -156,7 +156,7 @@ The <a href='/docs/reference/typescript-api/entities/product-variant#productvari
 
 <MemberInfo kind="property" type="number"   />
 
-The quantity of this OrderLine at the time the order was placed (as per the <a href='/docs/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>).
+The quantity of this OrderLine at the time the order was placed (as per the <a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>).
 ### initialListPrice
 
 <MemberInfo kind="property" type="number"   />
@@ -168,7 +168,7 @@ the Order has been performed.
 
 <MemberInfo kind="property" type="number"   />
 
-This is the price as listed by the ProductVariant (and possibly modified by the <a href='/docs/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>),
+This is the price as listed by the ProductVariant (and possibly modified by the <a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>),
 which, depending on the current Channel, may or may not include tax.
 ### listPriceIncludesTax
 
@@ -187,7 +187,7 @@ Whether the listPrice includes tax, which depends on the settings of the current
 
 ### cancellation
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>"   />
 
 
 ### customFields

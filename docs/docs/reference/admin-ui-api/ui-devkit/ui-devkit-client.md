@@ -1,7 +1,7 @@
 ---
 title: "UiDevkitClient"
 weight: 10
-date: 2023-07-21T07:17:04.821Z
+date: 2023-07-21T15:46:19.610Z
 showtoc: true
 generated: true
 ---

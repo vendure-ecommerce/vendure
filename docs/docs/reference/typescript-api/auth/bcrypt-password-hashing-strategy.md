@@ -1,7 +1,7 @@
 ---
 title: "BcryptPasswordHashingStrategy"
 weight: 10
-date: 2023-07-21T07:17:00.066Z
+date: 2023-07-21T15:46:14.914Z
 showtoc: true
 generated: true
 ---
@@ -23,7 +23,7 @@ class BcryptPasswordHashingStrategy implements PasswordHashingStrategy {
   check(plaintext: string, hash: string) => Promise<boolean>;
 }
 ```
-* Implements: <code><a href='/docs/reference/typescript-api/auth/password-hashing-strategy#passwordhashingstrategy'>PasswordHashingStrategy</a></code>
+* Implements: <code><a href='/reference/typescript-api/auth/password-hashing-strategy#passwordhashingstrategy'>PasswordHashingStrategy</a></code>
 
 
 

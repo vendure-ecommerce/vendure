@@ -1,7 +1,7 @@
 ---
 title: "I18nService"
 weight: 10
-date: 2023-07-21T07:17:01.350Z
+date: 2023-07-21T15:46:16.612Z
 showtoc: true
 generated: true
 ---
@@ -36,7 +36,7 @@ class I18nService implements OnModuleInit {
 Add a I18n translation by json file
 ### addTranslation
 
-<MemberInfo kind="method" type="(langKey: string, resources: <a href='/docs/reference/typescript-api/common/i18n-service#venduretranslationresources'>VendureTranslationResources</a> | any) => void"   />
+<MemberInfo kind="method" type="(langKey: string, resources: <a href='/reference/typescript-api/common/i18n-service#venduretranslationresources'>VendureTranslationResources</a> | any) => void"   />
 
 Add a I18n translation (key-value) resource
 

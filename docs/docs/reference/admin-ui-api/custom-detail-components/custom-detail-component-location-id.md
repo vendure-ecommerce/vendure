@@ -1,7 +1,7 @@
 ---
 title: "CustomDetailComponentLocationId"
 weight: 10
-date: 2023-07-21T07:17:04.012Z
+date: 2023-07-21T15:46:19.022Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="111" packageName="@vendure/admin-ui" />
 
-The valid locations for embedding a <a href='/docs/reference/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a>.
+The valid locations for embedding a <a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a>.
 
 ```ts title="Signature"
 type CustomDetailComponentLocationId = | 'administrator-profile'

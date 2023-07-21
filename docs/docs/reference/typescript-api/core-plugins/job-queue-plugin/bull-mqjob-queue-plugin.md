@@ -1,7 +1,7 @@
 ---
 title: "BullMQJobQueuePlugin"
 weight: 10
-date: 2023-07-21T07:17:02.860Z
+date: 2023-07-21T15:46:18.205Z
 showtoc: true
 generated: true
 ---
@@ -116,12 +116,12 @@ class BullMQJobQueuePlugin {
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>) => "   />
+<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>) => "   />
 
 Configures the plugin.
 

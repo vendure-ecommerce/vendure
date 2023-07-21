@@ -35,7 +35,7 @@ const TOAST_DURATION = 3000;
  * Provides toast notification functionality.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * class MyComponent {
  *   constructor(private notificationService: NotificationService) {}
  *

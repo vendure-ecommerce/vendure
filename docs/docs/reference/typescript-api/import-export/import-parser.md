@@ -1,7 +1,7 @@
 ---
 title: "ImportParser"
 weight: 10
-date: 2023-07-21T07:17:00.713Z
+date: 2023-07-21T15:46:15.772Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="152" packageName="@vendure/core" />
 
 Validates and parses CSV files into a data structure which can then be used to created new entities.
-This is used internally by the <a href='/docs/reference/typescript-api/import-export/importer#importer'>Importer</a>.
+This is used internally by the <a href='/reference/typescript-api/import-export/importer#importer'>Importer</a>.
 
 ```ts title="Signature"
 class ImportParser {
@@ -28,10 +28,10 @@ class ImportParser {
 
 ### parseProducts
 
-<MemberInfo kind="method" type="(input: string | Stream, mainLanguage: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a> = this.configService.defaultLanguageCode) => Promise&#60;<a href='/docs/reference/typescript-api/import-export/import-parser#parseresult'>ParseResult</a>&#60;<a href='/docs/reference/typescript-api/import-export/import-parser#parsedproductwithvariants'>ParsedProductWithVariants</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(input: string | Stream, mainLanguage: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a> = this.configService.defaultLanguageCode) => Promise&#60;<a href='/reference/typescript-api/import-export/import-parser#parseresult'>ParseResult</a>&#60;<a href='/reference/typescript-api/import-export/import-parser#parsedproductwithvariants'>ParsedProductWithVariants</a>&#62;&#62;"   />
 
-Parses the contents of the [product import CSV file](/docs/developer-guide/importing-product-data/#product-import-format) and
-returns a data structure which can then be used to populate Vendure using the <a href='/docs/reference/typescript-api/import-export/fast-importer-service#fastimporterservice'>FastImporterService</a>.
+Parses the contents of the [product import CSV file](/guides/developer-guide/importing-product-data/#product-import-format) and
+returns a data structure which can then be used to populate Vendure using the <a href='/reference/typescript-api/import-export/fast-importer-service#fastimporterservice'>FastImporterService</a>.
 
 
 </div>
@@ -42,7 +42,7 @@ returns a data structure which can then be used to populate Vendure using the <a
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="45" packageName="@vendure/core" />
 
 The intermediate representation of an OptionGroup after it has been parsed
-by the <a href='/docs/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
+by the <a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
 
 ```ts title="Signature"
 interface ParsedOptionGroup {
@@ -58,7 +58,7 @@ interface ParsedOptionGroup {
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         values: string[];     }&#62;"   />
+<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         values: string[];     }&#62;"   />
 
 
 
@@ -71,7 +71,7 @@ interface ParsedOptionGroup {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="61" packageName="@vendure/core" />
 
 The intermediate representation of a Facet after it has been parsed
-by the <a href='/docs/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
+by the <a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
 
 ```ts title="Signature"
 interface ParsedFacet {
@@ -87,7 +87,7 @@ interface ParsedFacet {
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         facet: string;         value: string;     }&#62;"   />
+<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         facet: string;         value: string;     }&#62;"   />
 
 
 
@@ -100,7 +100,7 @@ interface ParsedFacet {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="77" packageName="@vendure/core" />
 
 The intermediate representation of a ProductVariant after it has been parsed
-by the <a href='/docs/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
+by the <a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
 
 ```ts title="Signature"
 interface ParsedProductVariant {
@@ -155,12 +155,12 @@ interface ParsedProductVariant {
 
 ### facets
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]"   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         optionValues: string[];         customFields: {             [name: string]: string;         };     }&#62;"   />
+<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         optionValues: string[];         customFields: {             [name: string]: string;         };     }&#62;"   />
 
 
 
@@ -173,7 +173,7 @@ interface ParsedProductVariant {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="102" packageName="@vendure/core" />
 
 The intermediate representation of a Product after it has been parsed
-by the <a href='/docs/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
+by the <a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
 
 ```ts title="Signature"
 interface ParsedProduct {
@@ -201,17 +201,17 @@ interface ParsedProduct {
 
 ### optionGroups
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/import-export/import-parser#parsedoptiongroup'>ParsedOptionGroup</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedoptiongroup'>ParsedOptionGroup</a>[]"   />
 
 
 ### facets
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]"   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         slug: string;         description: string;         customFields: {             [name: string]: string;         };     }&#62;"   />
+<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         slug: string;         description: string;         customFields: {             [name: string]: string;         };     }&#62;"   />
 
 
 
@@ -224,7 +224,7 @@ interface ParsedProduct {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="125" packageName="@vendure/core" />
 
 The data structure into which an import CSV file is parsed by the
-<a href='/docs/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a> `parseProducts()` method.
+<a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a> `parseProducts()` method.
 
 ```ts title="Signature"
 interface ParsedProductWithVariants {
@@ -237,12 +237,12 @@ interface ParsedProductWithVariants {
 
 ### product
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/import-export/import-parser#parsedproduct'>ParsedProduct</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedproduct'>ParsedProduct</a>"   />
 
 
 ### variants
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/import-export/import-parser#parsedproductvariant'>ParsedProductVariant</a>[]"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedproductvariant'>ParsedProductVariant</a>[]"   />
 
 
 
@@ -254,7 +254,7 @@ interface ParsedProductWithVariants {
 
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="137" packageName="@vendure/core" />
 
-The result returned by the <a href='/docs/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a> `parseProducts()` method.
+The result returned by the <a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a> `parseProducts()` method.
 
 ```ts title="Signature"
 interface ParseResult<T> {

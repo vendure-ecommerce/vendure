@@ -1,7 +1,7 @@
 ---
 title: "Region"
 weight: 10
-date: 2023-07-21T07:17:01.065Z
+date: 2023-07-21T15:46:16.246Z
 showtoc: true
 generated: true
 ---
@@ -16,8 +16,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/region/region.entity.ts" sourceLine="22" packageName="@vendure/core" />
 
 A Region represents a geographical administrative unit, such as a Country, Province, State, Prefecture etc.
-This is an abstract class which is extended by the <a href='/docs/reference/typescript-api/entities/country#country'>Country</a> and <a href='/docs/reference/typescript-api/entities/province#province'>Province</a> entities.
-Regions can be grouped into <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>s which are in turn used to determine applicable shipping and taxes for an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>.
+This is an abstract class which is extended by the <a href='/reference/typescript-api/entities/country#country'>Country</a> and <a href='/reference/typescript-api/entities/province#province'>Province</a> entities.
+Regions can be grouped into <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>s which are in turn used to determine applicable shipping and taxes for an <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 
 ```ts title="Signature"
 class Region extends VendureEntity implements Translatable, HasCustomFields {
@@ -37,10 +37,10 @@ class Region extends VendureEntity implements Translatable, HasCustomFields {
     customFields: CustomRegionFields;
 }
 ```
-* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+* Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>
+* Implements: <code><a href='/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>
 
 
 
@@ -65,12 +65,12 @@ a format relevant to the type of province, e.g. a US state code like "CA".
 
 ### parent
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/region#region'>Region</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/region#region'>Region</a>"   />
 
 
 ### parentId
 
-<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### enabled
@@ -80,7 +80,7 @@ a format relevant to the type of province, e.g. a US state code like "CA".
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/region#region'>Region</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/region#region'>Region</a>&#62;&#62;"   />
 
 
 ### customFields
