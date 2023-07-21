@@ -9,7 +9,6 @@ import {
     PaymentMethodService,
     RequestContext,
     RequestContextService,
-    TransactionalConnection,
 } from '@vendure/core';
 import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 import { Response } from 'express';
@@ -27,7 +26,6 @@ const noPaymentIntentErrorMessage = 'No payment intent in the event payload';
 @Controller('payments')
 export class StripeController {
     constructor(
-        private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
         private orderService: OrderService,
         private stripeService: StripeService,
