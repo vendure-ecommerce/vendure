@@ -1,7 +1,7 @@
 ---
 title: "UiExtensionCompilerProcessArgument"
 weight: 10
-date: 2023-07-20T13:56:18.819Z
+date: 2023-07-21T07:17:04.863Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "EntityHydrator"
 weight: 10
-date: 2023-07-20T13:56:15.853Z
+date: 2023-07-21T07:17:01.520Z
 showtoc: true
 generated: true
 ---
@@ -21,7 +21,7 @@ and you need to ensure that one or more relations are present.
 
 *Example*
 
-```TypeScript
+```ts
 const product = await this.productVariantService
   .getProductForVariant(ctx, variantId);
 
@@ -34,14 +34,14 @@ available, and those FacetValues will have their `facet` relations joined too.
 
 This `hydrate` method will _also_ automatically take care or translating any
 translatable entities (e.g. Product, Collection, Facet), and if the `applyProductVariantPrices`
-options is used (see <a href='/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>), any related ProductVariant will have the correct
+options is used (see <a href='/docs/reference/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>), any related ProductVariant will have the correct
 Channel-specific prices applied to them.
 
 Custom field relations may also be hydrated:
 
 *Example*
 
-```TypeScript
+```ts
 const customer = await this.customerService
   .findOne(ctx, id);
 
@@ -56,21 +56,23 @@ class EntityHydrator {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: TranslatorService) => EntityHydrator"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/docs/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: TranslatorService) => EntityHydrator"   />
 
 
 ### hydrate
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, target: Entity, options: <a href='/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>&#60;Entity&#62;) => Promise&#60;Entity&#62;"  since="1.3.0"  />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, target: Entity, options: <a href='/docs/reference/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>&#60;Entity&#62;) => Promise&#60;Entity&#62;"  since="1.3.0"  />
 
 Hydrates (joins) the specified relations to the target entity instance. This method
 mutates the `target` entity.
 
 *Example*
 
-```TypeScript
+```ts
 await this.entityHydrator.hydrate(ctx, product, {
   relations: [
     'variants.stockMovements'
@@ -80,3 +82,6 @@ await this.entityHydrator.hydrate(ctx, product, {
   applyProductVariantPrices: true,
 });
 ```
+
+
+</div>

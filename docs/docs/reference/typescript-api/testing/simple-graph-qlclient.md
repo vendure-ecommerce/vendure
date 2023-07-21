@@ -1,7 +1,7 @@
 ---
 title: "SimpleGraphQLClient"
 weight: 10
-date: 2023-07-20T13:56:17.075Z
+date: 2023-07-21T07:17:02.936Z
 showtoc: true
 generated: true
 ---
@@ -37,9 +37,11 @@ class SimpleGraphQLClient {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(vendureConfig: Required&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;, apiUrl: string = '') => SimpleGraphQLClient"   />
+<MemberInfo kind="method" type="(vendureConfig: Required&#60;<a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;, apiUrl: string = '') => SimpleGraphQLClient"   />
 
 
 ### setAuthToken
@@ -97,3 +99,6 @@ Perform a file upload mutation.
 
 Upload spec: https://github.com/jaydenseric/graphql-multipart-request-spec
 Discussion of issue: https://github.com/jaydenseric/apollo-upload-client/issues/32
+
+
+</div>

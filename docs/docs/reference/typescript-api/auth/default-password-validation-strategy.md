@@ -1,7 +1,7 @@
 ---
 title: "DefaultPasswordValidationStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.285Z
+date: 2023-07-21T07:17:00.071Z
 showtoc: true
 generated: true
 ---
@@ -29,11 +29,11 @@ class DefaultPasswordValidationStrategy implements PasswordValidationStrategy {
   validate(ctx: RequestContext, password: string) => boolean | string;
 }
 ```
-Implements
-
- * <a href='/typescript-api/auth/password-validation-strategy#passwordvalidationstrategy'>PasswordValidationStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/auth/password-validation-strategy#passwordvalidationstrategy'>PasswordValidationStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
@@ -42,6 +42,9 @@ Implements
 
 ### validate
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, password: string) => boolean | string"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, password: string) => boolean | string"   />
 
 
+
+
+</div>

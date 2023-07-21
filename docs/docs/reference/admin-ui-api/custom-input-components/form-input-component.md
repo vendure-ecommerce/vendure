@@ -1,7 +1,7 @@
 ---
 title: "FormInputComponent"
 weight: 10
-date: 2023-07-20T13:56:17.847Z
+date: 2023-07-21T07:17:03.997Z
 showtoc: true
 generated: true
 ---
@@ -26,6 +26,8 @@ interface FormInputComponent<C = InputComponentConfig> {
   config: C;
 }
 ```
+
+<div className="members-wrapper">
 
 ### isListInput
 
@@ -55,3 +57,6 @@ Full documentation can be found in the [Angular docs](https://angular.io/api/for
 <MemberInfo kind="property" type="C"   />
 
 The `config` property contains the full configuration object of the custom field or configurable argument.
+
+
+</div>

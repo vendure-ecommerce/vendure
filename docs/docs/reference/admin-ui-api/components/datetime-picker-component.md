@@ -1,7 +1,7 @@
 ---
 title: "DatetimePickerComponent"
 weight: 10
-date: 2023-07-20T13:56:18.286Z
+date: 2023-07-21T07:17:04.384Z
 showtoc: true
 generated: true
 ---
@@ -65,14 +65,11 @@ class DatetimePickerComponent implements ControlValueAccessor, AfterViewInit, On
   closeDatepicker() => ;
 }
 ```
-Implements
-
- * ControlValueAccessor
- * AfterViewInit
- * OnInit
- * OnDestroy
+* Implements: <code>ControlValueAccessor</code>, <code>AfterViewInit</code>, <code>OnInit</code>, <code>OnDestroy</code>
 
 
+
+<div className="members-wrapper">
 
 ### yearRange
 
@@ -108,7 +105,7 @@ The maximum date as an ISO string
 Sets the readonly state
 ### dropdownComponent
 
-<MemberInfo kind="property" type="<a href='/admin-ui-api/components/dropdown-component#dropdowncomponent'>DropdownComponent</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/components/dropdown-component#dropdowncomponent'>DropdownComponent</a>"   />
 
 
 ### datetimeInput
@@ -266,3 +263,6 @@ Sets the readonly state
 <MemberInfo kind="method" type="() => "   />
 
 
+
+
+</div>

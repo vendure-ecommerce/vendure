@@ -1,171 +1,248 @@
 ---
 title: "Queries"
 weight: 1
-date: 2023-07-04T11:02:06.199Z
+date: 2023-07-21T09:48:20.380Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
 
 # Queries
 
+
 ## activeChannel
-The active Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">The active Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">activeChannel: <a href="/docs/reference/graphql-api/shop/object-types#channel">Channel</a>!</div>
 
-{{% gql-fields %}}
- * activeChannel: [Channel](/graphql-api/shop/object-types#channel)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## activeCustomer
-The active Customer
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">The active Customer</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">activeCustomer: <a href="/docs/reference/graphql-api/shop/object-types#customer">Customer</a></div>
 
-{{% gql-fields %}}
- * activeCustomer: [Customer](/graphql-api/shop/object-types#customer)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## activeOrder
-The active Order. Will be `null` until an Order is created via `addItemToOrder`. Once an Order reaches the
-state of `PaymentAuthorized` or `PaymentSettled`, then that Order is no longer considered "active" and this
-query will once again return `null`.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">The active Order. Will be <code>null</code> until an Order is created via `addItemToOrder`. Once an Order reaches the</div>
 
-{{% gql-fields %}}
- * activeOrder: [Order](/graphql-api/shop/object-types#order)
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">state of <code>PaymentAuthorized</code> or `PaymentSettled`, then that Order is no longer considered "active" and this</div>
+
+<div class="graphql-code-line top-level comment">query will once again return `null`.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">activeOrder: <a href="/docs/reference/graphql-api/shop/object-types#order">Order</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## availableCountries
-An array of supported Countries
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">An array of supported Countries</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">availableCountries: [<a href="/docs/reference/graphql-api/shop/object-types#country">Country</a>!]!</div>
 
-{{% gql-fields %}}
- * availableCountries: [[Country](/graphql-api/shop/object-types#country)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## collection
-Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">collection(id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>, slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>): <a href="/docs/reference/graphql-api/shop/object-types#collection">Collection</a></div>
 
-{{% gql-fields %}}
- * collection(id: [ID](/graphql-api/shop/object-types#id), slug: [String](/graphql-api/shop/object-types#string)): [Collection](/graphql-api/shop/object-types#collection)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## collections
-A list of Collections available to the shop
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">A list of Collections available to the shop</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">collections(options: <a href="/docs/reference/graphql-api/shop/input-types#collectionlistoptions">CollectionListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#collectionlist">CollectionList</a>!</div>
 
-{{% gql-fields %}}
- * collections(options: [CollectionListOptions](/graphql-api/shop/input-types#collectionlistoptions)): [CollectionList](/graphql-api/shop/object-types#collectionlist)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## eligiblePaymentMethods
-Returns a list of payment methods and their eligibility based on the current active Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns a list of payment methods and their eligibility based on the current active Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">eligiblePaymentMethods: [<a href="/docs/reference/graphql-api/shop/object-types#paymentmethodquote">PaymentMethodQuote</a>!]!</div>
 
-{{% gql-fields %}}
- * eligiblePaymentMethods: [[PaymentMethodQuote](/graphql-api/shop/object-types#paymentmethodquote)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## eligibleShippingMethods
-Returns a list of eligible shipping methods based on the current active Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns a list of eligible shipping methods based on the current active Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">eligibleShippingMethods: [<a href="/docs/reference/graphql-api/shop/object-types#shippingmethodquote">ShippingMethodQuote</a>!]!</div>
 
-{{% gql-fields %}}
- * eligibleShippingMethods: [[ShippingMethodQuote](/graphql-api/shop/object-types#shippingmethodquote)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## facet
-Returns a Facet by its id
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns a Facet by its id</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">facet(id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/shop/object-types#facet">Facet</a></div>
 
-{{% gql-fields %}}
- * facet(id: [ID](/graphql-api/shop/object-types#id)!): [Facet](/graphql-api/shop/object-types#facet)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## facets
-A list of Facets available to the shop
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">A list of Facets available to the shop</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">facets(options: <a href="/docs/reference/graphql-api/shop/input-types#facetlistoptions">FacetListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#facetlist">FacetList</a>!</div>
 
-{{% gql-fields %}}
- * facets(options: [FacetListOptions](/graphql-api/shop/input-types#facetlistoptions)): [FacetList](/graphql-api/shop/object-types#facetlist)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## me
-Returns information about the current authenticated User
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns information about the current authenticated User</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">me: <a href="/docs/reference/graphql-api/shop/object-types#currentuser">CurrentUser</a></div>
 
-{{% gql-fields %}}
- * me: [CurrentUser](/graphql-api/shop/object-types#currentuser)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## nextOrderStates
-Returns the possible next states that the activeOrder can transition to
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns the possible next states that the activeOrder can transition to</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">nextOrderStates: [<a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!]!</div>
 
-{{% gql-fields %}}
- * nextOrderStates: [[String](/graphql-api/shop/object-types#string)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## order
-Returns an Order based on the id. Note that in the Shop API, only orders belonging to the
-currently-authenticated User may be queried.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns an Order based on the id. Note that in the Shop API, only orders belonging to the</div>
 
-{{% gql-fields %}}
- * order(id: [ID](/graphql-api/shop/object-types#id)!): [Order](/graphql-api/shop/object-types#order)
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">currently-authenticated User may be queried.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">order(id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/shop/object-types#order">Order</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## orderByCode
-Returns an Order based on the order `code`. For guest Orders (i.e. Orders placed by non-authenticated Customers)
-this query will only return the Order within 2 hours of the Order being placed. This allows an Order confirmation
-screen to be shown immediately after completion of a guest checkout, yet prevents security risks of allowing
-general anonymous access to Order data.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns an Order based on the order `code`. For guest Orders (i.e. Orders placed by non-authenticated Customers)</div>
 
-{{% gql-fields %}}
- * orderByCode(code: [String](/graphql-api/shop/object-types#string)!): [Order](/graphql-api/shop/object-types#order)
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">this query will only return the Order within 2 hours of the Order being placed. This allows an Order confirmation</div>
+
+<div class="graphql-code-line top-level comment">screen to be shown immediately after completion of a guest checkout, yet prevents security risks of allowing</div>
+
+<div class="graphql-code-line top-level comment">general anonymous access to Order data.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">orderByCode(code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#order">Order</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## product
-Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an error will result.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an error will result.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">product(id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>, slug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>): <a href="/docs/reference/graphql-api/shop/object-types#product">Product</a></div>
 
-{{% gql-fields %}}
- * product(id: [ID](/graphql-api/shop/object-types#id), slug: [String](/graphql-api/shop/object-types#string)): [Product](/graphql-api/shop/object-types#product)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## products
-Get a list of Products
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get a list of Products</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">products(options: <a href="/docs/reference/graphql-api/shop/input-types#productlistoptions">ProductListOptions</a>): <a href="/docs/reference/graphql-api/shop/object-types#productlist">ProductList</a>!</div>
 
-{{% gql-fields %}}
- * products(options: [ProductListOptions](/graphql-api/shop/input-types#productlistoptions)): [ProductList](/graphql-api/shop/object-types#productlist)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## search
-Search Products based on the criteria set by the `SearchInput`
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Search Products based on the criteria set by the `SearchInput`</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">search(input: <a href="/docs/reference/graphql-api/shop/input-types#searchinput">SearchInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#searchresponse">SearchResponse</a>!</div>
 
-{{% gql-fields %}}
- * search(input: [SearchInput](/graphql-api/shop/input-types#searchinput)!): [SearchResponse](/graphql-api/shop/object-types#searchresponse)!
-{{% /gql-fields %}}
 
-
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "OrderLineReference"
 weight: 10
-date: 2023-07-20T13:56:15.226Z
+date: 2023-07-21T07:17:00.940Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/fulfillment-line.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-This entity represents a line from an <a href='/typescript-api/entities/order#order'>Order</a> which has been fulfilled by a <a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>.
+This entity represents a line from an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> which has been fulfilled by a <a href='/docs/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>.
 
 ```ts title="Signature"
 class FulfillmentLine extends OrderLineReference {
@@ -27,34 +27,37 @@ class FulfillmentLine extends OrderLineReference {
     fulfillmentId: ID;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/order-line-reference#orderlinereference'>OrderLineReference</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/order-line-reference#orderlinereference'>OrderLineReference</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>&#62;) => FulfillmentLine"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>&#62;) => FulfillmentLine"   />
 
 
 ### fulfillment
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>"   />
 
 
 ### fulfillmentId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
+
+
+</div>
 
 
 ## OrderLineReference
 
 <GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/order-line-reference.entity.ts" sourceLine="15" packageName="@vendure/core" />
 
-This is an abstract base class for entities which reference an <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>.
+This is an abstract base class for entities which reference an <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>.
 
 ```ts title="Signature"
 class OrderLineReference extends VendureEntity {
@@ -67,11 +70,11 @@ class OrderLineReference extends VendureEntity {
     orderLineId: ID;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### quantity
 
@@ -80,21 +83,24 @@ Extends
 
 ### orderLine
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
 
 
 ### orderLineId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
+
+
+</div>
 
 
 ## OrderModificationLine
 
 <GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/order-modification-line.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-This entity represents a line from an <a href='/typescript-api/entities/order#order'>Order</a> which has been modified by an <a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>.
+This entity represents a line from an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> which has been modified by an <a href='/docs/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>.
 
 ```ts title="Signature"
 class OrderModificationLine extends OrderLineReference {
@@ -106,34 +112,37 @@ class OrderModificationLine extends OrderLineReference {
     modificationId: ID;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/order-line-reference#orderlinereference'>OrderLineReference</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/order-line-reference#orderlinereference'>OrderLineReference</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>&#62;) => OrderModificationLine"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>&#62;) => OrderModificationLine"   />
 
 
 ### modification
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>"   />
 
 
 ### modificationId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
+
+
+</div>
 
 
 ## RefundLine
 
 <GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/refund-line.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-This entity represents a line from an <a href='/typescript-api/entities/order#order'>Order</a> which has been refunded by a {@link Refund}.
+This entity represents a line from an <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> which has been refunded by a {@link Refund}.
 
 ```ts title="Signature"
 class RefundLine extends OrderLineReference {
@@ -145,15 +154,15 @@ class RefundLine extends OrderLineReference {
     refundId: ID;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/order-line-reference#orderlinereference'>OrderLineReference</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/order-line-reference#orderlinereference'>OrderLineReference</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order-line-reference#refundline'>RefundLine</a>&#62;) => RefundLine"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order-line-reference#refundline'>RefundLine</a>&#62;) => RefundLine"   />
 
 
 ### refund
@@ -163,6 +172,9 @@ Extends
 
 ### refundId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
+
+
+</div>

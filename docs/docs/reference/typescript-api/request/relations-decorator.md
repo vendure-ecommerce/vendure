@@ -1,7 +1,7 @@
 ---
 title: "Relations Decorator"
 weight: 10
-date: 2023-07-20T13:56:14.146Z
+date: 2023-07-21T07:16:59.911Z
 showtoc: true
 generated: true
 ---
@@ -30,7 +30,7 @@ not include many deep nested relations.
 
 *Example*
 
-```TypeScript
+```ts
 @Query()
 @Allow(Permission.ReadOrder)
 orders(
@@ -68,7 +68,7 @@ then the value of `relations` will be
 ['customer', 'lines'']
 ```
 The `'customer'` comes from the fact that the query is nesting the "customer" object, and the `'lines'` is taken
-from the `Order` entity's `totalQuantity` property, which uses <a href='/typescript-api/data-access/calculated#calculated'>Calculated</a> decorator and defines those relations as dependencies
+from the `Order` entity's `totalQuantity` property, which uses <a href='/docs/reference/typescript-api/data-access/calculated#calculated'>Calculated</a> decorator and defines those relations as dependencies
 for deriving the calculated value.
 
 ## Depth
@@ -102,7 +102,7 @@ use the decorator like this:
 
 *Example*
 
-```TypeScript
+```ts
 @Relations({ entity: Order, depth: 2 }) relations: RelationPaths<Order>,
 ```
 
@@ -116,7 +116,7 @@ PaginatedList query rather than a simple array.
 
 *Example*
 
-```TypeScript
+```ts
 @Relations({ entity: Collection, omit: ['productVariant'] }) relations: RelationPaths<Collection>,
 ```
 

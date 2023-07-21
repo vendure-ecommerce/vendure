@@ -1,7 +1,7 @@
 ---
 title: "Zone"
 weight: 10
-date: 2023-07-20T13:56:15.494Z
+date: 2023-07-21T07:17:01.204Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/zone/zone.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
-A Zone is a grouping of one or more <a href='/typescript-api/entities/country#country'>Country</a> entities. It is used for
+A Zone is a grouping of one or more <a href='/docs/reference/typescript-api/entities/country#country'>Country</a> entities. It is used for
 calculating applicable shipping and taxes.
 
 ```ts title="Signature"
@@ -29,20 +29,18 @@ class Zone extends VendureEntity implements HasCustomFields {
     customFields: CustomZoneFields;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * HasCustomFields
+* Implements: <code>HasCustomFields</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62;) => Zone"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;) => Zone"   />
 
 
 ### name
@@ -52,7 +50,7 @@ Implements
 
 ### members
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/region#region'>Region</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/region#region'>Region</a>[]"   />
 
 
 ### customFields
@@ -60,3 +58,6 @@ Implements
 <MemberInfo kind="property" type="CustomZoneFields"   />
 
 
+
+
+</div>

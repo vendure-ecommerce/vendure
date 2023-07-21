@@ -1,7 +1,7 @@
 ---
 title: "Calculated"
 weight: 10
-date: 2023-07-20T13:56:14.162Z
+date: 2023-07-21T07:16:59.930Z
 showtoc: true
 generated: true
 ---
@@ -26,7 +26,7 @@ Parameters
 
 ### queryInstruction
 
-<MemberInfo kind="parameter" type="<a href='/typescript-api/data-access/calculated#calculatedcolumnqueryinstruction'>CalculatedColumnQueryInstruction</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/data-access/calculated#calculatedcolumnqueryinstruction'>CalculatedColumnQueryInstruction</a>" />
 
 
 
@@ -34,7 +34,7 @@ Parameters
 
 <GenerationInfo sourceFile="packages/core/src/common/calculated-decorator.ts" sourceLine="17" packageName="@vendure/core" />
 
-Optional metadata used to tell the <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a> & <a href='/typescript-api/request/relations-decorator#relations'>Relations</a> decorator how to deal with
+Optional metadata used to tell the <a href='/docs/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a> & <a href='/docs/reference/typescript-api/request/relations-decorator#relations'>Relations</a> decorator how to deal with
 calculated columns when sorting, filtering and deriving required relations from GraphQL operations.
 
 ```ts title="Signature"
@@ -44,6 +44,8 @@ interface CalculatedColumnQueryInstruction {
   expression?: string;
 }
 ```
+
+<div className="members-wrapper">
 
 ### relations
 
@@ -62,3 +64,6 @@ up the quantities of each `OrderLine`), then those relations should be defined h
 <MemberInfo kind="property" type="string"   />
 
 
+
+
+</div>

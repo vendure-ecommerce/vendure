@@ -1,7 +1,7 @@
 ---
 title: "FileSizePipe"
 weight: 10
-date: 2023-07-20T13:56:18.691Z
+date: 2023-07-21T07:17:04.763Z
 showtoc: true
 generated: true
 ---
@@ -19,7 +19,7 @@ Formats a number into a human-readable file size string.
 
 *Example*
 
-```TypeScript
+```ts
 {{ fileSizeInBytes | filesize }}
 ```
 
@@ -28,14 +28,17 @@ class FileSizePipe implements PipeTransform {
   transform(value: number, useSiUnits:  = true) => any;
 }
 ```
-Implements
-
- * PipeTransform
+* Implements: <code>PipeTransform</code>
 
 
+
+<div className="members-wrapper">
 
 ### transform
 
 <MemberInfo kind="method" type="(value: number, useSiUnits:  = true) => any"   />
 
 
+
+
+</div>

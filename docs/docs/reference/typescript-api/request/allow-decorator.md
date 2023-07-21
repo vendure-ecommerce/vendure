@@ -1,7 +1,7 @@
 ---
 title: "Allow Decorator"
 weight: 10
-date: 2023-07-20T13:56:14.140Z
+date: 2023-07-21T07:16:59.903Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/api/decorators/allow.decorator.ts" sourceLine="38" packageName="@vendure/core" />
 
 Attaches metadata to the resolver defining which permissions are required to execute the
-operation, using one or more <a href='/typescript-api/common/permission#permission'>Permission</a> values.
+operation, using one or more <a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a> values.
 
 In a GraphQL context, it can be applied to top-level queries and mutations as well as field resolvers.
 
@@ -35,7 +35,7 @@ For more information see [Understanding Permission.Owner](/docs/typescript-api/c
 
 *Example*
 
-```TypeScript
+```ts
  @Allow(Permission.SuperAdmin)
  @Query()
  getAdministrators() {

@@ -1,7 +1,7 @@
 ---
 title: "MolliePlugin"
 weight: 10
-date: 2023-07-20T13:56:17.038Z
+date: 2023-07-21T07:17:02.890Z
 showtoc: true
 generated: true
 ---
@@ -32,7 +32,7 @@ This plugin uses the Order API from Mollie, not the Payments API.
 ## Setup
 
 1. Add the plugin to your VendureConfig `plugins` array:
-    ```TypeScript
+    ```ts
     import { MolliePlugin } from '@vendure/payments-plugin/package/mollie';
 
     // ...
@@ -129,16 +129,21 @@ class MolliePlugin {
 }
 ```
 
+<div className="members-wrapper">
+
 ### options
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/docs/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>"   />
 
 Initialize the mollie payment plugin
+
+
+</div>
 
 
 ## MolliePluginOptions
@@ -154,6 +159,8 @@ interface MolliePluginOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### vendureHost
 
 <MemberInfo kind="property" type="string"   />
@@ -168,3 +175,6 @@ For backwards compatibility, by default set to false.
 This option will be deprecated in a future version.
 When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation
 instead of being configured in the Payment Method.
+
+
+</div>

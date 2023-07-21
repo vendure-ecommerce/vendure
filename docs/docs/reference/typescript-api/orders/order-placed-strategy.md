@@ -1,7 +1,7 @@
 ---
 title: "OrderPlacedStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.630Z
+date: 2023-07-21T07:17:00.372Z
 showtoc: true
 generated: true
 ---
@@ -32,15 +32,15 @@ interface OrderPlacedStrategy extends InjectableStrategy {
     ): boolean | Promise<boolean>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### shouldSetAsPlaced
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
 
 This method is called whenever an _active_ Order transitions from one state to another.
 If it resolves to `true`, then the Order will be set as "placed", which means:
@@ -48,3 +48,6 @@ If it resolves to `true`, then the Order will be set as "placed", which means:
 * Order.active = false
 * Order.placedAt = new Date()
 * Any active Promotions are linked to the Order
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "OrderItemPriceCalculationStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.617Z
+date: 2023-07-21T07:17:00.363Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/order/order-item-price-calculation-strategy.ts" sourceLine="53" packageName="@vendure/core" />
 
 The OrderItemPriceCalculationStrategy defines the listPrice of an OrderLine when adding an item to an Order. By default the
-<a href='/typescript-api/orders/default-order-item-price-calculation-strategy#defaultorderitempricecalculationstrategy'>DefaultOrderItemPriceCalculationStrategy</a> is used.
+<a href='/docs/reference/typescript-api/orders/default-order-item-price-calculation-strategy#defaultorderitempricecalculationstrategy'>DefaultOrderItemPriceCalculationStrategy</a> is used.
 
 ### When is the strategy invoked ?
 * addItemToOrder (only on the new order line)
@@ -68,21 +68,24 @@ interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
     ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### calculateUnitPrice
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, orderLineCustomFields: { [key: string]: any }, order: <a href='/typescript-api/entities/order#order'>Order</a>, quantity: number) => <a href='/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, orderLineCustomFields: { [key: string]: any }, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, quantity: number) => <a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
 
 Receives the ProductVariant to be added to the Order as well as any OrderLine custom fields and returns
 the price for a single unit.
 
 Note: if you have any `relation` type custom fields defined on the OrderLine entity, they will only be
-passed in to this method if they are set to `eager: true`. Otherwise, you can use the <a href='/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>
+passed in to this method if they are set to `eager: true`. Otherwise, you can use the <a href='/docs/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>
 to join the missing relations.
 
 Note: the `quantity` argument was added in v2.0.0
+
+
+</div>

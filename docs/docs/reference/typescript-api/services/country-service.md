@@ -1,7 +1,7 @@
 ---
 title: "CountryService"
 weight: 10
-date: 2023-07-20T13:56:16.078Z
+date: 2023-07-21T07:17:01.723Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/country.service.ts" sourceLine="33" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/country#country'>Country</a> entities.
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/country#country'>Country</a> entities.
 
 ```ts title="Signature"
 class CountryService {
@@ -30,43 +30,48 @@ class CountryService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService) => CountryService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/docs/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/docs/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService) => CountryService"   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62;, relations: RelationPaths&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62; = []) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62;, relations: RelationPaths&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62; = []) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62;&#62;&#62;"   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, countryId: <a href='/typescript-api/common/id#id'>ID</a>, relations: RelationPaths&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62; = []) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, countryId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, relations: RelationPaths&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62; = []) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62; | undefined&#62;"   />
 
 
 ### findAllAvailable
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62;&#62;&#62;"   />
 
 Returns an array of enabled Countries, intended for use in a public-facing (ie. Shop) API.
 ### findOneByCode
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, countryCode: string) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, countryCode: string) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62;&#62;"   />
 
 Returns a Country based on its ISO country code.
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateCountryInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateCountryInput) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62;&#62;"   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateCountryInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/country#country'>Country</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateCountryInput) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>&#62;&#62;"   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
 
 
+
+
+</div>

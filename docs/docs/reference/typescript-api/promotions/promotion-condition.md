@@ -1,7 +1,7 @@
 ---
 title: "Promotion Condition"
 weight: 10
-date: 2023-07-20T13:56:14.701Z
+date: 2023-07-21T07:17:00.449Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="66" packageName="@vendure/core" />
 
-PromotionConditions are used to create <a href='/typescript-api/entities/promotion#promotion'>Promotion</a>s. The purpose of a PromotionCondition
+PromotionConditions are used to create <a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a>s. The purpose of a PromotionCondition
 is to check the order against a particular predicate function (the `check` function) and to return
 `true` if the Order satisfies the condition, or `false` if it does not.
 
@@ -27,18 +27,18 @@ class PromotionCondition<T extends ConfigArgs = ConfigArgs, C extends string = s
   async check(ctx: RequestContext, order: Order, args: ConfigArg[], promotion: Promotion) => Promise<R>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### priorityValue
 
 <MemberInfo kind="property" type="number" default="0"   />
 
 Used to determine the order of application of multiple Promotions
-on the same Order. See the <a href='/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
+on the same Order. See the <a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
 more information.
 ### code
 
@@ -47,15 +47,18 @@ more information.
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-condition#promotionconditionconfig'>PromotionConditionConfig</a>&#60;T, C, R&#62;) => PromotionCondition"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/promotions/promotion-condition#promotionconditionconfig'>PromotionConditionConfig</a>&#60;T, C, R&#62;) => PromotionCondition"   />
 
 
 ### check
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>, args: ConfigArg[], promotion: <a href='/typescript-api/entities/promotion#promotion'>Promotion</a>) => Promise&#60;R&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, args: ConfigArg[], promotion: <a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a>) => Promise&#60;R&#62;"   />
 
 This is the function which contains the conditional logic to decide whether
-a Promotion should apply to an Order. See <a href='/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>.
+a Promotion should apply to an Order. See <a href='/docs/reference/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>.
+
+
+</div>
 
 
 ## PromotionConditionConfig
@@ -71,11 +74,11 @@ interface PromotionConditionConfig<T extends ConfigArgs, C extends string, R ext
   priorityValue?: number;
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### code
 
@@ -84,7 +87,7 @@ Extends
 
 ### check
 
-<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>&#60;T, R&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>&#60;T, R&#62;"   />
 
 
 ### priorityValue
@@ -94,11 +97,14 @@ Extends
 
 
 
+</div>
+
+
 ## CheckPromotionConditionFn
 
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="31" packageName="@vendure/core" />
 
-A function which checks whether or not a given <a href='/typescript-api/entities/order#order'>Order</a> satisfies the <a href='/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>.
+A function which checks whether or not a given <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> satisfies the <a href='/docs/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>.
 
 The function should return either a `boolean` or and plain object type:
 

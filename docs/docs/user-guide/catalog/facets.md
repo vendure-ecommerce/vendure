@@ -11,7 +11,7 @@ Facets are the primary means to attach structured data to your Products & Produc
 * Organizing Products into Collections
 * Labelling Products for inclusion in Promotions 
 
-{{< figure src="../screen-facet-list.webp" >}}
+![./screen-facet-list.webp](./screen-facet-list.webp)
 
 A Facet has one or more FacetValues, for example:
 
@@ -22,7 +22,7 @@ A Facet has one or more FacetValues, for example:
 
 In the Product detail page, you can assign FacetValues by clicking the _ADD FACETS_ button toward the bottom of the Product or ProductVariant views.
 
-{{< figure src="../screen-facet-add.webp" >}}
+![./screen-facet-add.webp](./screen-facet-add.webp)
 
 ## Public vs Private Facets
 

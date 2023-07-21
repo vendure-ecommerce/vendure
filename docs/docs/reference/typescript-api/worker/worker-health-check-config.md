@@ -1,7 +1,7 @@
 ---
 title: "WorkerHealthCheckConfig"
 weight: 10
-date: 2023-07-20T13:56:16.721Z
+date: 2023-07-21T07:17:02.452Z
 showtoc: true
 generated: true
 ---
@@ -25,6 +25,8 @@ interface WorkerHealthCheckConfig {
 }
 ```
 
+<div className="members-wrapper">
+
 ### port
 
 <MemberInfo kind="property" type="number"   />
@@ -40,3 +42,6 @@ The hostname
 <MemberInfo kind="property" type="string" default="'/health'"   />
 
 The route at which the health check is available.
+
+
+</div>

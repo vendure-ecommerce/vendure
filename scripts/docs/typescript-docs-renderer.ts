@@ -93,15 +93,17 @@ export class TypescriptDocsRenderer {
         output +=
             info.kind === 'interface' ? this.renderInterfaceSignature(info) : this.renderClassSignature(info);
         if (info.extendsClause) {
-            output += 'Extends\n\n';
+            output += '* Extends: ';
             output += `${this.renderHeritageClause(info.extendsClause, knownTypeMap, docsUrl)}\n`;
         }
         if (info.kind === 'class' && info.implementsClause) {
-            output += 'Implements\n\n';
+            output += '* Implements: ';
             output += `${this.renderHeritageClause(info.implementsClause, knownTypeMap, docsUrl)}\n`;
         }
         if (info.members && info.members.length) {
+            output += '\n<div className="members-wrapper">\n';
             output += `${this.renderMembers(info, knownTypeMap, docsUrl)}\n`;
+            output += '\n\n</div>\n';
         }
         return output;
     }
@@ -117,8 +119,9 @@ export class TypescriptDocsRenderer {
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += this.renderTypeAliasSignature(typeAliasInfo);
         if (typeAliasInfo.members && typeAliasInfo.members.length) {
-            output += '## Members\n\n';
+            output += '\n<div className="members-wrapper">\n';
             output += `${this.renderMembers(typeAliasInfo, knownTypeMap, docsUrl)}\n`;
+            output += '\n\n</div>\n';
         }
         return output;
     }
@@ -307,11 +310,6 @@ export class TypescriptDocsRenderer {
             output += `<MemberInfo kind="${[member.kind].join(
                 ' ',
             )}" type="${type}" ${defaultParam} ${sinceParam}${experimentalParam} />\n\n`;
-            // output += `<MemberDescription description={\`${this.renderDescription(
-            //     member.description,
-            //     knownTypeMap,
-            //     docsUrl,
-            // )}\`} />\n\n`;
             output += this.renderDescription(member.description, knownTypeMap, docsUrl);
         }
         return output;
@@ -319,8 +317,9 @@ export class TypescriptDocsRenderer {
 
     private renderHeritageClause(clause: HeritageClause, knownTypeMap: TypeMap, docsUrl: string) {
         return (
-            clause.types.map(t => ` * ${this.renderType(t.getText(), knownTypeMap, docsUrl)}`).join('\n') +
-            '\n\n'
+            clause.types
+                .map(t => `<code>${this.renderType(t.getText(), knownTypeMap, docsUrl)}</code>`)
+                .join(', ') + '\n\n'
         );
     }
 

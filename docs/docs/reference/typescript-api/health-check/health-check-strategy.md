@@ -1,7 +1,7 @@
 ---
 title: "HealthCheckStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.780Z
+date: 2023-07-21T07:17:00.512Z
 showtoc: true
 generated: true
 ---
@@ -26,12 +26,12 @@ Custom strategies should be added to the `systemOptions.healthChecks` array.
 By default, Vendure includes the `TypeORMHealthCheckStrategy`, so if you set the value of the `healthChecks`
 array, be sure to include it manually.
 
-Vendure also ships with the <a href='/typescript-api/health-check/http-health-check-strategy#httphealthcheckstrategy'>HttpHealthCheckStrategy</a>, which is convenient
+Vendure also ships with the <a href='/docs/reference/typescript-api/health-check/http-health-check-strategy#httphealthcheckstrategy'>HttpHealthCheckStrategy</a>, which is convenient
 for adding a health check dependent on an HTTP ping.
 
 *Example*
 
-```TypeScript
+```ts
 import { HttpHealthCheckStrategy, TypeORMHealthCheckStrategy } from '@vendure/core';
 import { MyCustomHealthCheckStrategy } from './config/custom-health-check-strategy';
 
@@ -52,11 +52,11 @@ interface HealthCheckStrategy extends InjectableStrategy {
   getHealthIndicator(): HealthIndicatorFunction;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### getHealthIndicator
 
@@ -64,3 +64,6 @@ Extends
 
 Should return a `HealthIndicatorFunction`, as defined by the
 [NestJS Terminus module](https://docs.nestjs.com/recipes/terminus).
+
+
+</div>

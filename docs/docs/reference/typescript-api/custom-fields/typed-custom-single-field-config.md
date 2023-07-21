@@ -1,7 +1,7 @@
 ---
 title: "TypedCustomSingleFieldConfig"
 weight: 10
-date: 2023-07-20T13:56:14.375Z
+date: 2023-07-21T07:17:00.148Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="55" packageName="@vendure/core" />
 
-Configures a custom field on an entity in the <a href='/typescript-api/custom-fields/#customfields'>CustomFields</a> config object.
+Configures a custom field on an entity in the <a href='/docs/reference/typescript-api/custom-fields/#customfields'>CustomFields</a> config object.
 
 ```ts title="Signature"
 type TypedCustomSingleFieldConfig<T extends CustomFieldType, C extends CustomField> = BaseTypedCustomFieldConfig<T, C> & {

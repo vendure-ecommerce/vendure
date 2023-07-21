@@ -1,7 +1,7 @@
 ---
 title: "RichTextEditorComponent"
 weight: 10
-date: 2023-07-20T13:56:18.444Z
+date: 2023-07-21T07:17:04.523Z
 showtoc: true
 generated: true
 ---
@@ -43,13 +43,11 @@ class RichTextEditorComponent implements ControlValueAccessor, AfterViewInit, On
   writeValue(value: any) => ;
 }
 ```
-Implements
-
- * ControlValueAccessor
- * AfterViewInit
- * OnDestroy
+* Implements: <code>ControlValueAccessor</code>, <code>AfterViewInit</code>, <code>OnDestroy</code>
 
 
+
+<div className="members-wrapper">
 
 ### label
 
@@ -111,3 +109,6 @@ Implements
 <MemberInfo kind="method" type="(value: any) => "   />
 
 
+
+
+</div>

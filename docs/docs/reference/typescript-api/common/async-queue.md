@@ -1,7 +1,7 @@
 ---
 title: "AsyncQueue"
 weight: 10
-date: 2023-07-20T13:56:14.158Z
+date: 2023-07-21T07:16:59.927Z
 showtoc: true
 generated: true
 ---
@@ -25,6 +25,8 @@ class AsyncQueue {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
 <MemberInfo kind="method" type="(label: string = 'default', concurrency: number = 1) => AsyncQueue"   />
@@ -37,3 +39,6 @@ class AsyncQueue {
 Pushes a new task onto the queue, upon which the task will either execute immediately or
 (if the number of running tasks is equal to the concurrency limit) enqueue the task to
 be executed at the soonest opportunity.
+
+
+</div>

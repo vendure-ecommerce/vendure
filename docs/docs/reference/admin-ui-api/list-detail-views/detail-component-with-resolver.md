@@ -1,7 +1,7 @@
 ---
 title: "DetailComponentWithResolver"
 weight: 10
-date: 2023-07-20T13:56:17.775Z
+date: 2023-07-21T07:17:03.941Z
 showtoc: true
 generated: true
 ---
@@ -15,13 +15,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="243" packageName="@vendure/admin-ui" />
 
-A helper function for creating tabs that point to a <a href='/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>. This takes
+A helper function for creating tabs that point to a <a href='/docs/reference/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>. This takes
 care of the route resolver parts so that the detail component automatically has access to the
 correct resolved detail data.
 
 *Example*
 
-```TypeScript
+```ts
 @NgModule({
   imports: [ReviewsSharedModule],
   declarations: [/* ... *\/],
@@ -54,5 +54,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="{     component: Type&#60;<a href='/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>&#60;T, Field&#62;&#62;;     query: T;     entityKey: R;     getBreadcrumbs?: (entity: ResultOf&#60;T&#62;[R]) =&#62; BreadcrumbValue;     variables?: T extends TypedDocumentNode&#60;any, infer V&#62; ? Omit&#60;V, 'id'&#62; : never; }" />
+<MemberInfo kind="parameter" type="{     component: Type&#60;<a href='/docs/reference/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>&#60;T, Field&#62;&#62;;     query: T;     entityKey: R;     getBreadcrumbs?: (entity: ResultOf&#60;T&#62;[R]) =&#62; BreadcrumbValue;     variables?: T extends TypedDocumentNode&#60;any, infer V&#62; ? Omit&#60;V, 'id'&#62; : never; }" />
 

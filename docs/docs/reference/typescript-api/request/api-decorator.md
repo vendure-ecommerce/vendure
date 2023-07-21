@@ -1,7 +1,7 @@
 ---
 title: "Api Decorator"
 weight: 10
-date: 2023-07-20T13:56:14.144Z
+date: 2023-07-21T07:16:59.908Z
 showtoc: true
 generated: true
 ---
@@ -19,11 +19,11 @@ Resolver param decorator which returns which Api the request came though.
 This is useful because sometimes the same resolver will have different behaviour
 depending whether it is being called from the shop API or the admin API.
 
-Returns a string of type <a href='/typescript-api/request/api-type#apitype'>ApiType</a>.
+Returns a string of type <a href='/docs/reference/typescript-api/request/api-type#apitype'>ApiType</a>.
 
 *Example*
 
-```TypeScript
+```ts
  @Query()
  getAdministrators(@Api() apiType: ApiType) {
    if (apiType === 'admin') {

@@ -1,7 +1,7 @@
 ---
 title: "EmailEventListener"
 weight: 10
-date: 2023-07-20T13:56:16.920Z
+date: 2023-07-21T07:17:02.713Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/email-plugin/src/event-listener.ts" sourceLine="13" packageName="@vendure/email-plugin" />
 
-An EmailEventListener is used to listen for events and set up a <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> which
+An EmailEventListener is used to listen for events and set up a <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> which
 defines how an email will be generated from this event.
 
 ```ts title="Signature"
@@ -25,6 +25,8 @@ class EmailEventListener<T extends string> {
   on(event: Type<Event>) => EmailEventHandler<T, Event>;
 }
 ```
+
+<div className="members-wrapper">
 
 ### type
 
@@ -38,6 +40,9 @@ class EmailEventListener<T extends string> {
 
 ### on
 
-<MemberInfo kind="method" type="(event: Type&#60;Event&#62;) => <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type="(event: Type&#60;Event&#62;) => <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
 
 Defines the event to listen for.
+
+
+</div>

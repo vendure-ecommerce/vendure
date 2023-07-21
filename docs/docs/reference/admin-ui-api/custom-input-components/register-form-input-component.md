@@ -1,7 +1,7 @@
 ---
 title: "RegisterFormInputComponent"
 weight: 10
-date: 2023-07-20T13:56:18.675Z
+date: 2023-07-21T07:17:04.747Z
 showtoc: true
 generated: true
 ---
@@ -16,12 +16,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/dynamic-form-inputs/register-dynamic-input-components.ts" sourceLine="96" packageName="@vendure/admin-ui" />
 
 Registers a custom FormInputComponent which can be used to control the argument inputs
-of a <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (e.g. CollectionFilter, ShippingMethod etc) or for
+of a <a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (e.g. CollectionFilter, ShippingMethod etc) or for
 a custom field.
 
 *Example*
 
-```TypeScript
+```ts
 @NgModule({
   imports: [SharedModule],
   declarations: [MyCustomFieldControl],
@@ -36,7 +36,7 @@ This input component can then be used in a custom field:
 
 *Example*
 
-```TypeScript
+```ts
 const config = {
   // ...
   customFields: {
@@ -51,11 +51,11 @@ const config = {
 }
 ```
 
-or with an argument of a <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>:
+or with an argument of a <a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>:
 
 *Example*
 
-```TypeScript
+```ts
 args: {
   rrp: { type: 'int', ui: { component: 'my-custom-input' } },
 }
@@ -72,5 +72,5 @@ Parameters
 
 ### component
 
-<MemberInfo kind="parameter" type="Type&#60;<a href='/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a>&#62;" />
+<MemberInfo kind="parameter" type="Type&#60;<a href='/docs/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a>&#62;" />
 

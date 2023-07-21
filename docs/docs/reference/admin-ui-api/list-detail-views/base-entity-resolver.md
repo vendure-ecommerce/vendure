@@ -1,7 +1,7 @@
 ---
 title: "BaseEntityResolver"
 weight: 10
-date: 2023-07-20T13:56:17.779Z
+date: 2023-07-21T07:17:03.944Z
 showtoc: true
 generated: true
 ---
@@ -13,15 +13,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BaseEntityResolver
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-entity-resolver.ts" sourceLine="49" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-entity-resolver.ts" sourceLine="55" packageName="@vendure/admin-ui" />
 
 A base resolver for an entity detail route. Resolves to an observable of the given entity, or a "blank"
 version if the route id equals "create". Should be used together with details views which extend the
-<a href='/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a>.
+<a href='/docs/reference/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a>.
 
 *Example*
 
-```TypeScript
+```ts
 @Injectable({
   providedIn: 'root',
 })
@@ -48,8 +48,13 @@ class BaseEntityResolver<T> {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
 <MemberInfo kind="method" type="(router: Router, emptyEntity: T, entityStream: (id: string) =&#62; Observable&#60;T | null | undefined&#62;) => BaseEntityResolver"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "Ctx Decorator"
 weight: 10
-date: 2023-07-20T13:56:14.147Z
+date: 2023-07-21T07:16:59.913Z
 showtoc: true
 generated: true
 ---
@@ -15,12 +15,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/api/decorators/request-context.decorator.ts" sourceLine="21" packageName="@vendure/core" />
 
-Resolver param decorator which extracts the <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> from the incoming
+Resolver param decorator which extracts the <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> from the incoming
 request object.
 
 *Example*
 
-```TypeScript
+```ts
  @Query()
  getAdministrators(@Ctx() ctx: RequestContext) {
      // ...

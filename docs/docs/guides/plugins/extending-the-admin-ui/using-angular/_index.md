@@ -118,7 +118,7 @@ Next, these source files will be run through the Angular compiler, the output of
 
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greet` and you should see the component with the "Hello!" header:
 
-{{< figure src="./ui-extensions-greeter.webp" >}}
+![./ui-extensions-greeter.webp](./ui-extensions-greeter.webp)
 
 {{< alert warning >}}
 **Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`. You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array:

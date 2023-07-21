@@ -1,7 +1,7 @@
 ---
 title: "Job"
 weight: 10
-date: 2023-07-20T13:56:15.705Z
+date: 2023-07-21T07:17:01.395Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 A Job represents a piece of work to be run in the background, i.e. outside the request-response cycle.
 It is intended to be used for long-running work triggered by API requests. Jobs should now generally
-be directly instantiated. Rather, the <a href='/typescript-api/job-queue/#jobqueue'>JobQueue</a> `add()` method should be used to create and
+be directly instantiated. Rather, the <a href='/docs/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> `add()` method should be used to create and
 add a new Job to a queue.
 
 ```ts title="Signature"
@@ -48,6 +48,8 @@ class Job<T extends JobData<T> = any> {
   off(eventType: JobEventType, listener: JobEventListener<T>) => ;
 }
 ```
+
+<div className="members-wrapper">
 
 ### id
 
@@ -81,7 +83,7 @@ class Job<T extends JobData<T> = any> {
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/job-state#jobstate'>JobState</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/job-state#jobstate'>JobState</a>"   />
 
 
 ### progress
@@ -126,7 +128,7 @@ class Job<T extends JobData<T> = any> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;T&#62;) => Job"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;T&#62;) => Job"   />
 
 
 ### start
@@ -134,7 +136,7 @@ class Job<T extends JobData<T> = any> {
 <MemberInfo kind="method" type="() => "   />
 
 Calling this signifies that the job work has started. This method should be
-called in the <a href='/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `next()` method.
+called in the <a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `next()` method.
 ### setProgress
 
 <MemberInfo kind="method" type="(percent: number) => "   />
@@ -164,14 +166,17 @@ Sets a RUNNING job back to PENDING. Should be used when the JobQueue is being
 destroyed before the job has been completed.
 ### on
 
-<MemberInfo kind="method" type="(eventType: <a href='/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "   />
+<MemberInfo kind="method" type="(eventType: <a href='/docs/reference/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/docs/reference/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "   />
 
 Used to register event handlers for job events
 ### off
 
-<MemberInfo kind="method" type="(eventType: <a href='/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "   />
+<MemberInfo kind="method" type="(eventType: <a href='/docs/reference/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/docs/reference/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => "   />
 
 
+
+
+</div>
 
 
 ## JobEventType

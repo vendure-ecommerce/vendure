@@ -1,7 +1,7 @@
 ---
 title: "VendurePlugin"
 weight: 10
-date: 2023-07-20T13:56:15.826Z
+date: 2023-07-21T07:17:01.501Z
 showtoc: true
 generated: true
 ---
@@ -24,7 +24,7 @@ entirely new types. Database entities and resolvers can also be defined to handl
 
 *Example*
 
-```TypeScript
+```ts
 import { Controller, Get } from '@nestjs/common';
 import { Ctx, PluginCommonModule, ProductService, RequestContext, VendurePlugin } from '@vendure/core';
 
@@ -54,5 +54,5 @@ Parameters
 
 ### pluginMetadata
 
-<MemberInfo kind="parameter" type="<a href='/typescript-api/plugin/vendure-plugin-metadata#vendurepluginmetadata'>VendurePluginMetadata</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/plugin/vendure-plugin-metadata#vendurepluginmetadata'>VendurePluginMetadata</a>" />
 

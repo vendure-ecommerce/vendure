@@ -1,7 +1,7 @@
 ---
 title: "DefaultProductVariantPriceCalculationStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.323Z
+date: 2023-07-21T07:17:00.100Z
 showtoc: true
 generated: true
 ---
@@ -23,19 +23,22 @@ class DefaultProductVariantPriceCalculationStrategy implements ProductVariantPri
   async calculate(args: ProductVariantPriceCalculationArgs) => Promise<PriceCalculationResult>;
 }
 ```
-Implements
-
- * <a href='/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### calculate
 
-<MemberInfo kind="method" type="(args: <a href='/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationargs'>ProductVariantPriceCalculationArgs</a>) => Promise&#60;<a href='/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type="(args: <a href='/docs/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationargs'>ProductVariantPriceCalculationArgs</a>) => Promise&#60;<a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
 
 
+
+
+</div>

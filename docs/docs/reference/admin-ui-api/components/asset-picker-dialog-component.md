@@ -1,7 +1,7 @@
 ---
 title: "AssetPickerDialogComponent"
 weight: 10
-date: 2023-07-20T13:56:18.100Z
+date: 2023-07-21T07:17:04.193Z
 showtoc: true
 generated: true
 ---
@@ -19,7 +19,7 @@ A dialog which allows the creation and selection of assets.
 
 *Example*
 
-```TypeScript
+```ts
 selectAssets() {
   this.modalService
     .fromComponent(AssetPickerDialogComponent, {
@@ -60,14 +60,11 @@ class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Di
   createAssets(files: File[]) => ;
 }
 ```
-Implements
-
- * OnInit
- * AfterViewInit
- * OnDestroy
- * <a href='/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;<a href='/typescript-api/entities/asset#asset'>Asset</a>[]&#62;
+* Implements: <code>OnInit</code>, <code>AfterViewInit</code>, <code>OnDestroy</code>, <code><a href='/docs/reference/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>[]&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### assets$
 
@@ -96,12 +93,12 @@ Implements
 
 ### resolveWith
 
-<MemberInfo kind="property" type="(result?: <a href='/typescript-api/entities/asset#asset'>Asset</a>[]) =&#62; void"   />
+<MemberInfo kind="property" type="(result?: <a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>[]) =&#62; void"   />
 
 
 ### selection
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>[]"   />
 
 
 ### searchTerm$
@@ -121,7 +118,7 @@ Implements
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, notificationService: <a href='/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, notificationService: <a href='/docs/reference/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent"   />
 
 
 ### ngOnInit
@@ -164,3 +161,6 @@ Implements
 <MemberInfo kind="method" type="(files: File[]) => "   />
 
 
+
+
+</div>

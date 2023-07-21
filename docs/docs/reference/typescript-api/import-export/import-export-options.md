@@ -1,7 +1,7 @@
 ---
 title: "ImportExportOptions"
 weight: 10
-date: 2023-07-20T13:56:14.904Z
+date: 2023-07-21T07:17:00.644Z
 showtoc: true
 generated: true
 ---
@@ -24,6 +24,8 @@ interface ImportExportOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### importAssetsDir
 
 <MemberInfo kind="property" type="string" default="__dirname"   />
@@ -31,7 +33,10 @@ interface ImportExportOptions {
 The directory in which assets to be imported are located.
 ### assetImportStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/import-export/asset-import-strategy#assetimportstrategy'>AssetImportStrategy</a>"  since="1.7.0"  />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/import-export/asset-import-strategy#assetimportstrategy'>AssetImportStrategy</a>"  since="1.7.0"  />
 
 This strategy determines how asset files get imported based on the path given in the
-import CSV or via the <a href='/typescript-api/import-export/asset-importer#assetimporter'>AssetImporter</a> `getAssets()` method.
+import CSV or via the <a href='/docs/reference/typescript-api/import-export/asset-importer#assetimporter'>AssetImporter</a> `getAssets()` method.
+
+
+</div>

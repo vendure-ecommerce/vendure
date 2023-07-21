@@ -1,7 +1,7 @@
 ---
 title: "Province"
 weight: 10
-date: 2023-07-20T13:56:15.347Z
+date: 2023-07-21T07:17:01.062Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/region/province.entity.ts" sourceLine="13" packageName="@vendure/core" />
 
-A Province represents an administrative subdivision of a <a href='/typescript-api/entities/country#country'>Country</a>. For example, in the
+A Province represents an administrative subdivision of a <a href='/docs/reference/typescript-api/entities/country#country'>Country</a>. For example, in the
 United States, the country would be "United States" and the province would be "California".
 
 ```ts title="Signature"
@@ -24,15 +24,15 @@ class Province extends Region {
   readonly readonly type: RegionType = 'province';
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/region#region'>Region</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/region#region'>Region</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/province#province'>Province</a>&#62;) => Province"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/province#province'>Province</a>&#62;) => Province"   />
 
 
 ### type
@@ -40,3 +40,6 @@ Extends
 <MemberInfo kind="property" type="RegionType"   />
 
 
+
+
+</div>

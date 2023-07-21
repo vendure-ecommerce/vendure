@@ -1,7 +1,7 @@
 ---
 title: "CustomDetailComponent"
 weight: 10
-date: 2023-07-20T13:56:17.917Z
+date: 2023-07-21T07:17:04.057Z
 showtoc: true
 generated: true
 ---
@@ -25,6 +25,8 @@ interface CustomDetailComponent {
 }
 ```
 
+<div className="members-wrapper">
+
 ### entity$
 
 <MemberInfo kind="property" type="Observable&#60;any&#62;"   />
@@ -35,3 +37,6 @@ interface CustomDetailComponent {
 <MemberInfo kind="property" type="UntypedFormGroup"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "CacheConfig"
 weight: 10
-date: 2023-07-20T13:56:16.863Z
+date: 2023-07-21T07:17:02.640Z
 showtoc: true
 generated: true
 ---
@@ -23,8 +23,8 @@ type CacheConfig = {
   restriction?: 'public' | 'private';
 }
 ```
-## Members
 
+<div className="members-wrapper">
 
 ### maxAge
 
@@ -37,3 +37,6 @@ The max-age=N response directive indicates that the response remains fresh until
 
 The `private` response directive indicates that the response can be stored only in a private cache (e.g. local caches in browsers).
 The `public` response directive indicates that the response can be stored in a shared cache.
+
+
+</div>

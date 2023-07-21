@@ -1,7 +1,7 @@
 ---
 title: "LocaleCurrencyPipe"
 weight: 10
-date: 2023-07-20T13:56:18.713Z
+date: 2023-07-21T07:17:04.783Z
 showtoc: true
 generated: true
 ---
@@ -30,20 +30,18 @@ class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform {
   transform(value: unknown, args: unknown[]) => string | unknown;
 }
 ```
-Extends
-
- * LocaleBasePipe
+* Extends: <code>LocaleBasePipe</code>
 
 
-Implements
-
- * PipeTransform
+* Implements: <code>PipeTransform</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService?: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyPipe"   />
+<MemberInfo kind="method" type="(dataService?: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyPipe"   />
 
 
 ### transform
@@ -51,3 +49,6 @@ Implements
 <MemberInfo kind="method" type="(value: unknown, args: unknown[]) => string | unknown"   />
 
 
+
+
+</div>

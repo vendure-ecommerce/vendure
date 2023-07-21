@@ -11,23 +11,23 @@ An Order is created whenever someone adds an item to their cart in the storefron
 
 The exact set of stages that an Order goes through can be customized in Vendure to suit your particular business needs, but we can look at the default steps to get a good idea of the typical workflow:
 
-{{< figure src="./order-state-diagram-for-admin.png" >}}
+![./order-state-diagram-for-admin.png](./order-state-diagram-for-admin.png)
 
 When a new Order arrives, you would:
 
 1. **Settle the payment** if not already done (this may or may not be needed depending on the way your payment provider is configured).
-    {{< figure src="./screen-settle-payment.webp" >}}
+    ![./screen-settle-payment.webp](./screen-settle-payment.webp)
 1. **Create a Fulfillment** by clicking the "Fulfill Order" button in the top-right of the order detail page. A Fulfillment represents the physical package which will be sent to the customer. You may split up your order into multiple Fulfillments, if that makes sense from a logistical point of view.
-    {{< figure src="./screen-fulfillment.webp" >}}
+    ![./screen-fulfillment.webp](./screen-fulfillment.webp)
 1. **Mark the Fulfillment as "shipped"** once the physical package leaves your warehouse. 
 1. **Mark the Fulfillment as "delivered"** once you have notice of the package arriving with the customer. 
-   {{< figure src="./screen-fulfillment-shipped.webp" >}}
+   ![./screen-fulfillment-shipped.webp](./screen-fulfillment-shipped.webp)
 
 ## Refunds
 
 You can refund one or more items from an Order by clicking this menu item, which is available once the payments are settled:
 
-{{< figure src="./screen-refund-button.webp" >}}
+![./screen-refund-button.webp](./screen-refund-button.webp)
 
 This will bring up a dialog which allows you to select which items to refund, as well as whether to refund shipping. You can also make an arbitrary adjustment to the refund amount if needed.
 
@@ -43,7 +43,7 @@ Cancellations and refunds are often done together, but do not have to be. For ex
 
 An Order can be modified after checkout is completed. 
 
-{{< figure src="./screen-modify-button.webp" >}}
+![./screen-modify-button.webp](./screen-modify-button.webp)
 
 Modification allows you to:
 
@@ -53,7 +53,7 @@ Modification allows you to:
 * Add arbitrary surcharges or discounts
 * Alter the shipping & billing address
 
-{{< figure src="./screen-modification.webp" >}}
+![./screen-modification.webp](./screen-modification.webp)
 
 Once you have made the desired modifications, you preview the changes including the price difference.
 

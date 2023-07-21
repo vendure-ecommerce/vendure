@@ -1,7 +1,7 @@
 ---
 title: "AdministratorService"
 weight: 10
-date: 2023-07-20T13:56:15.951Z
+date: 2023-07-21T07:17:01.617Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/administrator.service.ts" sourceLine="40" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/administrator#administrator'>Administrator</a> entities.
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a> entities.
 
 ```ts title="Signature"
 class AdministratorService {
@@ -30,43 +30,48 @@ class AdministratorService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, listQueryBuilder: <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, passwordCipher: PasswordCipher, userService: <a href='/typescript-api/services/user-service#userservice'>UserService</a>, roleService: <a href='/typescript-api/services/role-service#roleservice'>RoleService</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, requestContextService: <a href='/typescript-api/request/request-context-service#requestcontextservice'>RequestContextService</a>) => AdministratorService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, listQueryBuilder: <a href='/docs/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, passwordCipher: PasswordCipher, userService: <a href='/docs/reference/typescript-api/services/user-service#userservice'>UserService</a>, roleService: <a href='/docs/reference/typescript-api/services/role-service#roleservice'>RoleService</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, requestContextService: <a href='/docs/reference/typescript-api/request/request-context-service#requestcontextservice'>RequestContextService</a>) => AdministratorService"   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;, relations?: RelationPaths&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;, relations?: RelationPaths&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;&#62;"   />
 
 Get a paginated list of Administrators.
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, administratorId: <a href='/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Promise&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, administratorId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a> | undefined&#62;"   />
 
 Get an Administrator by id.
 ### findOneByUserId
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Promise&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a> | undefined&#62;"   />
 
 Get an Administrator based on the User id.
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateAdministratorInput) => Promise&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateAdministratorInput) => Promise&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;"   />
 
 Create a new Administrator.
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateAdministratorInput) => Promise&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateAdministratorInput) => Promise&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;"   />
 
 Update an existing Administrator.
 ### assignRole
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, administratorId: <a href='/typescript-api/common/id#id'>ID</a>, roleId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, administratorId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, roleId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;"   />
 
 Assigns a Role to the Administrator's User entity.
 ### softDelete
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => "   />
 
 Soft deletes an Administrator (sets the `deletedAt` field).
+
+
+</div>

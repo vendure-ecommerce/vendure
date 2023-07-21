@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethodHandler"
 weight: 10
-date: 2023-07-20T13:56:14.671Z
+date: 2023-07-21T07:17:00.416Z
 showtoc: true
 generated: true
 ---
@@ -20,7 +20,7 @@ A PaymentMethodHandler contains the code which is used to generate a Payment whe
 third-party payment gateway before the Payment is created and can also define actions to fire
 when the state of the payment is changed.
 
-PaymentMethodHandlers are instantiated using a <a href='/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a> object, which
+PaymentMethodHandlers are instantiated using a <a href='/docs/reference/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a> object, which
 configures the business logic used to create, settle and refund payments.
 
 *Example*
@@ -73,14 +73,17 @@ class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Configurab
   constructor(config: PaymentMethodConfigOptions<T>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a>&#60;T&#62;) => PaymentMethodHandler"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a>&#60;T&#62;) => PaymentMethodHandler"   />
 
 
+
+
+</div>

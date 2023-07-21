@@ -1,7 +1,7 @@
 ---
 title: "AssetImporter"
 weight: 10
-date: 2023-07-20T13:56:14.979Z
+date: 2023-07-21T07:17:00.709Z
 showtoc: true
 generated: true
 ---
@@ -15,9 +15,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/asset-importer/asset-importer.ts" sourceLine="18" packageName="@vendure/core" />
 
-This service creates new <a href='/typescript-api/entities/asset#asset'>Asset</a> entities based on string paths provided in the CSV
+This service creates new <a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a> entities based on string paths provided in the CSV
 import format. The source files are resolved by joining the value of `importExportOptions.importAssetsDir`
-with the asset path. This service is used internally by the <a href='/typescript-api/import-export/importer#importer'>Importer</a> service.
+with the asset path. This service is used internally by the <a href='/docs/reference/typescript-api/import-export/importer#importer'>Importer</a> service.
 
 ```ts title="Signature"
 class AssetImporter {
@@ -25,9 +25,14 @@ class AssetImporter {
 }
 ```
 
+<div className="members-wrapper">
+
 ### getAssets
 
-<MemberInfo kind="method" type="(assetPaths: string[], ctx?: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;{ assets: <a href='/typescript-api/entities/asset#asset'>Asset</a>[]; errors: string[] }&#62;"   />
+<MemberInfo kind="method" type="(assetPaths: string[], ctx?: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;{ assets: <a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>[]; errors: string[] }&#62;"   />
 
 Creates Asset entities for the given paths, using the assetMap cache to prevent the
 creation of duplicates.
+
+
+</div>

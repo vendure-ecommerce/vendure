@@ -1,7 +1,7 @@
 ---
 title: "ModalService"
 weight: 10
-date: 2023-07-20T13:56:17.962Z
+date: 2023-07-21T07:17:04.089Z
 showtoc: true
 generated: true
 ---
@@ -26,6 +26,8 @@ class ModalService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
 <MemberInfo kind="method" type="(componentFactoryResolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => ModalService"   />
@@ -33,9 +35,9 @@ class ModalService {
 
 ### fromComponent
 
-<MemberInfo kind="method" type="(component: Type&#60;T&#62; &#38; Type&#60;<a href='/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;R&#62;&#62;, options?: <a href='/admin-ui-api/providers/modal-service#modaloptions'>ModalOptions</a>&#60;T&#62;) => Observable&#60;R | undefined&#62;"   />
+<MemberInfo kind="method" type="(component: Type&#60;T&#62; &#38; Type&#60;<a href='/docs/reference/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;R&#62;&#62;, options?: <a href='/docs/reference/admin-ui-api/providers/modal-service#modaloptions'>ModalOptions</a>&#60;T&#62;) => Observable&#60;R | undefined&#62;"   />
 
-Create a modal from a component. The component must implement the <a href='/admin-ui-api/providers/modal-service#dialog'>Dialog</a> interface.
+Create a modal from a component. The component must implement the <a href='/docs/reference/admin-ui-api/providers/modal-service#dialog'>Dialog</a> interface.
 Additionally, the component should include templates for the title and the buttons to be
 displayed in the modal dialog. See example:
 
@@ -77,9 +79,12 @@ class MyDialog implements Dialog {
 ```
 ### dialog
 
-<MemberInfo kind="method" type="(config: <a href='/admin-ui-api/providers/modal-service#dialogconfig'>DialogConfig</a>&#60;T&#62;) => Observable&#60;T | undefined&#62;"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/admin-ui-api/providers/modal-service#dialogconfig'>DialogConfig</a>&#60;T&#62;) => Observable&#60;T | undefined&#62;"   />
 
 Displays a modal dialog with the provided title, body and buttons.
+
+
+</div>
 
 
 ## Dialog
@@ -95,6 +100,8 @@ interface Dialog<R = any> {
 }
 ```
 
+<div className="members-wrapper">
+
 ### resolveWith
 
 <MemberInfo kind="property" type="(result?: R) =&#62; void"   />
@@ -102,6 +109,9 @@ interface Dialog<R = any> {
 Function to be invoked in order to close the dialog when the action is complete.
 The Observable returned from the .fromComponent() method will emit the value passed
 to this method and then complete.
+
+
+</div>
 
 
 ## DialogConfig
@@ -119,6 +129,8 @@ interface DialogConfig<T> {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 ```
+
+<div className="members-wrapper">
 
 ### title
 
@@ -147,6 +159,9 @@ interface DialogConfig<T> {
 
 
 
+</div>
+
+
 ## ModalOptions
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="48" packageName="@vendure/admin-ui" />
@@ -161,6 +176,8 @@ interface ModalOptions<T> {
   locals?: Partial<T>;
 }
 ```
+
+<div className="members-wrapper">
 
 ### size
 
@@ -183,3 +200,6 @@ and clicking it or the mask will close the dialog
 <MemberInfo kind="property" type="Partial&#60;T&#62;"   />
 
 Values to be passed directly to the component being instantiated inside the dialog.
+
+
+</div>

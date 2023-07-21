@@ -9,7 +9,7 @@ showtoc: true
 Vendure is built with an internal architecture based on [NestJS modules](https://docs.nestjs.com/modules). It is not necessary to be familiar with all the internal modules, but a simplified overview can help to see how the major parts fit together.
 Here is a simplified diagram of the Vendure application architecture:
 
-{{< figure src="./vendure_architecture.png" >}} 
+![./vendure_architecture.png](./vendure_architecture.png) 
 
 ## Entry Points
 

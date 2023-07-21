@@ -1,7 +1,7 @@
 ---
 title: "LocalAssetStorageStrategy"
 weight: 10
-date: 2023-07-20T13:56:16.802Z
+date: 2023-07-21T07:17:02.578Z
 showtoc: true
 generated: true
 ---
@@ -29,11 +29,11 @@ class LocalAssetStorageStrategy implements AssetStorageStrategy {
   deleteFile(identifier: string) => Promise<void>;
 }
 ```
-Implements
-
- * <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### toAbsoluteUrl
 
@@ -75,3 +75,6 @@ Implements
 <MemberInfo kind="method" type="(identifier: string) => Promise&#60;void&#62;"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "ErrorResultGuard"
 weight: 10
-date: 2023-07-20T13:56:17.064Z
+date: 2023-07-21T07:17:02.918Z
 showtoc: true
 generated: true
 ---
@@ -23,7 +23,7 @@ The methods of this class are used to:
 
 *Example*
 
-```TypeScript
+```ts
 const orderResultGuard: ErrorResultGuard<AddItemToOrderResult>
   = createErrorResultGuard(order => !!order.lines);
 
@@ -50,6 +50,8 @@ class ErrorResultGuard<T> {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
 <MemberInfo kind="method" type="(testFn: (input: T) =&#62; boolean) => ErrorResultGuard"   />
@@ -72,3 +74,6 @@ successful, i.e. it passes the `testFn`.
 
 Asserts (using the testing library's `fail()` function) that the input is
 not successful, i.e. it does not pass the `testFn`.
+
+
+</div>

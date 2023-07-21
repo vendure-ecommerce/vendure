@@ -1,7 +1,7 @@
 ---
 title: "EmailGenerator"
 weight: 10
-date: 2023-07-20T13:56:16.883Z
+date: 2023-07-21T07:17:02.658Z
 showtoc: true
 generated: true
 ---
@@ -28,23 +28,26 @@ interface EmailGenerator<T extends string = any, E extends VendureEvent = any> e
     ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### onInit
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a>) => void | Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a>) => void | Promise&#60;void&#62;"   />
 
 Any necessary setup can be performed here.
 ### generate
 
-<MemberInfo kind="method" type="(from: string, subject: string, body: string, templateVars: { [key: string]: any }) => Pick&#60;<a href='/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, 'from' | 'subject' | 'body'&#62;"   />
+<MemberInfo kind="method" type="(from: string, subject: string, body: string, templateVars: { [key: string]: any }) => Pick&#60;<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, 'from' | 'subject' | 'body'&#62;"   />
 
 Given a subject and body from an email template, this method generates the final
 interpolated email text.
+
+
+</div>
 
 
 ## HandlebarsMjmlGenerator
@@ -60,11 +63,11 @@ class HandlebarsMjmlGenerator implements EmailGenerator {
   generate(from: string, subject: string, template: string, templateVars: any) => ;
 }
 ```
-Implements
-
- * <a href='/typescript-api/core-plugins/email-plugin/email-generator#emailgenerator'>EmailGenerator</a>
+* Implements: <code><a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-generator#emailgenerator'>EmailGenerator</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### onInit
 
@@ -76,3 +79,6 @@ Implements
 <MemberInfo kind="method" type="(from: string, subject: string, template: string, templateVars: any) => "   />
 
 
+
+
+</div>

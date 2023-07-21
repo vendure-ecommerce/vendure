@@ -1,7 +1,7 @@
 ---
 title: "User"
 weight: 10
-date: 2023-07-20T13:56:15.484Z
+date: 2023-07-21T07:17:01.195Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/user/user.entity.ts" sourceLine="20" packageName="@vendure/core" />
 
 A User represents any authenticated user of the Vendure API. This includes both
-<a href='/typescript-api/entities/administrator#administrator'>Administrator</a>s as well as registered <a href='/typescript-api/entities/customer#customer'>Customer</a>s.
+<a href='/docs/reference/typescript-api/entities/administrator#administrator'>Administrator</a>s as well as registered <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>s.
 
 ```ts title="Signature"
 class User extends VendureEntity implements HasCustomFields, SoftDeletable {
@@ -41,21 +41,18 @@ class User extends VendureEntity implements HasCustomFields, SoftDeletable {
   getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * HasCustomFields
- * <a href='/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a>
+* Implements: <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/user#user'>User</a>&#62;) => User"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a>&#62;) => User"   />
 
 
 ### deletedAt
@@ -70,7 +67,7 @@ Implements
 
 ### authenticationMethods
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a>[]"   />
 
 
 ### verified
@@ -80,7 +77,7 @@ Implements
 
 ### roles
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/role#role'>Role</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/role#role'>Role</a>[]"   />
 
 
 ### lastLogin
@@ -95,16 +92,19 @@ Implements
 
 ### getNativeAuthenticationMethod
 
-<MemberInfo kind="method" type="() => <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>"   />
+<MemberInfo kind="method" type="() => <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>"   />
 
 
 ### getNativeAuthenticationMethod
 
-<MemberInfo kind="method" type="(strict?: boolean) => <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined"   />
+<MemberInfo kind="method" type="(strict?: boolean) => <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined"   />
 
 
 ### getNativeAuthenticationMethod
 
-<MemberInfo kind="method" type="(strict?: boolean) => <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined"   />
+<MemberInfo kind="method" type="(strict?: boolean) => <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined"   />
 
 
+
+
+</div>

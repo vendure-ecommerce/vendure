@@ -1,1398 +1,2019 @@
 ---
 title: "Mutations"
 weight: 2
-date: 2023-07-04T11:02:07.589Z
+date: 2023-07-21T09:48:22.063Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
 
 # Mutations
 
+
 ## addCustomersToGroup
-Add Customers to a CustomerGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Add Customers to a CustomerGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addCustomersToGroup(customerGroupId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, customerIds: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): <a href="/docs/reference/graphql-api/admin/object-types#customergroup">CustomerGroup</a>!</div>
 
-{{% gql-fields %}}
- * addCustomersToGroup(customerGroupId: [ID](/graphql-api/admin/object-types#id)!, customerIds: [[ID](/graphql-api/admin/object-types#id)!]!): [CustomerGroup](/graphql-api/admin/object-types#customergroup)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addFulfillmentToOrder
-{{% gql-fields %}}
- * addFulfillmentToOrder(input: [FulfillOrderInput](/graphql-api/admin/input-types#fulfillorderinput)!): [AddFulfillmentToOrderResult](/graphql-api/admin/object-types#addfulfillmenttoorderresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addFulfillmentToOrder(input: <a href="/docs/reference/graphql-api/admin/input-types#fulfillorderinput">FulfillOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#addfulfillmenttoorderresult">AddFulfillmentToOrderResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addItemToDraftOrder
-Adds an item to the draft Order.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Adds an item to the draft Order.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addItemToDraftOrder(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, input: <a href="/docs/reference/graphql-api/admin/input-types#additemtodraftorderinput">AddItemToDraftOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
 
-{{% gql-fields %}}
- * addItemToDraftOrder(orderId: [ID](/graphql-api/admin/object-types#id)!, input: [AddItemToDraftOrderInput](/graphql-api/admin/input-types#additemtodraftorderinput)!): [UpdateOrderItemsResult](/graphql-api/admin/object-types#updateorderitemsresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addManualPaymentToOrder
-Used to manually create a new Payment against an Order.
-This can be used by an Administrator when an Order is in the ArrangingPayment state.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Used to manually create a new Payment against an Order.</div>
 
-It is also used when a completed Order
-has been modified (using `modifyOrder`) and the price has increased. The extra payment
-can then be manually arranged by the administrator, and the details used to create a new
-Payment.
+<div class="graphql-code-line top-level comment">This can be used by an Administrator when an Order is in the ArrangingPayment state.</div>
 
-{{% gql-fields %}}
- * addManualPaymentToOrder(input: [ManualPaymentInput](/graphql-api/admin/input-types#manualpaymentinput)!): [AddManualPaymentToOrderResult](/graphql-api/admin/object-types#addmanualpaymenttoorderresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">It is also used when a completed Order</div>
+
+<div class="graphql-code-line top-level comment">has been modified (using `modifyOrder`) and the price has increased. The extra payment</div>
+
+<div class="graphql-code-line top-level comment">can then be manually arranged by the administrator, and the details used to create a new</div>
+
+<div class="graphql-code-line top-level comment">Payment.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addManualPaymentToOrder(input: <a href="/docs/reference/graphql-api/admin/input-types#manualpaymentinput">ManualPaymentInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#addmanualpaymenttoorderresult">AddManualPaymentToOrderResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addMembersToZone
-Add members to a Zone
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Add members to a Zone</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addMembersToZone(zoneId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, memberIds: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): <a href="/docs/reference/graphql-api/admin/object-types#zone">Zone</a>!</div>
 
-{{% gql-fields %}}
- * addMembersToZone(zoneId: [ID](/graphql-api/admin/object-types#id)!, memberIds: [[ID](/graphql-api/admin/object-types#id)!]!): [Zone](/graphql-api/admin/object-types#zone)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addNoteToCustomer
-{{% gql-fields %}}
- * addNoteToCustomer(input: [AddNoteToCustomerInput](/graphql-api/admin/input-types#addnotetocustomerinput)!): [Customer](/graphql-api/admin/object-types#customer)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addNoteToCustomer(input: <a href="/docs/reference/graphql-api/admin/input-types#addnotetocustomerinput">AddNoteToCustomerInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#customer">Customer</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addNoteToOrder
-{{% gql-fields %}}
- * addNoteToOrder(input: [AddNoteToOrderInput](/graphql-api/admin/input-types#addnotetoorderinput)!): [Order](/graphql-api/admin/object-types#order)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addNoteToOrder(input: <a href="/docs/reference/graphql-api/admin/input-types#addnotetoorderinput">AddNoteToOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addOptionGroupToProduct
-Add an OptionGroup to a Product
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Add an OptionGroup to a Product</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addOptionGroupToProduct(productId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, optionGroupId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#product">Product</a>!</div>
 
-{{% gql-fields %}}
- * addOptionGroupToProduct(productId: [ID](/graphql-api/admin/object-types#id)!, optionGroupId: [ID](/graphql-api/admin/object-types#id)!): [Product](/graphql-api/admin/object-types#product)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## adjustDraftOrderLine
-Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type <code>OrderLineCustomFieldsInput</code> will be available.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">adjustDraftOrderLine(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, input: <a href="/docs/reference/graphql-api/admin/input-types#adjustdraftorderlineinput">AdjustDraftOrderLineInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
 
-{{% gql-fields %}}
- * adjustDraftOrderLine(orderId: [ID](/graphql-api/admin/object-types#id)!, input: [AdjustDraftOrderLineInput](/graphql-api/admin/input-types#adjustdraftorderlineinput)!): [UpdateOrderItemsResult](/graphql-api/admin/object-types#updateorderitemsresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## applyCouponCodeToDraftOrder
-Applies the given coupon code to the draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Applies the given coupon code to the draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">applyCouponCodeToDraftOrder(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, couponCode: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/admin/object-types#applycouponcoderesult">ApplyCouponCodeResult</a>!</div>
 
-{{% gql-fields %}}
- * applyCouponCodeToDraftOrder(orderId: [ID](/graphql-api/admin/object-types#id)!, couponCode: [String](/graphql-api/admin/object-types#string)!): [ApplyCouponCodeResult](/graphql-api/admin/object-types#applycouponcoderesult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignAssetsToChannel
-Assign assets to channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assign assets to channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignAssetsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignassetstochannelinput">AssignAssetsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#asset">Asset</a>!]!</div>
 
-{{% gql-fields %}}
- * assignAssetsToChannel(input: [AssignAssetsToChannelInput](/graphql-api/admin/input-types#assignassetstochannelinput)!): [[Asset](/graphql-api/admin/object-types#asset)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignCollectionsToChannel
-Assigns Collections to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns Collections to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignCollectionsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assigncollectionstochannelinput">AssignCollectionsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#collection">Collection</a>!]!</div>
 
-{{% gql-fields %}}
- * assignCollectionsToChannel(input: [AssignCollectionsToChannelInput](/graphql-api/admin/input-types#assigncollectionstochannelinput)!): [[Collection](/graphql-api/admin/object-types#collection)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignFacetsToChannel
-Assigns Facets to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns Facets to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignFacetsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignfacetstochannelinput">AssignFacetsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#facet">Facet</a>!]!</div>
 
-{{% gql-fields %}}
- * assignFacetsToChannel(input: [AssignFacetsToChannelInput](/graphql-api/admin/input-types#assignfacetstochannelinput)!): [[Facet](/graphql-api/admin/object-types#facet)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignPaymentMethodsToChannel
-Assigns PaymentMethods to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns PaymentMethods to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignPaymentMethodsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignpaymentmethodstochannelinput">AssignPaymentMethodsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#paymentmethod">PaymentMethod</a>!]!</div>
 
-{{% gql-fields %}}
- * assignPaymentMethodsToChannel(input: [AssignPaymentMethodsToChannelInput](/graphql-api/admin/input-types#assignpaymentmethodstochannelinput)!): [[PaymentMethod](/graphql-api/admin/object-types#paymentmethod)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignProductVariantsToChannel
-Assigns ProductVariants to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns ProductVariants to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignProductVariantsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignproductvariantstochannelinput">AssignProductVariantsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#productvariant">ProductVariant</a>!]!</div>
 
-{{% gql-fields %}}
- * assignProductVariantsToChannel(input: [AssignProductVariantsToChannelInput](/graphql-api/admin/input-types#assignproductvariantstochannelinput)!): [[ProductVariant](/graphql-api/admin/object-types#productvariant)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignProductsToChannel
-Assigns all ProductVariants of Product to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns all ProductVariants of Product to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignProductsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignproductstochannelinput">AssignProductsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#product">Product</a>!]!</div>
 
-{{% gql-fields %}}
- * assignProductsToChannel(input: [AssignProductsToChannelInput](/graphql-api/admin/input-types#assignproductstochannelinput)!): [[Product](/graphql-api/admin/object-types#product)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignPromotionsToChannel
-Assigns Promotions to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns Promotions to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignPromotionsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignpromotionstochannelinput">AssignPromotionsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#promotion">Promotion</a>!]!</div>
 
-{{% gql-fields %}}
- * assignPromotionsToChannel(input: [AssignPromotionsToChannelInput](/graphql-api/admin/input-types#assignpromotionstochannelinput)!): [[Promotion](/graphql-api/admin/object-types#promotion)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignRoleToAdministrator
-Assign a Role to an Administrator
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assign a Role to an Administrator</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignRoleToAdministrator(administratorId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, roleId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#administrator">Administrator</a>!</div>
 
-{{% gql-fields %}}
- * assignRoleToAdministrator(administratorId: [ID](/graphql-api/admin/object-types#id)!, roleId: [ID](/graphql-api/admin/object-types#id)!): [Administrator](/graphql-api/admin/object-types#administrator)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignShippingMethodsToChannel
-Assigns ShippingMethods to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns ShippingMethods to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignShippingMethodsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignshippingmethodstochannelinput">AssignShippingMethodsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#shippingmethod">ShippingMethod</a>!]!</div>
 
-{{% gql-fields %}}
- * assignShippingMethodsToChannel(input: [AssignShippingMethodsToChannelInput](/graphql-api/admin/input-types#assignshippingmethodstochannelinput)!): [[ShippingMethod](/graphql-api/admin/object-types#shippingmethod)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assignStockLocationsToChannel
-Assigns StockLocations to the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Assigns StockLocations to the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">assignStockLocationsToChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#assignstocklocationstochannelinput">AssignStockLocationsToChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#stocklocation">StockLocation</a>!]!</div>
 
-{{% gql-fields %}}
- * assignStockLocationsToChannel(input: [AssignStockLocationsToChannelInput](/graphql-api/admin/input-types#assignstocklocationstochannelinput)!): [[StockLocation](/graphql-api/admin/object-types#stocklocation)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## authenticate
-Authenticates the user using a named authentication strategy
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Authenticates the user using a named authentication strategy</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">authenticate(input: <a href="/docs/reference/graphql-api/admin/input-types#authenticationinput">AuthenticationInput</a>!, rememberMe: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/admin/object-types#authenticationresult">AuthenticationResult</a>!</div>
 
-{{% gql-fields %}}
- * authenticate(input: [AuthenticationInput](/graphql-api/admin/input-types#authenticationinput)!, rememberMe: [Boolean](/graphql-api/admin/object-types#boolean)): [AuthenticationResult](/graphql-api/admin/object-types#authenticationresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## cancelJob
-{{% gql-fields %}}
- * cancelJob(jobId: [ID](/graphql-api/admin/object-types#id)!): [Job](/graphql-api/admin/object-types#job)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">cancelJob(jobId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#job">Job</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## cancelOrder
-{{% gql-fields %}}
- * cancelOrder(input: [CancelOrderInput](/graphql-api/admin/input-types#cancelorderinput)!): [CancelOrderResult](/graphql-api/admin/object-types#cancelorderresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">cancelOrder(input: <a href="/docs/reference/graphql-api/admin/input-types#cancelorderinput">CancelOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#cancelorderresult">CancelOrderResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## cancelPayment
-{{% gql-fields %}}
- * cancelPayment(id: [ID](/graphql-api/admin/object-types#id)!): [CancelPaymentResult](/graphql-api/admin/object-types#cancelpaymentresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">cancelPayment(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#cancelpaymentresult">CancelPaymentResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createAdministrator
-Create a new Administrator
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Administrator</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createAdministrator(input: <a href="/docs/reference/graphql-api/admin/input-types#createadministratorinput">CreateAdministratorInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#administrator">Administrator</a>!</div>
 
-{{% gql-fields %}}
- * createAdministrator(input: [CreateAdministratorInput](/graphql-api/admin/input-types#createadministratorinput)!): [Administrator](/graphql-api/admin/object-types#administrator)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createAssets
-Create a new Asset
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Asset</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createAssets(input: [<a href="/docs/reference/graphql-api/admin/input-types#createassetinput">CreateAssetInput</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#createassetresult">CreateAssetResult</a>!]!</div>
 
-{{% gql-fields %}}
- * createAssets(input: [[CreateAssetInput](/graphql-api/admin/input-types#createassetinput)!]!): [[CreateAssetResult](/graphql-api/admin/object-types#createassetresult)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createChannel
-Create a new Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#createchannelinput">CreateChannelInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#createchannelresult">CreateChannelResult</a>!</div>
 
-{{% gql-fields %}}
- * createChannel(input: [CreateChannelInput](/graphql-api/admin/input-types#createchannelinput)!): [CreateChannelResult](/graphql-api/admin/object-types#createchannelresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createCollection
-Create a new Collection
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Collection</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createCollection(input: <a href="/docs/reference/graphql-api/admin/input-types#createcollectioninput">CreateCollectionInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#collection">Collection</a>!</div>
 
-{{% gql-fields %}}
- * createCollection(input: [CreateCollectionInput](/graphql-api/admin/input-types#createcollectioninput)!): [Collection](/graphql-api/admin/object-types#collection)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createCountry
-Create a new Country
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Country</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createCountry(input: <a href="/docs/reference/graphql-api/admin/input-types#createcountryinput">CreateCountryInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#country">Country</a>!</div>
 
-{{% gql-fields %}}
- * createCountry(input: [CreateCountryInput](/graphql-api/admin/input-types#createcountryinput)!): [Country](/graphql-api/admin/object-types#country)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createCustomer
-Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createCustomer(input: <a href="/docs/reference/graphql-api/admin/input-types#createcustomerinput">CreateCustomerInput</a>!, password: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>): <a href="/docs/reference/graphql-api/admin/object-types#createcustomerresult">CreateCustomerResult</a>!</div>
 
-{{% gql-fields %}}
- * createCustomer(input: [CreateCustomerInput](/graphql-api/admin/input-types#createcustomerinput)!, password: [String](/graphql-api/admin/object-types#string)): [CreateCustomerResult](/graphql-api/admin/object-types#createcustomerresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createCustomerAddress
-Create a new Address and associate it with the Customer specified by customerId
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Address and associate it with the Customer specified by customerId</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createCustomerAddress(customerId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, input: <a href="/docs/reference/graphql-api/admin/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#address">Address</a>!</div>
 
-{{% gql-fields %}}
- * createCustomerAddress(customerId: [ID](/graphql-api/admin/object-types#id)!, input: [CreateAddressInput](/graphql-api/admin/input-types#createaddressinput)!): [Address](/graphql-api/admin/object-types#address)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createCustomerGroup
-Create a new CustomerGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new CustomerGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createCustomerGroup(input: <a href="/docs/reference/graphql-api/admin/input-types#createcustomergroupinput">CreateCustomerGroupInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#customergroup">CustomerGroup</a>!</div>
 
-{{% gql-fields %}}
- * createCustomerGroup(input: [CreateCustomerGroupInput](/graphql-api/admin/input-types#createcustomergroupinput)!): [CustomerGroup](/graphql-api/admin/object-types#customergroup)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createDraftOrder
-Creates a draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Creates a draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createDraftOrder: <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a>!</div>
 
-{{% gql-fields %}}
- * createDraftOrder: [Order](/graphql-api/admin/object-types#order)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createFacet
-Create a new Facet
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Facet</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createFacet(input: <a href="/docs/reference/graphql-api/admin/input-types#createfacetinput">CreateFacetInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#facet">Facet</a>!</div>
 
-{{% gql-fields %}}
- * createFacet(input: [CreateFacetInput](/graphql-api/admin/input-types#createfacetinput)!): [Facet](/graphql-api/admin/object-types#facet)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createFacetValues
-Create one or more FacetValues
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create one or more FacetValues</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createFacetValues(input: [<a href="/docs/reference/graphql-api/admin/input-types#createfacetvalueinput">CreateFacetValueInput</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#facetvalue">FacetValue</a>!]!</div>
 
-{{% gql-fields %}}
- * createFacetValues(input: [[CreateFacetValueInput](/graphql-api/admin/input-types#createfacetvalueinput)!]!): [[FacetValue](/graphql-api/admin/object-types#facetvalue)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createPaymentMethod
-Create existing PaymentMethod
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create existing PaymentMethod</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createPaymentMethod(input: <a href="/docs/reference/graphql-api/admin/input-types#createpaymentmethodinput">CreatePaymentMethodInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#paymentmethod">PaymentMethod</a>!</div>
 
-{{% gql-fields %}}
- * createPaymentMethod(input: [CreatePaymentMethodInput](/graphql-api/admin/input-types#createpaymentmethodinput)!): [PaymentMethod](/graphql-api/admin/object-types#paymentmethod)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createProduct
-Create a new Product
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Product</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createProduct(input: <a href="/docs/reference/graphql-api/admin/input-types#createproductinput">CreateProductInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#product">Product</a>!</div>
 
-{{% gql-fields %}}
- * createProduct(input: [CreateProductInput](/graphql-api/admin/input-types#createproductinput)!): [Product](/graphql-api/admin/object-types#product)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createProductOption
-Create a new ProductOption within a ProductOptionGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new ProductOption within a ProductOptionGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createProductOption(input: <a href="/docs/reference/graphql-api/admin/input-types#createproductoptioninput">CreateProductOptionInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#productoption">ProductOption</a>!</div>
 
-{{% gql-fields %}}
- * createProductOption(input: [CreateProductOptionInput](/graphql-api/admin/input-types#createproductoptioninput)!): [ProductOption](/graphql-api/admin/object-types#productoption)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createProductOptionGroup
-Create a new ProductOptionGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new ProductOptionGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createProductOptionGroup(input: <a href="/docs/reference/graphql-api/admin/input-types#createproductoptiongroupinput">CreateProductOptionGroupInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#productoptiongroup">ProductOptionGroup</a>!</div>
 
-{{% gql-fields %}}
- * createProductOptionGroup(input: [CreateProductOptionGroupInput](/graphql-api/admin/input-types#createproductoptiongroupinput)!): [ProductOptionGroup](/graphql-api/admin/object-types#productoptiongroup)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createProductVariants
-Create a set of ProductVariants based on the OptionGroups assigned to the given Product
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a set of ProductVariants based on the OptionGroups assigned to the given Product</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createProductVariants(input: [<a href="/docs/reference/graphql-api/admin/input-types#createproductvariantinput">CreateProductVariantInput</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#productvariant">ProductVariant</a>]!</div>
 
-{{% gql-fields %}}
- * createProductVariants(input: [[CreateProductVariantInput](/graphql-api/admin/input-types#createproductvariantinput)!]!): [[ProductVariant](/graphql-api/admin/object-types#productvariant)]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createPromotion
-{{% gql-fields %}}
- * createPromotion(input: [CreatePromotionInput](/graphql-api/admin/input-types#createpromotioninput)!): [CreatePromotionResult](/graphql-api/admin/object-types#createpromotionresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createPromotion(input: <a href="/docs/reference/graphql-api/admin/input-types#createpromotioninput">CreatePromotionInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#createpromotionresult">CreatePromotionResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createProvince
-Create a new Province
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Province</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createProvince(input: <a href="/docs/reference/graphql-api/admin/input-types#createprovinceinput">CreateProvinceInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#province">Province</a>!</div>
 
-{{% gql-fields %}}
- * createProvince(input: [CreateProvinceInput](/graphql-api/admin/input-types#createprovinceinput)!): [Province](/graphql-api/admin/object-types#province)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createRole
-Create a new Role
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Role</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createRole(input: <a href="/docs/reference/graphql-api/admin/input-types#createroleinput">CreateRoleInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#role">Role</a>!</div>
 
-{{% gql-fields %}}
- * createRole(input: [CreateRoleInput](/graphql-api/admin/input-types#createroleinput)!): [Role](/graphql-api/admin/object-types#role)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createSeller
-Create a new Seller
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Seller</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createSeller(input: <a href="/docs/reference/graphql-api/admin/input-types#createsellerinput">CreateSellerInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#seller">Seller</a>!</div>
 
-{{% gql-fields %}}
- * createSeller(input: [CreateSellerInput](/graphql-api/admin/input-types#createsellerinput)!): [Seller](/graphql-api/admin/object-types#seller)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createShippingMethod
-Create a new ShippingMethod
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new ShippingMethod</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createShippingMethod(input: <a href="/docs/reference/graphql-api/admin/input-types#createshippingmethodinput">CreateShippingMethodInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#shippingmethod">ShippingMethod</a>!</div>
 
-{{% gql-fields %}}
- * createShippingMethod(input: [CreateShippingMethodInput](/graphql-api/admin/input-types#createshippingmethodinput)!): [ShippingMethod](/graphql-api/admin/object-types#shippingmethod)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createStockLocation
-{{% gql-fields %}}
- * createStockLocation(input: [CreateStockLocationInput](/graphql-api/admin/input-types#createstocklocationinput)!): [StockLocation](/graphql-api/admin/object-types#stocklocation)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createStockLocation(input: <a href="/docs/reference/graphql-api/admin/input-types#createstocklocationinput">CreateStockLocationInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#stocklocation">StockLocation</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createTag
-Create a new Tag
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Tag</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createTag(input: <a href="/docs/reference/graphql-api/admin/input-types#createtaginput">CreateTagInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#tag">Tag</a>!</div>
 
-{{% gql-fields %}}
- * createTag(input: [CreateTagInput](/graphql-api/admin/input-types#createtaginput)!): [Tag](/graphql-api/admin/object-types#tag)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createTaxCategory
-Create a new TaxCategory
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new TaxCategory</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createTaxCategory(input: <a href="/docs/reference/graphql-api/admin/input-types#createtaxcategoryinput">CreateTaxCategoryInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#taxcategory">TaxCategory</a>!</div>
 
-{{% gql-fields %}}
- * createTaxCategory(input: [CreateTaxCategoryInput](/graphql-api/admin/input-types#createtaxcategoryinput)!): [TaxCategory](/graphql-api/admin/object-types#taxcategory)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createTaxRate
-Create a new TaxRate
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new TaxRate</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createTaxRate(input: <a href="/docs/reference/graphql-api/admin/input-types#createtaxrateinput">CreateTaxRateInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#taxrate">TaxRate</a>!</div>
 
-{{% gql-fields %}}
- * createTaxRate(input: [CreateTaxRateInput](/graphql-api/admin/input-types#createtaxrateinput)!): [TaxRate](/graphql-api/admin/object-types#taxrate)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createZone
-Create a new Zone
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Zone</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createZone(input: <a href="/docs/reference/graphql-api/admin/input-types#createzoneinput">CreateZoneInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#zone">Zone</a>!</div>
 
-{{% gql-fields %}}
- * createZone(input: [CreateZoneInput](/graphql-api/admin/input-types#createzoneinput)!): [Zone](/graphql-api/admin/object-types#zone)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteAdministrator
-Delete an Administrator
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete an Administrator</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteAdministrator(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteAdministrator(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteAdministrators
-Delete multiple Administrators
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Administrators</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteAdministrators(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteAdministrators(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteAsset
-Delete an Asset
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete an Asset</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteAsset(input: <a href="/docs/reference/graphql-api/admin/input-types#deleteassetinput">DeleteAssetInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteAsset(input: [DeleteAssetInput](/graphql-api/admin/input-types#deleteassetinput)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteAssets
-Delete multiple Assets
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Assets</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteAssets(input: <a href="/docs/reference/graphql-api/admin/input-types#deleteassetsinput">DeleteAssetsInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteAssets(input: [DeleteAssetsInput](/graphql-api/admin/input-types#deleteassetsinput)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteChannel
-Delete a Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteChannel(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteChannel(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteChannels
-Delete multiple Channels
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Channels</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteChannels(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteChannels(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCollection
-Delete a Collection and all of its descendants
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Collection and all of its descendants</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCollection(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteCollection(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCollections
-Delete multiple Collections and all of their descendants
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Collections and all of their descendants</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCollections(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteCollections(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCountries
-Delete multiple Countries
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Countries</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCountries(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteCountries(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCountry
-Delete a Country
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Country</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCountry(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteCountry(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCustomer
-Delete a Customer
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Customer</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCustomer(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteCustomer(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCustomerAddress
-Update an existing Address
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Address</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCustomerAddress(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#success">Success</a>!</div>
 
-{{% gql-fields %}}
- * deleteCustomerAddress(id: [ID](/graphql-api/admin/object-types#id)!): [Success](/graphql-api/admin/object-types#success)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCustomerGroup
-Delete a CustomerGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a CustomerGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCustomerGroup(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteCustomerGroup(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCustomerGroups
-Delete multiple CustomerGroups
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple CustomerGroups</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCustomerGroups(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteCustomerGroups(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCustomerNote
-{{% gql-fields %}}
- * deleteCustomerNote(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCustomerNote(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCustomers
-Deletes Customers
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Deletes Customers</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCustomers(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteCustomers(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteDraftOrder
-Deletes a draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Deletes a draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteDraftOrder(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteDraftOrder(orderId: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteFacet
-Delete an existing Facet
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete an existing Facet</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteFacet(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, force: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteFacet(id: [ID](/graphql-api/admin/object-types#id)!, force: [Boolean](/graphql-api/admin/object-types#boolean)): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteFacetValues
-Delete one or more FacetValues
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete one or more FacetValues</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteFacetValues(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!, force: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteFacetValues(ids: [[ID](/graphql-api/admin/object-types#id)!]!, force: [Boolean](/graphql-api/admin/object-types#boolean)): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteFacets
-Delete multiple existing Facets
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple existing Facets</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteFacets(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!, force: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteFacets(ids: [[ID](/graphql-api/admin/object-types#id)!]!, force: [Boolean](/graphql-api/admin/object-types#boolean)): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteOrderNote
-{{% gql-fields %}}
- * deleteOrderNote(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteOrderNote(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deletePaymentMethod
-Delete a PaymentMethod
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a PaymentMethod</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deletePaymentMethod(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, force: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deletePaymentMethod(id: [ID](/graphql-api/admin/object-types#id)!, force: [Boolean](/graphql-api/admin/object-types#boolean)): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deletePaymentMethods
-Delete multiple PaymentMethods
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple PaymentMethods</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deletePaymentMethods(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!, force: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deletePaymentMethods(ids: [[ID](/graphql-api/admin/object-types#id)!]!, force: [Boolean](/graphql-api/admin/object-types#boolean)): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteProduct
-Delete a Product
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Product</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteProduct(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteProduct(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteProductOption
-Delete a ProductOption
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a ProductOption</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteProductOption(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteProductOption(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteProductVariant
-Delete a ProductVariant
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a ProductVariant</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteProductVariant(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteProductVariant(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteProductVariants
-Delete multiple ProductVariants
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple ProductVariants</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteProductVariants(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteProductVariants(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteProducts
-Delete multiple Products
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Products</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteProducts(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteProducts(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deletePromotion
-{{% gql-fields %}}
- * deletePromotion(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deletePromotion(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deletePromotions
-{{% gql-fields %}}
- * deletePromotions(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deletePromotions(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteProvince
-Delete a Province
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Province</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteProvince(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteProvince(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteRole
-Delete an existing Role
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete an existing Role</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteRole(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteRole(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteRoles
-Delete multiple Roles
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Roles</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteRoles(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteRoles(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteSeller
-Delete a Seller
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Seller</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteSeller(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteSeller(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteSellers
-Delete multiple Sellers
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple Sellers</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteSellers(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteSellers(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteShippingMethod
-Delete a ShippingMethod
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a ShippingMethod</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteShippingMethod(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteShippingMethod(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteShippingMethods
-Delete multiple ShippingMethods
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple ShippingMethods</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteShippingMethods(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteShippingMethods(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteStockLocation
-{{% gql-fields %}}
- * deleteStockLocation(input: [DeleteStockLocationInput](/graphql-api/admin/input-types#deletestocklocationinput)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteStockLocation(input: <a href="/docs/reference/graphql-api/admin/input-types#deletestocklocationinput">DeleteStockLocationInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteStockLocations
-{{% gql-fields %}}
- * deleteStockLocations(input: [[DeleteStockLocationInput](/graphql-api/admin/input-types#deletestocklocationinput)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteStockLocations(input: [<a href="/docs/reference/graphql-api/admin/input-types#deletestocklocationinput">DeleteStockLocationInput</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteTag
-Delete an existing Tag
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete an existing Tag</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteTag(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteTag(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteTaxCategories
-Deletes multiple TaxCategories
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Deletes multiple TaxCategories</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteTaxCategories(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteTaxCategories(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteTaxCategory
-Deletes a TaxCategory
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Deletes a TaxCategory</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteTaxCategory(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteTaxCategory(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteTaxRate
-Delete a TaxRate
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a TaxRate</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteTaxRate(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteTaxRate(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteTaxRates
-Delete multiple TaxRates
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete multiple TaxRates</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteTaxRates(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteTaxRates(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteZone
-Delete a Zone
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Zone</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteZone(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!</div>
 
-{{% gql-fields %}}
- * deleteZone(id: [ID](/graphql-api/admin/object-types#id)!): [DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteZones
-Delete a Zone
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete a Zone</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteZones(ids: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#deletionresponse">DeletionResponse</a>!]!</div>
 
-{{% gql-fields %}}
- * deleteZones(ids: [[ID](/graphql-api/admin/object-types#id)!]!): [[DeletionResponse](/graphql-api/admin/object-types#deletionresponse)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## flushBufferedJobs
-{{% gql-fields %}}
- * flushBufferedJobs(bufferIds: [[String](/graphql-api/admin/object-types#string)!]): [Success](/graphql-api/admin/object-types#success)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">flushBufferedJobs(bufferIds: [<a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!]): <a href="/docs/reference/graphql-api/admin/object-types#success">Success</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## importProducts
-{{% gql-fields %}}
- * importProducts(csvFile: [Upload](/graphql-api/admin/object-types#upload)!): [ImportInfo](/graphql-api/admin/object-types#importinfo)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">importProducts(csvFile: <a href="/docs/reference/graphql-api/admin/object-types#upload">Upload</a>!): <a href="/docs/reference/graphql-api/admin/object-types#importinfo">ImportInfo</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## login
-Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate(&#123; native: &#123; ... &#125;&#125;)`</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">login(username: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!, password: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!, rememberMe: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/admin/object-types#nativeauthenticationresult">NativeAuthenticationResult</a>!</div>
 
-{{% gql-fields %}}
- * login(username: [String](/graphql-api/admin/object-types#string)!, password: [String](/graphql-api/admin/object-types#string)!, rememberMe: [Boolean](/graphql-api/admin/object-types#boolean)): [NativeAuthenticationResult](/graphql-api/admin/object-types#nativeauthenticationresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## logout
-{{% gql-fields %}}
- * logout: [Success](/graphql-api/admin/object-types#success)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">logout: <a href="/docs/reference/graphql-api/admin/object-types#success">Success</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## modifyOrder
-Allows an Order to be modified after it has been completed by the Customer. The Order must first
-be in the `Modifying` state.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Allows an Order to be modified after it has been completed by the Customer. The Order must first</div>
 
-{{% gql-fields %}}
- * modifyOrder(input: [ModifyOrderInput](/graphql-api/admin/input-types#modifyorderinput)!): [ModifyOrderResult](/graphql-api/admin/object-types#modifyorderresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">be in the <code>Modifying</code> state.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">modifyOrder(input: <a href="/docs/reference/graphql-api/admin/input-types#modifyorderinput">ModifyOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#modifyorderresult">ModifyOrderResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## moveCollection
-Move a Collection to a different parent or index
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Move a Collection to a different parent or index</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">moveCollection(input: <a href="/docs/reference/graphql-api/admin/input-types#movecollectioninput">MoveCollectionInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#collection">Collection</a>!</div>
 
-{{% gql-fields %}}
- * moveCollection(input: [MoveCollectionInput](/graphql-api/admin/input-types#movecollectioninput)!): [Collection](/graphql-api/admin/object-types#collection)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## refundOrder
-{{% gql-fields %}}
- * refundOrder(input: [RefundOrderInput](/graphql-api/admin/input-types#refundorderinput)!): [RefundOrderResult](/graphql-api/admin/object-types#refundorderresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">refundOrder(input: <a href="/docs/reference/graphql-api/admin/input-types#refundorderinput">RefundOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#refundorderresult">RefundOrderResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## reindex
-{{% gql-fields %}}
- * reindex: [Job](/graphql-api/admin/object-types#job)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">reindex: <a href="/docs/reference/graphql-api/admin/object-types#job">Job</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeCollectionsFromChannel
-Removes Collections from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes Collections from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeCollectionsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removecollectionsfromchannelinput">RemoveCollectionsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#collection">Collection</a>!]!</div>
 
-{{% gql-fields %}}
- * removeCollectionsFromChannel(input: [RemoveCollectionsFromChannelInput](/graphql-api/admin/input-types#removecollectionsfromchannelinput)!): [[Collection](/graphql-api/admin/object-types#collection)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeCouponCodeFromDraftOrder
-Removes the given coupon code from the draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes the given coupon code from the draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeCouponCodeFromDraftOrder(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, couponCode: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a></div>
 
-{{% gql-fields %}}
- * removeCouponCodeFromDraftOrder(orderId: [ID](/graphql-api/admin/object-types#id)!, couponCode: [String](/graphql-api/admin/object-types#string)!): [Order](/graphql-api/admin/object-types#order)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeCustomersFromGroup
-Remove Customers from a CustomerGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Remove Customers from a CustomerGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeCustomersFromGroup(customerGroupId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, customerIds: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): <a href="/docs/reference/graphql-api/admin/object-types#customergroup">CustomerGroup</a>!</div>
 
-{{% gql-fields %}}
- * removeCustomersFromGroup(customerGroupId: [ID](/graphql-api/admin/object-types#id)!, customerIds: [[ID](/graphql-api/admin/object-types#id)!]!): [CustomerGroup](/graphql-api/admin/object-types#customergroup)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeDraftOrderLine
-Remove an OrderLine from the draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Remove an OrderLine from the draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeDraftOrderLine(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, orderLineId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#removeorderitemsresult">RemoveOrderItemsResult</a>!</div>
 
-{{% gql-fields %}}
- * removeDraftOrderLine(orderId: [ID](/graphql-api/admin/object-types#id)!, orderLineId: [ID](/graphql-api/admin/object-types#id)!): [RemoveOrderItemsResult](/graphql-api/admin/object-types#removeorderitemsresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeFacetsFromChannel
-Removes Facets from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes Facets from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeFacetsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removefacetsfromchannelinput">RemoveFacetsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#removefacetfromchannelresult">RemoveFacetFromChannelResult</a>!]!</div>
 
-{{% gql-fields %}}
- * removeFacetsFromChannel(input: [RemoveFacetsFromChannelInput](/graphql-api/admin/input-types#removefacetsfromchannelinput)!): [[RemoveFacetFromChannelResult](/graphql-api/admin/object-types#removefacetfromchannelresult)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeMembersFromZone
-Remove members from a Zone
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Remove members from a Zone</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeMembersFromZone(zoneId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, memberIds: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): <a href="/docs/reference/graphql-api/admin/object-types#zone">Zone</a>!</div>
 
-{{% gql-fields %}}
- * removeMembersFromZone(zoneId: [ID](/graphql-api/admin/object-types#id)!, memberIds: [[ID](/graphql-api/admin/object-types#id)!]!): [Zone](/graphql-api/admin/object-types#zone)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeOptionGroupFromProduct
-Remove an OptionGroup from a Product. If the OptionGroup is in use by any ProductVariants
-the mutation will return a ProductOptionInUseError, and the OptionGroup will not be removed.
-Setting the `force` argument to `true` will override this and remove the OptionGroup anyway,
-as well as removing any of the group's options from the Product's ProductVariants.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Remove an OptionGroup from a Product. If the OptionGroup is in use by any ProductVariants</div>
 
-{{% gql-fields %}}
- * removeOptionGroupFromProduct(productId: [ID](/graphql-api/admin/object-types#id)!, optionGroupId: [ID](/graphql-api/admin/object-types#id)!, force: [Boolean](/graphql-api/admin/object-types#boolean)): [RemoveOptionGroupFromProductResult](/graphql-api/admin/object-types#removeoptiongroupfromproductresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">the mutation will return a ProductOptionInUseError, and the OptionGroup will not be removed.</div>
+
+<div class="graphql-code-line top-level comment">Setting the <code>force</code> argument to <code>true</code> will override this and remove the OptionGroup anyway,</div>
+
+<div class="graphql-code-line top-level comment">as well as removing any of the group's options from the Product's ProductVariants.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeOptionGroupFromProduct(productId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, optionGroupId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, force: <a href="/docs/reference/graphql-api/admin/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/admin/object-types#removeoptiongroupfromproductresult">RemoveOptionGroupFromProductResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removePaymentMethodsFromChannel
-Removes PaymentMethods from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes PaymentMethods from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removePaymentMethodsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removepaymentmethodsfromchannelinput">RemovePaymentMethodsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#paymentmethod">PaymentMethod</a>!]!</div>
 
-{{% gql-fields %}}
- * removePaymentMethodsFromChannel(input: [RemovePaymentMethodsFromChannelInput](/graphql-api/admin/input-types#removepaymentmethodsfromchannelinput)!): [[PaymentMethod](/graphql-api/admin/object-types#paymentmethod)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeProductVariantsFromChannel
-Removes ProductVariants from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes ProductVariants from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeProductVariantsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removeproductvariantsfromchannelinput">RemoveProductVariantsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#productvariant">ProductVariant</a>!]!</div>
 
-{{% gql-fields %}}
- * removeProductVariantsFromChannel(input: [RemoveProductVariantsFromChannelInput](/graphql-api/admin/input-types#removeproductvariantsfromchannelinput)!): [[ProductVariant](/graphql-api/admin/object-types#productvariant)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeProductsFromChannel
-Removes all ProductVariants of Product from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes all ProductVariants of Product from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeProductsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removeproductsfromchannelinput">RemoveProductsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#product">Product</a>!]!</div>
 
-{{% gql-fields %}}
- * removeProductsFromChannel(input: [RemoveProductsFromChannelInput](/graphql-api/admin/input-types#removeproductsfromchannelinput)!): [[Product](/graphql-api/admin/object-types#product)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removePromotionsFromChannel
-Removes Promotions from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes Promotions from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removePromotionsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removepromotionsfromchannelinput">RemovePromotionsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#promotion">Promotion</a>!]!</div>
 
-{{% gql-fields %}}
- * removePromotionsFromChannel(input: [RemovePromotionsFromChannelInput](/graphql-api/admin/input-types#removepromotionsfromchannelinput)!): [[Promotion](/graphql-api/admin/object-types#promotion)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeSettledJobs
-Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeSettledJobs(queueNames: [<a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!], olderThan: <a href="/docs/reference/graphql-api/admin/object-types#datetime">DateTime</a>): <a href="/docs/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
-{{% gql-fields %}}
- * removeSettledJobs(queueNames: [[String](/graphql-api/admin/object-types#string)!], olderThan: [DateTime](/graphql-api/admin/object-types#datetime)): [Int](/graphql-api/admin/object-types#int)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeShippingMethodsFromChannel
-Removes ShippingMethods from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes ShippingMethods from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeShippingMethodsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removeshippingmethodsfromchannelinput">RemoveShippingMethodsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#shippingmethod">ShippingMethod</a>!]!</div>
 
-{{% gql-fields %}}
- * removeShippingMethodsFromChannel(input: [RemoveShippingMethodsFromChannelInput](/graphql-api/admin/input-types#removeshippingmethodsfromchannelinput)!): [[ShippingMethod](/graphql-api/admin/object-types#shippingmethod)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeStockLocationsFromChannel
-Removes StockLocations from the specified Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes StockLocations from the specified Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeStockLocationsFromChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#removestocklocationsfromchannelinput">RemoveStockLocationsFromChannelInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#stocklocation">StockLocation</a>!]!</div>
 
-{{% gql-fields %}}
- * removeStockLocationsFromChannel(input: [RemoveStockLocationsFromChannelInput](/graphql-api/admin/input-types#removestocklocationsfromchannelinput)!): [[StockLocation](/graphql-api/admin/object-types#stocklocation)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## runPendingSearchIndexUpdates
-{{% gql-fields %}}
- * runPendingSearchIndexUpdates: [Success](/graphql-api/admin/object-types#success)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">runPendingSearchIndexUpdates: <a href="/docs/reference/graphql-api/admin/object-types#success">Success</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setCustomerForDraftOrder
-{{% gql-fields %}}
- * setCustomerForDraftOrder(orderId: [ID](/graphql-api/admin/object-types#id)!, customerId: [ID](/graphql-api/admin/object-types#id), input: [CreateCustomerInput](/graphql-api/admin/input-types#createcustomerinput)): [SetCustomerForDraftOrderResult](/graphql-api/admin/object-types#setcustomerfordraftorderresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setCustomerForDraftOrder(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, customerId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>, input: <a href="/docs/reference/graphql-api/admin/input-types#createcustomerinput">CreateCustomerInput</a>): <a href="/docs/reference/graphql-api/admin/object-types#setcustomerfordraftorderresult">SetCustomerForDraftOrderResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setDraftOrderBillingAddress
-Sets the billing address for a draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Sets the billing address for a draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setDraftOrderBillingAddress(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, input: <a href="/docs/reference/graphql-api/admin/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a>!</div>
 
-{{% gql-fields %}}
- * setDraftOrderBillingAddress(orderId: [ID](/graphql-api/admin/object-types#id)!, input: [CreateAddressInput](/graphql-api/admin/input-types#createaddressinput)!): [Order](/graphql-api/admin/object-types#order)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setDraftOrderCustomFields
-Allows any custom fields to be set for the active order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Allows any custom fields to be set for the active order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setDraftOrderCustomFields(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, input: <a href="/docs/reference/graphql-api/admin/input-types#updateorderinput">UpdateOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a>!</div>
 
-{{% gql-fields %}}
- * setDraftOrderCustomFields(orderId: [ID](/graphql-api/admin/object-types#id)!, input: [UpdateOrderInput](/graphql-api/admin/input-types#updateorderinput)!): [Order](/graphql-api/admin/object-types#order)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setDraftOrderShippingAddress
-Sets the shipping address for a draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Sets the shipping address for a draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setDraftOrderShippingAddress(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, input: <a href="/docs/reference/graphql-api/admin/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a>!</div>
 
-{{% gql-fields %}}
- * setDraftOrderShippingAddress(orderId: [ID](/graphql-api/admin/object-types#id)!, input: [CreateAddressInput](/graphql-api/admin/input-types#createaddressinput)!): [Order](/graphql-api/admin/object-types#order)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setDraftOrderShippingMethod
-Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Sets the shipping method by id, which can be obtained with the <code>eligibleShippingMethodsForDraftOrder</code> query</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setDraftOrderShippingMethod(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, shippingMethodId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#setordershippingmethodresult">SetOrderShippingMethodResult</a>!</div>
 
-{{% gql-fields %}}
- * setDraftOrderShippingMethod(orderId: [ID](/graphql-api/admin/object-types#id)!, shippingMethodId: [ID](/graphql-api/admin/object-types#id)!): [SetOrderShippingMethodResult](/graphql-api/admin/object-types#setordershippingmethodresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setOrderCustomFields
-{{% gql-fields %}}
- * setOrderCustomFields(input: [UpdateOrderInput](/graphql-api/admin/input-types#updateorderinput)!): [Order](/graphql-api/admin/object-types#order)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setOrderCustomFields(input: <a href="/docs/reference/graphql-api/admin/input-types#updateorderinput">UpdateOrderInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## settlePayment
-{{% gql-fields %}}
- * settlePayment(id: [ID](/graphql-api/admin/object-types#id)!): [SettlePaymentResult](/graphql-api/admin/object-types#settlepaymentresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">settlePayment(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#settlepaymentresult">SettlePaymentResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## settleRefund
-{{% gql-fields %}}
- * settleRefund(input: [SettleRefundInput](/graphql-api/admin/input-types#settlerefundinput)!): [SettleRefundResult](/graphql-api/admin/object-types#settlerefundresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">settleRefund(input: <a href="/docs/reference/graphql-api/admin/input-types#settlerefundinput">SettleRefundInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#settlerefundresult">SettleRefundResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## transitionFulfillmentToState
-{{% gql-fields %}}
- * transitionFulfillmentToState(id: [ID](/graphql-api/admin/object-types#id)!, state: [String](/graphql-api/admin/object-types#string)!): [TransitionFulfillmentToStateResult](/graphql-api/admin/object-types#transitionfulfillmenttostateresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">transitionFulfillmentToState(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, state: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/admin/object-types#transitionfulfillmenttostateresult">TransitionFulfillmentToStateResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## transitionOrderToState
-{{% gql-fields %}}
- * transitionOrderToState(id: [ID](/graphql-api/admin/object-types#id)!, state: [String](/graphql-api/admin/object-types#string)!): [TransitionOrderToStateResult](/graphql-api/admin/object-types#transitionordertostateresult)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">transitionOrderToState(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, state: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/admin/object-types#transitionordertostateresult">TransitionOrderToStateResult</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## transitionPaymentToState
-{{% gql-fields %}}
- * transitionPaymentToState(id: [ID](/graphql-api/admin/object-types#id)!, state: [String](/graphql-api/admin/object-types#string)!): [TransitionPaymentToStateResult](/graphql-api/admin/object-types#transitionpaymenttostateresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">transitionPaymentToState(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!, state: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/admin/object-types#transitionpaymenttostateresult">TransitionPaymentToStateResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateActiveAdministrator
-Update the active (currently logged-in) Administrator
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update the active (currently logged-in) Administrator</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateActiveAdministrator(input: <a href="/docs/reference/graphql-api/admin/input-types#updateactiveadministratorinput">UpdateActiveAdministratorInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#administrator">Administrator</a>!</div>
 
-{{% gql-fields %}}
- * updateActiveAdministrator(input: [UpdateActiveAdministratorInput](/graphql-api/admin/input-types#updateactiveadministratorinput)!): [Administrator](/graphql-api/admin/object-types#administrator)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateAdministrator
-Update an existing Administrator
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Administrator</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateAdministrator(input: <a href="/docs/reference/graphql-api/admin/input-types#updateadministratorinput">UpdateAdministratorInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#administrator">Administrator</a>!</div>
 
-{{% gql-fields %}}
- * updateAdministrator(input: [UpdateAdministratorInput](/graphql-api/admin/input-types#updateadministratorinput)!): [Administrator](/graphql-api/admin/object-types#administrator)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateAsset
-Update an existing Asset
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Asset</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateAsset(input: <a href="/docs/reference/graphql-api/admin/input-types#updateassetinput">UpdateAssetInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#asset">Asset</a>!</div>
 
-{{% gql-fields %}}
- * updateAsset(input: [UpdateAssetInput](/graphql-api/admin/input-types#updateassetinput)!): [Asset](/graphql-api/admin/object-types#asset)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateChannel
-Update an existing Channel
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Channel</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateChannel(input: <a href="/docs/reference/graphql-api/admin/input-types#updatechannelinput">UpdateChannelInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#updatechannelresult">UpdateChannelResult</a>!</div>
 
-{{% gql-fields %}}
- * updateChannel(input: [UpdateChannelInput](/graphql-api/admin/input-types#updatechannelinput)!): [UpdateChannelResult](/graphql-api/admin/object-types#updatechannelresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCollection
-Update an existing Collection
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Collection</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCollection(input: <a href="/docs/reference/graphql-api/admin/input-types#updatecollectioninput">UpdateCollectionInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#collection">Collection</a>!</div>
 
-{{% gql-fields %}}
- * updateCollection(input: [UpdateCollectionInput](/graphql-api/admin/input-types#updatecollectioninput)!): [Collection](/graphql-api/admin/object-types#collection)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCountry
-Update an existing Country
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Country</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCountry(input: <a href="/docs/reference/graphql-api/admin/input-types#updatecountryinput">UpdateCountryInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#country">Country</a>!</div>
 
-{{% gql-fields %}}
- * updateCountry(input: [UpdateCountryInput](/graphql-api/admin/input-types#updatecountryinput)!): [Country](/graphql-api/admin/object-types#country)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomer
-Update an existing Customer
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Customer</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomer(input: <a href="/docs/reference/graphql-api/admin/input-types#updatecustomerinput">UpdateCustomerInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#updatecustomerresult">UpdateCustomerResult</a>!</div>
 
-{{% gql-fields %}}
- * updateCustomer(input: [UpdateCustomerInput](/graphql-api/admin/input-types#updatecustomerinput)!): [UpdateCustomerResult](/graphql-api/admin/object-types#updatecustomerresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomerAddress
-Update an existing Address
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Address</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomerAddress(input: <a href="/docs/reference/graphql-api/admin/input-types#updateaddressinput">UpdateAddressInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#address">Address</a>!</div>
 
-{{% gql-fields %}}
- * updateCustomerAddress(input: [UpdateAddressInput](/graphql-api/admin/input-types#updateaddressinput)!): [Address](/graphql-api/admin/object-types#address)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomerGroup
-Update an existing CustomerGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing CustomerGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomerGroup(input: <a href="/docs/reference/graphql-api/admin/input-types#updatecustomergroupinput">UpdateCustomerGroupInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#customergroup">CustomerGroup</a>!</div>
 
-{{% gql-fields %}}
- * updateCustomerGroup(input: [UpdateCustomerGroupInput](/graphql-api/admin/input-types#updatecustomergroupinput)!): [CustomerGroup](/graphql-api/admin/object-types#customergroup)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomerNote
-{{% gql-fields %}}
- * updateCustomerNote(input: [UpdateCustomerNoteInput](/graphql-api/admin/input-types#updatecustomernoteinput)!): [HistoryEntry](/graphql-api/admin/object-types#historyentry)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomerNote(input: <a href="/docs/reference/graphql-api/admin/input-types#updatecustomernoteinput">UpdateCustomerNoteInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#historyentry">HistoryEntry</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateFacet
-Update an existing Facet
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Facet</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateFacet(input: <a href="/docs/reference/graphql-api/admin/input-types#updatefacetinput">UpdateFacetInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#facet">Facet</a>!</div>
 
-{{% gql-fields %}}
- * updateFacet(input: [UpdateFacetInput](/graphql-api/admin/input-types#updatefacetinput)!): [Facet](/graphql-api/admin/object-types#facet)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateFacetValues
-Update one or more FacetValues
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update one or more FacetValues</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateFacetValues(input: [<a href="/docs/reference/graphql-api/admin/input-types#updatefacetvalueinput">UpdateFacetValueInput</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#facetvalue">FacetValue</a>!]!</div>
 
-{{% gql-fields %}}
- * updateFacetValues(input: [[UpdateFacetValueInput](/graphql-api/admin/input-types#updatefacetvalueinput)!]!): [[FacetValue](/graphql-api/admin/object-types#facetvalue)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateGlobalSettings
-{{% gql-fields %}}
- * updateGlobalSettings(input: [UpdateGlobalSettingsInput](/graphql-api/admin/input-types#updateglobalsettingsinput)!): [UpdateGlobalSettingsResult](/graphql-api/admin/object-types#updateglobalsettingsresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateGlobalSettings(input: <a href="/docs/reference/graphql-api/admin/input-types#updateglobalsettingsinput">UpdateGlobalSettingsInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#updateglobalsettingsresult">UpdateGlobalSettingsResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateOrderNote
-{{% gql-fields %}}
- * updateOrderNote(input: [UpdateOrderNoteInput](/graphql-api/admin/input-types#updateordernoteinput)!): [HistoryEntry](/graphql-api/admin/object-types#historyentry)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateOrderNote(input: <a href="/docs/reference/graphql-api/admin/input-types#updateordernoteinput">UpdateOrderNoteInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#historyentry">HistoryEntry</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updatePaymentMethod
-Update an existing PaymentMethod
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing PaymentMethod</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updatePaymentMethod(input: <a href="/docs/reference/graphql-api/admin/input-types#updatepaymentmethodinput">UpdatePaymentMethodInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#paymentmethod">PaymentMethod</a>!</div>
 
-{{% gql-fields %}}
- * updatePaymentMethod(input: [UpdatePaymentMethodInput](/graphql-api/admin/input-types#updatepaymentmethodinput)!): [PaymentMethod](/graphql-api/admin/object-types#paymentmethod)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateProduct
-Update an existing Product
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Product</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateProduct(input: <a href="/docs/reference/graphql-api/admin/input-types#updateproductinput">UpdateProductInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#product">Product</a>!</div>
 
-{{% gql-fields %}}
- * updateProduct(input: [UpdateProductInput](/graphql-api/admin/input-types#updateproductinput)!): [Product](/graphql-api/admin/object-types#product)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateProductOption
-Create a new ProductOption within a ProductOptionGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new ProductOption within a ProductOptionGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateProductOption(input: <a href="/docs/reference/graphql-api/admin/input-types#updateproductoptioninput">UpdateProductOptionInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#productoption">ProductOption</a>!</div>
 
-{{% gql-fields %}}
- * updateProductOption(input: [UpdateProductOptionInput](/graphql-api/admin/input-types#updateproductoptioninput)!): [ProductOption](/graphql-api/admin/object-types#productoption)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateProductOptionGroup
-Update an existing ProductOptionGroup
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing ProductOptionGroup</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateProductOptionGroup(input: <a href="/docs/reference/graphql-api/admin/input-types#updateproductoptiongroupinput">UpdateProductOptionGroupInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#productoptiongroup">ProductOptionGroup</a>!</div>
 
-{{% gql-fields %}}
- * updateProductOptionGroup(input: [UpdateProductOptionGroupInput](/graphql-api/admin/input-types#updateproductoptiongroupinput)!): [ProductOptionGroup](/graphql-api/admin/object-types#productoptiongroup)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateProductVariants
-Update existing ProductVariants
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update existing ProductVariants</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateProductVariants(input: [<a href="/docs/reference/graphql-api/admin/input-types#updateproductvariantinput">UpdateProductVariantInput</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#productvariant">ProductVariant</a>]!</div>
 
-{{% gql-fields %}}
- * updateProductVariants(input: [[UpdateProductVariantInput](/graphql-api/admin/input-types#updateproductvariantinput)!]!): [[ProductVariant](/graphql-api/admin/object-types#productvariant)]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateProducts
-Update multiple existing Products
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update multiple existing Products</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateProducts(input: [<a href="/docs/reference/graphql-api/admin/input-types#updateproductinput">UpdateProductInput</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#product">Product</a>!]!</div>
 
-{{% gql-fields %}}
- * updateProducts(input: [[UpdateProductInput](/graphql-api/admin/input-types#updateproductinput)!]!): [[Product](/graphql-api/admin/object-types#product)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updatePromotion
-{{% gql-fields %}}
- * updatePromotion(input: [UpdatePromotionInput](/graphql-api/admin/input-types#updatepromotioninput)!): [UpdatePromotionResult](/graphql-api/admin/object-types#updatepromotionresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updatePromotion(input: <a href="/docs/reference/graphql-api/admin/input-types#updatepromotioninput">UpdatePromotionInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#updatepromotionresult">UpdatePromotionResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateProvince
-Update an existing Province
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Province</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateProvince(input: <a href="/docs/reference/graphql-api/admin/input-types#updateprovinceinput">UpdateProvinceInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#province">Province</a>!</div>
 
-{{% gql-fields %}}
- * updateProvince(input: [UpdateProvinceInput](/graphql-api/admin/input-types#updateprovinceinput)!): [Province](/graphql-api/admin/object-types#province)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateRole
-Update an existing Role
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Role</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateRole(input: <a href="/docs/reference/graphql-api/admin/input-types#updateroleinput">UpdateRoleInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#role">Role</a>!</div>
 
-{{% gql-fields %}}
- * updateRole(input: [UpdateRoleInput](/graphql-api/admin/input-types#updateroleinput)!): [Role](/graphql-api/admin/object-types#role)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateSeller
-Update an existing Seller
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Seller</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateSeller(input: <a href="/docs/reference/graphql-api/admin/input-types#updatesellerinput">UpdateSellerInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#seller">Seller</a>!</div>
 
-{{% gql-fields %}}
- * updateSeller(input: [UpdateSellerInput](/graphql-api/admin/input-types#updatesellerinput)!): [Seller](/graphql-api/admin/object-types#seller)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateShippingMethod
-Update an existing ShippingMethod
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing ShippingMethod</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateShippingMethod(input: <a href="/docs/reference/graphql-api/admin/input-types#updateshippingmethodinput">UpdateShippingMethodInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#shippingmethod">ShippingMethod</a>!</div>
 
-{{% gql-fields %}}
- * updateShippingMethod(input: [UpdateShippingMethodInput](/graphql-api/admin/input-types#updateshippingmethodinput)!): [ShippingMethod](/graphql-api/admin/object-types#shippingmethod)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateStockLocation
-{{% gql-fields %}}
- * updateStockLocation(input: [UpdateStockLocationInput](/graphql-api/admin/input-types#updatestocklocationinput)!): [StockLocation](/graphql-api/admin/object-types#stocklocation)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateStockLocation(input: <a href="/docs/reference/graphql-api/admin/input-types#updatestocklocationinput">UpdateStockLocationInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#stocklocation">StockLocation</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateTag
-Update an existing Tag
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Tag</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateTag(input: <a href="/docs/reference/graphql-api/admin/input-types#updatetaginput">UpdateTagInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#tag">Tag</a>!</div>
 
-{{% gql-fields %}}
- * updateTag(input: [UpdateTagInput](/graphql-api/admin/input-types#updatetaginput)!): [Tag](/graphql-api/admin/object-types#tag)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateTaxCategory
-Update an existing TaxCategory
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing TaxCategory</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateTaxCategory(input: <a href="/docs/reference/graphql-api/admin/input-types#updatetaxcategoryinput">UpdateTaxCategoryInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#taxcategory">TaxCategory</a>!</div>
 
-{{% gql-fields %}}
- * updateTaxCategory(input: [UpdateTaxCategoryInput](/graphql-api/admin/input-types#updatetaxcategoryinput)!): [TaxCategory](/graphql-api/admin/object-types#taxcategory)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateTaxRate
-Update an existing TaxRate
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing TaxRate</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateTaxRate(input: <a href="/docs/reference/graphql-api/admin/input-types#updatetaxrateinput">UpdateTaxRateInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#taxrate">TaxRate</a>!</div>
 
-{{% gql-fields %}}
- * updateTaxRate(input: [UpdateTaxRateInput](/graphql-api/admin/input-types#updatetaxrateinput)!): [TaxRate](/graphql-api/admin/object-types#taxrate)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateZone
-Update an existing Zone
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Zone</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateZone(input: <a href="/docs/reference/graphql-api/admin/input-types#updatezoneinput">UpdateZoneInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#zone">Zone</a>!</div>
 
-{{% gql-fields %}}
- * updateZone(input: [UpdateZoneInput](/graphql-api/admin/input-types#updatezoneinput)!): [Zone](/graphql-api/admin/object-types#zone)!
-{{% /gql-fields %}}
 
-
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>

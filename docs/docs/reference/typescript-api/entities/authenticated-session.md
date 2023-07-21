@@ -1,7 +1,7 @@
 ---
 title: "AuthenticatedSession"
 weight: 10
-date: 2023-07-20T13:56:15.376Z
+date: 2023-07-21T07:17:01.087Z
 showtoc: true
 generated: true
 ---
@@ -27,25 +27,28 @@ class AuthenticatedSession extends Session {
     authenticationStrategy: string;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/session#session'>Session</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/session#session'>Session</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>&#62;) => AuthenticatedSession"   />
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>&#62;) => AuthenticatedSession"   />
 
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/user#user'>User</a>"   />
 
-The <a href='/typescript-api/entities/user#user'>User</a> who has authenticated to create this session.
+The <a href='/docs/reference/typescript-api/entities/user#user'>User</a> who has authenticated to create this session.
 ### authenticationStrategy
 
 <MemberInfo kind="property" type="string"   />
 
-The name of the <a href='/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a> used when authenticating
+The name of the <a href='/docs/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a> used when authenticating
 to create this session.
+
+
+</div>

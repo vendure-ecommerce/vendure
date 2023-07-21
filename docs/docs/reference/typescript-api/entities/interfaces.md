@@ -1,7 +1,7 @@
 ---
 title: "Interfaces"
 weight: 10
-date: 2023-07-20T13:56:14.231Z
+date: 2023-07-21T07:16:59.997Z
 showtoc: true
 generated: true
 ---
@@ -23,11 +23,16 @@ interface ChannelAware {
 }
 ```
 
+<div className="members-wrapper">
+
 ### channels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
+
+
+</div>
 
 
 ## SoftDeletable
@@ -42,11 +47,16 @@ interface SoftDeletable {
 }
 ```
 
+<div className="members-wrapper">
+
 ### deletedAt
 
 <MemberInfo kind="property" type="Date | null"   />
 
 
+
+
+</div>
 
 
 ## Orderable
@@ -61,11 +71,16 @@ interface Orderable {
 }
 ```
 
+<div className="members-wrapper">
+
 ### position
 
 <MemberInfo kind="property" type="number"   />
 
 
+
+
+</div>
 
 
 ## Taggable
@@ -80,11 +95,16 @@ interface Taggable {
 }
 ```
 
+<div className="members-wrapper">
+
 ### tags
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/tag#tag'>Tag</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
 
 
+
+
+</div>
 
 
 ## Translatable
@@ -99,8 +119,13 @@ interface Translatable {
 }
 ```
 
+<div className="members-wrapper">
+
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;"   />
 
 
+
+
+</div>

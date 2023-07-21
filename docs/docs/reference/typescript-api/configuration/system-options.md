@@ -1,7 +1,7 @@
 ---
 title: "SystemOptions"
 weight: 10
-date: 2023-07-20T13:56:14.913Z
+date: 2023-07-21T07:17:00.652Z
 showtoc: true
 generated: true
 ---
@@ -23,9 +23,14 @@ interface SystemOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### healthChecks
 
-<MemberInfo kind="property" type="<a href='/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a>[]" default="[<a href='/typescript-api/health-check/type-ormhealth-check-strategy#typeormhealthcheckstrategy'>TypeORMHealthCheckStrategy</a>]"  since="1.6.0"  />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a>[]" default="[<a href='/docs/reference/typescript-api/health-check/type-ormhealth-check-strategy#typeormhealthcheckstrategy'>TypeORMHealthCheckStrategy</a>]"  since="1.6.0"  />
 
-Defines an array of <a href='/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> instances which are used by the `/health` endpoint to verify
+Defines an array of <a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> instances which are used by the `/health` endpoint to verify
 that any critical systems which the Vendure server depends on are also healthy.
+
+
+</div>

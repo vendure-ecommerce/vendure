@@ -1,7 +1,7 @@
 ---
 title: "AdminUiAppConfig"
 weight: 10
-date: 2023-07-20T13:56:16.772Z
+date: 2023-07-21T07:17:02.534Z
 showtoc: true
 generated: true
 ---
@@ -25,6 +25,8 @@ interface AdminUiAppConfig {
 }
 ```
 
+<div className="members-wrapper">
+
 ### path
 
 <MemberInfo kind="property" type="string"   />
@@ -42,3 +44,6 @@ Specifies the url route to the Admin UI app.
 <MemberInfo kind="property" type="() =&#62; Promise&#60;void&#62;"   />
 
 The function which will be invoked to start the app compilation process.
+
+
+</div>

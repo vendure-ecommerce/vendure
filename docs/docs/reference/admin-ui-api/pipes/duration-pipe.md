@@ -1,7 +1,7 @@
 ---
 title: "DurationPipe"
 weight: 10
-date: 2023-07-20T13:56:18.685Z
+date: 2023-07-21T07:17:04.757Z
 showtoc: true
 generated: true
 ---
@@ -20,7 +20,7 @@ e.g. "12ms", "33s", "2:03m"
 
 *Example*
 
-```TypeScript
+```ts
 {{ timeInMs | duration }}
 ```
 
@@ -30,15 +30,15 @@ class DurationPipe implements PipeTransform {
   transform(value: number) => string;
 }
 ```
-Implements
-
- * PipeTransform
+* Implements: <code>PipeTransform</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(i18nService: <a href='/typescript-api/common/i18n-service#i18nservice'>I18nService</a>) => DurationPipe"   />
+<MemberInfo kind="method" type="(i18nService: <a href='/docs/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>) => DurationPipe"   />
 
 
 ### transform
@@ -46,3 +46,6 @@ Implements
 <MemberInfo kind="method" type="(value: number) => string"   />
 
 
+
+
+</div>

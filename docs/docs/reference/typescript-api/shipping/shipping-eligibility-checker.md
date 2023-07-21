@@ -1,7 +1,7 @@
 ---
 title: "ShippingEligibilityChecker"
 weight: 10
-date: 2023-07-20T13:56:14.769Z
+date: 2023-07-21T07:17:00.501Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="49" packageName="@vendure/core" />
 
 The ShippingEligibilityChecker class is used to check whether an order qualifies for a
-given <a href='/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>.
+given <a href='/docs/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>.
 
 *Example*
 
@@ -34,20 +34,21 @@ const minOrderTotalEligibilityChecker = new ShippingEligibilityChecker({
 ```
 
 ```ts title="Signature"
-class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<
-    T
-> {
+class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
   constructor(config: ShippingEligibilityCheckerConfig<T>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;     T &#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker"   />
 
 
+
+
+</div>

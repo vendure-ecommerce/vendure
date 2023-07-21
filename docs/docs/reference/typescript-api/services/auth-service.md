@@ -1,7 +1,7 @@
 ---
 title: "AuthService"
 weight: 10
-date: 2023-07-20T13:56:15.991Z
+date: 2023-07-21T07:17:01.657Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/auth.service.ts" sourceLine="36" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/session#session'>Session</a>, <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> & <a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a> entities.
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/session#session'>Session</a>, <a href='/docs/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> & <a href='/docs/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a> entities.
 
 ```ts title="Signature"
 class AuthService {
@@ -27,29 +27,34 @@ class AuthService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, sessionService: <a href='/typescript-api/services/session-service#sessionservice'>SessionService</a>, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>) => AuthService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, sessionService: <a href='/docs/reference/typescript-api/services/session-service#sessionservice'>SessionService</a>, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) => AuthService"   />
 
 
 ### authenticate
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, apiType: <a href='/typescript-api/request/api-type#apitype'>ApiType</a>, authenticationMethod: string, authenticationData: any) => Promise&#60;<a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> | InvalidCredentialsError | NotVerifiedError&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, apiType: <a href='/docs/reference/typescript-api/request/api-type#apitype'>ApiType</a>, authenticationMethod: string, authenticationData: any) => Promise&#60;<a href='/docs/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> | InvalidCredentialsError | NotVerifiedError&#62;"   />
 
-Authenticates a user's credentials and if okay, creates a new <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>.
+Authenticates a user's credentials and if okay, creates a new <a href='/docs/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>.
 ### createAuthenticatedSessionForUser
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>, authenticationStrategyName: string) => Promise&#60;<a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> | NotVerifiedError&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/docs/reference/typescript-api/entities/user#user'>User</a>, authenticationStrategyName: string) => Promise&#60;<a href='/docs/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> | NotVerifiedError&#62;"   />
 
 
 ### verifyUserPassword
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean | InvalidCredentialsError | ShopInvalidCredentialsError&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean | InvalidCredentialsError | ShopInvalidCredentialsError&#62;"   />
 
 Verify the provided password against the one we have for the given user. Requires
-the <a href='/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a> to be configured.
+the <a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a> to be configured.
 ### destroyAuthenticatedSession
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sessionToken: string) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sessionToken: string) => Promise&#60;void&#62;"   />
 
 Deletes all sessions for the user associated with the given session token.
+
+
+</div>

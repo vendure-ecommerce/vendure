@@ -1,7 +1,7 @@
 ---
 title: "Asset"
 weight: 10
-date: 2023-07-20T13:56:15.047Z
+date: 2023-07-21T07:17:00.777Z
 showtoc: true
 generated: true
 ---
@@ -41,22 +41,18 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
     customFields: CustomAssetFields;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * <a href='/typescript-api/entities/interfaces#taggable'>Taggable</a>
- * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
- * HasCustomFields
+* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#taggable'>Taggable</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset"   />
 
 
 ### name
@@ -106,12 +102,12 @@ Implements
 
 ### tags
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/tag#tag'>Tag</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 ### customFields
@@ -119,3 +115,6 @@ Implements
 <MemberInfo kind="property" type="CustomAssetFields"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "RegisterPageTab"
 weight: 10
-date: 2023-07-20T13:56:18.097Z
+date: 2023-07-21T07:17:04.190Z
 showtoc: true
 generated: true
 ---
@@ -19,7 +19,7 @@ Add a tab to an existing list or detail page.
 
 *Example*
 
-```TypeScript
+```ts
 @NgModule({
   imports: [SharedModule],
   providers: [
@@ -41,5 +41,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/admin-ui-api/tabs/page-tab-config#pagetabconfig'>PageTabConfig</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/tabs/page-tab-config#pagetabconfig'>PageTabConfig</a>" />
 

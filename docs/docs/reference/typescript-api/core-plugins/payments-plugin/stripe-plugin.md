@@ -1,7 +1,7 @@
 ---
 title: "StripePlugin"
 weight: 10
-date: 2023-07-20T13:56:17.047Z
+date: 2023-07-21T07:17:02.898Z
 showtoc: true
 generated: true
 ---
@@ -36,7 +36,7 @@ the Stripe CLI to test your webhook locally. See the _local development_ section
 ## Setup
 
 1. Add the plugin to your VendureConfig `plugins` array:
-    ```TypeScript
+    ```ts
     import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
 
     // ...
@@ -68,7 +68,7 @@ If you are using React, you should also consider installing `@stripe/react-strip
 The high-level workflow is:
 1. Create a "payment intent" on the server by executing the `createStripePaymentIntent` mutation which is exposed by this plugin.
 2. Use the returned client secret to instantiate the Stripe Payment Element:
-   ```TypeScript
+   ```ts
    import { Elements } from '@stripe/react-stripe-js';
    import { loadStripe, Stripe } from '@stripe/stripe-js';
    import { CheckoutForm } from './CheckoutForm';
@@ -92,7 +92,7 @@ The high-level workflow is:
      );
    }
    ```
-   ```TypeScript
+   ```ts
    // CheckoutForm.tsx
    import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
    import { FormEvent } from 'react';
@@ -164,16 +164,21 @@ class StripePlugin {
 }
 ```
 
+<div className="members-wrapper">
+
 ### options
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripeplugin'>StripePlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripeplugin'>StripePlugin</a>&#62;"   />
 
 Initialize the Stripe payment plugin
+
+
+</div>
 
 
 ## StripePluginOptions
@@ -193,6 +198,8 @@ interface StripePluginOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### storeCustomersInStripe
 
 <MemberInfo kind="property" type="boolean" default="false"   />
@@ -203,6 +210,9 @@ to be used with the same PaymentIntent. This is done by adding a custom field to
 the Stripe customer ID, so switching this on will require a database migration / synchronization.
 ### metadata
 
-<MemberInfo kind="property" type="(         injector: <a href='/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;"  since="1.9.7"  />
+<MemberInfo kind="property" type="(         injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;"  since="1.9.7"  />
 
 Attach extra metadata to Stripe payment intent
+
+
+</div>

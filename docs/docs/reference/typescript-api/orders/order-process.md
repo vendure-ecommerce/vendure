@@ -1,7 +1,7 @@
 ---
 title: "OrderProcess"
 weight: 10
-date: 2023-07-20T13:56:14.529Z
+date: 2023-07-21T07:17:00.282Z
 showtoc: true
 generated: true
 ---
@@ -20,7 +20,7 @@ in, and how it may transition from one state to another. Using the `onTransition
 OrderProcess can perform checks before allowing a state transition to occur, and the `onTransitionEnd()`
 hook allows logic to be executed after a state change.
 
-For detailed description of the interface members, see the <a href='/typescript-api/state-machine/state-machine-config#statemachineconfig'>StateMachineConfig</a> docs.
+For detailed description of the interface members, see the <a href='/docs/reference/typescript-api/state-machine/state-machine-config#statemachineconfig'>StateMachineConfig</a> docs.
 
 ```ts title="Signature"
 interface OrderProcess<State extends keyof CustomOrderStates | string> extends InjectableStrategy {
@@ -30,40 +30,43 @@ interface OrderProcess<State extends keyof CustomOrderStates | string> extends I
   onTransitionError?: OnTransitionErrorFn<State | OrderState>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### transitions
 
-<MemberInfo kind="property" type="<a href='/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62; &#38; Partial&#60;<a href='/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/typescript-api/orders/order-process#orderstate'>OrderState</a> | State&#62;&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62; &#38; Partial&#60;<a href='/docs/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a> | State&#62;&#62;"   />
 
 
 ### onTransitionStart
 
-<MemberInfo kind="property" type="<a href='/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;State | <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;State | <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/docs/reference/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;"   />
 
 
 ### onTransitionEnd
 
-<MemberInfo kind="property" type="<a href='/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;State | <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;State | <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/docs/reference/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;"   />
 
 
 ### onTransitionError
 
-<MemberInfo kind="property" type="<a href='/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;State | <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;State | <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62;"   />
 
 
+
+
+</div>
 
 
 ## DefaultOrderProcessOptions
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="50" packageName="@vendure/core" since="2.0.0" />
 
-Options which can be passed to the <a href='/typescript-api/orders/order-process#configuredefaultorderprocess'>configureDefaultOrderProcess</a> function
-to configure an instance of the default <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a>. By default, all
+Options which can be passed to the <a href='/docs/reference/typescript-api/orders/order-process#configuredefaultorderprocess'>configureDefaultOrderProcess</a> function
+to configure an instance of the default <a href='/docs/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a>. By default, all
 options are set to `true`.
 
 ```ts title="Signature"
@@ -80,6 +83,8 @@ interface DefaultOrderProcessOptions {
   checkFulfillmentStates?: boolean;
 }
 ```
+
+<div className="members-wrapper">
 
 ### checkModificationPayments
 
@@ -144,14 +149,17 @@ there are corresponding Fulfillments in the correct states to allow this. E.g. `
 the Order are part of a Fulfillment which itself is in the `Shipped` state.
 
 
+</div>
+
+
 ## configureDefaultOrderProcess
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="163" packageName="@vendure/core" since="2.0.0" />
 
-Used to configure a customized instance of the default <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure.
+Used to configure a customized instance of the default <a href='/docs/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure.
 Using this function allows you to turn off certain checks and constraints that are enabled by default.
 
-```TypeScript
+```ts
 import { configureDefaultOrderProcess, VendureConfig } from '@vendure/core';
 
 const myCustomOrderProcess = configureDefaultOrderProcess({
@@ -167,8 +175,8 @@ export const config: VendureConfig = {
   },
 };
 ```
-The <a href='/typescript-api/orders/order-process#defaultorderprocessoptions'>DefaultOrderProcessOptions</a> type defines all available options. If you require even
-more customization, you can create your own implementation of the <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> interface.
+The <a href='/docs/reference/typescript-api/orders/order-process#defaultorderprocessoptions'>DefaultOrderProcessOptions</a> type defines all available options. If you require even
+more customization, you can create your own implementation of the <a href='/docs/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> interface.
 
 ```ts title="Signature"
 function configureDefaultOrderProcess(options: DefaultOrderProcessOptions): void
@@ -177,7 +185,7 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="<a href='/typescript-api/orders/order-process#defaultorderprocessoptions'>DefaultOrderProcessOptions</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/orders/order-process#defaultorderprocessoptions'>DefaultOrderProcessOptions</a>" />
 
 
 
@@ -185,8 +193,8 @@ Parameters
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="474" packageName="@vendure/core" since="2.0.0" />
 
-This is the built-in <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure. A customized version of this process
-can be created using the <a href='/typescript-api/orders/order-process#configuredefaultorderprocess'>configureDefaultOrderProcess</a> function, which allows you to pass in an object
+This is the built-in <a href='/docs/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure. A customized version of this process
+can be created using the <a href='/docs/reference/typescript-api/orders/order-process#configuredefaultorderprocess'>configureDefaultOrderProcess</a> function, which allows you to pass in an object
 to enable/disable certain checks.
 
 
@@ -195,7 +203,7 @@ to enable/disable certain checks.
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="21" packageName="@vendure/core" since="2.0.0" />
 
-An interface to extend the <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a> type.
+An interface to extend the <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a> type.
 
 ```ts title="Signature"
 interface OrderStates {
@@ -209,8 +217,8 @@ interface OrderStates {
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="42" packageName="@vendure/core" />
 
 These are the default states of the Order process. They can be augmented and
-modified by using the <a href='/typescript-api/orders/order-options#orderoptions'>OrderOptions</a> `process` property, and by default
-the <a href='/typescript-api/orders/order-process#defaultorderprocess'>defaultOrderProcess</a> will add the states
+modified by using the <a href='/docs/reference/typescript-api/orders/order-options#orderoptions'>OrderOptions</a> `process` property, and by default
+the <a href='/docs/reference/typescript-api/orders/order-process#defaultorderprocess'>defaultOrderProcess</a> will add the states
 
 - `ArrangingPayment`
 - `PaymentAuthorized`
@@ -236,7 +244,7 @@ type OrderState = | 'Created'
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="57" packageName="@vendure/core" />
 
-This is the object passed to the <a href='/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> state transition hooks.
+This is the object passed to the <a href='/docs/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> state transition hooks.
 
 ```ts title="Signature"
 interface OrderTransitionData {
@@ -245,13 +253,18 @@ interface OrderTransitionData {
 }
 ```
 
+<div className="members-wrapper">
+
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
+
+
+</div>

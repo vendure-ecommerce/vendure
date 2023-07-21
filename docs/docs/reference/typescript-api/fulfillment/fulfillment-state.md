@@ -1,7 +1,7 @@
 ---
 title: "FulfillmentState"
 weight: 10
-date: 2023-07-20T13:56:15.876Z
+date: 2023-07-21T07:17:01.539Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/service/helpers/fulfillment-state-machine/fulfillment-state.ts" sourceLine="29" packageName="@vendure/core" />
 
 These are the default states of the fulfillment process. By default, they will be extended
-by the <a href='/typescript-api/fulfillment/fulfillment-process#defaultfulfillmentprocess'>defaultFulfillmentProcess</a> to also include `Shipped` and `Delivered`.
+by the <a href='/docs/reference/typescript-api/fulfillment/fulfillment-process#defaultfulfillmentprocess'>defaultFulfillmentProcess</a> to also include `Shipped` and `Delivered`.
 
 ```ts title="Signature"
 type FulfillmentState = | 'Created'

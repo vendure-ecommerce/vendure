@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntryComponent"
 weight: 10
-date: 2023-07-20T13:56:17.931Z
+date: 2023-07-21T07:17:04.067Z
 showtoc: true
 generated: true
 ---
@@ -17,7 +17,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 This interface should be implemented by components intended to display a history entry in the
 Order or Customer history timeline. If the component needs access to the Order or Customer object itself,
-you should implement <a href='/admin-ui-api/custom-history-entry-components/order-history-entry-component#orderhistoryentrycomponent'>OrderHistoryEntryComponent</a> or <a href='/admin-ui-api/custom-history-entry-components/customer-history-entry-component#customerhistoryentrycomponent'>CustomerHistoryEntryComponent</a> respectively.
+you should implement <a href='/docs/reference/admin-ui-api/custom-history-entry-components/order-history-entry-component#orderhistoryentrycomponent'>OrderHistoryEntryComponent</a> or <a href='/docs/reference/admin-ui-api/custom-history-entry-components/customer-history-entry-component#customerhistoryentrycomponent'>CustomerHistoryEntryComponent</a> respectively.
 
 ```ts title="Signature"
 interface HistoryEntryComponent {
@@ -28,6 +28,8 @@ interface HistoryEntryComponent {
   getIconShape?: (entry: TimelineHistoryEntry) => string | string[] | undefined;
 }
 ```
+
+<div className="members-wrapper">
 
 ### entry
 
@@ -56,3 +58,6 @@ or "Administrator".
 <MemberInfo kind="property" type="(entry: TimelineHistoryEntry) =&#62; string | string[] | undefined"   />
 
 Optional Clarity icon shape to display with the entry. Examples: `'note'`, `['success-standard', 'is-solid']`
+
+
+</div>

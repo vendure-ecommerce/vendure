@@ -1,7 +1,7 @@
 ---
 title: "ProductVariantSelectorComponent"
 weight: 10
-date: 2023-07-20T13:56:18.431Z
+date: 2023-07-21T07:17:04.508Z
 showtoc: true
 generated: true
 ---
@@ -35,11 +35,11 @@ class ProductVariantSelectorComponent implements OnInit {
   selectResult(product?: ProductSelectorSearchQuery['search']['items'][number]) => ;
 }
 ```
-Implements
-
- * OnInit
+* Implements: <code>OnInit</code>
 
 
+
+<div className="members-wrapper">
 
 ### searchInput$
 
@@ -63,7 +63,7 @@ Implements
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent"   />
 
 
 ### ngOnInit
@@ -76,3 +76,6 @@ Implements
 <MemberInfo kind="method" type="(product?: ProductSelectorSearchQuery['search']['items'][number]) => "   />
 
 
+
+
+</div>

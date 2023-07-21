@@ -1,7 +1,7 @@
 ---
 title: "AddNavMenuSection"
 weight: 10
-date: 2023-07-20T13:56:18.037Z
+date: 2023-07-21T07:17:04.152Z
 showtoc: true
 generated: true
 ---
@@ -23,7 +23,7 @@ This should be used in the NgModule `providers` array of your ui extension modul
 
 *Example*
 
-```TypeScript
+```ts
 @NgModule({
   imports: [SharedModule],
   providers: [
@@ -47,7 +47,7 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/admin-ui-api/nav-menu/nav-menu-section#navmenusection'>NavMenuSection</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/nav-menu/nav-menu-section#navmenusection'>NavMenuSection</a>" />
 
 ### before
 

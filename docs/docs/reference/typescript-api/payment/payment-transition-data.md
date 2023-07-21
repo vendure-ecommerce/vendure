@@ -1,7 +1,7 @@
 ---
 title: "PaymentTransitionData"
 weight: 10
-date: 2023-07-20T13:56:15.921Z
+date: 2023-07-21T07:17:01.588Z
 showtoc: true
 generated: true
 ---
@@ -26,18 +26,23 @@ interface PaymentTransitionData {
 }
 ```
 
+<div className="members-wrapper">
+
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 
 ### payment
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/payment#payment'>Payment</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/payment#payment'>Payment</a>"   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
+
+
+</div>

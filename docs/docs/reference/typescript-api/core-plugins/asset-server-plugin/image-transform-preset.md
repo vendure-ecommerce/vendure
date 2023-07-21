@@ -1,7 +1,7 @@
 ---
 title: "ImageTransformPreset"
 weight: 10
-date: 2023-07-20T13:56:16.859Z
+date: 2023-07-21T07:17:02.635Z
 showtoc: true
 generated: true
 ---
@@ -36,6 +36,8 @@ interface ImageTransformPreset {
 }
 ```
 
+<div className="members-wrapper">
+
 ### name
 
 <MemberInfo kind="property" type="string"   />
@@ -53,6 +55,9 @@ interface ImageTransformPreset {
 
 ### mode
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/asset-server-plugin/image-transform-mode#imagetransformmode'>ImageTransformMode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/image-transform-mode#imagetransformmode'>ImageTransformMode</a>"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "RequestContext"
 weight: 10
-date: 2023-07-20T13:56:14.079Z
+date: 2023-07-21T07:16:59.845Z
 showtoc: true
 generated: true
 ---
@@ -18,16 +18,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 The RequestContext holds information relevant to the current request, which may be
 required at various points of the stack.
 
-It is a good practice to inject the RequestContext (using the <a href='/typescript-api/request/ctx-decorator#ctx'>Ctx</a> decorator) into
+It is a good practice to inject the RequestContext (using the <a href='/docs/reference/typescript-api/request/ctx-decorator#ctx'>Ctx</a> decorator) into
 _all_ resolvers & REST handlers, and then pass it through to the service layer.
 
 This allows the service layer to access information about the current user, the active language,
-the active Channel, and so on. In addition, the <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> relies on the
+the active Channel, and so on. In addition, the <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> relies on the
 presence of the RequestContext object in order to correctly handle per-request database transactions.
 
 *Example*
 
-```TypeScript
+```ts
 @Query()
 myQuery(@Ctx() ctx: RequestContext) {
   return this.myService.getData(ctx);
@@ -55,24 +55,26 @@ class RequestContext {
 }
 ```
 
+<div className="members-wrapper">
+
 ### empty
 
-<MemberInfo kind="method" type="() => <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="method" type="() => <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 Creates an "empty" RequestContext object. This is only intended to be used
 when a service method must be called outside the normal request-response
 cycle, e.g. when programmatically populating data. Usually a better alternative
-is to use the <a href='/typescript-api/request/request-context-service#requestcontextservice'>RequestContextService</a> `create()` method, which allows more control
+is to use the <a href='/docs/reference/typescript-api/request/request-context-service#requestcontextservice'>RequestContextService</a> `create()` method, which allows more control
 over the resulting RequestContext object.
 ### deserialize
 
-<MemberInfo kind="method" type="(ctxObject: SerializedRequestContext) => <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="method" type="(ctxObject: SerializedRequestContext) => <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 Creates a new RequestContext object from a serialized object created by the
 `serialize()` method.
 ### userHasPermissions
 
-<MemberInfo kind="method" type="(permissions: <a href='/typescript-api/common/permission#permission'>Permission</a>[]) => boolean"   />
+<MemberInfo kind="method" type="(permissions: <a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>[]) => boolean"   />
 
 Returns `true` if there is an active Session & User associated with this request,
 and that User has the specified permissions on the active Channel.
@@ -82,10 +84,10 @@ and that User has the specified permissions on the active Channel.
 
 Serializes the RequestContext object into a JSON-compatible simple object.
 This is useful when you need to send a RequestContext object to another
-process, e.g. to pass it to the Job Queue via the <a href='/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>.
+process, e.g. to pass it to the Job Queue via the <a href='/docs/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>.
 ### copy
 
-<MemberInfo kind="method" type="() => <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="method" type="() => <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 Creates a shallow copy of the RequestContext instance. This means that
 mutations to the copy itself will not affect the original, but deep mutations
@@ -97,37 +99,37 @@ mutations to the copy itself will not affect the original, but deep mutations
 The raw Express request object.
 ### apiType
 
-<MemberInfo kind="property" type="<a href='/typescript-api/request/api-type#apitype'>ApiType</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/api-type#apitype'>ApiType</a>"   />
 
 Signals which API this request was received by, e.g. `admin` or `shop`.
 ### channel
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>"   />
 
-The active <a href='/typescript-api/entities/channel#channel'>Channel</a> of this request.
+The active <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a> of this request.
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### languageCode
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
 
 
 ### currencyCode
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
 
 
 ### session
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined"   />
 
 
 ### activeUserId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a> | undefined"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a> | undefined"   />
 
 
 ### isAuthorized
@@ -146,3 +148,6 @@ are owned by the current session.
 <MemberInfo kind="method" type="(key: string, variables?: { [k: string]: any }) => string"   />
 
 Translate the given i18n key
+
+
+</div>

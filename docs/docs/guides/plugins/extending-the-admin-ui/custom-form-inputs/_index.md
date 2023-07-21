@@ -23,7 +23,7 @@ customFields: {
 
 By default, the "intensity" field will be displayed as a number input:
 
-{{< figure src="./ui-extensions-custom-field-default.webp" >}}
+![./ui-extensions-custom-field-default.webp](./ui-extensions-custom-field-default.webp)
 
 But let's say we want to display a range slider instead. Here's how we can do this using our shared extension module combined with the [registerFormInputComponent function]({{< relref "register-form-input-component" >}}):
 
@@ -102,7 +102,7 @@ If we want, we can also pass any other arbitrary data in the `ui` object, which 
 
 Re-compiling the Admin UI will result in our SliderControl now being used for the "intensity" custom field:
 
-{{< figure src="./ui-extensions-custom-field-slider.webp" >}}
+![./ui-extensions-custom-field-slider.webp](./ui-extensions-custom-field-slider.webp)
 
 To recap the steps involved:
 

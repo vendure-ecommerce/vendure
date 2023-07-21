@@ -1,7 +1,7 @@
 ---
 title: "HealthCheckRegistryService"
 weight: 10
-date: 2023-07-20T13:56:15.631Z
+date: 2023-07-21T07:17:01.335Z
 showtoc: true
 generated: true
 ---
@@ -29,15 +29,15 @@ service to add a check for that dependency to the Vendure health check.
 
 
 Since v1.6.0, the preferred way to implement a custom health check is by creating a new
-<a href='/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> and then passing it to the `systemOptions.healthChecks` array.
-See the <a href='/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> docs for an example configuration.
+<a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> and then passing it to the `systemOptions.healthChecks` array.
+See the <a href='/docs/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> docs for an example configuration.
 
 The alternative way to register a health check is by injecting this service directly into your
-plugin module. To use it in your plugin, you'll need to import the <a href='/typescript-api/plugin/plugin-common-module#plugincommonmodule'>PluginCommonModule</a>:
+plugin module. To use it in your plugin, you'll need to import the <a href='/docs/reference/typescript-api/plugin/plugin-common-module#plugincommonmodule'>PluginCommonModule</a>:
 
 *Example*
 
-```TypeScript
+```ts
 import { HealthCheckRegistryService, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { TerminusModule } from '@nestjs/terminus';
 
@@ -62,6 +62,8 @@ class HealthCheckRegistryService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### registerIndicatorFunction
 
 <MemberInfo kind="method" type="(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => "   />
@@ -69,3 +71,6 @@ class HealthCheckRegistryService {
 Registers one or more `HealthIndicatorFunctions` (see [Nestjs docs](https://docs.nestjs.com/recipes/terminus#setting-up-a-healthcheck))
 to be added to the health check endpoint.
 The indicator will also appear in the Admin UI's "system status" view.
+
+
+</div>

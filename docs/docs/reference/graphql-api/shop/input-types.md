@@ -1,614 +1,1151 @@
 ---
 title: "Input Objects"
 weight: 4
-date: 2023-07-04T11:02:06.199Z
+date: 2023-07-21T09:48:20.380Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
 
 # Input Objects
 
+
 ## AuthenticationInput
 
-{{% gql-fields %}}
- * native: [NativeAuthInput](/graphql-api/shop/input-types#nativeauthinput)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">AuthenticationInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">native: <a href="/docs/reference/graphql-api/shop/input-types#nativeauthinput">NativeAuthInput</a></div>
 
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## BooleanListOperators
 
-Operators for filtering on a list of Boolean fields
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a list of Boolean fields</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">BooleanListOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">inList: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
 
-{{% gql-fields %}}
- * inList: [Boolean](/graphql-api/shop/object-types#boolean)!
-{{% /gql-fields %}}
 
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## BooleanOperators
 
-Operators for filtering on a Boolean field
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a Boolean field</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">BooleanOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">eq: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
-{{% gql-fields %}}
- * eq: [Boolean](/graphql-api/shop/object-types#boolean)
- * isNull: [Boolean](/graphql-api/shop/object-types#boolean)
-{{% /gql-fields %}}
+<div class="graphql-code-line ">isNull: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CollectionFilterParameter
 
-{{% gql-fields %}}
- * id: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * createdAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * updatedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * languageCode: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * name: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * slug: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * position: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * description: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * parentId: [IDOperators](/graphql-api/shop/input-types#idoperators)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CollectionFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">position: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">parentId: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CollectionListOptions
 
-{{% gql-fields %}}
- * topLevelOnly: [Boolean](/graphql-api/shop/object-types#boolean)
-* *// Skips the first n results, for use in pagination*
- * skip: [Int](/graphql-api/shop/object-types#int)
-* *// Takes n results, for use in pagination*
- * take: [Int](/graphql-api/shop/object-types#int)
-* *// Specifies which properties to sort the results by*
- * sort: [CollectionSortParameter](/graphql-api/shop/input-types#collectionsortparameter)
-* *// Allows the results to be filtered*
- * filter: [CollectionFilterParameter](/graphql-api/shop/input-types#collectionfilterparameter)
-* *// Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.*
- * filterOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CollectionListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line ">topLevelOnly: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#collectionsortparameter">CollectionSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/docs/reference/graphql-api/shop/input-types#collectionfilterparameter">CollectionFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CollectionSortParameter
 
-{{% gql-fields %}}
- * id: [SortOrder](/graphql-api/shop/enums#sortorder)
- * createdAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * updatedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * name: [SortOrder](/graphql-api/shop/enums#sortorder)
- * slug: [SortOrder](/graphql-api/shop/enums#sortorder)
- * position: [SortOrder](/graphql-api/shop/enums#sortorder)
- * description: [SortOrder](/graphql-api/shop/enums#sortorder)
- * parentId: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CollectionSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">position: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">parentId: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ConfigArgInput
 
-{{% gql-fields %}}
- * name: [String](/graphql-api/shop/object-types#string)!
-* *// A JSON stringified representation of the actual value*
- * value: [String](/graphql-api/shop/object-types#string)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ConfigArgInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">A JSON stringified representation of the actual value</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">value: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ConfigurableOperationInput
 
-{{% gql-fields %}}
- * code: [String](/graphql-api/shop/object-types#string)!
- * arguments: [[ConfigArgInput](/graphql-api/shop/input-types#configarginput)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ConfigurableOperationInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
+<div class="graphql-code-line ">arguments: [<a href="/docs/reference/graphql-api/shop/input-types#configarginput">ConfigArgInput</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CreateAddressInput
 
-{{% gql-fields %}}
- * fullName: [String](/graphql-api/shop/object-types#string)
- * company: [String](/graphql-api/shop/object-types#string)
- * streetLine1: [String](/graphql-api/shop/object-types#string)!
- * streetLine2: [String](/graphql-api/shop/object-types#string)
- * city: [String](/graphql-api/shop/object-types#string)
- * province: [String](/graphql-api/shop/object-types#string)
- * postalCode: [String](/graphql-api/shop/object-types#string)
- * countryCode: [String](/graphql-api/shop/object-types#string)!
- * phoneNumber: [String](/graphql-api/shop/object-types#string)
- * defaultShippingAddress: [Boolean](/graphql-api/shop/object-types#boolean)
- * defaultBillingAddress: [Boolean](/graphql-api/shop/object-types#boolean)
- * customFields: [JSON](/graphql-api/shop/object-types#json)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CreateAddressInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">fullName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
+<div class="graphql-code-line ">company: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">streetLine1: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">streetLine2: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">city: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">province: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">postalCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">countryCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">defaultShippingAddress: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">defaultBillingAddress: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CreateCustomerInput
 
-{{% gql-fields %}}
- * title: [String](/graphql-api/shop/object-types#string)
- * firstName: [String](/graphql-api/shop/object-types#string)!
- * lastName: [String](/graphql-api/shop/object-types#string)!
- * phoneNumber: [String](/graphql-api/shop/object-types#string)
- * emailAddress: [String](/graphql-api/shop/object-types#string)!
- * customFields: [JSON](/graphql-api/shop/object-types#json)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CreateCustomerInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">title: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
+<div class="graphql-code-line ">firstName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">lastName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">emailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CustomerFilterParameter
 
-{{% gql-fields %}}
- * id: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * createdAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * updatedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * title: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * firstName: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * lastName: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * phoneNumber: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * emailAddress: [StringOperators](/graphql-api/shop/input-types#stringoperators)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CustomerFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">title: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">firstName: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">lastName: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">emailAddress: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CustomerListOptions
 
-{{% gql-fields %}}
-* *// Skips the first n results, for use in pagination*
- * skip: [Int](/graphql-api/shop/object-types#int)
-* *// Takes n results, for use in pagination*
- * take: [Int](/graphql-api/shop/object-types#int)
-* *// Specifies which properties to sort the results by*
- * sort: [CustomerSortParameter](/graphql-api/shop/input-types#customersortparameter)
-* *// Allows the results to be filtered*
- * filter: [CustomerFilterParameter](/graphql-api/shop/input-types#customerfilterparameter)
-* *// Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.*
- * filterOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CustomerListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#customersortparameter">CustomerSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/docs/reference/graphql-api/shop/input-types#customerfilterparameter">CustomerFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## CustomerSortParameter
 
-{{% gql-fields %}}
- * id: [SortOrder](/graphql-api/shop/enums#sortorder)
- * createdAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * updatedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * title: [SortOrder](/graphql-api/shop/enums#sortorder)
- * firstName: [SortOrder](/graphql-api/shop/enums#sortorder)
- * lastName: [SortOrder](/graphql-api/shop/enums#sortorder)
- * phoneNumber: [SortOrder](/graphql-api/shop/enums#sortorder)
- * emailAddress: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CustomerSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">title: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">firstName: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">lastName: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">emailAddress: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## DateListOperators
 
-Operators for filtering on a list of Date fields
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a list of Date fields</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">DateListOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">inList: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
-{{% gql-fields %}}
- * inList: [DateTime](/graphql-api/shop/object-types#datetime)!
-{{% /gql-fields %}}
 
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## DateOperators
 
-Operators for filtering on a DateTime field
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a DateTime field</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">DateOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">eq: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
 
-{{% gql-fields %}}
- * eq: [DateTime](/graphql-api/shop/object-types#datetime)
- * before: [DateTime](/graphql-api/shop/object-types#datetime)
- * after: [DateTime](/graphql-api/shop/object-types#datetime)
- * between: [DateRange](/graphql-api/shop/input-types#daterange)
- * isNull: [Boolean](/graphql-api/shop/object-types#boolean)
-{{% /gql-fields %}}
+<div class="graphql-code-line ">before: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
 
+<div class="graphql-code-line ">after: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a></div>
+
+<div class="graphql-code-line ">between: <a href="/docs/reference/graphql-api/shop/input-types#daterange">DateRange</a></div>
+
+<div class="graphql-code-line ">isNull: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## DateRange
 
-{{% gql-fields %}}
- * start: [DateTime](/graphql-api/shop/object-types#datetime)!
- * end: [DateTime](/graphql-api/shop/object-types#datetime)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">DateRange</span>
+ &#123;</div>
+<div class="graphql-code-line ">start: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
 
+<div class="graphql-code-line ">end: <a href="/docs/reference/graphql-api/shop/object-types#datetime">DateTime</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## FacetFilterParameter
 
-{{% gql-fields %}}
- * id: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * createdAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * updatedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * languageCode: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * name: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * code: [StringOperators](/graphql-api/shop/input-types#stringoperators)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">FacetFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## FacetListOptions
 
-{{% gql-fields %}}
-* *// Skips the first n results, for use in pagination*
- * skip: [Int](/graphql-api/shop/object-types#int)
-* *// Takes n results, for use in pagination*
- * take: [Int](/graphql-api/shop/object-types#int)
-* *// Specifies which properties to sort the results by*
- * sort: [FacetSortParameter](/graphql-api/shop/input-types#facetsortparameter)
-* *// Allows the results to be filtered*
- * filter: [FacetFilterParameter](/graphql-api/shop/input-types#facetfilterparameter)
-* *// Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.*
- * filterOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">FacetListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#facetsortparameter">FacetSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/docs/reference/graphql-api/shop/input-types#facetfilterparameter">FacetFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## FacetSortParameter
 
-{{% gql-fields %}}
- * id: [SortOrder](/graphql-api/shop/enums#sortorder)
- * createdAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * updatedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * name: [SortOrder](/graphql-api/shop/enums#sortorder)
- * code: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">FacetSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## FacetValueFilterInput
 
-Used to construct boolean expressions for filtering search results
-by FacetValue ID. Examples:
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Used to construct boolean expressions for filtering search results</div>
 
-* ID=1 OR ID=2: `{ facetValueFilters: [{ or: [1,2] }] }`
-* ID=1 AND ID=2: `{ facetValueFilters: [{ and: 1 }, { and: 2 }] }`
-* ID=1 AND (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1 }, { or: [2,3] }] }`
+<div class="graphql-code-line top-level comment">by FacetValue ID. Examples:</div>
 
-{{% gql-fields %}}
- * and: [ID](/graphql-api/shop/object-types#id)
- * or: [[ID](/graphql-api/shop/object-types#id)!]
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment"></div>
 
+<div class="graphql-code-line top-level comment">* ID=1 OR ID=2: `&#123; facetValueFilters: [&#123; or: [1,2] &#125;] &#125;`</div>
+
+<div class="graphql-code-line top-level comment">* ID=1 AND ID=2: `&#123; facetValueFilters: [&#123; and: 1 &#125;, &#123; and: 2 &#125;] &#125;`</div>
+
+<div class="graphql-code-line top-level comment">* ID=1 AND (ID=2 OR ID=3): `&#123; facetValueFilters: [&#123; and: 1 &#125;, &#123; or: [2,3] &#125;] &#125;`</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">FacetValueFilterInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">and: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a></div>
+
+<div class="graphql-code-line ">or: [<a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!]</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## HistoryEntryFilterParameter
 
-{{% gql-fields %}}
- * id: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * createdAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * updatedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * type: [StringOperators](/graphql-api/shop/input-types#stringoperators)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">HistoryEntryFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## HistoryEntryListOptions
 
-{{% gql-fields %}}
-* *// Skips the first n results, for use in pagination*
- * skip: [Int](/graphql-api/shop/object-types#int)
-* *// Takes n results, for use in pagination*
- * take: [Int](/graphql-api/shop/object-types#int)
-* *// Specifies which properties to sort the results by*
- * sort: [HistoryEntrySortParameter](/graphql-api/shop/input-types#historyentrysortparameter)
-* *// Allows the results to be filtered*
- * filter: [HistoryEntryFilterParameter](/graphql-api/shop/input-types#historyentryfilterparameter)
-* *// Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.*
- * filterOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">HistoryEntryListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#historyentrysortparameter">HistoryEntrySortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/docs/reference/graphql-api/shop/input-types#historyentryfilterparameter">HistoryEntryFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## HistoryEntrySortParameter
 
-{{% gql-fields %}}
- * id: [SortOrder](/graphql-api/shop/enums#sortorder)
- * createdAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * updatedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">HistoryEntrySortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## IDListOperators
 
-Operators for filtering on a list of ID fields
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a list of ID fields</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">IDListOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">inList: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
-{{% gql-fields %}}
- * inList: [ID](/graphql-api/shop/object-types#id)!
-{{% /gql-fields %}}
 
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## IDOperators
 
-Operators for filtering on an ID field
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on an ID field</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">IDOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">eq: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
-{{% gql-fields %}}
- * eq: [String](/graphql-api/shop/object-types#string)
- * notEq: [String](/graphql-api/shop/object-types#string)
- * in: [[String](/graphql-api/shop/object-types#string)!]
- * notIn: [[String](/graphql-api/shop/object-types#string)!]
- * isNull: [Boolean](/graphql-api/shop/object-types#boolean)
-{{% /gql-fields %}}
+<div class="graphql-code-line ">notEq: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
+<div class="graphql-code-line ">in: [<a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!]</div>
+
+<div class="graphql-code-line ">notIn: [<a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!]</div>
+
+<div class="graphql-code-line ">isNull: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## NativeAuthInput
 
-{{% gql-fields %}}
- * username: [String](/graphql-api/shop/object-types#string)!
- * password: [String](/graphql-api/shop/object-types#string)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">NativeAuthInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">username: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
+<div class="graphql-code-line ">password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## NumberListOperators
 
-Operators for filtering on a list of Number fields
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a list of Number fields</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">NumberListOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">inList: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
-{{% gql-fields %}}
- * inList: [Float](/graphql-api/shop/object-types#float)!
-{{% /gql-fields %}}
 
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## NumberOperators
 
-Operators for filtering on a Int or Float field
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a Int or Float field</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">NumberOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">eq: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
 
-{{% gql-fields %}}
- * eq: [Float](/graphql-api/shop/object-types#float)
- * lt: [Float](/graphql-api/shop/object-types#float)
- * lte: [Float](/graphql-api/shop/object-types#float)
- * gt: [Float](/graphql-api/shop/object-types#float)
- * gte: [Float](/graphql-api/shop/object-types#float)
- * between: [NumberRange](/graphql-api/shop/input-types#numberrange)
- * isNull: [Boolean](/graphql-api/shop/object-types#boolean)
-{{% /gql-fields %}}
+<div class="graphql-code-line ">lt: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
 
+<div class="graphql-code-line ">lte: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
+
+<div class="graphql-code-line ">gt: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
+
+<div class="graphql-code-line ">gte: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a></div>
+
+<div class="graphql-code-line ">between: <a href="/docs/reference/graphql-api/shop/input-types#numberrange">NumberRange</a></div>
+
+<div class="graphql-code-line ">isNull: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## NumberRange
 
-{{% gql-fields %}}
- * start: [Float](/graphql-api/shop/object-types#float)!
- * end: [Float](/graphql-api/shop/object-types#float)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">NumberRange</span>
+ &#123;</div>
+<div class="graphql-code-line ">start: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
 
+<div class="graphql-code-line ">end: <a href="/docs/reference/graphql-api/shop/object-types#float">Float</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## OrderFilterParameter
 
-{{% gql-fields %}}
- * id: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * createdAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * updatedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * type: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * orderPlacedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * code: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * state: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * active: [BooleanOperators](/graphql-api/shop/input-types#booleanoperators)
- * totalQuantity: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * subTotal: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * subTotalWithTax: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * currencyCode: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * shipping: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * shippingWithTax: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * total: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * totalWithTax: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">OrderFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">type: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">orderPlacedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">state: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">active: <a href="/docs/reference/graphql-api/shop/input-types#booleanoperators">BooleanOperators</a></div>
+
+<div class="graphql-code-line ">totalQuantity: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">subTotal: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">subTotalWithTax: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">currencyCode: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">shipping: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">shippingWithTax: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">total: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">totalWithTax: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## OrderListOptions
 
-{{% gql-fields %}}
-* *// Skips the first n results, for use in pagination*
- * skip: [Int](/graphql-api/shop/object-types#int)
-* *// Takes n results, for use in pagination*
- * take: [Int](/graphql-api/shop/object-types#int)
-* *// Specifies which properties to sort the results by*
- * sort: [OrderSortParameter](/graphql-api/shop/input-types#ordersortparameter)
-* *// Allows the results to be filtered*
- * filter: [OrderFilterParameter](/graphql-api/shop/input-types#orderfilterparameter)
-* *// Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.*
- * filterOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">OrderListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#ordersortparameter">OrderSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/docs/reference/graphql-api/shop/input-types#orderfilterparameter">OrderFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## OrderSortParameter
 
-{{% gql-fields %}}
- * id: [SortOrder](/graphql-api/shop/enums#sortorder)
- * createdAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * updatedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * orderPlacedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * code: [SortOrder](/graphql-api/shop/enums#sortorder)
- * state: [SortOrder](/graphql-api/shop/enums#sortorder)
- * totalQuantity: [SortOrder](/graphql-api/shop/enums#sortorder)
- * subTotal: [SortOrder](/graphql-api/shop/enums#sortorder)
- * subTotalWithTax: [SortOrder](/graphql-api/shop/enums#sortorder)
- * shipping: [SortOrder](/graphql-api/shop/enums#sortorder)
- * shippingWithTax: [SortOrder](/graphql-api/shop/enums#sortorder)
- * total: [SortOrder](/graphql-api/shop/enums#sortorder)
- * totalWithTax: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">OrderSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">orderPlacedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">code: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">state: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">totalQuantity: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">subTotal: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">subTotalWithTax: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">shipping: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">shippingWithTax: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">total: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">totalWithTax: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## PaymentInput
 
-Passed as input to the `addPaymentToOrder` mutation.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Passed as input to the <code>addPaymentToOrder</code> mutation.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">PaymentInput</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">This field should correspond to the <code>code</code> property of a PaymentMethod.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">method: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-{{% gql-fields %}}
-* *// This field should correspond to the `code` property of a PaymentMethod.*
- * method: [String](/graphql-api/shop/object-types#string)!
-* *// This field should contain arbitrary data passed to the specified PaymentMethodHandler's `createPayment()` method
-as the "metadata" argument. For example, it could contain an ID for the payment and other
-data generated by the payment provider.*
- * metadata: [JSON](/graphql-api/shop/object-types#json)!
-{{% /gql-fields %}}
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">This field should contain arbitrary data passed to the specified PaymentMethodHandler's <code>createPayment()</code> method</div>
 
+<div class="graphql-code-line comment">as the "metadata" argument. For example, it could contain an ID for the payment and other</div>
+
+<div class="graphql-code-line comment">data generated by the payment provider.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">metadata: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ProductFilterParameter
 
-{{% gql-fields %}}
- * id: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * createdAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * updatedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * languageCode: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * name: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * slug: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * description: [StringOperators](/graphql-api/shop/input-types#stringoperators)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ProductListOptions
 
-{{% gql-fields %}}
-* *// Skips the first n results, for use in pagination*
- * skip: [Int](/graphql-api/shop/object-types#int)
-* *// Takes n results, for use in pagination*
- * take: [Int](/graphql-api/shop/object-types#int)
-* *// Specifies which properties to sort the results by*
- * sort: [ProductSortParameter](/graphql-api/shop/input-types#productsortparameter)
-* *// Allows the results to be filtered*
- * filter: [ProductFilterParameter](/graphql-api/shop/input-types#productfilterparameter)
-* *// Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.*
- * filterOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#productsortparameter">ProductSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/docs/reference/graphql-api/shop/input-types#productfilterparameter">ProductFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ProductSortParameter
 
-{{% gql-fields %}}
- * id: [SortOrder](/graphql-api/shop/enums#sortorder)
- * createdAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * updatedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * name: [SortOrder](/graphql-api/shop/enums#sortorder)
- * slug: [SortOrder](/graphql-api/shop/enums#sortorder)
- * description: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">slug: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">description: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ProductVariantFilterParameter
 
-{{% gql-fields %}}
- * id: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * productId: [IDOperators](/graphql-api/shop/input-types#idoperators)
- * createdAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * updatedAt: [DateOperators](/graphql-api/shop/input-types#dateoperators)
- * languageCode: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * sku: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * name: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * price: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * currencyCode: [StringOperators](/graphql-api/shop/input-types#stringoperators)
- * priceWithTax: [NumberOperators](/graphql-api/shop/input-types#numberoperators)
- * stockLevel: [StringOperators](/graphql-api/shop/input-types#stringoperators)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductVariantFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">productId: <a href="/docs/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
+
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">languageCode: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">sku: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">currencyCode: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">priceWithTax: <a href="/docs/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
+
+<div class="graphql-code-line ">stockLevel: <a href="/docs/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ProductVariantListOptions
 
-{{% gql-fields %}}
-* *// Skips the first n results, for use in pagination*
- * skip: [Int](/graphql-api/shop/object-types#int)
-* *// Takes n results, for use in pagination*
- * take: [Int](/graphql-api/shop/object-types#int)
-* *// Specifies which properties to sort the results by*
- * sort: [ProductVariantSortParameter](/graphql-api/shop/input-types#productvariantsortparameter)
-* *// Allows the results to be filtered*
- * filter: [ProductVariantFilterParameter](/graphql-api/shop/input-types#productvariantfilterparameter)
-* *// Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.*
- * filterOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductVariantListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#productvariantsortparameter">ProductVariantSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/docs/reference/graphql-api/shop/input-types#productvariantfilterparameter">ProductVariantFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## ProductVariantSortParameter
 
-{{% gql-fields %}}
- * id: [SortOrder](/graphql-api/shop/enums#sortorder)
- * productId: [SortOrder](/graphql-api/shop/enums#sortorder)
- * createdAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * updatedAt: [SortOrder](/graphql-api/shop/enums#sortorder)
- * sku: [SortOrder](/graphql-api/shop/enums#sortorder)
- * name: [SortOrder](/graphql-api/shop/enums#sortorder)
- * price: [SortOrder](/graphql-api/shop/enums#sortorder)
- * priceWithTax: [SortOrder](/graphql-api/shop/enums#sortorder)
- * stockLevel: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductVariantSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">productId: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">createdAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">sku: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">priceWithTax: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">stockLevel: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## RegisterCustomerInput
 
-{{% gql-fields %}}
- * emailAddress: [String](/graphql-api/shop/object-types#string)!
- * title: [String](/graphql-api/shop/object-types#string)
- * firstName: [String](/graphql-api/shop/object-types#string)
- * lastName: [String](/graphql-api/shop/object-types#string)
- * phoneNumber: [String](/graphql-api/shop/object-types#string)
- * password: [String](/graphql-api/shop/object-types#string)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">RegisterCustomerInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">emailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
+<div class="graphql-code-line ">title: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">firstName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">lastName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## SearchInput
 
-{{% gql-fields %}}
- * term: [String](/graphql-api/shop/object-types#string)
- * facetValueIds: [[ID](/graphql-api/shop/object-types#id)!]
- * facetValueOperator: [LogicalOperator](/graphql-api/shop/enums#logicaloperator)
- * facetValueFilters: [[FacetValueFilterInput](/graphql-api/shop/input-types#facetvaluefilterinput)!]
- * collectionId: [ID](/graphql-api/shop/object-types#id)
- * collectionSlug: [String](/graphql-api/shop/object-types#string)
- * groupByProduct: [Boolean](/graphql-api/shop/object-types#boolean)
- * take: [Int](/graphql-api/shop/object-types#int)
- * skip: [Int](/graphql-api/shop/object-types#int)
- * sort: [SearchResultSortParameter](/graphql-api/shop/input-types#searchresultsortparameter)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">SearchInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">term: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
+<div class="graphql-code-line ">facetValueIds: [<a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!]</div>
+
+<div class="graphql-code-line ">facetValueOperator: <a href="/docs/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+<div class="graphql-code-line ">facetValueFilters: [<a href="/docs/reference/graphql-api/shop/input-types#facetvaluefilterinput">FacetValueFilterInput</a>!]</div>
+
+<div class="graphql-code-line ">collectionId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a></div>
+
+<div class="graphql-code-line ">collectionSlug: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">groupByProduct: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">take: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">skip: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">sort: <a href="/docs/reference/graphql-api/shop/input-types#searchresultsortparameter">SearchResultSortParameter</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## SearchResultSortParameter
 
-{{% gql-fields %}}
- * name: [SortOrder](/graphql-api/shop/enums#sortorder)
- * price: [SortOrder](/graphql-api/shop/enums#sortorder)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">SearchResultSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">name: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
+<div class="graphql-code-line ">price: <a href="/docs/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## StringListOperators
 
-Operators for filtering on a list of String fields
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a list of String fields</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">StringListOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">inList: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
-{{% gql-fields %}}
- * inList: [String](/graphql-api/shop/object-types#string)!
-{{% /gql-fields %}}
 
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## StringOperators
 
-Operators for filtering on a String field
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Operators for filtering on a String field</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">StringOperators</span>
+ &#123;</div>
+<div class="graphql-code-line ">eq: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
-{{% gql-fields %}}
- * eq: [String](/graphql-api/shop/object-types#string)
- * notEq: [String](/graphql-api/shop/object-types#string)
- * contains: [String](/graphql-api/shop/object-types#string)
- * notContains: [String](/graphql-api/shop/object-types#string)
- * in: [[String](/graphql-api/shop/object-types#string)!]
- * notIn: [[String](/graphql-api/shop/object-types#string)!]
- * regex: [String](/graphql-api/shop/object-types#string)
- * isNull: [Boolean](/graphql-api/shop/object-types#boolean)
-{{% /gql-fields %}}
+<div class="graphql-code-line ">notEq: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
+<div class="graphql-code-line ">contains: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">notContains: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">in: [<a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!]</div>
+
+<div class="graphql-code-line ">notIn: [<a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!]</div>
+
+<div class="graphql-code-line ">regex: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">isNull: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## UpdateAddressInput
 
-{{% gql-fields %}}
- * id: [ID](/graphql-api/shop/object-types#id)!
- * fullName: [String](/graphql-api/shop/object-types#string)
- * company: [String](/graphql-api/shop/object-types#string)
- * streetLine1: [String](/graphql-api/shop/object-types#string)
- * streetLine2: [String](/graphql-api/shop/object-types#string)
- * city: [String](/graphql-api/shop/object-types#string)
- * province: [String](/graphql-api/shop/object-types#string)
- * postalCode: [String](/graphql-api/shop/object-types#string)
- * countryCode: [String](/graphql-api/shop/object-types#string)
- * phoneNumber: [String](/graphql-api/shop/object-types#string)
- * defaultShippingAddress: [Boolean](/graphql-api/shop/object-types#boolean)
- * defaultBillingAddress: [Boolean](/graphql-api/shop/object-types#boolean)
- * customFields: [JSON](/graphql-api/shop/object-types#json)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateAddressInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!</div>
 
+<div class="graphql-code-line ">fullName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">company: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">streetLine1: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">streetLine2: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">city: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">province: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">postalCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">countryCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">defaultShippingAddress: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">defaultBillingAddress: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## UpdateCustomerInput
 
-{{% gql-fields %}}
- * title: [String](/graphql-api/shop/object-types#string)
- * firstName: [String](/graphql-api/shop/object-types#string)
- * lastName: [String](/graphql-api/shop/object-types#string)
- * phoneNumber: [String](/graphql-api/shop/object-types#string)
- * customFields: [JSON](/graphql-api/shop/object-types#json)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateCustomerInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">title: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
 
+<div class="graphql-code-line ">firstName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">lastName: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">phoneNumber: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
 
 ## UpdateOrderInput
 
-{{% gql-fields %}}
- * customFields: [JSON](/graphql-api/shop/object-types#json)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateOrderInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">customFields: <a href="/docs/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>

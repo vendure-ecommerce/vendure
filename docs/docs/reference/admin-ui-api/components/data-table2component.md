@@ -1,7 +1,7 @@
 ---
 title: "DataTable2Component"
 weight: 10
-date: 2023-07-20T13:56:18.222Z
+date: 2023-07-21T07:17:04.320Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table-2/data-table2.component.ts" sourceLine="92" packageName="@vendure/admin-ui" />
 
 A table for displaying PaginatedList results. It is designed to be used inside components which
-extend the <a href='/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> or <a href='/admin-ui-api/list-detail-views/typed-base-list-component#typedbaselistcomponent'>TypedBaseListComponent</a> class.
+extend the <a href='/docs/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> or <a href='/docs/reference/admin-ui-api/list-detail-views/typed-base-list-component#typedbaselistcomponent'>TypedBaseListComponent</a> class.
 
 *Example*
 
@@ -116,13 +116,11 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
   protected getDataTableConfig() => DataTableConfig;
 }
 ```
-Implements
-
- * AfterContentInit
- * OnChanges
- * OnDestroy
+* Implements: <code>AfterContentInit</code>, <code>OnChanges</code>, <code>OnDestroy</code>
 
 
+
+<div className="members-wrapper">
 
 ### id
 
@@ -231,12 +229,12 @@ Implements
 
 ### uiLanguage$
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
+<MemberInfo kind="property" type="Observable&#60;<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => DataTable2Component"   />
+<MemberInfo kind="method" type="(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => DataTable2Component"   />
 
 
 ### selectionManager
@@ -309,3 +307,6 @@ Implements
 <MemberInfo kind="method" type="() => DataTableConfig"   />
 
 
+
+
+</div>

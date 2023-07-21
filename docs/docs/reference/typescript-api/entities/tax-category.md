@@ -1,7 +1,7 @@
 ---
 title: "TaxCategory"
 weight: 10
-date: 2023-07-20T13:56:15.467Z
+date: 2023-07-21T07:17:01.178Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/tax-category/tax-category.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-A TaxCategory defines what type of taxes to apply to a <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
+A TaxCategory defines what type of taxes to apply to a <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
 
 ```ts title="Signature"
 class TaxCategory extends VendureEntity implements HasCustomFields {
@@ -26,20 +26,18 @@ class TaxCategory extends VendureEntity implements HasCustomFields {
     customFields: CustomTaxCategoryFields;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * HasCustomFields
+* Implements: <code>HasCustomFields</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>&#62;) => TaxCategory"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>&#62;) => TaxCategory"   />
 
 
 ### name
@@ -57,3 +55,6 @@ Implements
 <MemberInfo kind="property" type="CustomTaxCategoryFields"   />
 
 
+
+
+</div>

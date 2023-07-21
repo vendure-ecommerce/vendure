@@ -1,7 +1,7 @@
 ---
 title: "Custom Template Loader"
 weight: 10
-date: 2023-07-20T13:56:16.967Z
+date: 2023-07-21T07:17:02.782Z
 showtoc: true
 generated: true
 ---
@@ -20,7 +20,7 @@ and return the template as a string.
 
 *Example*
 
-```TypeScript
+```ts
 import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
 
 class MyTemplateLoader implements TemplateLoader {
@@ -44,9 +44,11 @@ interface TemplateLoader {
 }
 ```
 
+<div className="members-wrapper">
+
 ### loadTemplate
 
-<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: LoadTemplateInput) => Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: LoadTemplateInput) => Promise&#60;string&#62;"   />
 
 
 ### loadPartials
@@ -54,3 +56,6 @@ interface TemplateLoader {
 <MemberInfo kind="method" type="() => Promise&#60;Partial[]&#62;"   />
 
 
+
+
+</div>

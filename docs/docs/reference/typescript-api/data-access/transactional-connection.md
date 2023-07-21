@@ -1,7 +1,7 @@
 ---
 title: "TransactionalConnection"
 weight: 10
-date: 2023-07-20T13:56:14.953Z
+date: 2023-07-21T07:17:00.685Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="38" packageName="@vendure/core" />
 
 The TransactionalConnection is a wrapper around the TypeORM `Connection` object which works in conjunction
-with the <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator to implement per-request transactions. All services which access the
+with the <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator to implement per-request transactions. All services which access the
 database should use this class rather than the raw TypeORM connection, to ensure that db changes can be
 easily wrapped in transactions when required.
 
@@ -42,6 +42,8 @@ class TransactionalConnection {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
 <MemberInfo kind="method" type="(connection: Connection, transactionWrapper: TransactionWrapper) => TransactionalConnection"   />
@@ -63,24 +65,24 @@ be aware of any existing transaction. Therefore, calling this method without sup
 is discouraged without a deliberate reason.
 ### getRepository
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> | undefined, target: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string) => Repository&#60;Entity&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | undefined, target: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string) => Repository&#60;Entity&#62;"   />
 
 Returns a TypeORM repository which is bound to any existing transactions. It is recommended to _always_ pass
 the RequestContext argument when possible, otherwise the queries will be executed outside of any
-ongoing transactions which have been started by the <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator.
+ongoing transactions which have been started by the <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator.
 ### getRepository
 
-<MemberInfo kind="method" type="(ctxOrTarget: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string | undefined, maybeTarget?: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string) => Repository&#60;Entity&#62;"   />
+<MemberInfo kind="method" type="(ctxOrTarget: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string | undefined, maybeTarget?: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string) => Repository&#60;Entity&#62;"   />
 
 
 ### withTransaction
 
-<MemberInfo kind="method" type="(work: (ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;) => Promise&#60;T&#62;"  since="1.3.0"  />
+<MemberInfo kind="method" type="(work: (ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;) => Promise&#60;T&#62;"  since="1.3.0"  />
 
 Allows database operations to be wrapped in a transaction, ensuring that in the event of an error being
 thrown at any point, the entire transaction will be rolled back and no changes will be saved.
 
-In the context of API requests, you should instead use the <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator on your resolver or
+In the context of API requests, you should instead use the <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator on your resolver or
 controller method.
 
 On the other hand, for code that does not run in the context of a GraphQL/REST request, this method
@@ -90,14 +92,14 @@ inconsistent state.
 Such situations include function processed by the JobQueue or stand-alone scripts which make use
 of Vendure internal services.
 
-If there is already a <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> object available, you should pass it in as the first
+If there is already a <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object available, you should pass it in as the first
 argument in order to create transactional context as the copy. If not, omit the first argument and an empty
 RequestContext object will be created, which is then used to propagate the transaction to
 all inner method calls.
 
 *Example*
 
-```TypeScript
+```ts
 private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amount: number) {
   await this.connection.withTransaction(outerCtx, async ctx => {
     // Note you must not use `outerCtx` here, instead use `ctx`. Otherwise, this query
@@ -116,50 +118,53 @@ private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amo
 ```
 ### withTransaction
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, work: (ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, work: (ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;) => Promise&#60;T&#62;"   />
 
 
 ### withTransaction
 
-<MemberInfo kind="method" type="(ctxOrWork: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ((ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;), maybeWork?: (ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type="(ctxOrWork: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ((ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;), maybeWork?: (ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;) => Promise&#60;T&#62;"   />
 
 
 ### startTransaction
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, isolationLevel?: <a href='/typescript-api/request/transaction-decorator#transactionisolationlevel'>TransactionIsolationLevel</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, isolationLevel?: <a href='/docs/reference/typescript-api/request/transaction-decorator#transactionisolationlevel'>TransactionIsolationLevel</a>) => "   />
 
 Manually start a transaction if one is not already in progress. This method should be used in
-conjunction with the `'manual'` mode of the <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator.
+conjunction with the `'manual'` mode of the <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator.
 ### commitOpenTransaction
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
 
-Manually commits any open transaction. Should be very rarely needed, since the <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator
+Manually commits any open transaction. Should be very rarely needed, since the <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator
 and the internal TransactionInterceptor take care of this automatically. Use-cases include situations
 in which the worker thread needs to access changes made in the current transaction, or when using the
 Transaction decorator in manual mode.
 ### rollBackTransaction
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
 
-Manually rolls back any open transaction. Should be very rarely needed, since the <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator
+Manually rolls back any open transaction. Should be very rarely needed, since the <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator
 and the internal TransactionInterceptor take care of this automatically. Use-cases include when using the
 Transaction decorator in manual mode.
 ### getEntityOrThrow
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entityType: Type&#60;T&#62;, id: <a href='/typescript-api/common/id#id'>ID</a>, options: <a href='/typescript-api/data-access/get-entity-or-throw-options#getentityorthrowoptions'>GetEntityOrThrowOptions</a>&#60;T&#62; = {}) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entityType: Type&#60;T&#62;, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, options: <a href='/docs/reference/typescript-api/data-access/get-entity-or-throw-options#getentityorthrowoptions'>GetEntityOrThrowOptions</a>&#60;T&#62; = {}) => Promise&#60;T&#62;"   />
 
 Finds an entity of the given type by ID, or throws an `EntityNotFoundError` if none
 is found.
 ### findOneInChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: Type&#60;T&#62;, id: <a href='/typescript-api/common/id#id'>ID</a>, channelId: <a href='/typescript-api/common/id#id'>ID</a>, options: FindOneOptions&#60;T&#62; = {}) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: Type&#60;T&#62;, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, channelId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, options: FindOneOptions&#60;T&#62; = {}) => "   />
 
 Like the TypeOrm `Repository.findOne()` method, but limits the results to
 the given Channel.
 ### findByIdsInChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: Type&#60;T&#62;, ids: <a href='/typescript-api/common/id#id'>ID</a>[], channelId: <a href='/typescript-api/common/id#id'>ID</a>, options: FindManyOptions&#60;T&#62;) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: Type&#60;T&#62;, ids: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>[], channelId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, options: FindManyOptions&#60;T&#62;) => "   />
 
 Like the TypeOrm `Repository.findByIds()` method, but limits the results to
 the given Channel.
+
+
+</div>

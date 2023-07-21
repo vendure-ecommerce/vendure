@@ -1,7 +1,7 @@
 ---
 title: "PermissionDefinition"
 weight: 10
-date: 2023-07-20T13:56:14.218Z
+date: 2023-07-21T07:16:59.984Z
 showtoc: true
 generated: true
 ---
@@ -16,20 +16,20 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="86" packageName="@vendure/core" />
 
 Defines a new Permission with which to control access to GraphQL resolvers & REST controllers.
-Used in conjunction with the <a href='/typescript-api/request/allow-decorator#allow'>Allow</a> decorator (see example below).
+Used in conjunction with the <a href='/docs/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator (see example below).
 
-**Note:** To define CRUD permissions, use the <a href='/typescript-api/auth/permission-definition#crudpermissiondefinition'>CrudPermissionDefinition</a>.
+**Note:** To define CRUD permissions, use the <a href='/docs/reference/typescript-api/auth/permission-definition#crudpermissiondefinition'>CrudPermissionDefinition</a>.
 
 *Example*
 
-```TypeScript
+```ts
 export const sync = new PermissionDefinition({
   name: 'SyncInventory',
   description: 'Allows syncing stock levels via Admin API'
 });
 ```
 
-```TypeScript
+```ts
 const config: VendureConfig = {
   authOptions: {
     customPermissions: [sync],
@@ -37,7 +37,7 @@ const config: VendureConfig = {
 }
 ```
 
-```TypeScript
+```ts
 @Resolver()
 export class ExternalSyncResolver {
 
@@ -56,17 +56,22 @@ class PermissionDefinition {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/auth/permission-definition#permissiondefinitionconfig'>PermissionDefinitionConfig</a>) => PermissionDefinition"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/auth/permission-definition#permissiondefinitionconfig'>PermissionDefinitionConfig</a>) => PermissionDefinition"   />
 
 
 ### Permission
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/permission#permission'>Permission</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>"   />
 
 Returns the permission defined by this definition, for use in the
-<a href='/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<a href='/docs/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+
+
+</div>
 
 
 ## CrudPermissionDefinition
@@ -78,11 +83,11 @@ Defines a set of CRUD Permissions for the given name, i.e. a `name` of 'Wishlist
 
 *Example*
 
-```TypeScript
+```ts
 export const wishlist = new CrudPermissionDefinition('Wishlist');
 ```
 
-```TypeScript
+```ts
 const config: VendureConfig = {
   authOptions: {
     customPermissions: [wishlist],
@@ -90,7 +95,7 @@ const config: VendureConfig = {
 }
 ```
 
-```TypeScript
+```ts
 @Resolver()
 export class WishlistResolver {
 
@@ -111,11 +116,11 @@ class CrudPermissionDefinition extends PermissionDefinition {
   Delete: Permission
 }
 ```
-Extends
-
- * <a href='/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a>
+* Extends: <code><a href='/docs/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
@@ -124,35 +129,38 @@ Extends
 
 ### Create
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/permission#permission'>Permission</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>"   />
 
 Returns the 'Create' CRUD permission defined by this definition, for use in the
-<a href='/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<a href='/docs/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
 ### Read
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/permission#permission'>Permission</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>"   />
 
 Returns the 'Read' CRUD permission defined by this definition, for use in the
-<a href='/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<a href='/docs/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
 ### Update
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/permission#permission'>Permission</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>"   />
 
 Returns the 'Update' CRUD permission defined by this definition, for use in the
-<a href='/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<a href='/docs/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
 ### Delete
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/permission#permission'>Permission</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/permission#permission'>Permission</a>"   />
 
 Returns the 'Delete' CRUD permission defined by this definition, for use in the
-<a href='/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+<a href='/docs/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+
+
+</div>
 
 
 ## PermissionDefinitionConfig
 
 <GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="10" packageName="@vendure/core" />
 
-Configures a <a href='/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a>
+Configures a <a href='/docs/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a>
 
 ```ts title="Signature"
 interface PermissionDefinitionConfig {
@@ -162,6 +170,8 @@ interface PermissionDefinitionConfig {
   internal?: boolean;
 }
 ```
+
+<div className="members-wrapper">
 
 ### name
 
@@ -186,3 +196,6 @@ should be left as the default `true` except in special cases.
 
 Internal permissions are not exposed via the API and are reserved for
 special use-cases such at the `Owner` or `Public` permissions.
+
+
+</div>

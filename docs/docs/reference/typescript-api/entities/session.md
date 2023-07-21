@@ -1,7 +1,7 @@
 ---
 title: "Session"
 weight: 10
-date: 2023-07-20T13:56:15.380Z
+date: 2023-07-21T07:17:01.090Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/session/session.entity.ts" sourceLine="18" packageName="@vendure/core" />
 
-A Session is created when a user makes a request to restricted API operations. A Session can be an <a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>
-in the case of un-authenticated users, otherwise it is an <a href='/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>.
+A Session is created when a user makes a request to restricted API operations. A Session can be an <a href='/docs/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>
+in the case of un-authenticated users, otherwise it is an <a href='/docs/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>.
 
 ```ts title="Signature"
 class Session extends VendureEntity {
@@ -37,11 +37,11 @@ class Session extends VendureEntity {
     activeChannel: Channel | null;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### token
 
@@ -60,21 +60,24 @@ Extends
 
 ### activeOrderId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### activeOrder
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a> | null"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a> | null"   />
 
 
 ### activeChannelId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### activeChannel
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a> | null"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a> | null"   />
 
 
+
+
+</div>

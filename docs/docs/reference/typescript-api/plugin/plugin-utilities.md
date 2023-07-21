@@ -1,7 +1,7 @@
 ---
 title: "Plugin Utilities"
 weight: 10
-date: 2023-07-20T13:56:15.811Z
+date: 2023-07-21T07:17:01.488Z
 showtoc: true
 generated: true
 ---
@@ -49,7 +49,7 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="<a href='/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>" />
 
 
 
@@ -57,7 +57,7 @@ Parameters
 
 <GenerationInfo sourceFile="packages/core/src/plugin/plugin-utils.ts" sourceLine="76" packageName="@vendure/core" />
 
-Options to configure proxy middleware via <a href='/typescript-api/plugin/plugin-utilities#createproxyhandler'>createProxyHandler</a>.
+Options to configure proxy middleware via <a href='/docs/reference/typescript-api/plugin/plugin-utilities#createproxyhandler'>createProxyHandler</a>.
 
 ```ts title="Signature"
 interface ProxyOptions {
@@ -68,6 +68,8 @@ interface ProxyOptions {
   basePath?: string;
 }
 ```
+
+<div className="members-wrapper">
 
 ### label
 
@@ -95,3 +97,6 @@ The hostname of the server on which the service being proxied is running.
 <MemberInfo kind="property" type="string"   />
 
 An optional base path on the proxied server.
+
+
+</div>

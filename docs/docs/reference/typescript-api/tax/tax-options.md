@@ -1,7 +1,7 @@
 ---
 title: "TaxOptions"
 weight: 10
-date: 2023-07-20T13:56:14.900Z
+date: 2023-07-21T07:17:00.640Z
 showtoc: true
 generated: true
 ---
@@ -24,13 +24,18 @@ interface TaxOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### taxZoneStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/tax/tax-zone-strategy#taxzonestrategy'>TaxZoneStrategy</a>" default="<a href='/typescript-api/tax/default-tax-zone-strategy#defaulttaxzonestrategy'>DefaultTaxZoneStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy'>TaxZoneStrategy</a>" default="<a href='/docs/reference/typescript-api/tax/default-tax-zone-strategy#defaulttaxzonestrategy'>DefaultTaxZoneStrategy</a>"   />
 
 Defines the strategy used to determine the applicable Zone used in tax calculations.
 ### taxLineCalculationStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/tax/tax-line-calculation-strategy#taxlinecalculationstrategy'>TaxLineCalculationStrategy</a>" default="<a href='/typescript-api/tax/default-tax-line-calculation-strategy#defaulttaxlinecalculationstrategy'>DefaultTaxLineCalculationStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/tax/tax-line-calculation-strategy#taxlinecalculationstrategy'>TaxLineCalculationStrategy</a>" default="<a href='/docs/reference/typescript-api/tax/default-tax-line-calculation-strategy#defaulttaxlinecalculationstrategy'>DefaultTaxLineCalculationStrategy</a>"   />
 
 Defines the strategy used to calculate the TaxLines added to OrderItems.
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "CurrencyCode"
 weight: 10
-date: 2023-07-20T13:56:16.724Z
+date: 2023-07-21T07:17:02.459Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CurrencyCode
 
-<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="949" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="968" packageName="@vendure/common" />
 
 ISO 4217 currency code
 

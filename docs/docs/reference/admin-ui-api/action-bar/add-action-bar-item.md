@@ -1,7 +1,7 @@
 ---
 title: "AddActionBarItem"
 weight: 10
-date: 2023-07-20T13:56:18.048Z
+date: 2023-07-21T07:17:04.158Z
 showtoc: true
 generated: true
 ---
@@ -23,7 +23,7 @@ This should be used in the NgModule `providers` array of your ui extension modul
 
 *Example*
 
-```TypeScript
+```ts
 @NgModule({
   imports: [SharedModule],
   providers: [
@@ -45,5 +45,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/admin-ui-api/action-bar/action-bar-item#actionbaritem'>ActionBarItem</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/action-bar/action-bar-item#actionbaritem'>ActionBarItem</a>" />
 

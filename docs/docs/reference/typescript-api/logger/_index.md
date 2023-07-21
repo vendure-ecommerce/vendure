@@ -1,7 +1,7 @@
 ---
 title: "Logger"
 weight: 10
-date: 2023-07-20T13:56:14.480Z
+date: 2023-07-21T07:17:00.243Z
 showtoc: true
 generated: true
 ---
@@ -27,14 +27,14 @@ import { Logger } from '@vendure/core';
 Logger.info(`Some log message`, 'My Vendure Plugin');
 ```
 
-The actual implementation - where the logs are written to - is defined by the <a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>
-instance configured in the <a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>. By default, the <a href='/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a> is used, which
+The actual implementation - where the logs are written to - is defined by the <a href='/docs/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>
+instance configured in the <a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>. By default, the <a href='/docs/reference/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a> is used, which
 logs to the console.
 
 ## Implementing a custom logger
 
 A custom logger can be passed to the `logger` config option by creating a class which implements the
-<a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> interface. For example, here is how you might go about implementing a logger which
+<a href='/docs/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> interface. For example, here is how you might go about implementing a logger which
 logs to a file:
 
 *Example*
@@ -85,15 +85,15 @@ class Logger implements LoggerService {
   static debug(message: string, context?: string) => void;
 }
 ```
-Implements
-
- * LoggerService
+* Implements: <code>LoggerService</code>
 
 
+
+<div className="members-wrapper">
 
 ### logger
 
-<MemberInfo kind="property" type="<a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>"   />
 
 
 ### error
@@ -121,3 +121,6 @@ Implements
 <MemberInfo kind="method" type="(message: string, context?: string) => void"   />
 
 
+
+
+</div>

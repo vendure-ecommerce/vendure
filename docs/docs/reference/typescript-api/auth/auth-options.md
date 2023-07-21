@@ -1,7 +1,7 @@
 ---
 title: "AuthOptions"
 weight: 10
-date: 2023-07-20T13:56:14.834Z
+date: 2023-07-21T07:17:00.574Z
 showtoc: true
 generated: true
 ---
@@ -37,6 +37,8 @@ interface AuthOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### disableAuth
 
 <MemberInfo kind="property" type="boolean" default="false"   />
@@ -63,7 +65,7 @@ by default).
 From v1.2.0 it is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
 ### cookieOptions
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/cookie-options#cookieoptions'>CookieOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/cookie-options#cookieoptions'>CookieOptions</a>"   />
 
 Options related to the handling of cookies when using the 'cookie' tokenMethod.
 ### authTokenHeaderKey
@@ -82,7 +84,7 @@ Expressed as a string describing a time span per
 [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
 ### sessionCacheStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>" default="<a href='/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy'>InMemorySessionCacheStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>" default="<a href='/docs/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy'>InMemorySessionCacheStrategy</a>"   />
 
 This strategy defines how sessions will be cached. By default, sessions are cached using a simple
 in-memory caching strategy which is suitable for development and low-traffic, single-instance
@@ -113,38 +115,38 @@ Expressed as a string describing a time span per
 [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
 ### superadminCredentials
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/superadmin-credentials#superadmincredentials'>SuperadminCredentials</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/superadmin-credentials#superadmincredentials'>SuperadminCredentials</a>"   />
 
 Configures the credentials to be used to create a superadmin
 ### shopAuthenticationStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>[]" default="<a href='/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>[]" default="<a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>"   />
 
 Configures one or more AuthenticationStrategies which defines how authentication
 is handled in the Shop API.
 ### adminAuthenticationStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>[]" default="<a href='/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>[]" default="<a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>"   />
 
 Configures one or more AuthenticationStrategy which defines how authentication
 is handled in the Admin API.
 ### customPermissions
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a>[]" default="[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a>[]" default="[]"   />
 
 Allows custom Permissions to be defined, which can be used to restrict access to custom
 GraphQL resolvers defined in plugins.
 ### passwordHashingStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/password-hashing-strategy#passwordhashingstrategy'>PasswordHashingStrategy</a>" default="<a href='/typescript-api/auth/bcrypt-password-hashing-strategy#bcryptpasswordhashingstrategy'>BcryptPasswordHashingStrategy</a>"  since="1.3.0"  />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/password-hashing-strategy#passwordhashingstrategy'>PasswordHashingStrategy</a>" default="<a href='/docs/reference/typescript-api/auth/bcrypt-password-hashing-strategy#bcryptpasswordhashingstrategy'>BcryptPasswordHashingStrategy</a>"  since="1.3.0"  />
 
-Allows you to customize the way passwords are hashed when using the <a href='/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
+Allows you to customize the way passwords are hashed when using the <a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
 ### passwordValidationStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/auth/password-validation-strategy#passwordvalidationstrategy'>PasswordValidationStrategy</a>" default="<a href='/typescript-api/auth/default-password-validation-strategy#defaultpasswordvalidationstrategy'>DefaultPasswordValidationStrategy</a>"  since="1.5.0"  />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/auth/password-validation-strategy#passwordvalidationstrategy'>PasswordValidationStrategy</a>" default="<a href='/docs/reference/typescript-api/auth/default-password-validation-strategy#defaultpasswordvalidationstrategy'>DefaultPasswordValidationStrategy</a>"  since="1.5.0"  />
 
-Allows you to set a custom policy for passwords when using the <a href='/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
-By default, it uses the <a href='/typescript-api/auth/default-password-validation-strategy#defaultpasswordvalidationstrategy'>DefaultPasswordValidationStrategy</a>, which will impose a minimum length
+Allows you to set a custom policy for passwords when using the <a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
+By default, it uses the <a href='/docs/reference/typescript-api/auth/default-password-validation-strategy#defaultpasswordvalidationstrategy'>DefaultPasswordValidationStrategy</a>, which will impose a minimum length
 of four characters. To improve security for production, you are encouraged to specify a more strict
 policy, which you can do like this:
 
@@ -158,3 +160,6 @@ policy, which you can do like this:
   }),
 }
 ```
+
+
+</div>

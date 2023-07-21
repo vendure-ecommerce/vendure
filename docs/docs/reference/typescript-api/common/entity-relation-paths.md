@@ -1,7 +1,7 @@
 ---
 title: "EntityRelationPaths"
 weight: 10
-date: 2023-07-20T13:56:14.243Z
+date: 2023-07-21T07:17:00.011Z
 showtoc: true
 generated: true
 ---
@@ -20,7 +20,7 @@ It works to 2 levels deep.
 
 *Example*
 
-```TypeScript
+```ts
 type T1 = EntityRelationPaths<Product>;
 ```
 In the above example, the type `T1` will be a string union of all relations of the

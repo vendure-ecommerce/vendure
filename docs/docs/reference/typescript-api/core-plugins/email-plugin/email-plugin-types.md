@@ -1,7 +1,7 @@
 ---
 title: "Email Plugin Types"
 weight: 10
-date: 2023-07-20T13:56:16.934Z
+date: 2023-07-21T07:17:02.730Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="21" packageName="@vendure/email-plugin" />
 
 A VendureEvent which also includes a `ctx` property containing the current
-<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, which is used to determine the channel and language
+<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, which is used to determine the channel and language
 to use when generating the email.
 
 ```ts title="Signature"
@@ -28,8 +28,8 @@ type EventWithContext = VendureEvent & { ctx: RequestContext }
 
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="31" packageName="@vendure/email-plugin" />
 
-A VendureEvent with a <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> and a `data` property which contains the
-value resolved from the <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>`.loadData()` callback.
+A VendureEvent with a <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> and a `data` property which contains the
+value resolved from the <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>`.loadData()` callback.
 
 ```ts title="Signature"
 type EventWithAsyncData<Event extends EventWithContext, R> = Event & { data: R }
@@ -54,6 +54,8 @@ interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialize
   replyTo?: string;
 }
 ```
+
+<div className="members-wrapper">
 
 ### from
 
@@ -97,11 +99,14 @@ interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialize
 
 
 
+</div>
+
+
 ## LoadDataFn
 
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="282" packageName="@vendure/email-plugin" />
 
-A function used to load async data for use by an <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.
+A function used to load async data for use by an <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.
 
 ```ts title="Signature"
 type LoadDataFn<Event extends EventWithContext, R> = (context: {
@@ -130,7 +135,7 @@ type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string }
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="410" packageName="@vendure/email-plugin" />
 
 A function used to define template variables available to email templates.
-See <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.setTemplateVars().
+See <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.setTemplateVars().
 
 ```ts title="Signature"
 type SetTemplateVarsFn<Event> = (
@@ -167,6 +172,8 @@ interface OptionalAddressFields {
 }
 ```
 
+<div className="members-wrapper">
+
 ### cc
 
 <MemberInfo kind="property" type="string"   />
@@ -184,11 +191,14 @@ Comma separated list of recipients email addresses that will appear on the _Bcc:
 An email address that will appear on the _Reply-To:_ field
 
 
+</div>
+
+
 ## SetOptionalAddressFieldsFn
 
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="460" packageName="@vendure/email-plugin" since="1.1.0" />
 
-A function used to set the <a href='/typescript-api/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a>.
+A function used to set the <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a>.
 
 ```ts title="Signature"
 type SetOptionalAddressFieldsFn<Event> = (

@@ -1,7 +1,7 @@
 ---
 title: "UiExtensionCompilerOptions"
 weight: 10
-date: 2023-07-20T13:56:18.821Z
+date: 2023-07-21T07:17:04.864Z
 showtoc: true
 generated: true
 ---
@@ -28,6 +28,8 @@ interface UiExtensionCompilerOptions {
   additionalProcessArguments?: UiExtensionCompilerProcessArgument[];
 }
 ```
+
+<div className="members-wrapper">
 
 ### outputPath
 
@@ -56,12 +58,12 @@ Allows the baseHref of the compiled Admin UI app to be set. This determines the 
 of the app, for example with the default value of `'/admin/'`, the Admin UI app
 will be configured to be served from `http://<host>/admin/`.
 
-Note: if you are using this in conjunction with the <a href='/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a> then you should
+Note: if you are using this in conjunction with the <a href='/docs/reference/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a> then you should
 also set the `route` option to match this value.
 
 *Example*
 
-```TypeScript
+```ts
 AdminUiPlugin.init({
   route: 'my-route',
   port: 5001,
@@ -88,7 +90,7 @@ to run the script if it is detected, otherwise it will use npm. This setting all
 set which command to use, rather than relying on the default behavior.
 ### additionalProcessArguments
 
-<MemberInfo kind="property" type="<a href='/admin-ui-api/ui-devkit/ui-extension-compiler-process-argument#uiextensioncompilerprocessargument'>UiExtensionCompilerProcessArgument</a>[]" default="undefined"  since="1.5.0"  />
+<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/ui-devkit/ui-extension-compiler-process-argument#uiextensioncompilerprocessargument'>UiExtensionCompilerProcessArgument</a>[]" default="undefined"  since="1.5.0"  />
 
 Additional command-line arguments which will get passed to the [ng build](https://angular.io/cli/build)
 command (or [ng serve](https://angular.io/cli/serve) if `devMode = true`).
@@ -96,3 +98,6 @@ command (or [ng serve](https://angular.io/cli/serve) if `devMode = true`).
 *Example*
 
 ['--disable-host-check'] // to disable host check
+
+
+</div>

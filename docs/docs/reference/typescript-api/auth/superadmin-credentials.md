@@ -1,7 +1,7 @@
 ---
 title: "SuperadminCredentials"
 weight: 10
-date: 2023-07-20T13:56:14.893Z
+date: 2023-07-21T07:17:00.633Z
 showtoc: true
 generated: true
 ---
@@ -25,6 +25,8 @@ interface SuperadminCredentials {
 }
 ```
 
+<div className="members-wrapper">
+
 ### identifier
 
 <MemberInfo kind="property" type="string" default="'superadmin'"   />
@@ -35,3 +37,6 @@ The identifier to be used to create a superadmin account
 <MemberInfo kind="property" type="string" default="'superadmin'"   />
 
 The password to be used to create a superadmin account
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "ListQueryBuilder"
 weight: 10
-date: 2023-07-20T13:56:15.880Z
+date: 2023-07-21T07:17:01.544Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="199" packageName="@vendure/core" />
 
-This helper class is used when fetching entities the database from queries which return a <a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
+This helper class is used when fetching entities the database from queries which return a <a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
 These queries all follow the same format:
 
 In the GraphQL definition, they return a type which implements the `Node` interface, and the query returns a
@@ -48,7 +48,7 @@ all primitive field of the `BlogPost` type (namely, "published", "title" and "bo
 
 Your resolver function will then look like this:
 
-```TypeScript
+```ts
 @Resolver()
 export class BlogPostResolver
   constructor(private blogPostService: BlogPostService) {}
@@ -65,7 +65,7 @@ export class BlogPostResolver
 
 and the corresponding service will use the ListQueryBuilder:
 
-```TypeScript
+```ts
 @Injectable()
 export class BlogPostService {
   constructor(private listQueryBuilder: ListQueryBuilder) {}
@@ -87,22 +87,25 @@ class ListQueryBuilder implements OnApplicationBootstrap {
   build(entity: Type<T>, options: ListQueryOptions<T> = {}, extendedOptions: ExtendedListQueryOptions<T> = {}) => SelectQueryBuilder<T>;
 }
 ```
-Implements
-
- * OnApplicationBootstrap
+* Implements: <code>OnApplicationBootstrap</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService) => ListQueryBuilder"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService) => ListQueryBuilder"   />
 
 
 ### build
 
-<MemberInfo kind="method" type="(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;"   />
+<MemberInfo kind="method" type="(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/docs/reference/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;"   />
 
 Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
+
+
+</div>
 
 
 ## ExtendedListQueryOptions
@@ -123,8 +126,8 @@ type ExtendedListQueryOptions<T extends VendureEntity> = {
   ignoreQueryLimits?: boolean;
 }
 ```
-## Members
 
+<div className="members-wrapper">
 
 ### relations
 
@@ -133,7 +136,7 @@ type ExtendedListQueryOptions<T extends VendureEntity> = {
 
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### where
@@ -154,7 +157,7 @@ Allows you to specify the alias used for the entity `T` in the generated SQL que
 Defaults to the entity class name lower-cased, i.e. `ProductVariant` -> `'productvariant'`.
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 When a RequestContext is passed, then the query will be
 executed as part of any outer transaction.
@@ -224,3 +227,6 @@ query {
 When set to `true`, the configured `shopListQueryLimit` and `adminListQueryLimit` values will be ignored,
 allowing unlimited results to be returned. Use caution when exposing an unlimited list query to the public,
 as it could become a vector for a denial of service attack if an attacker requests a very large list.
+
+
+</div>

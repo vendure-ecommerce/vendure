@@ -1,7 +1,7 @@
 ---
 title: "StockLocationStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.362Z
+date: 2023-07-21T07:17:00.134Z
 showtoc: true
 generated: true
 ---
@@ -15,10 +15,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/catalog/stock-location-strategy.ts" sourceLine="48" packageName="@vendure/core" since="2.0.0" />
 
-The StockLocationStrategy is responsible for determining which <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>s
-should be used to fulfill an <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a> and how much stock should be allocated
+The StockLocationStrategy is responsible for determining which <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>s
+should be used to fulfill an <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> and how much stock should be allocated
 from each location. It is also used to determine the available stock for a given
-<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
+<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
 
 ```ts title="Signature"
 interface StockLocationStrategy extends InjectableStrategy {
@@ -53,42 +53,45 @@ interface StockLocationStrategy extends InjectableStrategy {
     ): LocationWithQuantity[] | Promise<LocationWithQuantity[]>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### getAvailableStock
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/typescript-api/common/id#id'>ID</a>, stockLevels: <a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]) => <a href='/typescript-api/products-stock/stock-location-strategy#availablestock'>AvailableStock</a> | Promise&#60;<a href='/typescript-api/products-stock/stock-location-strategy#availablestock'>AvailableStock</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, stockLevels: <a href='/docs/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]) => <a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#availablestock'>AvailableStock</a> | Promise&#60;<a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#availablestock'>AvailableStock</a>&#62;"   />
 
 Returns the available stock for the given ProductVariant, taking into account
 the stock levels at each StockLocation.
 ### forAllocation
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
 
 Determines which StockLocations should be used to when allocating stock when
 and Order is placed.
 ### forRelease
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
 
 Determines which StockLocations should be used to when releasing allocated
 stock when an OrderLine is cancelled before being fulfilled.
 ### forSale
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
 
 Determines which StockLocations should be used to when creating a Sale
 and reducing the stockOnHand upon fulfillment.
 ### forCancellation
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockLocations: <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[], orderLine: <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number) => <a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[] | Promise&#60;<a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#locationwithquantity'>LocationWithQuantity</a>[]&#62;"   />
 
 Determines which StockLocations should be used to when creating a Cancellation
 of an OrderLine which has already been fulfilled.
+
+
+</div>
 
 
 ## AvailableStock
@@ -96,7 +99,7 @@ of an OrderLine which has already been fulfilled.
 <GenerationInfo sourceFile="packages/core/src/config/catalog/stock-location-strategy.ts" sourceLine="18" packageName="@vendure/core" since="2.0.0" />
 
 The overall available stock for a ProductVariant as determined by the logic of the
-<a href='/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>'s `getAvailableStock` method.
+<a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>'s `getAvailableStock` method.
 
 ```ts title="Signature"
 interface AvailableStock {
@@ -104,6 +107,8 @@ interface AvailableStock {
   stockAllocated: number;
 }
 ```
+
+<div className="members-wrapper">
 
 ### stockOnHand
 
@@ -115,6 +120,9 @@ interface AvailableStock {
 <MemberInfo kind="property" type="number"   />
 
 
+
+
+</div>
 
 
 ## LocationWithQuantity
@@ -131,9 +139,11 @@ interface LocationWithQuantity {
 }
 ```
 
+<div className="members-wrapper">
+
 ### location
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
 
 
 ### quantity
@@ -141,3 +151,6 @@ interface LocationWithQuantity {
 <MemberInfo kind="property" type="number"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "DefaultStockAllocationStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.556Z
+date: 2023-07-21T07:17:00.315Z
 showtoc: true
 generated: true
 ---
@@ -23,14 +23,17 @@ class DefaultStockAllocationStrategy implements StockAllocationStrategy {
   shouldAllocateStock(ctx: RequestContext, fromState: OrderState, toState: OrderState, order: Order) => boolean | Promise<boolean>;
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy'>StockAllocationStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy'>StockAllocationStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### shouldAllocateStock
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
 
 
+
+
+</div>

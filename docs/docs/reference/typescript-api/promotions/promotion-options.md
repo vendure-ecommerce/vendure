@@ -1,7 +1,7 @@
 ---
 title: "PromotionOptions"
 weight: 10
-date: 2023-07-20T13:56:14.883Z
+date: 2023-07-21T07:17:00.625Z
 showtoc: true
 generated: true
 ---
@@ -24,13 +24,18 @@ interface PromotionOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### promotionConditions
 
-<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;"   />
 
 An array of conditions which can be used to construct Promotions
 ### promotionActions
 
-<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;"   />
 
 An array of actions which can be used to construct Promotions
+
+
+</div>

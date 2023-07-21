@@ -1,7 +1,7 @@
 ---
 title: "NativeAuthenticationStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.293Z
+date: 2023-07-21T07:17:00.075Z
 showtoc: true
 generated: true
 ---
@@ -28,11 +28,11 @@ class NativeAuthenticationStrategy implements AuthenticationStrategy<NativeAuthe
   async verifyUserPassword(ctx: RequestContext, userId: ID, password: string) => Promise<boolean>;
 }
 ```
-Implements
-
- * <a href='/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>&#60;NativeAuthenticationData&#62;
+* Implements: <code><a href='/docs/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>&#60;NativeAuthenticationData&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### name
 
@@ -41,7 +41,7 @@ Implements
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### defineInputType
@@ -51,11 +51,14 @@ Implements
 
 ### authenticate
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: NativeAuthenticationData) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a> | false&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: NativeAuthenticationData) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a> | false&#62;"   />
 
 
 ### verifyUserPassword
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean&#62;"   />
 
 
+
+
+</div>

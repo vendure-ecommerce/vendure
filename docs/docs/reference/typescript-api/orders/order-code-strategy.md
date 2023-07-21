@@ -1,7 +1,7 @@
 ---
 title: "OrderCodeStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.613Z
+date: 2023-07-21T07:17:00.359Z
 showtoc: true
 generated: true
 ---
@@ -21,7 +21,7 @@ existing system to generate a code:
 
 *Example*
 
-```TypeScript
+```ts
 class MyOrderCodeStrategy implements OrderCodeStrategy {
   // Some imaginary service which calls out to an existing external
   // order management system.
@@ -43,17 +43,20 @@ interface OrderCodeStrategy extends InjectableStrategy {
   generate(ctx: RequestContext): string | Promise<string>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### generate
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string | Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string | Promise&#60;string&#62;"   />
 
 Generates the order code.
+
+
+</div>
 
 
 ## DefaultOrderCodeStrategy
@@ -68,14 +71,17 @@ class DefaultOrderCodeStrategy implements OrderCodeStrategy {
   generate(ctx: RequestContext) => string;
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### generate
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string"   />
 
 
+
+
+</div>

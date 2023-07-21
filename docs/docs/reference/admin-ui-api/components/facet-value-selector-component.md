@@ -1,7 +1,7 @@
 ---
 title: "FacetValueSelectorComponent"
 weight: 10
-date: 2023-07-20T13:56:18.369Z
+date: 2023-07-21T07:17:04.451Z
 showtoc: true
 generated: true
 ---
@@ -30,7 +30,7 @@ like this:
 
 *Example*
 
-```TypeScript
+```ts
 this.facets = this.dataService
   .facet.getAllFacets()
   .mapSingle(data => data.facets.items);
@@ -60,13 +60,11 @@ class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAcce
   writeValue(obj: string | FacetValueFragment[] | Array<string | number> | null) => void;
 }
 ```
-Implements
-
- * OnInit
- * OnDestroy
- * ControlValueAccessor
+* Implements: <code>OnInit</code>, <code>OnDestroy</code>, <code>ControlValueAccessor</code>
 
 
+
+<div className="members-wrapper">
 
 ### selectedValuesChange
 
@@ -125,7 +123,7 @@ Implements
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent"   />
 
 
 ### ngOnInit
@@ -168,3 +166,6 @@ Implements
 <MemberInfo kind="method" type="(obj: string | FacetValueFragment[] | Array&#60;string | number&#62; | null) => void"   />
 
 
+
+
+</div>

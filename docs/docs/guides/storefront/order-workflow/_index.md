@@ -15,7 +15,7 @@ Every Order has a `state` property of type [`OrderState`]({{< relref "order-proc
 Note that this default workflow can be modified to better fit your business processes. See the [Customizing the Order Process guide]({{< relref "customizing-the-order-process" >}}).
 {{< /alert >}}
 
-{{< figure src="./order_state_diagram.png" >}}
+![./order_state_diagram.png](./order_state_diagram.png)
 
 ## Structure of an Order
 
@@ -23,7 +23,7 @@ In Vendure an [Order]({{< relref "order" >}}) consists of one or more [OrderLine
 
 Here is a simplified diagram illustrating this relationship:
 
-{{< figure src="./order_class_diagram.png" >}}
+![./order_class_diagram.png](./order_class_diagram.png)
 
 ## Shop client order workflow
 

@@ -1,7 +1,7 @@
 ---
 title: "AssetImportStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.247Z
+date: 2023-07-21T07:17:00.018Z
 showtoc: true
 generated: true
 ---
@@ -16,9 +16,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/asset-import-strategy/asset-import-strategy.ts" sourceLine="18" packageName="@vendure/core" since="1.7.0" />
 
 The AssetImportStrategy determines how asset files get imported based on the path given in the
-import CSV or via the <a href='/typescript-api/import-export/asset-importer#assetimporter'>AssetImporter</a> `getAssets()` method.
+import CSV or via the <a href='/docs/reference/typescript-api/import-export/asset-importer#assetimporter'>AssetImporter</a> `getAssets()` method.
 
-The <a href='/typescript-api/import-export/default-asset-import-strategy#defaultassetimportstrategy'>DefaultAssetImportStrategy</a> is able to load files from either the local filesystem
+The <a href='/docs/reference/typescript-api/import-export/default-asset-import-strategy#defaultassetimportstrategy'>DefaultAssetImportStrategy</a> is able to load files from either the local filesystem
 or from a remote URL.
 
 A custom strategy could be created which could e.g. get the asset file from an S3 bucket.
@@ -28,11 +28,11 @@ interface AssetImportStrategy extends InjectableStrategy {
   getStreamFromPath(assetPath: string): Readable | Promise<Readable>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### getStreamFromPath
 
@@ -40,3 +40,6 @@ Extends
 
 Given an asset path, this method should return a Stream of file data. This could
 e.g. be read from a file system or fetch from a remote location.
+
+
+</div>

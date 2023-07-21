@@ -1,7 +1,7 @@
 ---
 title: "Order"
 weight: 10
-date: 2023-07-20T13:56:15.177Z
+date: 2023-07-21T07:17:00.888Z
 showtoc: true
 generated: true
 ---
@@ -15,11 +15,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/order/order.entity.ts" sourceLine="43" packageName="@vendure/core" />
 
-An Order is created whenever a <a href='/typescript-api/entities/customer#customer'>Customer</a> adds an item to the cart. It contains all the
-information required to fulfill an order: which <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s in what quantities;
+An Order is created whenever a <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a> adds an item to the cart. It contains all the
+information required to fulfill an order: which <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s in what quantities;
 the shipping address and price; any applicable promotions; payments etc.
 
-An Order exists in a well-defined state according to the <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a> type. A state machine
+An Order exists in a well-defined state according to the <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a> type. A state machine
 is used to govern the transition from one state to another.
 
 ```ts title="Signature"
@@ -138,21 +138,18 @@ class Order extends VendureEntity implements ChannelAware, HasCustomFields {
   @Calculated({ relations: ['lines'] }) taxSummary: OrderTaxSummary[]
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
- * HasCustomFields
+* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code>HasCustomFields</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order#order'>Order</a>&#62;) => Order"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Order"   />
 
 
 ### type
@@ -162,17 +159,17 @@ Implements
 
 ### sellerOrders
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>[]"   />
 
 
 ### aggregateOrder
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### aggregateOrderId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### code
@@ -180,11 +177,11 @@ Implements
 <MemberInfo kind="property" type="string"   />
 
 A unique code for the Order, generated according to the
-<a href='/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a>. This should be used as an order reference
+<a href='/docs/reference/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a>. This should be used as an order reference
 for Customers, rather than the Order's id.
 ### state
 
-<MemberInfo kind="property" type="<a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>"   />
 
 
 ### active
@@ -194,32 +191,32 @@ for Customers, rather than the Order's id.
 Whether the Order is considered "active", meaning that the
 Customer can still make changes to it and has not yet completed
 the checkout process.
-This is governed by the <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.
+This is governed by the <a href='/docs/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.
 ### orderPlacedAt
 
 <MemberInfo kind="property" type="Date"   />
 
 The date & time that the Order was placed, i.e. the Customer
 completed the checkout and the Order is no longer "active".
-This is governed by the <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.
+This is governed by the <a href='/docs/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>.
 ### customer
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/customer#customer'>Customer</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>"   />
 
 
 ### customerId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]"   />
 
 
 ### surcharges
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
 
 Surcharges are arbitrary modifications to the Order total which are neither
 ProductVariants nor discounts resulting from applied Promotions. For example,
@@ -232,7 +229,7 @@ methods.
 An array of all coupon codes applied to the Order.
 ### promotions
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/promotion#promotion'>Promotion</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a>[]"   />
 
 Promotions applied to the order. Only gets populated after the payment process has completed,
 i.e. the Order is no longer active.
@@ -248,17 +245,17 @@ i.e. the Order is no longer active.
 
 ### payments
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/payment#payment'>Payment</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/payment#payment'>Payment</a>[]"   />
 
 
 ### fulfillments
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>[]"   />
 
 
 ### currencyCode
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
 
 
 ### customFields
@@ -268,17 +265,17 @@ i.e. the Order is no longer active.
 
 ### taxZoneId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
 ### modifications
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>[]"   />
 
 
 ### subTotal
@@ -288,7 +285,7 @@ i.e. the Order is no longer active.
 The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
 discounts which have been prorated (proportionally distributed) amongst the OrderItems.
 To get a total of all OrderLines which does not account for prorated discounts, use the
-sum of <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>'s `discountedLinePrice` values.
+sum of <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>'s `discountedLinePrice` values.
 ### subTotalWithTax
 
 <MemberInfo kind="property" type="number"   />
@@ -296,7 +293,7 @@ sum of <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>'s `
 Same as subTotal, but inclusive of tax.
 ### shippingLines
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>[]"   />
 
 The shipping charges applied to this order.
 ### shipping
@@ -334,3 +331,6 @@ The final payable amount. Equal to `subTotalWithTax` plus `shippingWithTax`.
 <MemberInfo kind="property" type="OrderTaxSummary[]"   />
 
 A summary of the taxes being applied to this Order.
+
+
+</div>

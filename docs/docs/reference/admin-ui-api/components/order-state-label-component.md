@@ -1,7 +1,7 @@
 ---
 title: "OrderStateLabelComponent"
 weight: 10
-date: 2023-07-20T13:56:18.426Z
+date: 2023-07-21T07:17:04.500Z
 showtoc: true
 generated: true
 ---
@@ -30,6 +30,8 @@ class OrderStateLabelComponent {
 }
 ```
 
+<div className="members-wrapper">
+
 ### state
 
 <MemberInfo kind="property" type="string"   />
@@ -40,3 +42,6 @@ class OrderStateLabelComponent {
 <MemberInfo kind="property" type=""   />
 
 
+
+
+</div>

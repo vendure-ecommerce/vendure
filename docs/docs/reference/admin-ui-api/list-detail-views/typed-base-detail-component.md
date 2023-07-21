@@ -1,7 +1,7 @@
 ---
 title: "TypedBaseDetailComponent"
 weight: 10
-date: 2023-07-20T13:56:17.765Z
+date: 2023-07-21T07:17:03.934Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="179" packageName="@vendure/admin-ui" />
 
-A version of the <a href='/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a> which is designed to be used with a
+A version of the <a href='/docs/reference/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a> which is designed to be used with a
 [TypedDocumentNode](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
 
 ```ts title="Signature"
@@ -26,11 +26,11 @@ class TypedBaseDetailComponent<T extends TypedDocumentNode<any, any>, Field exte
   override init() => ;
 }
 ```
-Extends
-
- * <a href='/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a>&#60;NonNullable&#60;ResultOf&#60;T&#62;[Field]&#62;&#62;
+* Extends: <code><a href='/docs/reference/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a>&#60;NonNullable&#60;ResultOf&#60;T&#62;[Field]&#62;&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### result$
 
@@ -52,3 +52,6 @@ Extends
 <MemberInfo kind="method" type="() => "   />
 
 
+
+
+</div>

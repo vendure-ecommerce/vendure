@@ -26,5 +26,5 @@ Customer Groups can be used for things like:
 * Grouping members of a loyalty scheme for access to exclusive Promotions
 * Segmenting customers for other marketing purposes
 
-{{< figure src="./screen-customer-group.webp" >}}
+![./screen-customer-group.webp](./screen-customer-group.webp)
 

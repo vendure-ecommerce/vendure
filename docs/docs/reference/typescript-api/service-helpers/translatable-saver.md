@@ -1,7 +1,7 @@
 ---
 title: "TranslatableSaver"
 weight: 10
-date: 2023-07-20T13:56:15.947Z
+date: 2023-07-21T07:17:01.612Z
 showtoc: true
 generated: true
 ---
@@ -15,11 +15,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/translatable-saver/translatable-saver.ts" sourceLine="57" packageName="@vendure/core" />
 
-A helper which contains methods for creating and updating entities which implement the <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a> interface.
+A helper which contains methods for creating and updating entities which implement the <a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a> interface.
 
 *Example*
 
-```TypeScript
+```ts
 export class MyService {
   constructor(private translatableSaver: TranslatableSaver) {}
 
@@ -48,9 +48,11 @@ class TranslatableSaver {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => TranslatableSaver"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => TranslatableSaver"   />
 
 
 ### create
@@ -65,3 +67,6 @@ to the `translations` array.
 
 Update a translatable entity. Performs a diff of the `translations` array in order to
 perform the correct operation on the translations.
+
+
+</div>

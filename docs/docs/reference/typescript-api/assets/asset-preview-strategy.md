@@ -1,7 +1,7 @@
 ---
 title: "AssetPreviewStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.265Z
+date: 2023-07-21T07:17:00.043Z
 showtoc: true
 generated: true
 ---
@@ -27,14 +27,17 @@ interface AssetPreviewStrategy extends InjectableStrategy {
   generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer): Promise<Buffer>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### generatePreviewImage
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
 
 
+
+
+</div>

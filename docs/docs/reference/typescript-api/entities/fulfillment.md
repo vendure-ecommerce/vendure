@@ -1,7 +1,7 @@
 ---
 title: "Fulfillment"
 weight: 10
-date: 2023-07-20T13:56:15.157Z
+date: 2023-07-21T07:17:00.870Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/fulfillment/fulfillment.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
-This entity represents a fulfillment of an Order or part of it, i.e. which <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>s have been
+This entity represents a fulfillment of an Order or part of it, i.e. which <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s have been
 delivered to the Customer after successful payment.
 
 ```ts title="Signature"
@@ -34,25 +34,23 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
     customFields: CustomFulfillmentFields;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * HasCustomFields
+* Implements: <code>HasCustomFields</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment"   />
 
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>"   />
 
 
 ### trackingCode
@@ -72,7 +70,7 @@ Implements
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]"   />
 
 
 ### customFields
@@ -80,3 +78,6 @@ Implements
 <MemberInfo kind="property" type="CustomFulfillmentFields"   />
 
 
+
+
+</div>

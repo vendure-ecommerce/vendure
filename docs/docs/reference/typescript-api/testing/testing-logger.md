@@ -1,7 +1,7 @@
 ---
 title: "TestingLogger"
 weight: 10
-date: 2023-07-20T13:56:17.092Z
+date: 2023-07-21T07:17:02.960Z
 showtoc: true
 generated: true
 ---
@@ -24,7 +24,7 @@ the Jest testing framework, but the TestingLogger should work with other similar
 
 *Example*
 
-```TypeScript
+```ts
 // e2e test example
 import { createTestEnvironment, TestingLogger } from '@vendure/testing';
 
@@ -49,7 +49,7 @@ it('should log an error', async () => {
 
 *Example*
 
-```TypeScript
+```ts
 // unit test example
 import { Test } from '@nestjs/testing';
 import { Logger } from '@vendure/core';
@@ -80,11 +80,11 @@ class TestingLogger<Spy extends (...args: any[]) => any> implements VendureLogge
   warn(message: string, context?: string) => void;
 }
 ```
-Implements
-
- * <a href='/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>
+* Implements: <code><a href='/docs/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
@@ -141,3 +141,6 @@ Implements
 <MemberInfo kind="method" type="(message: string, context?: string) => void"   />
 
 
+
+
+</div>

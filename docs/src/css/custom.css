@@ -6,25 +6,62 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+    --ifm-color-primary: hsl(196 100% 35%);
+    --ifm-color-primary-dark: hsl(196 100% 25%);
+    --ifm-color-primary-darker: hsl(196 100% 15%);
+    --ifm-color-primary-darkest: hsl(196 100% 7%);
+    --ifm-color-primary-light: hsl(196 100% 65%);
+    --ifm-color-primary-lighter: hsl(196 100% 75%);
+    --ifm-color-primary-lightest: hsl(196 100% 90%);
+    --ifm-code-font-size: 95%;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+    --color-graphql-comment: #47954d;
+    --color-graphql-identifier: rgb(227, 17, 108);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+    --ifm-color-primary: hsl(196 100% 45%);
+    --ifm-color-primary-dark: hsl(196 100% 35%);
+    --ifm-color-primary-darker: hsl(196 100% 25%);
+    --ifm-color-primary-darkest: hsl(196 100% 15%);
+    --ifm-color-primary-light: hsl(196 100% 65%);
+    --ifm-color-primary-lighter: hsl(196 100% 75%);
+    --ifm-color-primary-lightest: hsl(196 100% 90%);
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+    --color-graphql-comment: #6ea372;
+    --color-graphql-identifier: rgb(255, 121, 198);
+}
+
+
+.members-wrapper {
+    border-left: 1px solid var(--ifm-color-secondary);
+    padding-left: 32px;
+}
+
+.members-wrapper > h3 {
+    margin-top: 42px;
+}
+
+/* Styling of GraphQL code blocks */
+.graphql-code-block {
+    background-color: var(--ifm-pre-background);
+    border-radius: var(--ifm-pre-border-radius);
+    padding: var(--ifm-pre-padding);
+    color: var(--ifm-pre-color);
+    font: var(--ifm-code-font-size) / var(--ifm-pre-line-height) var(--ifm-font-family-monospace);
+}
+
+.graphql-code-line {
+}
+
+.graphql-code-line:not(.top-level) {
+    margin-left: 24px;
+}
+.graphql-code-line.comment {
+    color: var(--color-graphql-comment);
+}
+.graphql-code-identifier {
+    color: var(--color-graphql-identifier);
+    margin-right: 6px;
 }

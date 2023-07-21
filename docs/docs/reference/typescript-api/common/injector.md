@@ -1,7 +1,7 @@
 ---
 title: "Injector"
 weight: 10
-date: 2023-07-20T13:56:14.212Z
+date: 2023-07-21T07:16:59.980Z
 showtoc: true
 generated: true
 ---
@@ -28,6 +28,8 @@ class Injector {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
 <MemberInfo kind="method" type="(moduleRef: ModuleRef) => Injector"   />
@@ -46,3 +48,6 @@ Wraps the Nestjs `ModuleRef.get()` method.
 Retrieve an instance of the given scoped provider (transient or request-scoped) from the
 app's dependency injection container.
 Wraps the Nestjs `ModuleRef.resolve()` method.
+
+
+</div>

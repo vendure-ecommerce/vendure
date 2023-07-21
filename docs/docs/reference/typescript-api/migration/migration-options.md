@@ -1,7 +1,7 @@
 ---
 title: "MigrationOptions"
 weight: 10
-date: 2023-07-20T13:56:15.764Z
+date: 2023-07-21T07:17:01.441Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="19" packageName="@vendure/core" />
 
-Configuration for generating a new migration script via <a href='/typescript-api/migration/generate-migration#generatemigration'>generateMigration</a>.
+Configuration for generating a new migration script via <a href='/docs/reference/typescript-api/migration/generate-migration#generatemigration'>generateMigration</a>.
 
 ```ts title="Signature"
 interface MigrationOptions {
@@ -23,6 +23,8 @@ interface MigrationOptions {
   outputDir?: string;
 }
 ```
+
+<div className="members-wrapper">
 
 ### name
 
@@ -35,3 +37,6 @@ The name of the migration. The resulting migration script will be named
 <MemberInfo kind="property" type="string"   />
 
 The output directory of the generated migration scripts.
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "ElasticsearchOptions"
 weight: 10
-date: 2023-07-20T13:56:16.974Z
+date: 2023-07-21T07:17:02.787Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="22" packageName="@vendure/elasticsearch-plugin" />
 
-Configuration options for the <a href='/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>.
+Configuration options for the <a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>.
 
 ```ts title="Signature"
 interface ElasticsearchOptions {
@@ -46,6 +46,8 @@ interface ElasticsearchOptions {
   extendSearchSortType?: string[];
 }
 ```
+
+<div className="members-wrapper">
 
 ### host
 
@@ -89,7 +91,7 @@ are directly passed to index settings. To apply some settings indices will be re
 
 *Example*
 
-```TypeScript
+```ts
 // Configuring an English stemmer
 indexSettings: {
   analysis: {
@@ -115,7 +117,7 @@ A more complete example can be found in the discussion thread
 [How to make elastic plugin to search by substring with stemming](https://github.com/vendure-ecommerce/vendure/discussions/1066).
 ### indexMappingProperties
 
-<MemberInfo kind="property" type="{         [indexName: string]: object;     }" default="{}"  since="1.2.0"  />
+<MemberInfo kind="property" type="{         [indexName: string]: object;     }" default="{}"  since="1.2.0"  />
 
 This option allow to redefine or define new properties in mapping. More about elastic
 [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
@@ -123,7 +125,7 @@ After changing this option indices will be recreated.
 
 *Example*
 
-```TypeScript
+```ts
 // Configuring custom analyzer for the `productName` field.
 indexMappingProperties: {
   productName: {
@@ -144,7 +146,7 @@ need to prefix the name with `'product-<name>'` or `'variant-<name>'` respective
 
 *Example*
 
-```TypeScript
+```ts
 customProductMappings: {
    variantCount: {
        graphQlType: 'Int!',
@@ -164,12 +166,12 @@ indexMappingProperties: {
 Batch size for bulk operations (e.g. when rebuilding the indices).
 ### searchConfig
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>"   />
 
 Configuration of the internal Elasticsearch query.
 ### customProductMappings
 
-<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product#product'>Product</a>, <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
+<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/docs/reference/typescript-api/entities/product#product'>Product</a>, <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
 
 Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
@@ -188,7 +190,7 @@ the `customProductVariantMappings` field, which is always available.
 
 *Example*
 
-```TypeScript
+```ts
 customProductMappings: {
    variantCount: {
        graphQlType: 'Int!',
@@ -232,7 +234,7 @@ query SearchProducts($input: SearchInput!) {
 ```
 ### customProductVariantMappings
 
-<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
+<MemberInfo kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"   />
 
 This config option defines custom mappings which are accessible when the "groupByProduct"
 input options is set to `false`. In addition, custom product mappings can be accessed by using
@@ -273,7 +275,7 @@ and also performs optimizations to minimize the amount of work that needs to be 
 the worker.
 ### hydrateProductRelations
 
-<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/typescript-api/entities/product#product'>Product</a>&#62;&#62;" default="[]"  since="1.3.0"  />
+<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/docs/reference/typescript-api/entities/product#product'>Product</a>&#62;&#62;" default="[]"  since="1.3.0"  />
 
 Additional product relations that will be fetched from DB while reindexing. This can be used
 in combination with `customProductMappings` to ensure that the required relations are joined
@@ -281,7 +283,7 @@ before the `product` object is passed to the `valueFn`.
 
 *Example*
 
-```TypeScript
+```ts
 {
   hydrateProductRelations: ['assets.asset'],
   customProductMappings: {
@@ -296,13 +298,13 @@ before the `product` object is passed to the `valueFn`.
 ```
 ### hydrateProductVariantRelations
 
-<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;" default="[]"  since="1.3.0"  />
+<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;" default="[]"  since="1.3.0"  />
 
 Additional variant relations that will be fetched from DB while reindexing. See
 `hydrateProductRelations` for more explanation and a usage example.
 ### extendSearchInputType
 
-<MemberInfo kind="property" type="{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }" default="{}"  since="1.3.0"  />
+<MemberInfo kind="property" type="{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }" default="{}"  since="1.3.0"  />
 
 Allows the `SearchInput` type to be extended with new input fields. This allows arbitrary
 data to be passed in, which can then be used e.g. in the `mapQuery()` function or
@@ -310,7 +312,7 @@ custom `scriptFields` functions.
 
 *Example*
 
-```TypeScript
+```ts
 extendSearchInputType: {
   longitude: 'Float',
   latitude: 'Float',
@@ -344,7 +346,7 @@ correct sort order values available inside `input` parameter of the `mapSort` op
 
 *Example*
 
-```TypeScript
+```ts
 extendSearchSortType: ["distance"]
 ```
 
@@ -357,6 +359,9 @@ extend input SearchResultSortParameter {
      distance: SortOrder
 }
 ```
+
+
+</div>
 
 
 ## SearchConfig
@@ -384,6 +389,8 @@ interface SearchConfig {
   mapSort?: (sort: ElasticSearchSortInput, input: ElasticSearchInput) => ElasticSearchSortInput;
 }
 ```
+
+<div className="members-wrapper">
 
 ### facetValueMaxSize
 
@@ -415,7 +422,7 @@ Defines the
 used when matching against a search term.
 ### boostFields
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#boostfieldsconfig'>BoostFieldsConfig</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#boostfieldsconfig'>BoostFieldsConfig</a>"   />
 
 Set custom boost values for particular fields when matching against a search term.
 ### priceRangeBucketInterval
@@ -456,14 +463,14 @@ The interval used to group search results into buckets according to price range.
 ```
 ### mapQuery
 
-<MemberInfo kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"   />
+<MemberInfo kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"   />
 
 This config option allows the the modification of the whole (already built) search query. This allows
 for e.g. wildcard / fuzzy searches on the index.
 
 *Example*
 
-```TypeScript
+```ts
 mapQuery: (query, input, searchConfig, channelId, enabledOnly){
   if(query.bool.must){
     delete query.bool.must;
@@ -512,7 +519,7 @@ as covered in the
 
 *Example*
 
-```TypeScript
+```ts
 extendSearchInputType: {
   latitude: 'Float',
   longitude: 'Float',
@@ -635,6 +642,9 @@ searchConfig: {
 ```
 
 
+</div>
+
+
 ## BoostFieldsConfig
 
 <GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="662" packageName="@vendure/elasticsearch-plugin" />
@@ -652,6 +662,8 @@ interface BoostFieldsConfig {
   sku?: number;
 }
 ```
+
+<div className="members-wrapper">
 
 ### productName
 
@@ -673,3 +685,6 @@ Defines the boost factor for the description field.
 <MemberInfo kind="property" type="number" default="1"   />
 
 Defines the boost factor for the sku field.
+
+
+</div>

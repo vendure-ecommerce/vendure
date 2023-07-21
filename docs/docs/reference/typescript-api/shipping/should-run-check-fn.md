@@ -1,7 +1,7 @@
 ---
 title: "ShouldRunCheckFn"
 weight: 10
-date: 2023-07-20T13:56:14.774Z
+date: 2023-07-21T07:17:00.506Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShouldRunCheckFn
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="143" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="158" packageName="@vendure/core" />
 
 An optional method which is used to decide whether to run the `check()` function.
 Returns a JSON-compatible object which is cached and compared between calls.
@@ -24,7 +24,7 @@ the `check()` function is expensive and should be kept to an absolute minimum.
 
 *Example*
 
-```TypeScript
+```ts
 const optimizedChecker = new ShippingEligibilityChecker({
   code: 'example',
   description: [],
@@ -45,6 +45,6 @@ type ShouldRunCheckFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-    method: ShippingMethod
+    method: ShippingMethod,
 ) => Json | Promise<Json>
 ```

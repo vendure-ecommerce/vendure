@@ -1,7 +1,7 @@
 ---
 title: "CurrencyInputComponent"
 weight: 10
-date: 2023-07-20T13:56:18.132Z
+date: 2023-07-21T07:17:04.237Z
 showtoc: true
 generated: true
 ---
@@ -52,14 +52,11 @@ class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges,
   writeValue(value: any) => void;
 }
 ```
-Implements
-
- * ControlValueAccessor
- * OnInit
- * OnChanges
- * OnDestroy
+* Implements: <code>ControlValueAccessor</code>, <code>OnInit</code>, <code>OnChanges</code>, <code>OnDestroy</code>
 
 
+
+<div className="members-wrapper">
 
 ### disabled
 
@@ -118,7 +115,7 @@ Implements
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent"   />
 
 
 ### ngOnInit
@@ -166,3 +163,6 @@ Implements
 <MemberInfo kind="method" type="(value: any) => void"   />
 
 
+
+
+</div>

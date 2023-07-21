@@ -1,7 +1,7 @@
 ---
 title: "AuthenticationMethod"
 weight: 10
-date: 2023-07-20T13:56:15.069Z
+date: 2023-07-21T07:17:00.794Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/authentication-method/authentication-method.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-An AuthenticationMethod represents the means by which a <a href='/typescript-api/entities/user#user'>User</a> is authenticated. There are two kinds:
-<a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> and <a href='/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>.
+An AuthenticationMethod represents the means by which a <a href='/docs/reference/typescript-api/entities/user#user'>User</a> is authenticated. There are two kinds:
+<a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> and <a href='/docs/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>.
 
 ```ts title="Signature"
 class AuthenticationMethod extends VendureEntity {
@@ -25,17 +25,20 @@ class AuthenticationMethod extends VendureEntity {
     user: User;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/user#user'>User</a>"   />
 
 
+
+
+</div>
 
 
 ## ExternalAuthenticationMethod
@@ -56,15 +59,15 @@ class ExternalAuthenticationMethod extends AuthenticationMethod {
     metadata: any;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>&#62;) => ExternalAuthenticationMethod"   />
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>&#62;) => ExternalAuthenticationMethod"   />
 
 
 ### strategy
@@ -82,6 +85,9 @@ Extends
 <MemberInfo kind="property" type="any"   />
 
 
+
+
+</div>
 
 
 ## NativeAuthenticationMethod
@@ -107,15 +113,15 @@ class NativeAuthenticationMethod extends AuthenticationMethod {
     pendingIdentifier: string | null;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>&#62;) => NativeAuthenticationMethod"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>&#62;) => NativeAuthenticationMethod"   />
 
 
 ### identifier
@@ -151,3 +157,6 @@ an email address)
 When a request has been made to change the User's identifier, the new identifier
 will be stored here until it has been verified, after which it will
 replace the current value of the `identifier` field.
+
+
+</div>

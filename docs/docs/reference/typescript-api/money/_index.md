@@ -1,7 +1,7 @@
 ---
 title: "Money"
 weight: 10
-date: 2023-07-20T13:56:15.175Z
+date: 2023-07-21T07:17:00.886Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/money.decorator.ts" sourceLine="29" packageName="@vendure/core" since="2.0.0" />
 
 Use this decorator for any entity field that is storing a monetary value.
-This allows the column type to be defined by the configured <a href='/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>.
+This allows the column type to be defined by the configured <a href='/docs/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>.
 
 ```ts title="Signature"
 function Money(options?: MoneyColumnOptions): void

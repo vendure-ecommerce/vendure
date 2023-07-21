@@ -1,7 +1,7 @@
 ---
 title: "Payment"
 weight: 10
-date: 2023-07-20T13:56:15.252Z
+date: 2023-07-21T07:17:00.962Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/payment/payment.entity.ts" sourceLine="18" packageName="@vendure/core" />
 
 A Payment represents a single payment transaction and exists in a well-defined state
-defined by the <a href='/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> type.
+defined by the <a href='/docs/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> type.
 
 ```ts title="Signature"
 class Payment extends VendureEntity {
@@ -36,15 +36,15 @@ class Payment extends VendureEntity {
     refunds: Refund[];
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/payment#payment'>Payment</a>&#62;) => Payment"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;) => Payment"   />
 
 
 ### method
@@ -59,7 +59,7 @@ Extends
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>"   />
 
 
 ### errorMessage
@@ -79,7 +79,7 @@ Extends
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### refunds
@@ -87,3 +87,6 @@ Extends
 <MemberInfo kind="property" type="Refund[]"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "PriceCalculationResult"
 weight: 10
-date: 2023-07-20T13:56:14.236Z
+date: 2023-07-21T07:17:00.004Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="171" packageName="@vendure/core" />
 
-The result of the price calculation from the <a href='/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a> or the
-<a href='/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.
+The result of the price calculation from the <a href='/docs/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a> or the
+<a href='/docs/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.
 
 ```ts title="Signature"
 type PriceCalculationResult = {
@@ -24,8 +24,8 @@ type PriceCalculationResult = {
   priceIncludesTax: boolean;
 }
 ```
-## Members
 
+<div className="members-wrapper">
 
 ### price
 
@@ -37,3 +37,6 @@ type PriceCalculationResult = {
 <MemberInfo kind="property" type="boolean"   />
 
 
+
+
+</div>

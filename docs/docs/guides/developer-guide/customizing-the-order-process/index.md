@@ -170,4 +170,4 @@ This technique uses advanced TypeScript features - [declaration merging](https:/
 If you have defined custom order states, the Admin UI will allow you to manually transition an 
 order from one state to another:
 
-{{< figure src="./custom-order-ui.webp" >}}
+![./custom-order-ui.webp](./custom-order-ui.webp)

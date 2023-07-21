@@ -1,7 +1,7 @@
 ---
 title: "BootstrapWorker"
 weight: 10
-date: 2023-07-20T13:56:14.153Z
+date: 2023-07-21T07:16:59.921Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="102" packageName="@vendure/core" />
 
-Bootstraps a Vendure worker. Resolves to a <a href='/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a> object containing a reference to the underlying
+Bootstraps a Vendure worker. Resolves to a <a href='/docs/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a> object containing a reference to the underlying
 NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
 methods for starting the job queue and health check server.
 
@@ -23,7 +23,7 @@ Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}).
 
 *Example*
 
-```TypeScript
+```ts
 import { bootstrapWorker } from '@vendure/core';
 import { config } from './vendure-config';
 
@@ -42,5 +42,5 @@ Parameters
 
 ### userConfig
 
-<MemberInfo kind="parameter" type="Partial&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
+<MemberInfo kind="parameter" type="Partial&#60;<a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
 

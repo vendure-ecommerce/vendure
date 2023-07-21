@@ -1,7 +1,7 @@
 ---
 title: "Merge Strategies"
 weight: 10
-date: 2023-07-20T13:56:14.566Z
+date: 2023-07-21T07:17:00.323Z
 showtoc: true
 generated: true
 ---
@@ -23,17 +23,20 @@ class MergeOrdersStrategy implements OrderMergeStrategy {
   merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### merge
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/typescript-api/entities/order#order'>Order</a>) => <a href='/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
 
 
+
+
+</div>
 
 
 ## UseExistingStrategy
@@ -47,17 +50,20 @@ class UseExistingStrategy implements OrderMergeStrategy {
   merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### merge
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/typescript-api/entities/order#order'>Order</a>) => <a href='/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
 
 
+
+
+</div>
 
 
 ## UseGuestIfExistingEmptyStrategy
@@ -71,17 +77,20 @@ class UseGuestIfExistingEmptyStrategy implements OrderMergeStrategy {
   merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### merge
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/typescript-api/entities/order#order'>Order</a>) => <a href='/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
 
 
+
+
+</div>
 
 
 ## UseGuestStrategy
@@ -95,14 +104,17 @@ class UseGuestStrategy implements OrderMergeStrategy {
   merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### merge
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/typescript-api/entities/order#order'>Order</a>) => <a href='/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
 
 
+
+
+</div>

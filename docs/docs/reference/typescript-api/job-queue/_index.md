@@ -1,7 +1,7 @@
 ---
 title: "JobQueue"
 weight: 10
-date: 2023-07-20T13:56:15.697Z
+date: 2023-07-21T07:17:01.391Z
 showtoc: true
 generated: true
 ---
@@ -15,12 +15,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/job-queue.ts" sourceLine="25" packageName="@vendure/core" />
 
-A JobQueue is used to process <a href='/typescript-api/job-queue/job#job'>Job</a>s. A job is added to the queue via the
-`.add()` method, and the configured <a href='/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> will check for new jobs and process each
+A JobQueue is used to process <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>s. A job is added to the queue via the
+`.add()` method, and the configured <a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> will check for new jobs and process each
 according to the defined `process` function.
 
 *Note*: JobQueue instances should not be directly instantiated. Rather, the
-<a href='/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a> `createQueue()` method should be used (see that service
+<a href='/docs/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a> `createQueue()` method should be used (see that service
 for example usage).
 
 ```ts title="Signature"
@@ -31,6 +31,8 @@ class JobQueue<Data extends JobData<Data> = object> {
   async add(data: Data, options?: Pick<JobConfig<Data>, 'retries'>) => Promise<SubscribableJob<Data>>;
 }
 ```
+
+<div className="members-wrapper">
 
 ### name
 
@@ -44,19 +46,19 @@ class JobQueue<Data extends JobData<Data> = object> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/job-queue/types#createqueueoptions'>CreateQueueOptions</a>&#60;Data&#62;, jobQueueStrategy: <a href='/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>, jobBufferService: JobBufferService) => JobQueue"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/job-queue/types#createqueueoptions'>CreateQueueOptions</a>&#60;Data&#62;, jobQueueStrategy: <a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>, jobBufferService: JobBufferService) => JobQueue"   />
 
 
 ### add
 
-<MemberInfo kind="method" type="(data: Data, options?: Pick&#60;<a href='/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;Data&#62;, 'retries'&#62;) => Promise&#60;<a href='/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>&#60;Data&#62;&#62;"   />
+<MemberInfo kind="method" type="(data: Data, options?: Pick&#60;<a href='/docs/reference/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;Data&#62;, 'retries'&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>&#60;Data&#62;&#62;"   />
 
-Adds a new <a href='/typescript-api/job-queue/job#job'>Job</a> to the queue. The resolved <a href='/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a> allows the
+Adds a new <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a> to the queue. The resolved <a href='/docs/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a> allows the
 calling code to subscribe to updates to the Job:
 
 *Example*
 
-```TypeScript
+```ts
 const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries: 2 });
 return job.updates().pipe(
   map(update => {
@@ -77,9 +79,12 @@ Alternatively, if you aren't interested in the intermediate
 
 *Example*
 
-```TypeScript
+```ts
 const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries: 2 });
 return job.updates().toPromise()
   .then(update => update.result),
   .catch(err => err.message);
 ```
+
+
+</div>

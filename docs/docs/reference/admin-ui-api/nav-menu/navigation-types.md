@@ -1,7 +1,7 @@
 ---
 title: "Navigation Types"
 weight: 10
-date: 2023-07-20T13:56:17.982Z
+date: 2023-07-21T07:17:04.108Z
 showtoc: true
 generated: true
 ---
@@ -25,6 +25,8 @@ interface NavMenuBadge {
 }
 ```
 
+<div className="members-wrapper">
+
 ### type
 
 <MemberInfo kind="property" type="NavMenuBadgeType"   />
@@ -37,3 +39,6 @@ interface NavMenuBadge {
 If true, the badge will propagate to the NavMenuItem's
 parent section, displaying a notification badge next
 to the section name.
+
+
+</div>

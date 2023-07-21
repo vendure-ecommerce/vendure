@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethodEligibilityChecker"
 weight: 10
-date: 2023-07-20T13:56:14.639Z
+date: 2023-07-21T07:17:00.384Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-eligibility-checker.ts" sourceLine="47" packageName="@vendure/core" />
 
 The PaymentMethodEligibilityChecker class is used to check whether an order qualifies for a
-given <a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>.
+given <a href='/docs/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>.
 
 *Example*
 
@@ -38,24 +38,27 @@ class PaymentMethodEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends
   constructor(config: PaymentMethodEligibilityCheckerConfig<T>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitycheckerconfig'>PaymentMethodEligibilityCheckerConfig</a>&#60;T&#62;) => PaymentMethodEligibilityChecker"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitycheckerconfig'>PaymentMethodEligibilityCheckerConfig</a>&#60;T&#62;) => PaymentMethodEligibilityChecker"   />
 
 
+
+
+</div>
 
 
 ## PaymentMethodEligibilityCheckerConfig
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-eligibility-checker.ts" sourceLine="20" packageName="@vendure/core" />
 
-Configuration passed into the constructor of a <a href='/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> to
+Configuration passed into the constructor of a <a href='/docs/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> to
 configure its behavior.
 
 ```ts title="Signature"
@@ -63,24 +66,27 @@ interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs> extends Co
   check: CheckPaymentMethodEligibilityCheckerFn<T>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### check
 
-<MemberInfo kind="property" type="<a href='/typescript-api/payment/payment-method-eligibility-checker#checkpaymentmethodeligibilitycheckerfn'>CheckPaymentMethodEligibilityCheckerFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/payment/payment-method-eligibility-checker#checkpaymentmethodeligibilitycheckerfn'>CheckPaymentMethodEligibilityCheckerFn</a>&#60;T&#62;"   />
 
 
+
+
+</div>
 
 
 ## CheckPaymentMethodEligibilityCheckerFn
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-eligibility-checker.ts" sourceLine="83" packageName="@vendure/core" />
 
-A function which implements logic to determine whether a given <a href='/typescript-api/entities/order#order'>Order</a> is eligible for
+A function which implements logic to determine whether a given <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> is eligible for
 a particular payment method. If the function resolves to `false` or a string, the check is
 considered to have failed. A string result can be used to provide information about the
 reason for ineligibility, if desired.

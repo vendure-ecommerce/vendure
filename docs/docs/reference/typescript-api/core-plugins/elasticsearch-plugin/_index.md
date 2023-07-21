@@ -1,7 +1,7 @@
 ---
 title: "ElasticsearchPlugin"
 weight: 10
-date: 2023-07-20T13:56:17.003Z
+date: 2023-07-21T07:17:02.838Z
 showtoc: true
 generated: true
 ---
@@ -33,7 +33,7 @@ or
 
 Make sure to remove the `DefaultSearchPlugin` if it is still in the VendureConfig plugins array.
 
-Then add the `ElasticsearchPlugin`, calling the `.init()` method with <a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>:
+Then add the `ElasticsearchPlugin`, calling the `.init()` method with <a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>:
 
 *Example*
 
@@ -181,14 +181,17 @@ class ElasticsearchPlugin implements OnApplicationBootstrap {
   static init(options: ElasticsearchOptions) => Type<ElasticsearchPlugin>;
 }
 ```
-Implements
-
- * OnApplicationBootstrap
+* Implements: <code>OnApplicationBootstrap</code>
 
 
+
+<div className="members-wrapper">
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>&#62;"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "Address"
 weight: 10
-date: 2023-07-20T13:56:15.026Z
+date: 2023-07-21T07:17:00.761Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/address/address.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-Represents a <a href='/typescript-api/entities/customer#customer'>Customer</a>'s address.
+Represents a <a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>'s address.
 
 ```ts title="Signature"
 class Address extends VendureEntity implements HasCustomFields {
@@ -46,25 +46,23 @@ class Address extends VendureEntity implements HasCustomFields {
     customFields: CustomAddressFields;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * HasCustomFields
+* Implements: <code>HasCustomFields</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/address#address'>Address</a>&#62;) => Address"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/address#address'>Address</a>&#62;) => Address"   />
 
 
 ### customer
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/customer#customer'>Customer</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/customer#customer'>Customer</a>"   />
 
 
 ### fullName
@@ -104,7 +102,7 @@ Implements
 
 ### country
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/country#country'>Country</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/country#country'>Country</a>"   />
 
 
 ### phoneNumber
@@ -127,3 +125,6 @@ Implements
 <MemberInfo kind="property" type="CustomAddressFields"   />
 
 
+
+
+</div>

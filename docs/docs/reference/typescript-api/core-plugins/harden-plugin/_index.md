@@ -1,7 +1,7 @@
 ---
 title: "HardenPlugin"
 weight: 10
-date: 2023-07-20T13:56:17.110Z
+date: 2023-07-21T07:17:02.982Z
 showtoc: true
 generated: true
 ---
@@ -32,7 +32,7 @@ or
 
 `npm install @vendure/harden-plugin`
 
-Then add the `HardenPlugin`, calling the `.init()` method with <a href='/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>:
+Then add the `HardenPlugin`, calling the `.init()` method with <a href='/docs/reference/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>:
 
 *Example*
 
@@ -90,7 +90,7 @@ query EvilQuery {
 This evil query has a complexity score of 2,443,203 - much greater than the default of 1,000!
 
 The complexity score is calculated by the [graphql-query-complexity library](https://www.npmjs.com/package/graphql-query-complexity),
-and by default uses the <a href='/typescript-api/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a>, which is tuned specifically to the Vendure Shop API.
+and by default uses the <a href='/docs/reference/typescript-api/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a>, which is tuned specifically to the Vendure Shop API.
 
 {{% alert "warning" %}}
 Note: By default, if the "take" argument is omitted from a list query (e.g. the `products` or `collections` query), a default factor of 1000 is applied.
@@ -158,13 +158,18 @@ class HardenPlugin {
 }
 ```
 
+<div className="members-wrapper">
+
 ### options
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>) => "   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>) => "   />
 
 
+
+
+</div>

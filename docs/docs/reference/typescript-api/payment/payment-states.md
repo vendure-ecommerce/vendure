@@ -1,7 +1,7 @@
 ---
 title: "PaymentStates"
 weight: 10
-date: 2023-07-20T13:56:15.920Z
+date: 2023-07-21T07:17:01.586Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/payment-state-machine/payment-state.ts" sourceLine="19" packageName="@vendure/core" />
 
-An interface to extend standard <a href='/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>.
+An interface to extend standard <a href='/docs/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>.
 
 ```ts title="Signature"
 interface PaymentStates {

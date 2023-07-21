@@ -1,7 +1,7 @@
 ---
 title: "Promotion Action"
 weight: 10
-date: 2023-07-20T13:56:14.678Z
+date: 2023-07-21T07:17:00.424Z
 showtoc: true
 generated: true
 ---
@@ -15,8 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="247" packageName="@vendure/core" />
 
-An abstract class which is extended by <a href='/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>, <a href='/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a>,
-and <a href='/typescript-api/promotions/promotion-action#promotionshippingaction'>PromotionShippingAction</a>.
+An abstract class which is extended by <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>, <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a>,
+and <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionshippingaction'>PromotionShippingAction</a>.
 
 ```ts title="Signature"
 class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] | undefined = any> extends ConfigurableOperationDef<T> {
@@ -24,31 +24,34 @@ class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCond
   constructor(config: PromotionActionConfig<T, U>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### priorityValue
 
 <MemberInfo kind="property" type="number" default="0"   />
 
 Used to determine the order of application of multiple Promotions
-on the same Order. See the <a href='/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
+on the same Order. See the <a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
 more information.
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;) => PromotionAction"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;) => PromotionAction"   />
 
 
+
+
+</div>
 
 
 ## PromotionItemAction
 
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="320" packageName="@vendure/core" />
 
-Represents a PromotionAction which applies to individual <a href='/typescript-api/entities/order-line#orderline'>OrderLine</a>s.
+Represents a PromotionAction which applies to individual <a href='/docs/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s.
 
 *Example*
 
@@ -69,24 +72,27 @@ class PromotionItemAction<T extends ConfigArgs = ConfigArgs, U extends Array<Pro
   constructor(config: PromotionItemActionConfig<T, U>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionitemactionconfig'>PromotionItemActionConfig</a>&#60;T, U&#62;) => PromotionItemAction"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionitemactionconfig'>PromotionItemActionConfig</a>&#60;T, U&#62;) => PromotionItemAction"   />
 
 
+
+
+</div>
 
 
 ## PromotionOrderAction
 
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="375" packageName="@vendure/core" />
 
-Represents a PromotionAction which applies to the <a href='/typescript-api/entities/order#order'>Order</a> as a whole.
+Represents a PromotionAction which applies to the <a href='/docs/reference/typescript-api/entities/order#order'>Order</a> as a whole.
 
 *Example*
 
@@ -107,17 +113,20 @@ class PromotionOrderAction<T extends ConfigArgs = ConfigArgs, U extends Promotio
   constructor(config: PromotionOrderActionConfig<T, U>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionorderactionconfig'>PromotionOrderActionConfig</a>&#60;T, U&#62;) => PromotionOrderAction"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionorderactionconfig'>PromotionOrderActionConfig</a>&#60;T, U&#62;) => PromotionOrderAction"   />
 
 
+
+
+</div>
 
 
 ## PromotionShippingAction
@@ -131,17 +140,20 @@ class PromotionShippingAction<T extends ConfigArgs = ConfigArgs, U extends Promo
   constructor(config: PromotionShippingActionConfig<T, U>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/promotions/promotion-action#promotionshippingactionconfig'>PromotionShippingActionConfig</a>&#60;T, U&#62;) => PromotionShippingAction"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionshippingactionconfig'>PromotionShippingActionConfig</a>&#60;T, U&#62;) => PromotionShippingAction"   />
 
 
+
+
+</div>
 
 
 ## ExecutePromotionItemActionFn
@@ -219,7 +231,7 @@ type PromotionActionSideEffectFn<T extends ConfigArgs> = (
 
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="139" packageName="@vendure/core" />
 
-Configuration for all types of <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>.
+Configuration for all types of <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>.
 
 ```ts title="Signature"
 interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionCondition<any>> | undefined> extends ConfigurableOperationDefOptions<T> {
@@ -229,18 +241,18 @@ interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionC
   onDeactivate?: PromotionActionSideEffectFn<T>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### priorityValue
 
 <MemberInfo kind="property" type="number" default="0"   />
 
 Used to determine the order of application of multiple Promotions
-on the same Order. See the <a href='/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
+on the same Order. See the <a href='/docs/reference/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
 more information.
 ### conditions
 
@@ -254,7 +266,7 @@ on which it depends.
 the return values of the PromotionConditions' `check()` function.
 ### onActivate
 
-<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
 
 An optional side effect function which is invoked when the promotion
 becomes active. It can be used for things like adding a free gift to the order
@@ -264,35 +276,41 @@ If used, make sure to use the corresponding `onDeactivate` function to clean up
 or reverse any side effects as needed.
 ### onDeactivate
 
-<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
 
 Used to reverse or clean up any side effects executed as part of the `onActivate` function.
+
+
+</div>
 
 
 ## PromotionItemActionConfig
 
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="193" packageName="@vendure/core" />
 
-Configuration for a <a href='/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>
+Configuration for a <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>
 
 ```ts title="Signature"
 interface PromotionItemActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
   execute: ExecutePromotionItemActionFn<T, U>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### execute
 
-<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionitemactionfn'>ExecutePromotionItemActionFn</a>&#60;T, U&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/promotions/promotion-action#executepromotionitemactionfn'>ExecutePromotionItemActionFn</a>&#60;T, U&#62;"   />
 
 The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
 the OrderLine, i.e. the number should be negative.
+
+
+</div>
 
 
 ## PromotionOrderActionConfig
@@ -306,19 +324,22 @@ interface PromotionOrderActionConfig<T extends ConfigArgs, U extends PromotionCo
   execute: ExecutePromotionOrderActionFn<T, U>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### execute
 
-<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionorderactionfn'>ExecutePromotionOrderActionFn</a>&#60;T, U&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/promotions/promotion-action#executepromotionorderactionfn'>ExecutePromotionOrderActionFn</a>&#60;T, U&#62;"   />
 
 The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
 the Order, i.e. the number should be negative.
+
+
+</div>
 
 
 ## PromotionShippingActionConfig
@@ -332,16 +353,19 @@ interface PromotionShippingActionConfig<T extends ConfigArgs, U extends Promotio
   execute: ExecutePromotionShippingActionFn<T, U>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### execute
 
-<MemberInfo kind="property" type="<a href='/typescript-api/promotions/promotion-action#executepromotionshippingactionfn'>ExecutePromotionShippingActionFn</a>&#60;T, U&#62;"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/promotions/promotion-action#executepromotionshippingactionfn'>ExecutePromotionShippingActionFn</a>&#60;T, U&#62;"   />
 
 The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
 the Shipping, i.e. the number should be negative.
+
+
+</div>

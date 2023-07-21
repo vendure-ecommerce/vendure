@@ -78,7 +78,7 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
         for (const page of docsPages) {
             const { category, fileName, declarations } = page;
             for (const declaration of declarations) {
-                const pathToTypeDoc = `${outputPath}/${
+                const pathToTypeDoc = `docs/reference/${outputPath}/${
                     category ? category.map(part => normalizeForUrlPart(part)).join('/') + '/' : ''
                 }${fileName === '_index' ? '' : fileName}#${toHash(declaration.title)}`;
                 globalTypeMap.set(declaration.title, pathToTypeDoc);

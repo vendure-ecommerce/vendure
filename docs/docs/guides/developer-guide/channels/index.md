@@ -15,7 +15,7 @@ Channels are a feature of Vendure which allows multiple sales channels to be rep
 
 Every Vendure server always has a **default Channel**, which contains _all_ entities. Subsequent channels can then contain a subset of the above entities.
 
-{{< figure src="channels_diagram.png" >}}
+![channels_diagram.png](channels_diagram.png)
 
 Use-cases of Channels include:
 
@@ -28,11 +28,11 @@ Use-cases of Channels include:
 
 Each Channel has a set of `availableCurrencyCodes`, and one of these is designated as the `defaultCurrencyCode`, which sets the currency for all monetary values in that channel.
 
-{{< figure src="channels_currencies_diagram.png" >}}
+![channels_currencies_diagram.png](channels_currencies_diagram.png)
 
 Internally, there is a one-to-many relation from [ProductVariant]({{< relref "product-variant" >}}) to [ProductVariantPrice]({{< relref "product-variant-price" >}}). So the ProductVariant does _not_ hold a price for the product - this is actually stored on the ProductVariantPrice entity, and there will be at least one for each Channel to which the ProductVariant has been assigned.
 
-{{< figure src="channels_prices_diagram.png" >}}
+![channels_prices_diagram.png](channels_prices_diagram.png)
 
 {{< alert "warning" >}}
 **Note:** in the diagram above that the ProductVariant is **always assigned to the default Channel**, and thus will have a price in the default channel too. Likewise, the default Channel also has a defaultCurrencyCode.

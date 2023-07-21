@@ -1,7 +1,7 @@
 ---
 title: "ZoneSelectorComponent"
 weight: 10
-date: 2023-07-20T13:56:18.473Z
+date: 2023-07-21T07:17:04.550Z
 showtoc: true
 generated: true
 ---
@@ -39,11 +39,11 @@ class ZoneSelectorComponent implements ControlValueAccessor {
   writeValue(obj: string | Zone | null) => void;
 }
 ```
-Implements
-
- * ControlValueAccessor
+* Implements: <code>ControlValueAccessor</code>
 
 
+
+<div className="members-wrapper">
 
 ### selectedValuesChange
 
@@ -57,7 +57,7 @@ Implements
 
 ### transformControlValueAccessorValue
 
-<MemberInfo kind="property" type="(value: <a href='/typescript-api/entities/zone#zone'>Zone</a> | undefined) =&#62; any"   />
+<MemberInfo kind="property" type="(value: <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> | undefined) =&#62; any"   />
 
 
 ### selectedId$
@@ -82,7 +82,7 @@ Implements
 
 ### value
 
-<MemberInfo kind="property" type="string | <a href='/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="property" type="string | <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
 
 
 ### zones$
@@ -92,12 +92,12 @@ Implements
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => ZoneSelectorComponent"   />
+<MemberInfo kind="method" type="(dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => ZoneSelectorComponent"   />
 
 
 ### onChange
 
-<MemberInfo kind="method" type="(selected: <a href='/typescript-api/entities/zone#zone'>Zone</a>) => "   />
+<MemberInfo kind="method" type="(selected: <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>) => "   />
 
 
 ### registerOnChange
@@ -122,6 +122,9 @@ Implements
 
 ### writeValue
 
-<MemberInfo kind="method" type="(obj: string | <a href='/typescript-api/entities/zone#zone'>Zone</a> | null) => void"   />
+<MemberInfo kind="method" type="(obj: string | <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> | null) => void"   />
 
 
+
+
+</div>

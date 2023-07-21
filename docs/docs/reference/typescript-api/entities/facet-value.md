@@ -1,7 +1,7 @@
 ---
 title: "FacetValue"
 weight: 10
-date: 2023-07-20T13:56:15.148Z
+date: 2023-07-21T07:17:00.861Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/facet-value/facet-value.entity.ts" sourceLine="20" packageName="@vendure/core" />
 
-A particular value of a <a href='/typescript-api/entities/facet#facet'>Facet</a>.
+A particular value of a <a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>.
 
 ```ts title="Signature"
 class FacetValue extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
@@ -34,22 +34,18 @@ class FacetValue extends VendureEntity implements Translatable, HasCustomFields,
     channels: Channel[];
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
- * HasCustomFields
- * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
+* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;) => FacetValue"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;) => FacetValue"   />
 
 
 ### name
@@ -64,12 +60,12 @@ Implements
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;"   />
 
 
 ### facet
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/facet#facet'>Facet</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>"   />
 
 
 ### customFields
@@ -79,6 +75,9 @@ Implements
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
+
+
+</div>

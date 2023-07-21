@@ -1,7 +1,7 @@
 ---
 title: "Error Types"
 weight: 10
-date: 2023-07-20T13:56:14.185Z
+date: 2023-07-21T07:16:59.955Z
 showtoc: true
 generated: true
 ---
@@ -22,17 +22,20 @@ class InternalServerError extends I18nError {
   constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
-Extends
-
- * <a href='/typescript-api/errors/i18n-error#i18nerror'>I18nError</a>
+* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
 <MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}) => InternalServerError"   />
 
 
+
+
+</div>
 
 
 ## UserInputError
@@ -46,17 +49,20 @@ class UserInputError extends I18nError {
   constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
-Extends
-
- * <a href='/typescript-api/errors/i18n-error#i18nerror'>I18nError</a>
+* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
 <MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}) => UserInputError"   />
 
 
+
+
+</div>
 
 
 ## IllegalOperationError
@@ -70,17 +76,20 @@ class IllegalOperationError extends I18nError {
   constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
-Extends
-
- * <a href='/typescript-api/errors/i18n-error#i18nerror'>I18nError</a>
+* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
 <MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}) => IllegalOperationError"   />
 
 
+
+
+</div>
 
 
 ## UnauthorizedError
@@ -94,17 +103,20 @@ class UnauthorizedError extends I18nError {
   constructor()
 }
 ```
-Extends
-
- * <a href='/typescript-api/errors/i18n-error#i18nerror'>I18nError</a>
+* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
 <MemberInfo kind="method" type="() => UnauthorizedError"   />
 
 
+
+
+</div>
 
 
 ## ForbiddenError
@@ -119,24 +131,27 @@ class ForbiddenError extends I18nError {
   constructor(logLevel: LogLevel = LogLevel.Error)
 }
 ```
-Extends
-
- * <a href='/typescript-api/errors/i18n-error#i18nerror'>I18nError</a>
+* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(logLevel: <a href='/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Error) => ForbiddenError"   />
+<MemberInfo kind="method" type="(logLevel: <a href='/docs/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Error) => ForbiddenError"   />
 
 
+
+
+</div>
 
 
 ## ChannelNotFoundError
 
 <GenerationInfo sourceFile="packages/core/src/common/error/errors.ts" sourceLine="81" packageName="@vendure/core" />
 
-This error should be thrown when a <a href='/typescript-api/entities/channel#channel'>Channel</a> cannot be found based on the provided
+This error should be thrown when a <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a> cannot be found based on the provided
 channel token.
 
 ```ts title="Signature"
@@ -144,17 +159,20 @@ class ChannelNotFoundError extends I18nError {
   constructor(token: string)
 }
 ```
-Extends
-
- * <a href='/typescript-api/errors/i18n-error#i18nerror'>I18nError</a>
+* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
 <MemberInfo kind="method" type="(token: string) => ChannelNotFoundError"   />
 
 
+
+
+</div>
 
 
 ## EntityNotFoundError
@@ -169,14 +187,17 @@ class EntityNotFoundError extends I18nError {
   constructor(entityName: keyof typeof coreEntitiesMap | string, id: ID)
 }
 ```
-Extends
-
- * <a href='/typescript-api/errors/i18n-error#i18nerror'>I18nError</a>
+* Extends: <code><a href='/docs/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(entityName: keyof typeof coreEntitiesMap | string, id: <a href='/typescript-api/common/id#id'>ID</a>) => EntityNotFoundError"   />
+<MemberInfo kind="method" type="(entityName: keyof typeof coreEntitiesMap | string, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => EntityNotFoundError"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "ProductOption"
 weight: 10
-date: 2023-07-20T13:56:15.285Z
+date: 2023-07-21T07:17:00.999Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/product-option/product-option.entity.ts" sourceLine="20" packageName="@vendure/core" />
 
-A ProductOption is used to differentiate <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s from one another.
+A ProductOption is used to differentiate <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s from one another.
 
 ```ts title="Signature"
 class ProductOption extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
@@ -35,22 +35,18 @@ class ProductOption extends VendureEntity implements Translatable, HasCustomFiel
     customFields: CustomProductOptionFields;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
- * HasCustomFields
- * <a href='/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a>
+* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;) => ProductOption"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;) => ProductOption"   />
 
 
 ### deletedAt
@@ -70,17 +66,17 @@ Implements
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
 
 
 ### group
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>"   />
 
 
 ### groupId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### customFields
@@ -88,3 +84,6 @@ Implements
 <MemberInfo kind="property" type="CustomProductOptionFields"   />
 
 
+
+
+</div>

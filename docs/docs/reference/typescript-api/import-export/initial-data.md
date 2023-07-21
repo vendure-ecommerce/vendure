@@ -1,7 +1,7 @@
 ---
 title: "InitialData"
 weight: 10
-date: 2023-07-20T13:56:15.018Z
+date: 2023-07-21T07:17:00.755Z
 showtoc: true
 generated: true
 ---
@@ -30,9 +30,11 @@ interface InitialData {
 }
 ```
 
+<div className="members-wrapper">
+
 ### defaultLanguage
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
 
 
 ### defaultZone
@@ -70,3 +72,6 @@ interface InitialData {
 <MemberInfo kind="property" type="CollectionDefinition[]"   />
 
 
+
+
+</div>

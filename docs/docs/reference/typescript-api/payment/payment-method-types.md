@@ -1,7 +1,7 @@
 ---
 title: "Payment Method Types"
 weight: 10
-date: 2023-07-20T13:56:14.645Z
+date: 2023-07-21T07:17:00.391Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="30" packageName="@vendure/core" />
 
-This object is the return value of the <a href='/typescript-api/payment/payment-method-types#createpaymentfn'>CreatePaymentFn</a>.
+This object is the return value of the <a href='/docs/reference/typescript-api/payment/payment-method-types#createpaymentfn'>CreatePaymentFn</a>.
 
 ```ts title="Signature"
 interface CreatePaymentResult {
@@ -27,6 +27,8 @@ interface CreatePaymentResult {
 }
 ```
 
+<div className="members-wrapper">
+
 ### amount
 
 <MemberInfo kind="property" type="number"   />
@@ -36,9 +38,9 @@ Typically this should equal the Order total, unless multiple payment methods
 are being used for the order.
 ### state
 
-<MemberInfo kind="property" type="Exclude&#60;<a href='/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Error'&#62;"   />
+<MemberInfo kind="property" type="Exclude&#60;<a href='/docs/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Error'&#62;"   />
 
-The <a href='/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> of the resulting Payment.
+The <a href='/docs/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> of the resulting Payment.
 
 In a single-step payment flow, this should be set to `'Settled'`.
 In a two-step flow, this should be set to `'Authorized'`.
@@ -72,11 +74,14 @@ external gateways, where the payment provider returns a unique
 url which must then be passed to the storefront app.
 
 
+</div>
+
+
 ## CreatePaymentErrorResult
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="83" packageName="@vendure/core" />
 
-This object is the return value of the <a href='/typescript-api/payment/payment-method-types#createpaymentfn'>CreatePaymentFn</a> when there has been an error.
+This object is the return value of the <a href='/docs/reference/typescript-api/payment/payment-method-types#createpaymentfn'>CreatePaymentFn</a> when there has been an error.
 
 ```ts title="Signature"
 interface CreatePaymentErrorResult {
@@ -87,6 +92,8 @@ interface CreatePaymentErrorResult {
   metadata?: PaymentMetadata;
 }
 ```
+
+<div className="members-wrapper">
 
 ### amount
 
@@ -115,11 +122,14 @@ interface CreatePaymentErrorResult {
 
 
 
+</div>
+
+
 ## CreateRefundResult
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="98" packageName="@vendure/core" />
 
-This object is the return value of the <a href='/typescript-api/payment/payment-method-types#createrefundfn'>CreateRefundFn</a>.
+This object is the return value of the <a href='/docs/reference/typescript-api/payment/payment-method-types#createrefundfn'>CreateRefundFn</a>.
 
 ```ts title="Signature"
 interface CreateRefundResult {
@@ -129,9 +139,11 @@ interface CreateRefundResult {
 }
 ```
 
+<div className="members-wrapper">
+
 ### state
 
-<MemberInfo kind="property" type="<a href='/typescript-api/payment/refund-state#refundstate'>RefundState</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>"   />
 
 
 ### transactionId
@@ -146,11 +158,14 @@ interface CreateRefundResult {
 
 
 
+</div>
+
+
 ## SettlePaymentResult
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="112" packageName="@vendure/core" />
 
-This object is the return value of the <a href='/typescript-api/payment/payment-method-types#settlepaymentfn'>SettlePaymentFn</a> when the Payment
+This object is the return value of the <a href='/docs/reference/typescript-api/payment/payment-method-types#settlepaymentfn'>SettlePaymentFn</a> when the Payment
 has been successfully settled.
 
 ```ts title="Signature"
@@ -159,6 +174,8 @@ interface SettlePaymentResult {
   metadata?: PaymentMetadata;
 }
 ```
+
+<div className="members-wrapper">
 
 ### success
 
@@ -172,11 +189,14 @@ interface SettlePaymentResult {
 
 
 
+</div>
+
+
 ## SettlePaymentErrorResult
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="125" packageName="@vendure/core" />
 
-This object is the return value of the <a href='/typescript-api/payment/payment-method-types#settlepaymentfn'>SettlePaymentFn</a> when the Payment
+This object is the return value of the <a href='/docs/reference/typescript-api/payment/payment-method-types#settlepaymentfn'>SettlePaymentFn</a> when the Payment
 could not be settled.
 
 ```ts title="Signature"
@@ -188,6 +208,8 @@ interface SettlePaymentErrorResult {
 }
 ```
 
+<div className="members-wrapper">
+
 ### success
 
 <MemberInfo kind="property" type="false"   />
@@ -195,7 +217,7 @@ interface SettlePaymentErrorResult {
 
 ### state
 
-<MemberInfo kind="property" type="Exclude&#60;<a href='/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Settled'&#62;"   />
+<MemberInfo kind="property" type="Exclude&#60;<a href='/docs/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Settled'&#62;"   />
 
 The state to transition this Payment to upon unsuccessful settlement.
 Defaults to `Error`. Note that if using a different state, it must be
@@ -215,11 +237,14 @@ also be persisted as `Payment.errorMessage`.
 
 
 
+</div>
+
+
 ## CancelPaymentResult
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="153" packageName="@vendure/core" />
 
-This object is the return value of the <a href='/typescript-api/payment/payment-method-types#cancelpaymentfn'>CancelPaymentFn</a> when the Payment
+This object is the return value of the <a href='/docs/reference/typescript-api/payment/payment-method-types#cancelpaymentfn'>CancelPaymentFn</a> when the Payment
 has been successfully cancelled.
 
 ```ts title="Signature"
@@ -228,6 +253,8 @@ interface CancelPaymentResult {
   metadata?: PaymentMetadata;
 }
 ```
+
+<div className="members-wrapper">
 
 ### success
 
@@ -241,11 +268,14 @@ interface CancelPaymentResult {
 
 
 
+</div>
+
+
 ## CancelPaymentErrorResult
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="165" packageName="@vendure/core" />
 
-This object is the return value of the <a href='/typescript-api/payment/payment-method-types#cancelpaymentfn'>CancelPaymentFn</a> when the Payment
+This object is the return value of the <a href='/docs/reference/typescript-api/payment/payment-method-types#cancelpaymentfn'>CancelPaymentFn</a> when the Payment
 could not be cancelled.
 
 ```ts title="Signature"
@@ -257,6 +287,8 @@ interface CancelPaymentErrorResult {
 }
 ```
 
+<div className="members-wrapper">
+
 ### success
 
 <MemberInfo kind="property" type="false"   />
@@ -264,7 +296,7 @@ interface CancelPaymentErrorResult {
 
 ### state
 
-<MemberInfo kind="property" type="Exclude&#60;<a href='/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Cancelled'&#62;"   />
+<MemberInfo kind="property" type="Exclude&#60;<a href='/docs/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Cancelled'&#62;"   />
 
 The state to transition this Payment to upon unsuccessful cancellation.
 Defaults to `Error`. Note that if using a different state, it must be
@@ -284,13 +316,16 @@ also be persisted as `Payment.errorMessage`.
 
 
 
+</div>
+
+
 ## CreatePaymentFn
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="193" packageName="@vendure/core" />
 
-This function contains the logic for creating a payment. See <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
+This function contains the logic for creating a payment. See <a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
 
-Returns a <a href='/typescript-api/payment/payment-method-types#createpaymentresult'>CreatePaymentResult</a>.
+Returns a <a href='/docs/reference/typescript-api/payment/payment-method-types#createpaymentresult'>CreatePaymentResult</a>.
 
 ```ts title="Signature"
 type CreatePaymentFn<T extends ConfigArgs> = (
@@ -308,7 +343,7 @@ type CreatePaymentFn<T extends ConfigArgs> = (
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="209" packageName="@vendure/core" />
 
-This function contains the logic for settling a payment. See <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
+This function contains the logic for settling a payment. See <a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
 
 ```ts title="Signature"
 type SettlePaymentFn<T extends ConfigArgs> = (
@@ -325,7 +360,7 @@ type SettlePaymentFn<T extends ConfigArgs> = (
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="224" packageName="@vendure/core" />
 
-This function contains the logic for cancelling a payment. See <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
+This function contains the logic for cancelling a payment. See <a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
 
 ```ts title="Signature"
 type CancelPaymentFn<T extends ConfigArgs> = (
@@ -342,7 +377,7 @@ type CancelPaymentFn<T extends ConfigArgs> = (
 
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="239" packageName="@vendure/core" />
 
-This function contains the logic for creating a refund. See <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
+This function contains the logic for creating a refund. See <a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a> for an example.
 
 ```ts title="Signature"
 type CreateRefundFn<T extends ConfigArgs> = (

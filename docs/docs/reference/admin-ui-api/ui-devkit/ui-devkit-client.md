@@ -1,7 +1,7 @@
 ---
 title: "UiDevkitClient"
 weight: 10
-date: 2023-07-20T13:56:18.764Z
+date: 2023-07-21T07:17:04.821Z
 showtoc: true
 generated: true
 ---
@@ -40,7 +40,7 @@ to otherwise get this information from within the child iframe.
 
 *Example*
 
-```TypeScript
+```ts
 import { getActivatedRoute } from '@vendure/ui-devkit';
 
 const route = await getActivatedRoute();
@@ -60,7 +60,7 @@ Perform a GraphQL query and returns either an Observable or a Promise of the res
 
 *Example*
 
-```TypeScript
+```ts
 import { graphQlQuery } from '@vendure/ui-devkit';
 
 const productList = await graphQlQuery(`
@@ -105,7 +105,7 @@ Perform a GraphQL mutation and returns either an Observable or a Promise of the 
 
 *Example*
 
-```TypeScript
+```ts
 import { graphQlMutation } from '@vendure/ui-devkit';
 
 const disableProduct = (id: string) => {
@@ -146,7 +146,7 @@ Display a toast notification.
 
 *Example*
 
-```TypeScript
+```ts
 import { notify } from '@vendure/ui-devkit';
 
 notify({

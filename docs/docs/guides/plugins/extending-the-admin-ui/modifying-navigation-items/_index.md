@@ -59,7 +59,7 @@ ngModules: [
 
 Running the server will compile our new shared module into the app, and the result should look like this:
 
-{{< figure src="./ui-extensions-navbar.webp" >}}
+![./ui-extensions-navbar.webp](./ui-extensions-navbar.webp)
 
 ## Overriding existing nav items
 
@@ -92,4 +92,4 @@ import { ReviewListComponent } from './components/review-list/review-list.compon
 export class ReviewsSharedModule {}
 ```
 
-{{< figure src="./ui-extensions-tabs.webp" >}}
+![./ui-extensions-tabs.webp](./ui-extensions-tabs.webp)

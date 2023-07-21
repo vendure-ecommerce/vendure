@@ -1,7 +1,7 @@
 ---
 title: "I18nService"
 weight: 10
-date: 2023-07-20T13:56:15.647Z
+date: 2023-07-21T07:17:01.350Z
 showtoc: true
 generated: true
 ---
@@ -23,11 +23,11 @@ class I18nService implements OnModuleInit {
   addTranslation(langKey: string, resources: VendureTranslationResources | any) => void;
 }
 ```
-Implements
-
- * OnModuleInit
+* Implements: <code>OnModuleInit</code>
 
 
+
+<div className="members-wrapper">
 
 ### addTranslationFile
 
@@ -36,9 +36,12 @@ Implements
 Add a I18n translation by json file
 ### addTranslation
 
-<MemberInfo kind="method" type="(langKey: string, resources: <a href='/typescript-api/common/i18n-service#venduretranslationresources'>VendureTranslationResources</a> | any) => void"   />
+<MemberInfo kind="method" type="(langKey: string, resources: <a href='/docs/reference/typescript-api/common/i18n-service#venduretranslationresources'>VendureTranslationResources</a> | any) => void"   />
 
 Add a I18n translation (key-value) resource
+
+
+</div>
 
 
 ## VendureTranslationResources
@@ -55,6 +58,8 @@ interface VendureTranslationResources {
 }
 ```
 
+<div className="members-wrapper">
+
 ### error
 
 <MemberInfo kind="property" type="any"   />
@@ -70,3 +75,6 @@ interface VendureTranslationResources {
 <MemberInfo kind="property" type="any"   />
 
 
+
+
+</div>

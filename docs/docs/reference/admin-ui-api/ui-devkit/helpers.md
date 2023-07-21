@@ -1,7 +1,7 @@
 ---
 title: "Helpers"
 weight: 10
-date: 2023-07-20T13:56:18.777Z
+date: 2023-07-21T07:17:04.833Z
 showtoc: true
 generated: true
 ---
@@ -19,7 +19,7 @@ A helper function to simplify the process of setting custom branding images.
 
 *Example*
 
-```TypeScript
+```ts
 compileUiExtensions({
   outputPath: path.join(__dirname, '../admin-ui'),
   extensions: [

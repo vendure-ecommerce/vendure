@@ -1,7 +1,7 @@
 ---
 title: "ConfigurableOperationDef"
 weight: 10
-date: 2023-07-20T13:56:14.177Z
+date: 2023-07-21T07:16:59.946Z
 showtoc: true
 generated: true
 ---
@@ -20,15 +20,15 @@ code blocks which have arguments which are configurable at run-time by the admin
 
 This is the mechanism used by:
 
-* <a href='/typescript-api/configuration/collection-filter#collectionfilter'>CollectionFilter</a>
-* <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>
-* <a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>
-* <a href='/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>
-* <a href='/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>
-* <a href='/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a>
+* <a href='/docs/reference/typescript-api/configuration/collection-filter#collectionfilter'>CollectionFilter</a>
+* <a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>
+* <a href='/docs/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>
+* <a href='/docs/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>
+* <a href='/docs/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>
+* <a href='/docs/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a>
 
 Any class which extends ConfigurableOperationDef works in the same way: it takes a
-config object as the constructor argument. That config object extends the <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>
+config object as the constructor argument. That config object extends the <a href='/docs/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>
 interface and typically adds some kind of business logic function to it.
 
 For example, in the case of `ShippingEligibilityChecker`,
@@ -42,19 +42,19 @@ arguments that are exposed via the Admin UI as data input components. This allow
 be set at run-time by the Administrator. Those values can then be accessed in the business logic
 of the operation.
 
-The data type of the args can be one of <a href='/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>, and the configuration is further explained in
-the docs of <a href='/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a>.
+The data type of the args can be one of <a href='/docs/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>, and the configuration is further explained in
+the docs of <a href='/docs/reference/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a>.
 
 ## Dependency Injection
 If your business logic relies on injectable providers, such as the `TransactionalConnection` object, or any of the
 internal Vendure services or those defined in a plugin, you can inject them by using the config object's
-`init()` method, which exposes the <a href='/typescript-api/common/injector#injector'>Injector</a>.
+`init()` method, which exposes the <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>.
 
 Here's an example of a ShippingCalculator that injects a service which has been defined in a plugin:
 
 *Example*
 
-```TypeScript
+```ts
 import { Injector, ShippingCalculator } from '@vendure/core';
 import { ShippingRatesService } from './shipping-rates.service';
 
@@ -101,6 +101,8 @@ class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
 }
 ```
 
+<div className="members-wrapper">
+
 ### code
 
 <MemberInfo kind="property" type="string"   />
@@ -113,17 +115,17 @@ class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
 
 ### description
 
-<MemberInfo kind="property" type="<a href='/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;) => ConfigurableOperationDef"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;) => ConfigurableOperationDef"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### destroy
@@ -133,7 +135,7 @@ class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
 
 ### toGraphQlType
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => ConfigurableOperationDefinition"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => ConfigurableOperationDefinition"   />
 
 Convert a ConfigurableOperationDef into a ConfigurableOperationDefinition object, typically
 so that it can be sent via the API.
@@ -148,3 +150,6 @@ from:
 
 to:
 `{ foo: 'bar' }`
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "FSM"
 weight: 10
-date: 2023-07-20T13:56:14.196Z
+date: 2023-07-21T07:16:59.965Z
 showtoc: true
 generated: true
 ---
@@ -30,9 +30,11 @@ class FSM<T extends string, Data = any> {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/typescript-api/state-machine/state-machine-config#statemachineconfig'>StateMachineConfig</a>&#60;T, Data&#62;, initialState: T) => FSM"   />
+<MemberInfo kind="method" type="(config: <a href='/docs/reference/typescript-api/state-machine/state-machine-config#statemachineconfig'>StateMachineConfig</a>&#60;T, Data&#62;, initialState: T) => FSM"   />
 
 
 ### initialState
@@ -65,3 +67,6 @@ class FSM<T extends string, Data = any> {
 <MemberInfo kind="method" type="(state: T) => boolean"   />
 
 
+
+
+</div>

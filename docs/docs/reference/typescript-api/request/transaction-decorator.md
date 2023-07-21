@@ -1,7 +1,7 @@
 ---
 title: "Transaction Decorator"
 weight: 10
-date: 2023-07-20T13:56:14.148Z
+date: 2023-07-21T07:16:59.915Z
 showtoc: true
 generated: true
 ---
@@ -13,11 +13,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Transaction
 
-<GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="77" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="81" packageName="@vendure/core" />
 
 Runs the decorated method in a TypeORM transaction. It works by creating a transactional
 QueryRunner which gets attached to the RequestContext object. When the RequestContext
-is the passed to the <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getRepository()` method, this
+is the passed to the <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getRepository()` method, this
 QueryRunner is used to execute the queries within this transaction.
 
 Essentially, the entire resolver function is wrapped in a try-catch block which commits the
@@ -26,7 +26,7 @@ error is thrown.
 
 *Example*
 
-```TypeScript
+```ts
 // in a GraphQL resolver file
 
 @Transaction()
@@ -47,12 +47,12 @@ async myMutation(@Ctx() ctx: RequestContext) {
 <GenerationInfo sourceFile="packages/core/src/api/decorators/transaction.decorator.ts" sourceLine="32" packageName="@vendure/core" />
 
 The Transaction decorator can handle transactions automatically (which is the default) or be set to
-"manual" mode, where the <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `.startTransaction()` and `.commitOpenTransaction()`
+"manual" mode, where the <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `.startTransaction()` and `.commitOpenTransaction()`
 methods must them be used.
 
 *Example*
 
-```TypeScript
+```ts
 // in a GraphQL resolver file
 
 @Transaction('manual')
@@ -81,5 +81,8 @@ falls back to the default of your database. See the documentation of your databa
 information on available isolation levels.
 
 ```ts title="Signature"
-type TransactionIsolationLevel = 'READ UNCOMMITTED' | 'READ COMMITTED' | 'REPEATABLE READ' | 'SERIALIZABLE'
+type TransactionIsolationLevel = | 'READ UNCOMMITTED'
+    | 'READ COMMITTED'
+    | 'REPEATABLE READ'
+    | 'SERIALIZABLE'
 ```

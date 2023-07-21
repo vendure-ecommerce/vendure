@@ -9,7 +9,7 @@ The Order & Customer detail pages feature a timeline of history entries. Since v
 
 You can also define a custom Angular component to render any timeline entry using the [registerHistoryEntryComponent function]({{< relref "register-history-entry-component" >}}).
 
-{{< figure src="./timeline-entry.webp" >}}
+![./timeline-entry.webp](./timeline-entry.webp)
 
 Following the example used in the HistoryService docs, we can define a component to render the tax ID verification
 entry in our Customer timeline:

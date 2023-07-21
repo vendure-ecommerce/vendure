@@ -1,7 +1,7 @@
 ---
 title: "StockLevelService"
 weight: 10
-date: 2023-07-20T13:56:16.603Z
+date: 2023-07-21T07:17:02.308Z
 showtoc: true
 generated: true
 ---
@@ -30,34 +30,39 @@ class StockLevelService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, stockLocationService: StockLocationService, configService: ConfigService) => StockLevelService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, stockLocationService: StockLocationService, configService: ConfigService) => StockLevelService"   />
 
 
 ### getStockLevel
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;"   />
 
-Returns the StockLevel for the given <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
+Returns the StockLevel for the given <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
 ### getStockLevelsForVariant
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]&#62;"   />
 
 
 ### getAvailableStock
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/products-stock/stock-location-strategy#availablestock'>AvailableStock</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#availablestock'>AvailableStock</a>&#62;"   />
 
-Returns the available stock (on hand and allocated) for the given <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>. This is determined
-by the configured <a href='/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>.
+Returns the available stock (on hand and allocated) for the given <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>. This is determined
+by the configured <a href='/docs/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy'>StockLocationStrategy</a>.
 ### updateStockOnHandForLocation
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/typescript-api/common/id#id'>ID</a>, change: number) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, change: number) => "   />
 
-Updates the `stockOnHand` for the given <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
+Updates the `stockOnHand` for the given <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
 ### updateStockAllocatedForLocation
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/typescript-api/common/id#id'>ID</a>, change: number) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, change: number) => "   />
 
-Updates the `stockAllocated` for the given <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and <a href='/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
+Updates the `stockAllocated` for the given <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and <a href='/docs/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
+
+
+</div>

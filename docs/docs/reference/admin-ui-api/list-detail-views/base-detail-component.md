@@ -1,7 +1,7 @@
 ---
 title: "BaseDetailComponent"
 weight: 10
-date: 2023-07-20T13:56:17.714Z
+date: 2023-07-21T07:17:03.892Z
 showtoc: true
 generated: true
 ---
@@ -16,11 +16,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="56" packageName="@vendure/admin-ui" />
 
 A base class for entity detail views. It should be used in conjunction with the
-<a href='/admin-ui-api/list-detail-views/base-entity-resolver#baseentityresolver'>BaseEntityResolver</a>.
+<a href='/docs/reference/admin-ui-api/list-detail-views/base-entity-resolver#baseentityresolver'>BaseEntityResolver</a>.
 
 *Example*
 
-```TypeScript
+```ts
 @Component({
   selector: 'app-my-entity',
   templateUrl: './my-entity.component.html',
@@ -73,11 +73,11 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
   protected setQueryParam(key: string, value: any) => ;
 }
 ```
-Implements
-
- * DeactivateAware
+* Implements: <code>DeactivateAware</code>
 
 
+
+<div className="members-wrapper">
 
 ### entity$
 
@@ -86,17 +86,17 @@ Implements
 
 ### availableLanguages$
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;"   />
+<MemberInfo kind="property" type="Observable&#60;<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;"   />
 
 
 ### languageCode$
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
+<MemberInfo kind="property" type="Observable&#60;<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
 
 
 ### languageCode
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
 
 
 ### isNew$
@@ -121,7 +121,7 @@ Implements
 
 ### constructor
 
-<MemberInfo kind="method" type="(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => BaseDetailComponent"   />
+<MemberInfo kind="method" type="(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => BaseDetailComponent"   />
 
 
 ### init
@@ -141,7 +141,7 @@ Implements
 
 ### setLanguage
 
-<MemberInfo kind="method" type="(code: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => "   />
+<MemberInfo kind="method" type="(code: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => "   />
 
 
 ### canDeactivate
@@ -151,17 +151,17 @@ Implements
 
 ### setFormValues
 
-<MemberInfo kind="method" type="(entity: Entity, languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => void"   />
+<MemberInfo kind="method" type="(entity: Entity, languageCode: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => void"   />
 
 
 ### setCustomFieldFormValues
 
-<MemberInfo kind="method" type="(customFields: <a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[], formGroup: AbstractControl | null, entity: T, currentTranslation?: TranslationOf&#60;T&#62;) => "   />
+<MemberInfo kind="method" type="(customFields: <a href='/docs/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[], formGroup: AbstractControl | null, entity: T, currentTranslation?: TranslationOf&#60;T&#62;) => "   />
 
 
 ### getCustomFieldConfig
 
-<MemberInfo kind="method" type="(key: Exclude&#60;keyof <a href='/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62;) => <a href='/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
+<MemberInfo kind="method" type="(key: Exclude&#60;keyof <a href='/docs/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62;) => <a href='/docs/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
 
 
 ### setQueryParam
@@ -169,3 +169,6 @@ Implements
 <MemberInfo kind="method" type="(key: string, value: any) => "   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "AnonymousSession"
 weight: 10
-date: 2023-07-20T13:56:15.373Z
+date: 2023-07-21T07:17:01.085Z
 showtoc: true
 generated: true
 ---
@@ -24,14 +24,17 @@ class AnonymousSession extends Session {
   constructor(input: DeepPartial<AnonymousSession>)
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/session#session'>Session</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/session#session'>Session</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>&#62;) => AnonymousSession"   />
+<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>&#62;) => AnonymousSession"   />
 
 
+
+
+</div>

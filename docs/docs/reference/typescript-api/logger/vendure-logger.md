@@ -1,7 +1,7 @@
 ---
 title: "VendureLogger"
 weight: 10
-date: 2023-07-20T13:56:14.473Z
+date: 2023-07-21T07:17:00.236Z
 showtoc: true
 generated: true
 ---
@@ -28,6 +28,8 @@ interface VendureLogger {
   setDefaultContext?(defaultContext: string): void;
 }
 ```
+
+<div className="members-wrapper">
 
 ### error
 
@@ -59,3 +61,6 @@ interface VendureLogger {
 <MemberInfo kind="method" type="(defaultContext: string) => void"   />
 
 
+
+
+</div>

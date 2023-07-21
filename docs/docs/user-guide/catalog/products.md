@@ -11,7 +11,7 @@ Products represent the items you want to sell to your customers.
 
 In Vendure, every Product has one or more _ProductVariants_. You can think of a Product as a "container" which houses the variants: 
 
-{{< figure src="../product-variants.png" >}}
+![./product-variants.png](./product-variants.png)
 
 In the diagram above you'll notice that it is the ProductVariants which have an SKU (_stock-keeping unit_: a unique product code) and a price.
 
@@ -23,7 +23,7 @@ In the diagram above you'll notice that it is the ProductVariants which have an 
 
 Vendure can track the stock levels of each of your ProductVariants. This is done by setting the "track inventory" option to "track" (or "inherit from global settings" if the [global setting]({{< relref "/user-guide/settings/global-settings" >}}) is set to track).
 
-{{< figure src="../screen-inventory.webp" >}}
+![./screen-inventory.webp](./screen-inventory.webp)
 
 When tracking inventory:
 

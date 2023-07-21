@@ -1,7 +1,7 @@
 ---
 title: "RuntimeVendureConfig"
 weight: 10
-date: 2023-07-20T13:56:14.939Z
+date: 2023-07-21T07:17:00.676Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1142" packageName="@vendure/core" />
 
 This interface represents the VendureConfig object available at run-time, i.e. the user-supplied
-config values have been merged with the <a href='/typescript-api/configuration/default-config#defaultconfig'>defaultConfig</a> values.
+config values have been merged with the <a href='/docs/reference/typescript-api/configuration/default-config#defaultconfig'>defaultConfig</a> values.
 
 ```ts title="Signature"
 interface RuntimeVendureConfig extends Required<VendureConfig> {
@@ -35,74 +35,77 @@ interface RuntimeVendureConfig extends Required<VendureConfig> {
   systemOptions: Required<SystemOptions>;
 }
 ```
-Extends
-
- * Required&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;
+* Extends: <code>Required&#60;<a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### apiOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>&#62;"   />
 
 
 ### assetOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/assets/asset-options#assetoptions'>AssetOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/assets/asset-options#assetoptions'>AssetOptions</a>&#62;"   />
 
 
 ### authOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/auth/auth-options#authoptions'>AuthOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/auth/auth-options#authoptions'>AuthOptions</a>&#62;"   />
 
 
 ### catalogOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/products-stock/catalog-options#catalogoptions'>CatalogOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/products-stock/catalog-options#catalogoptions'>CatalogOptions</a>&#62;"   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/custom-fields/#customfields'>CustomFields</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>&#62;"   />
 
 
 ### entityOptions
 
-<MemberInfo kind="property" type="Required&#60;Omit&#60;<a href='/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>, 'entityIdStrategy'&#62;&#62; &#38; <a href='/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>"   />
+<MemberInfo kind="property" type="Required&#60;Omit&#60;<a href='/docs/reference/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>, 'entityIdStrategy'&#62;&#62; &#38; <a href='/docs/reference/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>"   />
 
 
 ### importExportOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/import-export/import-export-options#importexportoptions'>ImportExportOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/import-export/import-export-options#importexportoptions'>ImportExportOptions</a>&#62;"   />
 
 
 ### jobQueueOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/job-queue/job-queue-options#jobqueueoptions'>JobQueueOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/job-queue/job-queue-options#jobqueueoptions'>JobQueueOptions</a>&#62;"   />
 
 
 ### orderOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/orders/order-options#orderoptions'>OrderOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/orders/order-options#orderoptions'>OrderOptions</a>&#62;"   />
 
 
 ### promotionOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/promotions/promotion-options#promotionoptions'>PromotionOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/promotions/promotion-options#promotionoptions'>PromotionOptions</a>&#62;"   />
 
 
 ### shippingOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/shipping/shipping-options#shippingoptions'>ShippingOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/shipping/shipping-options#shippingoptions'>ShippingOptions</a>&#62;"   />
 
 
 ### taxOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/tax/tax-options#taxoptions'>TaxOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/tax/tax-options#taxoptions'>TaxOptions</a>&#62;"   />
 
 
 ### systemOptions
 
-<MemberInfo kind="property" type="Required&#60;<a href='/typescript-api/configuration/system-options#systemoptions'>SystemOptions</a>&#62;"   />
+<MemberInfo kind="property" type="Required&#60;<a href='/docs/reference/typescript-api/configuration/system-options#systemoptions'>SystemOptions</a>&#62;"   />
 
 
+
+
+</div>

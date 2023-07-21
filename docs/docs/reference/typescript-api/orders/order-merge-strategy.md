@@ -1,7 +1,7 @@
 ---
 title: "OrderMergeStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.624Z
+date: 2023-07-21T07:17:00.367Z
 showtoc: true
 generated: true
 ---
@@ -26,25 +26,28 @@ interface OrderMergeStrategy extends InjectableStrategy {
   merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): MergedOrderLine[];
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### merge
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/typescript-api/entities/order#order'>Order</a>) => <a href='/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, guestOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>, existingOrder: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/docs/reference/typescript-api/orders/order-merge-strategy#mergedorderline'>MergedOrderLine</a>[]"   />
 
 Merges the lines of the guest Order with those of the existing Order which is associated
 with the active customer.
+
+
+</div>
 
 
 ## MergedOrderLine
 
 <GenerationInfo sourceFile="packages/core/src/config/order/order-merge-strategy.ts" sourceLine="15" packageName="@vendure/core" />
 
-The result of the <a href='/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a> `merge` method.
+The result of the <a href='/docs/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a> `merge` method.
 
 ```ts title="Signature"
 interface MergedOrderLine {
@@ -54,9 +57,11 @@ interface MergedOrderLine {
 }
 ```
 
+<div className="members-wrapper">
+
 ### orderLineId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### quantity
@@ -69,3 +74,6 @@ interface MergedOrderLine {
 <MemberInfo kind="property" type="any"   />
 
 
+
+
+</div>

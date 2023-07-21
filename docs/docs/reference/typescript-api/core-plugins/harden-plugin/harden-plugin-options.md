@@ -1,7 +1,7 @@
 ---
 title: "HardenPluginOptions"
 weight: 10
-date: 2023-07-20T13:56:17.116Z
+date: 2023-07-21T07:17:02.993Z
 showtoc: true
 generated: true
 ---
@@ -30,6 +30,8 @@ interface HardenPluginOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### maxQueryComplexity
 
 <MemberInfo kind="property" type="number" default="1000"   />
@@ -44,7 +46,7 @@ A query which exceeds the maximum score will result in an error.
 <MemberInfo kind="property" type="ComplexityEstimator[]"   />
 
 An array of custom estimator functions for calculating the complexity of a query. By default,
-the plugin will use the <a href='/typescript-api/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a> which is specifically
+the plugin will use the <a href='/docs/reference/typescript-api/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a> which is specifically
 tuned to accurately estimate Vendure queries.
 ### logComplexityScore
 
@@ -56,7 +58,7 @@ log level, and a breakdown of the calculation for each field will be logged at t
 This is very useful for tuning your complexity scores.
 ### customComplexityFactors
 
-<MemberInfo kind="property" type="{         [path: string]: number;     }"   />
+<MemberInfo kind="property" type="{         [path: string]: number;     }"   />
 
 This object allows you to tune the complexity weight of specific fields. For example,
 if you have a custom `stockLocations` field defined on the `ProductVariant` type, and
@@ -65,7 +67,7 @@ its complexity like this:
 
 *Example*
 
-```TypeScript
+```ts
 HardenPlugin.init({
   maxQueryComplexity: 650,
   customComplexityFactors: {
@@ -91,3 +93,6 @@ When set to `'prod'`, the plugin will disable dev-mode features of the GraphQL A
 
 - introspection
 - GraphQL playground
+
+
+</div>

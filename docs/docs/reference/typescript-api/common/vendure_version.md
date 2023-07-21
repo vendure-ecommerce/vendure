@@ -1,7 +1,7 @@
 ---
 title: "VENDURE_VERSION"
 weight: 10
-date: 2023-07-20T13:56:16.716Z
+date: 2023-07-21T07:17:02.441Z
 showtoc: true
 generated: true
 ---
@@ -20,7 +20,7 @@ this when your code needs to know the version of Vendure which is running.
 
 *Example*
 
-```TypeScript
+```ts
 import { VENDURE_VERSION } from '@vendure/core';
 
 console.log('Vendure version:', VENDURE_VERSION);

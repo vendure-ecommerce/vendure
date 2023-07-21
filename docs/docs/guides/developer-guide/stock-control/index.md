@@ -9,7 +9,7 @@ Vendure includes features to help manage your stock levels, stock allocations an
 
 Stock control is enabled globally via the Global Settings:
 
-{{< figure src="./global-stock-control.webp" >}}
+![./global-stock-control.webp](./global-stock-control.webp)
 
 It can be disabled if, for example, you manage your stock with a separate inventory management system and synchronize stock levels into Vendure automatically. The setting can also be overridden at the individual ProductVariant level.
 

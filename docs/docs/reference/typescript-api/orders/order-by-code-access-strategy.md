@@ -1,7 +1,7 @@
 ---
 title: "OrderByCodeAccessStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.576Z
+date: 2023-07-21T07:17:00.334Z
 showtoc: true
 generated: true
 ---
@@ -23,7 +23,7 @@ conditions like IP range or an Order status.
 *Example*
 
 This example grants access to the requested Order to anyone – unless it's Monday.
-```TypeScript
+```ts
 export class NotMondayOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
     canAccessOrder(ctx: RequestContext, order: Order): boolean {
         const MONDAY = 1;
@@ -39,17 +39,20 @@ interface OrderByCodeAccessStrategy extends InjectableStrategy {
   canAccessOrder(ctx: RequestContext, order: Order): boolean | Promise<boolean>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### canAccessOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
 
 Gives or denies permission to access the requested Order
+
+
+</div>
 
 
 ## DefaultOrderByCodeAccessStrategy
@@ -66,11 +69,11 @@ class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
   canAccessOrder(ctx: RequestContext, order: Order) => boolean;
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/order-by-code-access-strategy#orderbycodeaccessstrategy'>OrderByCodeAccessStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/order-by-code-access-strategy#orderbycodeaccessstrategy'>OrderByCodeAccessStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
@@ -79,6 +82,9 @@ Implements
 
 ### canAccessOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>) => boolean"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean"   />
 
 
+
+
+</div>

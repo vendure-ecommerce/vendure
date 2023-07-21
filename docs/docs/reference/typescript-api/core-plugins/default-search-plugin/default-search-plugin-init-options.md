@@ -1,7 +1,7 @@
 ---
 title: "DefaultSearchPluginInitOptions"
 weight: 10
-date: 2023-07-20T13:56:15.804Z
+date: 2023-07-21T07:17:01.480Z
 showtoc: true
 generated: true
 ---
@@ -24,6 +24,8 @@ interface DefaultSearchPluginInitOptions {
   searchStategy?: SearchStrategy;
 }
 ```
+
+<div className="members-wrapper">
 
 ### indexStockStatus
 
@@ -53,7 +55,7 @@ such as {@link MysqlSearchStrategy}, {@link PostgresSearchStrategy} or {@link Sq
 
 *Example*
 
-```Typescript
+```ts
 export class MySearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
     private connection: TransactionalConnection;
@@ -125,3 +127,6 @@ export class MySearchStrategy implements SearchStrategy {
     }
 }
 ```
+
+
+</div>

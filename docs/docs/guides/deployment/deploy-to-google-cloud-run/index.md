@@ -5,7 +5,7 @@ images:
     - "/docs/deployment/deploy-to-google-cloud-run/deploy-to-gcr.webp"
 ---
 
-{{< figure src="./deploy-to-gcr.webp" >}}
+![./deploy-to-gcr.webp](./deploy-to-gcr.webp)
 
 [Google Cloud Run](https://cloud.google.com/run) is a fully managed platform which allows you to run containerized apps and only pay while your app code is actually running.
 

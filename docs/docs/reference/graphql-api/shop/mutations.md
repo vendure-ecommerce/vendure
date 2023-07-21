@@ -1,287 +1,425 @@
 ---
 title: "Mutations"
 weight: 2
-date: 2023-07-04T11:02:06.199Z
+date: 2023-07-21T09:48:20.380Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
 
 # Mutations
 
+
 ## addItemToOrder
-Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addItemToOrder(productVariantId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!, quantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
 
-{{% gql-fields %}}
- * addItemToOrder(productVariantId: [ID](/graphql-api/shop/object-types#id)!, quantity: [Int](/graphql-api/shop/object-types#int)!): [UpdateOrderItemsResult](/graphql-api/shop/object-types#updateorderitemsresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## addPaymentToOrder
-Add a Payment to the Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Add a Payment to the Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">addPaymentToOrder(input: <a href="/docs/reference/graphql-api/shop/input-types#paymentinput">PaymentInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#addpaymenttoorderresult">AddPaymentToOrderResult</a>!</div>
 
-{{% gql-fields %}}
- * addPaymentToOrder(input: [PaymentInput](/graphql-api/shop/input-types#paymentinput)!): [AddPaymentToOrderResult](/graphql-api/shop/object-types#addpaymenttoorderresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## adjustOrderLine
-Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type <code>OrderLineCustomFieldsInput</code> will be available.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">adjustOrderLine(orderLineId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!, quantity: <a href="/docs/reference/graphql-api/shop/object-types#int">Int</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updateorderitemsresult">UpdateOrderItemsResult</a>!</div>
 
-{{% gql-fields %}}
- * adjustOrderLine(orderLineId: [ID](/graphql-api/shop/object-types#id)!, quantity: [Int](/graphql-api/shop/object-types#int)!): [UpdateOrderItemsResult](/graphql-api/shop/object-types#updateorderitemsresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## applyCouponCode
-Applies the given coupon code to the active Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Applies the given coupon code to the active Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">applyCouponCode(couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#applycouponcoderesult">ApplyCouponCodeResult</a>!</div>
 
-{{% gql-fields %}}
- * applyCouponCode(couponCode: [String](/graphql-api/shop/object-types#string)!): [ApplyCouponCodeResult](/graphql-api/shop/object-types#applycouponcoderesult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## authenticate
-Authenticates the user using a named authentication strategy
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Authenticates the user using a named authentication strategy</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">authenticate(input: <a href="/docs/reference/graphql-api/shop/input-types#authenticationinput">AuthenticationInput</a>!, rememberMe: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/shop/object-types#authenticationresult">AuthenticationResult</a>!</div>
 
-{{% gql-fields %}}
- * authenticate(input: [AuthenticationInput](/graphql-api/shop/input-types#authenticationinput)!, rememberMe: [Boolean](/graphql-api/shop/object-types#boolean)): [AuthenticationResult](/graphql-api/shop/object-types#authenticationresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## createCustomerAddress
-Create a new Customer Address
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Create a new Customer Address</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">createCustomerAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#address">Address</a>!</div>
 
-{{% gql-fields %}}
- * createCustomerAddress(input: [CreateAddressInput](/graphql-api/shop/input-types#createaddressinput)!): [Address](/graphql-api/shop/object-types#address)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## deleteCustomerAddress
-Delete an existing Address
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Delete an existing Address</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">deleteCustomerAddress(id: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/shop/object-types#success">Success</a>!</div>
 
-{{% gql-fields %}}
- * deleteCustomerAddress(id: [ID](/graphql-api/shop/object-types#id)!): [Success](/graphql-api/shop/object-types#success)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## login
-Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate(&#123; native: &#123; ... &#125;&#125;)`</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">login(username: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, rememberMe: <a href="/docs/reference/graphql-api/shop/object-types#boolean">Boolean</a>): <a href="/docs/reference/graphql-api/shop/object-types#nativeauthenticationresult">NativeAuthenticationResult</a>!</div>
 
-{{% gql-fields %}}
- * login(username: [String](/graphql-api/shop/object-types#string)!, password: [String](/graphql-api/shop/object-types#string)!, rememberMe: [Boolean](/graphql-api/shop/object-types#boolean)): [NativeAuthenticationResult](/graphql-api/shop/object-types#nativeauthenticationresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## logout
-End the current authenticated session
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">End the current authenticated session</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">logout: <a href="/docs/reference/graphql-api/shop/object-types#success">Success</a>!</div>
 
-{{% gql-fields %}}
- * logout: [Success](/graphql-api/shop/object-types#success)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## refreshCustomerVerification
-Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Regenerate and send a verification token for a new Customer registration. Only applicable if <code>authOptions.requireVerification</code> is set to true.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">refreshCustomerVerification(emailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#refreshcustomerverificationresult">RefreshCustomerVerificationResult</a>!</div>
 
-{{% gql-fields %}}
- * refreshCustomerVerification(emailAddress: [String](/graphql-api/shop/object-types#string)!): [RefreshCustomerVerificationResult](/graphql-api/shop/object-types#refreshcustomerverificationresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## registerCustomerAccount
-Register a Customer account with the given credentials. There are three possible registration flows:
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Register a Customer account with the given credentials. There are three possible registration flows:</div>
 
-_If `authOptions.requireVerification` is set to `true`:_
+<div class="graphql-code-line top-level comment"></div>
 
-1. **The Customer is registered _with_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
-   verificationToken would then be passed to the `verifyCustomerAccount` mutation _without_ a password. The Customer is then
-   verified and authenticated in one step.
-2. **The Customer is registered _without_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
-   verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosen password of the Customer. The Customer is then
-   verified and authenticated in one step.
+<div class="graphql-code-line top-level comment">_If <code>authOptions.requireVerification</code> is set to `true`:_</div>
 
-_If `authOptions.requireVerification` is set to `false`:_
+<div class="graphql-code-line top-level comment"></div>
 
-3. The Customer _must_ be registered _with_ a password. No further action is needed - the Customer is able to authenticate immediately.
+<div class="graphql-code-line top-level comment">1. **The Customer is registered _with_ a password**. A verificationToken will be created (and typically emailed to the Customer). That</div>
 
-{{% gql-fields %}}
- * registerCustomerAccount(input: [RegisterCustomerInput](/graphql-api/shop/input-types#registercustomerinput)!): [RegisterCustomerAccountResult](/graphql-api/shop/object-types#registercustomeraccountresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">   verificationToken would then be passed to the <code>verifyCustomerAccount</code> mutation _without_ a password. The Customer is then</div>
+
+<div class="graphql-code-line top-level comment">   verified and authenticated in one step.</div>
+
+<div class="graphql-code-line top-level comment">2. **The Customer is registered _without_ a password**. A verificationToken will be created (and typically emailed to the Customer). That</div>
+
+<div class="graphql-code-line top-level comment">   verificationToken would then be passed to the <code>verifyCustomerAccount</code> mutation _with_ the chosen password of the Customer. The Customer is then</div>
+
+<div class="graphql-code-line top-level comment">   verified and authenticated in one step.</div>
+
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">_If <code>authOptions.requireVerification</code> is set to `false`:_</div>
+
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">3. The Customer _must_ be registered _with_ a password. No further action is needed - the Customer is able to authenticate immediately.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">registerCustomerAccount(input: <a href="/docs/reference/graphql-api/shop/input-types#registercustomerinput">RegisterCustomerInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#registercustomeraccountresult">RegisterCustomerAccountResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeAllOrderLines
-Remove all OrderLine from the Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Remove all OrderLine from the Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeAllOrderLines: <a href="/docs/reference/graphql-api/shop/object-types#removeorderitemsresult">RemoveOrderItemsResult</a>!</div>
 
-{{% gql-fields %}}
- * removeAllOrderLines: [RemoveOrderItemsResult](/graphql-api/shop/object-types#removeorderitemsresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeCouponCode
-Removes the given coupon code from the active Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Removes the given coupon code from the active Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeCouponCode(couponCode: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#order">Order</a></div>
 
-{{% gql-fields %}}
- * removeCouponCode(couponCode: [String](/graphql-api/shop/object-types#string)!): [Order](/graphql-api/shop/object-types#order)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## removeOrderLine
-Remove an OrderLine from the Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Remove an OrderLine from the Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">removeOrderLine(orderLineId: <a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/shop/object-types#removeorderitemsresult">RemoveOrderItemsResult</a>!</div>
 
-{{% gql-fields %}}
- * removeOrderLine(orderLineId: [ID](/graphql-api/shop/object-types#id)!): [RemoveOrderItemsResult](/graphql-api/shop/object-types#removeorderitemsresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## requestPasswordReset
-Requests a password reset email to be sent
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Requests a password reset email to be sent</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">requestPasswordReset(emailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#requestpasswordresetresult">RequestPasswordResetResult</a></div>
 
-{{% gql-fields %}}
- * requestPasswordReset(emailAddress: [String](/graphql-api/shop/object-types#string)!): [RequestPasswordResetResult](/graphql-api/shop/object-types#requestpasswordresetresult)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## requestUpdateCustomerEmailAddress
-Request to update the emailAddress of the active Customer. If `authOptions.requireVerification` is enabled
-(as is the default), then the `identifierChangeToken` will be assigned to the current User and
-a IdentifierChangeRequestEvent will be raised. This can then be used e.g. by the EmailPlugin to email
-that verification token to the Customer, which is then used to verify the change of email address.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Request to update the emailAddress of the active Customer. If <code>authOptions.requireVerification</code> is enabled</div>
 
-{{% gql-fields %}}
- * requestUpdateCustomerEmailAddress(password: [String](/graphql-api/shop/object-types#string)!, newEmailAddress: [String](/graphql-api/shop/object-types#string)!): [RequestUpdateCustomerEmailAddressResult](/graphql-api/shop/object-types#requestupdatecustomeremailaddressresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">(as is the default), then the <code>identifierChangeToken</code> will be assigned to the current User and</div>
+
+<div class="graphql-code-line top-level comment">a IdentifierChangeRequestEvent will be raised. This can then be used e.g. by the EmailPlugin to email</div>
+
+<div class="graphql-code-line top-level comment">that verification token to the Customer, which is then used to verify the change of email address.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">requestUpdateCustomerEmailAddress(password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, newEmailAddress: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#requestupdatecustomeremailaddressresult">RequestUpdateCustomerEmailAddressResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## resetPassword
-Resets a Customer's password based on the provided token
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Resets a Customer's password based on the provided token</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">resetPassword(token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#resetpasswordresult">ResetPasswordResult</a>!</div>
 
-{{% gql-fields %}}
- * resetPassword(token: [String](/graphql-api/shop/object-types#string)!, password: [String](/graphql-api/shop/object-types#string)!): [ResetPasswordResult](/graphql-api/shop/object-types#resetpasswordresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setCustomerForOrder
-Set the Customer for the Order. Required only if the Customer is not currently logged in
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Set the Customer for the Order. Required only if the Customer is not currently logged in</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setCustomerForOrder(input: <a href="/docs/reference/graphql-api/shop/input-types#createcustomerinput">CreateCustomerInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#setcustomerfororderresult">SetCustomerForOrderResult</a>!</div>
 
-{{% gql-fields %}}
- * setCustomerForOrder(input: [CreateCustomerInput](/graphql-api/shop/input-types#createcustomerinput)!): [SetCustomerForOrderResult](/graphql-api/shop/object-types#setcustomerfororderresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setOrderBillingAddress
-Sets the billing address for this order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Sets the billing address for this order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setOrderBillingAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
 
-{{% gql-fields %}}
- * setOrderBillingAddress(input: [CreateAddressInput](/graphql-api/shop/input-types#createaddressinput)!): [ActiveOrderResult](/graphql-api/shop/object-types#activeorderresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setOrderCustomFields
-Allows any custom fields to be set for the active order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Allows any custom fields to be set for the active order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setOrderCustomFields(input: <a href="/docs/reference/graphql-api/shop/input-types#updateorderinput">UpdateOrderInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
 
-{{% gql-fields %}}
- * setOrderCustomFields(input: [UpdateOrderInput](/graphql-api/shop/input-types#updateorderinput)!): [ActiveOrderResult](/graphql-api/shop/object-types#activeorderresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setOrderShippingAddress
-Sets the shipping address for this order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Sets the shipping address for this order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setOrderShippingAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#createaddressinput">CreateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#activeorderresult">ActiveOrderResult</a>!</div>
 
-{{% gql-fields %}}
- * setOrderShippingAddress(input: [CreateAddressInput](/graphql-api/shop/input-types#createaddressinput)!): [ActiveOrderResult](/graphql-api/shop/object-types#activeorderresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## setOrderShippingMethod
-Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
-An Order can have multiple shipping methods, in which case you can pass an array of ids. In this case,
-you should configure a custom ShippingLineAssignmentStrategy in order to know which OrderLines each
-shipping method will apply to.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Sets the shipping method by id, which can be obtained with the <code>eligibleShippingMethods</code> query.</div>
 
-{{% gql-fields %}}
- * setOrderShippingMethod(shippingMethodId: [[ID](/graphql-api/shop/object-types#id)!]!): [SetOrderShippingMethodResult](/graphql-api/shop/object-types#setordershippingmethodresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">An Order can have multiple shipping methods, in which case you can pass an array of ids. In this case,</div>
+
+<div class="graphql-code-line top-level comment">you should configure a custom ShippingLineAssignmentStrategy in order to know which OrderLines each</div>
+
+<div class="graphql-code-line top-level comment">shipping method will apply to.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setOrderShippingMethod(shippingMethodId: [<a href="/docs/reference/graphql-api/shop/object-types#id">ID</a>!]!): <a href="/docs/reference/graphql-api/shop/object-types#setordershippingmethodresult">SetOrderShippingMethodResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## transitionOrderToState
-Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">transitionOrderToState(state: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#transitionordertostateresult">TransitionOrderToStateResult</a></div>
 
-{{% gql-fields %}}
- * transitionOrderToState(state: [String](/graphql-api/shop/object-types#string)!): [TransitionOrderToStateResult](/graphql-api/shop/object-types#transitionordertostateresult)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomer
-Update an existing Customer
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Customer</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomer(input: <a href="/docs/reference/graphql-api/shop/input-types#updatecustomerinput">UpdateCustomerInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#customer">Customer</a>!</div>
 
-{{% gql-fields %}}
- * updateCustomer(input: [UpdateCustomerInput](/graphql-api/shop/input-types#updatecustomerinput)!): [Customer](/graphql-api/shop/object-types#customer)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomerAddress
-Update an existing Address
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update an existing Address</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomerAddress(input: <a href="/docs/reference/graphql-api/shop/input-types#updateaddressinput">UpdateAddressInput</a>!): <a href="/docs/reference/graphql-api/shop/object-types#address">Address</a>!</div>
 
-{{% gql-fields %}}
- * updateCustomerAddress(input: [UpdateAddressInput](/graphql-api/shop/input-types#updateaddressinput)!): [Address](/graphql-api/shop/object-types#address)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomerEmailAddress
-Confirm the update of the emailAddress with the provided token, which has been generated by the
-`requestUpdateCustomerEmailAddress` mutation.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Confirm the update of the emailAddress with the provided token, which has been generated by the</div>
 
-{{% gql-fields %}}
- * updateCustomerEmailAddress(token: [String](/graphql-api/shop/object-types#string)!): [UpdateCustomerEmailAddressResult](/graphql-api/shop/object-types#updatecustomeremailaddressresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">`requestUpdateCustomerEmailAddress` mutation.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomerEmailAddress(token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updatecustomeremailaddressresult">UpdateCustomerEmailAddressResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## updateCustomerPassword
-Update the password of the active Customer
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Update the password of the active Customer</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">updateCustomerPassword(currentPassword: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, newPassword: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!): <a href="/docs/reference/graphql-api/shop/object-types#updatecustomerpasswordresult">UpdateCustomerPasswordResult</a>!</div>
 
-{{% gql-fields %}}
- * updateCustomerPassword(currentPassword: [String](/graphql-api/shop/object-types#string)!, newPassword: [String](/graphql-api/shop/object-types#string)!): [UpdateCustomerPasswordResult](/graphql-api/shop/object-types#updatecustomerpasswordresult)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## verifyCustomerAccount
-Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Verify a Customer email address with the token sent to that address. Only applicable if <code>authOptions.requireVerification</code> is set to true.</div>
 
-If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
-provided here.
+<div class="graphql-code-line top-level comment"></div>
 
-{{% gql-fields %}}
- * verifyCustomerAccount(token: [String](/graphql-api/shop/object-types#string)!, password: [String](/graphql-api/shop/object-types#string)): [VerifyCustomerAccountResult](/graphql-api/shop/object-types#verifycustomeraccountresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-line top-level comment">If the Customer was not registered with a password in the <code>registerCustomerAccount</code> mutation, the password _must_ be</div>
+
+<div class="graphql-code-line top-level comment">provided here.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">verifyCustomerAccount(token: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>!, password: <a href="/docs/reference/graphql-api/shop/object-types#string">String</a>): <a href="/docs/reference/graphql-api/shop/object-types#verifycustomeraccountresult">VerifyCustomerAccountResult</a>!</div>
 
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "ProductVariantPriceCalculationStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.350Z
+date: 2023-07-21T07:17:00.126Z
 showtoc: true
 generated: true
 ---
@@ -22,24 +22,27 @@ interface ProductVariantPriceCalculationStrategy extends InjectableStrategy {
   calculate(args: ProductVariantPriceCalculationArgs): Promise<PriceCalculationResult>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### calculate
 
-<MemberInfo kind="method" type="(args: <a href='/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationargs'>ProductVariantPriceCalculationArgs</a>) => Promise&#60;<a href='/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type="(args: <a href='/docs/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationargs'>ProductVariantPriceCalculationArgs</a>) => Promise&#60;<a href='/docs/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
 
 
+
+
+</div>
 
 
 ## ProductVariantPriceCalculationArgs
 
 <GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="25" packageName="@vendure/core" />
 
-The arguments passed the `calculate` method of the configured <a href='/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a>.
+The arguments passed the `calculate` method of the configured <a href='/docs/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a>.
 
 ```ts title="Signature"
 interface ProductVariantPriceCalculationArgs {
@@ -50,6 +53,8 @@ interface ProductVariantPriceCalculationArgs {
 }
 ```
 
+<div className="members-wrapper">
+
 ### inputPrice
 
 <MemberInfo kind="property" type="number"   />
@@ -57,16 +62,19 @@ interface ProductVariantPriceCalculationArgs {
 
 ### taxCategory
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
 
 
 ### activeTaxZone
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
 
 
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
 
 
+
+
+</div>

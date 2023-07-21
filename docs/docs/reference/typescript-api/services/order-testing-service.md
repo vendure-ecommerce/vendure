@@ -1,7 +1,7 @@
 ---
 title: "OrderTestingService"
 weight: 10
-date: 2023-07-20T13:56:16.246Z
+date: 2023-07-21T07:17:01.871Z
 showtoc: true
 generated: true
 ---
@@ -26,20 +26,25 @@ class OrderTestingService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, orderCalculator: <a href='/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, shippingCalculator: <a href='/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, configArgService: ConfigArgService, configService: ConfigService, productPriceApplicator: <a href='/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: TranslatorService) => OrderTestingService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, orderCalculator: <a href='/docs/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, shippingCalculator: <a href='/docs/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, configArgService: ConfigArgService, configService: ConfigService, productPriceApplicator: <a href='/docs/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: TranslatorService) => OrderTestingService"   />
 
 
 ### testShippingMethod
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: TestShippingMethodInput) => Promise&#60;TestShippingMethodResult&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: TestShippingMethodInput) => Promise&#60;TestShippingMethodResult&#62;"   />
 
 Runs a given ShippingMethod configuration against a mock Order to test for eligibility and resulting
 price.
 ### testEligibleShippingMethods
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: TestEligibleShippingMethodsInput) => Promise&#60;ShippingMethodQuote[]&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: TestEligibleShippingMethodsInput) => Promise&#60;ShippingMethodQuote[]&#62;"   />
 
 Tests all available ShippingMethods against a mock Order and return those which are eligible. This
 is intended to simulate a call to the `eligibleShippingMethods` query of the Shop API.
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "DefaultAssetImportStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.249Z
+date: 2023-07-21T07:17:00.023Z
 showtoc: true
 generated: true
 ---
@@ -28,11 +28,11 @@ class DefaultAssetImportStrategy implements AssetImportStrategy {
   getStreamFromPath(assetPath: string) => ;
 }
 ```
-Implements
-
- * <a href='/typescript-api/import-export/asset-import-strategy#assetimportstrategy'>AssetImportStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/import-export/asset-import-strategy#assetimportstrategy'>AssetImportStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
@@ -41,7 +41,7 @@ Implements
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type="(injector: <a href='/docs/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
 
 
 ### getStreamFromPath
@@ -49,3 +49,6 @@ Implements
 <MemberInfo kind="method" type="(assetPath: string) => "   />
 
 
+
+
+</div>

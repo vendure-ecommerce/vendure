@@ -1,7 +1,7 @@
 ---
 title: "VendureWorker"
 weight: 10
-date: 2023-07-20T13:56:16.717Z
+date: 2023-07-21T07:17:02.443Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/worker/vendure-worker.ts" sourceLine="13" packageName="@vendure/core" />
 
-This object is created by calling the <a href='/typescript-api/worker/bootstrap-worker#bootstrapworker'>bootstrapWorker</a> function.
+This object is created by calling the <a href='/docs/reference/typescript-api/worker/bootstrap-worker#bootstrapworker'>bootstrapWorker</a> function.
 
 ```ts title="Signature"
 class VendureWorker {
@@ -25,6 +25,8 @@ class VendureWorker {
   async startHealthCheckServer(healthCheckConfig: WorkerHealthCheckConfig) => Promise<VendureWorker>;
 }
 ```
+
+<div className="members-wrapper">
 
 ### app
 
@@ -39,13 +41,16 @@ the NestJS [standalone application](https://docs.nestjs.com/standalone-applicati
 
 ### startJobQueue
 
-<MemberInfo kind="method" type="() => Promise&#60;<a href='/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;"   />
+<MemberInfo kind="method" type="() => Promise&#60;<a href='/docs/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;"   />
 
 Starts the job queues running so that the worker can handle background jobs.
 ### startHealthCheckServer
 
-<MemberInfo kind="method" type="(healthCheckConfig: <a href='/typescript-api/worker/worker-health-check-config#workerhealthcheckconfig'>WorkerHealthCheckConfig</a>) => Promise&#60;<a href='/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;"  since="1.2.0"  />
+<MemberInfo kind="method" type="(healthCheckConfig: <a href='/docs/reference/typescript-api/worker/worker-health-check-config#workerhealthcheckconfig'>WorkerHealthCheckConfig</a>) => Promise&#60;<a href='/docs/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;"  since="1.2.0"  />
 
 Starts a simple http server which can be used as a health check on the worker instance.
 This endpoint can be used by container orchestration services such as Kubernetes to
 verify whether the worker is running.
+
+
+</div>

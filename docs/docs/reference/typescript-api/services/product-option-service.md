@@ -1,7 +1,7 @@
 ---
 title: "ProductOptionService"
 weight: 10
-date: 2023-07-20T13:56:16.401Z
+date: 2023-07-21T07:17:02.052Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/product-option.service.ts" sourceLine="32" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/product-option#productoption'>ProductOption</a> entities.
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a> entities.
 
 ```ts title="Signature"
 class ProductOptionService {
@@ -28,34 +28,36 @@ class ProductOptionService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, translatableSaver: <a href='/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService) => ProductOptionService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, translatableSaver: <a href='/docs/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService) => ProductOptionService"   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;&#62;"   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62; | undefined&#62;"   />
 
 
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, group: <a href='/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a> | <a href='/typescript-api/common/id#id'>ID</a>, input: CreateGroupOptionInput | CreateProductOptionInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, group: <a href='/docs/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a> | <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, input: CreateGroupOptionInput | CreateProductOptionInput) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateProductOptionInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateProductOptionInput) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
 
 Deletes a ProductOption.
 
@@ -63,3 +65,6 @@ Deletes a ProductOption.
 - If the ProductOption is used only by soft-deleted ProductVariants, the option will itself
   be soft-deleted.
 - If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.
+
+
+</div>

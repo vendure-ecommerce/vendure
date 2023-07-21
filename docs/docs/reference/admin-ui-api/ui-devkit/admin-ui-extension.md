@@ -1,7 +1,7 @@
 ---
 title: "AdminUiExtension"
 weight: 10
-date: 2023-07-20T13:56:18.780Z
+date: 2023-07-21T07:17:04.835Z
 showtoc: true
 generated: true
 ---
@@ -33,13 +33,11 @@ interface AdminUiExtension extends Partial<TranslationExtension>,
   exclude?: string[];
 }
 ```
-Extends
-
- * Partial&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#translationextension'>TranslationExtension</a>&#62;
- * Partial&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension'>StaticAssetExtension</a>&#62;
- * Partial&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension'>GlobalStylesExtension</a>&#62;
+* Extends: <code>Partial&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#translationextension'>TranslationExtension</a>&#62;</code>, <code>Partial&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension'>StaticAssetExtension</a>&#62;</code>, <code>Partial&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension'>GlobalStylesExtension</a>&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### id
 
@@ -56,7 +54,7 @@ will be copied into the Admin UI app, including all TypeScript source files, htm
 scss style sheets etc.
 ### ngModules
 
-<MemberInfo kind="property" type="Array&#60;<a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;"   />
 
 One or more Angular modules which extend the default Admin UI.
 ### pathAlias
@@ -160,12 +158,15 @@ exclude: ['**/*.spec.ts']
 ```
 
 
+</div>
+
+
 ## TranslationExtension
 
 <GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="18" packageName="@vendure/ui-devkit" />
 
 Defines extensions to the Admin UI translations. Can be used as a stand-alone extension definition which only adds translations
-without adding new UI functionality, or as part of a full <a href='/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension'>AdminUiExtension</a>.
+without adding new UI functionality, or as part of a full <a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension'>AdminUiExtension</a>.
 
 ```ts title="Signature"
 interface TranslationExtension {
@@ -173,9 +174,11 @@ interface TranslationExtension {
 }
 ```
 
+<div className="members-wrapper">
+
 ### translations
 
-<MemberInfo kind="property" type="{ [languageCode in <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }"   />
+<MemberInfo kind="property" type="{ [languageCode in <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }"   />
 
 Optional object defining any translation files for the Admin UI. The value should be an object with
 the key as a 2-character [ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
@@ -184,12 +187,15 @@ translation files in JSON format.
 
 *Example*
 
-```TypeScript
+```ts
 translations: {
   en: path.join(__dirname, 'translations/*.en.json'),
   de: path.join(__dirname, 'translations/*.de.json'),
 }
 ```
+
+
+</div>
 
 
 ## StaticAssetExtension
@@ -204,12 +210,17 @@ interface StaticAssetExtension {
 }
 ```
 
+<div className="members-wrapper">
+
 ### staticAssets
 
-<MemberInfo kind="property" type="<a href='/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]"   />
 
 Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
 directory.
+
+
+</div>
 
 
 ## GlobalStylesExtension
@@ -224,12 +235,17 @@ interface GlobalStylesExtension {
 }
 ```
 
+<div className="members-wrapper">
+
 ### globalStyles
 
 <MemberInfo kind="property" type="string[] | string"   />
 
 Specifies a path (or array of paths) to global style files (css or Sass) which will be
 incorporated into the Admin UI app global stylesheet.
+
+
+</div>
 
 
 ## SassVariableOverridesExtension
@@ -244,12 +260,17 @@ interface SassVariableOverridesExtension {
 }
 ```
 
+<div className="members-wrapper">
+
 ### sassVariableOverrides
 
 <MemberInfo kind="property" type="string"   />
 
 Specifies a path to a Sass style file containing variable declarations, which will take precedence over
 default values defined in Clarity.
+
+
+</div>
 
 
 ## StaticAssetDefinition
@@ -278,6 +299,8 @@ interface AdminUiExtensionSharedModule {
 }
 ```
 
+<div className="members-wrapper">
+
 ### type
 
 <MemberInfo kind="property" type="'shared'"   />
@@ -297,6 +320,9 @@ The name of the file containing the extension module class.
 The name of the extension module class.
 
 
+</div>
+
+
 ## AdminUiExtensionLazyModule
 
 <GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="267" packageName="@vendure/ui-devkit" />
@@ -311,6 +337,8 @@ interface AdminUiExtensionLazyModule {
   ngModuleName: string;
 }
 ```
+
+<div className="members-wrapper">
 
 ### type
 
@@ -335,3 +363,6 @@ The name of the file containing the extension module class.
 <MemberInfo kind="property" type="string"   />
 
 The name of the extension module class.
+
+
+</div>

@@ -1,529 +1,755 @@
 ---
 title: "Queries"
 weight: 1
-date: 2023-07-04T11:02:07.589Z
+date: 2023-07-21T09:48:22.063Z
 showtoc: true
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 
 
 # Queries
 
+
 ## activeAdministrator
-{{% gql-fields %}}
- * activeAdministrator: [Administrator](/graphql-api/admin/object-types#administrator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">activeAdministrator: <a href="/docs/reference/graphql-api/admin/object-types#administrator">Administrator</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## activeChannel
-{{% gql-fields %}}
- * activeChannel: [Channel](/graphql-api/admin/object-types#channel)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">activeChannel: <a href="/docs/reference/graphql-api/admin/object-types#channel">Channel</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## administrator
-{{% gql-fields %}}
- * administrator(id: [ID](/graphql-api/admin/object-types#id)!): [Administrator](/graphql-api/admin/object-types#administrator)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">administrator(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#administrator">Administrator</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## administrators
-{{% gql-fields %}}
- * administrators(options: [AdministratorListOptions](/graphql-api/admin/input-types#administratorlistoptions)): [AdministratorList](/graphql-api/admin/object-types#administratorlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">administrators(options: <a href="/docs/reference/graphql-api/admin/input-types#administratorlistoptions">AdministratorListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#administratorlist">AdministratorList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## asset
-Get a single Asset by id
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get a single Asset by id</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">asset(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#asset">Asset</a></div>
 
-{{% gql-fields %}}
- * asset(id: [ID](/graphql-api/admin/object-types#id)!): [Asset](/graphql-api/admin/object-types#asset)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## assets
-Get a list of Assets
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get a list of Assets</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">assets(options: <a href="/docs/reference/graphql-api/admin/input-types#assetlistoptions">AssetListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#assetlist">AssetList</a>!</div>
 
-{{% gql-fields %}}
- * assets(options: [AssetListOptions](/graphql-api/admin/input-types#assetlistoptions)): [AssetList](/graphql-api/admin/object-types#assetlist)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## channel
-{{% gql-fields %}}
- * channel(id: [ID](/graphql-api/admin/object-types#id)!): [Channel](/graphql-api/admin/object-types#channel)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">channel(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#channel">Channel</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## channels
-{{% gql-fields %}}
- * channels(options: [ChannelListOptions](/graphql-api/admin/input-types#channellistoptions)): [ChannelList](/graphql-api/admin/object-types#channellist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">channels(options: <a href="/docs/reference/graphql-api/admin/input-types#channellistoptions">ChannelListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#channellist">ChannelList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## collection
-Get a Collection either by id or slug. If neither id nor slug is specified, an error will result.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get a Collection either by id or slug. If neither id nor slug is specified, an error will result.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">collection(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>, slug: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>): <a href="/docs/reference/graphql-api/admin/object-types#collection">Collection</a></div>
 
-{{% gql-fields %}}
- * collection(id: [ID](/graphql-api/admin/object-types#id), slug: [String](/graphql-api/admin/object-types#string)): [Collection](/graphql-api/admin/object-types#collection)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## collectionFilters
-{{% gql-fields %}}
- * collectionFilters: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">collectionFilters: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## collections
-{{% gql-fields %}}
- * collections(options: [CollectionListOptions](/graphql-api/admin/input-types#collectionlistoptions)): [CollectionList](/graphql-api/admin/object-types#collectionlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">collections(options: <a href="/docs/reference/graphql-api/admin/input-types#collectionlistoptions">CollectionListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#collectionlist">CollectionList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## countries
-{{% gql-fields %}}
- * countries(options: [CountryListOptions](/graphql-api/admin/input-types#countrylistoptions)): [CountryList](/graphql-api/admin/object-types#countrylist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">countries(options: <a href="/docs/reference/graphql-api/admin/input-types#countrylistoptions">CountryListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#countrylist">CountryList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## country
-{{% gql-fields %}}
- * country(id: [ID](/graphql-api/admin/object-types#id)!): [Country](/graphql-api/admin/object-types#country)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">country(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#country">Country</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## customer
-{{% gql-fields %}}
- * customer(id: [ID](/graphql-api/admin/object-types#id)!): [Customer](/graphql-api/admin/object-types#customer)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">customer(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#customer">Customer</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## customerGroup
-{{% gql-fields %}}
- * customerGroup(id: [ID](/graphql-api/admin/object-types#id)!): [CustomerGroup](/graphql-api/admin/object-types#customergroup)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">customerGroup(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#customergroup">CustomerGroup</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## customerGroups
-{{% gql-fields %}}
- * customerGroups(options: [CustomerGroupListOptions](/graphql-api/admin/input-types#customergrouplistoptions)): [CustomerGroupList](/graphql-api/admin/object-types#customergrouplist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">customerGroups(options: <a href="/docs/reference/graphql-api/admin/input-types#customergrouplistoptions">CustomerGroupListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#customergrouplist">CustomerGroupList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## customers
-{{% gql-fields %}}
- * customers(options: [CustomerListOptions](/graphql-api/admin/input-types#customerlistoptions)): [CustomerList](/graphql-api/admin/object-types#customerlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">customers(options: <a href="/docs/reference/graphql-api/admin/input-types#customerlistoptions">CustomerListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#customerlist">CustomerList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## eligibleShippingMethodsForDraftOrder
-Returns a list of eligible shipping methods for the draft Order
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns a list of eligible shipping methods for the draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">eligibleShippingMethodsForDraftOrder(orderId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#shippingmethodquote">ShippingMethodQuote</a>!]!</div>
 
-{{% gql-fields %}}
- * eligibleShippingMethodsForDraftOrder(orderId: [ID](/graphql-api/admin/object-types#id)!): [[ShippingMethodQuote](/graphql-api/admin/object-types#shippingmethodquote)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## facet
-{{% gql-fields %}}
- * facet(id: [ID](/graphql-api/admin/object-types#id)!): [Facet](/graphql-api/admin/object-types#facet)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">facet(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#facet">Facet</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## facetValues
-{{% gql-fields %}}
- * facetValues(options: [FacetValueListOptions](/graphql-api/admin/input-types#facetvaluelistoptions)): [FacetValueList](/graphql-api/admin/object-types#facetvaluelist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">facetValues(options: <a href="/docs/reference/graphql-api/admin/input-types#facetvaluelistoptions">FacetValueListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#facetvaluelist">FacetValueList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## facets
-{{% gql-fields %}}
- * facets(options: [FacetListOptions](/graphql-api/admin/input-types#facetlistoptions)): [FacetList](/graphql-api/admin/object-types#facetlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">facets(options: <a href="/docs/reference/graphql-api/admin/input-types#facetlistoptions">FacetListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#facetlist">FacetList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## fulfillmentHandlers
-{{% gql-fields %}}
- * fulfillmentHandlers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">fulfillmentHandlers: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## globalSettings
-{{% gql-fields %}}
- * globalSettings: [GlobalSettings](/graphql-api/admin/object-types#globalsettings)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">globalSettings: <a href="/docs/reference/graphql-api/admin/object-types#globalsettings">GlobalSettings</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## job
-{{% gql-fields %}}
- * job(jobId: [ID](/graphql-api/admin/object-types#id)!): [Job](/graphql-api/admin/object-types#job)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">job(jobId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#job">Job</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## jobBufferSize
-{{% gql-fields %}}
- * jobBufferSize(bufferIds: [[String](/graphql-api/admin/object-types#string)!]): [[JobBufferSize](/graphql-api/admin/object-types#jobbuffersize)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">jobBufferSize(bufferIds: [<a href="/docs/reference/graphql-api/admin/object-types#string">String</a>!]): [<a href="/docs/reference/graphql-api/admin/object-types#jobbuffersize">JobBufferSize</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## jobQueues
-{{% gql-fields %}}
- * jobQueues: [[JobQueue](/graphql-api/admin/object-types#jobqueue)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">jobQueues: [<a href="/docs/reference/graphql-api/admin/object-types#jobqueue">JobQueue</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## jobs
-{{% gql-fields %}}
- * jobs(options: [JobListOptions](/graphql-api/admin/input-types#joblistoptions)): [JobList](/graphql-api/admin/object-types#joblist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">jobs(options: <a href="/docs/reference/graphql-api/admin/input-types#joblistoptions">JobListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#joblist">JobList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## jobsById
-{{% gql-fields %}}
- * jobsById(jobIds: [[ID](/graphql-api/admin/object-types#id)!]!): [[Job](/graphql-api/admin/object-types#job)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">jobsById(jobIds: [<a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!]!): [<a href="/docs/reference/graphql-api/admin/object-types#job">Job</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## me
-{{% gql-fields %}}
- * me: [CurrentUser](/graphql-api/admin/object-types#currentuser)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">me: <a href="/docs/reference/graphql-api/admin/object-types#currentuser">CurrentUser</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## metricSummary
-Get metrics for the given interval and metric types.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get metrics for the given interval and metric types.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">metricSummary(input: <a href="/docs/reference/graphql-api/admin/input-types#metricsummaryinput">MetricSummaryInput</a>): [<a href="/docs/reference/graphql-api/admin/object-types#metricsummary">MetricSummary</a>!]!</div>
 
-{{% gql-fields %}}
- * metricSummary(input: [MetricSummaryInput](/graphql-api/admin/input-types#metricsummaryinput)): [[MetricSummary](/graphql-api/admin/object-types#metricsummary)!]!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## order
-{{% gql-fields %}}
- * order(id: [ID](/graphql-api/admin/object-types#id)!): [Order](/graphql-api/admin/object-types#order)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">order(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#order">Order</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## orders
-{{% gql-fields %}}
- * orders(options: [OrderListOptions](/graphql-api/admin/input-types#orderlistoptions)): [OrderList](/graphql-api/admin/object-types#orderlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">orders(options: <a href="/docs/reference/graphql-api/admin/input-types#orderlistoptions">OrderListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#orderlist">OrderList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## paymentMethod
-{{% gql-fields %}}
- * paymentMethod(id: [ID](/graphql-api/admin/object-types#id)!): [PaymentMethod](/graphql-api/admin/object-types#paymentmethod)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">paymentMethod(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#paymentmethod">PaymentMethod</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## paymentMethodEligibilityCheckers
-{{% gql-fields %}}
- * paymentMethodEligibilityCheckers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">paymentMethodEligibilityCheckers: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## paymentMethodHandlers
-{{% gql-fields %}}
- * paymentMethodHandlers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">paymentMethodHandlers: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## paymentMethods
-{{% gql-fields %}}
- * paymentMethods(options: [PaymentMethodListOptions](/graphql-api/admin/input-types#paymentmethodlistoptions)): [PaymentMethodList](/graphql-api/admin/object-types#paymentmethodlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">paymentMethods(options: <a href="/docs/reference/graphql-api/admin/input-types#paymentmethodlistoptions">PaymentMethodListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#paymentmethodlist">PaymentMethodList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## pendingSearchIndexUpdates
-{{% gql-fields %}}
- * pendingSearchIndexUpdates: [Int](/graphql-api/admin/object-types#int)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">pendingSearchIndexUpdates: <a href="/docs/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## previewCollectionVariants
-Used for real-time previews of the contents of a Collection
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Used for real-time previews of the contents of a Collection</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">previewCollectionVariants(input: <a href="/docs/reference/graphql-api/admin/input-types#previewcollectionvariantsinput">PreviewCollectionVariantsInput</a>!, options: <a href="/docs/reference/graphql-api/admin/input-types#productvariantlistoptions">ProductVariantListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#productvariantlist">ProductVariantList</a>!</div>
 
-{{% gql-fields %}}
- * previewCollectionVariants(input: [PreviewCollectionVariantsInput](/graphql-api/admin/input-types#previewcollectionvariantsinput)!, options: [ProductVariantListOptions](/graphql-api/admin/input-types#productvariantlistoptions)): [ProductVariantList](/graphql-api/admin/object-types#productvariantlist)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## product
-Get a Product either by id or slug. If neither id nor slug is specified, an error will result.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get a Product either by id or slug. If neither id nor slug is specified, an error will result.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">product(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>, slug: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>): <a href="/docs/reference/graphql-api/admin/object-types#product">Product</a></div>
 
-{{% gql-fields %}}
- * product(id: [ID](/graphql-api/admin/object-types#id), slug: [String](/graphql-api/admin/object-types#string)): [Product](/graphql-api/admin/object-types#product)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## productOptionGroup
-{{% gql-fields %}}
- * productOptionGroup(id: [ID](/graphql-api/admin/object-types#id)!): [ProductOptionGroup](/graphql-api/admin/object-types#productoptiongroup)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">productOptionGroup(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#productoptiongroup">ProductOptionGroup</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## productOptionGroups
-{{% gql-fields %}}
- * productOptionGroups(filterTerm: [String](/graphql-api/admin/object-types#string)): [[ProductOptionGroup](/graphql-api/admin/object-types#productoptiongroup)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">productOptionGroups(filterTerm: <a href="/docs/reference/graphql-api/admin/object-types#string">String</a>): [<a href="/docs/reference/graphql-api/admin/object-types#productoptiongroup">ProductOptionGroup</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## productVariant
-Get a ProductVariant by id
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get a ProductVariant by id</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">productVariant(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#productvariant">ProductVariant</a></div>
 
-{{% gql-fields %}}
- * productVariant(id: [ID](/graphql-api/admin/object-types#id)!): [ProductVariant](/graphql-api/admin/object-types#productvariant)
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## productVariants
-List ProductVariants either all or for the specific product.
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">List ProductVariants either all or for the specific product.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">productVariants(options: <a href="/docs/reference/graphql-api/admin/input-types#productvariantlistoptions">ProductVariantListOptions</a>, productId: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>): <a href="/docs/reference/graphql-api/admin/object-types#productvariantlist">ProductVariantList</a>!</div>
 
-{{% gql-fields %}}
- * productVariants(options: [ProductVariantListOptions](/graphql-api/admin/input-types#productvariantlistoptions), productId: [ID](/graphql-api/admin/object-types#id)): [ProductVariantList](/graphql-api/admin/object-types#productvariantlist)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## products
-List Products
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">List Products</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">products(options: <a href="/docs/reference/graphql-api/admin/input-types#productlistoptions">ProductListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#productlist">ProductList</a>!</div>
 
-{{% gql-fields %}}
- * products(options: [ProductListOptions](/graphql-api/admin/input-types#productlistoptions)): [ProductList](/graphql-api/admin/object-types#productlist)!
-{{% /gql-fields %}}
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## promotion
-{{% gql-fields %}}
- * promotion(id: [ID](/graphql-api/admin/object-types#id)!): [Promotion](/graphql-api/admin/object-types#promotion)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">promotion(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#promotion">Promotion</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## promotionActions
-{{% gql-fields %}}
- * promotionActions: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">promotionActions: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## promotionConditions
-{{% gql-fields %}}
- * promotionConditions: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">promotionConditions: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## promotions
-{{% gql-fields %}}
- * promotions(options: [PromotionListOptions](/graphql-api/admin/input-types#promotionlistoptions)): [PromotionList](/graphql-api/admin/object-types#promotionlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">promotions(options: <a href="/docs/reference/graphql-api/admin/input-types#promotionlistoptions">PromotionListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#promotionlist">PromotionList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## province
-{{% gql-fields %}}
- * province(id: [ID](/graphql-api/admin/object-types#id)!): [Province](/graphql-api/admin/object-types#province)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">province(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#province">Province</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## provinces
-{{% gql-fields %}}
- * provinces(options: [ProvinceListOptions](/graphql-api/admin/input-types#provincelistoptions)): [ProvinceList](/graphql-api/admin/object-types#provincelist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">provinces(options: <a href="/docs/reference/graphql-api/admin/input-types#provincelistoptions">ProvinceListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#provincelist">ProvinceList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## role
-{{% gql-fields %}}
- * role(id: [ID](/graphql-api/admin/object-types#id)!): [Role](/graphql-api/admin/object-types#role)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">role(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#role">Role</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## roles
-{{% gql-fields %}}
- * roles(options: [RoleListOptions](/graphql-api/admin/input-types#rolelistoptions)): [RoleList](/graphql-api/admin/object-types#rolelist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">roles(options: <a href="/docs/reference/graphql-api/admin/input-types#rolelistoptions">RoleListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#rolelist">RoleList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## search
-{{% gql-fields %}}
- * search(input: [SearchInput](/graphql-api/admin/input-types#searchinput)!): [SearchResponse](/graphql-api/admin/object-types#searchresponse)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">search(input: <a href="/docs/reference/graphql-api/admin/input-types#searchinput">SearchInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#searchresponse">SearchResponse</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## seller
-{{% gql-fields %}}
- * seller(id: [ID](/graphql-api/admin/object-types#id)!): [Seller](/graphql-api/admin/object-types#seller)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">seller(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#seller">Seller</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## sellers
-{{% gql-fields %}}
- * sellers(options: [SellerListOptions](/graphql-api/admin/input-types#sellerlistoptions)): [SellerList](/graphql-api/admin/object-types#sellerlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">sellers(options: <a href="/docs/reference/graphql-api/admin/input-types#sellerlistoptions">SellerListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#sellerlist">SellerList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## shippingCalculators
-{{% gql-fields %}}
- * shippingCalculators: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">shippingCalculators: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## shippingEligibilityCheckers
-{{% gql-fields %}}
- * shippingEligibilityCheckers: [[ConfigurableOperationDefinition](/graphql-api/admin/object-types#configurableoperationdefinition)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">shippingEligibilityCheckers: [<a href="/docs/reference/graphql-api/admin/object-types#configurableoperationdefinition">ConfigurableOperationDefinition</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## shippingMethod
-{{% gql-fields %}}
- * shippingMethod(id: [ID](/graphql-api/admin/object-types#id)!): [ShippingMethod](/graphql-api/admin/object-types#shippingmethod)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">shippingMethod(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#shippingmethod">ShippingMethod</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## shippingMethods
-{{% gql-fields %}}
- * shippingMethods(options: [ShippingMethodListOptions](/graphql-api/admin/input-types#shippingmethodlistoptions)): [ShippingMethodList](/graphql-api/admin/object-types#shippingmethodlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">shippingMethods(options: <a href="/docs/reference/graphql-api/admin/input-types#shippingmethodlistoptions">ShippingMethodListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#shippingmethodlist">ShippingMethodList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## stockLocation
-{{% gql-fields %}}
- * stockLocation(id: [ID](/graphql-api/admin/object-types#id)!): [StockLocation](/graphql-api/admin/object-types#stocklocation)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">stockLocation(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#stocklocation">StockLocation</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## stockLocations
-{{% gql-fields %}}
- * stockLocations(options: [StockLocationListOptions](/graphql-api/admin/input-types#stocklocationlistoptions)): [StockLocationList](/graphql-api/admin/object-types#stocklocationlist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">stockLocations(options: <a href="/docs/reference/graphql-api/admin/input-types#stocklocationlistoptions">StockLocationListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#stocklocationlist">StockLocationList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## tag
-{{% gql-fields %}}
- * tag(id: [ID](/graphql-api/admin/object-types#id)!): [Tag](/graphql-api/admin/object-types#tag)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">tag(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#tag">Tag</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## tags
-{{% gql-fields %}}
- * tags(options: [TagListOptions](/graphql-api/admin/input-types#taglistoptions)): [TagList](/graphql-api/admin/object-types#taglist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">tags(options: <a href="/docs/reference/graphql-api/admin/input-types#taglistoptions">TagListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#taglist">TagList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## taxCategories
-{{% gql-fields %}}
- * taxCategories(options: [TaxCategoryListOptions](/graphql-api/admin/input-types#taxcategorylistoptions)): [TaxCategoryList](/graphql-api/admin/object-types#taxcategorylist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">taxCategories(options: <a href="/docs/reference/graphql-api/admin/input-types#taxcategorylistoptions">TaxCategoryListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#taxcategorylist">TaxCategoryList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## taxCategory
-{{% gql-fields %}}
- * taxCategory(id: [ID](/graphql-api/admin/object-types#id)!): [TaxCategory](/graphql-api/admin/object-types#taxcategory)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">taxCategory(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#taxcategory">TaxCategory</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## taxRate
-{{% gql-fields %}}
- * taxRate(id: [ID](/graphql-api/admin/object-types#id)!): [TaxRate](/graphql-api/admin/object-types#taxrate)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">taxRate(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#taxrate">TaxRate</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## taxRates
-{{% gql-fields %}}
- * taxRates(options: [TaxRateListOptions](/graphql-api/admin/input-types#taxratelistoptions)): [TaxRateList](/graphql-api/admin/object-types#taxratelist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">taxRates(options: <a href="/docs/reference/graphql-api/admin/input-types#taxratelistoptions">TaxRateListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#taxratelist">TaxRateList</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## testEligibleShippingMethods
-{{% gql-fields %}}
- * testEligibleShippingMethods(input: [TestEligibleShippingMethodsInput](/graphql-api/admin/input-types#testeligibleshippingmethodsinput)!): [[ShippingMethodQuote](/graphql-api/admin/object-types#shippingmethodquote)!]!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">testEligibleShippingMethods(input: <a href="/docs/reference/graphql-api/admin/input-types#testeligibleshippingmethodsinput">TestEligibleShippingMethodsInput</a>!): [<a href="/docs/reference/graphql-api/admin/object-types#shippingmethodquote">ShippingMethodQuote</a>!]!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## testShippingMethod
-{{% gql-fields %}}
- * testShippingMethod(input: [TestShippingMethodInput](/graphql-api/admin/input-types#testshippingmethodinput)!): [TestShippingMethodResult](/graphql-api/admin/object-types#testshippingmethodresult)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">testShippingMethod(input: <a href="/docs/reference/graphql-api/admin/input-types#testshippingmethodinput">TestShippingMethodInput</a>!): <a href="/docs/reference/graphql-api/admin/object-types#testshippingmethodresult">TestShippingMethodResult</a>!</div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## zone
-{{% gql-fields %}}
- * zone(id: [ID](/graphql-api/admin/object-types#id)!): [Zone](/graphql-api/admin/object-types#zone)
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">zone(id: <a href="/docs/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/docs/reference/graphql-api/admin/object-types#zone">Zone</a></div>
 
 
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
 
 ## zones
-{{% gql-fields %}}
- * zones(options: [ZoneListOptions](/graphql-api/admin/input-types#zonelistoptions)): [ZoneList](/graphql-api/admin/object-types#zonelist)!
-{{% /gql-fields %}}
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">zones(options: <a href="/docs/reference/graphql-api/admin/input-types#zonelistoptions">ZoneListOptions</a>): <a href="/docs/reference/graphql-api/admin/object-types#zonelist">ZoneList</a>!</div>
 
 
-
+<div class="graphql-code-line top-level">&#125;</div>
+</div>

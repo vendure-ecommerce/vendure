@@ -1,7 +1,7 @@
 ---
 title: "Facet"
 weight: 10
-date: 2023-07-20T13:56:15.136Z
+date: 2023-07-21T07:17:00.854Z
 showtoc: true
 generated: true
 ---
@@ -15,11 +15,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/facet/facet.entity.ts" sourceLine="25" packageName="@vendure/core" />
 
-A Facet is a class of properties which can be applied to a <a href='/typescript-api/entities/product#product'>Product</a> or <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
+A Facet is a class of properties which can be applied to a <a href='/docs/reference/typescript-api/entities/product#product'>Product</a> or <a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
 They are used to enable [faceted search](https://en.wikipedia.org/wiki/Faceted_search) whereby products
 can be filtered along a number of dimensions (facets).
 
-For example, there could be a Facet named "Brand" which has a number of <a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>s representing
+For example, there could be a Facet named "Brand" which has a number of <a href='/docs/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>s representing
 the various brands of product, e.g. "Apple", "Samsung", "Dell", "HP" etc.
 
 ```ts title="Signature"
@@ -41,22 +41,18 @@ class Facet extends VendureEntity implements Translatable, HasCustomFields, Chan
     channels: Channel[];
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
- * HasCustomFields
- * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
+* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;) => Facet"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;) => Facet"   />
 
 
 ### name
@@ -76,12 +72,12 @@ Implements
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;"   />
 
 
 ### values
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"   />
 
 
 ### customFields
@@ -91,6 +87,9 @@ Implements
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
+
+
+</div>

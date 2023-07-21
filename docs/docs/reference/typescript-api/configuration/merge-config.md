@@ -1,7 +1,7 @@
 ---
 title: "MergeConfig"
 weight: 10
-date: 2023-07-20T13:56:14.494Z
+date: 2023-07-21T07:17:00.252Z
 showtoc: true
 generated: true
 ---
@@ -24,7 +24,7 @@ Arrays do not get merged, they are treated as a single value that will be replac
 
 *Example*
 
-```TypeScript
+```ts
 const result = mergeConfig(defaultConfig, {
   assetOptions: {
     uploadMaxFileSize: 5000,

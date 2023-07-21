@@ -1,7 +1,7 @@
 ---
 title: "CompileUiExtensions"
 weight: 10
-date: 2023-07-20T13:56:18.774Z
+date: 2023-07-21T07:17:04.829Z
 showtoc: true
 generated: true
 ---
@@ -24,5 +24,5 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="<a href='/admin-ui-api/ui-devkit/ui-extension-compiler-options#uiextensioncompileroptions'>UiExtensionCompilerOptions</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/ui-devkit/ui-extension-compiler-options#uiextensioncompileroptions'>UiExtensionCompilerOptions</a>" />
 

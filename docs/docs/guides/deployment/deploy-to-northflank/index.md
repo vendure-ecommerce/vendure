@@ -5,7 +5,7 @@ images:
     - "/docs/deployment/deploy-to-northflank/deploy-to-northflank.webp"
 ---
 
-{{< figure src="./deploy-to-northflank.webp" >}}
+![./deploy-to-northflank.webp](./deploy-to-northflank.webp)
 
 [Northflank](https://northflank.com) is a comprehensive developer platform to build and scale your apps. It has an outstanding developer experience and has a free tier for small projects, and is well-suited for deploying and scaling Vendure applications.
 
@@ -21,13 +21,13 @@ A template defines the infrastructure that is needed to run your Vendure server.
 
 Click the templates menu item in the left sidebar and click the "Create template" button.
 
-{{< figure src="./01-create-template-screen.webp" >}}
+![./01-create-template-screen.webp](./01-create-template-screen.webp)
 
 Fill in the name of the template (though note that the name will be replaced by the name "Vendure Template" based on the configuration below).
 
 Now paste the following configuration into the "Template" code editor:
 
-{{< figure src="./02-paste-config.webp" >}}
+![./02-paste-config.webp](./02-paste-config.webp)
 
 
 ```json
@@ -207,17 +207,17 @@ Then click the "Create template" button.
 
 Next, click the "run template" button to start the deployment process.
 
-{{< figure src="./03-run-template.webp" >}}
+![./03-run-template.webp](./03-run-template.webp)
 
 Once the template run has completed, you should be able to see the newly-created project in the project selector.
 
-{{< figure src="./04-find-project.webp" >}}
+![./04-find-project.webp](./04-find-project.webp)
 
 ## Find the public URL
 
 Click the "Services" menu item in the left sidebar and then click the "Server" service.
 
-{{< figure src="./05-server-service.webp" >}}
+![./05-server-service.webp](./05-server-service.webp)
 
 In the top right corner you'll see the public URL of your new Vendure server!
 
@@ -225,7 +225,7 @@ Note that it may take a few minutes for the server to start up and populate all 
 
 Once it is ready, you can navigate to the public URL and append `/admin` to the end of the URL to access the admin panel.
 
-{{< figure src="./06-find-url.webp" >}}
+![./06-find-url.webp](./06-find-url.webp)
 
 
 Congratulations on deploying your Vendure server!

@@ -1,7 +1,7 @@
 ---
 title: "AssetServerPlugin"
 weight: 10
-date: 2023-07-20T13:56:16.819Z
+date: 2023-07-21T07:17:02.592Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/plugin.ts" sourceLine="139" packageName="@vendure/asset-server-plugin" />
 
 The `AssetServerPlugin` serves assets (images and other files) from the local file system, and can also be configured to use
-other storage strategies (e.g. <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a>. It can also perform on-the-fly image transformations
+other storage strategies (e.g. <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a>. It can also perform on-the-fly image transformations
 and caches the results for subsequent calls.
 
 ## Installation
@@ -132,21 +132,20 @@ class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
   configure(consumer: MiddlewareConsumer) => ;
 }
 ```
-Implements
-
- * NestModule
- * OnApplicationBootstrap
+* Implements: <code>NestModule</code>, <code>OnApplicationBootstrap</code>
 
 
+
+<div className="members-wrapper">
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/asset-server-plugin/#assetserverplugin'>AssetServerPlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/#assetserverplugin'>AssetServerPlugin</a>&#62;"   />
 
 Set the plugin options.
 ### constructor
 
-<MemberInfo kind="method" type="(processContext: <a href='/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AssetServerPlugin"   />
+<MemberInfo kind="method" type="(processContext: <a href='/docs/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AssetServerPlugin"   />
 
 
 ### configure
@@ -154,3 +153,6 @@ Set the plugin options.
 <MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
 
 
+
+
+</div>

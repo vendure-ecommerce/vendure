@@ -50,6 +50,6 @@ Your developers can however create much more sophisticated fulfillment handlers,
 
 At the bottom of the shipping method **detail page** you can test the current method by creating a fake order and shipping address and testing a) whether this method would be eligible, and b) how much it would cost.
 
-{{< figure src="../screen-shipping-test.webp" >}}
+![./screen-shipping-test.webp](./screen-shipping-test.webp)
 
 Additionally, on the shipping method **list page** you can test _all_ shipping methods at once.

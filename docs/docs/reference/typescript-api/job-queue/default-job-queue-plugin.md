@@ -1,7 +1,7 @@
 ---
 title: "DefaultJobQueuePlugin"
 weight: 10
-date: 2023-07-20T13:56:15.773Z
+date: 2023-07-21T07:17:01.450Z
 showtoc: true
 generated: true
 ---
@@ -15,13 +15,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="171" packageName="@vendure/core" />
 
-A plugin which configures Vendure to use the SQL database to persist the JobQueue jobs using the <a href='/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a>. If you add this
+A plugin which configures Vendure to use the SQL database to persist the JobQueue jobs using the <a href='/docs/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a>. If you add this
 plugin to an existing Vendure installation, you'll need to run a [database migration](/docs/developer-guide/migrations), since this
 plugin will add a new "job_record" table to the database.
 
 *Example*
 
-```TypeScript
+```ts
 import { DefaultJobQueuePlugin, VendureConfig } from '@vendure/core';
 
 export const config: VendureConfig = {
@@ -34,7 +34,7 @@ export const config: VendureConfig = {
 
 ## Configuration
 
-It is possible to configure the behaviour of the <a href='/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a> by passing options to the static `init()` function:
+It is possible to configure the behaviour of the <a href='/docs/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a> by passing options to the static `init()` function:
 
 ### pollInterval
 The interval in ms between polling for new jobs. The default is 200ms.
@@ -44,7 +44,7 @@ a pollInterval based on the queue name:
 
 *Example*
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   plugins: [
     DefaultJobQueuePlugin.init({
@@ -74,7 +74,7 @@ exponential backoff may be used which progressively increases the delay between 
 
 *Example*
 
-```TypeScript
+```ts
 export const config: VendureConfig = {
   plugins: [
     DefaultJobQueuePlugin.init({
@@ -109,11 +109,16 @@ class DefaultJobQueuePlugin {
 }
 ```
 
+<div className="members-wrapper">
+
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueoptions'>DefaultJobQueueOptions</a>) => Type&#60;<a href='/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueoptions'>DefaultJobQueueOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>&#62;"   />
 
 
+
+
+</div>
 
 
 ## DefaultJobQueueOptions
@@ -121,7 +126,7 @@ class DefaultJobQueuePlugin {
 <GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="21" packageName="@vendure/core" />
 
 Configuration options for the DefaultJobQueuePlugin. These values get passed into the
-<a href='/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a>.
+<a href='/docs/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a>.
 
 ```ts title="Signature"
 interface DefaultJobQueueOptions {
@@ -132,6 +137,8 @@ interface DefaultJobQueueOptions {
   useDatabaseForBuffer?: boolean;
 }
 ```
+
+<div className="members-wrapper">
 
 ### pollInterval
 
@@ -147,12 +154,12 @@ should be increased to e.g. 1000.
 How many jobs from a given queue to process concurrently.
 ### backoffStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>" default="() =&#62; 1000"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>" default="() =&#62; 1000"   />
 
 The strategy used to decide how long to wait before retrying a failed job.
 ### setRetries
 
-<MemberInfo kind="property" type="(queueName: string, job: <a href='/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"   />
+<MemberInfo kind="property" type="(queueName: string, job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"   />
 
 When a job is added to the JobQueue using `JobQueue.add()`, the calling
 code may specify the number of retries in case of failure. This option allows
@@ -161,7 +168,7 @@ the job being added.
 
 *Example*
 
-```TypeScript
+```ts
 setRetries: (queueName, job) => {
   if (queueName === 'send-email') {
     // Override the default number of retries
@@ -181,3 +188,6 @@ recommended for production.
 
 When enabled, a new `JobRecordBuffer` database entity will be defined which will
 require a migration when first enabling this option.
+
+
+</div>

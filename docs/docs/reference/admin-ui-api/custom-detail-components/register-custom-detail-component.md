@@ -1,7 +1,7 @@
 ---
 title: "RegisterCustomDetailComponent"
 weight: 10
-date: 2023-07-20T13:56:17.928Z
+date: 2023-07-21T07:17:04.065Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/custom-detail-component/custom-detail-component.service.ts" sourceLine="12" packageName="@vendure/admin-ui" />
 
-Registers a <a href='/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a> to be placed in a given location. This allows you
+Registers a <a href='/docs/reference/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a> to be placed in a given location. This allows you
 to embed any type of custom Angular component in the entity detail pages of the Admin UI.
 
 ```ts title="Signature"
@@ -25,5 +25,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/admin-ui-api/custom-detail-components/custom-detail-component-config#customdetailcomponentconfig'>CustomDetailComponentConfig</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/admin-ui-api/custom-detail-components/custom-detail-component-config#customdetailcomponentconfig'>CustomDetailComponentConfig</a>" />
 

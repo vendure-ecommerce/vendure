@@ -1,7 +1,7 @@
 ---
 title: "PluginCommonModule"
 weight: 10
-date: 2023-07-20T13:56:15.810Z
+date: 2023-07-21T07:17:01.487Z
 showtoc: true
 generated: true
 ---
@@ -21,11 +21,11 @@ repeat the same boilerplate for each individual plugin.
 
 The PluginCommonModule exports:
 
-* `EventBusModule`, allowing the injection of the <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a> service.
+* `EventBusModule`, allowing the injection of the <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a> service.
 * `ServiceModule` allowing the injection of any of the various entity services such as ProductService, OrderService etc.
 * `ConfigModule`, allowing the injection of the ConfigService.
-* `JobQueueModule`, allowing the injection of the <a href='/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>.
-* `HealthCheckModule`, allowing the injection of the <a href='/typescript-api/health-check/health-check-registry-service#healthcheckregistryservice'>HealthCheckRegistryService</a>.
+* `JobQueueModule`, allowing the injection of the <a href='/docs/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>.
+* `HealthCheckModule`, allowing the injection of the <a href='/docs/reference/typescript-api/health-check/health-check-registry-service#healthcheckregistryservice'>HealthCheckRegistryService</a>.
 
 ```ts title="Signature"
 class PluginCommonModule {

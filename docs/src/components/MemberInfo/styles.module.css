@@ -16,5 +16,11 @@
 .type {
     display: flex;
     align-items: center;
-    font-size: 12px;
+    font-size: 75%;
+}
+
+.default {
+    display: flex;
+    align-items: center;
+    font-size: 75%;
 }

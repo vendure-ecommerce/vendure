@@ -1,7 +1,7 @@
 ---
 title: "ConfigurableOperationDefOptions"
 weight: 10
-date: 2023-07-20T13:56:14.173Z
+date: 2023-07-21T07:16:59.941Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="230" packageName="@vendure/core" />
 
 Common configuration options used when creating a new instance of a
-<a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (
+<a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (
 
 ```ts title="Signature"
 interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends InjectableStrategy {
@@ -25,11 +25,11 @@ interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends Injectab
   description: LocalizedStringArray;
 }
 ```
-Extends
-
- * <a href='/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a>
+* Extends: <code><a href='/docs/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### code
 
@@ -52,9 +52,12 @@ args: {
 }
 ```
 
-See <a href='/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a> for available configuration options.
+See <a href='/docs/reference/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a> for available configuration options.
 ### description
 
-<MemberInfo kind="property" type="<a href='/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
 
 A human-readable description for the operation method.
+
+
+</div>

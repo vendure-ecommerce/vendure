@@ -1,7 +1,7 @@
 ---
 title: "EmailPlugin"
 weight: 10
-date: 2023-07-20T13:56:16.925Z
+date: 2023-07-21T07:17:02.719Z
 showtoc: true
 generated: true
 ---
@@ -19,8 +19,8 @@ The EmailPlugin creates and sends transactional emails based on Vendure events. 
 email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
 
 ## High-level description
-Vendure has an internal events system (see <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>) that allows plugins to subscribe to events. The EmailPlugin is configured with
-<a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>s that listen for a specific event and when it is published, the handler defines which template to use to generate
+Vendure has an internal events system (see <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) that allows plugins to subscribe to events. The EmailPlugin is configured with
+<a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>s that listen for a specific event and when it is published, the handler defines which template to use to generate
 the resulting email.
 
 The plugin comes with a set of default handlers for the following events:
@@ -29,7 +29,7 @@ The plugin comes with a set of default handlers for the following events:
 - Password reset request
 - Email address change request
 
-You can also create your own handlers and register them with the plugin - see the <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> docs for more details.
+You can also create your own handlers and register them with the plugin - see the <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> docs for more details.
 
 ## Installation
 
@@ -125,7 +125,7 @@ New handlers are defined in exactly the same way.
 
 It is also possible to modify the default handlers:
 
-```TypeScript
+```ts
 // Rather than importing `defaultEmailHandlers`, you can
 // import the handlers individually
 import {
@@ -167,7 +167,7 @@ EmailPlugin.init({
 }),
 ```
 
-For all available methods of extending a handler, see the <a href='/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> documentation.
+For all available methods of extending a handler, see the <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> documentation.
 
 ## Dynamic SMTP settings
 
@@ -203,10 +203,10 @@ const config: VendureConfig = {
 ## Dev mode
 
 For development, the `transport` option can be replaced by `devMode: true`. Doing so configures Vendure to use the
-file transport (See <a href='/typescript-api/core-plugins/email-plugin/transport-options#filetransportoptions'>FileTransportOptions</a>) and outputs emails as rendered HTML files in the directory specified by the
+file transport (See <a href='/docs/reference/typescript-api/core-plugins/email-plugin/transport-options#filetransportoptions'>FileTransportOptions</a>) and outputs emails as rendered HTML files in the directory specified by the
 `outputPath` property.
 
-```TypeScript
+```ts
 EmailPlugin.init({
   devMode: true,
   route: 'mailbox',
@@ -227,7 +227,7 @@ If you are having trouble sending email over and SMTP connection, set the `loggi
 send detailed information from the SMTP transporter to the configured logger (defaults to console). For maximum detail combine
 this with a detail log level in the configured VendureLogger:
 
-```TypeScript
+```ts
 const config: VendureConfig = {
   logger: new DefaultLogger({ level: LogLevel.Debug })
   // ...
@@ -257,17 +257,15 @@ class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, Nest
   configure(consumer: MiddlewareConsumer) => ;
 }
 ```
-Implements
-
- * OnApplicationBootstrap
- * OnApplicationShutdown
- * NestModule
+* Implements: <code>OnApplicationBootstrap</code>, <code>OnApplicationShutdown</code>, <code>NestModule</code>
 
 
+
+<div className="members-wrapper">
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a> | <a href='/typescript-api/core-plugins/email-plugin/email-plugin-options#emailplugindevmodeoptions'>EmailPluginDevModeOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/email-plugin/#emailplugin'>EmailPlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a> | <a href='/docs/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailplugindevmodeoptions'>EmailPluginDevModeOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/email-plugin/#emailplugin'>EmailPlugin</a>&#62;"   />
 
 
 ### onApplicationShutdown
@@ -280,3 +278,6 @@ Implements
 <MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
 
 
+
+
+</div>

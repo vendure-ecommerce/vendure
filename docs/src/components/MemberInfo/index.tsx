@@ -15,16 +15,13 @@ export default function MemberInfo(props: {
             </div>
 
             {props.since && (
-                <div
-                    className="since mr-2 bg-yellow-100 px-2 rounded-sm"
-                    title={`This API was added in v${props.since}`}
-                >
+                <div className="badge badge--warning" title={`This API was added in v${props.since}`}>
                     <div className="text-yellow-700">v{props.since}</div>
                 </div>
             )}
             {props.experimental && (
                 <div
-                    className="mr-2 bg-yellow-100 px-2 rounded-sm"
+                    className="badge badge--info"
                     title="This API is experimental and may change in a future release"
                 >
                     <div className="text-yellow-700">experimental</div>
@@ -34,7 +31,7 @@ export default function MemberInfo(props: {
                 <code dangerouslySetInnerHTML={{ __html: props.type }} className="padding-horiz--sm"></code>
             </div>
             {props.default && (
-                <div className="default">
+                <div className={styles.default}>
                     <div className="label">default:</div>
                     <code>{props.default}</code>
                 </div>

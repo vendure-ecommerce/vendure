@@ -1,7 +1,7 @@
 ---
 title: "JobQueueOptions"
 weight: 10
-date: 2023-07-20T13:56:14.909Z
+date: 2023-07-21T07:17:00.647Z
 showtoc: true
 generated: true
 ---
@@ -26,14 +26,16 @@ interface JobQueueOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### jobQueueStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>" default="<a href='/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>" default="<a href='/docs/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>"   />
 
 Defines how the jobs in the queue are persisted and accessed.
 ### jobBufferStorageStrategy
 
-<MemberInfo kind="property" type="<a href='/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>"   />
 
 
 ### activeQueues
@@ -55,3 +57,6 @@ in cloud environments using services such as Amazon SQS or Google Cloud Tasks.
 
 For example, we might have a staging and a production deployment in the same account/project and
 each one will need its own task queue. We can achieve this with a prefix.
+
+
+</div>

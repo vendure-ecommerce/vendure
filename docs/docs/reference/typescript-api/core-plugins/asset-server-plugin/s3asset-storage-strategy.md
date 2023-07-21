@@ -1,7 +1,7 @@
 ---
 title: "S3AssetStorageStrategy"
 weight: 10
-date: 2023-07-20T13:56:16.825Z
+date: 2023-07-21T07:17:02.599Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="155" packageName="@vendure/asset-server-plugin" />
 
-An <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> which uses [Amazon S3](https://aws.amazon.com/s3/) object storage service.
+An <a href='/docs/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> which uses [Amazon S3](https://aws.amazon.com/s3/) object storage service.
 To us this strategy you must first have access to an AWS account.
 See their [getting started guide](https://aws.amazon.com/s3/getting-started/) for how to get set up.
 
@@ -25,11 +25,11 @@ Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aw
 npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
 ```
 
-**Note:** Rather than instantiating this manually, use the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage'>configureS3AssetStorage</a> function.
+**Note:** Rather than instantiating this manually, use the <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage'>configureS3AssetStorage</a> function.
 
 ## Use with S3-compatible services (MinIO)
 This strategy will also work with any S3-compatible object storage solutions, such as [MinIO](https://min.io/).
-See the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage'>configureS3AssetStorage</a> for an example with MinIO.
+See the <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage'>configureS3AssetStorage</a> for an example with MinIO.
 
 ```ts title="Signature"
 class S3AssetStorageStrategy implements AssetStorageStrategy {
@@ -44,15 +44,15 @@ class S3AssetStorageStrategy implements AssetStorageStrategy {
   async fileExists(fileName: string) => ;
 }
 ```
-Implements
-
- * <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(s3Config: <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>, toAbsoluteUrl: (request: Request, identifier: string) =&#62; string) => S3AssetStorageStrategy"   />
+<MemberInfo kind="method" type="(s3Config: <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>, toAbsoluteUrl: (request: Request, identifier: string) =&#62; string) => S3AssetStorageStrategy"   />
 
 
 ### init
@@ -97,6 +97,9 @@ Implements
 
 
 
+</div>
+
+
 ## S3Config
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="19" packageName="@vendure/asset-server-plugin" />
@@ -111,6 +114,8 @@ interface S3Config {
   nativeS3UploadConfiguration?: any;
 }
 ```
+
+<div className="members-wrapper">
 
 ### credentials
 
@@ -141,12 +146,14 @@ ManagedUpload.ManagedUploadOptions can be used after importing aws-sdk.
 Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
 
 
+</div>
+
+
 ## configureS3AssetStorage
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="119" packageName="@vendure/asset-server-plugin" />
 
-Returns a configured instance of the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>
-`storageStrategyFactory` property.
+Returns a configured instance of the <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>`storageStrategyFactory` property.
 
 Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
 
@@ -155,7 +162,7 @@ npm install
 
 *Example*
 
-```TypeScript
+```ts
 import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DefaultAssetNamingStrategy } from '@vendure/core';
 import { fromEnv } from '@aws-sdk/credential-providers';
@@ -183,7 +190,7 @@ Reference: [How to use AWS SDK for Javascript with MinIO Server](https://docs.mi
 
 *Example*
 
-```TypeScript
+```ts
 import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
 import { DefaultAssetNamingStrategy } from '@vendure/core';
 
@@ -219,5 +226,5 @@ Parameters
 
 ### s3Config
 
-<MemberInfo kind="parameter" type="<a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>" />
 

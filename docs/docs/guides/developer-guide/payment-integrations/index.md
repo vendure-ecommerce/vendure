@@ -161,13 +161,13 @@ Once the PaymentMethodHandler is defined as above, you can use it to create a ne
 
 If the `createPayment()` function returns a result with the state set to `'Settled'`, then this is a single-step ("authorize & capture") flow, as illustrated below:
 
-{{< figure src="./payment_sequence_one_step.png" >}}
+![./payment_sequence_one_step.png](./payment_sequence_one_step.png)
 
 ### Two-step
 
 If the `createPayment()` function returns a result with the state set to `'Authorized'`, then this is a two-step flow, and the settlement / capture part is performed at some later point, e.g. when shipping the goods, or on confirmation of payment-on-delivery.
 
-{{< figure src="./payment_sequence_two_step.png" >}}
+![./payment_sequence_two_step.png](./payment_sequence_two_step.png)
 
 ## Custom Payment Flows
 

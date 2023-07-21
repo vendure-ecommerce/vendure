@@ -1,7 +1,7 @@
 ---
 title: "InMemorySessionCacheStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.717Z
+date: 2023-07-21T07:17:00.460Z
 showtoc: true
 generated: true
 ---
@@ -33,11 +33,11 @@ class InMemorySessionCacheStrategy implements SessionCacheStrategy {
   clear() => ;
 }
 ```
-Implements
-
- * <a href='/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
@@ -56,7 +56,7 @@ Implements
 
 ### set
 
-<MemberInfo kind="method" type="(session: <a href='/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => "   />
+<MemberInfo kind="method" type="(session: <a href='/docs/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => "   />
 
 
 ### clear
@@ -64,3 +64,6 @@ Implements
 <MemberInfo kind="method" type="() => "   />
 
 
+
+
+</div>

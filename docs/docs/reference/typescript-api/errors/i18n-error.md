@@ -1,7 +1,7 @@
 ---
 title: "I18nError"
 weight: 10
-date: 2023-07-20T13:56:15.644Z
+date: 2023-07-21T07:17:01.347Z
 showtoc: true
 generated: true
 ---
@@ -29,14 +29,17 @@ class I18nError extends ApolloError {
   constructor(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: LogLevel = LogLevel.Warn)
 }
 ```
-Extends
-
- * ApolloError
+* Extends: <code>ApolloError</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: <a href='/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Warn) => I18nError"   />
+<MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: <a href='/docs/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Warn) => I18nError"   />
 
 
+
+
+</div>

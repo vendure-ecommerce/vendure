@@ -1,7 +1,7 @@
 ---
 title: "HistoryService"
 weight: 10
-date: 2023-07-20T13:56:16.221Z
+date: 2023-07-21T07:17:01.856Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/history.service.ts" sourceLine="241" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a> entities. Histories are timelines of actions
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a> entities. Histories are timelines of actions
 related to a particular Customer or Order, recording significant events such as creation, state changes,
 notes, etc.
 
@@ -31,7 +31,7 @@ First of all we'd extend the GraphQL `HistoryEntryType` enum for our new type as
 
 *Example*
 
-```TypeScript
+```ts
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { VerificationService } from './verification.service';
 
@@ -55,7 +55,7 @@ and [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#
 
 *Example*
 
-```TypeScript
+```ts
 // types.ts
 import { CustomerHistoryEntryData } from '@vendure/core';
 
@@ -80,7 +80,7 @@ Now that we have our types set up, we can use the HistoryService to add a new Hi
 
 *Example*
 
-```TypeScript
+```ts
 // verification.service.ts
 import { Injectable } from '@nestjs/common';
 import { RequestContext } from '@vendure/core';
@@ -126,48 +126,53 @@ class HistoryService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, administratorService: <a href='/typescript-api/services/administrator-service#administratorservice'>AdministratorService</a>, listQueryBuilder: <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>) => HistoryService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, administratorService: <a href='/docs/reference/typescript-api/services/administrator-service#administratorservice'>AdministratorService</a>, listQueryBuilder: <a href='/docs/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) => HistoryService"   />
 
 
 ### getHistoryForOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/typescript-api/common/id#id'>ID</a>, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/docs/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;&#62;"   />
 
 
 ### createHistoryEntryForOrder
 
-<MemberInfo kind="method" type="(args: CreateOrderHistoryEntryArgs&#60;T&#62;, isPublic:  = true) => Promise&#60;<a href='/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;"   />
+<MemberInfo kind="method" type="(args: CreateOrderHistoryEntryArgs&#60;T&#62;, isPublic:  = true) => Promise&#60;<a href='/docs/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;"   />
 
 
 ### getHistoryForCustomer
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customerId: <a href='/typescript-api/common/id#id'>ID</a>, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customerId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/docs/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>&#62;&#62;"   />
 
 
 ### createHistoryEntryForCustomer
 
-<MemberInfo kind="method" type="(args: CreateCustomerHistoryEntryArgs&#60;T&#62;, isPublic:  = false) => Promise&#60;<a href='/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>&#62;"   />
+<MemberInfo kind="method" type="(args: CreateCustomerHistoryEntryArgs&#60;T&#62;, isPublic:  = false) => Promise&#60;<a href='/docs/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>&#62;"   />
 
 
 ### updateOrderHistoryEntry
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, args: UpdateOrderHistoryEntryArgs&#60;T&#62;) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, args: UpdateOrderHistoryEntryArgs&#60;T&#62;) => "   />
 
 
 ### deleteOrderHistoryEntry
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;"   />
 
 
 ### updateCustomerHistoryEntry
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, args: UpdateCustomerHistoryEntryArgs&#60;T&#62;) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, args: UpdateCustomerHistoryEntryArgs&#60;T&#62;) => "   />
 
 
 ### deleteCustomerHistoryEntry
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;"   />
 
 
+
+
+</div>

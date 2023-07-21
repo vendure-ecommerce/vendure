@@ -1,7 +1,7 @@
 ---
 title: "GlobalSettingsService"
 weight: 10
-date: 2023-07-20T13:56:16.213Z
+date: 2023-07-21T07:17:01.852Z
 showtoc: true
 generated: true
 ---
@@ -25,18 +25,23 @@ class GlobalSettingsService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, requestCache: RequestContextCacheService) => GlobalSettingsService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, requestCache: RequestContextCacheService) => GlobalSettingsService"   />
 
 
 ### getSettings
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;GlobalSettings&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;GlobalSettings&#62;"   />
 
 Returns the GlobalSettings entity.
 ### updateSettings
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateGlobalSettingsInput) => Promise&#60;GlobalSettings&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateGlobalSettingsInput) => Promise&#60;GlobalSettings&#62;"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "ObjectTreeComponent"
 weight: 10
-date: 2023-07-20T13:56:18.409Z
+date: 2023-07-21T07:17:04.482Z
 showtoc: true
 generated: true
 ---
@@ -36,11 +36,11 @@ class ObjectTreeComponent implements OnChanges {
   isObject(value: any) => boolean;
 }
 ```
-Implements
-
- * OnChanges
+* Implements: <code>OnChanges</code>
 
 
+
+<div className="members-wrapper">
 
 ### value
 
@@ -74,7 +74,7 @@ Implements
 
 ### constructor
 
-<MemberInfo kind="method" type="(parent: <a href='/admin-ui-api/components/object-tree-component#objecttreecomponent'>ObjectTreeComponent</a>) => ObjectTreeComponent"   />
+<MemberInfo kind="method" type="(parent: <a href='/docs/reference/admin-ui-api/components/object-tree-component#objecttreecomponent'>ObjectTreeComponent</a>) => ObjectTreeComponent"   />
 
 
 ### ngOnChanges
@@ -87,3 +87,6 @@ Implements
 <MemberInfo kind="method" type="(value: any) => boolean"   />
 
 
+
+
+</div>

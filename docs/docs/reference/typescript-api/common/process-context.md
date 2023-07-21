@@ -1,7 +1,7 @@
 ---
 title: "ProcessContext"
 weight: 10
-date: 2023-07-20T13:56:15.827Z
+date: 2023-07-21T07:17:01.503Z
 showtoc: true
 generated: true
 ---
@@ -20,7 +20,7 @@ is being executed in the context of the main Vendure server or the worker.
 
 *Example*
 
-```TypeScript
+```ts
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ProcessContext } from '@vendure/core';
 
@@ -44,6 +44,8 @@ class ProcessContext {
 }
 ```
 
+<div className="members-wrapper">
+
 ### isServer
 
 <MemberInfo kind="property" type="boolean"   />
@@ -54,3 +56,6 @@ class ProcessContext {
 <MemberInfo kind="property" type="boolean"   />
 
 
+
+
+</div>

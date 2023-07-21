@@ -1,7 +1,7 @@
 ---
 title: "Populate"
 weight: 10
-date: 2023-07-20T13:56:14.155Z
+date: 2023-07-21T07:16:59.923Z
 showtoc: true
 generated: true
 ---
@@ -25,13 +25,13 @@ The argument can be either a Channel object or a valid channel `token`.
 
 Internally the `populate()` function does the following:
 
-1. Uses the <a href='/typescript-api/import-export/populator#populator'>Populator</a> to populate the <a href='/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
-2. If `productsCsvPath` is provided, uses <a href='/typescript-api/import-export/importer#importer'>Importer</a> to populate Product data.
-3. Uses {@Populator} to populate collections specified in the <a href='/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
+1. Uses the <a href='/docs/reference/typescript-api/import-export/populator#populator'>Populator</a> to populate the <a href='/docs/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
+2. If `productsCsvPath` is provided, uses <a href='/docs/reference/typescript-api/import-export/importer#importer'>Importer</a> to populate Product data.
+3. Uses {@Populator} to populate collections specified in the <a href='/docs/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
 
 *Example*
 
-```TypeScript
+```ts
 import { bootstrap } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
 import { config } from './vendure-config.ts'
@@ -73,5 +73,5 @@ Parameters
 
 ### channelOrToken
 
-<MemberInfo kind="parameter" type="string | import('@vendure/core').<a href='/typescript-api/entities/channel#channel'>Channel</a>" />
+<MemberInfo kind="parameter" type="string | import('@vendure/core').<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>" />
 

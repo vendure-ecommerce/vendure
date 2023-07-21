@@ -1,7 +1,7 @@
 ---
 title: "Permission"
 weight: 10
-date: 2023-07-20T13:56:16.728Z
+date: 2023-07-21T07:17:02.466Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Permission
 
-<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="4197" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="4076" packageName="@vendure/common" />
 
 Permissions for administrators and customers. Used to control access to
-GraphQL resolvers via the <a href='/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
+GraphQL resolvers via the <a href='/docs/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator.
 
 ## Understanding Permission.Owner
 
@@ -28,7 +28,7 @@ based on the activeUserId of the current session. As a result, the resolver code
 
 *Example*
 
-```TypeScript
+```ts
 @Query()
 @Allow(Permission.Owner)
 async activeCustomer(@Ctx() ctx: RequestContext): Promise<Customer | undefined> {

@@ -1,7 +1,7 @@
 ---
 title: "TestDbInitializer"
 weight: 10
-date: 2023-07-20T13:56:17.071Z
+date: 2023-07-21T07:17:02.930Z
 showtoc: true
 generated: true
 ---
@@ -19,11 +19,11 @@ Defines how the e2e TestService sets up a particular DB to run a single test sui
 The `@vendure/testing` package ships with initializers for sql.js, MySQL & Postgres.
 
 Custom initializers can be created by implementing this interface and registering
-it with the <a href='/typescript-api/testing/register-initializer#registerinitializer'>registerInitializer</a> function:
+it with the <a href='/docs/reference/typescript-api/testing/register-initializer#registerinitializer'>registerInitializer</a> function:
 
 *Example*
 
-```TypeScript
+```ts
 export class CockroachDbInitializer implements TestDbInitializer<CockroachConnectionOptions> {
     // database-specific implementation goes here
 }
@@ -38,6 +38,8 @@ interface TestDbInitializer<T extends BaseConnectionOptions> {
   destroy(): void | Promise<void>;
 }
 ```
+
+<div className="members-wrapper">
 
 ### init
 
@@ -59,3 +61,6 @@ Execute the populateFn to populate your database.
 <MemberInfo kind="method" type="() => void | Promise&#60;void&#62;"   />
 
 Clean up any resources used during the init() phase (i.e. close open DB connections)
+
+
+</div>

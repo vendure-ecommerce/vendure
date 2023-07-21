@@ -1,7 +1,7 @@
 ---
 title: "OrderModification"
 weight: 10
-date: 2023-07-20T13:56:15.244Z
+date: 2023-07-21T07:17:00.953Z
 showtoc: true
 generated: true
 ---
@@ -43,15 +43,15 @@ class OrderModification extends VendureEntity {
   @Calculated() isSettled: boolean
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification"   />
 
 
 ### note
@@ -61,17 +61,17 @@ Extends
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order#order'>Order</a>"   />
 
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]"   />
 
 
 ### surcharges
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
 
 
 ### priceChange
@@ -81,7 +81,7 @@ Extends
 
 ### payment
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/payment#payment'>Payment</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/payment#payment'>Payment</a>"   />
 
 
 ### refund
@@ -104,3 +104,6 @@ Extends
 <MemberInfo kind="property" type="boolean"   />
 
 
+
+
+</div>

@@ -9,13 +9,13 @@ showtoc: true
 
 Vendure uses a [job queue](https://en.wikipedia.org/wiki/Job_queue) to handle the processing of certain tasks which are typically too slow to run in the normal request-response cycle. A normal request-response looks like this:
 
-{{< figure src="./job_queue_req_res.png" >}}
+![./job_queue_req_res.png](./job_queue_req_res.png)
 
 In the normal request-response, all intermediate tasks (looking up data in the database, performing business logic etc.) occur before the response can be returned. For most operations this is fine, since those intermediate tasks are very fast.
 
 Some operations however will need to perform much longer-running tasks. For example, updating the search index on thousands of products could take up to a minute or more. In this case, we certainly don't want to delay the reponse until that processing has completed. That's where a job queue comes in:
 
-{{< figure src="./job_queue_req_res_with_queue.png" >}}
+![./job_queue_req_res_with_queue.png](./job_queue_req_res_with_queue.png)
 
 ## What does Vendure use the job queue for?
 
@@ -30,7 +30,7 @@ By default, Vendure uses the job queue for the following tasks:
 
 This diagram illustrates the job queue mechanism:
 
-{{< figure src="./job_queue_sequence.png" >}}
+![./job_queue_sequence.png](./job_queue_sequence.png)
 
 The server adds jobs to the queue. The worker then picks up these jobs from the queue and processes them in sequence, one by one (it is possible to increase job queue throughput by [running multiple workers]({{< relref "vendure-worker" >}}#multiple-workers)).
 

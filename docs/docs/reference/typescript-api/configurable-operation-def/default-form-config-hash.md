@@ -1,7 +1,7 @@
 ---
 title: "DefaultFormConfigHash"
 weight: 10
-date: 2023-07-20T13:56:16.739Z
+date: 2023-07-21T07:17:02.488Z
 showtoc: true
 generated: true
 ---
@@ -44,8 +44,8 @@ type DefaultFormConfigHash = {
   'combination-mode-form-input': Record<string, never>;
 }
 ```
-## Members
 
+<div className="members-wrapper">
 
 ### 'boolean-form-input'
 
@@ -132,3 +132,6 @@ type DefaultFormConfigHash = {
 <MemberInfo kind="property" type="Record&#60;string, never&#62;"   />
 
 
+
+
+</div>

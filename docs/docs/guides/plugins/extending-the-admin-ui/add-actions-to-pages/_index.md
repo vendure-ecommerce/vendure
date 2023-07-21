@@ -34,7 +34,7 @@ import { SharedModule, addActionBarItem } from '@vendure/admin-ui/core';
 export class SharedExtensionModule {}
 ```
 
-{{< figure src="./ui-extensions-actionbar.webp" >}}
+![./ui-extensions-actionbar.webp](./ui-extensions-actionbar.webp)
 
 In each list or detail view in the app, the ActionBar has a unique `locationId` which is how the app knows in which view to place your button. The complete list of available locations into which you can add new ActionBar can be found in the [ActionBarLocationId docs]({{< relref "action-bar-location-id" >}}).
 
@@ -81,7 +81,7 @@ The utility function `firstValueFrom` from the RxJS library is used in this exam
 Certain list views in the Admin UI support bulk actions. There are a default set of bulk actions that are defined by the Admin UI itself (e.g. delete, assign to channels), but using the `@vendure/ui-devit` package
 you are also able to define your own bulk actions.
 
-{{< figure src="./bulk-actions-screenshot.webp" >}}
+![./bulk-actions-screenshot.webp](./bulk-actions-screenshot.webp)
 
 Use cases for bulk actions include things like:
 

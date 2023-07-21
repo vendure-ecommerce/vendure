@@ -1,7 +1,7 @@
 ---
 title: "BraintreePlugin"
 weight: 10
-date: 2023-07-20T13:56:17.029Z
+date: 2023-07-21T07:17:02.879Z
 showtoc: true
 generated: true
 ---
@@ -34,7 +34,7 @@ This plugin enables payments to be processed by [Braintree](https://www.braintre
 ## Setup
 
 1. Add the plugin to your VendureConfig `plugins` array:
-    ```TypeScript
+    ```ts
     import { BraintreePlugin } from '@vendure/payments-plugin/package/braintree';
     import { Environment } from 'braintree';
 
@@ -75,7 +75,7 @@ The high-level workflow is:
 Here is an example of how your storefront code will look. Note that this example is attempting to
 be framework-agnostic, so you'll need to adapt it to fit to your framework of choice.
 
-```TypeScript
+```ts
 // The Braintree Dropin instance
 let dropin: import('braintree-web-drop-in').Dropin;
 
@@ -204,7 +204,7 @@ how to securely store payment details.
 
 To enable this feature, set the `storeCustomersInBraintree` option to `true`.
 
-```TypeScript
+```ts
 BraintreePlugin.init({
   environment: Environment.Sandbox,
   storeCustomersInBraintree: true,
@@ -224,7 +224,7 @@ const { generateBraintreeClientToken } = await graphQlClient.query(gql`
 
 as well as in the metadata of the `addPaymentToOrder` mutation:
 
-```TypeScript
+```ts
 const { addPaymentToOrder } = await graphQlClient.query(gql`
   mutation AddPayment($input: PaymentInput!) {
     addPaymentToOrder(input: $input) {
@@ -249,16 +249,21 @@ class BraintreePlugin {
 }
 ```
 
+<div className="members-wrapper">
+
 ### options
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;"   />
 
 
+
+
+</div>
 
 
 ## BraintreePluginOptions
@@ -274,6 +279,8 @@ interface BraintreePluginOptions {
   extractMetadata?: (transaction: Transaction) => PaymentMetadata;
 }
 ```
+
+<div className="members-wrapper">
 
 ### environment
 
@@ -293,7 +300,7 @@ Since v1.8, it is possible to override vaulting on a per-payment basis by passin
 `generateBraintreeClientToken` mutation.
 ### extractMetadata
 
-<MemberInfo kind="property" type="(transaction: <a href='/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata"  since="1.7.0"  />
+<MemberInfo kind="property" type="(transaction: <a href='/docs/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata"  since="1.7.0"  />
 
 Allows you to configure exactly what information from the Braintree
 [Transaction object](https://developer.paypal.com/braintree/docs/reference/response/transaction#result-object) (which is returned by the
@@ -303,7 +310,7 @@ By default, the built-in extraction function will return a metadata object that 
 
 *Example*
 
-```TypeScript
+```ts
 const metadata = {
   "status": "settling",
   "currencyIsoCode": "GBP",
@@ -344,3 +351,6 @@ const metadata = {
   }
 }
 ```
+
+
+</div>

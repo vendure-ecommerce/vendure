@@ -6,7 +6,7 @@ showtoc: true
  
 # Plugin Architecture
 
-{{< figure src="plugin_architecture.png" >}}
+![plugin_architecture.png](plugin_architecture.png)
 
 A plugin in Vendure is a specialized Nestjs Module that is decorated with the [`VendurePlugin` class decorator]({{< relref "vendure-plugin" >}}). This diagram illustrates how a plugin can integrate with and extend Vendure.
  

@@ -1,7 +1,7 @@
 ---
 title: "UserService"
 weight: 10
-date: 2023-07-20T13:56:16.666Z
+date: 2023-07-21T07:17:02.383Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="37" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/user#user'>User</a> entities.
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/user#user'>User</a> entities.
 
 ```ts title="Signature"
 class UserService {
@@ -43,52 +43,54 @@ class UserService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, roleService: <a href='/typescript-api/services/role-service#roleservice'>RoleService</a>, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef) => UserService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, roleService: <a href='/docs/reference/typescript-api/services/role-service#roleservice'>RoleService</a>, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef) => UserService"   />
 
 
 ### getUserById
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a> | undefined&#62;"   />
 
 
 ### getUserByEmailAddress
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, emailAddress: string, userType?: 'administrator' | 'customer') => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, emailAddress: string, userType?: 'administrator' | 'customer') => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a> | undefined&#62;"   />
 
 
 ### createCustomerUser
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, identifier: string, password?: string) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a> | PasswordValidationError&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, identifier: string, password?: string) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a> | PasswordValidationError&#62;"   />
 
-Creates a new User with the special `customer` Role and using the <a href='/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
+Creates a new User with the special `customer` Role and using the <a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
 ### addNativeAuthenticationMethod
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>, identifier: string, password?: string) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a> | PasswordValidationError&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/docs/reference/typescript-api/entities/user#user'>User</a>, identifier: string, password?: string) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a> | PasswordValidationError&#62;"   />
 
-Adds a new <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> to the User. If the <a href='/typescript-api/auth/auth-options#authoptions'>AuthOptions</a> `requireVerification`
+Adds a new <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> to the User. If the <a href='/docs/reference/typescript-api/auth/auth-options#authoptions'>AuthOptions</a> `requireVerification`
 is set to `true` (as is the default), the User will be marked as unverified until the email verification
 flow is completed.
 ### createAdminUser
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, identifier: string, password: string) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, identifier: string, password: string) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a>&#62;"   />
 
-Creates a new verified User using the <a href='/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
+Creates a new verified User using the <a href='/docs/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
 ### softDelete
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => "   />
 
 
 ### setVerificationToken
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/docs/reference/typescript-api/entities/user#user'>User</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a>&#62;"   />
 
-Sets the <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> `verificationToken` as part of the User email verification
+Sets the <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> `verificationToken` as part of the User email verification
 flow.
 ### verifyUserByToken
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, verificationToken: string, password?: string) => Promise&#60;ErrorResultUnion&#60;VerifyCustomerAccountResult, <a href='/typescript-api/entities/user#user'>User</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, verificationToken: string, password?: string) => Promise&#60;ErrorResultUnion&#60;VerifyCustomerAccountResult, <a href='/docs/reference/typescript-api/entities/user#user'>User</a>&#62;&#62;"   />
 
 Verifies a verificationToken by looking for a User which has previously had it set using the
 `setVerificationToken()` method, and checks that the token is valid and has not expired.
@@ -96,13 +98,13 @@ Verifies a verificationToken by looking for a User which has previously had it s
 If valid, the User will be set to `verified: true`.
 ### setPasswordResetToken
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, emailAddress: string) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, emailAddress: string) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a> | undefined&#62;"   />
 
-Sets the <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> `passwordResetToken` as part of the User password reset
+Sets the <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> `passwordResetToken` as part of the User password reset
 flow.
 ### resetPasswordByToken
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/docs/reference/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"   />
 
 Verifies a passwordResetToken by looking for a User which has previously had it set using the
 `setPasswordResetToken()` method, and checks that the token is valid and has not expired.
@@ -110,24 +112,27 @@ Verifies a passwordResetToken by looking for a User which has previously had it 
 If valid, the User's credentials will be updated with the new password.
 ### changeUserAndNativeIdentifier
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>, newIdentifier: string) => "   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, newIdentifier: string) => "   />
 
 Changes the User identifier without an email verification step, so this should be only used when
 an Administrator is setting a new email address.
 ### setIdentifierChangeToken
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/typescript-api/entities/user#user'>User</a>) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/docs/reference/typescript-api/entities/user#user'>User</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/user#user'>User</a>&#62;"   />
 
-Sets the <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> `identifierChangeToken` as part of the User email address change
+Sets the <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> `identifierChangeToken` as part of the User email address change
 flow.
 ### changeIdentifierByToken
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/docs/reference/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;"   />
 
 Changes the User identifier as part of the storefront flow used by Customers to set a
 new email address, with the token previously set using the `setIdentifierChangeToken()` method.
 ### updatePassword
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>, currentPassword: string, newPassword: string) => Promise&#60;boolean | InvalidCredentialsError | PasswordValidationError&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, currentPassword: string, newPassword: string) => Promise&#60;boolean | InvalidCredentialsError | PasswordValidationError&#62;"   />
 
-Updates the password for a User with the <a href='/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>.
+Updates the password for a User with the <a href='/docs/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>.
+
+
+</div>

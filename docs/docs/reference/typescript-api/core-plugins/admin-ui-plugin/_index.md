@@ -1,7 +1,7 @@
 ---
 title: "AdminUiPlugin"
 weight: 10
-date: 2023-07-20T13:56:16.789Z
+date: 2023-07-21T07:17:02.560Z
 showtoc: true
 generated: true
 ---
@@ -50,7 +50,7 @@ you can still use the `metricSummary` query by adding the `AdminUiPlugin` to the
 
 *Example*
 
-```TypeScript
+```ts
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 
 const config: VendureConfig = {
@@ -68,20 +68,20 @@ class AdminUiPlugin implements NestModule {
   async configure(consumer: MiddlewareConsumer) => ;
 }
 ```
-Implements
-
- * NestModule
+* Implements: <code>NestModule</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(configService: ConfigService, processContext: <a href='/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AdminUiPlugin"   />
+<MemberInfo kind="method" type="(configService: ConfigService, processContext: <a href='/docs/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AdminUiPlugin"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/admin-ui-plugin/admin-ui-plugin-options#adminuipluginoptions'>AdminUiPluginOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-plugin-options#adminuipluginoptions'>AdminUiPluginOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>&#62;"   />
 
 Set the plugin options
 ### configure
@@ -89,3 +89,6 @@ Set the plugin options
 <MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
 
 
+
+
+</div>

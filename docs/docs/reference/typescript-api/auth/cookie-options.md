@@ -1,7 +1,7 @@
 ---
 title: "CookieOptions"
 weight: 10
-date: 2023-07-20T13:56:14.823Z
+date: 2023-07-21T07:17:00.565Z
 showtoc: true
 generated: true
 ---
@@ -33,6 +33,8 @@ interface CookieOptions {
   overwrite?: boolean;
 }
 ```
+
+<div className="members-wrapper">
 
 ### name
 
@@ -93,3 +95,6 @@ first Keygrip key. This signature key is used to detect tampering the next time 
 
 a boolean indicating whether to overwrite previously set cookies of the same name (true by default). If this is true, all cookies set during
 the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
+
+
+</div>

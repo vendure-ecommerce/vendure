@@ -1,7 +1,7 @@
 ---
 title: "GenerateMigration"
 weight: 10
-date: 2023-07-20T13:56:15.771Z
+date: 2023-07-21T07:17:01.448Z
 showtoc: true
 generated: true
 ---
@@ -26,9 +26,9 @@ Parameters
 
 ### userConfig
 
-<MemberInfo kind="parameter" type="Partial&#60;<a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
+<MemberInfo kind="parameter" type="Partial&#60;<a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
 
 ### options
 
-<MemberInfo kind="parameter" type="<a href='/typescript-api/migration/migration-options#migrationoptions'>MigrationOptions</a>" />
+<MemberInfo kind="parameter" type="<a href='/docs/reference/typescript-api/migration/migration-options#migrationoptions'>MigrationOptions</a>" />
 

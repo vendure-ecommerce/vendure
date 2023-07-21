@@ -1,7 +1,7 @@
 ---
 title: "SharpAssetPreviewStrategy"
 weight: 10
-date: 2023-07-20T13:56:16.848Z
+date: 2023-07-21T07:17:02.620Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="95" packageName="@vendure/asset-server-plugin" />
 
-This <a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
+This <a href='/docs/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
 overlay will be generated.
 
@@ -26,7 +26,7 @@ a webp source file will output a webp preview, and so on.
 The settings for the outputs will default to Sharp's defaults (https://sharp.pixelplumbing.com/api-output).
 However, it is possible to pass your own configurations to control the output of each format:
 
-```TypeScript
+```ts
 AssetServerPlugin.init({
   previewStrategy: new SharpAssetPreviewStrategy({
     jpegOptions: { quality: 95 },
@@ -41,29 +41,32 @@ class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
   async generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer) => Promise<Buffer>;
 }
 ```
-Implements
-
- * <a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(config?: <a href='/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy"   />
+<MemberInfo kind="method" type="(config?: <a href='/docs/reference/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy"   />
 
 
 ### generatePreviewImage
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
 
 
+
+
+</div>
 
 
 ## SharpAssetPreviewConfig
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="17" packageName="@vendure/asset-server-plugin" />
 
-This <a href='/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
+This <a href='/docs/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
 overlay will be generated.
 
@@ -78,6 +81,8 @@ interface SharpAssetPreviewConfig {
   avifOptions?: sharp.AvifOptions;
 }
 ```
+
+<div className="members-wrapper">
 
 ### maxHeight
 
@@ -114,3 +119,6 @@ Set Sharp's options for encoding gif files: https://sharp.pixelplumbing.com/api-
 <MemberInfo kind="property" type="sharp.AvifOptions"  since="1.7.0"  />
 
 Set Sharp's options for encoding avif files: https://sharp.pixelplumbing.com/api-output#avif
+
+
+</div>

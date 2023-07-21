@@ -1,7 +1,7 @@
 ---
 title: "CustomerHistoryEntryComponent"
 weight: 10
-date: 2023-07-20T13:56:17.948Z
+date: 2023-07-21T07:17:04.079Z
 showtoc: true
 generated: true
 ---
@@ -15,21 +15,24 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/custom-history-entry-component/history-entry-component-types.ts" sourceLine="64" packageName="@vendure/admin-ui" since="1.9.0" />
 
-Used to implement a <a href='/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a> which requires access to the Customer object.
+Used to implement a <a href='/docs/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a> which requires access to the Customer object.
 
 ```ts title="Signature"
 interface CustomerHistoryEntryComponent extends HistoryEntryComponent {
   customer: CustomerFragment;
 }
 ```
-Extends
-
- * <a href='/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a>
+* Extends: <code><a href='/docs/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### customer
 
 <MemberInfo kind="property" type="CustomerFragment"   />
 
 
+
+
+</div>

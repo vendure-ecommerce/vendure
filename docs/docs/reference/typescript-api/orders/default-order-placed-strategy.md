@@ -1,7 +1,7 @@
 ---
 title: "DefaultOrderPlacedStrategy"
 weight: 10
-date: 2023-07-20T13:56:14.526Z
+date: 2023-07-21T07:17:00.278Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-placed-strategy.ts" sourceLine="14" packageName="@vendure/core" />
 
-The default <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>. The order is set as "placed" when it transitions from
+The default <a href='/docs/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>. The order is set as "placed" when it transitions from
 'ArrangingPayment' to either 'PaymentAuthorized' or 'PaymentSettled'.
 
 ```ts title="Signature"
@@ -23,14 +23,17 @@ class DefaultOrderPlacedStrategy implements OrderPlacedStrategy {
   shouldSetAsPlaced(ctx: RequestContext, fromState: OrderState, toState: OrderState, order: Order) => boolean;
 }
 ```
-Implements
-
- * <a href='/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>
+* Implements: <code><a href='/docs/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### shouldSetAsPlaced
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/typescript-api/entities/order#order'>Order</a>) => boolean"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/docs/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/docs/reference/typescript-api/entities/order#order'>Order</a>) => boolean"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "DefaultSearchPlugin"
 weight: 10
-date: 2023-07-20T13:56:15.797Z
+date: 2023-07-21T07:17:01.475Z
 showtoc: true
 generated: true
 ---
@@ -49,20 +49,22 @@ class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicationShutdo
   static init(options: DefaultSearchPluginInitOptions) => Type<DefaultSearchPlugin>;
 }
 ```
-Implements
-
- * OnApplicationBootstrap
- * OnApplicationShutdown
+* Implements: <code>OnApplicationBootstrap</code>, <code>OnApplicationShutdown</code>
 
 
+
+<div className="members-wrapper">
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>) => Type&#60;<a href='/typescript-api/core-plugins/default-search-plugin/#defaultsearchplugin'>DefaultSearchPlugin</a>&#62;"   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>) => Type&#60;<a href='/docs/reference/typescript-api/core-plugins/default-search-plugin/#defaultsearchplugin'>DefaultSearchPlugin</a>&#62;"   />
 
 
+
+
+</div>

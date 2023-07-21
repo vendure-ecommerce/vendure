@@ -1,7 +1,7 @@
 ---
 title: "ProductVariant"
 weight: 10
-date: 2023-07-20T13:56:15.309Z
+date: 2023-07-21T07:17:01.022Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="37" packageName="@vendure/core" />
 
 A ProductVariant represents a single stock keeping unit (SKU) in the store's inventory.
-Whereas a <a href='/typescript-api/entities/product#product'>Product</a> is a "container" of variants, the variant itself holds the
+Whereas a <a href='/docs/reference/typescript-api/entities/product#product'>Product</a> is a "container" of variants, the variant itself holds the
 data on price, tax category etc. When one adds items to their cart, they are adding
 ProductVariants, not Products.
 
@@ -90,23 +90,18 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     channels: Channel[];
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
- * HasCustomFields
- * <a href='/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a>
- * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
+* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#softdeletable'>SoftDeletable</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;) => ProductVariant"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;) => ProductVariant"   />
 
 
 ### deletedAt
@@ -141,7 +136,7 @@ Implements
 
 ### currencyCode
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
 
 
 ### price
@@ -156,12 +151,12 @@ Implements
 
 ### taxRateApplied
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>"   />
 
 
 ### featuredAsset
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
 
 
 ### assets
@@ -171,27 +166,27 @@ Implements
 
 ### taxCategory
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
 
 
 ### productVariantPrices
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]"   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;"   />
 
 
 ### product
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/product#product'>Product</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product#product'>Product</a>"   />
 
 
 ### productId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### outOfStockThreshold
@@ -213,22 +208,22 @@ value set on this ProductVariant will be ignored.
 
 ### stockLevels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]"   />
 
 
 ### stockMovements
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]"   />
 
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-option#productoption'>ProductOption</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>[]"   />
 
 
 ### facetValues
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"   />
 
 
 ### customFields
@@ -238,11 +233,14 @@ value set on this ProductVariant will be ignored.
 
 ### collections
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>[]"   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
+
+
+</div>

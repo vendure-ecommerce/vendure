@@ -1,7 +1,7 @@
 ---
 title: "BullMQJobQueuePlugin"
 weight: 10
-date: 2023-07-20T13:56:17.019Z
+date: 2023-07-21T07:17:02.860Z
 showtoc: true
 generated: true
 ---
@@ -93,7 +93,7 @@ You can change the concurrency in the `workerOptions` passed to the `init()` met
 
 *Example*
 
-```TypeScript
+```ts
 const config: VendureConfig = {
   plugins: [
     BullMQJobQueuePlugin.init({
@@ -112,13 +112,18 @@ class BullMQJobQueuePlugin {
 }
 ```
 
+<div className="members-wrapper">
+
 ### options
 
-<MemberInfo kind="property" type="<a href='/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>"   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>) => "   />
+<MemberInfo kind="method" type="(options: <a href='/docs/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqplugin-options#bullmqpluginoptions'>BullMQPluginOptions</a>) => "   />
 
 Configures the plugin.
+
+
+</div>

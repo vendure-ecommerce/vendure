@@ -32,7 +32,7 @@ With the example config above, the following will occur:
 3. If you are using the [admin-ui-plugin]({{< relref "/reference/typescript-api/core-plugins/admin-ui-plugin" >}}), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited, and the list view data tables will allow custom field columns to be added, sorted and filtered. 
 
 
-{{< figure src="custom-fields-data-table.webp" >}}
+![custom-fields-data-table.webp](custom-fields-data-table.webp)
 
 The values of the custom fields can then be set and queried via the GraphQL APIs:
 
@@ -155,7 +155,7 @@ const config: VendureConfig = {
 
 and the resulting UI:
 
-{{< figure src="custom-fields-ui.webp" >}}
+![custom-fields-ui.webp](custom-fields-ui.webp)
 
 ## Tabbed custom fields
 

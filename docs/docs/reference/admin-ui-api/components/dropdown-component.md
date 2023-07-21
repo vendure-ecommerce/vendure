@@ -1,7 +1,7 @@
 ---
 title: "DropdownComponent"
 weight: 10
-date: 2023-07-20T13:56:18.353Z
+date: 2023-07-21T07:17:04.440Z
 showtoc: true
 generated: true
 ---
@@ -50,6 +50,8 @@ class DropdownComponent {
 }
 ```
 
+<div className="members-wrapper">
+
 ### isOpen
 
 <MemberInfo kind="property" type=""   />
@@ -85,3 +87,6 @@ class DropdownComponent {
 <MemberInfo kind="method" type="(elementRef: ElementRef) => "   />
 
 
+
+
+</div>

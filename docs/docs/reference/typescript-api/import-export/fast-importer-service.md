@@ -1,7 +1,7 @@
 ---
 title: "FastImporterService"
 weight: 10
-date: 2023-07-20T13:56:14.997Z
+date: 2023-07-21T07:17:00.736Z
 showtoc: true
 generated: true
 ---
@@ -32,9 +32,11 @@ class FastImporterService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### initialize
 
-<MemberInfo kind="method" type="(channel?: <a href='/typescript-api/entities/channel#channel'>Channel</a>) => "   />
+<MemberInfo kind="method" type="(channel?: <a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>) => "   />
 
 This should be called prior to any of the import methods, as it establishes the
 default Channel as well as the context in which the new entities will be created.
@@ -43,26 +45,29 @@ Passing a `channel` argument means that Products and ProductVariants will be ass
 to that Channel.
 ### createProduct
 
-<MemberInfo kind="method" type="(input: CreateProductInput) => Promise&#60;<a href='/typescript-api/common/id#id'>ID</a>&#62;"   />
+<MemberInfo kind="method" type="(input: CreateProductInput) => Promise&#60;<a href='/docs/reference/typescript-api/common/id#id'>ID</a>&#62;"   />
 
 
 ### createProductOptionGroup
 
-<MemberInfo kind="method" type="(input: CreateProductOptionGroupInput) => Promise&#60;<a href='/typescript-api/common/id#id'>ID</a>&#62;"   />
+<MemberInfo kind="method" type="(input: CreateProductOptionGroupInput) => Promise&#60;<a href='/docs/reference/typescript-api/common/id#id'>ID</a>&#62;"   />
 
 
 ### createProductOption
 
-<MemberInfo kind="method" type="(input: CreateProductOptionInput) => Promise&#60;<a href='/typescript-api/common/id#id'>ID</a>&#62;"   />
+<MemberInfo kind="method" type="(input: CreateProductOptionInput) => Promise&#60;<a href='/docs/reference/typescript-api/common/id#id'>ID</a>&#62;"   />
 
 
 ### addOptionGroupToProduct
 
-<MemberInfo kind="method" type="(productId: <a href='/typescript-api/common/id#id'>ID</a>, optionGroupId: <a href='/typescript-api/common/id#id'>ID</a>) => "   />
+<MemberInfo kind="method" type="(productId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, optionGroupId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => "   />
 
 
 ### createProductVariant
 
-<MemberInfo kind="method" type="(input: CreateProductVariantInput) => Promise&#60;<a href='/typescript-api/common/id#id'>ID</a>&#62;"   />
+<MemberInfo kind="method" type="(input: CreateProductVariantInput) => Promise&#60;<a href='/docs/reference/typescript-api/common/id#id'>ID</a>&#62;"   />
 
 
+
+
+</div>

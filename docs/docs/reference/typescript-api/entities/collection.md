@@ -1,7 +1,7 @@
 ---
 title: "Collection"
 weight: 10
-date: 2023-07-20T13:56:15.098Z
+date: 2023-07-21T07:17:00.825Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/entity/collection/collection.entity.ts" sourceLine="35" packageName="@vendure/core" />
 
-A Collection is a grouping of <a href='/typescript-api/entities/product#product'>Product</a>s based on various configurable criteria.
+A Collection is a grouping of <a href='/docs/reference/typescript-api/entities/product#product'>Product</a>s based on various configurable criteria.
 
 ```ts title="Signature"
 class Collection extends VendureEntity implements Translatable, HasCustomFields, ChannelAware, Orderable {
@@ -54,23 +54,18 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
     channels: Channel[];
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
-Implements
-
- * <a href='/typescript-api/entities/interfaces#translatable'>Translatable</a>
- * HasCustomFields
- * <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
- * <a href='/typescript-api/entities/interfaces#orderable'>Orderable</a>
+* Implements: <code><a href='/docs/reference/typescript-api/entities/interfaces#translatable'>Translatable</a></code>, <code>HasCustomFields</code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a></code>, <code><a href='/docs/reference/typescript-api/entities/interfaces#orderable'>Orderable</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection"   />
 
 
 ### isRoot
@@ -105,12 +100,12 @@ Implements
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;"   />
 
 
 ### featuredAsset
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
 
 
 ### assets
@@ -130,7 +125,7 @@ Implements
 
 ### productVariants
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"   />
 
 
 ### customFields
@@ -140,21 +135,24 @@ Implements
 
 ### children
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>[]"   />
 
 
 ### parent
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/collection#collection'>Collection</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/collection#collection'>Collection</a>"   />
 
 
 ### parentId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
 
 
+
+
+</div>

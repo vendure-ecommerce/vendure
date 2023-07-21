@@ -1,7 +1,7 @@
 ---
 title: "LanguageCode"
 weight: 10
-date: 2023-07-20T13:56:16.727Z
+date: 2023-07-21T07:17:02.463Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LanguageCode
 
-<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2090" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2115" packageName="@vendure/common" />
 
 Languages in the form of a ISO 639-1 language code with optional
 region or script modifier (e.g. de_AT). The selection available is based

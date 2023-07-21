@@ -1,7 +1,7 @@
 ---
 title: "ProductVariantPrice"
 weight: 10
-date: 2023-07-20T13:56:15.305Z
+date: 2023-07-21T07:17:01.016Z
 showtoc: true
 generated: true
 ---
@@ -30,15 +30,15 @@ class ProductVariantPrice extends VendureEntity {
     variant: ProductVariant;
 }
 ```
-Extends
-
- * <a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>
+* Extends: <code><a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>&#62;) => ProductVariantPrice"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>&#62;) => ProductVariantPrice"   />
 
 
 ### price
@@ -48,16 +48,19 @@ Extends
 
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### currencyCode
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
 
 
 ### variant
 
-<MemberInfo kind="property" type="<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
 
 
+
+
+</div>

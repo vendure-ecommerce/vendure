@@ -1,7 +1,7 @@
 ---
 title: "DefaultVendureComplexityEstimator"
 weight: 10
-date: 2023-07-20T13:56:17.115Z
+date: 2023-07-21T07:17:02.990Z
 showtoc: true
 generated: true
 ---

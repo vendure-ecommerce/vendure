@@ -1,7 +1,7 @@
 ---
 title: "VendureEntity"
 weight: 10
-date: 2023-07-20T13:56:15.079Z
+date: 2023-07-21T07:17:00.804Z
 showtoc: true
 generated: true
 ---
@@ -16,7 +16,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/entity/base/base.entity.ts" sourceLine="13" packageName="@vendure/core" />
 
 This is the base class from which all entities inherit. The type of
-the `id` property is defined by the <a href='/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>.
+the `id` property is defined by the <a href='/docs/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>.
 
 ```ts title="Signature"
 class VendureEntity {
@@ -28,14 +28,16 @@ class VendureEntity {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;) => VendureEntity"   />
+<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/docs/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;) => VendureEntity"   />
 
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### createdAt
@@ -48,3 +50,6 @@ class VendureEntity {
 <MemberInfo kind="property" type="Date"   />
 
 
+
+
+</div>

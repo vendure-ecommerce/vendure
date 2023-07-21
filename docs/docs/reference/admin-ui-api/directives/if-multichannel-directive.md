@@ -1,7 +1,7 @@
 ---
 title: "IfMultichannelDirective"
 weight: 10
-date: 2023-07-20T13:56:18.495Z
+date: 2023-07-21T07:17:04.570Z
 showtoc: true
 generated: true
 ---
@@ -31,14 +31,17 @@ class IfMultichannelDirective extends IfDirectiveBase<[]> {
   constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, dataService: DataService)
 }
 ```
-Extends
-
- * IfDirectiveBase&#60;[]&#62;
+* Extends: <code>IfDirectiveBase&#60;[]&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => IfMultichannelDirective"   />
+<MemberInfo kind="method" type="(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => IfMultichannelDirective"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "Types"
 weight: 10
-date: 2023-07-20T13:56:15.734Z
+date: 2023-07-21T07:17:01.412Z
 showtoc: true
 generated: true
 ---
@@ -27,7 +27,7 @@ type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job) => nu
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="22" packageName="@vendure/core" />
 
-Job update status as returned from the <a href='/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>'s `update()` method.
+Job update status as returned from the <a href='/docs/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>'s `update()` method.
 
 ```ts title="Signature"
 type JobUpdate<T extends JobData<T>> = Pick<
@@ -50,8 +50,8 @@ type JobUpdateOptions = {
   errorOnFail?: boolean;
 }
 ```
-## Members
 
+<div className="members-wrapper">
 
 ### pollInterval
 
@@ -70,11 +70,14 @@ type JobUpdateOptions = {
 
 
 
+</div>
+
+
 ## CreateQueueOptions
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="13" packageName="@vendure/core" />
 
-Used to configure a new <a href='/typescript-api/job-queue/#jobqueue'>JobQueue</a> instance.
+Used to configure a new <a href='/docs/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> instance.
 
 ```ts title="Signature"
 interface CreateQueueOptions<T extends JobData<T>> {
@@ -83,6 +86,8 @@ interface CreateQueueOptions<T extends JobData<T>> {
 }
 ```
 
+<div className="members-wrapper">
+
 ### name
 
 <MemberInfo kind="property" type="string"   />
@@ -90,17 +95,20 @@ interface CreateQueueOptions<T extends JobData<T>> {
 The name of the queue, e.g. "image processing", "re-indexing" etc.
 ### process
 
-<MemberInfo kind="property" type="(job: <a href='/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;) =&#62; Promise&#60;any&#62;"   />
+<MemberInfo kind="property" type="(job: <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;) =&#62; Promise&#60;any&#62;"   />
 
 Defines the work to be done for each job in the queue. The returned promise
 should resolve when the job is complete, or be rejected in case of an error.
+
+
+</div>
 
 
 ## JobData
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="35" packageName="@vendure/core" />
 
-A JSON-serializable data type which provides a <a href='/typescript-api/job-queue/job#job'>Job</a>
+A JSON-serializable data type which provides a <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>
 with the data it needs to be processed.
 
 ```ts title="Signature"
@@ -112,7 +120,7 @@ type JobData<T> = JsonCompatible<T>
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="44" packageName="@vendure/core" />
 
-Used to instantiate a new <a href='/typescript-api/job-queue/job#job'>Job</a>
+Used to instantiate a new <a href='/docs/reference/typescript-api/job-queue/job#job'>Job</a>
 
 ```ts title="Signature"
 interface JobConfig<T extends JobData<T>> {
@@ -130,6 +138,8 @@ interface JobConfig<T extends JobData<T>> {
   settledAt?: Date;
 }
 ```
+
+<div className="members-wrapper">
 
 ### queueName
 
@@ -153,12 +163,12 @@ interface JobConfig<T extends JobData<T>> {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/id#id'>ID</a>"   />
 
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/job-state#jobstate'>JobState</a>"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/job-state#jobstate'>JobState</a>"   />
 
 
 ### progress
@@ -191,3 +201,6 @@ interface JobConfig<T extends JobData<T>> {
 <MemberInfo kind="property" type="Date"   />
 
 
+
+
+</div>

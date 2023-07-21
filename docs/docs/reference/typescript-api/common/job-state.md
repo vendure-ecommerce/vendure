@@ -1,7 +1,7 @@
 ---
 title: "JobState"
 weight: 10
-date: 2023-07-20T13:56:16.726Z
+date: 2023-07-21T07:17:02.461Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobState
 
-<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2072" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="2097" packageName="@vendure/common" />
 
 The state of a Job in the JobQueue
 

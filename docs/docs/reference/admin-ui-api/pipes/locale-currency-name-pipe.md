@@ -1,7 +1,7 @@
 ---
 title: "LocaleCurrencyNamePipe"
 weight: 10
-date: 2023-07-20T13:56:18.705Z
+date: 2023-07-21T07:17:04.775Z
 showtoc: true
 generated: true
 ---
@@ -29,20 +29,18 @@ class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransform {
   transform(value: any, display: 'full' | 'symbol' | 'name' = 'full', locale?: unknown) => any;
 }
 ```
-Extends
-
- * LocaleBasePipe
+* Extends: <code>LocaleBasePipe</code>
 
 
-Implements
-
- * PipeTransform
+* Implements: <code>PipeTransform</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService?: <a href='/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyNamePipe"   />
+<MemberInfo kind="method" type="(dataService?: <a href='/docs/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyNamePipe"   />
 
 
 ### transform
@@ -50,3 +48,6 @@ Implements
 <MemberInfo kind="method" type="(value: any, display: 'full' | 'symbol' | 'name' = 'full', locale?: unknown) => any"   />
 
 
+
+
+</div>

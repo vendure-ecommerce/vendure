@@ -1,7 +1,7 @@
 ---
 title: "PaymentOptions"
 weight: 10
-date: 2023-07-20T13:56:14.895Z
+date: 2023-07-21T07:17:00.636Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="793" packageName="@vendure/core" />
 
-Defines payment-related options in the <a href='/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
+Defines payment-related options in the <a href='/docs/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
 
 ```ts title="Signature"
 interface PaymentOptions {
@@ -26,26 +26,31 @@ interface PaymentOptions {
 }
 ```
 
+<div className="members-wrapper">
+
 ### paymentMethodHandlers
 
-<MemberInfo kind="property" type="<a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>[]"   />
 
-Defines which <a href='/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>s are available when configuring
-<a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>s
+Defines which <a href='/docs/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>s are available when configuring
+<a href='/docs/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>s
 ### paymentMethodEligibilityCheckers
 
-<MemberInfo kind="property" type="<a href='/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a>[]"   />
 
-Defines which <a href='/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a>s are available when configuring
-<a href='/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>s
+Defines which <a href='/docs/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a>s are available when configuring
+<a href='/docs/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>s
 ### customPaymentProcess
 
-<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>&#60;any&#62;&#62;"   />
+<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>&#60;any&#62;&#62;"   />
 
 
 ### process
 
-<MemberInfo kind="property" type="Array&#60;<a href='/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>&#60;any&#62;&#62;" default="<a href='/typescript-api/payment/default-payment-process#defaultpaymentprocess'>defaultPaymentProcess</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type="Array&#60;<a href='/docs/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>&#60;any&#62;&#62;" default="<a href='/docs/reference/typescript-api/payment/default-payment-process#defaultpaymentprocess'>defaultPaymentProcess</a>"  since="2.0.0"  />
 
 Allows the definition of custom states and transition logic for the payment process state machine.
-Takes an array of objects implementing the <a href='/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a> interface.
+Takes an array of objects implementing the <a href='/docs/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a> interface.
+
+
+</div>

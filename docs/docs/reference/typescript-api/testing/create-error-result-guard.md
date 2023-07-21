@@ -1,7 +1,7 @@
 ---
 title: "CreateErrorResultGuard"
 weight: 10
-date: 2023-07-20T13:56:17.063Z
+date: 2023-07-21T07:17:02.915Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/testing/src/error-result-guard.ts" sourceLine="18" packageName="@vendure/testing" />
 
-Convenience method for creating an <a href='/typescript-api/testing/error-result-guard#errorresultguard'>ErrorResultGuard</a>. Takes a predicate function which
+Convenience method for creating an <a href='/docs/reference/typescript-api/testing/error-result-guard#errorresultguard'>ErrorResultGuard</a>. Takes a predicate function which
 tests whether the input is considered successful (true) or an error result (false).
 
 Note that the resulting variable must _still_ be type annotated in order for the TypeScript
@@ -23,7 +23,7 @@ type inference to work as expected:
 
 *Example*
 
-```TypeScript
+```ts
 const orderResultGuard: ErrorResultGuard<AddItemToOrderResult>
   = createErrorResultGuard(order => !!order.lines);
 ```

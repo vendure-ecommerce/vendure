@@ -1,7 +1,7 @@
 ---
 title: "FacetService"
 weight: 10
-date: 2023-07-20T13:56:16.165Z
+date: 2023-07-21T07:17:01.814Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/facet.service.ts" sourceLine="45" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/facet#facet'>Facet</a> entities.
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a> entities.
 
 ```ts title="Signature"
 class FacetService {
@@ -34,63 +34,68 @@ class FacetService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, facetValueService: <a href='/typescript-api/services/facet-value-service#facetvalueservice'>FacetValueService</a>, translatableSaver: <a href='/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, listQueryBuilder: <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, configService: ConfigService, channelService: <a href='/typescript-api/services/channel-service#channelservice'>ChannelService</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService, roleService: <a href='/typescript-api/services/role-service#roleservice'>RoleService</a>) => FacetService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, facetValueService: <a href='/docs/reference/typescript-api/services/facet-value-service#facetvalueservice'>FacetValueService</a>, translatableSaver: <a href='/docs/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, listQueryBuilder: <a href='/docs/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, configService: ConfigService, channelService: <a href='/docs/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService, roleService: <a href='/docs/reference/typescript-api/services/role-service#roleservice'>RoleService</a>) => FacetService"   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;, relations?: RelationPaths&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;, relations?: RelationPaths&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;"   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facetId: <a href='/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facetId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
 
 
 ### findByCode
 
-<MemberInfo kind="method" type="(facetCode: string, lang: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type="(facetCode: string, lang: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
 
 
 ### findByCode
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facetCode: string, lang: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facetCode: string, lang: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
 
 
 ### findByCode
 
-<MemberInfo kind="method" type="(ctxOrFacetCode: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a> | string, facetCodeOrLang: string | <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>, lang?: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctxOrFacetCode: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | string, facetCodeOrLang: string | <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, lang?: <a href='/docs/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
 
 
 ### findByFacetValueId
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62; | undefined&#62;"   />
 
 Returns the Facet which contains the given FacetValue id.
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateFacetInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateFacetInput) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;"   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateFacetInput) => Promise&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateFacetInput) => Promise&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;"   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>, force: boolean = false) => Promise&#60;DeletionResponse&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>, force: boolean = false) => Promise&#60;DeletionResponse&#62;"   />
 
 
 ### assignFacetsToChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: AssignFacetsToChannelInput) => Promise&#60;Array&#60;Translated&#60;<a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: AssignFacetsToChannelInput) => Promise&#60;Array&#60;Translated&#60;<a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;"   />
 
 Assigns Facets to the specified Channel
 ### removeFacetsFromChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RemoveFacetsFromChannelInput) => Promise&#60;Array&#60;ErrorResultUnion&#60;RemoveFacetFromChannelResult, <a href='/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RemoveFacetsFromChannelInput) => Promise&#60;Array&#60;ErrorResultUnion&#60;RemoveFacetFromChannelResult, <a href='/docs/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;"   />
 
 Remove Facets from the specified Channel
+
+
+</div>

@@ -147,7 +147,7 @@ Next, these source files will be run through the Angular compiler, the output of
 
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/react-ui` and you should see the default Create React App demo page:
 
-{{< figure src="./ui-extensions-cra.jpg" >}}
+![./ui-extensions-cra.jpg](./ui-extensions-cra.jpg)
 
 ## Integrate with the Admin UI
 

@@ -1,7 +1,7 @@
 ---
 title: "CollectionFilter"
 weight: 10
-date: 2023-07-20T13:56:14.319Z
+date: 2023-07-21T07:17:00.096Z
 showtoc: true
 generated: true
 ---
@@ -26,7 +26,7 @@ Here's a simple example of a custom CollectionFilter:
 
 *Example*
 
-```TypeScript
+```ts
 import { CollectionFilter, LanguageCode } from '@vendure/core';
 
 export const skuCollectionFilter = new CollectionFilter({
@@ -61,11 +61,11 @@ class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOp
   apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]) => SelectQueryBuilder<ProductVariant>;
 }
 ```
-Extends
-
- * <a href='/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;
+* Extends: <code><a href='/docs/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
 
 
+
+<div className="members-wrapper">
 
 ### constructor
 
@@ -74,6 +74,9 @@ Extends
 
 ### apply
 
-<MemberInfo kind="method" type="(qb: SelectQueryBuilder&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"   />
+<MemberInfo kind="method" type="(qb: SelectQueryBuilder&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/docs/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"   />
 
 
+
+
+</div>

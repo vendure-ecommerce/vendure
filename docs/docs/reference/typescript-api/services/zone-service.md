@@ -1,7 +1,7 @@
 ---
 title: "ZoneService"
 weight: 10
-date: 2023-07-20T13:56:16.704Z
+date: 2023-07-21T07:17:02.419Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/zone.service.ts" sourceLine="36" packageName="@vendure/core" />
 
-Contains methods relating to <a href='/typescript-api/entities/zone#zone'>Zone</a> entities.
+Contains methods relating to <a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> entities.
 
 ```ts title="Signature"
 class ZoneService {
@@ -31,48 +31,53 @@ class ZoneService {
 }
 ```
 
+<div className="members-wrapper">
+
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, eventBus: <a href='/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService, listQueryBuilder: <a href='/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => ZoneService"   />
+<MemberInfo kind="method" type="(connection: <a href='/docs/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, eventBus: <a href='/docs/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService, listQueryBuilder: <a href='/docs/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => ZoneService"   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62;) => Promise&#60;<a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62;&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;) => Promise&#60;<a href='/docs/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;&#62;"   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zoneId: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a> | undefined&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zoneId: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a> | undefined&#62;"   />
 
 
 ### getAllWithMembers
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>[]&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>[]&#62;"   />
 
 
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateZoneInput) => Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateZoneInput) => Promise&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateZoneInput) => Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateZoneInput) => Promise&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/docs/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
 
 
 ### addMembersToZone
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { memberIds, zoneId }: MutationAddMembersToZoneArgs) => Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { memberIds, zoneId }: MutationAddMembersToZoneArgs) => Promise&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
 
 
 ### removeMembersFromZone
 
-<MemberInfo kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { memberIds, zoneId }: MutationRemoveMembersFromZoneArgs) => Promise&#60;<a href='/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
+<MemberInfo kind="method" type="(ctx: <a href='/docs/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { memberIds, zoneId }: MutationRemoveMembersFromZoneArgs) => Promise&#60;<a href='/docs/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;"   />
 
 
+
+
+</div>

@@ -1,7 +1,7 @@
 ---
 title: "ApiOptions"
 weight: 10
-date: 2023-07-20T13:56:14.805Z
+date: 2023-07-21T07:17:00.538Z
 showtoc: true
 generated: true
 ---
@@ -39,6 +39,8 @@ interface ApiOptions {
   introspection?: boolean;
 }
 ```
+
+<div className="members-wrapper">
 
 ### hostname
 
@@ -122,7 +124,7 @@ the request header or as a query string.
 Set the CORS handling for the server. See the [express CORS docs](https://github.com/expressjs/cors#configuration-options).
 ### middleware
 
-<MemberInfo kind="property" type="<a href='/typescript-api/common/middleware#middleware'>Middleware</a>[]" default="[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/typescript-api/common/middleware#middleware'>Middleware</a>[]" default="[]"   />
 
 Custom Express or NestJS middleware for the server.
 ### apolloServerPlugins
@@ -147,8 +149,11 @@ will not work.
 
 *Example*
 
-```TypeScript
+```ts
 {
   introspection: process.env.NODE_ENV !== 'production'
 }
 ```
+
+
+</div>

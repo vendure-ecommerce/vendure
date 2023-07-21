@@ -1,7 +1,7 @@
 ---
 title: "ChipComponent"
 weight: 10
-date: 2023-07-20T13:56:18.125Z
+date: 2023-07-21T07:17:04.226Z
 showtoc: true
 generated: true
 ---
@@ -36,6 +36,8 @@ class ChipComponent {
 }
 ```
 
+<div className="members-wrapper">
+
 ### icon
 
 <MemberInfo kind="property" type="string"   />
@@ -62,3 +64,6 @@ The color of the chip can also be one of the standard status colors.
 <MemberInfo kind="property" type=""   />
 
 
+
+
+</div>

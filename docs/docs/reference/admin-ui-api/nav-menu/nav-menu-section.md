@@ -1,7 +1,7 @@
 ---
 title: "NavMenuSection"
 weight: 10
-date: 2023-07-20T13:56:17.997Z
+date: 2023-07-21T07:17:04.127Z
 showtoc: true
 generated: true
 ---
@@ -31,6 +31,8 @@ interface NavMenuSection {
 }
 ```
 
+<div className="members-wrapper">
+
 ### id
 
 <MemberInfo kind="property" type="string"   />
@@ -43,7 +45,7 @@ interface NavMenuSection {
 
 ### items
 
-<MemberInfo kind="property" type="<a href='/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]"   />
+<MemberInfo kind="property" type="<a href='/docs/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]"   />
 
 
 ### icon
@@ -71,3 +73,6 @@ Control the display of this item based on the user permissions.
 <MemberInfo kind="property" type="boolean"   />
 
 
+
+
+</div>

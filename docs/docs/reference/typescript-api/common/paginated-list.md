@@ -1,7 +1,7 @@
 ---
 title: "PaginatedList"
 weight: 10
-date: 2023-07-20T13:56:16.731Z
+date: 2023-07-21T07:17:02.473Z
 showtoc: true
 generated: true
 ---
@@ -24,8 +24,8 @@ type PaginatedList<T> = {
   totalItems: number;
 }
 ```
-## Members
 
+<div className="members-wrapper">
 
 ### items
 
@@ -37,3 +37,6 @@ type PaginatedList<T> = {
 <MemberInfo kind="property" type="number"   />
 
 
+
+
+</div>
