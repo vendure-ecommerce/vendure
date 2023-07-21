@@ -120,7 +120,7 @@ export interface DefaultSearchPluginInitOptions {
      * @since 1.6.0
      * @default undefined
      */
-    searchStategy?: SearchStrategy;
+    searchStrategy?: SearchStrategy;
 }
 
 /**
