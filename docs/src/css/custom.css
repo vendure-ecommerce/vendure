@@ -33,6 +33,10 @@
     --color-graphql-identifier: rgb(255, 121, 198);
 }
 
+.markdown {
+    --ifm-h2-vertical-rhythm-top: 6;
+}
+
 
 .members-wrapper {
     border-left: 1px solid var(--ifm-color-secondary);
