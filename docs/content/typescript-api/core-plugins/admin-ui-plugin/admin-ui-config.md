@@ -79,6 +79,13 @@ option.{{< /member-description >}}
 setting of the server's `authOptions.authTokenHeaderKey` config
 option.{{< /member-description >}}
 
+### channelTokenKey
+
+{{< member-info kind="property" type="string" default="'vendure-token'"  >}}
+
+{{< member-description >}}The name of the header which contains the channel token. Should match the
+setting of the server's `apiOptions.channelTokenKey` config option.{{< /member-description >}}
+
 ### defaultLanguage
 
 {{< member-info kind="property" type="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>" default="<a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"  >}}

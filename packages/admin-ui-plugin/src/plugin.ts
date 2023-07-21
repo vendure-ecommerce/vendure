@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
+import { DEFAULT_AUTH_TOKEN_HEADER_KEY, DEFAULT_CHANNEL_TOKEN_KEY } from '@vendure/common/lib/shared-constants';
 import {
     AdminUiAppConfig,
     AdminUiAppDevModeConfig,
@@ -251,7 +251,7 @@ export class AdminUiPlugin implements NestModule {
      * config object for writing to disk.
      */
     private getAdminUiConfig(partialConfig?: Partial<AdminUiConfig>): AdminUiConfig {
-        const { authOptions } = this.configService;
+        const { authOptions, apiOptions } = this.configService;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const options = AdminUiPlugin.options!;
         const propOrDefault = <Prop extends keyof AdminUiConfig>(
@@ -261,7 +261,7 @@ export class AdminUiPlugin implements NestModule {
             return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
         };
         return {
-            adminApiPath: propOrDefault('adminApiPath', this.configService.apiOptions.adminApiPath),
+            adminApiPath: propOrDefault('adminApiPath', apiOptions.adminApiPath),
             apiHost: propOrDefault('apiHost', 'auto'),
             apiPort: propOrDefault('apiPort', 'auto'),
             tokenMethod: propOrDefault(
@@ -271,6 +271,10 @@ export class AdminUiPlugin implements NestModule {
             authTokenHeaderKey: propOrDefault(
                 'authTokenHeaderKey',
                 authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY,
+            ),
+            channelTokenKey: propOrDefault(
+                'channelTokenKey',
+                apiOptions.channelTokenKey || DEFAULT_CHANNEL_TOKEN_KEY
             ),
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
             defaultLocale: propOrDefault('defaultLocale', defaultLocale),
