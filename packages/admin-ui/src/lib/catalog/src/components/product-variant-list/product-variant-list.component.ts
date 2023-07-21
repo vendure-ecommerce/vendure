@@ -22,6 +22,12 @@ export class ProductVariantListComponent
         .addDateFilters()
         .addFilters([
             {
+                name: 'name',
+                type: { kind: 'text' },
+                label: _('common.name'),
+                filterField: 'name',
+            },
+            {
                 name: 'id',
                 type: { kind: 'text' },
                 label: _('common.id'),

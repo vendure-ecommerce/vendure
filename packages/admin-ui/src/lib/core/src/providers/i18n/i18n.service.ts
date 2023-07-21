@@ -47,4 +47,18 @@ export class I18nService {
     translate(key: string | string[], params?: any): string {
         return this.ngxTranslate.instant(key, params);
     }
+
+    /**
+     * Returns true if the given language code is a right-to-left language.
+     */
+    isRTL(languageCode: LanguageCode): boolean {
+        const rtlLanguageCodes = [
+            LanguageCode.ar,
+            LanguageCode.he,
+            LanguageCode.fa,
+            LanguageCode.ur,
+            LanguageCode.ps,
+        ];
+        return rtlLanguageCodes.includes(languageCode);
+    }
 }

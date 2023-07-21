@@ -459,6 +459,7 @@
     "image-title": "圖片標題",
     "insert-image": "插入圖片",
     "link-href": "連結",
+    "link-target": "",
     "link-title": "連結標題",
     "remove-link": "移除連結",
     "set-link": "設定連結"

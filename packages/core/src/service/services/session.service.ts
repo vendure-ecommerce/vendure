@@ -29,6 +29,7 @@ import { OrderService } from './order.service';
 export class SessionService implements EntitySubscriberInterface {
     private sessionCacheStrategy: SessionCacheStrategy;
     private readonly sessionDurationInMs: number;
+    private readonly sessionCacheTimeoutMs = 50;
 
     constructor(
         private connection: TransactionalConnection,
@@ -65,7 +66,7 @@ export class SessionService implements EntitySubscriberInterface {
             // session cache will be wrong, so we just clear the entire cache. It should however
             // be a very rare occurrence in normal operation, once initial setup is complete.
             if (event.entity instanceof Channel || event.entity instanceof Role) {
-                await this.sessionCacheStrategy.clear();
+                await this.withTimeout(this.sessionCacheStrategy.clear());
             }
         }
     }
@@ -96,7 +97,7 @@ export class SessionService implements EntitySubscriberInterface {
                 invalidated: false,
             }),
         );
-        await this.sessionCacheStrategy.set(this.serializeSession(authenticatedSession));
+        await this.withTimeout(this.sessionCacheStrategy.set(this.serializeSession(authenticatedSession)));
         return authenticatedSession;
     }
 
@@ -115,7 +116,7 @@ export class SessionService implements EntitySubscriberInterface {
         // save the new session
         const newSession = await this.connection.rawConnection.getRepository(AnonymousSession).save(session);
         const serializedSession = this.serializeSession(newSession);
-        await this.sessionCacheStrategy.set(serializedSession);
+        await this.withTimeout(this.sessionCacheStrategy.set(serializedSession));
         return serializedSession;
     }
 
@@ -124,14 +125,14 @@ export class SessionService implements EntitySubscriberInterface {
      * Returns the cached session object matching the given session token.
      */
     async getSessionFromToken(sessionToken: string): Promise<CachedSession | undefined> {
-        let serializedSession = await this.sessionCacheStrategy.get(sessionToken);
+        let serializedSession = await this.withTimeout(this.sessionCacheStrategy.get(sessionToken));
         const stale = !!(serializedSession && serializedSession.cacheExpiry < new Date().getTime() / 1000);
         const expired = !!(serializedSession && serializedSession.expires < new Date());
         if (!serializedSession || stale || expired) {
             const session = await this.findSessionByToken(sessionToken);
             if (session) {
                 serializedSession = this.serializeSession(session);
-                await this.sessionCacheStrategy.set(serializedSession);
+                await this.withTimeout(this.sessionCacheStrategy.set(serializedSession));
                 return serializedSession;
             } else {
                 return;
@@ -166,6 +167,19 @@ export class SessionService implements EntitySubscriberInterface {
             };
         }
         return serializedSession;
+    }
+
+    /**
+     * If the session cache is taking longer than say 50ms then something is wrong - it is supposed to
+     * be very fast after all! So we will return undefined and let the request continue without a cached session.
+     */
+    private withTimeout<T>(maybeSlow: Promise<T> | T): Promise<T | undefined> {
+        return Promise.race([
+            new Promise<undefined>(resolve =>
+                setTimeout(() => resolve(undefined), this.sessionCacheTimeoutMs),
+            ),
+            maybeSlow,
+        ]);
     }
 
     /**
@@ -205,7 +219,7 @@ export class SessionService implements EntitySubscriberInterface {
             session.activeOrder = order;
             await this.connection.getRepository(ctx, Session).save(session, { reload: false });
             const updatedSerializedSession = this.serializeSession(session);
-            await this.sessionCacheStrategy.set(updatedSerializedSession);
+            await this.withTimeout(this.sessionCacheStrategy.set(updatedSerializedSession));
             return updatedSerializedSession;
         }
         return serializedSession;
@@ -245,7 +259,7 @@ export class SessionService implements EntitySubscriberInterface {
             session.activeChannel = channel;
             await this.connection.rawConnection.getRepository(Session).save(session, { reload: false });
             const updatedSerializedSession = this.serializeSession(session);
-            await this.sessionCacheStrategy.set(updatedSerializedSession);
+            await this.withTimeout(this.sessionCacheStrategy.set(updatedSerializedSession));
             return updatedSerializedSession;
         }
         return serializedSession;
@@ -261,7 +275,7 @@ export class SessionService implements EntitySubscriberInterface {
             .find({ where: { user: { id: user.id } } });
         await this.connection.getRepository(ctx, AuthenticatedSession).remove(userSessions);
         for (const session of userSessions) {
-            await this.sessionCacheStrategy.delete(session.token);
+            await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
         }
     }
 
@@ -273,7 +287,7 @@ export class SessionService implements EntitySubscriberInterface {
         const sessions = await this.connection.getRepository(ctx, Session).find({ where: { activeOrderId } });
         await this.connection.getRepository(ctx, Session).remove(sessions);
         for (const session of sessions) {
-            await this.sessionCacheStrategy.delete(session.token);
+            await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
         }
     }
 

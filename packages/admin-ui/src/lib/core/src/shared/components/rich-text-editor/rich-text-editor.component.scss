@@ -67,6 +67,12 @@ label.rich-text-label {
         max-width: 100%;
     }
 
+    a:link,
+    a:visited {
+        color: var(--color-primary-700);
+        text-decoration: none;
+    }
+
     .iframe-wrapper {
         width: 100%;
         text-align: center;

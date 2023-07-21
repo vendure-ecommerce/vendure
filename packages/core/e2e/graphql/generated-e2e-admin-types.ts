@@ -7599,6 +7599,14 @@ export type SetDraftOrderShippingMethodMutation = {
         | { errorCode: ErrorCode; message: string };
 };
 
+export type GetOrderPlacedAtQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetOrderPlacedAtQuery = {
+    order?: { id: string; createdAt: any; updatedAt: any; state: string; orderPlacedAt?: any | null } | null;
+};
+
 export type IdTest1QueryVariables = Exact<{ [key: string]: never }>;
 
 export type IdTest1Query = { products: { items: Array<{ id: string }> } };
@@ -21066,6 +21074,52 @@ export const SetDraftOrderShippingMethodDocument = {
     SetDraftOrderShippingMethodMutation,
     SetDraftOrderShippingMethodMutationVariables
 >;
+export const GetOrderPlacedAtDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetOrderPlacedAt' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'order' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'orderPlacedAt' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetOrderPlacedAtQuery, GetOrderPlacedAtQueryVariables>;
 export const IdTest1Document = {
     kind: 'Document',
     definitions: [

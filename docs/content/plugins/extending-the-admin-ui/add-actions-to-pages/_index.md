@@ -38,6 +38,44 @@ export class SharedExtensionModule {}
 
 In each list or detail view in the app, the ActionBar has a unique `locationId` which is how the app knows in which view to place your button. The complete list of available locations into which you can add new ActionBar can be found in the [ActionBarLocationId docs]({{< relref "action-bar-location-id" >}}).
 
+### Adding onClick Actions to ActionBar buttons
+
+The onClick property of the addActionBarItem function allows you to define a function that will be executed when the ActionBar button is clicked. This function receives two arguments: the click event and the current context.
+
+The context object provides access to the DataService, which allows you to perform GraphQL queries and mutations, and the current route, which can be used to get parameters from the URL.
+
+Here's an example of how to use the onClick property to perform a GraphQL mutation when the ActionBar button is clicked:
+
+```TypeScript
+addActionBarItem({
+    id: 'myButtonId',
+    label: 'My Button Label',
+    locationId: 'order-detail',
+    onClick: async (event, context) => {
+        const mutation = gql`
+            mutation MyMutation($orderId: ID!) {
+                myMutation(orderId: $orderId)
+            }
+        `;
+
+        try {
+            const orderId = context.route.snapshot.params.id;
+            const mutationResult = await firstValueFrom(
+                context.dataService.mutate(mutation, { orderId })
+            );
+            return mutationResult;
+        } catch (error) {
+            console.error('Error executing mutation:', error);
+        }
+    },
+    requiresPermission: 'ReadOrder',
+}),
+```
+
+In this example, clicking the ActionBar button triggers a GraphQL mutation. The `context.dataService` is utilized to execute the mutation. It can also be employed to retrieve additional information about the current order if needed. The `context.route` is used to extract the ID of the current order from the URL.
+
+The utility function `firstValueFrom` from the RxJS library is used in this example to convert the Observable returned by `context.dataService.mutate(...)` into a Promise. This conversion allows the use of the `await` keyword to pause execution until the Observable emits its first value or completes.
+
 ## Adding Bulk Actions
 
 Certain list views in the Admin UI support bulk actions. There are a default set of bulk actions that are defined by the Admin UI itself (e.g. delete, assign to channels), but using the `@vendure/ui-devit` package

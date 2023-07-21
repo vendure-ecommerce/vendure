@@ -43,6 +43,11 @@ export class DataTableFiltersComponent implements AfterViewInit {
 
     @HostListener('window:keydown.f', ['$event'])
     onFKeyPress(event: KeyboardEvent) {
+        if (event.target instanceof HTMLElement) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+        }
         if (!this.dropdown.isOpen && this.state === 'new') {
             this.dropdown.toggleOpen();
         }
