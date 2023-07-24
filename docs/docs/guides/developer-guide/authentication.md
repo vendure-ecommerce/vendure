@@ -372,8 +372,10 @@ plugins: [
 
 The backend part is very similar to the Google authentication example (they both use the OpenID Connect standard), so we'll not duplicate the explanatory comments here:
 
+Install `@nestjs/axios`.
+
 ```ts
-import { HttpService } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import {
     AuthenticationStrategy,
     ExternalAuthenticationService,

@@ -14,6 +14,7 @@
         "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
     },
     "dependencies": {
+        "@nestjs/axios": "^3.0.0",
         "@vendure/admin-ui-plugin": "^2.0.5",
         "@vendure/asset-server-plugin": "^2.0.5",
         "@vendure/common": "^2.0.5",
