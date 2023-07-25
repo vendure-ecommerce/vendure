@@ -85,7 +85,7 @@ export class TaxRateDetailComponent
         }
         const { name, enabled, value, taxCategoryId, zoneId, customerGroupId, customFields } =
             this.detailForm.value;
-        if (!name || enabled == null || !value || !taxCategoryId || !zoneId) {
+        if (!name || enabled == null || value == null || !taxCategoryId || !zoneId) {
             return;
         }
         const formValue = this.detailForm.value;
