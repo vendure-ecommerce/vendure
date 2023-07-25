@@ -1,6 +1,5 @@
 ---
 title: 'Extending the Admin UI'
-weight: 5
 ---
 
 # Extending the Admin UI

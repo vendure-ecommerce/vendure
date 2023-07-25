@@ -1,7 +1,10 @@
 ---
-title: "Getting Started"
-weight: 0
+title: "Installation"
+sidebar_position: 1
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Getting Started
 
@@ -15,40 +18,43 @@ weight: 0
 
 The recommended way to get started with Vendure is by using the [@vendure/create](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create) tool. This is a command-line tool which will scaffold and configure your new Vendure project and install all dependencies.
 
-{{% tab "npx" %}}
-```sh
-npx @vendure/create my-app
+
+<Tabs>
+<TabItem value="npx" label="npx" default>
+
+```
+npx @vendure/create my-shop
 ```
 
-{{< alert primary >}}
-[npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) comes with npm 5.2+ and higher.
-{{< /alert >}}
-{{% /tab %}}
-{{% tab "npm init" %}}
-```sh
-npm init @vendure my-app
+</TabItem>
+<TabItem value="npm init" label="npm init">
+
 ```
-{{< alert primary >}}
-`npm init <initializer>` is available in npm 6+
-{{< /alert >}}
-{{% /tab %}}
-{{% tab "yarn create" %}}
-```sh
-yarn create @vendure my-app
+npm init @vendure my-shop
 ```
-{{< alert primary >}}
-`yarn create` is available in Yarn 0.25+
-{{< /alert >}}
-{{% /tab %}}
+
+</TabItem>
+<TabItem value="yarn create" label="yarn create">
+
+```
+yarn create @vendure my-shop
+``` 
+
+</TabItem>
+</Tabs>
+
+:::note
+By default, the `@vendure/create` tool will use [Yarn](https://yarnpkg.com/) to manage your dependencies if you have it installed. If you want to force it to use npm, use the `--use-npm` flag.
+:::
 
 *For other installation options see the [@vendure/create documentation](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/README.md).*
 
 
-"my-app" in the above command would be replaced by whatever you'd like to name your new project.
+"my-shop" in the above command would be replaced by whatever you'd like to name your new project.
 Vendure Create will guide you through the setup. When done, you can run:
 
 ```sh
-cd my-app
+cd my-shop
 
 yarn dev
 # or
@@ -61,12 +67,20 @@ Assuming the default config settings, you can now access:
 * The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)
 * The Vendure Admin UI: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-{{< alert primary >}}
-Log in with the superadmin credentials you specified, which default to:
+:::tip
+Open [http://localhost:3000/admin](http://localhost:3000/admin) in your browser and log in with the superadmin credentials you specified, which default to:
 
 * **username**: superadmin
 * **password**: superadmin
-{{< /alert >}}
+:::
+
+## Troubleshooting
+
+If you encounter any issues during installation, you can get a more detailed output by setting the log level to `verbose`:
+
+```sh
+npx @vendure/create my-shop --log-level verbose
+```
 
 ## Next Steps
 

@@ -33,8 +33,8 @@
     --color-graphql-identifier: rgb(255, 121, 198);
 }
 
-.markdown {
-    --ifm-h2-vertical-rhythm-top: 6;
+.markdown h2:not(:first-of-type) {
+    --ifm-h2-vertical-rhythm-top: 5;
 }
 
 
