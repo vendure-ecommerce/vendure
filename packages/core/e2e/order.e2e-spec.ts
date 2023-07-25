@@ -1880,6 +1880,50 @@ describe('Orders resolver', () => {
             expect(refund2.state).toBe('Settled');
             expect(refund2.total).toBe(order.totalWithTax);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2302
+        it('passes correct amount to createRefund function after cancellation', async () => {
+            const orderResult = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[0].emailAddress,
+                password,
+            );
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentSettled');
+
+            const { cancelOrder } = await adminClient.query<
+                Codegen.CancelOrderMutation,
+                Codegen.CancelOrderMutationVariables
+            >(CANCEL_ORDER, {
+                input: {
+                    orderId: order.id,
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    reason: 'cancel reason 1',
+                },
+            });
+            orderGuard.assertSuccess(cancelOrder);
+
+            const { refundOrder } = await adminClient.query<
+                Codegen.RefundOrderMutation,
+                Codegen.RefundOrderMutationVariables
+            >(REFUND_ORDER, {
+                input: {
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    shipping: order.shipping,
+                    adjustment: 0,
+                    reason: 'foo',
+                    paymentId: order.payments![0].id,
+                },
+            });
+            refundGuard.assertSuccess(refundOrder);
+            expect(refundOrder.state).toBe('Settled');
+            expect(refundOrder.total).toBe(order.totalWithTax);
+            expect(refundOrder.metadata.amount).toBe(order.totalWithTax);
+        });
     });
 
     describe('payment cancellation', () => {
