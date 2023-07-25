@@ -1,7 +1,7 @@
 ---
 title: "DefaultLogger"
 weight: 10
-date: 2023-07-04T11:02:11.842Z
+date: 2023-07-14T16:57:49.560Z
 showtoc: true
 generated: true
 ---

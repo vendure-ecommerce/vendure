@@ -1,7 +1,7 @@
 ---
 title: "Tabs"
 weight: 10
-date: 2023-06-08T15:03:34.816Z
+date: 2023-07-14T16:57:51.138Z
 showtoc: false
 generated: true
 ---

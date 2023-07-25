@@ -1,7 +1,7 @@
 ---
 title: "FulfillmentProcess"
 weight: 10
-date: 2023-07-04T11:02:11.822Z
+date: 2023-07-14T16:57:49.546Z
 showtoc: true
 generated: true
 ---
@@ -59,7 +59,7 @@ interface FulfillmentProcess<State extends keyof CustomFulfillmentStates | strin
 
 ### transitions
 
-{{< member-info kind="property" type="<a href='/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>&#62; &#38;         Partial&#60;<a href='/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a> | State&#62;&#62;"  >}}
+{{< member-info kind="property" type="<a href='/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>&#62; &#38;         Partial&#60;<a href='/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a> | State&#62;&#62;"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

@@ -116,6 +116,7 @@ export type CustomDetailComponentLocationId =
     | 'country-detail'
     | 'customer-detail'
     | 'customer-group-detail'
+    | 'draft-order-detail'
     | 'facet-detail'
     | 'global-settings-detail'
     | 'order-detail'

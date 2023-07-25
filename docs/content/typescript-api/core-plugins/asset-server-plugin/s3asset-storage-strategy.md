@@ -1,7 +1,7 @@
 ---
 title: "S3AssetStorageStrategy"
 weight: 10
-date: 2023-07-04T11:02:13.702Z
+date: 2023-07-14T16:57:50.691Z
 showtoc: true
 generated: true
 ---
@@ -170,8 +170,7 @@ Using type `any` in order to avoid the need to include `aws-sdk` dependency in g
 
 {{< generation-info sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="119" packageName="@vendure/asset-server-plugin">}}
 
-Returns a configured instance of the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>
-`storageStrategyFactory` property.
+Returns a configured instance of the <a href='/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>`storageStrategyFactory` property.
 
 Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
 

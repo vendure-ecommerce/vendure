@@ -1,7 +1,7 @@
 ---
 title: "Types"
 weight: 10
-date: 2023-07-04T11:02:12.812Z
+date: 2023-07-14T16:57:50.171Z
 showtoc: true
 generated: true
 ---
@@ -123,8 +123,7 @@ should resolve when the job is complete, or be rejected in case of an error.{{< 
 
 {{< generation-info sourceFile="packages/core/src/job-queue/types.ts" sourceLine="35" packageName="@vendure/core">}}
 
-A JSON-serializable data type which provides a <a href='/typescript-api/job-queue/job#job'>Job</a>
-with the data it needs to be processed.
+A JSON-serializable data type which provides a <a href='/typescript-api/job-queue/job#job'>Job</a>with the data it needs to be processed.
 
 ## Signature
 
