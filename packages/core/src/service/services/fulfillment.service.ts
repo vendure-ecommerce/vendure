@@ -3,9 +3,10 @@ import { ConfigurableOperationInput, OrderLineInput } from '@vendure/common/lib/
 import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import {
     CreateFulfillmentError,
     FulfillmentStateTransitionError,
@@ -127,16 +128,21 @@ export class FulfillmentService {
             .then(fulfillment => fulfillment.lines);
     }
 
-    async getFulfillmentsLinesForOrderLine(ctx: RequestContext, orderLineId: ID): Promise<FulfillmentLine[]> {
-        const fulfillmentLines = await this.connection
-            .getRepository(ctx, FulfillmentLine)
-            .createQueryBuilder('fulfillmentLine')
-            .leftJoin('fulfillmentLine.fulfillment', 'fulfillment')
-            .where('fulfillmentLine.orderLineId = :orderLineId', { orderLineId })
-            .andWhere('fulfillment.state != :cancelledState', { cancelledState: 'Cancelled' })
-            .getMany();
-
-        return fulfillmentLines;
+    async getFulfillmentsLinesForOrderLine(
+        ctx: RequestContext,
+        orderLineId: ID,
+        relations: RelationPaths<FulfillmentLine> = [],
+    ): Promise<FulfillmentLine[]> {
+        const defaultRelations = ['fulfillment'];
+        return this.connection.getRepository(ctx, FulfillmentLine).find({
+            relations: Array.from(new Set([...defaultRelations, ...relations])),
+            where: {
+                fulfillment: {
+                    state: Not('Cancelled'),
+                },
+                orderLineId,
+            },
+        });
     }
 
     /**
