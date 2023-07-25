@@ -61,7 +61,7 @@ class TestEmailPlugin implements OnModuleInit {
 
     onModuleInit() {
         this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
-            sendEmailFn(event);
+            sendEmailFn?.(event);
         });
     }
 }
