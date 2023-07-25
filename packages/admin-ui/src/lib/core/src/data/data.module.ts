@@ -27,7 +27,7 @@ export function createApollo(
     fetchAdapter: FetchAdapter,
     injector: Injector,
 ): ApolloClientOptions<any> {
-    const { adminApiPath, tokenMethod } = getAppConfig();
+    const { adminApiPath, tokenMethod, channelTokenKey } = getAppConfig();
     const serverLocation = getServerLocation();
     const apolloCache = new InMemoryCache({
         possibleTypes: introspectionResult.possibleTypes,
@@ -66,7 +66,7 @@ export function createApollo(
                 const headers: Record<string, string> = {};
                 const channelToken = localStorageService.get('activeChannelToken');
                 if (channelToken) {
-                    headers['vendure-token'] = channelToken;
+                    headers[channelTokenKey] = channelToken;
                 }
                 if (tokenMethod === 'bearer') {
                     const authToken = localStorageService.get('authToken');
