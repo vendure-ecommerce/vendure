@@ -1,7 +1,7 @@
 ---
 title: "DefaultPasswordValidationStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.920Z
+date: 2023-07-26T18:59:54.229Z
 showtoc: true
 generated: true
 ---
@@ -37,12 +37,12 @@ class DefaultPasswordValidationStrategy implements PasswordValidationStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(options: { minLength?: number; regexp?: RegExp }) => DefaultPasswordValidationStrategy"   />
+<MemberInfo kind="method" type={`(options: { minLength?: number; regexp?: RegExp }) => DefaultPasswordValidationStrategy`}   />
 
 
 ### validate
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, password: string) => boolean | string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, password: string) => boolean | string`}   />
 
 
 

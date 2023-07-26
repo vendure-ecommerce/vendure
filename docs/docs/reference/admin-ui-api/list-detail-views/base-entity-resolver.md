@@ -1,7 +1,7 @@
 ---
 title: "BaseEntityResolver"
 weight: 10
-date: 2023-07-21T15:46:18.961Z
+date: 2023-07-26T19:00:02.084Z
 showtoc: true
 generated: true
 ---
@@ -52,7 +52,7 @@ class BaseEntityResolver<T> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(router: Router, emptyEntity: T, entityStream: (id: string) =&#62; Observable&#60;T | null | undefined&#62;) => BaseEntityResolver"   />
+<MemberInfo kind="method" type={`(router: Router, emptyEntity: T, entityStream: (id: string) =&#62; Observable&#60;T | null | undefined&#62;) => BaseEntityResolver`}   />
 
 
 

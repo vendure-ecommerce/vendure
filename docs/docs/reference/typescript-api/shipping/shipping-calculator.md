@@ -1,7 +1,7 @@
 ---
 title: "ShippingCalculator"
 weight: 10
-date: 2023-07-21T15:46:15.470Z
+date: 2023-07-26T18:59:55.141Z
 showtoc: true
 generated: true
 ---
@@ -56,7 +56,7 @@ class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: ShippingCalculatorConfig&#60;T&#62;) => ShippingCalculator"   />
+<MemberInfo kind="method" type={`(config: ShippingCalculatorConfig&#60;T&#62;) => ShippingCalculator`}   />
 
 
 
@@ -83,22 +83,22 @@ interface ShippingCalculationResult {
 
 ### price
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The shipping price without any taxes.
 ### priceIncludesTax
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 Whether or not the given price already includes taxes.
 ### taxRate
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The tax rate applied to the shipping price.
 ### metadata
 
-<MemberInfo kind="property" type="Record&#60;string, any&#62;"   />
+<MemberInfo kind="property" type={`Record&#60;string, any&#62;`}   />
 
 Arbitrary metadata may be returned from the calculation function. This can be used
 e.g. to return data on estimated delivery times or any other data which may be

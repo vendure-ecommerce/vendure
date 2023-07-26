@@ -1,7 +1,7 @@
 ---
 title: "BcryptPasswordHashingStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.914Z
+date: 2023-07-26T18:59:54.219Z
 showtoc: true
 generated: true
 ---
@@ -31,12 +31,12 @@ class BcryptPasswordHashingStrategy implements PasswordHashingStrategy {
 
 ### hash
 
-<MemberInfo kind="method" type="(plaintext: string) => Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type={`(plaintext: string) => Promise&#60;string&#62;`}   />
 
 
 ### check
 
-<MemberInfo kind="method" type="(plaintext: string, hash: string) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(plaintext: string, hash: string) => Promise&#60;boolean&#62;`}   />
 
 
 

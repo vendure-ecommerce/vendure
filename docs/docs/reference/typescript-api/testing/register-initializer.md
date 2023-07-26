@@ -1,7 +1,7 @@
 ---
 title: "RegisterInitializer"
 weight: 10
-date: 2023-07-21T15:46:18.266Z
+date: 2023-07-26T19:00:00.622Z
 showtoc: true
 generated: true
 ---
@@ -25,9 +25,9 @@ Parameters
 
 ### type
 
-<MemberInfo kind="parameter" type="DataSourceOptions['type']" />
+<MemberInfo kind="parameter" type={`DataSourceOptions['type']`} />
 
 ### initializer
 
-<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a>&#60;any&#62;" />
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a>&#60;any&#62;`} />
 

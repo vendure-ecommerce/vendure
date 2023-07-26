@@ -1,7 +1,7 @@
 ---
 title: "NavMenuItem"
 weight: 10
-date: 2023-07-21T15:46:19.121Z
+date: 2023-07-26T19:00:02.451Z
 showtoc: true
 generated: true
 ---
@@ -34,37 +34,37 @@ interface NavMenuItem {
 
 ### id
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### label
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### routerLink
 
-<MemberInfo kind="property" type="RouterLinkDefinition"   />
+<MemberInfo kind="property" type={`RouterLinkDefinition`}   />
 
 
 ### onClick
 
-<MemberInfo kind="property" type="(event: MouseEvent) =&#62; void"   />
+<MemberInfo kind="property" type={`(event: MouseEvent) =&#62; void`}   />
 
 
 ### icon
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### requiresPermission
 
-<MemberInfo kind="property" type="string | ((userPermissions: string[]) =&#62; boolean)"   />
+<MemberInfo kind="property" type={`string | ((userPermissions: string[]) =&#62; boolean)`}   />
 
 
 ### statusBadge
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/reference/admin-ui-api/nav-menu/navigation-types#navmenubadge'>NavMenuBadge</a>&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/admin-ui-api/nav-menu/navigation-types#navmenubadge'>NavMenuBadge</a>&#62;`}   />
 
 
 

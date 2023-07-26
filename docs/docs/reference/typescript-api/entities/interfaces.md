@@ -1,7 +1,7 @@
 ---
 title: "Interfaces"
 weight: 10
-date: 2023-07-21T15:46:14.840Z
+date: 2023-07-26T18:59:54.081Z
 showtoc: true
 generated: true
 ---
@@ -27,7 +27,7 @@ interface ChannelAware {
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 
@@ -51,7 +51,7 @@ interface SoftDeletable {
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 
@@ -75,7 +75,7 @@ interface Orderable {
 
 ### position
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 
@@ -99,7 +99,7 @@ interface Taggable {
 
 ### tags
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tag#tag'>Tag</a>[]`}   />
 
 
 
@@ -123,7 +123,7 @@ interface Translatable {
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;&#62;`}   />
 
 
 

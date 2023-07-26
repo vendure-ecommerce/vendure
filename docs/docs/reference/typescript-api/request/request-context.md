@@ -1,7 +1,7 @@
 ---
 title: "RequestContext"
 weight: 10
-date: 2023-07-21T15:46:14.614Z
+date: 2023-07-26T18:59:53.698Z
 showtoc: true
 generated: true
 ---
@@ -59,7 +59,7 @@ class RequestContext {
 
 ### empty
 
-<MemberInfo kind="method" type="() => <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="method" type={`() => <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`}   />
 
 Creates an "empty" RequestContext object. This is only intended to be used
 when a service method must be called outside the normal request-response
@@ -68,84 +68,84 @@ is to use the <a href='/reference/typescript-api/request/request-context-service
 over the resulting RequestContext object.
 ### deserialize
 
-<MemberInfo kind="method" type="(ctxObject: SerializedRequestContext) => <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="method" type={`(ctxObject: SerializedRequestContext) => <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`}   />
 
 Creates a new RequestContext object from a serialized object created by the
 `serialize()` method.
 ### userHasPermissions
 
-<MemberInfo kind="method" type="(permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => boolean"   />
+<MemberInfo kind="method" type={`(permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => boolean`}   />
 
 Returns `true` if there is an active Session & User associated with this request,
 and that User has the specified permissions on the active Channel.
 ### serialize
 
-<MemberInfo kind="method" type="() => SerializedRequestContext"   />
+<MemberInfo kind="method" type={`() => SerializedRequestContext`}   />
 
 Serializes the RequestContext object into a JSON-compatible simple object.
 This is useful when you need to send a RequestContext object to another
 process, e.g. to pass it to the Job Queue via the <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>.
 ### copy
 
-<MemberInfo kind="method" type="() => <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="method" type={`() => <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`}   />
 
 Creates a shallow copy of the RequestContext instance. This means that
 mutations to the copy itself will not affect the original, but deep mutations
 (e.g. copy.channel.code = 'new') *will* also affect the original.
 ### req
 
-<MemberInfo kind="property" type="Request | undefined"   />
+<MemberInfo kind="property" type={`Request | undefined`}   />
 
 The raw Express request object.
 ### apiType
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/request/api-type#apitype'>ApiType</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/request/api-type#apitype'>ApiType</a>`}   />
 
 Signals which API this request was received by, e.g. `admin` or `shop`.
 ### channel
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>`}   />
 
 The active <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> of this request.
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### languageCode
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>`}   />
 
 
 ### currencyCode
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>`}   />
 
 
 ### session
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined`}   />
 
 
 ### activeUserId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a> | undefined"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a> | undefined`}   />
 
 
 ### isAuthorized
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 True if the current session is authorized to access the current resolver method.
 ### authorizedAsOwnerOnly
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 True if the current anonymous session is only authorized to operate on entities that
 are owned by the current session.
 ### translate
 
-<MemberInfo kind="method" type="(key: string, variables?: { [k: string]: any }) => string"   />
+<MemberInfo kind="method" type={`(key: string, variables?: { [k: string]: any }) => string`}   />
 
 Translate the given i18n key
 

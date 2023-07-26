@@ -1,7 +1,7 @@
 ---
 title: "ActionBarItem"
 weight: 10
-date: 2023-07-21T15:46:19.150Z
+date: 2023-07-26T19:00:02.497Z
 showtoc: true
 generated: true
 ---
@@ -36,52 +36,52 @@ interface ActionBarItem {
 
 ### id
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### label
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### locationId
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/action-bar/action-bar-location-id#actionbarlocationid'>ActionBarLocationId</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/action-bar/action-bar-location-id#actionbarlocationid'>ActionBarLocationId</a>`}   />
 
 
 ### disabled
 
-<MemberInfo kind="property" type="Observable&#60;boolean&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;boolean&#62;`}   />
 
 
 ### onClick
 
-<MemberInfo kind="property" type="(event: MouseEvent, context: <a href='/reference/admin-ui-api/action-bar/on-click-context#onclickcontext'>OnClickContext</a>) =&#62; void"   />
+<MemberInfo kind="property" type={`(event: MouseEvent, context: <a href='/reference/admin-ui-api/action-bar/on-click-context#onclickcontext'>OnClickContext</a>) =&#62; void`}   />
 
 
 ### routerLink
 
-<MemberInfo kind="property" type="RouterLinkDefinition"   />
+<MemberInfo kind="property" type={`RouterLinkDefinition`}   />
 
 
 ### buttonColor
 
-<MemberInfo kind="property" type="'primary' | 'success' | 'warning'"   />
+<MemberInfo kind="property" type={`'primary' | 'success' | 'warning'`}   />
 
 
 ### buttonStyle
 
-<MemberInfo kind="property" type="'solid' | 'outline' | 'link'"   />
+<MemberInfo kind="property" type={`'solid' | 'outline' | 'link'`}   />
 
 
 ### icon
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### requiresPermission
 
-<MemberInfo kind="property" type="string | string[]"   />
+<MemberInfo kind="property" type={`string | string[]`}   />
 
 
 

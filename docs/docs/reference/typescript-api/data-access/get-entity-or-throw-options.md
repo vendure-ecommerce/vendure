@@ -1,7 +1,7 @@
 ---
 title: "GetEntityOrThrowOptions"
 weight: 10
-date: 2023-07-21T15:46:15.760Z
+date: 2023-07-26T18:59:55.582Z
 showtoc: true
 generated: true
 ---
@@ -33,24 +33,24 @@ interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
 
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 An optional channelId to limit results to entities assigned to the given Channel. Should
 only be used when getting entities that implement the <a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a> interface.
 ### retries
 
-<MemberInfo kind="property" type="number" default="0"  since="1.1.0"  />
+<MemberInfo kind="property" type={`number`} default="0"  since="1.1.0"  />
 
 If set to a positive integer, it will retry getting the entity in case it is initially not
 found.
 ### retryDelay
 
-<MemberInfo kind="property" type="number" default="25"  since="1.1.0"  />
+<MemberInfo kind="property" type={`number`} default="25"  since="1.1.0"  />
 
 Specifies the delay in ms to wait between retries.
 ### includeSoftDeleted
 
-<MemberInfo kind="property" type="boolean" default="false"  since="1.3.0"  />
+<MemberInfo kind="property" type={`boolean`} default="false"  since="1.3.0"  />
 
 If set to `true`, soft-deleted entities will be returned. Otherwise they will
 throw as if they did not exist.

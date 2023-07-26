@@ -1,7 +1,7 @@
 ---
 title: "DefaultVendureComplexityEstimator"
 weight: 10
-date: 2023-07-21T15:46:18.327Z
+date: 2023-07-26T19:00:00.743Z
 showtoc: true
 generated: true
 ---
@@ -28,9 +28,9 @@ Parameters
 
 ### customComplexityFactors
 
-<MemberInfo kind="parameter" type="{ [path: string]: number }" />
+<MemberInfo kind="parameter" type={`{ [path: string]: number }`} />
 
 ### logFieldScores
 
-<MemberInfo kind="parameter" type="boolean" />
+<MemberInfo kind="parameter" type={`boolean`} />
 

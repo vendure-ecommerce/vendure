@@ -1,7 +1,7 @@
 ---
 title: "AssetPreviewPipe"
 weight: 10
-date: 2023-07-21T15:46:19.569Z
+date: 2023-07-26T19:00:03.935Z
 showtoc: true
 generated: true
 ---
@@ -39,7 +39,7 @@ class AssetPreviewPipe implements PipeTransform {
 
 ### transform
 
-<MemberInfo kind="method" type="(asset?: AssetFragment, preset: string | number = 'thumb') => string"   />
+<MemberInfo kind="method" type={`(asset?: AssetFragment, preset: string | number = 'thumb') => string`}   />
 
 
 

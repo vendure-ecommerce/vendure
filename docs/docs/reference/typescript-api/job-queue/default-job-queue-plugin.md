@@ -1,7 +1,7 @@
 ---
 title: "DefaultJobQueuePlugin"
 weight: 10
-date: 2023-07-21T15:46:16.752Z
+date: 2023-07-26T18:59:57.333Z
 showtoc: true
 generated: true
 ---
@@ -113,7 +113,7 @@ class DefaultJobQueuePlugin {
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueoptions'>DefaultJobQueueOptions</a>) => Type&#60;<a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueoptions'>DefaultJobQueueOptions</a>) => Type&#60;<a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a>&#62;`}   />
 
 
 
@@ -142,24 +142,24 @@ interface DefaultJobQueueOptions {
 
 ### pollInterval
 
-<MemberInfo kind="property" type="number | ((queueName: string) =&#62; number)" default="200"   />
+<MemberInfo kind="property" type={`number | ((queueName: string) =&#62; number)`} default="200"   />
 
 The interval in ms between polling the database for new jobs. If many job queues
 are active, the polling may cause undue load on the database, in which case this value
 should be increased to e.g. 1000.
 ### concurrency
 
-<MemberInfo kind="property" type="number" default="1"   />
+<MemberInfo kind="property" type={`number`} default="1"   />
 
 How many jobs from a given queue to process concurrently.
 ### backoffStrategy
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>" default="() =&#62; 1000"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>`} default="() =&#62; 1000"   />
 
 The strategy used to decide how long to wait before retrying a failed job.
 ### setRetries
 
-<MemberInfo kind="property" type="(queueName: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"   />
+<MemberInfo kind="property" type={`(queueName: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number`}   />
 
 When a job is added to the JobQueue using `JobQueue.add()`, the calling
 code may specify the number of retries in case of failure. This option allows
@@ -181,7 +181,7 @@ setRetries: (queueName, job) => {
  ```
 ### useDatabaseForBuffer
 
-<MemberInfo kind="property" type="boolean"  since="1.3.0"  />
+<MemberInfo kind="property" type={`boolean`}  since="1.3.0"  />
 
 If set to `true`, the database will be used to store buffered jobs. This is
 recommended for production.

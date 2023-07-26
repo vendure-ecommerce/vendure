@@ -1,7 +1,7 @@
 ---
 title: "OrderHistoryEntry"
 weight: 10
-date: 2023-07-21T15:46:16.031Z
+date: 2023-07-26T18:59:55.987Z
 showtoc: true
 generated: true
 ---
@@ -33,12 +33,12 @@ class OrderHistoryEntry extends HistoryEntry {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;) => OrderHistoryEntry"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-history-entry#orderhistoryentry'>OrderHistoryEntry</a>&#62;) => OrderHistoryEntry`}   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}   />
 
 
 

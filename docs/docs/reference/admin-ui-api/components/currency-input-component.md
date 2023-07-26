@@ -1,7 +1,7 @@
 ---
 title: "CurrencyInputComponent"
 weight: 10
-date: 2023-07-21T15:46:19.239Z
+date: 2023-07-26T19:00:02.650Z
 showtoc: true
 generated: true
 ---
@@ -60,107 +60,107 @@ class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges,
 
 ### disabled
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### readonly
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### value
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### currencyCode
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### valueChange
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### prefix$
 
-<MemberInfo kind="property" type="Observable&#60;string&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;string&#62;`}   />
 
 
 ### suffix$
 
-<MemberInfo kind="property" type="Observable&#60;string&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;string&#62;`}   />
 
 
 ### hasFractionPart
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### onChange
 
-<MemberInfo kind="property" type="(val: any) =&#62; void"   />
+<MemberInfo kind="property" type={`(val: any) =&#62; void`}   />
 
 
 ### onTouch
 
-<MemberInfo kind="property" type="() =&#62; void"   />
+<MemberInfo kind="property" type={`() =&#62; void`}   />
 
 
 ### _inputValue
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent"   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent`}   />
 
 
 ### ngOnInit
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### ngOnChanges
 
-<MemberInfo kind="method" type="(changes: SimpleChanges) => "   />
+<MemberInfo kind="method" type={`(changes: SimpleChanges) => `}   />
 
 
 ### ngOnDestroy
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### registerOnChange
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### registerOnTouched
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### setDisabledState
 
-<MemberInfo kind="method" type="(isDisabled: boolean) => "   />
+<MemberInfo kind="method" type={`(isDisabled: boolean) => `}   />
 
 
 ### onInput
 
-<MemberInfo kind="method" type="(value: string) => "   />
+<MemberInfo kind="method" type={`(value: string) => `}   />
 
 
 ### onFocus
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### writeValue
 
-<MemberInfo kind="method" type="(value: any) => void"   />
+<MemberInfo kind="method" type={`(value: any) => void`}   />
 
 
 

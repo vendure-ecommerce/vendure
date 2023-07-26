@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntryConfig"
 weight: 10
-date: 2023-07-21T15:46:19.088Z
+date: 2023-07-26T19:00:02.385Z
 showtoc: true
 generated: true
 ---
@@ -28,12 +28,12 @@ interface HistoryEntryConfig {
 
 ### type
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The type should correspond to the custom HistoryEntryType string.
 ### component
 
-<MemberInfo kind="property" type="Type&#60;<a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a>&#62;"   />
+<MemberInfo kind="property" type={`Type&#60;<a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a>&#62;`}   />
 
 The component to be rendered for this history entry type.
 

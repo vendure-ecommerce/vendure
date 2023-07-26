@@ -18,6 +18,12 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * Vendure also ships with the {@link HttpHealthCheckStrategy}, which is convenient
  * for adding a health check dependent on an HTTP ping.
  *
+ * :::info
+ *
+ * This is configured via the `systemOptions.healthChecks` property of
+ * your VendureConfig.
+ *
+ * :::
  *
  *
  * @example

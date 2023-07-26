@@ -1,7 +1,7 @@
 ---
 title: "LocalAssetStorageStrategy"
 weight: 10
-date: 2023-07-21T15:46:17.934Z
+date: 2023-07-26T18:59:59.935Z
 showtoc: true
 generated: true
 ---
@@ -37,42 +37,42 @@ class LocalAssetStorageStrategy implements AssetStorageStrategy {
 
 ### toAbsoluteUrl
 
-<MemberInfo kind="property" type="((reqest: Request, identifier: string) =&#62; string) | undefined"   />
+<MemberInfo kind="property" type={`((reqest: Request, identifier: string) =&#62; string) | undefined`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) =&#62; string) => LocalAssetStorageStrategy"   />
+<MemberInfo kind="method" type={`(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) =&#62; string) => LocalAssetStorageStrategy`}   />
 
 
 ### writeFileFromStream
 
-<MemberInfo kind="method" type="(fileName: string, data: ReadStream) => Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type={`(fileName: string, data: ReadStream) => Promise&#60;string&#62;`}   />
 
 
 ### writeFileFromBuffer
 
-<MemberInfo kind="method" type="(fileName: string, data: Buffer) => Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type={`(fileName: string, data: Buffer) => Promise&#60;string&#62;`}   />
 
 
 ### fileExists
 
-<MemberInfo kind="method" type="(fileName: string) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(fileName: string) => Promise&#60;boolean&#62;`}   />
 
 
 ### readFileToBuffer
 
-<MemberInfo kind="method" type="(identifier: string) => Promise&#60;Buffer&#62;"   />
+<MemberInfo kind="method" type={`(identifier: string) => Promise&#60;Buffer&#62;`}   />
 
 
 ### readFileToStream
 
-<MemberInfo kind="method" type="(identifier: string) => Promise&#60;Stream&#62;"   />
+<MemberInfo kind="method" type={`(identifier: string) => Promise&#60;Stream&#62;`}   />
 
 
 ### deleteFile
 
-<MemberInfo kind="method" type="(identifier: string) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(identifier: string) => Promise&#60;void&#62;`}   />
 
 
 

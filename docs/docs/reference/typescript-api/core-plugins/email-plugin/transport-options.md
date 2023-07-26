@@ -1,7 +1,7 @@
 ---
 title: "Transport Options"
 weight: 10
-date: 2023-07-21T15:46:18.123Z
+date: 2023-07-26T19:00:00.288Z
 showtoc: true
 generated: true
 ---
@@ -47,12 +47,12 @@ interface SMTPTransportOptions extends SMTPTransport.Options {
 
 ### type
 
-<MemberInfo kind="property" type="'smtp'"   />
+<MemberInfo kind="property" type={`'smtp'`}   />
 
 
 ### logging
 
-<MemberInfo kind="property" type="boolean" default="false"   />
+<MemberInfo kind="property" type={`boolean`} default="false"   />
 
 If true, uses the configured <a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> to log messages from Nodemailer as it interacts with
 the SMTP server.
@@ -112,7 +112,7 @@ interface SESTransportOptions extends SESTransport.Options {
 
 ### type
 
-<MemberInfo kind="property" type="'ses'"   />
+<MemberInfo kind="property" type={`'ses'`}   />
 
 
 
@@ -138,17 +138,17 @@ interface SendmailTransportOptions {
 
 ### type
 
-<MemberInfo kind="property" type="'sendmail'"   />
+<MemberInfo kind="property" type={`'sendmail'`}   />
 
 
 ### path
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### newline
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 
@@ -174,17 +174,17 @@ interface FileTransportOptions {
 
 ### type
 
-<MemberInfo kind="property" type="'file'"   />
+<MemberInfo kind="property" type={`'file'`}   />
 
 
 ### outputPath
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### raw
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 
@@ -209,7 +209,7 @@ interface NoopTransportOptions {
 
 ### type
 
-<MemberInfo kind="property" type="'none'"   />
+<MemberInfo kind="property" type={`'none'`}   />
 
 
 
@@ -234,12 +234,12 @@ interface TestingTransportOptions {
 
 ### type
 
-<MemberInfo kind="property" type="'testing'"   />
+<MemberInfo kind="property" type={`'testing'`}   />
 
 
 ### onSend
 
-<MemberInfo kind="property" type="(details: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>) =&#62; void"   />
+<MemberInfo kind="property" type={`(details: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>) =&#62; void`}   />
 
 Callback to be invoked when an email would be sent.
 

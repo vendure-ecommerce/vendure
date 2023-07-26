@@ -1,7 +1,7 @@
 ---
 title: "CollectionFilter"
 weight: 10
-date: 2023-07-21T15:46:14.945Z
+date: 2023-07-26T18:59:54.264Z
 showtoc: true
 generated: true
 ---
@@ -69,12 +69,12 @@ class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOp
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: CollectionFilterConfig&#60;T&#62;) => CollectionFilter"   />
+<MemberInfo kind="method" type={`(config: CollectionFilterConfig&#60;T&#62;) => CollectionFilter`}   />
 
 
 ### apply
 
-<MemberInfo kind="method" type="(qb: SelectQueryBuilder&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"   />
+<MemberInfo kind="method" type={`(qb: SelectQueryBuilder&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;, args: ConfigArg[]) => SelectQueryBuilder&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;`}   />
 
 
 

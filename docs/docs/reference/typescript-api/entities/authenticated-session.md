@@ -1,7 +1,7 @@
 ---
 title: "AuthenticatedSession"
 weight: 10
-date: 2023-07-21T15:46:16.270Z
+date: 2023-07-26T18:59:56.428Z
 showtoc: true
 generated: true
 ---
@@ -35,17 +35,17 @@ class AuthenticatedSession extends Session {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>&#62;) => AuthenticatedSession"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>&#62;) => AuthenticatedSession`}   />
 
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/user#user'>User</a>`}   />
 
 The <a href='/reference/typescript-api/entities/user#user'>User</a> who has authenticated to create this session.
 ### authenticationStrategy
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the <a href='/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a> used when authenticating
 to create this session.

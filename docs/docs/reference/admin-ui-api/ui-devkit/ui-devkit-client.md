@@ -1,7 +1,7 @@
 ---
 title: "UiDevkitClient"
 weight: 10
-date: 2023-07-21T15:46:19.610Z
+date: 2023-07-26T19:00:04.067Z
 showtoc: true
 generated: true
 ---
@@ -27,7 +27,7 @@ Parameters
 
 ### value
 
-<MemberInfo kind="parameter" type="string" />
+<MemberInfo kind="parameter" type={`string`} />
 
 
 
@@ -85,15 +85,15 @@ Parameters
 
 ### document
 
-<MemberInfo kind="parameter" type="string" />
+<MemberInfo kind="parameter" type={`string`} />
 
 ### variables
 
-<MemberInfo kind="parameter" type="{ [key: string]: any }" />
+<MemberInfo kind="parameter" type={`{ [key: string]: any }`} />
 
 ### fetchPolicy
 
-<MemberInfo kind="parameter" type="WatchQueryFetchPolicy" />
+<MemberInfo kind="parameter" type={`WatchQueryFetchPolicy`} />
 
 
 
@@ -130,11 +130,11 @@ Parameters
 
 ### document
 
-<MemberInfo kind="parameter" type="string" />
+<MemberInfo kind="parameter" type={`string`} />
 
 ### variables
 
-<MemberInfo kind="parameter" type="{ [key: string]: any }" />
+<MemberInfo kind="parameter" type={`{ [key: string]: any }`} />
 
 
 
@@ -162,5 +162,5 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="NotificationMessage['data']" />
+<MemberInfo kind="parameter" type={`NotificationMessage['data']`} />
 

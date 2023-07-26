@@ -1,7 +1,7 @@
 ---
 title: "DefaultConfig"
 weight: 10
-date: 2023-07-21T15:46:15.046Z
+date: 2023-07-26T18:59:54.410Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## defaultConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/default-config.ts" sourceLine="57" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/default-config.ts" sourceLine="58" packageName="@vendure/core" />
 
 The default configuration settings which are used if not explicitly overridden in the bootstrap() call.
 

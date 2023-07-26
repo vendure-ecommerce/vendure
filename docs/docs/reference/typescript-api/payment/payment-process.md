@@ -1,7 +1,7 @@
 ---
 title: "PaymentProcess"
 weight: 10
-date: 2023-07-21T15:46:15.383Z
+date: 2023-07-26T18:59:55.007Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaymentProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/payment/payment-process.ts" sourceLine="26" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/payment/payment-process.ts" sourceLine="33" packageName="@vendure/core" since="2.0.0" />
 
 A PaymentProcess is used to define the way the payment process works as in: what states a Payment can be
 in, and how it may transition from one state to another. Using the `onTransitionStart()` hook, a
@@ -21,6 +21,13 @@ PaymentProcess can perform checks before allowing a state transition to occur, a
 hook allows logic to be executed after a state change.
 
 For detailed description of the interface members, see the <a href='/reference/typescript-api/state-machine/state-machine-config#statemachineconfig'>StateMachineConfig</a> docs.
+
+:::info
+
+This is configured via the `paymentOptions.process` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface PaymentProcess<State extends keyof CustomPaymentStates | string> extends InjectableStrategy {
@@ -38,22 +45,22 @@ interface PaymentProcess<State extends keyof CustomPaymentStates | string> exten
 
 ### transitions
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>&#62; &#38; Partial&#60;<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> | State&#62;&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>&#62; &#38; Partial&#60;<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> | State&#62;&#62;`}   />
 
 
 ### onTransitionStart
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, <a href='/reference/typescript-api/payment/payment-transition-data#paymenttransitiondata'>PaymentTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, <a href='/reference/typescript-api/payment/payment-transition-data#paymenttransitiondata'>PaymentTransitionData</a>&#62;`}   />
 
 
 ### onTransitionEnd
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, <a href='/reference/typescript-api/payment/payment-transition-data#paymenttransitiondata'>PaymentTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, <a href='/reference/typescript-api/payment/payment-transition-data#paymenttransitiondata'>PaymentTransitionData</a>&#62;`}   />
 
 
 ### onTransitionError
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;State | <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>&#62;`}   />
 
 
 

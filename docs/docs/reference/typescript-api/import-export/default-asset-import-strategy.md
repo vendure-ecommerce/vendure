@@ -1,7 +1,7 @@
 ---
 title: "DefaultAssetImportStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.865Z
+date: 2023-07-26T18:59:54.124Z
 showtoc: true
 generated: true
 ---
@@ -36,17 +36,17 @@ class DefaultAssetImportStrategy implements AssetImportStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(options?: {             retryDelayMs: number;             retryCount: number;         }) => DefaultAssetImportStrategy"   />
+<MemberInfo kind="method" type={`(options?: {             retryDelayMs: number;             retryCount: number;         }) => DefaultAssetImportStrategy`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 ### getStreamFromPath
 
-<MemberInfo kind="method" type="(assetPath: string) => "   />
+<MemberInfo kind="method" type={`(assetPath: string) => `}   />
 
 
 

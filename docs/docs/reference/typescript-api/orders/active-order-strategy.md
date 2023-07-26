@@ -1,7 +1,7 @@
 ---
 title: "ActiveOrderStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.169Z
+date: 2023-07-26T18:59:54.634Z
 showtoc: true
 generated: true
 ---
@@ -146,13 +146,13 @@ interface ActiveOrderStrategy<InputType extends Record<string, any> | void = voi
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the strategy, e.g. "orderByToken", which will also be used as the
 field name in the ActiveOrderInput type.
 ### defineInputType
 
-<MemberInfo kind="property" type="() =&#62; DocumentNode"   />
+<MemberInfo kind="property" type={`() =&#62; DocumentNode`}   />
 
 Defines the type of the GraphQL Input object expected by the `activeOrderInput`
 input argument.
@@ -188,7 +188,7 @@ activeOrder(activeOrderInput: {
 the _first_ input will be assumed to be the top-level input.
 ### createActiveOrder
 
-<MemberInfo kind="property" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) =&#62; Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;"   />
+<MemberInfo kind="property" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) =&#62; Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
 
 Certain mutations such as `addItemToOrder` can automatically create a new Order if one does not exist.
 In these cases, this method will be called to create the new Order.
@@ -197,7 +197,7 @@ If automatic creation of an Order does not make sense in your strategy, then lea
 undefined. You'll then need to take care of creating an order manually by defining a custom mutation.
 ### determineActiveOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: InputType) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a> | undefined&#62;`}   />
 
 This method is used to determine the active Order based on the current RequestContext in addition to any
 input values provided, as defined by the `defineInputType` method of this strategy.

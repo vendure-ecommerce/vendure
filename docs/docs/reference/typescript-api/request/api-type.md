@@ -1,7 +1,7 @@
 ---
 title: "ApiType"
 weight: 10
-date: 2023-07-21T15:46:14.598Z
+date: 2023-07-26T18:59:53.668Z
 showtoc: true
 generated: true
 ---

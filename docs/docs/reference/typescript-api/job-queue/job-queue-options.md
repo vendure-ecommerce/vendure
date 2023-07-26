@@ -1,7 +1,7 @@
 ---
 title: "JobQueueOptions"
 weight: 10
-date: 2023-07-21T15:46:15.665Z
+date: 2023-07-26T18:59:55.449Z
 showtoc: true
 generated: true
 ---
@@ -30,17 +30,17 @@ interface JobQueueOptions {
 
 ### jobQueueStrategy
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>" default="<a href='/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>`} default="<a href='/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>"   />
 
 Defines how the jobs in the queue are persisted and accessed.
 ### jobBufferStorageStrategy
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a>`}   />
 
 
 ### activeQueues
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 Defines the queues that will run in this process.
 This can be used to configure only certain queues to run in this process.
@@ -50,7 +50,7 @@ regardless of this setting, but this setting determines whether they get
 _processed_ or not.
 ### prefix
 
-<MemberInfo kind="property" type="string"  since="1.5.0"  />
+<MemberInfo kind="property" type={`string`}  since="1.5.0"  />
 
 Prefixes all job queue names with the passed string. This is useful with multiple deployments
 in cloud environments using services such as Amazon SQS or Google Cloud Tasks.

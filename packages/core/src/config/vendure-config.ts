@@ -171,7 +171,7 @@ export interface ApiOptions {
     cors?: boolean | CorsOptions;
     /**
      * @description
-     * Custom Express or NestJS middleware for the server.
+     * Custom Express or NestJS middleware for the server. More information can be found in the {@link Middleware} docs.
      *
      * @default []
      */

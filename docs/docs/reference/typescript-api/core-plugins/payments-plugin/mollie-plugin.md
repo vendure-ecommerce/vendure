@@ -1,7 +1,7 @@
 ---
 title: "MolliePlugin"
 weight: 10
-date: 2023-07-21T15:46:18.229Z
+date: 2023-07-26T19:00:00.544Z
 showtoc: true
 generated: true
 ---
@@ -133,12 +133,12 @@ class MolliePlugin {
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#molliepluginoptions'>MolliePluginOptions</a>) => typeof <a href='/reference/typescript-api/core-plugins/payments-plugin/mollie-plugin#mollieplugin'>MolliePlugin</a>`}   />
 
 Initialize the mollie payment plugin
 
@@ -163,13 +163,13 @@ interface MolliePluginOptions {
 
 ### vendureHost
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The host of your Vendure server, e.g. `'https://my-vendure.io'`.
 This is used by Mollie to send webhook events to the Vendure server
 ### useDynamicRedirectUrl
 
-<MemberInfo kind="property" type="boolean" default="false"  since="2.0.0"  />
+<MemberInfo kind="property" type={`boolean`} default="false"  since="2.0.0"  />
 
 For backwards compatibility, by default set to false.
 This option will be deprecated in a future version.

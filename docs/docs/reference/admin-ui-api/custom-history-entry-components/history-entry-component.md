@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntryComponent"
 weight: 10
-date: 2023-07-21T15:46:19.075Z
+date: 2023-07-26T19:00:02.353Z
 showtoc: true
 generated: true
 ---
@@ -33,29 +33,29 @@ interface HistoryEntryComponent {
 
 ### entry
 
-<MemberInfo kind="property" type="TimelineHistoryEntry"   />
+<MemberInfo kind="property" type={`TimelineHistoryEntry`}   />
 
 The HistoryEntry data.
 ### getDisplayType
 
-<MemberInfo kind="property" type="(entry: TimelineHistoryEntry) =&#62; TimelineDisplayType"   />
+<MemberInfo kind="property" type={`(entry: TimelineHistoryEntry) =&#62; TimelineDisplayType`}   />
 
 Defines whether this entry is highlighted with a "success", "error" etc. color.
 ### isFeatured
 
-<MemberInfo kind="property" type="(entry: TimelineHistoryEntry) =&#62; boolean"   />
+<MemberInfo kind="property" type={`(entry: TimelineHistoryEntry) =&#62; boolean`}   />
 
 Featured entries are always expanded. Non-featured entries start of collapsed and can be clicked
 to expand.
 ### getName
 
-<MemberInfo kind="property" type="(entry: TimelineHistoryEntry) =&#62; string | undefined"   />
+<MemberInfo kind="property" type={`(entry: TimelineHistoryEntry) =&#62; string | undefined`}   />
 
 Returns the name of the person who did this action. For example, it could be the Customer's name
 or "Administrator".
 ### getIconShape
 
-<MemberInfo kind="property" type="(entry: TimelineHistoryEntry) =&#62; string | string[] | undefined"   />
+<MemberInfo kind="property" type={`(entry: TimelineHistoryEntry) =&#62; string | string[] | undefined`}   />
 
 Optional Clarity icon shape to display with the entry. Examples: `'note'`, `['success-standard', 'is-solid']`
 

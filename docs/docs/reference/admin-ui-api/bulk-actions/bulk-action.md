@@ -1,7 +1,7 @@
 ---
 title: "BulkAction"
 weight: 10
-date: 2023-07-21T15:46:19.043Z
+date: 2023-07-26T19:00:02.274Z
 showtoc: true
 generated: true
 ---
@@ -38,29 +38,29 @@ interface BulkAction<ItemType = any, ComponentType = any> {
 
 ### location
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionlocationid'>BulkActionLocationId</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionlocationid'>BulkActionLocationId</a>`}   />
 
 
 ### label
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### getTranslationVars
 
-<MemberInfo kind="property" type="(         context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"   />
+<MemberInfo kind="property" type={`(         context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;`}   />
 
 An optional function that should resolve to a map of translation variables which can be
 used when translating the `label` string.
 ### icon
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 A valid [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/) icon shape, e.g.
 "cog", "user", "info-standard".
 ### iconClass
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 A class to be added to the icon element. Examples:
 
@@ -71,12 +71,12 @@ A class to be added to the icon element. Examples:
 - is-highlight
 ### onClick
 
-<MemberInfo kind="property" type="(context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionclickcontext'>BulkActionClickContext</a>&#60;ItemType, ComponentType&#62;) =&#62; void"   />
+<MemberInfo kind="property" type={`(context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionclickcontext'>BulkActionClickContext</a>&#60;ItemType, ComponentType&#62;) =&#62; void`}   />
 
 Defines the logic that executes when the bulk action button is clicked.
 ### isVisible
 
-<MemberInfo kind="property" type="(context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;) =&#62; boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="property" type={`(context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;) =&#62; boolean | Promise&#60;boolean&#62;`}   />
 
 A function that determines whether this bulk action item should be displayed in the menu.
 If not defined, the item will always be displayed.
@@ -102,7 +102,7 @@ registerBulkAction({
 ```
 ### requiresPermission
 
-<MemberInfo kind="property" type="string | ((userPermissions: string[]) =&#62; boolean)"   />
+<MemberInfo kind="property" type={`string | ((userPermissions: string[]) =&#62; boolean)`}   />
 
 Control the display of this item based on the user permissions.
 
@@ -175,12 +175,12 @@ interface BulkActionFunctionContext<ItemType, ComponentType> {
 
 ### selection
 
-<MemberInfo kind="property" type="ItemType[]"   />
+<MemberInfo kind="property" type={`ItemType[]`}   />
 
 An array of the selected items from the list.
 ### hostComponent
 
-<MemberInfo kind="property" type="ComponentType"   />
+<MemberInfo kind="property" type={`ComponentType`}   />
 
 The component instance that is hosting the list view. For instance,
 `ProductListComponent`. This can be used to call methods on the instance,
@@ -188,13 +188,13 @@ e.g. calling `hostComponent.refresh()` to force a list refresh after
 deleting the selected items.
 ### injector
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/injector#injector'>Injector</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/injector#injector'>Injector</a>`}   />
 
 The Angular [Injector](https://angular.io/api/core/Injector) which can be used
 to get service instances which might be needed in the click handler.
 ### route
 
-<MemberInfo kind="property" type="ActivatedRoute"   />
+<MemberInfo kind="property" type={`ActivatedRoute`}   />
 
 
 
@@ -222,12 +222,12 @@ interface BulkActionClickContext<ItemType, ComponentType> extends BulkActionFunc
 
 ### clearSelection
 
-<MemberInfo kind="property" type="() =&#62; void"   />
+<MemberInfo kind="property" type={`() =&#62; void`}   />
 
 Clears the selection in the active list view.
 ### event
 
-<MemberInfo kind="property" type="MouseEvent"   />
+<MemberInfo kind="property" type={`MouseEvent`}   />
 
 The click event itself.
 

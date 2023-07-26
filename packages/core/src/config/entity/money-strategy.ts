@@ -34,6 +34,13 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * the solution would be to define a custom MoneyStrategy which uses a non-integer data type for storing
  * the value in the database, and defines a `round()` implementation which allows decimal places to be kept.
  *
+ * :::info
+ *
+ * This is configured via the `entityOptions.moneyStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory money
  * @since 2.0.0
  */

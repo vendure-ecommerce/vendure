@@ -1,7 +1,7 @@
 ---
 title: "CustomDetailComponent"
 weight: 10
-date: 2023-07-21T15:46:19.065Z
+date: 2023-07-26T19:00:02.330Z
 showtoc: true
 generated: true
 ---
@@ -29,12 +29,12 @@ interface CustomDetailComponent {
 
 ### entity$
 
-<MemberInfo kind="property" type="Observable&#60;any&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;any&#62;`}   />
 
 
 ### detailForm
 
-<MemberInfo kind="property" type="UntypedFormGroup"   />
+<MemberInfo kind="property" type={`UntypedFormGroup`}   />
 
 
 

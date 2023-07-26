@@ -1,7 +1,7 @@
 ---
 title: "ErrorResultGuard"
 weight: 10
-date: 2023-07-21T15:46:18.259Z
+date: 2023-07-26T19:00:00.606Z
 showtoc: true
 generated: true
 ---
@@ -54,23 +54,23 @@ class ErrorResultGuard<T> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(testFn: (input: T) =&#62; boolean) => ErrorResultGuard"   />
+<MemberInfo kind="method" type={`(testFn: (input: T) =&#62; boolean) => ErrorResultGuard`}   />
 
 
 ### isSuccess
 
-<MemberInfo kind="method" type="(input: T | any) => input is T"   />
+<MemberInfo kind="method" type={`(input: T | any) => input is T`}   />
 
 A type guard which returns `true` if the input passes the `testFn` predicate.
 ### assertSuccess
 
-<MemberInfo kind="method" type="(input: T | R) => asserts input is T"   />
+<MemberInfo kind="method" type={`(input: T | R) => asserts input is T`}   />
 
 Asserts (using the testing library's `fail()` function) that the input is
 successful, i.e. it passes the `testFn`.
 ### assertErrorResult
 
-<MemberInfo kind="method" type="(input: T | R) => asserts input is R"   />
+<MemberInfo kind="method" type={`(input: T | R) => asserts input is R`}   />
 
 Asserts (using the testing library's `fail()` function) that the input is
 not successful, i.e. it does not pass the `testFn`.

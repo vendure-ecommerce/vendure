@@ -1,7 +1,7 @@
 ---
 title: "Role"
 weight: 10
-date: 2023-07-21T15:46:16.255Z
+date: 2023-07-26T18:59:56.401Z
 showtoc: true
 generated: true
 ---
@@ -40,27 +40,27 @@ class Role extends VendureEntity implements ChannelAware {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Role"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Role`}   />
 
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### description
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### permissions
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

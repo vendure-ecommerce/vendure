@@ -1,7 +1,7 @@
 ---
 title: "FormInputComponent"
 weight: 10
-date: 2023-07-21T15:46:19.011Z
+date: 2023-07-26T19:00:02.209Z
 showtoc: true
 generated: true
 ---
@@ -31,20 +31,20 @@ interface FormInputComponent<C = InputComponentConfig> {
 
 ### isListInput
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 Should be set to `true` if this component is designed to handle lists.
 If `true` then the formControl value will be an array of all the
 values in the list.
 ### readonly
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 This is set by the Admin UI when consuming this component, indicating that the
 component should be rendered in a read-only state.
 ### formControl
 
-<MemberInfo kind="property" type="FormControl"   />
+<MemberInfo kind="property" type={`FormControl`}   />
 
 This controls the actual value of the form item. The current value is available
 as `this.formControl.value`, and an Observable stream of value changes is available
@@ -54,7 +54,7 @@ as `this.formControl.valueChanges`. To update the value, use `.setValue(val)` an
 Full documentation can be found in the [Angular docs](https://angular.io/api/forms/FormControl).
 ### config
 
-<MemberInfo kind="property" type="C"   />
+<MemberInfo kind="property" type={`C`}   />
 
 The `config` property contains the full configuration object of the custom field or configurable argument.
 

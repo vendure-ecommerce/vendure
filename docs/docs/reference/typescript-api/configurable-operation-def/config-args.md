@@ -1,7 +1,7 @@
 ---
 title: "ConfigArgs"
 weight: 10
-date: 2023-07-21T15:46:14.747Z
+date: 2023-07-26T18:59:53.944Z
 showtoc: true
 generated: true
 ---
@@ -87,7 +87,7 @@ type ConfigArgs = {
 
 ### [index]
 
-<MemberInfo kind="property" type="ConfigArgDef&#60;<a href='/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>&#62;"   />
+<MemberInfo kind="property" type={`ConfigArgDef&#60;<a href='/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype'>ConfigArgType</a>&#62;`}   />
 
 
 

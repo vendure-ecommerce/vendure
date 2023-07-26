@@ -1,7 +1,7 @@
 ---
 title: "EmailEventHandlerWithAsyncData"
 weight: 10
-date: 2023-07-21T15:46:18.068Z
+date: 2023-07-26T19:00:00.189Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class EmailEventHandlerWithAsyncData<Data, T extends string = string, InputEvent
 
 ### constructor
 
-<MemberInfo kind="method" type="(_loadDataFn: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#loaddatafn'>LoadDataFn</a>&#60;InputEvent, Data&#62;, listener: <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-listener#emaileventlistener'>EmailEventListener</a>&#60;T&#62;, event: Type&#60;InputEvent&#62;) => EmailEventHandlerWithAsyncData"   />
+<MemberInfo kind="method" type={`(_loadDataFn: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#loaddatafn'>LoadDataFn</a>&#60;InputEvent, Data&#62;, listener: <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-listener#emaileventlistener'>EmailEventListener</a>&#60;T&#62;, event: Type&#60;InputEvent&#62;) => EmailEventHandlerWithAsyncData`}   />
 
 
 

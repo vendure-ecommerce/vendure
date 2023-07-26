@@ -1,7 +1,7 @@
 ---
 title: "Middleware"
 weight: 10
-date: 2023-07-21T15:46:14.852Z
+date: 2023-07-26T18:59:54.101Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Middleware
 
-<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="208" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="209" packageName="@vendure/core" />
 
 Defines API middleware, set in the <a href='/reference/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>. Middleware can be either
 [Express middleware](https://expressjs.com/en/guide/using-middleware.html) or [NestJS middleware](https://docs.nestjs.com/middleware).
@@ -40,6 +40,7 @@ export const config: VendureConfig = {
     }],
   },
 };
+```
 
 ```ts title="Signature"
 interface Middleware {
@@ -53,12 +54,12 @@ interface Middleware {
 
 ### handler
 
-<MemberInfo kind="property" type="MiddlewareHandler"   />
+<MemberInfo kind="property" type={`MiddlewareHandler`}   />
 
 The Express middleware function or NestJS `NestMiddleware` class.
 ### route
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The route to which this middleware will apply. Pattern based routes are supported as well.
 
@@ -66,7 +67,7 @@ The `'ab*cd'` route path will match `abcd`, `ab_cd`, `abecd`, and so on. The cha
 and are subsets of their regular expression counterparts. The hyphen (`-`) and the dot (`.`) are interpreted literally.
 ### beforeListen
 
-<MemberInfo kind="property" type="boolean" default="false"  since="1.1.0"  />
+<MemberInfo kind="property" type={`boolean`} default="false"  since="1.1.0"  />
 
 When set to `true`, this will cause the middleware to be applied before the Vendure server (and underlying Express server) starts listening
 for connections. In practical terms this means that the middleware will be at the very start of the middleware stack, before even the

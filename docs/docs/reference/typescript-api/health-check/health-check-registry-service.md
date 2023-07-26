@@ -1,7 +1,7 @@
 ---
 title: "HealthCheckRegistryService"
 weight: 10
-date: 2023-07-21T15:46:16.596Z
+date: 2023-07-26T18:59:56.971Z
 showtoc: true
 generated: true
 ---
@@ -66,7 +66,7 @@ class HealthCheckRegistryService {
 
 ### registerIndicatorFunction
 
-<MemberInfo kind="method" type="(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => "   />
+<MemberInfo kind="method" type={`(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => `}   />
 
 Registers one or more `HealthIndicatorFunctions` (see [Nestjs docs](https://docs.nestjs.com/recipes/terminus#setting-up-a-healthcheck))
 to be added to the health check endpoint.

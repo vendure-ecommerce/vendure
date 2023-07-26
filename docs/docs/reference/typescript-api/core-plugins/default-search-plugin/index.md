@@ -1,7 +1,7 @@
 ---
 title: "DefaultSearchPlugin"
 weight: 10
-date: 2023-07-21T15:46:16.776Z
+date: 2023-07-26T18:59:57.385Z
 showtoc: true
 generated: true
 ---
@@ -57,12 +57,12 @@ class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicationShutdo
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/default-search-plugin/#defaultsearchplugin'>DefaultSearchPlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions'>DefaultSearchPluginInitOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/default-search-plugin/#defaultsearchplugin'>DefaultSearchPlugin</a>&#62;`}   />
 
 
 

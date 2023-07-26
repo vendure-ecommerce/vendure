@@ -1,7 +1,7 @@
 ---
 title: "ShippingEligibilityChecker"
 weight: 10
-date: 2023-07-21T15:46:15.482Z
+date: 2023-07-26T18:59:55.162Z
 showtoc: true
 generated: true
 ---
@@ -46,7 +46,7 @@ class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends Conf
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker`}   />
 
 
 

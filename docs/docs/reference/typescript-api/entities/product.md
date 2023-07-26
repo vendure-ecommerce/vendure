@@ -1,7 +1,7 @@
 ---
 title: "Product"
 weight: 10
-date: 2023-07-21T15:46:16.150Z
+date: 2023-07-26T18:59:56.220Z
 showtoc: true
 generated: true
 ---
@@ -60,72 +60,72 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product#product'>Product</a>&#62;) => Product"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product#product'>Product</a>&#62;) => Product`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### slug
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### description
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### enabled
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### featuredAsset
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}   />
 
 
 ### assets
 
-<MemberInfo kind="property" type="ProductAsset[]"   />
+<MemberInfo kind="property" type={`ProductAsset[]`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product#product'>Product</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product#product'>Product</a>&#62;&#62;`}   />
 
 
 ### variants
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}   />
 
 
 ### optionGroups
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>[]`}   />
 
 
 ### facetValues
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomProductFields"   />
+<MemberInfo kind="property" type={`CustomProductFields`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

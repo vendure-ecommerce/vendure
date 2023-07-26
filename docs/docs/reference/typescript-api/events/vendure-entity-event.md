@@ -1,7 +1,7 @@
 ---
 title: "VendureEntityEvent"
 weight: 10
-date: 2023-07-21T15:46:16.587Z
+date: 2023-07-26T18:59:56.954Z
 showtoc: true
 generated: true
 ---
@@ -36,27 +36,27 @@ class VendureEntityEvent<Entity, Input = any> extends VendureEvent {
 
 ### entity
 
-<MemberInfo kind="property" type="Entity"   />
+<MemberInfo kind="property" type={`Entity`}   />
 
 
 ### type
 
-<MemberInfo kind="property" type="'created' | 'updated' | 'deleted'"   />
+<MemberInfo kind="property" type={`'created' | 'updated' | 'deleted'`}   />
 
 
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`}   />
 
 
 ### input
 
-<MemberInfo kind="property" type="Input"   />
+<MemberInfo kind="property" type={`Input`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(entity: Entity, type: 'created' | 'updated' | 'deleted', ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input?: Input) => VendureEntityEvent"   />
+<MemberInfo kind="method" type={`(entity: Entity, type: 'created' | 'updated' | 'deleted', ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input?: Input) => VendureEntityEvent`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "NotificationService"
 weight: 10
-date: 2023-07-21T15:46:19.171Z
+date: 2023-07-26T19:00:02.537Z
 showtoc: true
 generated: true
 ---
@@ -46,32 +46,32 @@ class NotificationService {
 
 ### constructor
 
-<MemberInfo kind="method" type="(i18nService: <a href='/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => NotificationService"   />
+<MemberInfo kind="method" type={`(i18nService: <a href='/reference/typescript-api/common/i18n-service#i18nservice'>I18nService</a>, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => NotificationService`}   />
 
 
 ### success
 
-<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
+<MemberInfo kind="method" type={`(message: string, translationVars?: { [key: string]: string | number }) => void`}   />
 
 Display a success toast notification
 ### info
 
-<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
+<MemberInfo kind="method" type={`(message: string, translationVars?: { [key: string]: string | number }) => void`}   />
 
 Display an info toast notification
 ### warning
 
-<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
+<MemberInfo kind="method" type={`(message: string, translationVars?: { [key: string]: string | number }) => void`}   />
 
 Display a warning toast notification
 ### error
 
-<MemberInfo kind="method" type="(message: string, translationVars?: { [key: string]: string | number }) => void"   />
+<MemberInfo kind="method" type={`(message: string, translationVars?: { [key: string]: string | number }) => void`}   />
 
 Display an error toast notification
 ### notify
 
-<MemberInfo kind="method" type="(config: <a href='/reference/admin-ui-api/providers/notification-service#toastconfig'>ToastConfig</a>) => void"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/admin-ui-api/providers/notification-service#toastconfig'>ToastConfig</a>) => void`}   />
 
 Display a toast notification.
 
@@ -109,22 +109,22 @@ interface ToastConfig {
 
 ### message
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### translationVars
 
-<MemberInfo kind="property" type="{ [key: string]: string | number }"   />
+<MemberInfo kind="property" type={`{ [key: string]: string | number }`}   />
 
 
 ### type
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/providers/notification-service#notificationtype'>NotificationType</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/providers/notification-service#notificationtype'>NotificationType</a>`}   />
 
 
 ### duration
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 

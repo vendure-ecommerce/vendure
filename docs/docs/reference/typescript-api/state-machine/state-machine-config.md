@@ -1,7 +1,7 @@
 ---
 title: "StateMachineConfig"
 weight: 10
-date: 2023-07-21T15:46:14.799Z
+date: 2023-07-26T18:59:54.020Z
 showtoc: true
 generated: true
 ---
@@ -30,13 +30,13 @@ interface StateMachineConfig<T extends string, Data = undefined> {
 
 ### transitions
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;T&#62;`}   />
 
 Defines the available states of the state machine as well as the permitted
 transitions from one state to another.
 ### onTransitionStart
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;T, Data&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;T, Data&#62;`}   />
 
 Called before a transition takes place. If the function resolves to `false` or a string, then the transition
 will be cancelled. In the case of a string, the string (error message) will be forwarded to the onError handler.
@@ -45,12 +45,12 @@ If this function returns a value resolving to `true` or `void` (no return value)
 will be permitted.
 ### onTransitionEnd
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;T, Data&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;T, Data&#62;`}   />
 
 Called after a transition has taken place.
 ### onError
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;T&#62;`}   />
 
 Called when a transition is prevented and the `onTransitionStart` handler has returned an
 error message.

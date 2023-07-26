@@ -1,7 +1,7 @@
 ---
 title: "FacetValueChecker"
 weight: 10
-date: 2023-07-21T15:46:15.426Z
+date: 2023-07-26T18:59:55.074Z
 showtoc: true
 generated: true
 ---
@@ -60,12 +60,12 @@ class FacetValueChecker {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => FacetValueChecker"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => FacetValueChecker`}   />
 
 
 ### hasFacetValues
 
-<MemberInfo kind="method" type="(orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, facetValueIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, facetValueIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;boolean&#62;`}   />
 
 Checks a given <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> against the facetValueIds and returns
 `true` if the associated <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> & <a href='/reference/typescript-api/entities/product#product'>Product</a> together

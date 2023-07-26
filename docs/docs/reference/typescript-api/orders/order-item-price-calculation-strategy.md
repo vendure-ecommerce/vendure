@@ -1,7 +1,7 @@
 ---
 title: "OrderItemPriceCalculationStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.311Z
+date: 2023-07-26T18:59:54.895Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderItemPriceCalculationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-item-price-calculation-strategy.ts" sourceLine="53" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-item-price-calculation-strategy.ts" sourceLine="60" packageName="@vendure/core" />
 
 The OrderItemPriceCalculationStrategy defines the listPrice of an OrderLine when adding an item to an Order. By default the
 <a href='/reference/typescript-api/orders/default-order-item-price-calculation-strategy#defaultorderitempricecalculationstrategy'>DefaultOrderItemPriceCalculationStrategy</a> is used.
+
+:::info
+
+This is configured via the `orderOptions.orderItemPriceCalculationStrategy` property of
+your VendureConfig.
+
+:::
 
 ### When is the strategy invoked ?
 * addItemToOrder (only on the new order line)
@@ -76,7 +83,7 @@ interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
 
 ### calculateUnitPrice
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, orderLineCustomFields: { [key: string]: any }, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, quantity: number) => <a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, orderLineCustomFields: { [key: string]: any }, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, quantity: number) => <a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;`}   />
 
 Receives the ProductVariant to be added to the Order as well as any OrderLine custom fields and returns
 the price for a single unit.

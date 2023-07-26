@@ -1,7 +1,7 @@
 ---
 title: "ObjectTreeComponent"
 weight: 10
-date: 2023-07-21T15:46:19.427Z
+date: 2023-07-26T19:00:03.304Z
 showtoc: true
 generated: true
 ---
@@ -44,47 +44,47 @@ class ObjectTreeComponent implements OnChanges {
 
 ### value
 
-<MemberInfo kind="property" type="{ [key: string]: any } | string"   />
+<MemberInfo kind="property" type={`{ [key: string]: any } | string`}   />
 
 
 ### isArrayItem
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### depth
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### expanded
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### valueIsArray
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### entries
 
-<MemberInfo kind="property" type="Array&#60;{ key: string; value: any }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{ key: string; value: any }&#62;`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(parent: <a href='/reference/admin-ui-api/components/object-tree-component#objecttreecomponent'>ObjectTreeComponent</a>) => ObjectTreeComponent"   />
+<MemberInfo kind="method" type={`(parent: <a href='/reference/admin-ui-api/components/object-tree-component#objecttreecomponent'>ObjectTreeComponent</a>) => ObjectTreeComponent`}   />
 
 
 ### ngOnChanges
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### isObject
 
-<MemberInfo kind="method" type="(value: any) => boolean"   />
+<MemberInfo kind="method" type={`(value: any) => boolean`}   />
 
 
 

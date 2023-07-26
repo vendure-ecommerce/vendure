@@ -39,6 +39,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
     }
 
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
+        console.log(`ValidateCustomFieldsInterceptor.intercept()`);
         const parsedContext = parseContext(context);
         const injector = new Injector(this.moduleRef);
         if (parsedContext.isGraphQL) {

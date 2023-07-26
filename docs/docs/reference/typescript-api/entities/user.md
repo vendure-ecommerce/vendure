@@ -1,7 +1,7 @@
 ---
 title: "User"
 weight: 10
-date: 2023-07-21T15:46:16.385Z
+date: 2023-07-26T18:59:56.639Z
 showtoc: true
 generated: true
 ---
@@ -52,57 +52,57 @@ class User extends VendureEntity implements HasCustomFields, SoftDeletable {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/user#user'>User</a>&#62;) => User"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/user#user'>User</a>&#62;) => User`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### identifier
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### authenticationMethods
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/authentication-method#authenticationmethod'>AuthenticationMethod</a>[]`}   />
 
 
 ### verified
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### roles
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/role#role'>Role</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/role#role'>Role</a>[]`}   />
 
 
 ### lastLogin
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomUserFields"   />
+<MemberInfo kind="property" type={`CustomUserFields`}   />
 
 
 ### getNativeAuthenticationMethod
 
-<MemberInfo kind="method" type="() => <a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>"   />
+<MemberInfo kind="method" type={`() => <a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>`}   />
 
 
 ### getNativeAuthenticationMethod
 
-<MemberInfo kind="method" type="(strict?: boolean) => <a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined"   />
+<MemberInfo kind="method" type={`(strict?: boolean) => <a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined`}   />
 
 
 ### getNativeAuthenticationMethod
 
-<MemberInfo kind="method" type="(strict?: boolean) => <a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined"   />
+<MemberInfo kind="method" type={`(strict?: boolean) => <a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a> | undefined`}   />
 
 
 

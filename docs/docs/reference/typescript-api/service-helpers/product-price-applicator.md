@@ -1,7 +1,7 @@
 ---
 title: "ProductPriceApplicator"
 weight: 10
-date: 2023-07-21T15:46:16.919Z
+date: 2023-07-26T18:59:57.701Z
 showtoc: true
 generated: true
 ---
@@ -51,12 +51,12 @@ class ProductPriceApplicator {
 
 ### constructor
 
-<MemberInfo kind="method" type="(configService: ConfigService, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, requestCache: RequestContextCacheService) => ProductPriceApplicator"   />
+<MemberInfo kind="method" type={`(configService: ConfigService, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, requestCache: RequestContextCacheService) => ProductPriceApplicator`}   />
 
 
 ### applyChannelPriceAndTax
 
-<MemberInfo kind="method" type="(variant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order?: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;"   />
+<MemberInfo kind="method" type={`(variant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order?: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;`}   />
 
 Populates the `price` field with the price for the specified channel. Make sure that
 the ProductVariant being passed in has its `taxCategory` relation joined.

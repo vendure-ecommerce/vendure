@@ -1,7 +1,7 @@
 ---
 title: "MergeConfig"
 weight: 10
-date: 2023-07-21T15:46:15.167Z
+date: 2023-07-26T18:59:54.628Z
 showtoc: true
 generated: true
 ---
@@ -43,13 +43,13 @@ Parameters
 
 ### target
 
-<MemberInfo kind="parameter" type="T" />
+<MemberInfo kind="parameter" type={`T`} />
 
 ### source
 
-<MemberInfo kind="parameter" type="PartialVendureConfig" />
+<MemberInfo kind="parameter" type={`PartialVendureConfig`} />
 
 ### depth
 
-<MemberInfo kind="parameter" type="" />
+<MemberInfo kind="parameter" type={``} />
 

@@ -1,7 +1,7 @@
 ---
 title: "Plugin Utilities"
 weight: 10
-date: 2023-07-21T15:46:16.796Z
+date: 2023-07-26T18:59:57.409Z
 showtoc: true
 generated: true
 ---
@@ -49,7 +49,7 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/plugin/plugin-utilities#proxyoptions'>ProxyOptions</a>`} />
 
 
 
@@ -73,28 +73,28 @@ interface ProxyOptions {
 
 ### label
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 A human-readable label for the service which is being proxied. Used to
 generate more informative logs.
 ### route
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The route of the Vendure server which will act as the proxy url.
 ### port
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The port on which the service being proxied is running.
 ### hostname
 
-<MemberInfo kind="property" type="string" default="'localhost'"   />
+<MemberInfo kind="property" type={`string`} default="'localhost'"   />
 
 The hostname of the server on which the service being proxied is running.
 ### basePath
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 An optional base path on the proxied server.
 

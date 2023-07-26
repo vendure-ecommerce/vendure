@@ -1,7 +1,7 @@
 ---
 title: "TestDbInitializer"
 weight: 10
-date: 2023-07-21T15:46:18.268Z
+date: 2023-07-26T19:00:00.628Z
 showtoc: true
 generated: true
 ---
@@ -43,7 +43,7 @@ interface TestDbInitializer<T extends BaseConnectionOptions> {
 
 ### init
 
-<MemberInfo kind="method" type="(testFileName: string, connectionOptions: T) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(testFileName: string, connectionOptions: T) => Promise&#60;T&#62;`}   />
 
 Responsible for creating a database for the current test suite.
 Typically, this method will:
@@ -53,12 +53,12 @@ Typically, this method will:
 * mutate the `connetionOptions` object to point to that new database
 ### populate
 
-<MemberInfo kind="method" type="(populateFn: () =&#62; Promise&#60;void&#62;) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(populateFn: () =&#62; Promise&#60;void&#62;) => Promise&#60;void&#62;`}   />
 
 Execute the populateFn to populate your database.
 ### destroy
 
-<MemberInfo kind="method" type="() => void | Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`() => void | Promise&#60;void&#62;`}   />
 
 Clean up any resources used during the init() phase (i.e. close open DB connections)
 

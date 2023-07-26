@@ -1,7 +1,7 @@
 ---
 title: "CustomDetailComponentConfig"
 weight: 10
-date: 2023-07-21T15:46:19.069Z
+date: 2023-07-26T19:00:02.339Z
 showtoc: true
 generated: true
 ---
@@ -28,12 +28,12 @@ interface CustomDetailComponentConfig {
 
 ### locationId
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component-location-id#customdetailcomponentlocationid'>CustomDetailComponentLocationId</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component-location-id#customdetailcomponentlocationid'>CustomDetailComponentLocationId</a>`}   />
 
 
 ### component
 
-<MemberInfo kind="property" type="Type&#60;<a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a>&#62;"   />
+<MemberInfo kind="property" type={`Type&#60;<a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a>&#62;`}   />
 
 
 

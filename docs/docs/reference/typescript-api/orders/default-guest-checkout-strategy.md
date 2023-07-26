@@ -1,7 +1,7 @@
 ---
 title: "DefaultGuestCheckoutStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.189Z
+date: 2023-07-26T18:59:54.668Z
 showtoc: true
 generated: true
 ---
@@ -49,17 +49,17 @@ class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(options?: <a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategyoptions'>DefaultGuestCheckoutStrategyOptions</a>) => DefaultGuestCheckoutStrategy"   />
+<MemberInfo kind="method" type={`(options?: <a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategyoptions'>DefaultGuestCheckoutStrategyOptions</a>) => DefaultGuestCheckoutStrategy`}   />
 
 
 ### setCustomerForOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
 
 
 
@@ -84,12 +84,12 @@ interface DefaultGuestCheckoutStrategyOptions {
 
 ### allowGuestCheckouts
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Whether to allow guest checkouts.
 ### allowGuestCheckoutForRegisteredCustomers
 
-<MemberInfo kind="property" type="boolean" default="false"   />
+<MemberInfo kind="property" type={`boolean`} default="false"   />
 
 Whether to allow guest checkouts for customers who already have an account.
 Note that when this is enabled, the details provided in the `CreateCustomerInput`

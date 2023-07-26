@@ -1,7 +1,7 @@
 ---
 title: "AssetNamingStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.870Z
+date: 2023-07-26T18:59:54.132Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetNamingStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-naming-strategy/asset-naming-strategy.ts" sourceLine="11" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-naming-strategy/asset-naming-strategy.ts" sourceLine="18" packageName="@vendure/core" />
 
 The AssetNamingStrategy determines how file names are generated based on the uploaded source file name,
 as well as how to handle naming conflicts.
+
+:::info
+
+This is configured via the `assetOptions.assetNamingStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface AssetNamingStrategy extends InjectableStrategy {
@@ -32,7 +39,7 @@ interface AssetNamingStrategy extends InjectableStrategy {
 
 ### generateSourceFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string`}   />
 
 Given the original file name of the uploaded file, generate a file name to
 be stored on the server. Operations like normalization and time-stamping can
@@ -44,7 +51,7 @@ file name should then be generated. This process will repeat until a unique file
 been returned.
 ### generatePreviewFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sourceFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sourceFileName: string, conflictFileName?: string) => string`}   />
 
 Given the source file name generated in the `generateSourceFileName` method, this method
 should generate the file name of the preview image.

@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethodHandler"
 weight: 10
-date: 2023-07-21T15:46:15.379Z
+date: 2023-07-26T18:59:55.001Z
 showtoc: true
 generated: true
 ---
@@ -81,7 +81,7 @@ class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Configurab
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a>&#60;T&#62;) => PaymentMethodHandler"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions'>PaymentMethodConfigOptions</a>&#60;T&#62;) => PaymentMethodHandler`}   />
 
 
 

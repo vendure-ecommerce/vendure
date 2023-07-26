@@ -1,7 +1,7 @@
 ---
 title: "EntityHydrator"
 weight: 10
-date: 2023-07-21T15:46:16.837Z
+date: 2023-07-26T18:59:57.512Z
 showtoc: true
 generated: true
 ---
@@ -60,12 +60,12 @@ class EntityHydrator {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: TranslatorService) => EntityHydrator"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => EntityHydrator`}   />
 
 
 ### hydrate
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, target: Entity, options: <a href='/reference/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>&#60;Entity&#62;) => Promise&#60;Entity&#62;"  since="1.3.0"  />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, target: Entity, options: <a href='/reference/typescript-api/data-access/hydrate-options#hydrateoptions'>HydrateOptions</a>&#60;Entity&#62;) => Promise&#60;Entity&#62;`}  since="1.3.0"  />
 
 Hydrates (joins) the specified relations to the target entity instance. This method
 mutates the `target` entity.

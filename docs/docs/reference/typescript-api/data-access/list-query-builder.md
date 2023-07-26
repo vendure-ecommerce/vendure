@@ -1,7 +1,7 @@
 ---
 title: "ListQueryBuilder"
 weight: 10
-date: 2023-07-21T15:46:16.864Z
+date: 2023-07-26T18:59:57.582Z
 showtoc: true
 generated: true
 ---
@@ -95,12 +95,12 @@ class ListQueryBuilder implements OnApplicationBootstrap {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService) => ListQueryBuilder"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService) => ListQueryBuilder`}   />
 
 
 ### build
 
-<MemberInfo kind="method" type="(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/reference/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/reference/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;`}   />
 
 Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
 
@@ -131,39 +131,39 @@ type ExtendedListQueryOptions<T extends VendureEntity> = {
 
 ### relations
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### where
 
-<MemberInfo kind="property" type="FindOptionsWhere&#60;T&#62;"   />
+<MemberInfo kind="property" type={`FindOptionsWhere&#60;T&#62;`}   />
 
 
 ### orderBy
 
-<MemberInfo kind="property" type="FindOneOptions&#60;T&#62;['order']"   />
+<MemberInfo kind="property" type={`FindOneOptions&#60;T&#62;['order']`}   />
 
 
 ### entityAlias
 
-<MemberInfo kind="property" type="string"  since="1.6.0"  />
+<MemberInfo kind="property" type={`string`}  since="1.6.0"  />
 
 Allows you to specify the alias used for the entity `T` in the generated SQL query.
 Defaults to the entity class name lower-cased, i.e. `ProductVariant` -> `'productvariant'`.
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`}   />
 
 When a RequestContext is passed, then the query will be
 executed as part of any outer transaction.
 ### customPropertyMap
 
-<MemberInfo kind="property" type="{ [name: string]: string }"   />
+<MemberInfo kind="property" type={`{ [name: string]: string }`}   />
 
 One of the main tasks of the ListQueryBuilder is to auto-generate filter and sort queries based on the
 available columns of a given entity. However, it may also be sometimes desirable to allow filter/sort
@@ -222,7 +222,7 @@ query {
 ```
 ### ignoreQueryLimits
 
-<MemberInfo kind="property" type="boolean" default="false"  since="2.0.2"  />
+<MemberInfo kind="property" type={`boolean`} default="false"  since="2.0.2"  />
 
 When set to `true`, the configured `shopListQueryLimit` and `adminListQueryLimit` values will be ignored,
 allowing unlimited results to be returned. Use caution when exposing an unlimited list query to the public,

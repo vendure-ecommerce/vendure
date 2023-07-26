@@ -1,7 +1,7 @@
 ---
 title: "JobBufferStorageStrategy"
 weight: 10
-date: 2023-07-21T15:46:16.642Z
+date: 2023-07-26T18:59:57.092Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobBufferStorageStrategy
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/job-buffer-storage-strategy.ts" sourceLine="12" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/job-buffer-storage-strategy.ts" sourceLine="19" packageName="@vendure/core" since="1.3.0" />
 
 This strategy defines where to store jobs that have been collected by a
 <a href='/reference/typescript-api/job-queue/job-buffer#jobbuffer'>JobBuffer</a>.
+
+:::info
+
+This is configured via the `jobQueueOptions.jobBufferStorageStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface JobBufferStorageStrategy extends InjectableStrategy {
@@ -33,14 +40,14 @@ interface JobBufferStorageStrategy extends InjectableStrategy {
 
 ### add
 
-<MemberInfo kind="method" type="(bufferId: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;"   />
+<MemberInfo kind="method" type={`(bufferId: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;`}   />
 
 Persist a job to the storage medium. The storage format should
 take into account the `bufferId` argument, as it is necessary to be
 able to later retrieve jobs by that id.
 ### bufferSize
 
-<MemberInfo kind="method" type="(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: number }&#62;"   />
+<MemberInfo kind="method" type={`(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: number }&#62;`}   />
 
 Returns an object containing the number of buffered jobs arranged by bufferId.
 
@@ -56,7 +63,7 @@ const sizes = await myJobBufferStrategy.bufferSize(['buffer-1', 'buffer-2']);
 ```
 ### flush
 
-<MemberInfo kind="method" type="(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>[] }&#62;"   />
+<MemberInfo kind="method" type={`(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>[] }&#62;`}   />
 
 Clears all jobs from the storage medium which match the specified bufferIds (if the
 array is empty, clear for _all_ bufferIds), and returns those jobs in an object

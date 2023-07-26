@@ -1,7 +1,7 @@
 ---
 title: "HardenPluginOptions"
 weight: 10
-date: 2023-07-21T15:46:18.330Z
+date: 2023-07-26T19:00:00.747Z
 showtoc: true
 generated: true
 ---
@@ -34,7 +34,7 @@ interface HardenPluginOptions {
 
 ### maxQueryComplexity
 
-<MemberInfo kind="property" type="number" default="1000"   />
+<MemberInfo kind="property" type={`number`} default="1000"   />
 
 Defines the maximum permitted complexity score of a query. The complexity score is based
 on the number of fields being selected as well as other factors like whether there are nested
@@ -43,14 +43,14 @@ lists.
 A query which exceeds the maximum score will result in an error.
 ### queryComplexityEstimators
 
-<MemberInfo kind="property" type="ComplexityEstimator[]"   />
+<MemberInfo kind="property" type={`ComplexityEstimator[]`}   />
 
 An array of custom estimator functions for calculating the complexity of a query. By default,
 the plugin will use the <a href='/reference/typescript-api/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a> which is specifically
 tuned to accurately estimate Vendure queries.
 ### logComplexityScore
 
-<MemberInfo kind="property" type="boolean" default="false"   />
+<MemberInfo kind="property" type={`boolean`} default="false"   />
 
 When set to `true`, the complexity score of each query will be logged at the Verbose
 log level, and a breakdown of the calculation for each field will be logged at the Debug level.
@@ -58,7 +58,7 @@ log level, and a breakdown of the calculation for each field will be logged at t
 This is very useful for tuning your complexity scores.
 ### customComplexityFactors
 
-<MemberInfo kind="property" type="{         [path: string]: number;     }"   />
+<MemberInfo kind="property" type={`{         [path: string]: number;     }`}   />
 
 This object allows you to tune the complexity weight of specific fields. For example,
 if you have a custom `stockLocations` field defined on the `ProductVariant` type, and
@@ -77,7 +77,7 @@ HardenPlugin.init({
 ```
 ### hideFieldSuggestions
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Graphql-js will make suggestions about the names of fields if an invalid field name is provided.
 This would allow an attacker to find out the available fields by brute force even if introspection
@@ -87,7 +87,7 @@ Setting this option to `true` will prevent these suggestion error messages from 
 instead replacing the message with a generic "Invalid request" message.
 ### apiMode
 
-<MemberInfo kind="property" type="'dev' | 'prod'" default="'prod'"   />
+<MemberInfo kind="property" type={`'dev' | 'prod'`} default="'prod'"   />
 
 When set to `'prod'`, the plugin will disable dev-mode features of the GraphQL APIs:
 

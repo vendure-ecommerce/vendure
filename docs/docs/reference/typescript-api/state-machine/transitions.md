@@ -1,7 +1,7 @@
 ---
 title: "Transitions"
 weight: 10
-date: 2023-07-21T15:46:14.797Z
+date: 2023-07-26T18:59:54.016Z
 showtoc: true
 generated: true
 ---

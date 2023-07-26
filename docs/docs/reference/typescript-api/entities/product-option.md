@@ -1,7 +1,7 @@
 ---
 title: "ProductOption"
 weight: 10
-date: 2023-07-21T15:46:16.165Z
+date: 2023-07-26T18:59:56.249Z
 showtoc: true
 generated: true
 ---
@@ -46,42 +46,42 @@ class ProductOption extends VendureEntity implements Translatable, HasCustomFiel
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;) => ProductOption"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;) => ProductOption`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>&#62;&#62;`}   />
 
 
 ### group
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>`}   />
 
 
 ### groupId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomProductOptionFields"   />
+<MemberInfo kind="property" type={`CustomProductOptionFields`}   />
 
 
 

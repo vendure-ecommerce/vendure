@@ -1,7 +1,7 @@
 ---
 title: "ConfigurableOperationDefOptions"
 weight: 10
-date: 2023-07-21T15:46:14.750Z
+date: 2023-07-26T18:59:53.950Z
 showtoc: true
 generated: true
 ---
@@ -33,12 +33,12 @@ interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends Injectab
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 A unique code used to identify this operation.
 ### args
 
-<MemberInfo kind="property" type="T"   />
+<MemberInfo kind="property" type={`T`}   />
 
 Optional provider-specific arguments which, when specified, are
 editable in the admin-ui. For example, args could be used to store an API key
@@ -55,7 +55,7 @@ args: {
 See <a href='/reference/typescript-api/configurable-operation-def/config-args#configargs'>ConfigArgs</a> for available configuration options.
 ### description
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>`}   />
 
 A human-readable description for the operation method.
 

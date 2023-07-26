@@ -1,7 +1,7 @@
 ---
 title: "AdminUiExtension"
 weight: 10
-date: 2023-07-21T15:46:19.618Z
+date: 2023-07-26T19:00:04.086Z
 showtoc: true
 generated: true
 ---
@@ -41,25 +41,25 @@ interface AdminUiExtension extends Partial<TranslationExtension>,
 
 ### id
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 An optional ID for the extension module. Only used internally for generating
 import paths to your module. If not specified, a unique hash will be used as the id.
 ### extensionPath
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The path to the directory containing the extension module(s). The entire contents of this directory
 will be copied into the Admin UI app, including all TypeScript source files, html templates,
 scss style sheets etc.
 ### ngModules
 
-<MemberInfo kind="property" type="Array&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;`}   />
 
 One or more Angular modules which extend the default Admin UI.
 ### pathAlias
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 An optional alias for the module so it can be referenced by other UI extension modules.
 
@@ -146,7 +146,7 @@ export class SampleUiExtensionModule {}
 ```
 ### exclude
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 Optional array specifying filenames or [glob](https://github.com/isaacs/node-glob) patterns that should
 be skipped when copying the directory defined by `extensionPath`.
@@ -178,7 +178,7 @@ interface TranslationExtension {
 
 ### translations
 
-<MemberInfo kind="property" type="{ [languageCode in <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }"   />
+<MemberInfo kind="property" type={`{ [languageCode in <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }`}   />
 
 Optional object defining any translation files for the Admin UI. The value should be an object with
 the key as a 2-character [ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
@@ -214,7 +214,7 @@ interface StaticAssetExtension {
 
 ### staticAssets
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetdefinition'>StaticAssetDefinition</a>[]`}   />
 
 Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
 directory.
@@ -239,7 +239,7 @@ interface GlobalStylesExtension {
 
 ### globalStyles
 
-<MemberInfo kind="property" type="string[] | string"   />
+<MemberInfo kind="property" type={`string[] | string`}   />
 
 Specifies a path (or array of paths) to global style files (css or Sass) which will be
 incorporated into the Admin UI app global stylesheet.
@@ -264,7 +264,7 @@ interface SassVariableOverridesExtension {
 
 ### sassVariableOverrides
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 Specifies a path to a Sass style file containing variable declarations, which will take precedence over
 default values defined in Clarity.
@@ -303,19 +303,19 @@ interface AdminUiExtensionSharedModule {
 
 ### type
 
-<MemberInfo kind="property" type="'shared'"   />
+<MemberInfo kind="property" type={`'shared'`}   />
 
 Shared modules are directly imported into the main AppModule of the Admin UI
 and should be used to declare custom form components and define custom
 navigation items.
 ### ngModuleFileName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the file containing the extension module class.
 ### ngModuleName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the extension module class.
 
@@ -342,25 +342,25 @@ interface AdminUiExtensionLazyModule {
 
 ### type
 
-<MemberInfo kind="property" type="'lazy'"   />
+<MemberInfo kind="property" type={`'lazy'`}   />
 
 Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
 modules which define new views for the Admin UI.
 ### route
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The route specifies the route at which the module will be lazy-loaded. E.g. a value
 of `'foo'` will cause the module to lazy-load when the `/extensions/foo` route
 is activated.
 ### ngModuleFileName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the file containing the extension module class.
 ### ngModuleName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the extension module class.
 

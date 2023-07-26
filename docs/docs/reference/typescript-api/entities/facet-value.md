@@ -1,7 +1,7 @@
 ---
 title: "FacetValue"
 weight: 10
-date: 2023-07-21T15:46:16.001Z
+date: 2023-07-26T18:59:55.939Z
 showtoc: true
 generated: true
 ---
@@ -45,37 +45,37 @@ class FacetValue extends VendureEntity implements Translatable, HasCustomFields,
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;) => FacetValue"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;) => FacetValue`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;`}   />
 
 
 ### facet
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/facet#facet'>Facet</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet#facet'>Facet</a>`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomFacetValueFields"   />
+<MemberInfo kind="property" type={`CustomFacetValueFields`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

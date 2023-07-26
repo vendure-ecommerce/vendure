@@ -1,7 +1,7 @@
 ---
 title: "Allow Decorator"
 weight: 10
-date: 2023-07-21T15:46:14.700Z
+date: 2023-07-26T18:59:53.867Z
 showtoc: true
 generated: true
 ---

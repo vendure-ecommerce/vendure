@@ -1,7 +1,7 @@
 ---
 title: "PasswordValidationStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.940Z
+date: 2023-07-26T18:59:54.258Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PasswordValidationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/password-validation-strategy.ts" sourceLine="12" packageName="@vendure/core" since="1.5.0" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/password-validation-strategy.ts" sourceLine="19" packageName="@vendure/core" since="1.5.0" />
 
 Defines validation to apply to new password (when creating an account or updating an existing account's
 password when using the <a href='/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
+
+:::info
+
+This is configured via the `authOptions.passwordValidationStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface PasswordValidationStrategy extends InjectableStrategy {
@@ -31,7 +38,7 @@ interface PasswordValidationStrategy extends InjectableStrategy {
 
 ### validate
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, password: string) => Promise&#60;boolean | string&#62; | boolean | string"  since="1.5.0"  />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, password: string) => Promise&#60;boolean | string&#62; | boolean | string`}  since="1.5.0"  />
 
 Validates a password submitted during account registration or when a customer updates their password.
 The method should resolve to `true` if the password is acceptable. If not, it should return `false` or

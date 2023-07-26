@@ -1,7 +1,7 @@
 ---
 title: "AnonymousSession"
 weight: 10
-date: 2023-07-21T15:46:16.268Z
+date: 2023-07-26T18:59:56.422Z
 showtoc: true
 generated: true
 ---
@@ -32,7 +32,7 @@ class AnonymousSession extends Session {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>&#62;) => AnonymousSession"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>&#62;) => AnonymousSession`}   />
 
 
 

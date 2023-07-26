@@ -1,7 +1,7 @@
 ---
 title: "NativeAuthenticationStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.924Z
+date: 2023-07-26T18:59:54.237Z
 showtoc: true
 generated: true
 ---
@@ -36,27 +36,27 @@ class NativeAuthenticationStrategy implements AuthenticationStrategy<NativeAuthe
 
 ### name
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 ### defineInputType
 
-<MemberInfo kind="method" type="() => DocumentNode"   />
+<MemberInfo kind="method" type={`() => DocumentNode`}   />
 
 
 ### authenticate
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: NativeAuthenticationData) => Promise&#60;<a href='/reference/typescript-api/entities/user#user'>User</a> | false&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: NativeAuthenticationData) => Promise&#60;<a href='/reference/typescript-api/entities/user#user'>User</a> | false&#62;`}   />
 
 
 ### verifyUserPassword
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/reference/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/reference/typescript-api/common/id#id'>ID</a>, password: string) => Promise&#60;boolean&#62;`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "CustomerHistoryEntryComponent"
 weight: 10
-date: 2023-07-21T15:46:19.085Z
+date: 2023-07-26T19:00:02.379Z
 showtoc: true
 generated: true
 ---
@@ -30,7 +30,7 @@ interface CustomerHistoryEntryComponent extends HistoryEntryComponent {
 
 ### customer
 
-<MemberInfo kind="property" type="CustomerFragment"   />
+<MemberInfo kind="property" type={`CustomerFragment`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "OrderLineReference"
 weight: 10
-date: 2023-07-21T15:46:16.104Z
+date: 2023-07-26T18:59:56.122Z
 showtoc: true
 generated: true
 ---
@@ -35,17 +35,17 @@ class FulfillmentLine extends OrderLineReference {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>&#62;) => FulfillmentLine"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>&#62;) => FulfillmentLine`}   />
 
 
 ### fulfillment
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>`}   />
 
 
 ### fulfillmentId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 
@@ -78,17 +78,17 @@ class OrderLineReference extends VendureEntity {
 
 ### quantity
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### orderLine
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>`}   />
 
 
 ### orderLineId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 
@@ -120,17 +120,17 @@ class OrderModificationLine extends OrderLineReference {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>&#62;) => OrderModificationLine"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>&#62;) => OrderModificationLine`}   />
 
 
 ### modification
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>`}   />
 
 
 ### modificationId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 
@@ -162,17 +162,17 @@ class RefundLine extends OrderLineReference {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-line-reference#refundline'>RefundLine</a>&#62;) => RefundLine"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-line-reference#refundline'>RefundLine</a>&#62;) => RefundLine`}   />
 
 
 ### refund
 
-<MemberInfo kind="property" type="Refund"   />
+<MemberInfo kind="property" type={`Refund`}   />
 
 
 ### refundId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "DetailComponentWithResolver"
 weight: 10
-date: 2023-07-21T15:46:18.958Z
+date: 2023-07-26T19:00:02.079Z
 showtoc: true
 generated: true
 ---
@@ -54,5 +54,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="{     component: Type&#60;<a href='/reference/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>&#60;T, Field&#62;&#62;;     query: T;     entityKey: R;     getBreadcrumbs?: (entity: ResultOf&#60;T&#62;[R]) =&#62; BreadcrumbValue;     variables?: T extends TypedDocumentNode&#60;any, infer V&#62; ? Omit&#60;V, 'id'&#62; : never; }" />
+<MemberInfo kind="parameter" type={`{     component: Type&#60;<a href='/reference/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>&#60;T, Field&#62;&#62;;     query: T;     entityKey: R;     getBreadcrumbs?: (entity: ResultOf&#60;T&#62;[R]) =&#62; BreadcrumbValue;     variables?: T extends TypedDocumentNode&#60;any, infer V&#62; ? Omit&#60;V, 'id'&#62; : never; }`} />
 

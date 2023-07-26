@@ -1,7 +1,7 @@
 ---
 title: "TestingLogger"
 weight: 10
-date: 2023-07-21T15:46:18.298Z
+date: 2023-07-26T19:00:00.685Z
 showtoc: true
 generated: true
 ---
@@ -88,57 +88,57 @@ class TestingLogger<Spy extends (...args: any[]) => any> implements VendureLogge
 
 ### constructor
 
-<MemberInfo kind="method" type="(createSpyFn: () =&#62; Spy) => TestingLogger"   />
+<MemberInfo kind="method" type={`(createSpyFn: () =&#62; Spy) => TestingLogger`}   />
 
 
 ### debugSpy
 
-<MemberInfo kind="property" type="Spy"   />
+<MemberInfo kind="property" type={`Spy`}   />
 
 
 ### errorSpy
 
-<MemberInfo kind="property" type="Spy"   />
+<MemberInfo kind="property" type={`Spy`}   />
 
 
 ### infoSpy
 
-<MemberInfo kind="property" type="Spy"   />
+<MemberInfo kind="property" type={`Spy`}   />
 
 
 ### verboseSpy
 
-<MemberInfo kind="property" type="Spy"   />
+<MemberInfo kind="property" type={`Spy`}   />
 
 
 ### warnSpy
 
-<MemberInfo kind="property" type="Spy"   />
+<MemberInfo kind="property" type={`Spy`}   />
 
 
 ### debug
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### error
 
-<MemberInfo kind="method" type="(message: string, context?: string, trace?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string, trace?: string) => void`}   />
 
 
 ### info
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### verbose
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### warn
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "OrderCalculator"
 weight: 10
-date: 2023-07-21T15:46:16.878Z
+date: 2023-07-26T18:59:57.613Z
 showtoc: true
 generated: true
 ---
@@ -34,19 +34,19 @@ class OrderCalculator {
 
 ### constructor
 
-<MemberInfo kind="method" type="(configService: ConfigService, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, shippingMethodService: <a href='/reference/typescript-api/services/shipping-method-service#shippingmethodservice'>ShippingMethodService</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, requestContextCache: RequestContextCacheService) => OrderCalculator"   />
+<MemberInfo kind="method" type={`(configService: ConfigService, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, shippingMethodService: <a href='/reference/typescript-api/services/shipping-method-service#shippingmethodservice'>ShippingMethodService</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, requestContextCache: RequestContextCacheService) => OrderCalculator`}   />
 
 
 ### applyPriceAdjustments
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, promotions: <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>[], updatedOrderLines: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[] = [], options?: { recalculateShipping?: boolean }) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, promotions: <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>[], updatedOrderLines: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[] = [], options?: { recalculateShipping?: boolean }) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
 
 Applies taxes and promotions to an Order. Mutates the order object.
 Returns an array of any OrderItems which had new adjustments
 applied, either tax or promotions.
 ### calculateOrderTotals
 
-<MemberInfo kind="method" type="(order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => "   />
+<MemberInfo kind="method" type={`(order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => `}   />
 
 Sets the totals properties on an Order by summing each OrderLine, and taking
 into account any Surcharges and ShippingLines. Does not save the Order, so

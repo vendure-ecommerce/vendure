@@ -1,7 +1,7 @@
 ---
 title: "OrderModifier"
 weight: 10
-date: 2023-07-21T15:46:16.887Z
+date: 2023-07-26T18:59:57.625Z
 showtoc: true
 generated: true
 ---
@@ -40,42 +40,42 @@ class OrderModifier {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, stockMovementService: <a href='/reference/typescript-api/services/stock-movement-service#stockmovementservice'>StockMovementService</a>, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customFieldRelationService: CustomFieldRelationService, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, entityHydrator: <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, translator: TranslatorService) => OrderModifier"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, stockMovementService: <a href='/reference/typescript-api/services/stock-movement-service#stockmovementservice'>StockMovementService</a>, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customFieldRelationService: CustomFieldRelationService, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, entityHydrator: <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => OrderModifier`}   />
 
 
 ### constrainQuantityToSaleable
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, variant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, quantity: number, existingQuantity:  = 0) => "   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, variant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, quantity: number, existingQuantity:  = 0) => `}   />
 
 Ensure that the ProductVariant has sufficient saleable stock to add the given
 quantity to an Order.
 ### getExistingOrderLine
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, customFields?: { [key: string]: any }) => Promise&#60;<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, customFields?: { [key: string]: any }) => Promise&#60;<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> | undefined&#62;`}   />
 
 Given a ProductVariant ID and optional custom fields, this method will return an existing OrderLine that
 matches, or `undefined` if no match is found.
 ### getOrCreateOrderLine
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, customFields?: { [key: string]: any }) => "   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, customFields?: { [key: string]: any }) => `}   />
 
 Returns the OrderLine containing the given <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, taking into account any custom field values. If no existing
 OrderLine is found, a new OrderLine will be created.
 ### updateOrderLineQuantity
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, quantity: number, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>&#62;`}   />
 
 Updates the quantity of an OrderLine, taking into account the available saleable stock level.
 Returns the actual quantity that the OrderLine was updated to (which may be less than the
 `quantity` argument if insufficient stock was available.
 ### cancelOrderByOrderLines
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CancelOrderInput, lineInputs: OrderLineInput[]) => "   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CancelOrderInput, lineInputs: OrderLineInput[]) => `}   />
 
 
 ### modifyOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: ModifyOrderInput, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;JustErrorResults&#60;ModifyOrderResult&#62; | { order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; modification: <a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a> }&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: ModifyOrderInput, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;JustErrorResults&#60;ModifyOrderResult&#62; | { order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; modification: <a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a> }&#62;`}   />
 
 
 

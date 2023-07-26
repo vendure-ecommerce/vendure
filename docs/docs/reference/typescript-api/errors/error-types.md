@@ -1,7 +1,7 @@
 ---
 title: "Error Types"
 weight: 10
-date: 2023-07-21T15:46:14.766Z
+date: 2023-07-26T18:59:53.977Z
 showtoc: true
 generated: true
 ---
@@ -30,7 +30,7 @@ class InternalServerError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}) => InternalServerError"   />
+<MemberInfo kind="method" type={`(message: string, variables: { [key: string]: string | number } = {}) => InternalServerError`}   />
 
 
 
@@ -57,7 +57,7 @@ class UserInputError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}) => UserInputError"   />
+<MemberInfo kind="method" type={`(message: string, variables: { [key: string]: string | number } = {}) => UserInputError`}   />
 
 
 
@@ -84,7 +84,7 @@ class IllegalOperationError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(message: string, variables: { [key: string]: string | number } = {}) => IllegalOperationError"   />
+<MemberInfo kind="method" type={`(message: string, variables: { [key: string]: string | number } = {}) => IllegalOperationError`}   />
 
 
 
@@ -111,7 +111,7 @@ class UnauthorizedError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="() => UnauthorizedError"   />
+<MemberInfo kind="method" type={`() => UnauthorizedError`}   />
 
 
 
@@ -139,7 +139,7 @@ class ForbiddenError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(logLevel: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Error) => ForbiddenError"   />
+<MemberInfo kind="method" type={`(logLevel: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Error) => ForbiddenError`}   />
 
 
 
@@ -167,7 +167,7 @@ class ChannelNotFoundError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(token: string) => ChannelNotFoundError"   />
+<MemberInfo kind="method" type={`(token: string) => ChannelNotFoundError`}   />
 
 
 
@@ -195,7 +195,7 @@ class EntityNotFoundError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type="(entityName: keyof typeof coreEntitiesMap | string, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => EntityNotFoundError"   />
+<MemberInfo kind="method" type={`(entityName: keyof typeof coreEntitiesMap | string, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => EntityNotFoundError`}   />
 
 
 

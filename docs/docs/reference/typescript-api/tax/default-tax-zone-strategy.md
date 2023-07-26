@@ -1,7 +1,7 @@
 ---
 title: "DefaultTaxZoneStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.502Z
+date: 2023-07-26T18:59:55.195Z
 showtoc: true
 generated: true
 ---
@@ -30,7 +30,7 @@ class DefaultTaxZoneStrategy implements TaxZoneStrategy {
 
 ### determineTaxZone
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zones: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>[], channel: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>, order?: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zones: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>[], channel: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>, order?: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>`}   />
 
 
 

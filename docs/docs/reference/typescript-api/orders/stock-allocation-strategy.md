@@ -1,7 +1,7 @@
 ---
 title: "StockAllocationStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.330Z
+date: 2023-07-26T18:59:54.923Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockAllocationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/stock-allocation-strategy.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/stock-allocation-strategy.ts" sourceLine="20" packageName="@vendure/core" />
 
 This strategy is responsible for deciding at which stage in the order process
 stock will be allocated.
+
+:::info
+
+This is configured via the `orderOptions.stockAllocationStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface StockAllocationStrategy extends InjectableStrategy {
@@ -36,7 +43,7 @@ interface StockAllocationStrategy extends InjectableStrategy {
 
 ### shouldAllocateStock
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;`}   />
 
 This method is called whenever an Order transitions from one state to another.
 If it resolves to `true`, then stock will be allocated for this order.

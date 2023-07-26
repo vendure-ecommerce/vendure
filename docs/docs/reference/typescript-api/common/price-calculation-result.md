@@ -1,7 +1,7 @@
 ---
 title: "PriceCalculationResult"
 weight: 10
-date: 2023-07-21T15:46:14.849Z
+date: 2023-07-26T18:59:54.095Z
 showtoc: true
 generated: true
 ---
@@ -29,12 +29,12 @@ type PriceCalculationResult = {
 
 ### price
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### priceIncludesTax
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 

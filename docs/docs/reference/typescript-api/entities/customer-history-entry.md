@@ -1,7 +1,7 @@
 ---
 title: "CustomerHistoryEntry"
 weight: 10
-date: 2023-07-21T15:46:16.021Z
+date: 2023-07-26T18:59:55.970Z
 showtoc: true
 generated: true
 ---
@@ -33,12 +33,12 @@ class CustomerHistoryEntry extends HistoryEntry {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>&#62;) => CustomerHistoryEntry"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer-history-entry#customerhistoryentry'>CustomerHistoryEntry</a>&#62;) => CustomerHistoryEntry`}   />
 
 
 ### customer
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>`}   />
 
 
 

@@ -1,0 +1,123 @@
+---
+title: 'The API Layer'
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Vendure is a headless platform, which means that all functionality is exposed via GraphQL APIs. The API can be thought of
+as a number of layers through which a request will pass, each of which is responsible for a different aspect of the
+request/response lifecycle.
+
+## The journey of an API call
+
+Let's take a basic API call and trace its journey from the client to the server and back again.
+
+
+<Tabs>
+<TabItem value="Request" label="Request" default>
+
+```graphql title="GraphQL Playground Shop API"
+query {
+    product(id: "1") {
+        id
+        name
+        description
+    }
+}
+```
+
+This query is asking for the `id`, `name` and `description` of a `Product` with the id of `1`.
+
+</TabItem>
+<TabItem value="Response" label="Response">
+
+```json
+{
+  "data": {
+    "product": {
+      "id": "1",
+      "name": "Laptop",
+      "description": "Now equipped with seventh-generation Intel Core processors, Laptop is snappier than ever. From daily tasks like launching apps and opening files to more advanced computing, you can power through your day thanks to faster SSDs and Turbo Boost processing up to 3.6GHz."
+    }
+  }
+}
+```
+
+GraphQL returns only the specific fields you ask for in your query.
+
+</TabItem>
+</Tabs>
+
+
+:::note
+
+If you have your local development server running, you can try this out by opening the GraphQL Playground in your browser:
+
+[http://localhost:3000/shop-api](http://localhost:3000/shop-api)
+
+:::
+
+![./Vendure_docs-api_request.webp](./Vendure_docs-api_request.webp)
+
+
+## Middleware
+
+"Middleware" is a term for a function which is executed before or after the main logic of a request. In Vendure, middleware
+is used to perform tasks such as authentication, logging, and error handling. There are several types of middleware:
+
+* **Express middleware**: At the lowest level, Vendure makes use of the popular Express server library. Express middleware
+can be added to the sever via the [`apiOptions.middleware`](/reference/typescript-api/configuration/api-options#middleware) config property. There are hundreds of tried-and-tested Express
+middleware packages available, and they can be used to add functionality such as CORS, compression, rate-limiting, etc.
+* **NestJS-specific middleware**: NestJS allows you to define specific types of middleware including [Guards](https://docs.nestjs.com/guards),
+[Interceptors](https://docs.nestjs.com/interceptors), [Pipes](https://docs.nestjs.com/pipes) and [Filters](https://docs.nestjs.com/exception-filters).
+Vendure uses a number of these mechanisms internally to handle authentication, transaction management, error handling and
+data transformation. They are defined via decorators on custom resolvers or controllers.
+* **Apollo Server plugins**: Apollo Server (the underlying GraphQL server library used by Vendure) allows you to define
+[plugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which can be used to hook into various
+stages of the GraphQL request lifecycle and perform tasks such as data transformation. These are defined via the
+[`apiOptions.apolloServerPlugins`](/reference/typescript-api/configuration/api-options#apolloserverplugins) config property.
+
+## Resolvers
+
+A "resolver" is a GraphQL concept, and refers to a function which is responsible for returning the data for a particular
+field. In Vendure, a resolver can also refer to a class which contains multiple resolver functions. For every query or
+mutation, there is a corresponding resolver function which is responsible for returning the requested data (and performing
+side-effect such as updating data in the case of mutations).
+
+Here's a simplified example of a resolver function for the `product` query:
+
+```ts
+import { Query, Resolver, Args } from '@nestjs/graphql';
+import { Ctx, RequestContext, ProductService } from '@vendure/core';
+
+@Resolver()
+export class ShopProductsResolver {
+
+     constructor(private productService: ProductService) {}
+
+     @Query()
+     product(@Ctx() ctx: RequestContext, @Args() args: { id: string }) {
+         return this.productService.findOne(ctx, args.id);
+     }
+}
+```
+
+- The `@Resolver()` decorator marks this class as a resolver.
+- The `@Query()` decorator marks the `product()` method as a resolver function.
+- The `@Ctx()` decorator injects the [`RequestContext` object](/reference/typescript-api/request/request-context/), which contains information about the
+current request, such as the current user, the active channel, the active language, etc. The `RequestContext` is a key part
+of the Vendure architecture, and is used throughout the application to provide context to the various services and plugins. In general, your
+resolver functions should always accept a `RequestContext` as the first argument, and pass it through to the services.
+- The `@Args()` decorator injects the arguments passed to the query, in this case the `id` that we provided in our query.
+
+As you can see, the resolver function is very simple, and simply delegates the work to the `ProductService` which is
+responsible for fetching the data from the database.
+
+:::tip
+
+In general, resolver functions should be kept as simple as possible,
+and the bulk of the business logic should be delegated to the service layer.
+
+:::

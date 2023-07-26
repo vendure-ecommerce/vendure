@@ -1,7 +1,7 @@
 ---
 title: "Collection"
 weight: 10
-date: 2023-07-21T15:46:15.943Z
+date: 2023-07-26T18:59:55.858Z
 showtoc: true
 generated: true
 ---
@@ -65,92 +65,92 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;) => Collection`}   />
 
 
 ### isRoot
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### position
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### isPrivate
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### description
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### slug
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>&#62;&#62;`}   />
 
 
 ### featuredAsset
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}   />
 
 
 ### assets
 
-<MemberInfo kind="property" type="CollectionAsset[]"   />
+<MemberInfo kind="property" type={`CollectionAsset[]`}   />
 
 
 ### filters
 
-<MemberInfo kind="property" type="ConfigurableOperation[]"   />
+<MemberInfo kind="property" type={`ConfigurableOperation[]`}   />
 
 
 ### inheritFilters
 
-<MemberInfo kind="property" type="boolean"  since="2.0.0"  />
+<MemberInfo kind="property" type={`boolean`}  since="2.0.0"  />
 
 
 ### productVariants
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomCollectionFields"   />
+<MemberInfo kind="property" type={`CustomCollectionFields`}   />
 
 
 ### children
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]`}   />
 
 
 ### parent
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>`}   />
 
 
 ### parentId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

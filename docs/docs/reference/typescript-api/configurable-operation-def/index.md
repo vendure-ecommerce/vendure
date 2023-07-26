@@ -1,7 +1,7 @@
 ---
 title: "ConfigurableOperationDef"
 weight: 10
-date: 2023-07-21T15:46:14.754Z
+date: 2023-07-26T18:59:53.958Z
 showtoc: true
 generated: true
 ---
@@ -105,43 +105,43 @@ class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### args
 
-<MemberInfo kind="property" type="T"   />
+<MemberInfo kind="property" type={`T`}   />
 
 
 ### description
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configurable-operation-def/localized-string-array#localizedstringarray'>LocalizedStringArray</a>`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;) => ConfigurableOperationDef"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;) => ConfigurableOperationDef`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 ### destroy
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### toGraphQlType
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => ConfigurableOperationDefinition"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => ConfigurableOperationDefinition`}   />
 
 Convert a ConfigurableOperationDef into a ConfigurableOperationDefinition object, typically
 so that it can be sent via the API.
 ### argsArrayToHash
 
-<MemberInfo kind="method" type="(args: ConfigArg[]) => ConfigArgValues&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(args: ConfigArg[]) => ConfigArgValues&#60;T&#62;`}   />
 
 Coverts an array of ConfigArgs into a hash object:
 

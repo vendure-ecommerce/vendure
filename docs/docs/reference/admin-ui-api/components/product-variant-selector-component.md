@@ -1,7 +1,7 @@
 ---
 title: "ProductVariantSelectorComponent"
 weight: 10
-date: 2023-07-21T15:46:19.443Z
+date: 2023-07-26T19:00:03.373Z
 showtoc: true
 generated: true
 ---
@@ -43,37 +43,37 @@ class ProductVariantSelectorComponent implements OnInit {
 
 ### searchInput$
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### searchLoading
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### searchResults$
 
-<MemberInfo kind="property" type="Observable&#60;ProductSelectorSearchQuery['search']['items']&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;ProductSelectorSearchQuery['search']['items']&#62;`}   />
 
 
 ### productSelected
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent"   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductVariantSelectorComponent`}   />
 
 
 ### ngOnInit
 
-<MemberInfo kind="method" type="() => void"   />
+<MemberInfo kind="method" type={`() => void`}   />
 
 
 ### selectResult
 
-<MemberInfo kind="method" type="(product?: ProductSelectorSearchQuery['search']['items'][number]) => "   />
+<MemberInfo kind="method" type={`(product?: ProductSelectorSearchQuery['search']['items'][number]) => `}   />
 
 
 

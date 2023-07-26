@@ -1,7 +1,7 @@
 ---
 title: "InMemoryJobBufferStorageStrategy"
 weight: 10
-date: 2023-07-21T15:46:16.636Z
+date: 2023-07-26T18:59:57.066Z
 showtoc: true
 generated: true
 ---
@@ -38,22 +38,22 @@ class InMemoryJobBufferStorageStrategy implements JobBufferStorageStrategy {
 
 ### bufferStorage
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### add
 
-<MemberInfo kind="method" type="(bufferId: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;"   />
+<MemberInfo kind="method" type={`(bufferId: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;`}   />
 
 
 ### bufferSize
 
-<MemberInfo kind="method" type="(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: number }&#62;"   />
+<MemberInfo kind="method" type={`(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: number }&#62;`}   />
 
 
 ### flush
 
-<MemberInfo kind="method" type="(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>[] }&#62;"   />
+<MemberInfo kind="method" type={`(bufferIds?: string[]) => Promise&#60;{ [bufferId: string]: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>[] }&#62;`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "AssetPickerDialogComponent"
 weight: 10
-date: 2023-07-21T15:46:19.207Z
+date: 2023-07-26T19:00:02.591Z
 showtoc: true
 generated: true
 ---
@@ -68,97 +68,97 @@ class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Di
 
 ### assets$
 
-<MemberInfo kind="property" type="Observable&#60;AssetLike[]&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;AssetLike[]&#62;`}   />
 
 
 ### allTags$
 
-<MemberInfo kind="property" type="Observable&#60;TagFragment[]&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;TagFragment[]&#62;`}   />
 
 
 ### paginationConfig
 
-<MemberInfo kind="property" type="PaginationInstance"   />
+<MemberInfo kind="property" type={`PaginationInstance`}   />
 
 
 ### multiSelect
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### initialTags
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 
 ### resolveWith
 
-<MemberInfo kind="property" type="(result?: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]) =&#62; void"   />
+<MemberInfo kind="property" type={`(result?: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]) =&#62; void`}   />
 
 
 ### selection
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]`}   />
 
 
 ### searchTerm$
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### filterByTags$
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### uploading
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, notificationService: <a href='/reference/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent"   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, notificationService: <a href='/reference/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent`}   />
 
 
 ### ngOnInit
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### ngAfterViewInit
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### ngOnDestroy
 
-<MemberInfo kind="method" type="() => void"   />
+<MemberInfo kind="method" type={`() => void`}   />
 
 
 ### pageChange
 
-<MemberInfo kind="method" type="(page: number) => "   />
+<MemberInfo kind="method" type={`(page: number) => `}   />
 
 
 ### itemsPerPageChange
 
-<MemberInfo kind="method" type="(itemsPerPage: number) => "   />
+<MemberInfo kind="method" type={`(itemsPerPage: number) => `}   />
 
 
 ### cancel
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### select
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### createAssets
 
-<MemberInfo kind="method" type="(files: File[]) => "   />
+<MemberInfo kind="method" type={`(files: File[]) => `}   />
 
 
 

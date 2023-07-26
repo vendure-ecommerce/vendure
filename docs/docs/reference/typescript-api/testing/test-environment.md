@@ -1,7 +1,7 @@
 ---
 title: "TestEnvironment"
 weight: 10
-date: 2023-07-21T15:46:18.249Z
+date: 2023-07-26T19:00:00.584Z
 showtoc: true
 generated: true
 ---
@@ -30,17 +30,17 @@ interface TestEnvironment {
 
 ### server
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/testing/test-server#testserver'>TestServer</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/testing/test-server#testserver'>TestServer</a>`}   />
 
 A Vendure server instance against which GraphQL requests can be made.
 ### adminClient
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>`}   />
 
 A GraphQL client configured for the Admin API.
 ### shopClient
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a>`}   />
 
 A GraphQL client configured for the Shop API.
 

@@ -1,7 +1,7 @@
 ---
 title: "Province"
 weight: 10
-date: 2023-07-21T15:46:16.242Z
+date: 2023-07-26T18:59:56.379Z
 showtoc: true
 generated: true
 ---
@@ -32,12 +32,12 @@ class Province extends Region {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;) => Province"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;) => Province`}   />
 
 
 ### type
 
-<MemberInfo kind="property" type="RegionType"   />
+<MemberInfo kind="property" type={`RegionType`}   />
 
 
 

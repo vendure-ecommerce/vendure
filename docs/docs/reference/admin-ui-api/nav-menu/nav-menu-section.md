@@ -1,7 +1,7 @@
 ---
 title: "NavMenuSection"
 weight: 10
-date: 2023-07-21T15:46:19.133Z
+date: 2023-07-26T19:00:02.469Z
 showtoc: true
 generated: true
 ---
@@ -35,42 +35,42 @@ interface NavMenuSection {
 
 ### id
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### label
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### items
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>[]`}   />
 
 
 ### icon
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### displayMode
 
-<MemberInfo kind="property" type="'regular' | 'settings'"   />
+<MemberInfo kind="property" type={`'regular' | 'settings'`}   />
 
 
 ### requiresPermission
 
-<MemberInfo kind="property" type="string | ((userPermissions: string[]) =&#62; boolean)"   />
+<MemberInfo kind="property" type={`string | ((userPermissions: string[]) =&#62; boolean)`}   />
 
 Control the display of this item based on the user permissions.
 ### collapsible
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### collapsedByDefault
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 

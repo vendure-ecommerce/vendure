@@ -1,7 +1,7 @@
 ---
 title: "InitialData"
 weight: 10
-date: 2023-07-21T15:46:15.836Z
+date: 2023-07-26T18:59:55.682Z
 showtoc: true
 generated: true
 ---
@@ -34,42 +34,42 @@ interface InitialData {
 
 ### defaultLanguage
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>`}   />
 
 
 ### defaultZone
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### roles
 
-<MemberInfo kind="property" type="RoleDefinition[]"   />
+<MemberInfo kind="property" type={`RoleDefinition[]`}   />
 
 
 ### countries
 
-<MemberInfo kind="property" type="CountryDefinition[]"   />
+<MemberInfo kind="property" type={`CountryDefinition[]`}   />
 
 
 ### taxRates
 
-<MemberInfo kind="property" type="Array&#60;{ name: string; percentage: number }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{ name: string; percentage: number }&#62;`}   />
 
 
 ### shippingMethods
 
-<MemberInfo kind="property" type="Array&#60;{ name: string; price: number }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{ name: string; price: number }&#62;`}   />
 
 
 ### paymentMethods
 
-<MemberInfo kind="property" type="Array&#60;{ name: string; handler: ConfigurableOperationInput }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{ name: string; handler: ConfigurableOperationInput }&#62;`}   />
 
 
 ### collections
 
-<MemberInfo kind="property" type="CollectionDefinition[]"   />
+<MemberInfo kind="property" type={`CollectionDefinition[]`}   />
 
 
 

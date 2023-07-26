@@ -1,7 +1,7 @@
 ---
 title: "Promotion Action"
 weight: 10
-date: 2023-07-21T15:46:15.390Z
+date: 2023-07-26T18:59:55.018Z
 showtoc: true
 generated: true
 ---
@@ -32,14 +32,14 @@ class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCond
 
 ### priorityValue
 
-<MemberInfo kind="property" type="number" default="0"   />
+<MemberInfo kind="property" type={`number`} default="0"   />
 
 Used to determine the order of application of multiple Promotions
 on the same Order. See the <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
 more information.
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;) => PromotionAction"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;) => PromotionAction`}   />
 
 
 
@@ -80,7 +80,7 @@ class PromotionItemAction<T extends ConfigArgs = ConfigArgs, U extends Array<Pro
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionitemactionconfig'>PromotionItemActionConfig</a>&#60;T, U&#62;) => PromotionItemAction"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionitemactionconfig'>PromotionItemActionConfig</a>&#60;T, U&#62;) => PromotionItemAction`}   />
 
 
 
@@ -121,7 +121,7 @@ class PromotionOrderAction<T extends ConfigArgs = ConfigArgs, U extends Promotio
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionorderactionconfig'>PromotionOrderActionConfig</a>&#60;T, U&#62;) => PromotionOrderAction"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionorderactionconfig'>PromotionOrderActionConfig</a>&#60;T, U&#62;) => PromotionOrderAction`}   />
 
 
 
@@ -148,7 +148,7 @@ class PromotionShippingAction<T extends ConfigArgs = ConfigArgs, U extends Promo
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionshippingactionconfig'>PromotionShippingActionConfig</a>&#60;T, U&#62;) => PromotionShippingAction"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/promotions/promotion-action#promotionshippingactionconfig'>PromotionShippingActionConfig</a>&#60;T, U&#62;) => PromotionShippingAction`}   />
 
 
 
@@ -249,14 +249,14 @@ interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionC
 
 ### priorityValue
 
-<MemberInfo kind="property" type="number" default="0"   />
+<MemberInfo kind="property" type={`number`} default="0"   />
 
 Used to determine the order of application of multiple Promotions
 on the same Order. See the <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
 more information.
 ### conditions
 
-<MemberInfo kind="property" type="U extends undefined ? undefined : ConditionTuple&#60;Exclude&#60;U, undefined&#62;&#62;"   />
+<MemberInfo kind="property" type={`U extends undefined ? undefined : ConditionTuple&#60;Exclude&#60;U, undefined&#62;&#62;`}   />
 
 Allows PromotionActions to define one or more PromotionConditions as dependencies. Having a PromotionCondition
 as a dependency has the following consequences:
@@ -266,7 +266,7 @@ on which it depends.
 the return values of the PromotionConditions' `check()` function.
 ### onActivate
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;`}  since="1.8.0" experimental="true" />
 
 An optional side effect function which is invoked when the promotion
 becomes active. It can be used for things like adding a free gift to the order
@@ -276,7 +276,7 @@ If used, make sure to use the corresponding `onDeactivate` function to clean up
 or reverse any side effects as needed.
 ### onDeactivate
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;"  since="1.8.0" experimental="true" />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/promotions/promotion-action#promotionactionsideeffectfn'>PromotionActionSideEffectFn</a>&#60;T&#62;`}  since="1.8.0" experimental="true" />
 
 Used to reverse or clean up any side effects executed as part of the `onActivate` function.
 
@@ -303,7 +303,7 @@ interface PromotionItemActionConfig<T extends ConfigArgs, U extends PromotionCon
 
 ### execute
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/promotions/promotion-action#executepromotionitemactionfn'>ExecutePromotionItemActionFn</a>&#60;T, U&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/promotions/promotion-action#executepromotionitemactionfn'>ExecutePromotionItemActionFn</a>&#60;T, U&#62;`}   />
 
 The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
@@ -332,7 +332,7 @@ interface PromotionOrderActionConfig<T extends ConfigArgs, U extends PromotionCo
 
 ### execute
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/promotions/promotion-action#executepromotionorderactionfn'>ExecutePromotionOrderActionFn</a>&#60;T, U&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/promotions/promotion-action#executepromotionorderactionfn'>ExecutePromotionOrderActionFn</a>&#60;T, U&#62;`}   />
 
 The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount
@@ -361,7 +361,7 @@ interface PromotionShippingActionConfig<T extends ConfigArgs, U extends Promotio
 
 ### execute
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/promotions/promotion-action#executepromotionshippingactionfn'>ExecutePromotionShippingActionFn</a>&#60;T, U&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/promotions/promotion-action#executepromotionshippingactionfn'>ExecutePromotionShippingActionFn</a>&#60;T, U&#62;`}   />
 
 The function which contains the promotion calculation logic.
 Should resolve to a number which represents the amount by which to discount

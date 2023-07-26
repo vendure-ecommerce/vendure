@@ -1,7 +1,7 @@
 ---
 title: "AdminUiAppConfig"
 weight: 10
-date: 2023-07-21T15:46:17.890Z
+date: 2023-07-26T18:59:59.861Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiAppConfig
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="331" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="338" packageName="@vendure/common" />
 
 Configures the path to a custom-build of the Admin UI app.
 
@@ -29,19 +29,19 @@ interface AdminUiAppConfig {
 
 ### path
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The path to the compiled admin UI app files. If not specified, an internal
 default build is used. This path should contain the `vendure-ui-config.json` file,
 index.html, the compiled js bundles etc.
 ### route
 
-<MemberInfo kind="property" type="string" default="'admin'"   />
+<MemberInfo kind="property" type={`string`} default="'admin'"   />
 
 Specifies the url route to the Admin UI app.
 ### compile
 
-<MemberInfo kind="property" type="() =&#62; Promise&#60;void&#62;"   />
+<MemberInfo kind="property" type={`() =&#62; Promise&#60;void&#62;`}   />
 
 The function which will be invoked to start the app compilation process.
 

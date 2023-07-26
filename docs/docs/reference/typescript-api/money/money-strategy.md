@@ -1,7 +1,7 @@
 ---
 title: "MoneyStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.069Z
+date: 2023-07-26T18:59:54.467Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## MoneyStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="40" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="47" packageName="@vendure/core" since="2.0.0" />
 
 The MoneyStrategy defines how monetary values are stored and manipulated. The MoneyStrategy
 is defined in <a href='/reference/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>:
@@ -46,6 +46,13 @@ In certain use-cases, it may be required that fractions of a cent or penny be su
 the solution would be to define a custom MoneyStrategy which uses a non-integer data type for storing
 the value in the database, and defines a `round()` implementation which allows decimal places to be kept.
 
+:::info
+
+This is configured via the `entityOptions.moneyStrategy` property of
+your VendureConfig.
+
+:::
+
 ```ts title="Signature"
 interface MoneyStrategy extends InjectableStrategy {
   readonly moneyColumnOptions: ColumnOptions;
@@ -60,12 +67,12 @@ interface MoneyStrategy extends InjectableStrategy {
 
 ### moneyColumnOptions
 
-<MemberInfo kind="property" type="ColumnOptions"   />
+<MemberInfo kind="property" type={`ColumnOptions`}   />
 
 Defines the TypeORM column used to store monetary values.
 ### round
 
-<MemberInfo kind="method" type="(value: number, quantity?: number) => number"   />
+<MemberInfo kind="method" type={`(value: number, quantity?: number) => number`}   />
 
 Defines the logic used to round monetary values. For instance, the default behavior
 in the <a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a> is to round the value, then multiply.

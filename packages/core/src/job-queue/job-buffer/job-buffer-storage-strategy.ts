@@ -6,6 +6,13 @@ import { Job } from '../job';
  * This strategy defines where to store jobs that have been collected by a
  * {@link JobBuffer}.
  *
+ * :::info
+ *
+ * This is configured via the `jobQueueOptions.jobBufferStorageStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @since 1.3.0
  * @docsCategory job-queue
  */

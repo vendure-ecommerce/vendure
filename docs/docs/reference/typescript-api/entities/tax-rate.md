@@ -1,7 +1,7 @@
 ---
 title: "TaxRate"
 weight: 10
-date: 2023-07-21T15:46:16.369Z
+date: 2023-07-26T18:59:56.606Z
 showtoc: true
 generated: true
 ---
@@ -57,72 +57,72 @@ class TaxRate extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>&#62;) => TaxRate"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>&#62;) => TaxRate`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### enabled
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### value
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### category
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>`}   />
 
 
 ### zone
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>`}   />
 
 
 ### customerGroup
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomTaxRateFields"   />
+<MemberInfo kind="property" type={`CustomTaxRateFields`}   />
 
 
 ### taxComponentOf
 
-<MemberInfo kind="method" type="(grossPrice: number) => number"   />
+<MemberInfo kind="method" type={`(grossPrice: number) => number`}   />
 
 
 ### netPriceOf
 
-<MemberInfo kind="method" type="(grossPrice: number) => number"   />
+<MemberInfo kind="method" type={`(grossPrice: number) => number`}   />
 
 
 ### taxPayableOn
 
-<MemberInfo kind="method" type="(netPrice: number) => number"   />
+<MemberInfo kind="method" type={`(netPrice: number) => number`}   />
 
 
 ### grossPriceOf
 
-<MemberInfo kind="method" type="(netPrice: number) => number"   />
+<MemberInfo kind="method" type={`(netPrice: number) => number`}   />
 
 
 ### apply
 
-<MemberInfo kind="method" type="(price: number) => TaxLine"   />
+<MemberInfo kind="method" type={`(price: number) => TaxLine`}   />
 
 
 ### test
 
-<MemberInfo kind="method" type="(zone: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, taxCategory: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>) => boolean"   />
+<MemberInfo kind="method" type={`(zone: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, taxCategory: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>) => boolean`}   />
 
 
 

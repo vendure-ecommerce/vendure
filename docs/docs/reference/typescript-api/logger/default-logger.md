@@ -1,7 +1,7 @@
 ---
 title: "DefaultLogger"
 weight: 10
-date: 2023-07-21T15:46:15.124Z
+date: 2023-07-26T18:59:54.561Z
 showtoc: true
 generated: true
 ---
@@ -49,37 +49,37 @@ class DefaultLogger implements VendureLogger {
 
 ### constructor
 
-<MemberInfo kind="method" type="(options?: { level?: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a>; timestamp?: boolean }) => DefaultLogger"   />
+<MemberInfo kind="method" type={`(options?: { level?: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a>; timestamp?: boolean }) => DefaultLogger`}   />
 
 
 ### setDefaultContext
 
-<MemberInfo kind="method" type="(defaultContext: string) => "   />
+<MemberInfo kind="method" type={`(defaultContext: string) => `}   />
 
 
 ### error
 
-<MemberInfo kind="method" type="(message: string, context?: string, trace?: string | undefined) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string, trace?: string | undefined) => void`}   />
 
 
 ### warn
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### info
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### verbose
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### debug
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 

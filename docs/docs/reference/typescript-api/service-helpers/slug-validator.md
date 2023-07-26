@@ -1,7 +1,7 @@
 ---
 title: "SlugValidator"
 weight: 10
-date: 2023-07-21T15:46:16.939Z
+date: 2023-07-26T18:59:57.741Z
 showtoc: true
 generated: true
 ---
@@ -29,12 +29,12 @@ class SlugValidator {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => SlugValidator"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => SlugValidator`}   />
 
 
 ### validateSlugs
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: T, translationEntity: Type&#60;E&#62;) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: T, translationEntity: Type&#60;E&#62;) => Promise&#60;T&#62;`}   />
 
 
 
@@ -63,12 +63,12 @@ type InputWithSlug = {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a> | null"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a> | null`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         id?: <a href='/reference/typescript-api/common/id#id'>ID</a> | null;         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         slug?: string | null;     }&#62; | null"   />
+<MemberInfo kind="property" type={`Array&#60;{         id?: <a href='/reference/typescript-api/common/id#id'>ID</a> | null;         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         slug?: string | null;     }&#62; | null`}   />
 
 
 

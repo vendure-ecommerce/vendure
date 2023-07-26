@@ -9,6 +9,13 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  * The OrderItemPriceCalculationStrategy defines the listPrice of an OrderLine when adding an item to an Order. By default the
  * {@link DefaultOrderItemPriceCalculationStrategy} is used.
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.orderItemPriceCalculationStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * ### When is the strategy invoked ?
  * * addItemToOrder (only on the new order line)
  * * adjustOrderLine  (only on the adjusted order line)

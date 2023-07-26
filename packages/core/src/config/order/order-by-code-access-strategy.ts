@@ -24,6 +24,13 @@ import { Order } from '../../entity/order/order.entity';
  * }
  * ```
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.orderByCodeAccessStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @since 1.1.0
  * @docsCategory orders
  * @docsPage OrderByCodeAccessStrategy

@@ -1,7 +1,7 @@
 ---
 title: "OrderSellerStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.229Z
+date: 2023-07-26T18:59:54.754Z
 showtoc: true
 generated: true
 ---
@@ -13,10 +13,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderSellerStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-seller-strategy.ts" sourceLine="38" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-seller-strategy.ts" sourceLine="45" packageName="@vendure/core" since="2.0.0" />
 
 This strategy defines how an Order can be split into multiple sub-orders for the use-case of
 a multivendor application.
+
+:::info
+
+This is configured via the `orderOptions.orderSellerStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface OrderSellerStrategy extends InjectableStrategy {
@@ -40,7 +47,7 @@ interface OrderSellerStrategy extends InjectableStrategy {
 
 ### setOrderLineSellerChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>) => <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | undefined | Promise&#60;<a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>) => <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | undefined | Promise&#60;<a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | undefined&#62;`}   />
 
 This method is called whenever a new OrderLine is added to the Order via the `addItemToOrder` mutation or the
 underlying `addItemToOrder()` method of the <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>.
@@ -49,13 +56,13 @@ It should return the ID of the Channel to which this OrderLine will be assigned,
 <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> `sellerChannel` property.
 ### splitOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/orders/order-seller-strategy#splitordercontents'>SplitOrderContents</a>[] | Promise&#60;<a href='/reference/typescript-api/orders/order-seller-strategy#splitordercontents'>SplitOrderContents</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/orders/order-seller-strategy#splitordercontents'>SplitOrderContents</a>[] | Promise&#60;<a href='/reference/typescript-api/orders/order-seller-strategy#splitordercontents'>SplitOrderContents</a>[]&#62;`}   />
 
 Upon checkout (by default, when the Order moves from "active" to "inactive" according to the <a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>),
 this method will be called in order to split the Order into multiple Orders, one for each Seller.
 ### afterSellerOrdersCreated
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, aggregateOrder: <a href='/reference/typescript-api/entities/order#order'>Order</a>, sellerOrders: <a href='/reference/typescript-api/entities/order#order'>Order</a>[]) => void | Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, aggregateOrder: <a href='/reference/typescript-api/entities/order#order'>Order</a>, sellerOrders: <a href='/reference/typescript-api/entities/order#order'>Order</a>[]) => void | Promise&#60;void&#62;`}   />
 
 This method is called after splitting the orders, including calculating the totals for each of the seller Orders.
 This method can be used to set platform fee surcharges on the seller Orders as well as perform any payment processing
@@ -100,22 +107,22 @@ interface SplitOrderContents {
 
 ### channelId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>`}   />
 
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]`}   />
 
 
 ### shippingLines
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>[]`}   />
 
 
 

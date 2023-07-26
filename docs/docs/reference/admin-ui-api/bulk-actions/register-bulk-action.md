@@ -1,7 +1,7 @@
 ---
 title: "RegisterBulkAction"
 weight: 10
-date: 2023-07-21T15:46:19.063Z
+date: 2023-07-26T19:00:02.324Z
 showtoc: true
 generated: true
 ---
@@ -69,5 +69,5 @@ Parameters
 
 ### bulkAction
 
-<MemberInfo kind="parameter" type="<a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a>`} />
 

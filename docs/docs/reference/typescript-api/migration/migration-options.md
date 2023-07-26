@@ -1,7 +1,7 @@
 ---
 title: "MigrationOptions"
 weight: 10
-date: 2023-07-21T15:46:16.740Z
+date: 2023-07-26T18:59:57.320Z
 showtoc: true
 generated: true
 ---
@@ -28,13 +28,13 @@ interface MigrationOptions {
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the migration. The resulting migration script will be named
 `{TIMESTAMP}-{name}.ts`.
 ### outputDir
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The output directory of the generated migration scripts.
 

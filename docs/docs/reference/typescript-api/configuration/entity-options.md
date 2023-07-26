@@ -1,7 +1,7 @@
 ---
 title: "EntityOptions"
 weight: 10
-date: 2023-07-21T15:46:15.074Z
+date: 2023-07-26T18:59:54.478Z
 showtoc: true
 generated: true
 ---
@@ -32,7 +32,7 @@ interface EntityOptions {
 
 ### entityIdStrategy
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;" default="<a href='/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>"  since="1.3.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;`} default="<a href='/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>"  since="1.3.0"  />
 
 Defines the strategy used for both storing the primary keys of entities
 in the database, and the encoding & decoding of those ids when exposing
@@ -47,12 +47,12 @@ a fresh database.
 {{% /alert %}}
 ### moneyStrategy
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>" default="<a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>`} default="<a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>"  since="2.0.0"  />
 
 Defines the strategy used to store and round monetary values.
 ### channelCacheTtl
 
-<MemberInfo kind="property" type="number" default="30000"  since="1.3.0"  />
+<MemberInfo kind="property" type={`number`} default="30000"  since="1.3.0"  />
 
 Channels get cached in-memory as they are accessed very frequently. This
 setting determines how long the cache lives (in ms) until it is considered stale and
@@ -60,7 +60,7 @@ refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
 smaller value here will prevent data inconsistencies between instances.
 ### zoneCacheTtl
 
-<MemberInfo kind="property" type="number" default="30000"  since="1.3.0"  />
+<MemberInfo kind="property" type={`number`} default="30000"  since="1.3.0"  />
 
 Zones get cached in-memory as they are accessed very frequently. This
 setting determines how long the cache lives (in ms) until it is considered stale and
@@ -68,7 +68,7 @@ refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
 smaller value here will prevent data inconsistencies between instances.
 ### taxRateCacheTtl
 
-<MemberInfo kind="property" type="number" default="30000"  since="1.9.0"  />
+<MemberInfo kind="property" type={`number`} default="30000"  since="1.9.0"  />
 
 TaxRates get cached in-memory as they are accessed very frequently. This
 setting determines how long the cache lives (in ms) until it is considered stale and
@@ -76,7 +76,7 @@ refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
 smaller value here will prevent data inconsistencies between instances.
 ### metadataModifiers
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>[]" default="[]"  since="1.6.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/entity-options#entitymetadatamodifier'>EntityMetadataModifier</a>[]`} default="[]"  since="1.6.0"  />
 
 Allows the metadata of the built-in TypeORM entities to be manipulated. This allows you
 to do things like altering data types, adding indices etc. This is an advanced feature

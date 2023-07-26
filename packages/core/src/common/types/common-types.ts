@@ -202,6 +202,7 @@ export type MiddlewareHandler = Type<any> | Function;
  *     }],
  *   },
  * };
+ * ```
  *
  * @docsCategory Common
  */

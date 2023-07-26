@@ -1,7 +1,7 @@
 ---
 title: "AssetPreviewStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.885Z
+date: 2023-07-26T18:59:54.175Z
 showtoc: true
 generated: true
 ---
@@ -13,14 +13,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetPreviewStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-preview-strategy/asset-preview-strategy.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-preview-strategy/asset-preview-strategy.ts" sourceLine="25" packageName="@vendure/core" />
 
 The AssetPreviewStrategy determines how preview images for assets are created. For image
 assets, this would usually typically involve resizing to sensible dimensions. Other file types
 could be previewed in a variety of ways, e.g.:
+
 - waveform images generated for audio files
 - preview images generated for pdf documents
 - watermarks added to preview images
+
+:::info
+
+This is configured via the `assetOptions.assetPreviewStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface AssetPreviewStrategy extends InjectableStrategy {
@@ -35,7 +43,7 @@ interface AssetPreviewStrategy extends InjectableStrategy {
 
 ### generatePreviewImage
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;`}   />
 
 
 

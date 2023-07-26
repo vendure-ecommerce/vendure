@@ -1,7 +1,7 @@
 ---
 title: "InspectableJobQueueStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.106Z
+date: 2023-07-26T18:59:54.530Z
 showtoc: true
 generated: true
 ---
@@ -34,22 +34,22 @@ interface InspectableJobQueueStrategy extends JobQueueStrategy {
 
 ### findOne
 
-<MemberInfo kind="method" type="(id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;`}   />
 
 Returns a job by its id.
 ### findMany
 
-<MemberInfo kind="method" type="(options?: JobListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(options?: JobListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#62;&#62;`}   />
 
 Returns a list of jobs according to the specified options.
 ### findManyById
 
-<MemberInfo kind="method" type="(ids: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ids: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>[]&#62;`}   />
 
 Returns an array of jobs for the given ids.
 ### removeSettledJobs
 
-<MemberInfo kind="method" type="(queueNames?: string[], olderThan?: Date) => Promise&#60;number&#62;"   />
+<MemberInfo kind="method" type={`(queueNames?: string[], olderThan?: Date) => Promise&#60;number&#62;`}   />
 
 Remove all settled jobs in the specified queues older than the given date.
 If no queueName is passed, all queues will be considered. If no olderThan
@@ -58,7 +58,7 @@ date is passed, all jobs older than the current time will be removed.
 Returns a promise of the number of jobs removed.
 ### cancelJob
 
-<MemberInfo kind="method" type="(jobId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(jobId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "Region"
 weight: 10
-date: 2023-07-21T15:46:16.246Z
+date: 2023-07-26T18:59:56.385Z
 showtoc: true
 generated: true
 ---
@@ -48,44 +48,44 @@ class Region extends VendureEntity implements Translatable, HasCustomFields {
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 A code representing the region. The code format will depend on the type of region. For
 example, a Country code will be a 2-letter ISO code, whereas a Province code could use
 a format relevant to the type of province, e.g. a US state code like "CA".
 ### type
 
-<MemberInfo kind="property" type="RegionType"   />
+<MemberInfo kind="property" type={`RegionType`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### parent
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/region#region'>Region</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/region#region'>Region</a>`}   />
 
 
 ### parentId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### enabled
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/region#region'>Region</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/region#region'>Region</a>&#62;&#62;`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomRegionFields"   />
+<MemberInfo kind="property" type={`CustomRegionFields`}   />
 
 
 

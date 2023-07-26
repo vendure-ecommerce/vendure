@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethod"
 weight: 10
-date: 2023-07-21T15:46:16.139Z
+date: 2023-07-26T18:59:56.201Z
 showtoc: true
 generated: true
 ---
@@ -47,52 +47,52 @@ class PaymentMethod extends VendureEntity implements Translatable, ChannelAware,
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;) => PaymentMethod"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;) => PaymentMethod`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### description
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>&#62;&#62;`}   />
 
 
 ### enabled
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### checker
 
-<MemberInfo kind="property" type="ConfigurableOperation | null"   />
+<MemberInfo kind="property" type={`ConfigurableOperation | null`}   />
 
 
 ### handler
 
-<MemberInfo kind="property" type="ConfigurableOperation"   />
+<MemberInfo kind="property" type={`ConfigurableOperation`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomPaymentMethodFields"   />
+<MemberInfo kind="property" type={`CustomPaymentMethodFields`}   />
 
 
 

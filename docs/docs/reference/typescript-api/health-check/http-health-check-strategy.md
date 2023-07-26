@@ -1,7 +1,7 @@
 ---
 title: "HttpHealthCheckStrategy"
 weight: 10
-date: 2023-07-21T15:46:16.599Z
+date: 2023-07-26T18:59:56.980Z
 showtoc: true
 generated: true
 ---
@@ -49,17 +49,17 @@ class HttpHealthCheckStrategy implements HealthCheckStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(options: HttpHealthCheckOptions) => HttpHealthCheckStrategy"   />
+<MemberInfo kind="method" type={`(options: HttpHealthCheckOptions) => HttpHealthCheckStrategy`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 ### getHealthIndicator
 
-<MemberInfo kind="method" type="() => HealthIndicatorFunction"   />
+<MemberInfo kind="method" type={`() => HealthIndicatorFunction`}   />
 
 
 

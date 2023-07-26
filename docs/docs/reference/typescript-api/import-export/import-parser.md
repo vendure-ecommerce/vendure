@@ -1,7 +1,7 @@
 ---
 title: "ImportParser"
 weight: 10
-date: 2023-07-21T15:46:15.772Z
+date: 2023-07-26T18:59:55.602Z
 showtoc: true
 generated: true
 ---
@@ -28,7 +28,7 @@ class ImportParser {
 
 ### parseProducts
 
-<MemberInfo kind="method" type="(input: string | Stream, mainLanguage: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a> = this.configService.defaultLanguageCode) => Promise&#60;<a href='/reference/typescript-api/import-export/import-parser#parseresult'>ParseResult</a>&#60;<a href='/reference/typescript-api/import-export/import-parser#parsedproductwithvariants'>ParsedProductWithVariants</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(input: string | Stream, mainLanguage: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a> = this.configService.defaultLanguageCode) => Promise&#60;<a href='/reference/typescript-api/import-export/import-parser#parseresult'>ParseResult</a>&#60;<a href='/reference/typescript-api/import-export/import-parser#parsedproductwithvariants'>ParsedProductWithVariants</a>&#62;&#62;`}   />
 
 Parses the contents of the [product import CSV file](/guides/developer-guide/importing-product-data/#product-import-format) and
 returns a data structure which can then be used to populate Vendure using the <a href='/reference/typescript-api/import-export/fast-importer-service#fastimporterservice'>FastImporterService</a>.
@@ -58,7 +58,7 @@ interface ParsedOptionGroup {
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         values: string[];     }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         values: string[];     }&#62;`}   />
 
 
 
@@ -87,7 +87,7 @@ interface ParsedFacet {
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         facet: string;         value: string;     }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         facet: string;         value: string;     }&#62;`}   />
 
 
 
@@ -125,42 +125,42 @@ interface ParsedProductVariant {
 
 ### sku
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### price
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### taxCategory
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### stockOnHand
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### trackInventory
 
-<MemberInfo kind="property" type="GlobalFlag"   />
+<MemberInfo kind="property" type={`GlobalFlag`}   />
 
 
 ### assetPaths
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 
 ### facets
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         optionValues: string[];         customFields: {             [name: string]: string;         };     }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         optionValues: string[];         customFields: {             [name: string]: string;         };     }&#62;`}   />
 
 
 
@@ -196,22 +196,22 @@ interface ParsedProduct {
 
 ### assetPaths
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 
 ### optionGroups
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedoptiongroup'>ParsedOptionGroup</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/import-export/import-parser#parsedoptiongroup'>ParsedOptionGroup</a>[]`}   />
 
 
 ### facets
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         slug: string;         description: string;         customFields: {             [name: string]: string;         };     }&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         slug: string;         description: string;         customFields: {             [name: string]: string;         };     }&#62;`}   />
 
 
 
@@ -237,12 +237,12 @@ interface ParsedProductWithVariants {
 
 ### product
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedproduct'>ParsedProduct</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/import-export/import-parser#parsedproduct'>ParsedProduct</a>`}   />
 
 
 ### variants
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/import-export/import-parser#parsedproductvariant'>ParsedProductVariant</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/import-export/import-parser#parsedproductvariant'>ParsedProductVariant</a>[]`}   />
 
 
 
@@ -268,17 +268,17 @@ interface ParseResult<T> {
 
 ### results
 
-<MemberInfo kind="property" type="T[]"   />
+<MemberInfo kind="property" type={`T[]`}   />
 
 
 ### errors
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 
 ### processed
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 

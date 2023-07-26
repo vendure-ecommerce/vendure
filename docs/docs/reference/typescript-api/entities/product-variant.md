@@ -1,7 +1,7 @@
 ---
 title: "ProductVariant"
 weight: 10
-date: 2023-07-21T15:46:16.189Z
+date: 2023-07-26T18:59:56.293Z
 showtoc: true
 generated: true
 ---
@@ -101,144 +101,144 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;) => ProductVariant"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;) => ProductVariant`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### enabled
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### sku
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### listPrice
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### listPriceIncludesTax
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### currencyCode
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>`}   />
 
 
 ### price
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### priceWithTax
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### taxRateApplied
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>`}   />
 
 
 ### featuredAsset
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}   />
 
 
 ### assets
 
-<MemberInfo kind="property" type="ProductVariantAsset[]"   />
+<MemberInfo kind="property" type={`ProductVariantAsset[]`}   />
 
 
 ### taxCategory
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>`}   />
 
 
 ### productVariantPrices
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[]`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>&#62;&#62;`}   />
 
 
 ### product
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product#product'>Product</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product#product'>Product</a>`}   />
 
 
 ### productId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### outOfStockThreshold
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 Specifies the value of stockOnHand at which the ProductVariant is considered
 out of stock.
 ### useGlobalOutOfStockThreshold
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 When true, the `outOfStockThreshold` value will be taken from the GlobalSettings and the
 value set on this ProductVariant will be ignored.
 ### trackInventory
 
-<MemberInfo kind="property" type="GlobalFlag"   />
+<MemberInfo kind="property" type={`GlobalFlag`}   />
 
 
 ### stockLevels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]`}   />
 
 
 ### stockMovements
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]`}   />
 
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>[]`}   />
 
 
 ### facetValues
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomProductVariantFields"   />
+<MemberInfo kind="property" type={`CustomProductVariantFields`}   />
 
 
 ### collections
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "OrderModification"
 weight: 10
-date: 2023-07-21T15:46:16.118Z
+date: 2023-07-26T18:59:56.160Z
 showtoc: true
 generated: true
 ---
@@ -51,57 +51,57 @@ class OrderModification extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>&#62;) => OrderModification`}   />
 
 
 ### note
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}   />
 
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line-reference#ordermodificationline'>OrderModificationLine</a>[]`}   />
 
 
 ### surcharges
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>[]`}   />
 
 
 ### priceChange
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### payment
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>`}   />
 
 
 ### refund
 
-<MemberInfo kind="property" type="Refund"   />
+<MemberInfo kind="property" type={`Refund`}   />
 
 
 ### shippingAddressChange
 
-<MemberInfo kind="property" type="OrderAddress"   />
+<MemberInfo kind="property" type={`OrderAddress`}   />
 
 
 ### billingAddressChange
 
-<MemberInfo kind="property" type="OrderAddress"   />
+<MemberInfo kind="property" type={`OrderAddress`}   />
 
 
 ### isSettled
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 

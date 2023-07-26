@@ -1,7 +1,7 @@
 ---
 title: "OrderProcess"
 weight: 10
-date: 2023-07-21T15:46:15.207Z
+date: 2023-07-26T18:59:54.703Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-process.ts" sourceLine="28" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-process.ts" sourceLine="35" packageName="@vendure/core" />
 
 An OrderProcess is used to define the way the order process works as in: what states an Order can be
 in, and how it may transition from one state to another. Using the `onTransitionStart()` hook, an
@@ -21,6 +21,13 @@ OrderProcess can perform checks before allowing a state transition to occur, and
 hook allows logic to be executed after a state change.
 
 For detailed description of the interface members, see the <a href='/reference/typescript-api/state-machine/state-machine-config#statemachineconfig'>StateMachineConfig</a> docs.
+
+:::info
+
+This is configured via the `orderOptions.process` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface OrderProcess<State extends keyof CustomOrderStates | string> extends InjectableStrategy {
@@ -38,22 +45,22 @@ interface OrderProcess<State extends keyof CustomOrderStates | string> extends I
 
 ### transitions
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62; &#38; Partial&#60;<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a> | State&#62;&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62; &#38; Partial&#60;<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a> | State&#62;&#62;`}   />
 
 
 ### onTransitionStart
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/reference/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/reference/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;`}   />
 
 
 ### onTransitionEnd
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/reference/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionendfn'>OnTransitionEndFn</a>&#60;State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, <a href='/reference/typescript-api/orders/order-process#ordertransitiondata'>OrderTransitionData</a>&#62;`}   />
 
 
 ### onTransitionError
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionerrorfn'>OnTransitionErrorFn</a>&#60;State | <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>&#62;`}   />
 
 
 
@@ -88,61 +95,61 @@ interface DefaultOrderProcessOptions {
 
 ### checkModificationPayments
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents an Order from transitioning out of the `Modifying` state if
 the Order price has changed and there is no Payment or Refund associated
 with the Modification.
 ### checkAdditionalPaymentsAmount
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents an Order from transitioning out of the `ArrangingAdditionalPayment` state if
 the Order's Payments do not cover the full amount of `totalWithTax`.
 ### checkAllVariantsExist
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents the transition from `AddingItems` to any other state (apart from `Cancelled`) if
 and of the ProductVariants no longer exists due to deletion.
 ### arrangingPaymentRequiresContents
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents transition to the `ArrangingPayment` state if the active Order has no lines.
 ### arrangingPaymentRequiresCustomer
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents transition to the `ArrangingPayment` state if the active Order has no customer
 associated with it.
 ### arrangingPaymentRequiresShipping
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents transition to the `ArrangingPayment` state if the active Order has no shipping
 method set.
 ### arrangingPaymentRequiresStock
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents transition to the `ArrangingPayment` state if there is insufficient saleable
 stock to cover the contents of the Order.
 ### checkPaymentsCoverTotal
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents transition to the `PaymentAuthorized` or `PaymentSettled` states if the order
 `totalWithTax` amount is not covered by Payment(s) in the corresponding states.
 ### checkAllItemsBeforeCancel
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents transition to the `Cancelled` state unless all OrderItems are already
 cancelled.
 ### checkFulfillmentStates
 
-<MemberInfo kind="property" type="boolean" default="true"   />
+<MemberInfo kind="property" type={`boolean`} default="true"   />
 
 Prevents transition to the `Shipped`, `PartiallyShipped`, `Delivered` & `PartiallyDelivered` states unless
 there are corresponding Fulfillments in the correct states to allow this. E.g. `Shipped` only if all items in
@@ -185,7 +192,7 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/orders/order-process#defaultorderprocessoptions'>DefaultOrderProcessOptions</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/orders/order-process#defaultorderprocessoptions'>DefaultOrderProcessOptions</a>`} />
 
 
 
@@ -257,12 +264,12 @@ interface OrderTransitionData {
 
 ### ctx
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`}   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}   />
 
 
 

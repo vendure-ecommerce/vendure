@@ -1,7 +1,7 @@
 ---
 title: "GetSuperadminContext"
 weight: 10
-date: 2023-07-21T15:46:18.319Z
+date: 2023-07-26T19:00:00.730Z
 showtoc: true
 generated: true
 ---
@@ -25,5 +25,5 @@ Parameters
 
 ### app
 
-<MemberInfo kind="parameter" type="INestApplicationContext" />
+<MemberInfo kind="parameter" type={`INestApplicationContext`} />
 

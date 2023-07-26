@@ -1,7 +1,7 @@
 ---
 title: "JobBuffer"
 weight: 10
-date: 2023-07-21T15:46:16.648Z
+date: 2023-07-26T18:59:57.111Z
 showtoc: true
 generated: true
 ---
@@ -103,19 +103,19 @@ interface JobBuffer<Data extends JobData<Data> = object> {
 
 ### id
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### collect
 
-<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => boolean | Promise&#60;boolean&#62;`}   />
 
 This method is called whenever a job is added to the job queue. If it returns `true`, then
 the job will be _buffered_ and _not_ added to the job queue. If it returns `false`, the job
 will be added to the job queue as normal.
 ### reduce
 
-<MemberInfo kind="method" type="(collectedJobs: Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;) => Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62; | Promise&#60;Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(collectedJobs: Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;) => Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62; | Promise&#60;Array&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;&#62;`}   />
 
 This method is called whenever the buffer gets flushed via a call to `JobQueueService.flush()`.
 It allows logic to be run on the buffered jobs which enables optimizations such as

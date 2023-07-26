@@ -1,7 +1,7 @@
 ---
 title: "AsyncQueue"
 weight: 10
-date: 2023-07-21T15:46:14.734Z
+date: 2023-07-26T18:59:53.917Z
 showtoc: true
 generated: true
 ---
@@ -29,12 +29,12 @@ class AsyncQueue {
 
 ### constructor
 
-<MemberInfo kind="method" type="(label: string = 'default', concurrency: number = 1) => AsyncQueue"   />
+<MemberInfo kind="method" type={`(label: string = 'default', concurrency: number = 1) => AsyncQueue`}   />
 
 
 ### push
 
-<MemberInfo kind="method" type="(task: Task&#60;T&#62;) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(task: Task&#60;T&#62;) => Promise&#60;T&#62;`}   />
 
 Pushes a new task onto the queue, upon which the task will either execute immediately or
 (if the number of running tasks is equal to the concurrency limit) enqueue the task to

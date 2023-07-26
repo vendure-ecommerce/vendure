@@ -1,7 +1,7 @@
 ---
 title: "SharpAssetPreviewStrategy"
 weight: 10
-date: 2023-07-21T15:46:17.985Z
+date: 2023-07-26T19:00:00.016Z
 showtoc: true
 generated: true
 ---
@@ -49,12 +49,12 @@ class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(config?: <a href='/reference/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy"   />
+<MemberInfo kind="method" type={`(config?: <a href='/reference/typescript-api/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewconfig'>SharpAssetPreviewConfig</a>) => SharpAssetPreviewStrategy`}   />
 
 
 ### generatePreviewImage
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, mimeType: string, data: Buffer) => Promise&#60;Buffer&#62;`}   />
 
 
 
@@ -86,37 +86,37 @@ interface SharpAssetPreviewConfig {
 
 ### maxHeight
 
-<MemberInfo kind="property" type="number" default="1600"   />
+<MemberInfo kind="property" type={`number`} default="1600"   />
 
 The max height in pixels of a generated preview image.
 ### maxWidth
 
-<MemberInfo kind="property" type="number" default="1600"   />
+<MemberInfo kind="property" type={`number`} default="1600"   />
 
 The max width in pixels of a generated preview image.
 ### jpegOptions
 
-<MemberInfo kind="property" type="sharp.JpegOptions"  since="1.7.0"  />
+<MemberInfo kind="property" type={`sharp.JpegOptions`}  since="1.7.0"  />
 
 Set Sharp's options for encoding jpeg files: https://sharp.pixelplumbing.com/api-output#jpeg
 ### pngOptions
 
-<MemberInfo kind="property" type="sharp.PngOptions"  since="1.7.0"  />
+<MemberInfo kind="property" type={`sharp.PngOptions`}  since="1.7.0"  />
 
 Set Sharp's options for encoding png files: https://sharp.pixelplumbing.com/api-output#png
 ### webpOptions
 
-<MemberInfo kind="property" type="sharp.WebpOptions"  since="1.7.0"  />
+<MemberInfo kind="property" type={`sharp.WebpOptions`}  since="1.7.0"  />
 
 Set Sharp's options for encoding webp files: https://sharp.pixelplumbing.com/api-output#webp
 ### gifOptions
 
-<MemberInfo kind="property" type="sharp.GifOptions"  since="1.7.0"  />
+<MemberInfo kind="property" type={`sharp.GifOptions`}  since="1.7.0"  />
 
 Set Sharp's options for encoding gif files: https://sharp.pixelplumbing.com/api-output#gif
 ### avifOptions
 
-<MemberInfo kind="property" type="sharp.AvifOptions"  since="1.7.0"  />
+<MemberInfo kind="property" type={`sharp.AvifOptions`}  since="1.7.0"  />
 
 Set Sharp's options for encoding avif files: https://sharp.pixelplumbing.com/api-output#avif
 

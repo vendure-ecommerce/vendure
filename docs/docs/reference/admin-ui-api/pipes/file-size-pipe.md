@@ -1,7 +1,7 @@
 ---
 title: "FileSizePipe"
 weight: 10
-date: 2023-07-21T15:46:19.576Z
+date: 2023-07-26T19:00:03.964Z
 showtoc: true
 generated: true
 ---
@@ -36,7 +36,7 @@ class FileSizePipe implements PipeTransform {
 
 ### transform
 
-<MemberInfo kind="method" type="(value: number, useSiUnits:  = true) => any"   />
+<MemberInfo kind="method" type={`(value: number, useSiUnits:  = true) => any`}   />
 
 
 

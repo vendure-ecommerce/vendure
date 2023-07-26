@@ -1,7 +1,7 @@
 ---
 title: "TaxCategory"
 weight: 10
-date: 2023-07-21T15:46:16.364Z
+date: 2023-07-26T18:59:56.596Z
 showtoc: true
 generated: true
 ---
@@ -37,22 +37,22 @@ class TaxCategory extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>&#62;) => TaxCategory"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>&#62;) => TaxCategory`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### isDefault
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomTaxCategoryFields"   />
+<MemberInfo kind="property" type={`CustomTaxCategoryFields`}   />
 
 
 

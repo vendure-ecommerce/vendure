@@ -1,7 +1,7 @@
 ---
 title: "TypedBaseDetailComponent"
 weight: 10
-date: 2023-07-21T15:46:18.951Z
+date: 2023-07-26T19:00:02.064Z
 showtoc: true
 generated: true
 ---
@@ -34,22 +34,22 @@ class TypedBaseDetailComponent<T extends TypedDocumentNode<any, any>, Field exte
 
 ### result$
 
-<MemberInfo kind="property" type="Observable&#60;ResultOf&#60;T&#62;&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;ResultOf&#60;T&#62;&#62;`}   />
 
 
 ### entity
 
-<MemberInfo kind="property" type="ResultOf&#60;T&#62;[Field]"   />
+<MemberInfo kind="property" type={`ResultOf&#60;T&#62;[Field]`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="() => TypedBaseDetailComponent"   />
+<MemberInfo kind="method" type={`() => TypedBaseDetailComponent`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "Asset"
 weight: 10
-date: 2023-07-21T15:46:15.881Z
+date: 2023-07-26T18:59:55.739Z
 showtoc: true
 generated: true
 ---
@@ -52,67 +52,67 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>&#62;) => Asset`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### type
 
-<MemberInfo kind="property" type="AssetType"   />
+<MemberInfo kind="property" type={`AssetType`}   />
 
 
 ### mimeType
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### width
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### height
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### fileSize
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### source
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### preview
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### focalPoint
 
-<MemberInfo kind="property" type="{ x: number; y: number }"   />
+<MemberInfo kind="property" type={`{ x: number; y: number }`}   />
 
 
 ### tags
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/tag#tag'>Tag</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tag#tag'>Tag</a>[]`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomAssetFields"   />
+<MemberInfo kind="property" type={`CustomAssetFields`}   />
 
 
 

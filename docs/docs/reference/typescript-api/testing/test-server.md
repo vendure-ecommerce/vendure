@@ -1,7 +1,7 @@
 ---
 title: "TestServer"
 weight: 10
-date: 2023-07-21T15:46:18.290Z
+date: 2023-07-26T19:00:00.674Z
 showtoc: true
 generated: true
 ---
@@ -31,17 +31,17 @@ class TestServer {
 
 ### app
 
-<MemberInfo kind="property" type="INestApplication"   />
+<MemberInfo kind="property" type={`INestApplication`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(vendureConfig: Required&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;) => TestServer"   />
+<MemberInfo kind="method" type={`(vendureConfig: Required&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;) => TestServer`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/testing/test-server-options#testserveroptions'>TestServerOptions</a>) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/testing/test-server-options#testserveroptions'>TestServerOptions</a>) => Promise&#60;void&#62;`}   />
 
 Bootstraps an instance of Vendure server and populates the database according to the options
 passed in. Should be called in the `beforeAll` function.
@@ -50,14 +50,14 @@ The populated data is saved into an .sqlite file for each test file. On subseque
 is loaded so that the populate step can be skipped, which speeds up the tests significantly.
 ### bootstrap
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 Bootstraps a Vendure server instance. Generally the `.init()` method should be used, as that will also
 populate the test data. However, the `bootstrap()` method is sometimes useful in tests which need to
 start and stop a Vendure instance multiple times without re-populating data.
 ### destroy
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 Destroy the Vendure server instance and clean up all resources.
 Should be called after all tests have run, e.g. in an `afterAll` function.

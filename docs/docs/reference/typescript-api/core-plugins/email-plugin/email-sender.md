@@ -1,7 +1,7 @@
 ---
 title: "EmailSender"
 weight: 10
-date: 2023-07-21T15:46:18.038Z
+date: 2023-07-26T19:00:00.128Z
 showtoc: true
 generated: true
 ---
@@ -63,7 +63,7 @@ interface EmailSender extends InjectableStrategy {
 
 ### send
 
-<MemberInfo kind="property" type="(email: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) =&#62; void | Promise&#60;void&#62;"   />
+<MemberInfo kind="property" type={`(email: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) =&#62; void | Promise&#60;void&#62;`}   />
 
 
 
@@ -90,7 +90,7 @@ class NodemailerEmailSender implements EmailSender {
 
 ### send
 
-<MemberInfo kind="method" type="(email: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) => "   />
+<MemberInfo kind="method" type={`(email: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, options: <a href='/reference/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>) => `}   />
 
 
 

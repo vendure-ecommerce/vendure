@@ -1,7 +1,7 @@
 ---
 title: "OrderHistoryEntryComponent"
 weight: 10
-date: 2023-07-21T15:46:19.082Z
+date: 2023-07-26T19:00:02.370Z
 showtoc: true
 generated: true
 ---
@@ -30,7 +30,7 @@ interface OrderHistoryEntryComponent extends HistoryEntryComponent {
 
 ### order
 
-<MemberInfo kind="property" type="OrderDetailFragment"   />
+<MemberInfo kind="property" type={`OrderDetailFragment`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "DefaultStockAllocationStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.242Z
+date: 2023-07-26T18:59:54.776Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class DefaultStockAllocationStrategy implements StockAllocationStrategy {
 
 ### shouldAllocateStock
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;`}   />
 
 
 

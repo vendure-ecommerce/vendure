@@ -1,7 +1,7 @@
 ---
 title: "DefaultActiveOrderStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.183Z
+date: 2023-07-26T18:59:54.657Z
 showtoc: true
 generated: true
 ---
@@ -35,22 +35,22 @@ class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
 
 ### name
 
-<MemberInfo kind="property" type="'default-active-order-strategy'"   />
+<MemberInfo kind="property" type={`'default-active-order-strategy'`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 ### createActiveOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => `}   />
 
 
 ### determineActiveOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => "   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => `}   />
 
 
 

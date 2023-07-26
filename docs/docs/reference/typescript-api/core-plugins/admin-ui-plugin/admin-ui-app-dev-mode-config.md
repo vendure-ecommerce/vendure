@@ -1,7 +1,7 @@
 ---
 title: "AdminUiAppDevModeConfig"
 weight: 10
-date: 2023-07-21T15:46:17.896Z
+date: 2023-07-26T18:59:59.874Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiAppDevModeConfig
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="359" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="366" packageName="@vendure/common" />
 
 Information about the Admin UI app dev server.
 
@@ -30,22 +30,22 @@ interface AdminUiAppDevModeConfig {
 
 ### sourcePath
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The path to the uncompiled UI app source files. This path should contain the `vendure-ui-config.json` file.
 ### port
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The port on which the dev server is listening. Overrides the value set by `AdminUiOptions.port`.
 ### route
 
-<MemberInfo kind="property" type="string" default="'admin'"   />
+<MemberInfo kind="property" type={`string`} default="'admin'"   />
 
 Specifies the url route to the Admin UI app.
 ### compile
 
-<MemberInfo kind="property" type="() =&#62; Promise&#60;void&#62;"   />
+<MemberInfo kind="property" type={`() =&#62; Promise&#60;void&#62;`}   />
 
 The function which will be invoked to start the app compilation process.
 

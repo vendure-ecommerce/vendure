@@ -1,7 +1,7 @@
 ---
 title: "ShippingLine"
 weight: 10
-date: 2023-07-21T15:46:16.282Z
+date: 2023-07-26T18:59:56.454Z
 showtoc: true
 generated: true
 ---
@@ -56,82 +56,82 @@ class ShippingLine extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>&#62;) => ShippingLine"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>&#62;) => ShippingLine`}   />
 
 
 ### shippingMethodId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a> | null"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a> | null`}   />
 
 
 ### shippingMethod
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>`}   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}   />
 
 
 ### listPrice
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### listPriceIncludesTax
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### adjustments
 
-<MemberInfo kind="property" type="Adjustment[]"   />
+<MemberInfo kind="property" type={`Adjustment[]`}   />
 
 
 ### taxLines
 
-<MemberInfo kind="property" type="TaxLine[]"   />
+<MemberInfo kind="property" type={`TaxLine[]`}   />
 
 
 ### price
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### priceWithTax
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### discountedPrice
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### discountedPriceWithTax
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### taxRate
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### discounts
 
-<MemberInfo kind="property" type="Discount[]"   />
+<MemberInfo kind="property" type={`Discount[]`}   />
 
 
 ### addAdjustment
 
-<MemberInfo kind="method" type="(adjustment: Adjustment) => "   />
+<MemberInfo kind="method" type={`(adjustment: Adjustment) => `}   />
 
 
 ### clearAdjustments
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 

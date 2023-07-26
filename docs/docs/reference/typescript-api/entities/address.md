@@ -1,7 +1,7 @@
 ---
 title: "Address"
 weight: 10
-date: 2023-07-21T15:46:15.848Z
+date: 2023-07-26T18:59:55.698Z
 showtoc: true
 generated: true
 ---
@@ -57,72 +57,72 @@ class Address extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/address#address'>Address</a>&#62;) => Address"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/address#address'>Address</a>&#62;) => Address`}   />
 
 
 ### customer
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>`}   />
 
 
 ### fullName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### company
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### streetLine1
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### streetLine2
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### city
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### province
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### postalCode
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### country
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/country#country'>Country</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/country#country'>Country</a>`}   />
 
 
 ### phoneNumber
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### defaultShippingAddress
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### defaultBillingAddress
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomAddressFields"   />
+<MemberInfo kind="property" type={`CustomAddressFields`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "SubscribableJob"
 weight: 10
-date: 2023-07-21T15:46:16.736Z
+date: 2023-07-26T18:59:57.304Z
 showtoc: true
 generated: true
 ---
@@ -34,12 +34,12 @@ class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;, jobQueueStrategy: <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>) => SubscribableJob"   />
+<MemberInfo kind="method" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;, jobQueueStrategy: <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>) => SubscribableJob`}   />
 
 
 ### updates
 
-<MemberInfo kind="method" type="(options?: <a href='/reference/typescript-api/job-queue/types#jobupdateoptions'>JobUpdateOptions</a>) => Observable&#60;<a href='/reference/typescript-api/job-queue/types#jobupdate'>JobUpdate</a>&#60;T&#62;&#62;"   />
+<MemberInfo kind="method" type={`(options?: <a href='/reference/typescript-api/job-queue/types#jobupdateoptions'>JobUpdateOptions</a>) => Observable&#60;<a href='/reference/typescript-api/job-queue/types#jobupdate'>JobUpdate</a>&#60;T&#62;&#62;`}   />
 
 Returns an Observable stream of updates to the Job. Works by polling the current JobQueueStrategy's `findOne()` method
 to obtain updates. If this updates are not subscribed to, then no polling occurs.

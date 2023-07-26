@@ -1,7 +1,7 @@
 ---
 title: "Promotion Condition"
 weight: 10
-date: 2023-07-21T15:46:15.413Z
+date: 2023-07-26T18:59:55.051Z
 showtoc: true
 generated: true
 ---
@@ -35,24 +35,24 @@ class PromotionCondition<T extends ConfigArgs = ConfigArgs, C extends string = s
 
 ### priorityValue
 
-<MemberInfo kind="property" type="number" default="0"   />
+<MemberInfo kind="property" type={`number`} default="0"   />
 
 Used to determine the order of application of multiple Promotions
 on the same Order. See the <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for
 more information.
 ### code
 
-<MemberInfo kind="property" type="C"   />
+<MemberInfo kind="property" type={`C`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/promotions/promotion-condition#promotionconditionconfig'>PromotionConditionConfig</a>&#60;T, C, R&#62;) => PromotionCondition"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/promotions/promotion-condition#promotionconditionconfig'>PromotionConditionConfig</a>&#60;T, C, R&#62;) => PromotionCondition`}   />
 
 
 ### check
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, args: ConfigArg[], promotion: <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>) => Promise&#60;R&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, args: ConfigArg[], promotion: <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>) => Promise&#60;R&#62;`}   />
 
 This is the function which contains the conditional logic to decide whether
 a Promotion should apply to an Order. See <a href='/reference/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>.
@@ -82,17 +82,17 @@ interface PromotionConditionConfig<T extends ConfigArgs, C extends string, R ext
 
 ### code
 
-<MemberInfo kind="property" type="C"   />
+<MemberInfo kind="property" type={`C`}   />
 
 
 ### check
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>&#60;T, R&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/promotions/promotion-condition#checkpromotionconditionfn'>CheckPromotionConditionFn</a>&#60;T, R&#62;`}   />
 
 
 ### priorityValue
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "AdminUiPlugin"
 weight: 10
-date: 2023-07-21T15:46:17.913Z
+date: 2023-07-26T18:59:59.906Z
 showtoc: true
 generated: true
 ---
@@ -76,17 +76,17 @@ class AdminUiPlugin implements NestModule {
 
 ### constructor
 
-<MemberInfo kind="method" type="(configService: ConfigService, processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AdminUiPlugin"   />
+<MemberInfo kind="method" type={`(configService: ConfigService, processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AdminUiPlugin`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-plugin-options#adminuipluginoptions'>AdminUiPluginOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-plugin-options#adminuipluginoptions'>AdminUiPluginOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>&#62;`}   />
 
 Set the plugin options
 ### configure
 
-<MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
+<MemberInfo kind="method" type={`(consumer: MiddlewareConsumer) => `}   />
 
 
 

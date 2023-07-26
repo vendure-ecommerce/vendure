@@ -1,7 +1,7 @@
 ---
 title: "InMemorySessionCacheStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.431Z
+date: 2023-07-26T18:59:55.081Z
 showtoc: true
 generated: true
 ---
@@ -41,27 +41,27 @@ class InMemorySessionCacheStrategy implements SessionCacheStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(cacheSize?: number) => InMemorySessionCacheStrategy"   />
+<MemberInfo kind="method" type={`(cacheSize?: number) => InMemorySessionCacheStrategy`}   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(sessionToken: string) => "   />
+<MemberInfo kind="method" type={`(sessionToken: string) => `}   />
 
 
 ### get
 
-<MemberInfo kind="method" type="(sessionToken: string) => "   />
+<MemberInfo kind="method" type={`(sessionToken: string) => `}   />
 
 
 ### set
 
-<MemberInfo kind="method" type="(session: <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => "   />
+<MemberInfo kind="method" type={`(session: <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => `}   />
 
 
 ### clear
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 

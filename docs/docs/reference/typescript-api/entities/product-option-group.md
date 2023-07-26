@@ -1,7 +1,7 @@
 ---
 title: "ProductOptionGroup"
 weight: 10
-date: 2023-07-21T15:46:16.174Z
+date: 2023-07-26T18:59:56.265Z
 showtoc: true
 generated: true
 ---
@@ -47,42 +47,42 @@ class ProductOptionGroup extends VendureEntity implements Translatable, HasCusto
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;) => ProductOptionGroup"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;) => ProductOptionGroup`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="LocaleString"   />
+<MemberInfo kind="property" type={`LocaleString`}   />
 
 
 ### code
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### translations
 
-<MemberInfo kind="property" type="Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Translation&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;&#62;`}   />
 
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>[]`}   />
 
 
 ### product
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product#product'>Product</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product#product'>Product</a>`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomProductOptionGroupFields"   />
+<MemberInfo kind="property" type={`CustomProductOptionGroupFields`}   />
 
 
 

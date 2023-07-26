@@ -1,7 +1,7 @@
 ---
 title: "StockMovement"
 weight: 10
-date: 2023-07-21T15:46:16.328Z
+date: 2023-07-26T18:59:56.533Z
 showtoc: true
 generated: true
 ---
@@ -42,27 +42,27 @@ class StockMovement extends VendureEntity {
 
 ### type
 
-<MemberInfo kind="property" type="StockMovementType"   />
+<MemberInfo kind="property" type={`StockMovementType`}   />
 
 
 ### productVariant
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>`}   />
 
 
 ### stockLocation
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>`}   />
 
 
 ### stockLocationId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### quantity
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 
@@ -94,17 +94,17 @@ class Allocation extends StockMovement {
 
 ### type
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a>&#62;) => Allocation"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a>&#62;) => Allocation`}   />
 
 
 ### orderLine
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>`}   />
 
 
 
@@ -134,17 +134,17 @@ class Cancellation extends StockMovement {
 
 ### type
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>&#62;) => Cancellation"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>&#62;) => Cancellation`}   />
 
 
 ### orderLine
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>`}   />
 
 
 
@@ -175,17 +175,17 @@ class Release extends StockMovement {
 
 ### type
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#release'>Release</a>&#62;) => Release"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#release'>Release</a>&#62;) => Release`}   />
 
 
 ### orderLine
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>`}   />
 
 
 
@@ -215,17 +215,17 @@ class Sale extends StockMovement {
 
 ### type
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#sale'>Sale</a>&#62;) => Sale"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#sale'>Sale</a>&#62;) => Sale`}   />
 
 
 ### orderLine
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>`}   />
 
 
 
@@ -253,12 +253,12 @@ class StockAdjustment extends StockMovement {
 
 ### type
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#stockadjustment'>StockAdjustment</a>&#62;) => StockAdjustment"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-movement#stockadjustment'>StockAdjustment</a>&#62;) => StockAdjustment`}   />
 
 
 

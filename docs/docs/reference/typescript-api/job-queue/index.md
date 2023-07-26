@@ -1,7 +1,7 @@
 ---
 title: "JobQueue"
 weight: 10
-date: 2023-07-21T15:46:16.667Z
+date: 2023-07-26T18:59:57.169Z
 showtoc: true
 generated: true
 ---
@@ -36,22 +36,22 @@ class JobQueue<Data extends JobData<Data> = object> {
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### started
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/job-queue/types#createqueueoptions'>CreateQueueOptions</a>&#60;Data&#62;, jobQueueStrategy: <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>, jobBufferService: JobBufferService) => JobQueue"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/job-queue/types#createqueueoptions'>CreateQueueOptions</a>&#60;Data&#62;, jobQueueStrategy: <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>, jobBufferService: JobBufferService) => JobQueue`}   />
 
 
 ### add
 
-<MemberInfo kind="method" type="(data: Data, options?: Pick&#60;<a href='/reference/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;Data&#62;, 'retries'&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>&#60;Data&#62;&#62;"   />
+<MemberInfo kind="method" type={`(data: Data, options?: Pick&#60;<a href='/reference/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;Data&#62;, 'retries'&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>&#60;Data&#62;&#62;`}   />
 
 Adds a new <a href='/reference/typescript-api/job-queue/job#job'>Job</a> to the queue. The resolved <a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a> allows the
 calling code to subscribe to updates to the Job:

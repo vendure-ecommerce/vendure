@@ -1,7 +1,7 @@
 ---
 title: "VendureEntity"
 weight: 10
-date: 2023-07-21T15:46:15.922Z
+date: 2023-07-26T18:59:55.818Z
 showtoc: true
 generated: true
 ---
@@ -32,22 +32,22 @@ class VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;) => VendureEntity"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a>&#62;) => VendureEntity`}   />
 
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### createdAt
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 ### updatedAt
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 

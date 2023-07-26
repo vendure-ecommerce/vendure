@@ -1,7 +1,7 @@
 ---
 title: "RoleService"
 weight: 10
-date: 2023-07-21T15:46:17.608Z
+date: 2023-07-26T18:59:59.333Z
 showtoc: true
 generated: true
 ---
@@ -41,77 +41,77 @@ class RoleService {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, configService: ConfigService, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) => RoleService"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, configService: ConfigService, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) => RoleService`}   />
 
 
 ### initRoles
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;&#62;`}   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, roleId: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, roleId: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a> | undefined&#62;`}   />
 
 
 ### getChannelsForRole
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, roleId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, roleId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]&#62;`}   />
 
 
 ### getSuperAdminRole
 
-<MemberInfo kind="method" type="(ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;`}   />
 
 Returns the special SuperAdmin Role, which always exists in Vendure.
 ### getCustomerRole
 
-<MemberInfo kind="method" type="(ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;`}   />
 
 Returns the special Customer Role, which always exists in Vendure.
 ### getAllPermissions
 
-<MemberInfo kind="method" type="() => string[]"   />
+<MemberInfo kind="method" type={`() => string[]`}   />
 
 Returns all the valid Permission values
 ### userHasPermissionOnChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, permission: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, permission: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>) => Promise&#60;boolean&#62;`}   />
 
 Returns true if the User has the specified permission on that Channel
 ### userHasAnyPermissionsOnChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => Promise&#60;boolean&#62;`}   />
 
 Returns true if the User has any of the specified permissions on that Channel
 ### userHasAllPermissionsOnChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, permissions: <a href='/reference/typescript-api/common/permission#permission'>Permission</a>[]) => Promise&#60;boolean&#62;`}   />
 
 Returns true if the User has all the specified permissions on that Channel
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateRoleInput) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateRoleInput) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;`}   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateRoleInput) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateRoleInput) => Promise&#60;<a href='/reference/typescript-api/entities/role#role'>Role</a>&#62;`}   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;`}   />
 
 
 ### assignRoleToChannel
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, roleId: <a href='/reference/typescript-api/common/id#id'>ID</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => "   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, roleId: <a href='/reference/typescript-api/common/id#id'>ID</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => `}   />
 
 
 

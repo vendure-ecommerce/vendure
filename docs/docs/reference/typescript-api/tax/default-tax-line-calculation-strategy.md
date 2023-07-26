@@ -1,7 +1,7 @@
 ---
 title: "DefaultTaxLineCalculationStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.498Z
+date: 2023-07-26T18:59:55.189Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class DefaultTaxLineCalculationStrategy implements TaxLineCalculationStrategy {
 
 ### calculate
 
-<MemberInfo kind="method" type="(args: <a href='/reference/typescript-api/tax/tax-line-calculation-strategy#calculatetaxlinesargs'>CalculateTaxLinesArgs</a>) => TaxLine[]"   />
+<MemberInfo kind="method" type={`(args: <a href='/reference/typescript-api/tax/tax-line-calculation-strategy#calculatetaxlinesargs'>CalculateTaxLinesArgs</a>) => TaxLine[]`}   />
 
 
 

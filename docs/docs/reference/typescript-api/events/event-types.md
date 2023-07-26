@@ -1,7 +1,7 @@
 ---
 title: "Event Types"
 weight: 10
-date: 2023-07-21T15:46:16.412Z
+date: 2023-07-26T18:59:56.694Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class AccountRegistrationEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => AccountRegistrationEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => AccountRegistrationEvent`}   />
 
 
 
@@ -59,7 +59,7 @@ class AccountVerifiedEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customer: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>) => AccountVerifiedEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customer: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>) => AccountVerifiedEvent`}   />
 
 
 
@@ -86,7 +86,7 @@ class AdministratorEvent extends VendureEntityEvent<Administrator, Administrator
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>, type: 'created' | 'updated' | 'deleted', input?: AdministratorInputTypes) => AdministratorEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>, type: 'created' | 'updated' | 'deleted', input?: AdministratorInputTypes) => AdministratorEvent`}   />
 
 
 
@@ -114,7 +114,7 @@ class AssetChannelEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, asset: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => AssetChannelEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, asset: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => AssetChannelEvent`}   />
 
 
 
@@ -142,12 +142,12 @@ class AssetEvent extends VendureEntityEvent<Asset, AssetInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>, type: 'created' | 'updated' | 'deleted', input?: AssetInputTypes) => AssetEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>, type: 'created' | 'updated' | 'deleted', input?: AssetInputTypes) => AssetEvent`}   />
 
 
 ### asset
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>"  since="1.4"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}  since="1.4"  />
 
 
 
@@ -176,7 +176,7 @@ class AttemptedLoginEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, strategy: string, identifier?: string) => AttemptedLoginEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, strategy: string, identifier?: string) => AttemptedLoginEvent`}   />
 
 
 
@@ -204,7 +204,7 @@ class ChangeChannelEvent<T extends ChannelAware & VendureEntity> extends Vendure
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: T, channelIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], type: 'assigned' | 'removed', entityType?: Type&#60;T&#62;) => ChangeChannelEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: T, channelIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], type: 'assigned' | 'removed', entityType?: Type&#60;T&#62;) => ChangeChannelEvent`}   />
 
 
 
@@ -231,7 +231,7 @@ class ChannelEvent extends VendureEntityEvent<Channel, ChannelInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>, type: 'created' | 'updated' | 'deleted', input?: ChannelInputTypes) => ChannelEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>, type: 'created' | 'updated' | 'deleted', input?: ChannelInputTypes) => ChannelEvent`}   />
 
 
 
@@ -258,7 +258,7 @@ class CollectionEvent extends VendureEntityEvent<Collection, CollectionInputType
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>, type: 'created' | 'updated' | 'deleted', input?: CollectionInputTypes) => CollectionEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>, type: 'created' | 'updated' | 'deleted', input?: CollectionInputTypes) => CollectionEvent`}   />
 
 
 
@@ -289,7 +289,7 @@ class CollectionModificationEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>, productVariantIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => CollectionModificationEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>, productVariantIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => CollectionModificationEvent`}   />
 
 
 
@@ -316,7 +316,7 @@ class CountryEvent extends VendureEntityEvent<Country, CountryInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/country#country'>Country</a>, type: 'created' | 'updated' | 'deleted', input?: CountryInputTypes) => CountryEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/country#country'>Country</a>, type: 'created' | 'updated' | 'deleted', input?: CountryInputTypes) => CountryEvent`}   />
 
 
 
@@ -344,7 +344,7 @@ class CouponCodeEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, couponCode: string, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => CouponCodeEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, couponCode: string, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => CouponCodeEvent`}   />
 
 
 
@@ -373,12 +373,12 @@ class CustomerAddressEvent extends VendureEntityEvent<Address, CustomerAddressIn
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/address#address'>Address</a>, type: 'created' | 'updated' | 'deleted', input?: CustomerAddressInputTypes) => CustomerAddressEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/address#address'>Address</a>, type: 'created' | 'updated' | 'deleted', input?: CustomerAddressInputTypes) => CustomerAddressEvent`}   />
 
 
 ### address
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/address#address'>Address</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/address#address'>Address</a>`}   />
 
 
 
@@ -407,12 +407,12 @@ class CustomerEvent extends VendureEntityEvent<Customer, CustomerInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>, type: 'created' | 'updated' | 'deleted', input?: CustomerInputTypes) => CustomerEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>, type: 'created' | 'updated' | 'deleted', input?: CustomerInputTypes) => CustomerEvent`}   />
 
 
 ### customer
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>"  since="1.4"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>`}  since="1.4"  />
 
 
 
@@ -440,7 +440,7 @@ class CustomerGroupChangeEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customers: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>[], customGroup: <a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>, type: 'assigned' | 'removed') => CustomerGroupChangeEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, customers: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>[], customGroup: <a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>, type: 'assigned' | 'removed') => CustomerGroupChangeEvent`}   />
 
 
 
@@ -467,7 +467,7 @@ class CustomerGroupEvent extends VendureEntityEvent<CustomerGroup, CustomerGroup
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>, type: 'created' | 'updated' | 'deleted', input?: CustomerGroupInputTypes) => CustomerGroupEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>, type: 'created' | 'updated' | 'deleted', input?: CustomerGroupInputTypes) => CustomerGroupEvent`}   />
 
 
 
@@ -494,7 +494,7 @@ class FacetEvent extends VendureEntityEvent<Facet, FacetInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>, type: 'created' | 'updated' | 'deleted', input?: FacetInputTypes) => FacetEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>, type: 'created' | 'updated' | 'deleted', input?: FacetInputTypes) => FacetEvent`}   />
 
 
 
@@ -521,7 +521,7 @@ class FacetValueEvent extends VendureEntityEvent<FacetValue, FacetValueInputType
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>, type: 'created' | 'updated' | 'deleted', input?: FacetValueInputTypes) => FacetValueEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>, type: 'created' | 'updated' | 'deleted', input?: FacetValueInputTypes) => FacetValueEvent`}   />
 
 
 
@@ -548,7 +548,7 @@ class FulfillmentEvent extends VendureEntityEvent<Fulfillment, CreateFulfillment
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>, input?: CreateFulfillmentInput) => FulfillmentEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>, input?: CreateFulfillmentInput) => FulfillmentEvent`}   />
 
 
 
@@ -575,7 +575,7 @@ class FulfillmentStateTransitionEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(fromState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, toState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fulfillment: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>) => FulfillmentStateTransitionEvent"   />
+<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, toState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fulfillment: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>) => FulfillmentStateTransitionEvent`}   />
 
 
 
@@ -603,7 +603,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: GlobalSettings, input?: UpdateGlobalSettingsInput) => GlobalSettingsEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: GlobalSettings, input?: UpdateGlobalSettingsInput) => GlobalSettingsEvent`}   />
 
 
 
@@ -631,12 +631,12 @@ class HistoryEntryEvent extends VendureEntityEvent<HistoryEntry, HistoryInput> {
 
 ### historyType
 
-<MemberInfo kind="property" type="'order' | 'customer' | string"   />
+<MemberInfo kind="property" type={`'order' | 'customer' | string`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a>, type: 'created' | 'updated' | 'deleted', historyType: 'order' | 'customer' | string, input?: HistoryInput) => HistoryEntryEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a>, type: 'created' | 'updated' | 'deleted', historyType: 'order' | 'customer' | string, input?: HistoryInput) => HistoryEntryEvent`}   />
 
 
 
@@ -664,7 +664,7 @@ class IdentifierChangeEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>, oldIdentifier: string) => IdentifierChangeEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>, oldIdentifier: string) => IdentifierChangeEvent`}   />
 
 
 
@@ -692,7 +692,7 @@ class IdentifierChangeRequestEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => IdentifierChangeRequestEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => IdentifierChangeRequestEvent`}   />
 
 
 
@@ -719,7 +719,7 @@ class InitializerEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="() => InitializerEvent"   />
+<MemberInfo kind="method" type={`() => InitializerEvent`}   />
 
 
 
@@ -746,7 +746,7 @@ class LoginEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => LoginEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => LoginEvent`}   />
 
 
 
@@ -773,7 +773,7 @@ class LogoutEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => LogoutEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => LogoutEvent`}   />
 
 
 
@@ -801,7 +801,7 @@ class OrderEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, type: 'created' | 'updated' | 'deleted') => OrderEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, type: 'created' | 'updated' | 'deleted') => OrderEvent`}   />
 
 
 
@@ -829,7 +829,7 @@ class OrderLineEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, type: 'created' | 'updated' | 'deleted') => OrderLineEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, type: 'created' | 'updated' | 'deleted') => OrderLineEvent`}   />
 
 
 
@@ -860,7 +860,7 @@ class OrderPlacedEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => OrderPlacedEvent"   />
+<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => OrderPlacedEvent`}   />
 
 
 
@@ -887,7 +887,7 @@ class OrderStateTransitionEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => OrderStateTransitionEvent"   />
+<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => OrderStateTransitionEvent`}   />
 
 
 
@@ -914,7 +914,7 @@ class PasswordResetEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => PasswordResetEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => PasswordResetEvent`}   />
 
 
 
@@ -941,7 +941,7 @@ class PasswordResetVerifiedEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => PasswordResetVerifiedEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => PasswordResetVerifiedEvent`}   />
 
 
 
@@ -969,7 +969,7 @@ class PaymentMethodEvent extends VendureEntityEvent<PaymentMethod, PaymentMethod
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>, type: 'created' | 'updated' | 'deleted', input?: PaymentMethodInputTypes) => PaymentMethodEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>, type: 'created' | 'updated' | 'deleted', input?: PaymentMethodInputTypes) => PaymentMethodEvent`}   />
 
 
 
@@ -997,7 +997,7 @@ class PaymentStateTransitionEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(fromState: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, toState: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, payment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => PaymentStateTransitionEvent"   />
+<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, toState: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, payment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => PaymentStateTransitionEvent`}   />
 
 
 
@@ -1025,7 +1025,7 @@ class ProductChannelEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, product: <a href='/reference/typescript-api/entities/product#product'>Product</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => ProductChannelEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, product: <a href='/reference/typescript-api/entities/product#product'>Product</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => ProductChannelEvent`}   />
 
 
 
@@ -1054,12 +1054,12 @@ class ProductEvent extends VendureEntityEvent<Product, ProductInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product#product'>Product</a>, type: 'created' | 'updated' | 'deleted', input?: ProductInputTypes) => ProductEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product#product'>Product</a>, type: 'created' | 'updated' | 'deleted', input?: ProductInputTypes) => ProductEvent`}   />
 
 
 ### product
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product#product'>Product</a>"  since="1.4"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product#product'>Product</a>`}  since="1.4"  />
 
 
 
@@ -1086,7 +1086,7 @@ class ProductOptionEvent extends VendureEntityEvent<ProductOption, ProductOption
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>, type: 'created' | 'updated' | 'deleted', input?: ProductOptionInputTypes) => ProductOptionEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>, type: 'created' | 'updated' | 'deleted', input?: ProductOptionInputTypes) => ProductOptionEvent`}   />
 
 
 
@@ -1113,7 +1113,7 @@ class ProductOptionGroupChangeEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, product: <a href='/reference/typescript-api/entities/product#product'>Product</a>, optionGroupId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => ProductOptionGroupChangeEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, product: <a href='/reference/typescript-api/entities/product#product'>Product</a>, optionGroupId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => ProductOptionGroupChangeEvent`}   />
 
 
 
@@ -1143,7 +1143,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes) => ProductOptionGroupEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes) => ProductOptionGroupEvent`}   />
 
 
 
@@ -1170,7 +1170,7 @@ class ProductVariantChannelEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => ProductVariantChannelEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, type: 'assigned' | 'removed') => ProductVariantChannelEvent`}   />
 
 
 
@@ -1199,12 +1199,12 @@ class ProductVariantEvent extends VendureEntityEvent<ProductVariant[], ProductVa
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes) => ProductVariantEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes) => ProductVariantEvent`}   />
 
 
 ### variants
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]"  since="1.4"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}  since="1.4"  />
 
 
 
@@ -1232,7 +1232,7 @@ class PromotionEvent extends VendureEntityEvent<Promotion, PromotionInputTypes> 
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>, type: 'created' | 'updated' | 'deleted', input?: PromotionInputTypes) => PromotionEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>, type: 'created' | 'updated' | 'deleted', input?: PromotionInputTypes) => PromotionEvent`}   />
 
 
 
@@ -1259,7 +1259,7 @@ class ProvinceEvent extends VendureEntityEvent<Province, ProvinceInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/province#province'>Province</a>, type: 'created' | 'updated' | 'deleted', input?: ProvinceInputTypes) => ProvinceEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/province#province'>Province</a>, type: 'created' | 'updated' | 'deleted', input?: ProvinceInputTypes) => ProvinceEvent`}   />
 
 
 
@@ -1286,7 +1286,7 @@ class RefundStateTransitionEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(fromState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, toState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, refund: Refund, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => RefundStateTransitionEvent"   />
+<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, toState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, refund: Refund, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => RefundStateTransitionEvent`}   />
 
 
 
@@ -1314,7 +1314,7 @@ class RoleChangeEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, admin: <a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>, roleIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], type: 'assigned' | 'removed') => RoleChangeEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, admin: <a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>, roleIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], type: 'assigned' | 'removed') => RoleChangeEvent`}   />
 
 
 
@@ -1341,7 +1341,7 @@ class RoleEvent extends VendureEntityEvent<Role, RoleInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/role#role'>Role</a>, type: 'created' | 'updated' | 'deleted', input?: RoleInputTypes) => RoleEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/role#role'>Role</a>, type: 'created' | 'updated' | 'deleted', input?: RoleInputTypes) => RoleEvent`}   />
 
 
 
@@ -1368,7 +1368,7 @@ class SearchEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: ExtendedSearchInput) => SearchEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: ExtendedSearchInput) => SearchEvent`}   />
 
 
 
@@ -1395,7 +1395,7 @@ class SellerEvent extends VendureEntityEvent<Seller, SellerInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/seller#seller'>Seller</a>, type: 'created' | 'updated' | 'deleted', input?: SellerInputTypes) => SellerEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/seller#seller'>Seller</a>, type: 'created' | 'updated' | 'deleted', input?: SellerInputTypes) => SellerEvent`}   />
 
 
 
@@ -1423,7 +1423,7 @@ class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, ShippingMet
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>, type: 'created' | 'updated' | 'deleted', input?: ShippingMethodInputTypes) => ShippingMethodEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>, type: 'created' | 'updated' | 'deleted', input?: ShippingMethodInputTypes) => ShippingMethodEvent`}   />
 
 
 
@@ -1452,12 +1452,12 @@ class StockMovementEvent extends VendureEvent {
 
 ### type
 
-<MemberInfo kind="property" type="StockMovementType"   />
+<MemberInfo kind="property" type={`StockMovementType`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockMovements: <a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]) => StockMovementEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, stockMovements: <a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]) => StockMovementEvent`}   />
 
 
 
@@ -1485,7 +1485,7 @@ class TaxCategoryEvent extends VendureEntityEvent<TaxCategory, TaxCategoryInputT
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>, type: 'created' | 'updated' | 'deleted', input?: TaxCategoryInputTypes) => TaxCategoryEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>, type: 'created' | 'updated' | 'deleted', input?: TaxCategoryInputTypes) => TaxCategoryEvent`}   />
 
 
 
@@ -1513,7 +1513,7 @@ class TaxRateEvent extends VendureEntityEvent<TaxRate, TaxRateInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>, type: 'created' | 'updated' | 'deleted', input?: TaxRateInputTypes) => TaxRateEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>, type: 'created' | 'updated' | 'deleted', input?: TaxRateInputTypes) => TaxRateEvent`}   />
 
 
 
@@ -1540,7 +1540,7 @@ class TaxRateModificationEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, taxRate: <a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>) => TaxRateModificationEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, taxRate: <a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>) => TaxRateModificationEvent`}   />
 
 
 
@@ -1568,7 +1568,7 @@ class ZoneEvent extends VendureEntityEvent<Zone, ZoneInputTypes> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, type: 'created' | 'updated' | 'deleted', input?: ZoneInputTypes) => ZoneEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, type: 'created' | 'updated' | 'deleted', input?: ZoneInputTypes) => ZoneEvent`}   />
 
 
 
@@ -1596,7 +1596,7 @@ class ZoneMembersEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, type: 'assigned' | 'removed', memberIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => ZoneMembersEvent"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, type: 'assigned' | 'removed', memberIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => ZoneMembersEvent`}   />
 
 
 

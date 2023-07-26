@@ -1,7 +1,7 @@
 ---
 title: "StockLevel"
 weight: 10
-date: 2023-07-21T15:46:16.314Z
+date: 2023-07-26T18:59:56.506Z
 showtoc: true
 generated: true
 ---
@@ -45,37 +45,37 @@ class StockLevel extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;) => StockLevel"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>&#62;) => StockLevel`}   />
 
 
 ### productVariant
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>`}   />
 
 
 ### productVariantId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### stockLocation
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>`}   />
 
 
 ### stockLocationId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### stockOnHand
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### stockAllocated
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 

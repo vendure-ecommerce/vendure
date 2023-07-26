@@ -1,7 +1,7 @@
 ---
 title: "BraintreePlugin"
 weight: 10
-date: 2023-07-21T15:46:18.218Z
+date: 2023-07-26T19:00:00.522Z
 showtoc: true
 generated: true
 ---
@@ -253,12 +253,12 @@ class BraintreePlugin {
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreepluginoptions'>BraintreePluginOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/payments-plugin/braintree-plugin#braintreeplugin'>BraintreePlugin</a>&#62;`}   />
 
 
 
@@ -284,12 +284,12 @@ interface BraintreePluginOptions {
 
 ### environment
 
-<MemberInfo kind="property" type="Environment" default="Environment.Sandbox"   />
+<MemberInfo kind="property" type={`Environment`} default="Environment.Sandbox"   />
 
 The Braintree environment being targeted, e.g. sandbox or production.
 ### storeCustomersInBraintree
 
-<MemberInfo kind="property" type="boolean" default="false"   />
+<MemberInfo kind="property" type={`boolean`} default="false"   />
 
 If set to `true`, a [Customer](https://developer.paypal.com/braintree/docs/guides/customers) object
 will be created in Braintree, which allows the secure storage ("vaulting") of previously-used payment methods.
@@ -300,7 +300,7 @@ Since v1.8, it is possible to override vaulting on a per-payment basis by passin
 `generateBraintreeClientToken` mutation.
 ### extractMetadata
 
-<MemberInfo kind="property" type="(transaction: <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata"  since="1.7.0"  />
+<MemberInfo kind="property" type={`(transaction: <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a>) =&#62; PaymentMetadata`}  since="1.7.0"  />
 
 Allows you to configure exactly what information from the Braintree
 [Transaction object](https://developer.paypal.com/braintree/docs/reference/response/transaction#result-object) (which is returned by the

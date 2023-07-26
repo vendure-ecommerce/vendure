@@ -1,7 +1,7 @@
 ---
 title: "Email Plugin Types"
 weight: 10
-date: 2023-07-21T15:46:18.091Z
+date: 2023-07-26T19:00:00.225Z
 showtoc: true
 generated: true
 ---
@@ -59,42 +59,42 @@ interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialize
 
 ### from
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### recipient
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### subject
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### body
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### attachments
 
-<MemberInfo kind="property" type="Array&#60;Type extends 'serialized' ? SerializedAttachment : Attachment&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;Type extends 'serialized' ? SerializedAttachment : Attachment&#62;`}   />
 
 
 ### cc
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### bcc
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### replyTo
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 
@@ -176,17 +176,17 @@ interface OptionalAddressFields {
 
 ### cc
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 Comma separated list of recipients email addresses that will appear on the _Cc:_ field
 ### bcc
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 Comma separated list of recipients email addresses that will appear on the _Bcc:_ field
 ### replyTo
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 An email address that will appear on the _Reply-To:_ field
 

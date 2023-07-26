@@ -1,7 +1,7 @@
 ---
 title: "AssetServerPlugin"
 weight: 10
-date: 2023-07-21T15:46:17.951Z
+date: 2023-07-26T18:59:59.958Z
 showtoc: true
 generated: true
 ---
@@ -140,17 +140,17 @@ class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/asset-server-plugin/#assetserverplugin'>AssetServerPlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/asset-server-plugin/#assetserverplugin'>AssetServerPlugin</a>&#62;`}   />
 
 Set the plugin options.
 ### constructor
 
-<MemberInfo kind="method" type="(processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AssetServerPlugin"   />
+<MemberInfo kind="method" type={`(processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AssetServerPlugin`}   />
 
 
 ### configure
 
-<MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
+<MemberInfo kind="method" type={`(consumer: MiddlewareConsumer) => `}   />
 
 
 

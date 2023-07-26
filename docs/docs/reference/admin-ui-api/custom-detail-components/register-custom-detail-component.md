@@ -1,7 +1,7 @@
 ---
 title: "RegisterCustomDetailComponent"
 weight: 10
-date: 2023-07-21T15:46:19.073Z
+date: 2023-07-26T19:00:02.348Z
 showtoc: true
 generated: true
 ---
@@ -25,5 +25,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component-config#customdetailcomponentconfig'>CustomDetailComponentConfig</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component-config#customdetailcomponentconfig'>CustomDetailComponentConfig</a>`} />
 

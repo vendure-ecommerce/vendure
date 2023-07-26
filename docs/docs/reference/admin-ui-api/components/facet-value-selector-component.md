@@ -1,7 +1,7 @@
 ---
 title: "FacetValueSelectorComponent"
 weight: 10
-date: 2023-07-21T15:46:19.401Z
+date: 2023-07-26T19:00:03.205Z
 showtoc: true
 generated: true
 ---
@@ -68,102 +68,102 @@ class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAcce
 
 ### selectedValuesChange
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### readonly
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### transformControlValueAccessorValue
 
-<MemberInfo kind="property" type="(value: FacetValueFragment[]) =&#62; any[]"   />
+<MemberInfo kind="property" type={`(value: FacetValueFragment[]) =&#62; any[]`}   />
 
 
 ### searchInput$
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### searchLoading
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### searchResults$
 
-<MemberInfo kind="property" type="Observable&#60;FacetValueFragment[]&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;FacetValueFragment[]&#62;`}   />
 
 
 ### selectedIds$
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### onChangeFn
 
-<MemberInfo kind="property" type="(val: any) =&#62; void"   />
+<MemberInfo kind="property" type={`(val: any) =&#62; void`}   />
 
 
 ### onTouchFn
 
-<MemberInfo kind="property" type="() =&#62; void"   />
+<MemberInfo kind="property" type={`() =&#62; void`}   />
 
 
 ### disabled
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### value
 
-<MemberInfo kind="property" type="Array&#60;string | FacetValueFragment&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;string | FacetValueFragment&#62;`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent"   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent`}   />
 
 
 ### ngOnInit
 
-<MemberInfo kind="method" type="() => void"   />
+<MemberInfo kind="method" type={`() => void`}   />
 
 
 ### ngOnDestroy
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### onChange
 
-<MemberInfo kind="method" type="(selected: FacetValueFragment[]) => "   />
+<MemberInfo kind="method" type={`(selected: FacetValueFragment[]) => `}   />
 
 
 ### registerOnChange
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### registerOnTouched
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### setDisabledState
 
-<MemberInfo kind="method" type="(isDisabled: boolean) => void"   />
+<MemberInfo kind="method" type={`(isDisabled: boolean) => void`}   />
 
 
 ### focus
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### writeValue
 
-<MemberInfo kind="method" type="(obj: string | FacetValueFragment[] | Array&#60;string | number&#62; | null) => void"   />
+<MemberInfo kind="method" type={`(obj: string | FacetValueFragment[] | Array&#60;string | number&#62; | null) => void`}   />
 
 
 

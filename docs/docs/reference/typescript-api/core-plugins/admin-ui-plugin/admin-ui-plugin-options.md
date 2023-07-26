@@ -1,7 +1,7 @@
 ---
 title: "AdminUiPluginOptions"
 weight: 10
-date: 2023-07-21T15:46:17.903Z
+date: 2023-07-26T18:59:59.889Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ interface AdminUiPluginOptions {
 
 ### route
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The route to the Admin UI.
 
@@ -40,25 +40,25 @@ the route should match the `baseHref` option passed to that function. The defaul
 so it only needs to be changed if you set this `route` option to something other than `"admin"`.
 ### port
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The port on which the server will listen. This port will be proxied by the AdminUiPlugin to the same port that
 the Vendure server is running on.
 ### hostname
 
-<MemberInfo kind="property" type="string" default="'localhost'"   />
+<MemberInfo kind="property" type={`string`} default="'localhost'"   />
 
 The hostname of the server serving the static admin ui files.
 ### app
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-app-config#adminuiappconfig'>AdminUiAppConfig</a> | <a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-app-dev-mode-config#adminuiappdevmodeconfig'>AdminUiAppDevModeConfig</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-app-config#adminuiappconfig'>AdminUiAppConfig</a> | <a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-app-dev-mode-config#adminuiappdevmodeconfig'>AdminUiAppDevModeConfig</a>`}   />
 
 By default, the AdminUiPlugin comes bundles with a pre-built version of the
 Admin UI. This option can be used to override this default build with a different
 version, e.g. one pre-compiled with one or more ui extensions.
 ### adminUiConfig
 
-<MemberInfo kind="property" type="Partial&#60;<a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-config#adminuiconfig'>AdminUiConfig</a>&#62;"   />
+<MemberInfo kind="property" type={`Partial&#60;<a href='/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-config#adminuiconfig'>AdminUiConfig</a>&#62;`}   />
 
 Allows the contents of the `vendure-ui-config.json` file to be set, e.g.
 for specifying the Vendure GraphQL API host, available UI languages, etc.

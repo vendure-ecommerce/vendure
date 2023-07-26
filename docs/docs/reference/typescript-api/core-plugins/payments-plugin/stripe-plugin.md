@@ -1,7 +1,7 @@
 ---
 title: "StripePlugin"
 weight: 10
-date: 2023-07-21T15:46:18.236Z
+date: 2023-07-26T19:00:00.561Z
 showtoc: true
 generated: true
 ---
@@ -168,12 +168,12 @@ class StripePlugin {
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripeplugin'>StripePlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/payments-plugin/stripe-plugin#stripeplugin'>StripePlugin</a>&#62;`}   />
 
 Initialize the Stripe payment plugin
 
@@ -202,7 +202,7 @@ interface StripePluginOptions {
 
 ### storeCustomersInStripe
 
-<MemberInfo kind="property" type="boolean" default="false"   />
+<MemberInfo kind="property" type={`boolean`} default="false"   />
 
 If set to `true`, a [Customer](https://stripe.com/docs/api/customers) object will be created in Stripe - if
 it doesn't already exist - for authenticated users, which prevents payment methods attached to other Customers
@@ -210,7 +210,7 @@ to be used with the same PaymentIntent. This is done by adding a custom field to
 the Stripe customer ID, so switching this on will require a database migration / synchronization.
 ### metadata
 
-<MemberInfo kind="property" type="(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;"  since="1.9.7"  />
+<MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;`}  since="1.9.7"  />
 
 Attach extra metadata to Stripe payment intent
 

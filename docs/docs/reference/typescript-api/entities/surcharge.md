@@ -1,7 +1,7 @@
 ---
 title: "Surcharge"
 weight: 10
-date: 2023-07-21T15:46:16.350Z
+date: 2023-07-26T18:59:56.563Z
 showtoc: true
 generated: true
 ---
@@ -50,57 +50,57 @@ class Surcharge extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>&#62;) => Surcharge"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/surcharge#surcharge'>Surcharge</a>&#62;) => Surcharge`}   />
 
 
 ### description
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### listPrice
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### listPriceIncludesTax
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### sku
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### taxLines
 
-<MemberInfo kind="property" type="TaxLine[]"   />
+<MemberInfo kind="property" type={`TaxLine[]`}   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}   />
 
 
 ### orderModification
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>`}   />
 
 
 ### price
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### priceWithTax
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### taxRate
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 

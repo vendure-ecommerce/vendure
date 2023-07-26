@@ -1,7 +1,7 @@
 ---
 title: "CustomDetailComponentLocationId"
 weight: 10
-date: 2023-07-21T15:46:19.022Z
+date: 2023-07-26T19:00:02.230Z
 showtoc: true
 generated: true
 ---
@@ -25,6 +25,7 @@ type CustomDetailComponentLocationId = | 'administrator-profile'
     | 'country-detail'
     | 'customer-detail'
     | 'customer-group-detail'
+    | 'draft-order-detail'
     | 'facet-detail'
     | 'global-settings-detail'
     | 'order-detail'

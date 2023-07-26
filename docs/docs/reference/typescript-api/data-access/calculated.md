@@ -1,7 +1,7 @@
 ---
 title: "Calculated"
 weight: 10
-date: 2023-07-21T15:46:14.738Z
+date: 2023-07-26T18:59:53.925Z
 showtoc: true
 generated: true
 ---
@@ -26,7 +26,7 @@ Parameters
 
 ### queryInstruction
 
-<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/data-access/calculated#calculatedcolumnqueryinstruction'>CalculatedColumnQueryInstruction</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/data-access/calculated#calculatedcolumnqueryinstruction'>CalculatedColumnQueryInstruction</a>`} />
 
 
 
@@ -49,19 +49,19 @@ interface CalculatedColumnQueryInstruction {
 
 ### relations
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 If the calculated property depends on one or more relations being present
 on the entity (e.g. an `Order` entity calculating the `totalQuantity` by adding
 up the quantities of each `OrderLine`), then those relations should be defined here.
 ### query
 
-<MemberInfo kind="property" type="(qb: SelectQueryBuilder&#60;any&#62;) =&#62; void"   />
+<MemberInfo kind="property" type={`(qb: SelectQueryBuilder&#60;any&#62;) =&#62; void`}   />
 
 
 ### expression
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 

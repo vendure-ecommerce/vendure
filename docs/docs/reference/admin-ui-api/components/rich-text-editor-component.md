@@ -1,7 +1,7 @@
 ---
 title: "RichTextEditorComponent"
 weight: 10
-date: 2023-07-21T15:46:19.449Z
+date: 2023-07-26T19:00:03.418Z
 showtoc: true
 generated: true
 ---
@@ -51,62 +51,62 @@ class RichTextEditorComponent implements ControlValueAccessor, AfterViewInit, On
 
 ### label
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### _readonly
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### onChange
 
-<MemberInfo kind="property" type="(val: any) =&#62; void"   />
+<MemberInfo kind="property" type={`(val: any) =&#62; void`}   />
 
 
 ### onTouch
 
-<MemberInfo kind="property" type="() =&#62; void"   />
+<MemberInfo kind="property" type={`() =&#62; void`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(changeDetector: ChangeDetectorRef, prosemirrorService: ProsemirrorService, viewContainerRef: ViewContainerRef, contextMenuService: ContextMenuService) => RichTextEditorComponent"   />
+<MemberInfo kind="method" type={`(changeDetector: ChangeDetectorRef, prosemirrorService: ProsemirrorService, viewContainerRef: ViewContainerRef, contextMenuService: ContextMenuService) => RichTextEditorComponent`}   />
 
 
 ### menuElement
 
-<MemberInfo kind="property" type="HTMLDivElement | null"   />
+<MemberInfo kind="property" type={`HTMLDivElement | null`}   />
 
 
 ### ngAfterViewInit
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### ngOnDestroy
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### registerOnChange
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### registerOnTouched
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### setDisabledState
 
-<MemberInfo kind="method" type="(isDisabled: boolean) => "   />
+<MemberInfo kind="method" type={`(isDisabled: boolean) => `}   />
 
 
 ### writeValue
 
-<MemberInfo kind="method" type="(value: any) => "   />
+<MemberInfo kind="method" type={`(value: any) => `}   />
 
 
 

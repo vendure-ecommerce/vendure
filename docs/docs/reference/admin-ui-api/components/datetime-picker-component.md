@@ -1,7 +1,7 @@
 ---
 title: "DatetimePickerComponent"
 weight: 10
-date: 2023-07-21T15:46:19.343Z
+date: 2023-07-26T19:00:02.998Z
 showtoc: true
 generated: true
 ---
@@ -73,194 +73,194 @@ class DatetimePickerComponent implements ControlValueAccessor, AfterViewInit, On
 
 ### yearRange
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 The range above and below the current year which is selectable from
 the year select control. If a min or max value is set, these will
 override the yearRange.
 ### weekStartDay
 
-<MemberInfo kind="property" type="DayOfWeek"   />
+<MemberInfo kind="property" type={`DayOfWeek`}   />
 
 The day that the week should start with in the calendar view.
 ### timeGranularityInterval
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 The granularity of the minutes time picker
 ### min
 
-<MemberInfo kind="property" type="string | null"   />
+<MemberInfo kind="property" type={`string | null`}   />
 
 The minimum date as an ISO string
 ### max
 
-<MemberInfo kind="property" type="string | null"   />
+<MemberInfo kind="property" type={`string | null`}   />
 
 The maximum date as an ISO string
 ### readonly
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 Sets the readonly state
 ### dropdownComponent
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/components/dropdown-component#dropdowncomponent'>DropdownComponent</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/components/dropdown-component#dropdowncomponent'>DropdownComponent</a>`}   />
 
 
 ### datetimeInput
 
-<MemberInfo kind="property" type="ElementRef&#60;HTMLInputElement&#62;"   />
+<MemberInfo kind="property" type={`ElementRef&#60;HTMLInputElement&#62;`}   />
 
 
 ### calendarTable
 
-<MemberInfo kind="property" type="ElementRef&#60;HTMLTableElement&#62;"   />
+<MemberInfo kind="property" type={`ElementRef&#60;HTMLTableElement&#62;`}   />
 
 
 ### disabled
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### calendarView$
 
-<MemberInfo kind="property" type="Observable&#60;CalendarView&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;CalendarView&#62;`}   />
 
 
 ### current$
 
-<MemberInfo kind="property" type="Observable&#60;CurrentView&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;CurrentView&#62;`}   />
 
 
 ### selected$
 
-<MemberInfo kind="property" type="Observable&#60;Date | null&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;Date | null&#62;`}   />
 
 
 ### selectedHours$
 
-<MemberInfo kind="property" type="Observable&#60;number | null&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;number | null&#62;`}   />
 
 
 ### selectedMinutes$
 
-<MemberInfo kind="property" type="Observable&#60;number | null&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;number | null&#62;`}   />
 
 
 ### years
 
-<MemberInfo kind="property" type="number[]"   />
+<MemberInfo kind="property" type={`number[]`}   />
 
 
 ### weekdays
 
-<MemberInfo kind="property" type="string[]"   />
+<MemberInfo kind="property" type={`string[]`}   />
 
 
 ### hours
 
-<MemberInfo kind="property" type="number[]"   />
+<MemberInfo kind="property" type={`number[]`}   />
 
 
 ### minutes
 
-<MemberInfo kind="property" type="number[]"   />
+<MemberInfo kind="property" type={`number[]`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(changeDetectorRef: ChangeDetectorRef, datetimePickerService: DatetimePickerService) => DatetimePickerComponent"   />
+<MemberInfo kind="method" type={`(changeDetectorRef: ChangeDetectorRef, datetimePickerService: DatetimePickerService) => DatetimePickerComponent`}   />
 
 
 ### ngOnInit
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### ngAfterViewInit
 
-<MemberInfo kind="method" type="() => void"   />
+<MemberInfo kind="method" type={`() => void`}   />
 
 
 ### ngOnDestroy
 
-<MemberInfo kind="method" type="() => void"   />
+<MemberInfo kind="method" type={`() => void`}   />
 
 
 ### registerOnChange
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### registerOnTouched
 
-<MemberInfo kind="method" type="(fn: any) => "   />
+<MemberInfo kind="method" type={`(fn: any) => `}   />
 
 
 ### setDisabledState
 
-<MemberInfo kind="method" type="(isDisabled: boolean) => "   />
+<MemberInfo kind="method" type={`(isDisabled: boolean) => `}   />
 
 
 ### writeValue
 
-<MemberInfo kind="method" type="(value: string | null) => "   />
+<MemberInfo kind="method" type={`(value: string | null) => `}   />
 
 
 ### prevMonth
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### nextMonth
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### selectToday
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### setYear
 
-<MemberInfo kind="method" type="(event: Event) => "   />
+<MemberInfo kind="method" type={`(event: Event) => `}   />
 
 
 ### setMonth
 
-<MemberInfo kind="method" type="(event: Event) => "   />
+<MemberInfo kind="method" type={`(event: Event) => `}   />
 
 
 ### selectDay
 
-<MemberInfo kind="method" type="(day: DayCell) => "   />
+<MemberInfo kind="method" type={`(day: DayCell) => `}   />
 
 
 ### clearValue
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### handleCalendarKeydown
 
-<MemberInfo kind="method" type="(event: KeyboardEvent) => "   />
+<MemberInfo kind="method" type={`(event: KeyboardEvent) => `}   />
 
 
 ### setHour
 
-<MemberInfo kind="method" type="(event: Event) => "   />
+<MemberInfo kind="method" type={`(event: Event) => `}   />
 
 
 ### setMinute
 
-<MemberInfo kind="method" type="(event: Event) => "   />
+<MemberInfo kind="method" type={`(event: Event) => `}   />
 
 
 ### closeDatepicker
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 

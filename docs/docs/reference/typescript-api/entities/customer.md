@@ -1,7 +1,7 @@
 ---
 title: "Customer"
 weight: 10
-date: 2023-07-21T15:46:15.962Z
+date: 2023-07-26T18:59:55.890Z
 showtoc: true
 generated: true
 ---
@@ -60,67 +60,67 @@ class Customer extends VendureEntity implements ChannelAware, HasCustomFields, S
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;) => Customer"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;) => Customer`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### title
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### firstName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### lastName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### phoneNumber
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### emailAddress
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### groups
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>[]`}   />
 
 
 ### addresses
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/address#address'>Address</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/address#address'>Address</a>[]`}   />
 
 
 ### orders
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>[]`}   />
 
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/user#user'>User</a>`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomCustomerFields"   />
+<MemberInfo kind="property" type={`CustomCustomerFields`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

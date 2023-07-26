@@ -1,7 +1,7 @@
 ---
 title: "DefaultOrderItemPriceCalculationStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.198Z
+date: 2023-07-26T18:59:54.686Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class DefaultOrderItemPriceCalculationStrategy implements OrderItemPriceCalculat
 
 ### calculateUnitPrice
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>) => <a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>) => <a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a> | Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;`}   />
 
 
 

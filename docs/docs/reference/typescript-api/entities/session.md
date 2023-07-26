@@ -1,7 +1,7 @@
 ---
 title: "Session"
 weight: 10
-date: 2023-07-21T15:46:16.275Z
+date: 2023-07-26T18:59:56.436Z
 showtoc: true
 generated: true
 ---
@@ -45,37 +45,37 @@ class Session extends VendureEntity {
 
 ### token
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### expires
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 ### invalidated
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### activeOrderId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### activeOrder
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a> | null"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a> | null`}   />
 
 
 ### activeChannelId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### activeChannel
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | null"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | null`}   />
 
 
 

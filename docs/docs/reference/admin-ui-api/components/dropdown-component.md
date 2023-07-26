@@ -1,7 +1,7 @@
 ---
 title: "DropdownComponent"
 weight: 10
-date: 2023-07-21T15:46:19.392Z
+date: 2023-07-26T19:00:03.174Z
 showtoc: true
 generated: true
 ---
@@ -54,37 +54,37 @@ class DropdownComponent {
 
 ### isOpen
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### trigger
 
-<MemberInfo kind="property" type="ElementRef"   />
+<MemberInfo kind="property" type={`ElementRef`}   />
 
 
 ### manualToggle
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### onClick
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### toggleOpen
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### onOpenChange
 
-<MemberInfo kind="method" type="(callback: (isOpen: boolean) =&#62; void) => "   />
+<MemberInfo kind="method" type={`(callback: (isOpen: boolean) =&#62; void) => `}   />
 
 
 ### setTriggerElement
 
-<MemberInfo kind="method" type="(elementRef: ElementRef) => "   />
+<MemberInfo kind="method" type={`(elementRef: ElementRef) => `}   />
 
 
 

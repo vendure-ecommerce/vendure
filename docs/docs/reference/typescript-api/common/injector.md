@@ -1,7 +1,7 @@
 ---
 title: "Injector"
 weight: 10
-date: 2023-07-21T15:46:14.809Z
+date: 2023-07-26T18:59:54.034Z
 showtoc: true
 generated: true
 ---
@@ -32,18 +32,18 @@ class Injector {
 
 ### constructor
 
-<MemberInfo kind="method" type="(moduleRef: ModuleRef) => Injector"   />
+<MemberInfo kind="method" type={`(moduleRef: ModuleRef) => Injector`}   />
 
 
 ### get
 
-<MemberInfo kind="method" type="(typeOrToken: Type&#60;T&#62; | string | symbol) => R"   />
+<MemberInfo kind="method" type={`(typeOrToken: Type&#60;T&#62; | string | symbol) => R`}   />
 
 Retrieve an instance of the given type from the app's dependency injection container.
 Wraps the Nestjs `ModuleRef.get()` method.
 ### resolve
 
-<MemberInfo kind="method" type="(typeOrToken: Type&#60;T&#62; | string | symbol, contextId?: ContextId) => Promise&#60;R&#62;"   />
+<MemberInfo kind="method" type={`(typeOrToken: Type&#60;T&#62; | string | symbol, contextId?: ContextId) => Promise&#60;R&#62;`}   />
 
 Retrieve an instance of the given scoped provider (transient or request-scoped) from the
 app's dependency injection container.

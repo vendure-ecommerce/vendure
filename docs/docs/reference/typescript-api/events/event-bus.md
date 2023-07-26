@@ -1,7 +1,7 @@
 ---
 title: "EventBus"
 weight: 10
-date: 2023-07-21T15:46:16.403Z
+date: 2023-07-26T18:59:56.681Z
 showtoc: true
 generated: true
 ---
@@ -71,17 +71,17 @@ class EventBus implements OnModuleDestroy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(transactionSubscriber: TransactionSubscriber) => EventBus"   />
+<MemberInfo kind="method" type={`(transactionSubscriber: TransactionSubscriber) => EventBus`}   />
 
 
 ### publish
 
-<MemberInfo kind="method" type="(event: T) => void"   />
+<MemberInfo kind="method" type={`(event: T) => void`}   />
 
 Publish an event which any subscribers can react to.
 ### ofType
 
-<MemberInfo kind="method" type="(type: Type&#60;T&#62;) => Observable&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(type: Type&#60;T&#62;) => Observable&#60;T&#62;`}   />
 
 Returns an RxJS Observable stream of events of the given type.
 If the event contains a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber
@@ -91,7 +91,7 @@ This means that the subscriber function can safely access all updated
 data related to the event.
 ### filter
 
-<MemberInfo kind="method" type="(predicate: (event: <a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a>) =&#62; boolean) => Observable&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(predicate: (event: <a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a>) =&#62; boolean) => Observable&#60;T&#62;`}   />
 
 Returns an RxJS Observable stream of events filtered by a custom predicate.
 If the event contains a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> object, the subscriber

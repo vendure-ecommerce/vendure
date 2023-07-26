@@ -41,6 +41,13 @@ export interface LocationWithQuantity {
  * from each location. It is also used to determine the available stock for a given
  * {@link ProductVariant}.
  *
+ * :::info
+ *
+ * This is configured via the `catalogOptions.stockLocationStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory products & stock
  * @docsWeight 0
  * @since 2.0.0

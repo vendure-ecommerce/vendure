@@ -1,7 +1,7 @@
 ---
 title: "SessionCacheStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.445Z
+date: 2023-07-26T18:59:55.103Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SessionCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="147" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="154" packageName="@vendure/core" />
 
 This strategy defines how sessions get cached. Since most requests will need the Session
 object for permissions data, it can become a bottleneck to go to the database and do a multi-join
@@ -24,6 +24,13 @@ The Vendure default is to use a the <a href='/reference/typescript-api/auth/in-m
 single-instance deployments. However, for multi-instance deployments (horizontally scaled, serverless etc.),
 you will need to define a custom strategy that stores the session cache in a shared data store, such as in the
 DB or in Redis.
+
+:::info
+
+This is configured via the `authOptions.sessionCacheStrategy` property of
+your VendureConfig.
+
+:::
 
 Here's an example implementation using Redis. To use this, you need to add the
 [ioredis package](https://www.npmjs.com/package/ioredis) as a dependency.
@@ -127,24 +134,24 @@ interface SessionCacheStrategy extends InjectableStrategy {
 
 ### set
 
-<MemberInfo kind="method" type="(session: <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => void | Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(session: <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>) => void | Promise&#60;void&#62;`}   />
 
 Store the session in the cache. When caching a session, the data
 should not be modified apart from performing any transforms needed to
 get it into a state to be stored, e.g. JSON.stringify().
 ### get
 
-<MemberInfo kind="method" type="(sessionToken: string) => <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined | Promise&#60;<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(sessionToken: string) => <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined | Promise&#60;<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a> | undefined&#62;`}   />
 
 Retrieve the session from the cache
 ### delete
 
-<MemberInfo kind="method" type="(sessionToken: string) => void | Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(sessionToken: string) => void | Promise&#60;void&#62;`}   />
 
 Delete a session from the cache
 ### clear
 
-<MemberInfo kind="method" type="() => void | Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`() => void | Promise&#60;void&#62;`}   />
 
 Clear the entire cache
 
@@ -172,22 +179,22 @@ type CachedSessionUser = {
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### identifier
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### verified
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### channelPermissions
 
-<MemberInfo kind="property" type="UserChannelPermissions[]"   />
+<MemberInfo kind="property" type={`UserChannelPermissions[]`}   />
 
 
 
@@ -219,44 +226,44 @@ type CachedSession = {
 
 ### cacheExpiry
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The timestamp after which this cache entry is considered stale and
 a fresh copy of the data will be set. Based on the `sessionCacheTTL`
 option.
 ### id
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### token
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### expires
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 ### activeOrderId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### authenticationStrategy
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsessionuser'>CachedSessionUser</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsessionuser'>CachedSessionUser</a>`}   />
 
 
 ### activeChannelId
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 

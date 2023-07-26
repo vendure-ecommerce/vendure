@@ -1,7 +1,7 @@
 ---
 title: "InjectableStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.859Z
+date: 2023-07-26T18:59:54.113Z
 showtoc: true
 generated: true
 ---
@@ -29,7 +29,7 @@ interface InjectableStrategy {
 
 ### init
 
-<MemberInfo kind="property" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) =&#62; void | Promise&#60;void&#62;"   />
+<MemberInfo kind="property" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) =&#62; void | Promise&#60;void&#62;`}   />
 
 Defines setup logic to be run during application bootstrap. Receives
 the <a href='/reference/typescript-api/common/injector#injector'>Injector</a> as an argument, which allows application providers
@@ -46,7 +46,7 @@ async init(injector: Injector) {
 ```
 ### destroy
 
-<MemberInfo kind="property" type="() =&#62; void | Promise&#60;void&#62;"   />
+<MemberInfo kind="property" type={`() =&#62; void | Promise&#60;void&#62;`}   />
 
 Defines teardown logic to be run before application shutdown.
 

@@ -1,7 +1,7 @@
 ---
 title: "Country"
 weight: 10
-date: 2023-07-21T15:46:16.238Z
+date: 2023-07-26T18:59:56.371Z
 showtoc: true
 generated: true
 ---
@@ -33,12 +33,12 @@ class Country extends Region {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/country#country'>Country</a>&#62;) => Country"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/country#country'>Country</a>&#62;) => Country`}   />
 
 
 ### type
 
-<MemberInfo kind="property" type="RegionType"   />
+<MemberInfo kind="property" type={`RegionType`}   />
 
 
 

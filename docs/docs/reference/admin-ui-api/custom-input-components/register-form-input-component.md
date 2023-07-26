@@ -1,7 +1,7 @@
 ---
 title: "RegisterFormInputComponent"
 weight: 10
-date: 2023-07-21T15:46:19.566Z
+date: 2023-07-26T19:00:03.926Z
 showtoc: true
 generated: true
 ---
@@ -68,9 +68,9 @@ Parameters
 
 ### id
 
-<MemberInfo kind="parameter" type="string" />
+<MemberInfo kind="parameter" type={`string`} />
 
 ### component
 
-<MemberInfo kind="parameter" type="Type&#60;<a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a>&#62;" />
+<MemberInfo kind="parameter" type={`Type&#60;<a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a>&#62;`} />
 

@@ -1,7 +1,7 @@
 ---
 title: "DefaultAssetNamingStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.878Z
+date: 2023-07-26T18:59:54.145Z
 showtoc: true
 generated: true
 ---
@@ -32,12 +32,12 @@ class DefaultAssetNamingStrategy implements AssetNamingStrategy {
 
 ### generateSourceFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string`}   />
 
 
 ### generatePreviewFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sourceFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, sourceFileName: string, conflictFileName?: string) => string`}   />
 
 
 

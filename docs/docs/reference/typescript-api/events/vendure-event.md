@@ -1,7 +1,7 @@
 ---
 title: "VendureEvent"
 weight: 10
-date: 2023-07-21T15:46:16.593Z
+date: 2023-07-26T18:59:56.967Z
 showtoc: true
 generated: true
 ---
@@ -28,12 +28,12 @@ class VendureEvent {
 
 ### createdAt
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="() => VendureEvent"   />
+<MemberInfo kind="method" type={`() => VendureEvent`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "ElasticsearchPlugin"
 weight: 10
-date: 2023-07-21T15:46:18.184Z
+date: 2023-07-26T19:00:00.439Z
 showtoc: true
 generated: true
 ---
@@ -189,7 +189,7 @@ class ElasticsearchPlugin implements OnApplicationBootstrap {
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#elasticsearchoptions'>ElasticsearchOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>&#62;`}   />
 
 
 

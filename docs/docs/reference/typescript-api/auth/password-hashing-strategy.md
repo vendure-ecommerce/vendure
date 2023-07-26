@@ -1,7 +1,7 @@
 ---
 title: "PasswordHashingStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.933Z
+date: 2023-07-26T18:59:54.250Z
 showtoc: true
 generated: true
 ---
@@ -13,9 +13,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PasswordHashingStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/password-hashing-strategy.ts" sourceLine="10" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/password-hashing-strategy.ts" sourceLine="17" packageName="@vendure/core" since="1.3.0" />
 
 Defines how user passwords get hashed when using the <a href='/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
+
+:::info
+
+This is configured via the `authOptions.passwordHashingStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface PasswordHashingStrategy extends InjectableStrategy {
@@ -31,12 +38,12 @@ interface PasswordHashingStrategy extends InjectableStrategy {
 
 ### hash
 
-<MemberInfo kind="method" type="(plaintext: string) => Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type={`(plaintext: string) => Promise&#60;string&#62;`}   />
 
 
 ### check
 
-<MemberInfo kind="method" type="(plaintext: string, hash: string) => Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(plaintext: string, hash: string) => Promise&#60;boolean&#62;`}   />
 
 
 

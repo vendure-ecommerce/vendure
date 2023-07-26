@@ -1,7 +1,7 @@
 ---
 title: "DataService"
 weight: 10
-date: 2023-07-21T15:46:19.025Z
+date: 2023-07-26T19:00:02.234Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class DataService {
 
 ### query
 
-<MemberInfo kind="method" type="(query: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;"   />
+<MemberInfo kind="method" type={`(query: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
 
 Perform a GraphQL query. Returns a <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a> which allows further control over
 they type of result returned, e.g. stream of values, single value etc.
@@ -52,7 +52,7 @@ const result$ = this.dataService.query(gql`
 ```
 ### mutate
 
-<MemberInfo kind="method" type="(mutation: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, update?: MutationUpdaterFn&#60;T&#62;) => Observable&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(mutation: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, update?: MutationUpdaterFn&#60;T&#62;) => Observable&#60;T&#62;`}   />
 
 Perform a GraphQL mutation.
 
@@ -98,42 +98,42 @@ class QueryResult<T, V extends Record<string, any> = Record<string, any>> {
 
 ### constructor
 
-<MemberInfo kind="method" type="(queryRef: QueryRef&#60;T, V&#62;, apollo: Apollo) => QueryResult"   />
+<MemberInfo kind="method" type={`(queryRef: QueryRef&#60;T, V&#62;, apollo: Apollo) => QueryResult`}   />
 
 
 ### completed$
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### refetchOnChannelChange
 
-<MemberInfo kind="method" type="() => <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;"   />
+<MemberInfo kind="method" type={`() => <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
 
 Re-fetch this query whenever the active Channel changes.
 ### single$
 
-<MemberInfo kind="property" type="Observable&#60;T&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;T&#62;`}   />
 
 Returns an Observable which emits a single result and then completes.
 ### stream$
 
-<MemberInfo kind="property" type="Observable&#60;T&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;T&#62;`}   />
 
 Returns an Observable which emits until unsubscribed.
 ### ref
 
-<MemberInfo kind="property" type="QueryRef&#60;T, V&#62;"   />
+<MemberInfo kind="property" type={`QueryRef&#60;T, V&#62;`}   />
 
 
 ### mapSingle
 
-<MemberInfo kind="method" type="(mapFn: (item: T) =&#62; R) => Observable&#60;R&#62;"   />
+<MemberInfo kind="method" type={`(mapFn: (item: T) =&#62; R) => Observable&#60;R&#62;`}   />
 
 Returns a single-result Observable after applying the map function.
 ### mapStream
 
-<MemberInfo kind="method" type="(mapFn: (item: T) =&#62; R) => Observable&#60;R&#62;"   />
+<MemberInfo kind="method" type={`(mapFn: (item: T) =&#62; R) => Observable&#60;R&#62;`}   />
 
 Returns a multiple-result Observable after applying the map function.
 

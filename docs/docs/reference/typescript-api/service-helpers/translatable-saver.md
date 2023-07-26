@@ -1,7 +1,7 @@
 ---
 title: "TranslatableSaver"
 weight: 10
-date: 2023-07-21T15:46:16.947Z
+date: 2023-07-26T18:59:57.755Z
 showtoc: true
 generated: true
 ---
@@ -52,18 +52,18 @@ class TranslatableSaver {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => TranslatableSaver"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => TranslatableSaver`}   />
 
 
 ### create
 
-<MemberInfo kind="method" type="(options: CreateTranslatableOptions&#60;T&#62;) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(options: CreateTranslatableOptions&#60;T&#62;) => Promise&#60;T&#62;`}   />
 
 Create a translatable entity, including creating any translation entities according
 to the `translations` array.
 ### update
 
-<MemberInfo kind="method" type="(options: UpdateTranslatableOptions&#60;T&#62;) => Promise&#60;T&#62;"   />
+<MemberInfo kind="method" type={`(options: UpdateTranslatableOptions&#60;T&#62;) => Promise&#60;T&#62;`}   />
 
 Update a translatable entity. Performs a diff of the `translations` array in order to
 perform the correct operation on the translations.

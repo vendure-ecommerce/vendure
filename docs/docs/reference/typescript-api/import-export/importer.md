@@ -1,7 +1,7 @@
 ---
 title: "Importer"
 weight: 10
-date: 2023-07-21T15:46:15.817Z
+date: 2023-07-26T18:59:55.663Z
 showtoc: true
 generated: true
 ---
@@ -32,7 +32,7 @@ class Importer {
 
 ### parseAndImport
 
-<MemberInfo kind="method" type="(input: string | Stream, ctxOrLanguageCode: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, reportProgress: boolean = false) => Observable&#60;ImportProgress&#62;"   />
+<MemberInfo kind="method" type={`(input: string | Stream, ctxOrLanguageCode: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, reportProgress: boolean = false) => Observable&#60;ImportProgress&#62;`}   />
 
 Parses the contents of the [product import CSV file](/guides/developer-guide/importing-product-data/#product-import-format) and imports
 the resulting Product & ProductVariants, as well as any associated Assets, Facets & FacetValues.
@@ -40,7 +40,7 @@ the resulting Product & ProductVariants, as well as any associated Assets, Facet
 The `ctxOrLanguageCode` argument is used to specify the languageCode to be used when creating the Products.
 ### importProducts
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, rows: <a href='/reference/typescript-api/import-export/import-parser#parsedproductwithvariants'>ParsedProductWithVariants</a>[], onProgress: OnProgressFn) => Promise&#60;string[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, rows: <a href='/reference/typescript-api/import-export/import-parser#parsedproductwithvariants'>ParsedProductWithVariants</a>[], onProgress: OnProgressFn) => Promise&#60;string[]&#62;`}   />
 
 Imports the products specified in the rows object. Return an array of error messages.
 

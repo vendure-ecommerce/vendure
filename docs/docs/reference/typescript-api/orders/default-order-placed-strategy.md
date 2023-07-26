@@ -1,7 +1,7 @@
 ---
 title: "DefaultOrderPlacedStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.202Z
+date: 2023-07-26T18:59:54.693Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class DefaultOrderPlacedStrategy implements OrderPlacedStrategy {
 
 ### shouldSetAsPlaced
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fromState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, toState: <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean`}   />
 
 
 

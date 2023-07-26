@@ -1,7 +1,7 @@
 ---
 title: "S3AssetStorageStrategy"
 weight: 10
-date: 2023-07-21T15:46:17.962Z
+date: 2023-07-26T18:59:59.967Z
 showtoc: true
 generated: true
 ---
@@ -52,47 +52,47 @@ class S3AssetStorageStrategy implements AssetStorageStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(s3Config: <a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>, toAbsoluteUrl: (request: Request, identifier: string) =&#62; string) => S3AssetStorageStrategy"   />
+<MemberInfo kind="method" type={`(s3Config: <a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>, toAbsoluteUrl: (request: Request, identifier: string) =&#62; string) => S3AssetStorageStrategy`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### destroy
 
-<MemberInfo kind="property" type="(() =&#62; void | Promise&#60;void&#62;) | undefined"   />
+<MemberInfo kind="property" type={`(() =&#62; void | Promise&#60;void&#62;) | undefined`}   />
 
 
 ### writeFileFromBuffer
 
-<MemberInfo kind="method" type="(fileName: string, data: Buffer) => "   />
+<MemberInfo kind="method" type={`(fileName: string, data: Buffer) => `}   />
 
 
 ### writeFileFromStream
 
-<MemberInfo kind="method" type="(fileName: string, data: Readable) => "   />
+<MemberInfo kind="method" type={`(fileName: string, data: Readable) => `}   />
 
 
 ### readFileToBuffer
 
-<MemberInfo kind="method" type="(identifier: string) => "   />
+<MemberInfo kind="method" type={`(identifier: string) => `}   />
 
 
 ### readFileToStream
 
-<MemberInfo kind="method" type="(identifier: string) => "   />
+<MemberInfo kind="method" type={`(identifier: string) => `}   />
 
 
 ### deleteFile
 
-<MemberInfo kind="method" type="(identifier: string) => "   />
+<MemberInfo kind="method" type={`(identifier: string) => `}   />
 
 
 ### fileExists
 
-<MemberInfo kind="method" type="(fileName: string) => "   />
+<MemberInfo kind="method" type={`(fileName: string) => `}   />
 
 
 
@@ -119,7 +119,7 @@ interface S3Config {
 
 ### credentials
 
-<MemberInfo kind="property" type="AwsCredentialIdentity | AwsCredentialIdentityProvider"   />
+<MemberInfo kind="property" type={`AwsCredentialIdentity | AwsCredentialIdentityProvider`}   />
 
 The credentials used to access your s3 account. You can supply either the access key ID & secret, or you can make use of a
 [shared credentials file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
@@ -127,19 +127,19 @@ To use a shared credentials file, import the `fromIni()` function from the "@aws
 the profile name (e.g. `{ profile: 'default' }`) as its argument.
 ### bucket
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The S3 bucket in which to store the assets. If it does not exist, it will be created on startup.
 ### nativeS3Configuration
 
-<MemberInfo kind="property" type="any"   />
+<MemberInfo kind="property" type={`any`}   />
 
 Configuration object passed directly to the AWS SDK.
 S3.Types.ClientConfiguration can be used after importing aws-sdk.
 Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
 ### nativeS3UploadConfiguration
 
-<MemberInfo kind="property" type="any"   />
+<MemberInfo kind="property" type={`any`}   />
 
 Configuration object passed directly to the AWS SDK.
 ManagedUpload.ManagedUploadOptions can be used after importing aws-sdk.
@@ -153,7 +153,8 @@ Using type `any` in order to avoid the need to include `aws-sdk` dependency in g
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="119" packageName="@vendure/asset-server-plugin" />
 
-Returns a configured instance of the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>`storageStrategyFactory` property.
+Returns a configured instance of the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>
+`storageStrategyFactory` property.
 
 Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
 
@@ -226,5 +227,5 @@ Parameters
 
 ### s3Config
 
-<MemberInfo kind="parameter" type="<a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3config'>S3Config</a>`} />
 

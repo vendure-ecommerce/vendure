@@ -1,7 +1,7 @@
 ---
 title: "ProvinceService"
 weight: 10
-date: 2023-07-21T15:46:17.594Z
+date: 2023-07-26T18:59:59.313Z
 showtoc: true
 generated: true
 ---
@@ -32,32 +32,32 @@ class ProvinceService {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService) => ProvinceService"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => ProvinceService`}   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;, relations: RelationPaths&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62; = []) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;, relations: RelationPaths&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62; = []) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;&#62;&#62;`}   />
 
 
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, provinceId: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations: RelationPaths&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62; = []) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, provinceId: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations: RelationPaths&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62; = []) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62; | undefined&#62;`}   />
 
 
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateProvinceInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateProvinceInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;&#62;`}   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateProvinceInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateProvinceInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/province#province'>Province</a>&#62;&#62;`}   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;DeletionResponse&#62;`}   />
 
 
 

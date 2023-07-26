@@ -11,6 +11,13 @@ import { User } from '../../entity/user/user.entity';
  *
  * Real-world examples can be found in the [Authentication guide](/guides/developer-guide/authentication/).
  *
+ * :::info
+ *
+ * This is configured via the `authOptions.shopAuthenticationStrategy` and `authOptions.adminAuthenticationStrategy`
+ * properties of your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory auth
  */
 export interface AuthenticationStrategy<Data = unknown> extends InjectableStrategy {

@@ -1,7 +1,7 @@
 ---
 title: "HardenPlugin"
 weight: 10
-date: 2023-07-21T15:46:18.322Z
+date: 2023-07-26T19:00:00.733Z
 showtoc: true
 generated: true
 ---
@@ -162,12 +162,12 @@ class HardenPlugin {
 
 ### options
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>) => "   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>) => `}   />
 
 
 

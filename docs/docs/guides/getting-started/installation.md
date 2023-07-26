@@ -6,8 +6,6 @@ sidebar_position: 1
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Getting Started
-
 ## Requirements
  
 * [Node.js](https://nodejs.org/en/) **v16** or above, with support for **even-numbered Node.js versions**.
@@ -81,10 +79,3 @@ If you encounter any issues during installation, you can get a more detailed out
 ```sh
 npx @vendure/create my-shop --log-level verbose
 ```
-
-## Next Steps
-
-* Learn more about [Configuration]({{< relref "/guides/developer-guide/configuration" >}}) of your Vendure server.
-* Get a better understanding of how Vendure works by reading the [Architecture Overview]({{< relref "/guides/developer-guide/overview" >}})
-* Start writing custom plugins with the [Plugin guide]({{< relref "/guides/plugins" >}})
-* Learn how to implement a storefront with the [GraphQL API Guide]({{< relref "/guides/storefront/shop-api-guide" >}})

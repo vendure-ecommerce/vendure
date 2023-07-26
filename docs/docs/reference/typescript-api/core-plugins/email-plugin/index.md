@@ -1,7 +1,7 @@
 ---
 title: "EmailPlugin"
 weight: 10
-date: 2023-07-21T15:46:18.079Z
+date: 2023-07-26T19:00:00.206Z
 showtoc: true
 generated: true
 ---
@@ -265,17 +265,17 @@ class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, Nest
 
 ### init
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a> | <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailplugindevmodeoptions'>EmailPluginDevModeOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/#emailplugin'>EmailPlugin</a>&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a> | <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailplugindevmodeoptions'>EmailPluginDevModeOptions</a>) => Type&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/#emailplugin'>EmailPlugin</a>&#62;`}   />
 
 
 ### onApplicationShutdown
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### configure
 
-<MemberInfo kind="method" type="(consumer: MiddlewareConsumer) => "   />
+<MemberInfo kind="method" type={`(consumer: MiddlewareConsumer) => `}   />
 
 
 

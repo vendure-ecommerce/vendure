@@ -1,7 +1,7 @@
 ---
 title: "OrderByCodeAccessStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.266Z
+date: 2023-07-26T18:59:54.822Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderByCodeAccessStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="31" packageName="@vendure/core" since="1.1.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="38" packageName="@vendure/core" since="1.1.0" />
 
 The OrderByCodeAccessStrategy determines how access to a placed Order via the
 orderByCode query is granted.
@@ -34,6 +34,13 @@ export class NotMondayOrderByCodeAccessStrategy implements OrderByCodeAccessStra
 }
 ```
 
+:::info
+
+This is configured via the `orderOptions.orderByCodeAccessStrategy` property of
+your VendureConfig.
+
+:::
+
 ```ts title="Signature"
 interface OrderByCodeAccessStrategy extends InjectableStrategy {
   canAccessOrder(ctx: RequestContext, order: Order): boolean | Promise<boolean>;
@@ -47,7 +54,7 @@ interface OrderByCodeAccessStrategy extends InjectableStrategy {
 
 ### canAccessOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean | Promise&#60;boolean&#62;`}   />
 
 Gives or denies permission to access the requested Order
 
@@ -57,7 +64,7 @@ Gives or denies permission to access the requested Order
 
 ## DefaultOrderByCodeAccessStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="50" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="57" packageName="@vendure/core" />
 
 The default OrderByCodeAccessStrategy used by Vendure. It permitts permanent access to
 the Customer owning the Order and anyone within a given time period after placing the Order
@@ -77,12 +84,12 @@ class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(anonymousAccessDuration: string) => DefaultOrderByCodeAccessStrategy"   />
+<MemberInfo kind="method" type={`(anonymousAccessDuration: string) => DefaultOrderByCodeAccessStrategy`}   />
 
 
 ### canAccessOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => boolean`}   />
 
 
 

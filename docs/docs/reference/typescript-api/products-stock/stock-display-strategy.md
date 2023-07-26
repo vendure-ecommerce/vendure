@@ -1,7 +1,7 @@
 ---
 title: "StockDisplayStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.997Z
+date: 2023-07-26T18:59:54.332Z
 showtoc: true
 generated: true
 ---
@@ -13,12 +13,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockDisplayStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/stock-display-strategy.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/stock-display-strategy.ts" sourceLine="21" packageName="@vendure/core" />
 
 Defines how the `ProductVariant.stockLevel` value is obtained. It is usually not desirable
 to directly expose stock levels over a public API, as this could be considered a leak of
 sensitive information. However, the storefront will usually want to display _some_ indication
 of whether a given ProductVariant is in stock.
+
+:::info
+
+This is configured via the `catalogOptions.stockDisplayStrategy` property of
+your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface StockDisplayStrategy extends InjectableStrategy {
@@ -37,7 +44,7 @@ interface StockDisplayStrategy extends InjectableStrategy {
 
 ### getStockLevel
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, saleableStockLevel: number) => string | Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, saleableStockLevel: number) => string | Promise&#60;string&#62;`}   />
 
 Returns a string representing the stock level, which will be used directly
 in the GraphQL `ProductVariant.stockLevel` field.

@@ -1,7 +1,7 @@
 ---
 title: "TypedBaseListComponent"
 weight: 10
-date: 2023-07-21T15:46:18.994Z
+date: 2023-07-26T19:00:02.164Z
 showtoc: true
 generated: true
 ---
@@ -50,62 +50,62 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 
 ### availableLanguages$
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;`}   />
 
 
 ### contentLanguage$
 
-<MemberInfo kind="property" type="Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;"   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
 
 
 ### dataService
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### router
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### serverConfigService
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="() => TypedBaseListComponent"   />
+<MemberInfo kind="method" type={`() => TypedBaseListComponent`}   />
 
 
 ### configure
 
-<MemberInfo kind="method" type="(config: {         document: T;         getItems: (data: ResultOf&#60;T&#62;) =&#62; { items: Array&#60;ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;&#62;; totalItems: number };         setVariables?: (skip: number, take: number) =&#62; VariablesOf&#60;T&#62;;         refreshListOnChanges?: Array&#60;Observable&#60;any&#62;&#62;;     }) => "   />
+<MemberInfo kind="method" type={`(config: {         document: T;         getItems: (data: ResultOf&#60;T&#62;) =&#62; { items: Array&#60;ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;&#62;; totalItems: number };         setVariables?: (skip: number, take: number) =&#62; VariablesOf&#60;T&#62;;         refreshListOnChanges?: Array&#60;Observable&#60;any&#62;&#62;;     }) => `}   />
 
 
 ### ngOnInit
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### createFilterCollection
 
-<MemberInfo kind="method" type="() => DataTableFilterCollection&#60;NonNullable&#60;NonNullable&#60;Vars['options']&#62;['filter']&#62;&#62;"   />
+<MemberInfo kind="method" type={`() => DataTableFilterCollection&#60;NonNullable&#60;NonNullable&#60;Vars['options']&#62;['filter']&#62;&#62;`}   />
 
 
 ### createSortCollection
 
-<MemberInfo kind="method" type="() => DataTableSortCollection&#60;NonNullable&#60;NonNullable&#60;Vars['options']&#62;['sort']&#62;&#62;"   />
+<MemberInfo kind="method" type={`() => DataTableSortCollection&#60;NonNullable&#60;NonNullable&#60;Vars['options']&#62;['sort']&#62;&#62;`}   />
 
 
 ### setLanguage
 
-<MemberInfo kind="method" type="(code: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => "   />
+<MemberInfo kind="method" type={`(code: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => `}   />
 
 
 ### getCustomFieldConfig
 
-<MemberInfo kind="method" type="(key: Exclude&#60;keyof <a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62;) => <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]"   />
+<MemberInfo kind="method" type={`(key: Exclude&#60;keyof <a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62;) => <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
 
 
 

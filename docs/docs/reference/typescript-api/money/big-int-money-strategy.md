@@ -1,7 +1,7 @@
 ---
 title: "BigIntMoneyStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.060Z
+date: 2023-07-26T18:59:54.447Z
 showtoc: true
 generated: true
 ---
@@ -55,12 +55,12 @@ class BigIntMoneyStrategy implements MoneyStrategy {
 
 ### moneyColumnOptions
 
-<MemberInfo kind="property" type="ColumnOptions"   />
+<MemberInfo kind="property" type={`ColumnOptions`}   />
 
 
 ### round
 
-<MemberInfo kind="method" type="(value: number, quantity:  = 1) => number"   />
+<MemberInfo kind="method" type={`(value: number, quantity:  = 1) => number`}   />
 
 
 

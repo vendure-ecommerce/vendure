@@ -1,7 +1,7 @@
 ---
 title: "EmailEventListener"
 weight: 10
-date: 2023-07-21T15:46:18.073Z
+date: 2023-07-26T19:00:00.199Z
 showtoc: true
 generated: true
 ---
@@ -30,17 +30,17 @@ class EmailEventListener<T extends string> {
 
 ### type
 
-<MemberInfo kind="property" type="T"   />
+<MemberInfo kind="property" type={`T`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(type: T) => EmailEventListener"   />
+<MemberInfo kind="method" type={`(type: T) => EmailEventListener`}   />
 
 
 ### on
 
-<MemberInfo kind="method" type="(event: Type&#60;Event&#62;) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;"   />
+<MemberInfo kind="method" type={`(event: Type&#60;Event&#62;) => <a href='/reference/typescript-api/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;`}   />
 
 Defines the event to listen for.
 

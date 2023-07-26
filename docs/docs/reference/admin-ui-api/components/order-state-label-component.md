@@ -1,7 +1,7 @@
 ---
 title: "OrderStateLabelComponent"
 weight: 10
-date: 2023-07-21T15:46:19.440Z
+date: 2023-07-26T19:00:03.363Z
 showtoc: true
 generated: true
 ---
@@ -34,12 +34,12 @@ class OrderStateLabelComponent {
 
 ### state
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### chipColorType
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 

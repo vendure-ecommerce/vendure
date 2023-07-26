@@ -1,7 +1,7 @@
 ---
 title: "Payment Method Types"
 weight: 10
-date: 2023-07-21T15:46:15.344Z
+date: 2023-07-26T18:59:54.944Z
 showtoc: true
 generated: true
 ---
@@ -31,14 +31,14 @@ interface CreatePaymentResult {
 
 ### amount
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The amount (as an integer - i.e. $10 = `1000`) that this payment is for.
 Typically this should equal the Order total, unless multiple payment methods
 are being used for the order.
 ### state
 
-<MemberInfo kind="property" type="Exclude&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Error'&#62;"   />
+<MemberInfo kind="property" type={`Exclude&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Error'&#62;`}   />
 
 The <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a> of the resulting Payment.
 
@@ -49,20 +49,20 @@ If using a {@link CustomPaymentProcess}, may be something else
 entirely according to your business logic.
 ### transactionId
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The unique payment reference code typically assigned by
 the payment provider.
 ### errorMessage
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 If the payment is declined or fails for ome other reason, pass the
 relevant error message here, and it gets returned with the
 ErrorResponse of the `addPaymentToOrder` mutation.
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 This field can be used to store other relevant data which is often
 provided by the payment provider, such as security data related to
@@ -97,27 +97,27 @@ interface CreatePaymentErrorResult {
 
 ### amount
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### state
 
-<MemberInfo kind="property" type="'Error'"   />
+<MemberInfo kind="property" type={`'Error'`}   />
 
 
 ### transactionId
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### errorMessage
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 
 
@@ -143,17 +143,17 @@ interface CreateRefundResult {
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>`}   />
 
 
 ### transactionId
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 
 
@@ -179,12 +179,12 @@ interface SettlePaymentResult {
 
 ### success
 
-<MemberInfo kind="property" type="true"   />
+<MemberInfo kind="property" type={`true`}   />
 
 
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 
 
@@ -212,12 +212,12 @@ interface SettlePaymentErrorResult {
 
 ### success
 
-<MemberInfo kind="property" type="false"   />
+<MemberInfo kind="property" type={`false`}   />
 
 
 ### state
 
-<MemberInfo kind="property" type="Exclude&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Settled'&#62;"   />
+<MemberInfo kind="property" type={`Exclude&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Settled'&#62;`}   />
 
 The state to transition this Payment to upon unsuccessful settlement.
 Defaults to `Error`. Note that if using a different state, it must be
@@ -226,13 +226,13 @@ to the PaymentState config (which can be customized using the
 {@link CustomPaymentProcess}).
 ### errorMessage
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The message that will be returned when attempting to settle the payment, and will
 also be persisted as `Payment.errorMessage`.
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 
 
@@ -258,12 +258,12 @@ interface CancelPaymentResult {
 
 ### success
 
-<MemberInfo kind="property" type="true"   />
+<MemberInfo kind="property" type={`true`}   />
 
 
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 
 
@@ -291,12 +291,12 @@ interface CancelPaymentErrorResult {
 
 ### success
 
-<MemberInfo kind="property" type="false"   />
+<MemberInfo kind="property" type={`false`}   />
 
 
 ### state
 
-<MemberInfo kind="property" type="Exclude&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Cancelled'&#62;"   />
+<MemberInfo kind="property" type={`Exclude&#60;<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>, 'Cancelled'&#62;`}   />
 
 The state to transition this Payment to upon unsuccessful cancellation.
 Defaults to `Error`. Note that if using a different state, it must be
@@ -305,13 +305,13 @@ to the PaymentState config (which can be customized using the
 {@link CustomPaymentProcess}).
 ### errorMessage
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The message that will be returned when attempting to cancel the payment, and will
 also be persisted as `Payment.errorMessage`.
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 
 

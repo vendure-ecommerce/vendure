@@ -1,7 +1,7 @@
 ---
 title: "DefaultMoneyStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.065Z
+date: 2023-07-26T18:59:54.455Z
 showtoc: true
 generated: true
 ---
@@ -34,12 +34,12 @@ class DefaultMoneyStrategy implements MoneyStrategy {
 
 ### moneyColumnOptions
 
-<MemberInfo kind="property" type="ColumnOptions"   />
+<MemberInfo kind="property" type={`ColumnOptions`}   />
 
 
 ### round
 
-<MemberInfo kind="method" type="(value: number, quantity:  = 1) => number"   />
+<MemberInfo kind="method" type={`(value: number, quantity:  = 1) => number`}   />
 
 
 

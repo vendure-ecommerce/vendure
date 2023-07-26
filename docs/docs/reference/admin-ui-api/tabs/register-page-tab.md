@@ -1,7 +1,7 @@
 ---
 title: "RegisterPageTab"
 weight: 10
-date: 2023-07-21T15:46:19.203Z
+date: 2023-07-26T19:00:02.587Z
 showtoc: true
 generated: true
 ---
@@ -41,5 +41,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/reference/admin-ui-api/tabs/page-tab-config#pagetabconfig'>PageTabConfig</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/admin-ui-api/tabs/page-tab-config#pagetabconfig'>PageTabConfig</a>`} />
 

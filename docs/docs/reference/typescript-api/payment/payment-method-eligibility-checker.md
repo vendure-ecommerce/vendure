@@ -1,7 +1,7 @@
 ---
 title: "PaymentMethodEligibilityChecker"
 weight: 10
-date: 2023-07-21T15:46:15.338Z
+date: 2023-07-26T18:59:54.936Z
 showtoc: true
 generated: true
 ---
@@ -46,7 +46,7 @@ class PaymentMethodEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitycheckerconfig'>PaymentMethodEligibilityCheckerConfig</a>&#60;T&#62;) => PaymentMethodEligibilityChecker"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitycheckerconfig'>PaymentMethodEligibilityCheckerConfig</a>&#60;T&#62;) => PaymentMethodEligibilityChecker`}   />
 
 
 
@@ -74,7 +74,7 @@ interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs> extends Co
 
 ### check
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/payment/payment-method-eligibility-checker#checkpaymentmethodeligibilitycheckerfn'>CheckPaymentMethodEligibilityCheckerFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/payment/payment-method-eligibility-checker#checkpaymentmethodeligibilitycheckerfn'>CheckPaymentMethodEligibilityCheckerFn</a>&#60;T&#62;`}   />
 
 
 

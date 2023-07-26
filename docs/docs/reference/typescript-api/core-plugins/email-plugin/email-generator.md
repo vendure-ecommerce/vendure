@@ -1,7 +1,7 @@
 ---
 title: "EmailGenerator"
 weight: 10
-date: 2023-07-21T15:46:18.026Z
+date: 2023-07-26T19:00:00.100Z
 showtoc: true
 generated: true
 ---
@@ -36,12 +36,12 @@ interface EmailGenerator<T extends string = any, E extends VendureEvent = any> e
 
 ### onInit
 
-<MemberInfo kind="method" type="(options: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a>) => void | Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a>) => void | Promise&#60;void&#62;`}   />
 
 Any necessary setup can be performed here.
 ### generate
 
-<MemberInfo kind="method" type="(from: string, subject: string, body: string, templateVars: { [key: string]: any }) => Pick&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, 'from' | 'subject' | 'body'&#62;"   />
+<MemberInfo kind="method" type={`(from: string, subject: string, body: string, templateVars: { [key: string]: any }) => Pick&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, 'from' | 'subject' | 'body'&#62;`}   />
 
 Given a subject and body from an email template, this method generates the final
 interpolated email text.
@@ -71,12 +71,12 @@ class HandlebarsMjmlGenerator implements EmailGenerator {
 
 ### onInit
 
-<MemberInfo kind="method" type="(options: InitializedEmailPluginOptions) => "   />
+<MemberInfo kind="method" type={`(options: InitializedEmailPluginOptions) => `}   />
 
 
 ### generate
 
-<MemberInfo kind="method" type="(from: string, subject: string, template: string, templateVars: any) => "   />
+<MemberInfo kind="method" type={`(from: string, subject: string, template: string, templateVars: any) => `}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "AuthenticationStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.906Z
+date: 2023-07-26T18:59:54.207Z
 showtoc: true
 generated: true
 ---
@@ -13,12 +13,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AuthenticationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/authentication-strategy.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/authentication-strategy.ts" sourceLine="23" packageName="@vendure/core" />
 
 An AuthenticationStrategy defines how a User (which can be a Customer in the Shop API or
 and Administrator in the Admin API) may be authenticated.
 
 Real-world examples can be found in the [Authentication guide](/guides/developer-guide/authentication/).
+
+:::info
+
+This is configured via the `authOptions.shopAuthenticationStrategy` and `authOptions.adminAuthenticationStrategy`
+properties of your VendureConfig.
+
+:::
 
 ```ts title="Signature"
 interface AuthenticationStrategy<Data = unknown> extends InjectableStrategy {
@@ -36,12 +43,12 @@ interface AuthenticationStrategy<Data = unknown> extends InjectableStrategy {
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the strategy, for example `'facebook'`, `'google'`, `'keycloak'`.
 ### defineInputType
 
-<MemberInfo kind="method" type="() => DocumentNode"   />
+<MemberInfo kind="method" type={`() => DocumentNode`}   />
 
 Defines the type of the GraphQL Input object expected by the `authenticate`
 mutation. The final input object will be a map, with the key being the name
@@ -79,7 +86,7 @@ authenticate(input: {
 the _first_ input will be assumed to be the top-level input.
 ### authenticate
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: Data) => Promise&#60;<a href='/reference/typescript-api/entities/user#user'>User</a> | false | string&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, data: Data) => Promise&#60;<a href='/reference/typescript-api/entities/user#user'>User</a> | false | string&#62;`}   />
 
 Used to authenticate a user with the authentication provider. This method
 will implement the provider-specific authentication logic, and should resolve to either a
@@ -87,7 +94,7 @@ will implement the provider-specific authentication logic, and should resolve to
 A `string` return could be used to describe what error happened, otherwise `false` to an unknown error.
 ### onLogOut
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>) => Promise&#60;void&#62;`}   />
 
 Called when a user logs out, and may perform any required tasks
 related to the user logging out with the external provider.

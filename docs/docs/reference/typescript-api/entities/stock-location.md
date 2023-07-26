@@ -1,7 +1,7 @@
 ---
 title: "StockLocation"
 weight: 10
-date: 2023-07-21T15:46:16.322Z
+date: 2023-07-26T18:59:56.522Z
 showtoc: true
 generated: true
 ---
@@ -47,27 +47,27 @@ class StockLocation extends VendureEntity implements HasCustomFields, ChannelAwa
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>&#62;) => StockLocation"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>&#62;) => StockLocation`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### description
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomStockLocationFields"   />
+<MemberInfo kind="property" type={`CustomStockLocationFields`}   />
 
 
 ### channels
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

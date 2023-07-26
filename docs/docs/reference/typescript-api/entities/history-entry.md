@@ -1,7 +1,7 @@
 ---
 title: "HistoryEntry"
 weight: 10
-date: 2023-07-21T15:46:16.025Z
+date: 2023-07-26T18:59:55.979Z
 showtoc: true
 generated: true
 ---
@@ -39,22 +39,22 @@ class HistoryEntry extends VendureEntity {
 
 ### administrator
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>`}   />
 
 
 ### type
 
-<MemberInfo kind="property" type="HistoryEntryType"   />
+<MemberInfo kind="property" type={`HistoryEntryType`}   />
 
 
 ### isPublic
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 ### data
 
-<MemberInfo kind="property" type="any"   />
+<MemberInfo kind="property" type={`any`}   />
 
 
 

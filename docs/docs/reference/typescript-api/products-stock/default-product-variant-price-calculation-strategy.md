@@ -1,7 +1,7 @@
 ---
 title: "DefaultProductVariantPriceCalculationStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.952Z
+date: 2023-07-26T18:59:54.273Z
 showtoc: true
 generated: true
 ---
@@ -31,12 +31,12 @@ class DefaultProductVariantPriceCalculationStrategy implements ProductVariantPri
 
 ### init
 
-<MemberInfo kind="method" type="(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => "   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 ### calculate
 
-<MemberInfo kind="method" type="(args: <a href='/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationargs'>ProductVariantPriceCalculationArgs</a>) => Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;"   />
+<MemberInfo kind="method" type={`(args: <a href='/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationargs'>ProductVariantPriceCalculationArgs</a>) => Promise&#60;<a href='/reference/typescript-api/common/price-calculation-result#pricecalculationresult'>PriceCalculationResult</a>&#62;`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "Types"
 weight: 10
-date: 2023-07-21T15:46:16.701Z
+date: 2023-07-26T18:59:57.240Z
 showtoc: true
 generated: true
 ---
@@ -55,17 +55,17 @@ type JobUpdateOptions = {
 
 ### pollInterval
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### timeoutMs
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### errorOnFail
 
-<MemberInfo kind="property" type="boolean"   />
+<MemberInfo kind="property" type={`boolean`}   />
 
 
 
@@ -90,12 +90,12 @@ interface CreateQueueOptions<T extends JobData<T>> {
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the queue, e.g. "image processing", "re-indexing" etc.
 ### process
 
-<MemberInfo kind="property" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;) =&#62; Promise&#60;any&#62;"   />
+<MemberInfo kind="property" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;) =&#62; Promise&#60;any&#62;`}   />
 
 Defines the work to be done for each job in the queue. The returned promise
 should resolve when the job is complete, or be rejected in case of an error.
@@ -143,62 +143,62 @@ interface JobConfig<T extends JobData<T>> {
 
 ### queueName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### data
 
-<MemberInfo kind="property" type="T"   />
+<MemberInfo kind="property" type={`T`}   />
 
 
 ### retries
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### attempts
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### id
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/id#id'>ID</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/common/job-state#jobstate'>JobState</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/job-state#jobstate'>JobState</a>`}   />
 
 
 ### progress
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### result
 
-<MemberInfo kind="property" type="any"   />
+<MemberInfo kind="property" type={`any`}   />
 
 
 ### error
 
-<MemberInfo kind="property" type="any"   />
+<MemberInfo kind="property" type={`any`}   />
 
 
 ### createdAt
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 ### startedAt
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 ### settledAt
 
-<MemberInfo kind="property" type="Date"   />
+<MemberInfo kind="property" type={`Date`}   />
 
 
 

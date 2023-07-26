@@ -1,7 +1,7 @@
 ---
 title: "PaymentService"
 weight: 10
-date: 2023-07-21T15:46:17.414Z
+date: 2023-07-26T18:59:58.920Z
 showtoc: true
 generated: true
 ---
@@ -36,22 +36,22 @@ class PaymentService {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, paymentStateMachine: PaymentStateMachine, refundStateMachine: RefundStateMachine, paymentMethodService: <a href='/reference/typescript-api/services/payment-method-service#paymentmethodservice'>PaymentMethodService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) => PaymentService"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, paymentStateMachine: PaymentStateMachine, refundStateMachine: RefundStateMachine, paymentMethodService: <a href='/reference/typescript-api/services/payment-method-service#paymentmethodservice'>PaymentMethodService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) => PaymentService`}   />
 
 
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: DeepPartial&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: DeepPartial&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;`}   />
 
 
 ### findOneOrThrow
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations: string[] = ['order']) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>, relations: string[] = ['order']) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;`}   />
 
 
 ### transitionToState
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a> | PaymentStateTransitionError&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a> | PaymentStateTransitionError&#62;`}   />
 
 Transitions a Payment to the given state.
 
@@ -60,12 +60,12 @@ preferable to use the <a href='/reference/typescript-api/services/order-service#
 updating the Order state too.
 ### getNextStates
 
-<MemberInfo kind="method" type="(payment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>) => readonly <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>[]"   />
+<MemberInfo kind="method" type={`(payment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>) => readonly <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>[]`}   />
 
 
 ### createPayment
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, amount: number, method: string, metadata: any) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a> | IneligiblePaymentMethodError&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, amount: number, method: string, metadata: any) => Promise&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a> | IneligiblePaymentMethodError&#62;`}   />
 
 Creates a new Payment.
 
@@ -74,7 +74,7 @@ preferable to use the <a href='/reference/typescript-api/services/order-service#
 updating the Order state too.
 ### settlePayment
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;PaymentStateTransitionError | <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;PaymentStateTransitionError | <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;`}   />
 
 Settles a Payment.
 
@@ -83,12 +83,12 @@ preferable to use the <a href='/reference/typescript-api/services/order-service#
 updating the Order state too.
 ### cancelPayment
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;PaymentStateTransitionError | <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;PaymentStateTransitionError | <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;`}   />
 
 
 ### createManualPayment
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, amount: number, input: ManualPaymentInput) => "   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, amount: number, input: ManualPaymentInput) => `}   />
 
 Creates a Payment from the manual payment mutation in the Admin API
 
@@ -97,7 +97,7 @@ preferable to use the <a href='/reference/typescript-api/services/order-service#
 updating the Order state too.
 ### createRefund
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RefundOrderInput, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, selectedPayment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>) => Promise&#60;Refund | RefundStateTransitionError&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RefundOrderInput, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, selectedPayment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>) => Promise&#60;Refund | RefundStateTransitionError&#62;`}   />
 
 Creates a Refund against the specified Payment. If the amount to be refunded exceeds the value of the
 specified Payment (in the case of multiple payments on a single Order), then the remaining outstanding

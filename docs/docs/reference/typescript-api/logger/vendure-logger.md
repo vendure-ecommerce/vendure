@@ -1,7 +1,7 @@
 ---
 title: "VendureLogger"
 weight: 10
-date: 2023-07-21T15:46:15.144Z
+date: 2023-07-26T18:59:54.595Z
 showtoc: true
 generated: true
 ---
@@ -33,32 +33,32 @@ interface VendureLogger {
 
 ### error
 
-<MemberInfo kind="method" type="(message: string, context?: string, trace?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string, trace?: string) => void`}   />
 
 
 ### warn
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### info
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### verbose
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### debug
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### setDefaultContext
 
-<MemberInfo kind="method" type="(defaultContext: string) => void"   />
+<MemberInfo kind="method" type={`(defaultContext: string) => void`}   />
 
 
 

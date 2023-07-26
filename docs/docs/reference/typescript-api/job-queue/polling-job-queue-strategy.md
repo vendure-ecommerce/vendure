@@ -1,7 +1,7 @@
 ---
 title: "PollingJobQueueStrategy"
 weight: 10
-date: 2023-07-21T15:46:16.720Z
+date: 2023-07-26T18:59:57.273Z
 showtoc: true
 generated: true
 ---
@@ -46,69 +46,69 @@ class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
 
 ### concurrency
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### pollInterval
 
-<MemberInfo kind="property" type="number | ((queueName: string) =&#62; number)"   />
+<MemberInfo kind="property" type={`number | ((queueName: string) =&#62; number)`}   />
 
 
 ### setRetries
 
-<MemberInfo kind="property" type="(queueName: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number"   />
+<MemberInfo kind="property" type={`(queueName: string, job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) =&#62; number`}   />
 
 
 ### backOffStrategy
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(config?: PollingJobQueueStrategyConfig) => PollingJobQueueStrategy"   />
+<MemberInfo kind="method" type={`(config?: PollingJobQueueStrategyConfig) => PollingJobQueueStrategy`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(concurrency?: number, pollInterval?: number) => PollingJobQueueStrategy"   />
+<MemberInfo kind="method" type={`(concurrency?: number, pollInterval?: number) => PollingJobQueueStrategy`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number) => PollingJobQueueStrategy"   />
+<MemberInfo kind="method" type={`(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number) => PollingJobQueueStrategy`}   />
 
 
 ### start
 
-<MemberInfo kind="method" type="(queueName: string, process: (job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => "   />
+<MemberInfo kind="method" type={`(queueName: string, process: (job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => `}   />
 
 
 ### stop
 
-<MemberInfo kind="method" type="(queueName: string, process: (job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => "   />
+<MemberInfo kind="method" type={`(queueName: string, process: (job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) =&#62; Promise&#60;any&#62;) => `}   />
 
 
 ### cancelJob
 
-<MemberInfo kind="method" type="(jobId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(jobId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;`}   />
 
 
 ### next
 
-<MemberInfo kind="method" type="(queueName: string) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(queueName: string) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;`}   />
 
 Should return the next job in the given queue. The implementation is
 responsible for returning the correct job according to the time of
 creation.
 ### update
 
-<MemberInfo kind="method" type="(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;void&#62;"   />
+<MemberInfo kind="method" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>) => Promise&#60;void&#62;`}   />
 
 Update the job details in the store.
 ### findOne
 
-<MemberInfo kind="method" type="(id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;"   />
+<MemberInfo kind="method" type={`(id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a> | undefined&#62;`}   />
 
 Returns a job by its id.
 

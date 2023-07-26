@@ -27,9 +27,9 @@ export default function MemberInfo(props: {
                     <div className="text-yellow-700">experimental</div>
                 </div>
             )}
-            {/* <div className={styles.type}> */}
-            {/*     <code dangerouslySetInnerHTML={{ __html: props.type }} className="padding-horiz--sm"></code> */}
-            {/* </div> */}
+            <div className={styles.type}>
+                <code dangerouslySetInnerHTML={{ __html: props.type }} className="padding-horiz--sm"></code>
+            </div>
             {props.default && (
                 <div className={styles.default}>
                     <div className="label">default:</div>

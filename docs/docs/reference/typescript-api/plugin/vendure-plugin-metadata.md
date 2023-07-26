@@ -1,7 +1,7 @@
 ---
 title: "VendurePluginMetadata"
 weight: 10
-date: 2023-07-21T15:46:16.803Z
+date: 2023-07-26T18:59:57.421Z
 showtoc: true
 generated: true
 ---
@@ -37,29 +37,29 @@ interface VendurePluginMetadata extends ModuleMetadata {
 
 ### configuration
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#pluginconfigurationfn'>PluginConfigurationFn</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#pluginconfigurationfn'>PluginConfigurationFn</a>`}   />
 
 A function which can modify the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a> object before the server bootstraps.
 ### shopApiExtensions
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>`}   />
 
 The plugin may extend the default Vendure GraphQL shop api by providing extended
 schema definitions and any required resolvers.
 ### adminApiExtensions
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>`}   />
 
 The plugin may extend the default Vendure GraphQL admin api by providing extended
 schema definitions and any required resolvers.
 ### entities
 
-<MemberInfo kind="property" type="Array&#60;Type&#60;any&#62;&#62; | (() =&#62; Array&#60;Type&#60;any&#62;&#62;)"   />
+<MemberInfo kind="property" type={`Array&#60;Type&#60;any&#62;&#62; | (() =&#62; Array&#60;Type&#60;any&#62;&#62;)`}   />
 
 The plugin may define custom [TypeORM database entities](https://typeorm.io/#/entities).
 ### compatibility
 
-<MemberInfo kind="property" type="string"  since="2.0.0"  />
+<MemberInfo kind="property" type={`string`}  since="2.0.0"  />
 
 The plugin should define a valid [semver version string](https://www.npmjs.com/package/semver) to indicate which versions of
 Vendure core it is compatible with. Attempting to use a plugin with an incompatible
@@ -98,7 +98,7 @@ interface APIExtensionDefinition {
 
 ### schema
 
-<MemberInfo kind="property" type="DocumentNode | (() =&#62; DocumentNode | undefined)"   />
+<MemberInfo kind="property" type={`DocumentNode | (() =&#62; DocumentNode | undefined)`}   />
 
 Extensions to the schema.
 
@@ -112,13 +112,13 @@ const schema = gql`extend type SearchReindexResponse {
 ```
 ### resolvers
 
-<MemberInfo kind="property" type="Array&#60;Type&#60;any&#62;&#62; | (() =&#62; Array&#60;Type&#60;any&#62;&#62;)"   />
+<MemberInfo kind="property" type={`Array&#60;Type&#60;any&#62;&#62; | (() =&#62; Array&#60;Type&#60;any&#62;&#62;)`}   />
 
 An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
 classes, i.e. using the Nest `@Resolver()` decorator etc.
 ### scalars
 
-<MemberInfo kind="property" type="Record&#60;string, GraphQLScalarType&#62; | (() =&#62; Record&#60;string, GraphQLScalarType&#62;)"  since="1.7.0"  />
+<MemberInfo kind="property" type={`Record&#60;string, GraphQLScalarType&#62; | (() =&#62; Record&#60;string, GraphQLScalarType&#62;)`}  since="1.7.0"  />
 
 A map of GraphQL scalar types which should correspond to any custom scalars defined in your schema.
 Read more about defining custom scalars in the

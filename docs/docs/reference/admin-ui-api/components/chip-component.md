@@ -1,7 +1,7 @@
 ---
 title: "ChipComponent"
 weight: 10
-date: 2023-07-21T15:46:19.232Z
+date: 2023-07-26T19:00:02.634Z
 showtoc: true
 generated: true
 ---
@@ -40,28 +40,28 @@ class ChipComponent {
 
 ### icon
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The icon should be the name of one of the available Clarity icons: https://clarity.design/foundation/icons/shapes/
 ### invert
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### colorFrom
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 If set, the chip will have an auto-generated background
 color based on the string value passed in.
 ### colorType
 
-<MemberInfo kind="property" type="'error' | 'success' | 'warning'"   />
+<MemberInfo kind="property" type={`'error' | 'success' | 'warning'`}   />
 
 The color of the chip can also be one of the standard status colors.
 ### iconClick
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 

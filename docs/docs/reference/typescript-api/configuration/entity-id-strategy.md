@@ -1,7 +1,7 @@
 ---
 title: "EntityIdStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.048Z
+date: 2023-07-26T18:59:54.414Z
 showtoc: true
 generated: true
 ---
@@ -33,17 +33,17 @@ class AutoIncrementIdStrategy implements EntityIdStrategy<'increment'> {
 
 ### primaryKeyType
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### decodeId
 
-<MemberInfo kind="method" type="(id: string) => number"   />
+<MemberInfo kind="method" type={`(id: string) => number`}   />
 
 
 ### encodeId
 
-<MemberInfo kind="method" type="(primaryKey: number) => string"   />
+<MemberInfo kind="method" type={`(primaryKey: number) => string`}   />
 
 
 
@@ -53,7 +53,7 @@ class AutoIncrementIdStrategy implements EntityIdStrategy<'increment'> {
 
 ## EntityIdStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/entity/entity-id-strategy.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/entity/entity-id-strategy.ts" sourceLine="32" packageName="@vendure/core" />
 
 The EntityIdStrategy determines how entity IDs are generated and stored in the
 database, as well as how they are transformed when being passed from the API to the
@@ -63,12 +63,19 @@ Vendure ships with two strategies: <a href='/reference/typescript-api/configurat
 but custom strategies can be used, e.g. to apply some custom encoding to the ID before exposing
 it in the GraphQL API.
 
-{{% alert "warning" %}}
+:::info
+
+This is configured via the `entityOptions.entityIdStrategy` property of
+your VendureConfig.
+
+:::
+
+:::caution
 Note: changing from an integer-based strategy to a uuid-based strategy
 on an existing Vendure database will lead to problems with broken foreign-key
 references. To change primary key types like this, you'll need to start with
 a fresh database.
-{{% /alert %}}
+:::
 
 ```ts title="Signature"
 interface EntityIdStrategy<T extends 'increment' | 'uuid'> extends InjectableStrategy {
@@ -85,14 +92,14 @@ interface EntityIdStrategy<T extends 'increment' | 'uuid'> extends InjectableStr
 
 ### primaryKeyType
 
-<MemberInfo kind="property" type="T"   />
+<MemberInfo kind="property" type={`T`}   />
 
 Defines how the primary key will be stored in the database - either
 `'increment'` for auto-increment integer IDs, or `'uuid'` for a unique
 string ID.
 ### encodeId
 
-<MemberInfo kind="property" type="(primaryKey: PrimaryKeyType&#60;T&#62;) =&#62; string"   />
+<MemberInfo kind="property" type={`(primaryKey: PrimaryKeyType&#60;T&#62;) =&#62; string`}   />
 
 Allows the raw ID from the database to be transformed in some way before exposing
 it in the GraphQL API.
@@ -103,7 +110,7 @@ case, you can use the encode/decode methods to obfuscate the ID with some kind o
 encoding scheme, such as base64 (or something more sophisticated).
 ### decodeId
 
-<MemberInfo kind="property" type="(id: string) =&#62; PrimaryKeyType&#60;T&#62;"   />
+<MemberInfo kind="property" type={`(id: string) =&#62; PrimaryKeyType&#60;T&#62;`}   />
 
 Reverses the transformation performed by the `encodeId` method in order to get
 back to the raw ID value.
@@ -149,17 +156,17 @@ class UuidIdStrategy implements EntityIdStrategy<'uuid'> {
 
 ### primaryKeyType
 
-<MemberInfo kind="property" type=""   />
+<MemberInfo kind="property" type={``}   />
 
 
 ### decodeId
 
-<MemberInfo kind="method" type="(id: string) => string"   />
+<MemberInfo kind="method" type={`(id: string) => string`}   />
 
 
 ### encodeId
 
-<MemberInfo kind="method" type="(primaryKey: string) => string"   />
+<MemberInfo kind="method" type={`(primaryKey: string) => string`}   />
 
 
 

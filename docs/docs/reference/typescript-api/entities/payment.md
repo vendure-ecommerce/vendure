@@ -1,7 +1,7 @@
 ---
 title: "Payment"
 weight: 10
-date: 2023-07-21T15:46:16.130Z
+date: 2023-07-26T18:59:56.181Z
 showtoc: true
 generated: true
 ---
@@ -44,47 +44,47 @@ class Payment extends VendureEntity {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;) => Payment"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;) => Payment`}   />
 
 
 ### method
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### amount
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>`}   />
 
 
 ### errorMessage
 
-<MemberInfo kind="property" type="string | undefined"   />
+<MemberInfo kind="property" type={`string | undefined`}   />
 
 
 ### transactionId
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### metadata
 
-<MemberInfo kind="property" type="PaymentMetadata"   />
+<MemberInfo kind="property" type={`PaymentMetadata`}   />
 
 
 ### order
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order#order'>Order</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}   />
 
 
 ### refunds
 
-<MemberInfo kind="property" type="Refund[]"   />
+<MemberInfo kind="property" type={`Refund[]`}   />
 
 
 

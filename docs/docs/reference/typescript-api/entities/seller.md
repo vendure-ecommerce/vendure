@@ -1,7 +1,7 @@
 ---
 title: "Seller"
 weight: 10
-date: 2023-07-21T15:46:16.262Z
+date: 2023-07-26T18:59:56.412Z
 showtoc: true
 generated: true
 ---
@@ -39,22 +39,22 @@ class Seller extends VendureEntity implements SoftDeletable, HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/seller#seller'>Seller</a>&#62;) => Seller"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/seller#seller'>Seller</a>&#62;) => Seller`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomSellerFields"   />
+<MemberInfo kind="property" type={`CustomSellerFields`}   />
 
 
 

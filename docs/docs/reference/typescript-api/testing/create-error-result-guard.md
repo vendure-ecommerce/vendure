@@ -1,7 +1,7 @@
 ---
 title: "CreateErrorResultGuard"
 weight: 10
-date: 2023-07-21T15:46:18.257Z
+date: 2023-07-26T19:00:00.600Z
 showtoc: true
 generated: true
 ---
@@ -35,5 +35,5 @@ Parameters
 
 ### testFn
 
-<MemberInfo kind="parameter" type="(input: T) =&#62; boolean" />
+<MemberInfo kind="parameter" type={`(input: T) =&#62; boolean`} />
 

@@ -1,7 +1,7 @@
 ---
 title: "DefaultStockDisplayStrategy"
 weight: 10
-date: 2023-07-21T15:46:14.968Z
+date: 2023-07-26T18:59:54.290Z
 showtoc: true
 generated: true
 ---
@@ -33,12 +33,12 @@ class DefaultStockDisplayStrategy implements StockDisplayStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(lowStockLevel: number = 2) => DefaultStockDisplayStrategy"   />
+<MemberInfo kind="method" type={`(lowStockLevel: number = 2) => DefaultStockDisplayStrategy`}   />
 
 
 ### getStockLevel
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, saleableStockLevel: number) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariant: <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, saleableStockLevel: number) => string`}   />
 
 
 

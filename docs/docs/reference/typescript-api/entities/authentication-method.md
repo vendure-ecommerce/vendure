@@ -1,7 +1,7 @@
 ---
 title: "AuthenticationMethod"
 weight: 10
-date: 2023-07-21T15:46:15.904Z
+date: 2023-07-26T18:59:55.784Z
 showtoc: true
 generated: true
 ---
@@ -33,7 +33,7 @@ class AuthenticationMethod extends VendureEntity {
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/user#user'>User</a>`}   />
 
 
 
@@ -67,22 +67,22 @@ class ExternalAuthenticationMethod extends AuthenticationMethod {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>&#62;) => ExternalAuthenticationMethod"   />
+<MemberInfo kind="method" type={`(input: DeepPartial&#60;<a href='/reference/typescript-api/entities/authentication-method#externalauthenticationmethod'>ExternalAuthenticationMethod</a>&#62;) => ExternalAuthenticationMethod`}   />
 
 
 ### strategy
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### externalIdentifier
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### metadata
 
-<MemberInfo kind="property" type="any"   />
+<MemberInfo kind="property" type={`any`}   />
 
 
 
@@ -121,38 +121,38 @@ class NativeAuthenticationMethod extends AuthenticationMethod {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>&#62;) => NativeAuthenticationMethod"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod'>NativeAuthenticationMethod</a>&#62;) => NativeAuthenticationMethod`}   />
 
 
 ### identifier
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### passwordHash
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### verificationToken
 
-<MemberInfo kind="property" type="string | null"   />
+<MemberInfo kind="property" type={`string | null`}   />
 
 
 ### passwordResetToken
 
-<MemberInfo kind="property" type="string | null"   />
+<MemberInfo kind="property" type={`string | null`}   />
 
 
 ### identifierChangeToken
 
-<MemberInfo kind="property" type="string | null"   />
+<MemberInfo kind="property" type={`string | null`}   />
 
 A token issued when a User requests to change their identifier (typically
 an email address)
 ### pendingIdentifier
 
-<MemberInfo kind="property" type="string | null"   />
+<MemberInfo kind="property" type={`string | null`}   />
 
 When a request has been made to change the User's identifier, the new identifier
 will be stored here until it has been verified, after which it will

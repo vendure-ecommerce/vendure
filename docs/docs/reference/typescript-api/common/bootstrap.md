@@ -1,7 +1,7 @@
 ---
 title: "Bootstrap"
 weight: 10
-date: 2023-07-21T15:46:14.722Z
+date: 2023-07-26T18:59:53.897Z
 showtoc: true
 generated: true
 ---
@@ -35,5 +35,5 @@ Parameters
 
 ### userConfig
 
-<MemberInfo kind="parameter" type="Partial&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
+<MemberInfo kind="parameter" type={`Partial&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;`} />
 

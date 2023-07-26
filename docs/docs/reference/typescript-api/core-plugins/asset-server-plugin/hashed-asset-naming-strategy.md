@@ -1,7 +1,7 @@
 ---
 title: "HashedAssetNamingStrategy"
 weight: 10
-date: 2023-07-21T15:46:17.923Z
+date: 2023-07-26T18:59:59.922Z
 showtoc: true
 generated: true
 ---
@@ -40,12 +40,12 @@ class HashedAssetNamingStrategy extends DefaultAssetNamingStrategy {
 
 ### generateSourceFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string`}   />
 
 
 ### generatePreviewFileName
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, originalFileName: string, conflictFileName?: string) => string`}   />
 
 
 

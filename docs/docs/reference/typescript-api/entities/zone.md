@@ -1,7 +1,7 @@
 ---
 title: "Zone"
 weight: 10
-date: 2023-07-21T15:46:16.397Z
+date: 2023-07-26T18:59:56.671Z
 showtoc: true
 generated: true
 ---
@@ -40,22 +40,22 @@ class Zone extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;) => Zone"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>&#62;) => Zone`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### members
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/region#region'>Region</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/region#region'>Region</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomZoneFields"   />
+<MemberInfo kind="property" type={`CustomZoneFields`}   />
 
 
 

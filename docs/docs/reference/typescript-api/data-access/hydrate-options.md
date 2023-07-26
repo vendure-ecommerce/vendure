@@ -1,7 +1,7 @@
 ---
 title: "HydrateOptions"
 weight: 10
-date: 2023-07-21T15:46:16.833Z
+date: 2023-07-26T18:59:57.499Z
 showtoc: true
 generated: true
 ---
@@ -29,14 +29,14 @@ interface HydrateOptions<Entity extends VendureEntity> {
 
 ### relations
 
-<MemberInfo kind="property" type="Array&#60;<a href='/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;Entity&#62;&#62;"   />
+<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/common/entity-relation-paths#entityrelationpaths'>EntityRelationPaths</a>&#60;Entity&#62;&#62;`}   />
 
 Defines the relations to hydrate, using strings with dot notation to indicate
 nested joins. If the entity already has a particular relation available, that relation
 will be skipped (no extra DB join will be added).
 ### applyProductVariantPrices
 
-<MemberInfo kind="property" type="boolean" default="false"   />
+<MemberInfo kind="property" type={`boolean`} default="false"   />
 
 If set to `true`, any ProductVariants will also have their `price` and `priceWithTax` fields
 applied based on the current context. If prices are not required, this can be left `false` which

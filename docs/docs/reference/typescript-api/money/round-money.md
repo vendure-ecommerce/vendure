@@ -1,7 +1,7 @@
 ---
 title: "RoundMoney"
 weight: 10
-date: 2023-07-21T15:46:14.836Z
+date: 2023-07-26T18:59:54.075Z
 showtoc: true
 generated: true
 ---
@@ -24,9 +24,9 @@ Parameters
 
 ### value
 
-<MemberInfo kind="parameter" type="number" />
+<MemberInfo kind="parameter" type={`number`} />
 
 ### quantity
 
-<MemberInfo kind="parameter" type="" />
+<MemberInfo kind="parameter" type={``} />
 

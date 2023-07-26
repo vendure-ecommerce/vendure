@@ -1,7 +1,7 @@
 ---
 title: "OnClickContext"
 weight: 10
-date: 2023-07-21T15:46:19.143Z
+date: 2023-07-26T19:00:02.488Z
 showtoc: true
 generated: true
 ---
@@ -29,17 +29,17 @@ interface OnClickContext {
 
 ### route
 
-<MemberInfo kind="property" type="ActivatedRoute"   />
+<MemberInfo kind="property" type={`ActivatedRoute`}   />
 
 
 ### dataService
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>`}   />
 
 
 ### notificationService
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>`}   />
 
 
 

@@ -1,7 +1,7 @@
 ---
 title: "HasPermissionPipe"
 weight: 10
-date: 2023-07-21T15:46:19.579Z
+date: 2023-07-26T19:00:03.978Z
 showtoc: true
 generated: true
 ---
@@ -39,17 +39,17 @@ class HasPermissionPipe implements PipeTransform, OnDestroy {
 
 ### constructor
 
-<MemberInfo kind="method" type="(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => HasPermissionPipe"   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => HasPermissionPipe`}   />
 
 
 ### transform
 
-<MemberInfo kind="method" type="(input: string | string[]) => any"   />
+<MemberInfo kind="method" type={`(input: string | string[]) => any`}   />
 
 
 ### ngOnDestroy
 
-<MemberInfo kind="method" type="() => "   />
+<MemberInfo kind="method" type={`() => `}   />
 
 
 

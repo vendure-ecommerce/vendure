@@ -1,7 +1,7 @@
 ---
 title: "Fulfillment"
 weight: 10
-date: 2023-07-21T15:46:16.012Z
+date: 2023-07-26T18:59:55.952Z
 showtoc: true
 generated: true
 ---
@@ -45,37 +45,37 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>&#62;) => Fulfillment`}   />
 
 
 ### state
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>`}   />
 
 
 ### trackingCode
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### method
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### handlerCode
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### lines
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomFulfillmentFields"   />
+<MemberInfo kind="property" type={`CustomFulfillmentFields`}   />
 
 
 

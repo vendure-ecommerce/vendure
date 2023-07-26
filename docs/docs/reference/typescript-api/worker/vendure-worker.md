@@ -1,7 +1,7 @@
 ---
 title: "VendureWorker"
 weight: 10
-date: 2023-07-21T15:46:17.830Z
+date: 2023-07-26T18:59:59.733Z
 showtoc: true
 generated: true
 ---
@@ -30,23 +30,23 @@ class VendureWorker {
 
 ### app
 
-<MemberInfo kind="property" type="INestApplicationContext"   />
+<MemberInfo kind="property" type={`INestApplicationContext`}   />
 
 A reference to the `INestApplicationContext` object, which represents
 the NestJS [standalone application](https://docs.nestjs.com/standalone-applications) instance.
 ### constructor
 
-<MemberInfo kind="method" type="(app: INestApplicationContext) => VendureWorker"   />
+<MemberInfo kind="method" type={`(app: INestApplicationContext) => VendureWorker`}   />
 
 
 ### startJobQueue
 
-<MemberInfo kind="method" type="() => Promise&#60;<a href='/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;"   />
+<MemberInfo kind="method" type={`() => Promise&#60;<a href='/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;`}   />
 
 Starts the job queues running so that the worker can handle background jobs.
 ### startHealthCheckServer
 
-<MemberInfo kind="method" type="(healthCheckConfig: <a href='/reference/typescript-api/worker/worker-health-check-config#workerhealthcheckconfig'>WorkerHealthCheckConfig</a>) => Promise&#60;<a href='/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;"  since="1.2.0"  />
+<MemberInfo kind="method" type={`(healthCheckConfig: <a href='/reference/typescript-api/worker/worker-health-check-config#workerhealthcheckconfig'>WorkerHealthCheckConfig</a>) => Promise&#60;<a href='/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a>&#62;`}  since="1.2.0"  />
 
 Starts a simple http server which can be used as a health check on the worker instance.
 This endpoint can be used by container orchestration services such as Kubernetes to

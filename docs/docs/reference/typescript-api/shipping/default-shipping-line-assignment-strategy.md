@@ -1,7 +1,7 @@
 ---
 title: "DefaultShippingLineAssignmentStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.464Z
+date: 2023-07-26T18:59:55.134Z
 showtoc: true
 generated: true
 ---
@@ -31,7 +31,7 @@ class DefaultShippingLineAssignmentStrategy implements ShippingLineAssignmentStr
 
 ### assignShippingLineToOrderLines
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, shippingLine: <a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[] | Promise&#60;<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, shippingLine: <a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[] | Promise&#60;<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]&#62;`}   />
 
 
 

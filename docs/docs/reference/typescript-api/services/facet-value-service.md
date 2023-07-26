@@ -1,7 +1,7 @@
 ---
 title: "FacetValueService"
 weight: 10
-date: 2023-07-21T15:46:17.177Z
+date: 2023-07-26T18:59:58.394Z
 showtoc: true
 generated: true
 ---
@@ -38,27 +38,27 @@ class FacetValueService {
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: TranslatorService, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => FacetValueService"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => FacetValueService`}   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(lang: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(lang: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lang: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lang: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
 
 
 ### findAll
 
-<MemberInfo kind="method" type="(ctxOrLang: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, lang?: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctxOrLang: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, lang?: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
 
 
 ### findAllList
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, options?: ListQueryOptions&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
 
 Returns a PaginatedList of FacetValues.
 
@@ -66,37 +66,37 @@ TODO: in v2 this should replace the `findAll()` method.
 A separate method was created just to avoid a breaking change in v1.9.
 ### findOne
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62; | undefined&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62; | undefined&#62;`}   />
 
 
 ### findByIds
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, ids: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, ids: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
 
 
 ### findByFacetId
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
 
 Returns all FacetValues belonging to the Facet with the given id.
 ### create
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facet: <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>, input: CreateFacetValueInput | CreateFacetValueWithFacetInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facet: <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>, input: CreateFacetValueInput | CreateFacetValueWithFacetInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;`}   />
 
 
 ### update
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateFacetValueInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateFacetValueInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;`}   />
 
 
 ### delete
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>, force: boolean = false) => Promise&#60;DeletionResponse&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>, force: boolean = false) => Promise&#60;DeletionResponse&#62;`}   />
 
 
 ### checkFacetValueUsage
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facetValueIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], channelId?: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;{ productCount: number; variantCount: number }&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, facetValueIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[], channelId?: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;{ productCount: number; variantCount: number }&#62;`}   />
 
 Checks for usage of the given FacetValues in any Products or Variants, and returns the counts.
 

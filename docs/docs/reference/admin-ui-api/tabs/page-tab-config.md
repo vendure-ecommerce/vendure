@@ -1,7 +1,7 @@
 ---
 title: "PageTabConfig"
 weight: 10
-date: 2023-07-21T15:46:19.190Z
+date: 2023-07-26T19:00:02.572Z
 showtoc: true
 generated: true
 ---
@@ -33,40 +33,40 @@ interface PageTabConfig {
 
 ### location
 
-<MemberInfo kind="property" type="<a href='/reference/admin-ui-api/action-bar/page-location-id#pagelocationid'>PageLocationId</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/action-bar/page-location-id#pagelocationid'>PageLocationId</a>`}   />
 
 A valid location representing a list or detail page.
 ### tabIcon
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 An optional icon to display in the tab. The icon
 should be a valid shape name from the [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/)
 set.
 ### route
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The route path to the tab. This will be appended to the
 route of the parent page.
 ### tab
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 The name of the tab to display in the UI.
 ### priority
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 The priority of the tab. Tabs with a lower priority will be displayed first.
 ### component
 
-<MemberInfo kind="property" type="Type&#60;any&#62; | ReturnType&#60;typeof <a href='/reference/admin-ui-api/list-detail-views/detail-component-with-resolver#detailcomponentwithresolver'>detailComponentWithResolver</a>&#62;"   />
+<MemberInfo kind="property" type={`Type&#60;any&#62; | ReturnType&#60;typeof <a href='/reference/admin-ui-api/list-detail-views/detail-component-with-resolver#detailcomponentwithresolver'>detailComponentWithResolver</a>&#62;`}   />
 
 The component to render at the route of the tab.
 ### routeConfig
 
-<MemberInfo kind="property" type="Route"   />
+<MemberInfo kind="property" type={`Route`}   />
 
 You can optionally provide any native Angular route configuration options here.
 Any values provided here will take precedence over the values generated

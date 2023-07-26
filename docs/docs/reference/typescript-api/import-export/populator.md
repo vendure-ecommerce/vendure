@@ -1,7 +1,7 @@
 ---
 title: "Populator"
 weight: 10
-date: 2023-07-21T15:46:15.827Z
+date: 2023-07-26T18:59:55.673Z
 showtoc: true
 generated: true
 ---
@@ -29,14 +29,14 @@ class Populator {
 
 ### populateInitialData
 
-<MemberInfo kind="method" type="(data: <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, channel?: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>) => "   />
+<MemberInfo kind="method" type={`(data: <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, channel?: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>) => `}   />
 
 Should be run *before* populating the products, so that there are TaxRates by which
 product prices can be set. If the `channel` argument is set, then any <a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
 entities will be assigned to that Channel.
 ### populateCollections
 
-<MemberInfo kind="method" type="(data: <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, channel?: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>) => "   />
+<MemberInfo kind="method" type={`(data: <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, channel?: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>) => `}   />
 
 Should be run *after* the products have been populated, otherwise the expected FacetValues will not
 yet exist.

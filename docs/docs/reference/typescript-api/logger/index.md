@@ -1,7 +1,7 @@
 ---
 title: "Logger"
 weight: 10
-date: 2023-07-21T15:46:15.156Z
+date: 2023-07-26T18:59:54.612Z
 showtoc: true
 generated: true
 ---
@@ -93,32 +93,32 @@ class Logger implements LoggerService {
 
 ### logger
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>`}   />
 
 
 ### error
 
-<MemberInfo kind="method" type="(message: string, context?: string, trace?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string, trace?: string) => void`}   />
 
 
 ### warn
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### info
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### verbose
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 ### debug
 
-<MemberInfo kind="method" type="(message: string, context?: string) => void"   />
+<MemberInfo kind="method" type={`(message: string, context?: string) => void`}   />
 
 
 

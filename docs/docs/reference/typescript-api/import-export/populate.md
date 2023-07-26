@@ -1,7 +1,7 @@
 ---
 title: "Populate"
 weight: 10
-date: 2023-07-21T15:46:14.729Z
+date: 2023-07-26T18:59:53.909Z
 showtoc: true
 generated: true
 ---
@@ -61,17 +61,17 @@ Parameters
 
 ### bootstrapFn
 
-<MemberInfo kind="parameter" type="() =&#62; Promise&#60;T | undefined&#62;" />
+<MemberInfo kind="parameter" type={`() =&#62; Promise&#60;T | undefined&#62;`} />
 
 ### initialDataPathOrObject
 
-<MemberInfo kind="parameter" type="string | object" />
+<MemberInfo kind="parameter" type={`string | object`} />
 
 ### productsCsvPath
 
-<MemberInfo kind="parameter" type="string" />
+<MemberInfo kind="parameter" type={`string`} />
 
 ### channelOrToken
 
-<MemberInfo kind="parameter" type="string | import('@vendure/core').<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>" />
+<MemberInfo kind="parameter" type={`string | import('@vendure/core').<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>`} />
 

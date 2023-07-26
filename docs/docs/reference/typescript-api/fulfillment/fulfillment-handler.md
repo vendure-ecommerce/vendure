@@ -1,7 +1,7 @@
 ---
 title: "FulfillmentHandler"
 weight: 10
-date: 2023-07-21T15:46:15.095Z
+date: 2023-07-26T18:59:54.513Z
 showtoc: true
 generated: true
 ---
@@ -102,7 +102,7 @@ class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 ### constructor
 
-<MemberInfo kind="method" type="(config: <a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandlerconfig'>FulfillmentHandlerConfig</a>&#60;T&#62;) => FulfillmentHandler"   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandlerconfig'>FulfillmentHandlerConfig</a>&#60;T&#62;) => FulfillmentHandler`}   />
 
 
 
@@ -130,7 +130,7 @@ interface FulfillmentHandlerConfig<T extends ConfigArgs> extends ConfigurableOpe
 
 ### createFulfillment
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/fulfillment/fulfillment-handler#createfulfillmentfn'>CreateFulfillmentFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/fulfillment/fulfillment-handler#createfulfillmentfn'>CreateFulfillmentFn</a>&#60;T&#62;`}   />
 
 Invoked when the `addFulfillmentToOrder` mutation is executed with this handler selected.
 
@@ -138,7 +138,7 @@ If an Error is thrown from within this function, no Fulfillment is created and t
 result will be returned.
 ### onFulfillmentTransition
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, <a href='/reference/typescript-api/fulfillment/fulfillment-transition-data#fulfillmenttransitiondata'>FulfillmentTransitionData</a>&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, <a href='/reference/typescript-api/fulfillment/fulfillment-transition-data#fulfillmenttransitiondata'>FulfillmentTransitionData</a>&#62;`}   />
 
 This allows the handler to intercept state transitions of the created Fulfillment. This works much in the
 same way as the {@link CustomFulfillmentProcess} `onTransitionStart` method (i.e. returning `false` or

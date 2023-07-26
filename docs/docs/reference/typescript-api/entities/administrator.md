@@ -1,7 +1,7 @@
 ---
 title: "Administrator"
 weight: 10
-date: 2023-07-21T15:46:15.867Z
+date: 2023-07-26T18:59:55.722Z
 showtoc: true
 generated: true
 ---
@@ -46,37 +46,37 @@ class Administrator extends VendureEntity implements SoftDeletable, HasCustomFie
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Administrator"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>&#62;) => Administrator`}   />
 
 
 ### deletedAt
 
-<MemberInfo kind="property" type="Date | null"   />
+<MemberInfo kind="property" type={`Date | null`}   />
 
 
 ### firstName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### lastName
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### emailAddress
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### user
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/user#user'>User</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/user#user'>User</a>`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomAdministratorFields"   />
+<MemberInfo kind="property" type={`CustomAdministratorFields`}   />
 
 
 

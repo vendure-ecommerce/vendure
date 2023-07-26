@@ -12,6 +12,13 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
  * The {@link DefaultShippingLineAssignmentStrategy} simply assigns _all_ OrderLines, so is suitable for the
  * most common scenario of a single shipping method per Order.
  *
+ * :::info
+ *
+ * This is configured via the `shippingOptions.shippingLineAssignmentStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @since 2.0.0
  * @docsCategory shipping
  */

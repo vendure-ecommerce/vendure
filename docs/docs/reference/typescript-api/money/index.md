@@ -1,7 +1,7 @@
 ---
 title: "Money"
 weight: 10
-date: 2023-07-21T15:46:16.034Z
+date: 2023-07-26T18:59:55.994Z
 showtoc: true
 generated: true
 ---
@@ -25,5 +25,5 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type="MoneyColumnOptions" />
+<MemberInfo kind="parameter" type={`MoneyColumnOptions`} />
 

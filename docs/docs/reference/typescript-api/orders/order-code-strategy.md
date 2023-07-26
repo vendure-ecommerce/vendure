@@ -1,7 +1,7 @@
 ---
 title: "OrderCodeStrategy"
 weight: 10
-date: 2023-07-21T15:46:15.305Z
+date: 2023-07-26T18:59:54.886Z
 showtoc: true
 generated: true
 ---
@@ -13,11 +13,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderCodeStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="32" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="39" packageName="@vendure/core" />
 
 The OrderCodeStrategy determines how Order codes are generated.
 A custom strategy can be defined which e.g. integrates with an
 existing system to generate a code:
+
+:::info
+
+This is configured via the `orderOptions.orderCodeStrategy` property of
+your VendureConfig.
+
+:::
 
 *Example*
 
@@ -51,7 +58,7 @@ interface OrderCodeStrategy extends InjectableStrategy {
 
 ### generate
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string | Promise&#60;string&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string | Promise&#60;string&#62;`}   />
 
 Generates the order code.
 
@@ -61,7 +68,7 @@ Generates the order code.
 
 ## DefaultOrderCodeStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="55" packageName="@vendure/core" />
 
 The default OrderCodeStrategy generates a random string consisting
 of 16 uppercase letters and numbers.
@@ -79,7 +86,7 @@ class DefaultOrderCodeStrategy implements OrderCodeStrategy {
 
 ### generate
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => string`}   />
 
 
 

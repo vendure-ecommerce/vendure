@@ -1,7 +1,7 @@
 ---
 title: "StockMovementService"
 weight: 10
-date: 2023-07-21T15:46:17.715Z
+date: 2023-07-26T18:59:59.524Z
 showtoc: true
 generated: true
 ---
@@ -36,47 +36,47 @@ class StockMovementService {
 
 ### shippingEligibilityCheckers
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a>[]`}   />
 
 
 ### shippingCalculators
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>[]`}   />
 
 
 ### constructor
 
-<MemberInfo kind="method" type="(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, globalSettingsService: <a href='/reference/typescript-api/services/global-settings-service#globalsettingsservice'>GlobalSettingsService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, stockLocationService: StockLocationService, configService: ConfigService) => StockMovementService"   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, globalSettingsService: <a href='/reference/typescript-api/services/global-settings-service#globalsettingsservice'>GlobalSettingsService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, stockLocationService: StockLocationService, configService: ConfigService) => StockMovementService`}   />
 
 
 ### getStockMovementsByProductVariantId
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, options: StockMovementListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>&#62;&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, options: StockMovementListOptions) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;<a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>&#62;&#62;`}   />
 
 Returns a <a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> of all StockMovements associated with the specified ProductVariant.
 ### adjustProductVariantStock
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, stockOnHandNumberOrInput: number | StockLevelInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#stockadjustment'>StockAdjustment</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, stockOnHandNumberOrInput: number | StockLevelInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#stockadjustment'>StockAdjustment</a>[]&#62;`}   />
 
 Adjusts the stock level of the ProductVariant, creating a new <a href='/reference/typescript-api/entities/stock-movement#stockadjustment'>StockAdjustment</a> entity
 in the process.
 ### createAllocationsForOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a>[]&#62;`}   />
 
 Creates a new <a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a> for each OrderLine in the Order. For ProductVariants
 which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
 increased, indicating that this quantity of stock is allocated and cannot be sold.
 ### createAllocationsForOrderLines
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lines: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lines: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a>[]&#62;`}   />
 
 Creates a new <a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a> for each of the given OrderLines. For ProductVariants
 which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
 increased, indicating that this quantity of stock is allocated and cannot be sold.
 ### createSalesForOrder
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lines: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#sale'>Sale</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lines: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#sale'>Sale</a>[]&#62;`}   />
 
 Creates <a href='/reference/typescript-api/entities/stock-movement#sale'>Sale</a>s for each OrderLine in the Order. For ProductVariants
 which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
@@ -84,14 +84,14 @@ reduced and the `stockOnHand` value is also reduced by the OrderLine quantity, i
 that the stock is no longer allocated, but is actually sold and no longer available.
 ### createCancellationsForOrderLines
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lineInputs: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lineInputs: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>[]&#62;`}   />
 
 Creates a <a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a> for each of the specified OrderItems. For ProductVariants
 which are configured to track stock levels, the `ProductVariant.stockOnHand` value is
 increased for each Cancellation, allowing that stock to be sold again.
 ### createReleasesForOrderLines
 
-<MemberInfo kind="method" type="(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lineInputs: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#release'>Release</a>[]&#62;"   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, lineInputs: OrderLineInput[]) => Promise&#60;<a href='/reference/typescript-api/entities/stock-movement#release'>Release</a>[]&#62;`}   />
 
 Creates a <a href='/reference/typescript-api/entities/stock-movement#release'>Release</a> for each of the specified OrderItems. For ProductVariants
 which are configured to track stock levels, the `ProductVariant.stockAllocated` value is

@@ -1,7 +1,7 @@
 ---
 title: "RegisterHistoryEntryComponent"
 weight: 10
-date: 2023-07-21T15:46:19.093Z
+date: 2023-07-26T19:00:02.394Z
 showtoc: true
 generated: true
 ---
@@ -25,5 +25,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="<a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-config#historyentryconfig'>HistoryEntryConfig</a>" />
+<MemberInfo kind="parameter" type={`<a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-config#historyentryconfig'>HistoryEntryConfig</a>`} />
 

@@ -1,7 +1,7 @@
 ---
 title: "CreateTestEnvironment"
 weight: 10
-date: 2023-07-21T15:46:18.255Z
+date: 2023-07-26T19:00:00.593Z
 showtoc: true
 generated: true
 ---
@@ -49,5 +49,5 @@ Parameters
 
 ### config
 
-<MemberInfo kind="parameter" type="Required&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;" />
+<MemberInfo kind="parameter" type={`Required&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;`} />
 

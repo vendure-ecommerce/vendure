@@ -1,7 +1,7 @@
 ---
 title: "AssetImporter"
 weight: 10
-date: 2023-07-21T15:46:15.767Z
+date: 2023-07-26T18:59:55.593Z
 showtoc: true
 generated: true
 ---
@@ -29,7 +29,7 @@ class AssetImporter {
 
 ### getAssets
 
-<MemberInfo kind="method" type="(assetPaths: string[], ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;{ assets: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]; errors: string[] }&#62;"   />
+<MemberInfo kind="method" type={`(assetPaths: string[], ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;{ assets: <a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]; errors: string[] }&#62;`}   />
 
 Creates Asset entities for the given paths, using the assetMap cache to prevent the
 creation of duplicates.

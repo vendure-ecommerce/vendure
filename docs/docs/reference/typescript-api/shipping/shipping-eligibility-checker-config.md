@@ -1,7 +1,7 @@
 ---
 title: "ShippingEligibilityCheckerConfig"
 weight: 10
-date: 2023-07-21T15:46:15.477Z
+date: 2023-07-26T18:59:55.154Z
 showtoc: true
 generated: true
 ---
@@ -32,12 +32,12 @@ interface ShippingEligibilityCheckerConfig<T extends ConfigArgs> extends Configu
 
 ### check
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/shipping/check-shipping-eligibility-checker-fn#checkshippingeligibilitycheckerfn'>CheckShippingEligibilityCheckerFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/shipping/check-shipping-eligibility-checker-fn#checkshippingeligibilitycheckerfn'>CheckShippingEligibilityCheckerFn</a>&#60;T&#62;`}   />
 
 
 ### shouldRunCheck
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/shipping/should-run-check-fn#shouldruncheckfn'>ShouldRunCheckFn</a>&#60;T&#62;"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/shipping/should-run-check-fn#shouldruncheckfn'>ShouldRunCheckFn</a>&#60;T&#62;`}   />
 
 
 

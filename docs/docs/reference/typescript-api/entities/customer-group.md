@@ -1,7 +1,7 @@
 ---
 title: "CustomerGroup"
 weight: 10
-date: 2023-07-21T15:46:15.978Z
+date: 2023-07-26T18:59:55.912Z
 showtoc: true
 generated: true
 ---
@@ -39,22 +39,22 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
 
 ### constructor
 
-<MemberInfo kind="method" type="(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>&#62;) => CustomerGroup"   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>&#62;) => CustomerGroup`}   />
 
 
 ### name
 
-<MemberInfo kind="property" type="string"   />
+<MemberInfo kind="property" type={`string`}   />
 
 
 ### customers
 
-<MemberInfo kind="property" type="<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>[]"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>[]`}   />
 
 
 ### customFields
 
-<MemberInfo kind="property" type="CustomCustomerGroupFields"   />
+<MemberInfo kind="property" type={`CustomCustomerGroupFields`}   />
 
 
 

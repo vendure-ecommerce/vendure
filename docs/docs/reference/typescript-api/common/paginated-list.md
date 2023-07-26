@@ -1,7 +1,7 @@
 ---
 title: "PaginatedList"
 weight: 10
-date: 2023-07-21T15:46:17.848Z
+date: 2023-07-26T18:59:59.766Z
 showtoc: true
 generated: true
 ---
@@ -29,12 +29,12 @@ type PaginatedList<T> = {
 
 ### items
 
-<MemberInfo kind="property" type="T[]"   />
+<MemberInfo kind="property" type={`T[]`}   />
 
 
 ### totalItems
 
-<MemberInfo kind="property" type="number"   />
+<MemberInfo kind="property" type={`number`}   />
 
 
 
