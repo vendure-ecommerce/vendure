@@ -196,7 +196,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 new Brackets(qb1 => {
                     for (const id of facetValueIds) {
                         const placeholder = createPlaceholderFromId(id);
-                        const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
+                        const clause = `:${placeholder}::varchar = ANY (string_to_array(si.facetValueIds, ','))`;
                         const params = { [placeholder]: id };
                         if (facetValueOperator === LogicalOperator.AND) {
                             qb1.andWhere(clause, params);
@@ -218,14 +218,14 @@ export class PostgresSearchStrategy implements SearchStrategy {
                                 }
                                 if (facetValueFilter.and) {
                                     const placeholder = createPlaceholderFromId(facetValueFilter.and);
-                                    const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
+                                    const clause = `:${placeholder}::varchar = ANY (string_to_array(si.facetValueIds, ','))`;
                                     const params = { [placeholder]: facetValueFilter.and };
                                     qb2.where(clause, params);
                                 }
                                 if (facetValueFilter.or?.length) {
                                     for (const id of facetValueFilter.or) {
                                         const placeholder = createPlaceholderFromId(id);
-                                        const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
+                                        const clause = `:${placeholder}::varchar = ANY (string_to_array(si.facetValueIds, ','))`;
                                         const params = { [placeholder]: id };
                                         qb2.orWhere(clause, params);
                                     }
@@ -237,10 +237,12 @@ export class PostgresSearchStrategy implements SearchStrategy {
             );
         }
         if (collectionId) {
-            qb.andWhere(":collectionId = ANY (string_to_array(si.collectionIds, ','))", { collectionId });
+            qb.andWhere(":collectionId::varchar = ANY (string_to_array(si.collectionIds, ','))", {
+                collectionId,
+            });
         }
         if (collectionSlug) {
-            qb.andWhere(":collectionSlug = ANY (string_to_array(si.collectionSlugs, ','))", {
+            qb.andWhere(":collectionSlug::varchar = ANY (string_to_array(si.collectionSlugs, ','))", {
                 collectionSlug,
             });
         }
