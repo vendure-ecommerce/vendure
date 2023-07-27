@@ -90,19 +90,22 @@
         <ng-template let-facet="item">
             <div class="facet-values-list">
                 <vdr-facet-value-chip
-                    *ngFor="let value of facet.values | slice : 0 : displayLimit[facet.id] || 3"
+                    *ngFor="let value of facet.valueList.items | slice : 0 : displayLimit[facet.id] || 3"
                     [facetValue]="value"
                     [removable]="false"
                     [displayFacetName]="false"
                 ></vdr-facet-value-chip>
+                <vdr-chip *ngIf="displayLimit[facet.id] < facet.valueList.totalItems && (displayLimit[facet.id] || 0) === facet.valueList.items.length">
+                    ... + {{ facet.valueList.totalItems - facet.valueList.items.length }}
+                </vdr-chip>
                 <button
                     class="button-small"
-                    *ngIf="facet.values.length > initialLimit"
+                    *ngIf="facet.valueList.items.length > initialLimit"
                     (click)="toggleDisplayLimit(facet)"
                 >
-                    <ng-container *ngIf="(displayLimit[facet.id] || 0) < facet.values.length; else collapse">
+                    <ng-container *ngIf="(displayLimit[facet.id] || 0) < facet.valueList.items.length; else collapse">
                         <clr-icon shape="plus"></clr-icon>
-                        {{ facet.values.length - initialLimit }}
+                        {{ facet.valueList.totalItems - initialLimit }}
                     </ng-container>
                     <ng-template #collapse>
                         <clr-icon shape="minus"></clr-icon>
