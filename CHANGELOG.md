@@ -7,7 +7,6 @@
 * **admin-ui** Add custom detail component locationId and action bar items to draft order detail (#2286) ([27c9ae7](https://github.com/vendure-ecommerce/vendure/commit/27c9ae7)), closes [#2286](https://github.com/vendure-ecommerce/vendure/issues/2286)
 * **admin-ui** Add missing Russian translation strings (#2309) ([9524add](https://github.com/vendure-ecommerce/vendure/commit/9524add)), closes [#2309](https://github.com/vendure-ecommerce/vendure/issues/2309)
 * **admin-ui** Add product variant name filter in product variant list (#2271) ([b17494d](https://github.com/vendure-ecommerce/vendure/commit/b17494d)), closes [#2271](https://github.com/vendure-ecommerce/vendure/issues/2271)
-* **admin-ui** all Arabic tokens translated (100%) (#2287) ([83ecec9](https://github.com/vendure-ecommerce/vendure/commit/83ecec9)), closes [#2287](https://github.com/vendure-ecommerce/vendure/issues/2287)
 * **admin-ui** Allow period in slug ([7c9d110](https://github.com/vendure-ecommerce/vendure/commit/7c9d110)), closes [#2304](https://github.com/vendure-ecommerce/vendure/issues/2304)
 * **admin-ui** Fix creation of zero tax rates ([5f898b4](https://github.com/vendure-ecommerce/vendure/commit/5f898b4)), closes [#2312](https://github.com/vendure-ecommerce/vendure/issues/2312)
 * **core** Do not publish CollectionModificationEvent if no changes ([75f6dec](https://github.com/vendure-ecommerce/vendure/commit/75f6dec))
@@ -22,6 +21,10 @@
 
 #### Features
 
+Note: although we now have complete translations for Arabic & Hebrew, the right-to-left layout support is still in progress,
+so if you use these languages you will encounter layout issues.
+
+* **admin-ui** all Arabic tokens translated (100%) (#2287) ([83ecec9](https://github.com/vendure-ecommerce/vendure/commit/83ecec9)), closes [#2287](https://github.com/vendure-ecommerce/vendure/issues/2287)
 * **admin-ui** Hebrew support (#2313) ([2814142](https://github.com/vendure-ecommerce/vendure/commit/2814142)), closes [#2313](https://github.com/vendure-ecommerce/vendure/issues/2313)
 
 ## <small>2.0.4 (2023-07-13)</small>
