@@ -1,3 +1,29 @@
+## <small>2.0.5 (2023-07-27)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add channelTokenKey to AdminUiConfig (#2307) ([5162d0c](https://github.com/vendure-ecommerce/vendure/commit/5162d0c)), closes [#2307](https://github.com/vendure-ecommerce/vendure/issues/2307)
+* **admin-ui** Add custom detail component locationId and action bar items to draft order detail (#2286) ([27c9ae7](https://github.com/vendure-ecommerce/vendure/commit/27c9ae7)), closes [#2286](https://github.com/vendure-ecommerce/vendure/issues/2286)
+* **admin-ui** Add missing Russian translation strings (#2309) ([9524add](https://github.com/vendure-ecommerce/vendure/commit/9524add)), closes [#2309](https://github.com/vendure-ecommerce/vendure/issues/2309)
+* **admin-ui** Add product variant name filter in product variant list (#2271) ([b17494d](https://github.com/vendure-ecommerce/vendure/commit/b17494d)), closes [#2271](https://github.com/vendure-ecommerce/vendure/issues/2271)
+* **admin-ui** all Arabic tokens translated (100%) (#2287) ([83ecec9](https://github.com/vendure-ecommerce/vendure/commit/83ecec9)), closes [#2287](https://github.com/vendure-ecommerce/vendure/issues/2287)
+* **admin-ui** Allow period in slug ([7c9d110](https://github.com/vendure-ecommerce/vendure/commit/7c9d110)), closes [#2304](https://github.com/vendure-ecommerce/vendure/issues/2304)
+* **admin-ui** Fix creation of zero tax rates ([5f898b4](https://github.com/vendure-ecommerce/vendure/commit/5f898b4)), closes [#2312](https://github.com/vendure-ecommerce/vendure/issues/2312)
+* **core** Do not publish CollectionModificationEvent if no changes ([75f6dec](https://github.com/vendure-ecommerce/vendure/commit/75f6dec))
+* **core** Export missing search plugin types ([23af791](https://github.com/vendure-ecommerce/vendure/commit/23af791))
+* **core** Fix createRefund amount on cancelled OrderLines ([2b49edf](https://github.com/vendure-ecommerce/vendure/commit/2b49edf)), closes [#2302](https://github.com/vendure-ecommerce/vendure/issues/2302)
+* **core** Fix incorrect allocation logic in default fulfillment process ([f6881bf](https://github.com/vendure-ecommerce/vendure/commit/f6881bf)), closes [#2306](https://github.com/vendure-ecommerce/vendure/issues/2306)
+* **core** Fix startup error with readonly Administrator custom fields ([cae55a6](https://github.com/vendure-ecommerce/vendure/commit/cae55a6))
+* **core** Fix typo in option searchStrategy (#2305) ([8cd15e1](https://github.com/vendure-ecommerce/vendure/commit/8cd15e1)), closes [#2305](https://github.com/vendure-ecommerce/vendure/issues/2305)
+* **core** Improved CockroachDB compatibility for DefaultSearchPlugin ([b8d8dec](https://github.com/vendure-ecommerce/vendure/commit/b8d8dec))
+* **core** Publish AccountRegistrationEvent when creating Customer via admin ([e0bd036](https://github.com/vendure-ecommerce/vendure/commit/e0bd036))
+* **core** Use MoneyStrategy in Surcharges (#2294) ([efee8ec](https://github.com/vendure-ecommerce/vendure/commit/efee8ec)), closes [#2294](https://github.com/vendure-ecommerce/vendure/issues/2294)
+
+#### Features
+
+* **admin-ui** Hebrew support (#2313) ([2814142](https://github.com/vendure-ecommerce/vendure/commit/2814142)), closes [#2313](https://github.com/vendure-ecommerce/vendure/issues/2313)
+
 ## <small>2.0.4 (2023-07-13)</small>
 
 
