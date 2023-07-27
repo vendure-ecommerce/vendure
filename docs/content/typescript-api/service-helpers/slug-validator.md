@@ -1,7 +1,7 @@
 ---
 title: "SlugValidator"
 weight: 10
-date: 2023-06-21T06:23:39.381Z
+date: 2023-07-14T16:57:50.265Z
 showtoc: true
 generated: true
 ---
@@ -73,7 +73,7 @@ type InputWithSlug = {
 
 ### translations
 
-{{< member-info kind="property" type="Array&#60;{         id?: <a href='/typescript-api/common/id#id'>ID</a> | null;         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         slug?: string | null;     }&#62; | null"  >}}
+{{< member-info kind="property" type="Array&#60;{         id?: <a href='/typescript-api/common/id#id'>ID</a> | null;         languageCode: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         slug?: string | null;     }&#62; | null"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

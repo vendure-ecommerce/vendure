@@ -58,6 +58,11 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
 import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
+import {
+    assignProductVariantsToChannelBulkAction,
+    removeProductVariantsFromChannelBulkAction,
+    deleteProductVariantsBulkAction,
+} from './components/product-variant-list/product-variant-list-bulk-actions';
 import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
@@ -127,8 +132,11 @@ export class CatalogModule {
     ) {
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeProductsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeProductVariantsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteProductVariantsBulkAction);
 
         bulkActionRegistryService.registerBulkAction(assignFacetsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);

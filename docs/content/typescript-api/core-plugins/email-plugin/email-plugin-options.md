@@ -1,7 +1,7 @@
 ---
 title: "EmailPluginOptions"
 weight: 10
-date: 2023-06-21T06:23:40.597Z
+date: 2023-07-14T16:57:50.744Z
 showtoc: true
 generated: true
 ---
@@ -53,7 +53,7 @@ The default uses the FileBasedTemplateLoader which loads templates from `<projec
 
 ### transport
 
-{{< member-info kind="property" type="| <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)"  >}}
+{{< member-info kind="property" type="| <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/typescript-api/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)"  >}}
 
 {{< member-description >}}Configures how the emails are sent.{{< /member-description >}}
 

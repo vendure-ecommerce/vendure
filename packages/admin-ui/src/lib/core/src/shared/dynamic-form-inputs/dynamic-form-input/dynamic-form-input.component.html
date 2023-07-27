@@ -8,17 +8,19 @@
             *ngFor="let item of listItems; trackBy: trackById"
             cdkDrag
             [cdkDragData]="item"
+            [cdkDragLockAxis]="'y'"
         >
-            <ng-container #listItem></ng-container>
+            <div class="flex-spacer pr-2">
+                <ng-container #listItem></ng-container>
+            </div>
             <button
-                class="btn btn-link btn-sm btn-warning"
+                class="button-small"
                 *ngIf="!readonly"
                 (click)="removeListItem(item)"
                 [title]="'common.remove-item-from-list' | translate"
             >
                 <clr-icon shape="times"></clr-icon>
             </button>
-            <div class="flex-spacer"></div>
             <div class="drag-handle" cdkDragHandle [class.hidden]="readonly">
                 <clr-icon shape="drag-handle" size="24"></clr-icon>
             </div>

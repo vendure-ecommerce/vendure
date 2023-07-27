@@ -61,7 +61,7 @@ export class CollectionDetailComponent
     customFields = this.getCustomFieldConfig('Collection');
     detailForm = this.formBuilder.group({
         name: ['', Validators.required],
-        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
+        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9._-]+$/)],
         description: '',
         visible: false,
         inheritFilters: true,

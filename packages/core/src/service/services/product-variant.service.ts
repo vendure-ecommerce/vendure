@@ -711,6 +711,7 @@ export class ProductVariantService {
             relations: ['taxCategory', 'assets'],
         });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
+        const targetChannel = await this.connection.getEntityOrThrow(ctx, Channel, input.channelId);
         for (const variant of variants) {
             if (variant.deletedAt) {
                 continue;
@@ -718,13 +719,13 @@ export class ProductVariantService {
             await this.applyChannelPriceAndTax(variant, ctx);
             await this.channelService.assignToChannels(ctx, Product, variant.productId, [input.channelId]);
             await this.channelService.assignToChannels(ctx, ProductVariant, variant.id, [input.channelId]);
-            const targetChannel = await this.channelService.findOne(ctx, input.channelId);
-            const price = targetChannel?.pricesIncludeTax ? variant.priceWithTax : variant.price;
+            const price = targetChannel.pricesIncludeTax ? variant.priceWithTax : variant.price;
             await this.createOrUpdateProductVariantPrice(
                 ctx,
                 variant.id,
                 roundMoney(price * priceFactor),
                 input.channelId,
+                targetChannel.defaultCurrencyCode,
             );
             const assetIds = variant.assets?.map(a => a.assetId) || [];
             await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });

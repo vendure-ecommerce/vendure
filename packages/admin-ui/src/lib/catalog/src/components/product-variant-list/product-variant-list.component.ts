@@ -1,6 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { ProductVariantListQueryDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import {
+    LogicalOperator,
+    ProductVariantListQueryDocument,
+    TypedBaseListComponent,
+} from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-product-variant-list',
@@ -17,6 +21,12 @@ export class ProductVariantListComponent
     readonly filters = this.createFilterCollection()
         .addDateFilters()
         .addFilters([
+            {
+                name: 'name',
+                type: { kind: 'text' },
+                label: _('common.name'),
+                filterField: 'name',
+            },
             {
                 name: 'id',
                 type: { kind: 'text' },
@@ -74,7 +84,7 @@ export class ProductVariantListComponent
                     skip,
                     take,
                     filter: {
-                        name: {
+                        sku: {
                             contains: this.searchTermControl.value,
                         },
                         ...this.filters.createFilterInput(),

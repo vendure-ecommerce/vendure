@@ -32,7 +32,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownComponent {
-    private isOpen = false;
+    isOpen = false;
     private onOpenChangeCallbacks: Array<(isOpen: boolean) => void> = [];
     public trigger: ElementRef;
     @Input() manualToggle = false;

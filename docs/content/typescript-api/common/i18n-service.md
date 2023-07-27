@@ -1,7 +1,7 @@
 ---
 title: "I18nService"
 weight: 10
-date: 2023-06-21T06:23:38.961Z
+date: 2023-07-14T16:57:50.134Z
 showtoc: true
 generated: true
 ---

@@ -125,6 +125,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
         const searchTerm$ = this.searchTermControl.valueChanges.pipe(
             filter(value => value !== null && (2 < value.length || value.length === 0)),
             debounceTime(250),
+            tap(() => this.setPageNumber(1)),
         );
 
         merge(searchTerm$, ...streams)

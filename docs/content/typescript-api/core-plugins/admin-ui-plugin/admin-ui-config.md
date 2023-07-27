@@ -1,7 +1,7 @@
 ---
 title: "AdminUiConfig"
 weight: 10
-date: 2023-06-21T06:23:40.375Z
+date: 2023-07-14T16:57:50.664Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # AdminUiConfig
 
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="216" packageName="@vendure/common">}}
+{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="214" packageName="@vendure/common">}}
 
 This interface describes JSON config file (vendure-ui-config.json) used by the Admin UI.
 The values are loaded at run-time by the Admin UI app, and allow core configuration to be
@@ -78,6 +78,13 @@ option.{{< /member-description >}}
 {{< member-description >}}The header used when using the 'bearer' auth method. Should match the
 setting of the server's `authOptions.authTokenHeaderKey` config
 option.{{< /member-description >}}
+
+### channelTokenKey
+
+{{< member-info kind="property" type="string" default="'vendure-token'"  >}}
+
+{{< member-description >}}The name of the header which contains the channel token. Should match the
+setting of the server's `apiOptions.channelTokenKey` config option.{{< /member-description >}}
 
 ### defaultLanguage
 

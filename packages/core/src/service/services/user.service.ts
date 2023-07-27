@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { VerifyCustomerAccountResult } from '@vendure/common/lib/generated-shop-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
@@ -41,6 +42,7 @@ export class UserService {
         private roleService: RoleService,
         private passwordCipher: PasswordCipher,
         private verificationTokenGenerator: VerificationTokenGenerator,
+        private moduleRef: ModuleRef,
     ) {}
 
     async getUserById(ctx: RequestContext, userId: ID): Promise<User | undefined> {
@@ -170,6 +172,10 @@ export class UserService {
     }
 
     async softDelete(ctx: RequestContext, userId: ID) {
+        // Dynamic import to avoid the circular dependency of SessionService
+        await this.moduleRef
+            .get((await import('./session.service.js')).SessionService)
+            .deleteSessionsByUser(ctx, new User({ id: userId }));
         await this.connection.getEntityOrThrow(ctx, User, userId);
         await this.connection.getRepository(ctx, User).update({ id: userId }, { deletedAt: new Date() });
     }
@@ -307,7 +313,7 @@ export class UserService {
      * Changes the User identifier without an email verification step, so this should be only used when
      * an Administrator is setting a new email address.
      */
-    async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
+    async changeUserAndNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
         const user = await this.getUserById(ctx, userId);
         if (!user) {
             return;
@@ -315,18 +321,15 @@ export class UserService {
         const nativeAuthMethod = user.authenticationMethods.find(
             (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
         );
-        if (!nativeAuthMethod) {
-            // If the NativeAuthenticationMethod is not configured, then
-            // there is nothing to do.
-            return;
+        if (nativeAuthMethod) {
+            nativeAuthMethod.identifier = newIdentifier;
+            nativeAuthMethod.identifierChangeToken = null;
+            nativeAuthMethod.pendingIdentifier = null;
+            await this.connection
+                .getRepository(ctx, NativeAuthenticationMethod)
+                .save(nativeAuthMethod, { reload: false });
         }
         user.identifier = newIdentifier;
-        nativeAuthMethod.identifier = newIdentifier;
-        nativeAuthMethod.identifierChangeToken = null;
-        nativeAuthMethod.pendingIdentifier = null;
-        await this.connection
-            .getRepository(ctx, NativeAuthenticationMethod)
-            .save(nativeAuthMethod, { reload: false });
         await this.connection.getRepository(ctx, User).save(user, { reload: false });
     }
 

@@ -1,7 +1,7 @@
 ---
 title: "Populator"
 weight: 10
-date: 2023-06-21T06:23:38.077Z
+date: 2023-07-14T16:57:49.818Z
 showtoc: true
 generated: true
 ---
@@ -33,8 +33,7 @@ class Populator {
 {{< member-info kind="method" type="(data: <a href='/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, channel?: <a href='/typescript-api/entities/channel#channel'>Channel</a>) => "  >}}
 
 {{< member-description >}}Should be run *before* populating the products, so that there are TaxRates by which
-product prices can be set. If the `channel` argument is set, then any <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
-entities will be assigned to that Channel.{{< /member-description >}}
+product prices can be set. If the `channel` argument is set, then any <a href='/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>entities will be assigned to that Channel.{{< /member-description >}}
 
 ### populateCollections
 

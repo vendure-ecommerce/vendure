@@ -263,9 +263,8 @@ export class CustomerService {
                     customer.user = result;
                 }
             }
-        } else {
-            this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         }
+        this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         await this.channelService.assignToCurrentChannel(customer, ctx);
         const createdCustomer = await this.connection.getRepository(ctx, Customer).save(customer);
         await this.customFieldRelationService.updateRelations(ctx, Customer, input, createdCustomer);
@@ -338,7 +337,11 @@ export class CustomerService {
                         return new EmailAddressConflictAdminError();
                     }
 
-                    await this.userService.changeNativeIdentifier(ctx, customer.user.id, input.emailAddress);
+                    await this.userService.changeUserAndNativeIdentifier(
+                        ctx,
+                        customer.user.id,
+                        input.emailAddress,
+                    );
                 }
             }
         }

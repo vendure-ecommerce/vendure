@@ -1,7 +1,7 @@
 ---
 title: "HardenPluginOptions"
 weight: 10
-date: 2023-06-21T06:23:40.874Z
+date: 2023-07-14T16:57:50.832Z
 showtoc: true
 generated: true
 ---
@@ -62,7 +62,7 @@ This is very useful for tuning your complexity scores.{{< /member-description >}
 
 ### customComplexityFactors
 
-{{< member-info kind="property" type="{         [path: string]: number;     }"  >}}
+{{< member-info kind="property" type="{         [path: string]: number;     }"  >}}
 
 {{< member-description >}}This object allows you to tune the complexity weight of specific fields. For example,
 if you have a custom `stockLocations` field defined on the `ProductVariant` type, and

@@ -4,6 +4,7 @@ import {
     ChangeDetectorRef,
     Component,
     ComponentRef,
+    HostListener,
     Input,
     ViewChild,
 } from '@angular/core';
@@ -39,6 +40,18 @@ export class DataTableFiltersComponent implements AfterViewInit {
     protected formControl: AbstractControl;
     protected selectedFilter: DataTableFilter | undefined;
     protected customComponent?: ComponentRef<FormInputComponent>;
+
+    @HostListener('window:keydown.f', ['$event'])
+    onFKeyPress(event: KeyboardEvent) {
+        if (event.target instanceof HTMLElement) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+        }
+        if (!this.dropdown.isOpen && this.state === 'new') {
+            this.dropdown.toggleOpen();
+        }
+    }
 
     constructor(private i18nService: I18nService, private changeDetectorRef: ChangeDetectorRef) {}
 

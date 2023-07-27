@@ -435,6 +435,11 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
             if (toState === 'Cancelled') {
                 order.active = false;
             }
+            if (fromState === 'Draft' && toState === 'ArrangingPayment') {
+                // Once we exit the Draft state, we can consider the order active,
+                // which will allow us to run the OrderPlacedStrategy at the correct point.
+                order.active = true;
+            }
             await historyService.createHistoryEntryForOrder({
                 orderId: order.id,
                 type: HistoryEntryType.ORDER_STATE_TRANSITION,

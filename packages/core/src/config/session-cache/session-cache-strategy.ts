@@ -79,23 +79,39 @@ export type CachedSession = {
  *     this.client.on('error', err => Logger.error(err.message, loggerCtx, err.stack));
  *   }
  *
+ *   async destroy() {
+ *     await this.client.quit();
+ *   }
+ *
  *   async get(sessionToken: string): Promise<CachedSession | undefined> {
- *     const retrieved = await this.client.get(this.namespace(sessionToken));
- *     if (retrieved) {
- *       try {
- *         return JSON.parse(retrieved);
- *       } catch (e) {
- *         Logger.error(`Could not parse cached session data: ${e.message}`, loggerCtx);
+ *     try {
+ *       const retrieved = await this.client.get(this.namespace(sessionToken));
+ *       if (retrieved) {
+ *         try {
+ *           return JSON.parse(retrieved);
+ *         } catch (e: any) {
+ *           Logger.error(`Could not parse cached session data: ${e.message}`, loggerCtx);
+ *         }
  *       }
+ *     } catch (e: any) {
+ *       Logger.error(`Could not get cached session: ${e.message}`, loggerCtx);
  *     }
  *   }
  *
  *   async set(session: CachedSession) {
- *     await this.client.set(this.namespace(session.token), JSON.stringify(session));
+ *     try {
+ *       await this.client.set(this.namespace(session.token), JSON.stringify(session));
+ *     } catch (e: any) {
+ *       Logger.error(`Could not set cached session: ${e.message}`, loggerCtx);
+ *     }
  *   }
  *
  *   async delete(sessionToken: string) {
- *     await this.client.del(this.namespace(sessionToken));
+ *     try {
+ *       await this.client.del(this.namespace(sessionToken));
+ *     } catch (e: any) {
+ *       Logger.error(`Could not delete cached session: ${e.message}`, loggerCtx);
+ *     }
  *   }
  *
  *   clear() {

@@ -1,7 +1,7 @@
 ---
 title: "DropdownComponent"
 weight: 10
-date: 2023-06-21T06:23:42.498Z
+date: 2023-07-14T16:57:51.220Z
 showtoc: true
 generated: true
 ---
@@ -42,6 +42,7 @@ Used for building dropdown menus.
 
 ```TypeScript
 class DropdownComponent {
+  isOpen = false;
   public public trigger: ElementRef;
   @Input() @Input() manualToggle = false;
   onClick() => ;
@@ -51,6 +52,12 @@ class DropdownComponent {
 }
 ```
 ## Members
+
+### isOpen
+
+{{< member-info kind="property" type=""  >}}
+
+{{< member-description >}}{{< /member-description >}}
 
 ### trigger
 

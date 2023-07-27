@@ -1,7 +1,7 @@
 ---
 title: "BaseDetailComponent"
 weight: 10
-date: 2023-06-21T06:23:41.854Z
+date: 2023-07-14T16:57:51.024Z
 showtoc: true
 generated: true
 ---

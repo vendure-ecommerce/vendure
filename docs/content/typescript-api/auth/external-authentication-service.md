@@ -1,7 +1,7 @@
 ---
 title: "ExternalAuthenticationService"
 weight: 10
-date: 2023-06-21T06:23:39.279Z
+date: 2023-07-14T16:57:50.228Z
 showtoc: true
 generated: true
 ---
@@ -73,7 +73,7 @@ provider, ensuring this User is associated with an Administrator account.{{< /me
 
 ### createCustomerAndUser
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, config: {             strategy: string;             externalIdentifier: string;             verified: boolean;             emailAddress: string;             firstName?: string;             lastName?: string;         }) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a>&#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, config: {             strategy: string;             externalIdentifier: string;             verified: boolean;             emailAddress: string;             firstName?: string;             lastName?: string;         }) => Promise&#60;<a href='/typescript-api/entities/user#user'>User</a>&#62;"  >}}
 
 {{< member-description >}}If a customer has been successfully authenticated by an external authentication provider, yet cannot
 be found using `findCustomerUser`, then we need to create a new User and
@@ -82,7 +82,7 @@ housekeeping such as adding a record to the Customer's history.{{< /member-descr
 
 ### createAdministratorAndUser
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, config: {             strategy: string;             externalIdentifier: string;             identifier: string;             emailAddress?: string;             firstName?: string;             lastName?: string;             roles: <a href='/typescript-api/entities/role#role'>Role</a>[];         }) => "  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, config: {             strategy: string;             externalIdentifier: string;             identifier: string;             emailAddress?: string;             firstName?: string;             lastName?: string;             roles: <a href='/typescript-api/entities/role#role'>Role</a>[];         }) => "  >}}
 
 {{< member-description >}}If an administrator has been successfully authenticated by an external authentication provider, yet cannot
 be found using `findAdministratorUser`, then we need to create a new User and

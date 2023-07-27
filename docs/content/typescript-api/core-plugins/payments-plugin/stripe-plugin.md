@@ -1,7 +1,7 @@
 ---
 title: "StripePlugin"
 weight: 10
-date: 2023-06-21T06:23:40.743Z
+date: 2023-07-14T16:57:50.798Z
 showtoc: true
 generated: true
 ---
@@ -215,7 +215,7 @@ the Stripe customer ID, so switching this on will require a database migration /
 
 ### metadata
 
-{{< member-info kind="property" type="(         injector: <a href='/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;"  since="1.9.7" >}}
+{{< member-info kind="property" type="(         injector: <a href='/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;"  since="1.9.7" >}}
 
 {{< member-description >}}Attach extra metadata to Stripe payment intent{{< /member-description >}}
 

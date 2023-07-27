@@ -8,7 +8,9 @@
     [readonly]="readonly"
 >
     <ng-template vdrRelationCardPreview let-product="entity">
-        <img *ngIf="product.featuredAsset" [src]="product.featuredAsset | assetPreview: 'tiny'" />
+        <div>
+        <img class="thumb" *ngIf="product.featuredAsset" [src]="product.featuredAsset | assetPreview: 'tiny'" />
+        </div>
         <div class="placeholder" *ngIf="!product.featuredAsset">
             <clr-icon shape="image" size="50"></clr-icon>
         </div>

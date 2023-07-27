@@ -104,6 +104,7 @@ export const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
         return {
             state: 'Settled',
             transactionId: 'abc123',
+            metadata: { amount },
         };
     },
 });

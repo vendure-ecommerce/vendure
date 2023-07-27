@@ -1,7 +1,7 @@
 ---
 title: "List Detail Views"
 weight: 10
-date: 2023-06-08T15:03:34.498Z
+date: 2023-07-14T16:57:51.042Z
 showtoc: false
 generated: true
 ---

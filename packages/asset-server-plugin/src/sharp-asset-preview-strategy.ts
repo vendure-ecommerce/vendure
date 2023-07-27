@@ -118,7 +118,7 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
 
         if (assetType === AssetType.IMAGE) {
             try {
-                const image = sharp(data).rotate();
+                const image = sharp(data, { failOn: 'truncated' }).rotate();
                 const metadata = await image.metadata();
                 const width = metadata.width || 0;
                 const height = metadata.height || 0;

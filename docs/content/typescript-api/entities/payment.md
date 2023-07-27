@@ -1,7 +1,7 @@
 ---
 title: "Payment"
 weight: 10
-date: 2023-06-21T06:23:38.387Z
+date: 2023-07-14T16:57:49.930Z
 showtoc: true
 generated: true
 ---

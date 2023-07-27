@@ -109,7 +109,7 @@ describe('ProductOption resolver', () => {
                     ],
                 },
             });
-        }, "No ProductOptionGroup with the id '999' could be found"),
+        }, 'No ProductOptionGroup with the id "999" could be found'),
     );
 
     it('createProductOption', async () => {
@@ -217,7 +217,7 @@ describe('ProductOption resolver', () => {
                     >(DELETE_PRODUCT_OPTION, {
                         id: '999999',
                     }),
-                "No ProductOption with the id '999999' could be found",
+                'No ProductOption with the id "999999" could be found',
             ),
         );
 

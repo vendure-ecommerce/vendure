@@ -1,7 +1,7 @@
 ---
 title: "SessionCacheStrategy"
 weight: 10
-date: 2023-06-21T06:23:37.701Z
+date: 2023-07-14T16:57:49.690Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # SessionCacheStrategy
 
-{{< generation-info sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="131" packageName="@vendure/core">}}
+{{< generation-info sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="147" packageName="@vendure/core">}}
 
 This strategy defines how sessions get cached. Since most requests will need the Session
 object for permissions data, it can become a bottleneck to go to the database and do a multi-join
@@ -50,23 +50,39 @@ export class RedisSessionCacheStrategy implements SessionCacheStrategy {
     this.client.on('error', err => Logger.error(err.message, loggerCtx, err.stack));
   }
 
+  async destroy() {
+    await this.client.quit();
+  }
+
   async get(sessionToken: string): Promise<CachedSession | undefined> {
-    const retrieved = await this.client.get(this.namespace(sessionToken));
-    if (retrieved) {
-      try {
-        return JSON.parse(retrieved);
-      } catch (e) {
-        Logger.error(`Could not parse cached session data: ${e.message}`, loggerCtx);
+    try {
+      const retrieved = await this.client.get(this.namespace(sessionToken));
+      if (retrieved) {
+        try {
+          return JSON.parse(retrieved);
+        } catch (e: any) {
+          Logger.error(`Could not parse cached session data: ${e.message}`, loggerCtx);
+        }
       }
+    } catch (e: any) {
+      Logger.error(`Could not get cached session: ${e.message}`, loggerCtx);
     }
   }
 
   async set(session: CachedSession) {
-    await this.client.set(this.namespace(session.token), JSON.stringify(session));
+    try {
+      await this.client.set(this.namespace(session.token), JSON.stringify(session));
+    } catch (e: any) {
+      Logger.error(`Could not set cached session: ${e.message}`, loggerCtx);
+    }
   }
 
   async delete(sessionToken: string) {
-    await this.client.del(this.namespace(sessionToken));
+    try {
+      await this.client.del(this.namespace(sessionToken));
+    } catch (e: any) {
+      Logger.error(`Could not delete cached session: ${e.message}`, loggerCtx);
+    }
   }
 
   clear() {

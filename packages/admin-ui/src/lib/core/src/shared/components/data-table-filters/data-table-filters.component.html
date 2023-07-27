@@ -5,7 +5,7 @@
             <clr-icon shape="times" size="12"></clr-icon>
         </button>
         <button vdrDropdownTrigger class="">
-            <span *ngIf="state === 'new'">{{ 'common.add-filter' | translate }}</span>
+            <span *ngIf="state === 'new'">{{ 'common.add-filter' | translate }} <span class="filter-hotkey">f</span></span>
             <span *ngIf="state === 'active'">
                 <vdr-data-table-filter-label
                     [filterWithValue]="filterWithValue"
@@ -30,7 +30,7 @@
         <div class="mx-2 mt-1">
             <div vdrCustomFilterComponentHost #customComponentHost></div>
         </div>
-        <div *ngIf="selectedFilter" class="">
+        <form *ngIf="selectedFilter" class="" [cdkTrapFocus]="true" [cdkTrapFocusAutoCapture]="true">
             <ng-container *ngIf="selectedFilter.type.kind !== 'custom'">
                 <div class="mx-2 mt-1" [ngSwitch]="selectedFilter.type.kind">
                     <div *ngSwitchCase="'select'" [formGroup]="formControl">
@@ -104,6 +104,6 @@
                     <clr-icon shape="check"></clr-icon>
                 </button>
             </div>
-        </div>
+        </form>
     </vdr-dropdown-menu>
 </vdr-dropdown>

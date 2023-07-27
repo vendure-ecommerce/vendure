@@ -1,7 +1,7 @@
 ---
 title: "BullMQJobQueuePlugin"
 weight: 10
-date: 2023-06-21T06:23:40.700Z
+date: 2023-07-14T16:57:50.785Z
 showtoc: true
 generated: true
 ---

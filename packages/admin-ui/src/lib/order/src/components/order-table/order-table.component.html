@@ -34,7 +34,7 @@
             </div>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'order.unit-price' | translate" [optional]="false">
+    <vdr-dt2-column [heading]="'order.quantity' | translate" [optional]="false">
         <ng-template let-line="item">
             <ng-container *ngIf="!isDraft; else draft">
                 {{ line.quantity }}

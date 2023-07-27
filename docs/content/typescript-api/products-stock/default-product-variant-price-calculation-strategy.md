@@ -1,7 +1,7 @@
 ---
 title: "DefaultProductVariantPriceCalculationStrategy"
 weight: 10
-date: 2023-06-21T06:23:37.171Z
+date: 2023-07-14T16:57:49.490Z
 showtoc: true
 generated: true
 ---
