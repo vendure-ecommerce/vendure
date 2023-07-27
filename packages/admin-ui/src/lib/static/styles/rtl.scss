@@ -52,3 +52,59 @@
   .login-wrapper-form {
     direction: rtl;
   }
+
+  .dropdown-menu .dropdown-header{
+    text-align: right;
+  }
+
+.button-small{
+    font-size: 14px;
+  }
+
+.flex .button-small{
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+  }
+
+.page-title h1 {
+  font-size: 26px;
+  margin-right: 32px;
+  }
+
+.table thead tr th {
+    text-align: right !important;
+  }
+
+.table thead tr th:first-child {
+    padding-right: 48px !important;
+    padding-left: 8px !important;
+  }
+
+.table tbody tr td {
+text-align: right !important;
+}
+
+.is-warning {
+    transform: rotate(360deg) scaleX(-1);
+}
+
+.modal-content {
+direction: rtl;
+}
+
+vdr-timeline-entry .entry .entry-body {
+    margin-right: 20px;
+}
+
+vdr-timeline-entry .entry .entry-body .name {
+    margin-right: 12px;
+}
+
+.visible-toggle.clr-control-label{
+    margin-right: 30px;
+}
+
+.clr-toggle-wrapper input[type=checkbox]:checked + label::before {
+    right: -42px !important;
+    left: 0 !important;
+}
