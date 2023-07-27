@@ -66,7 +66,7 @@ export function createApollo(
                 const headers: Record<string, string> = {};
                 const channelToken = localStorageService.get('activeChannelToken');
                 if (channelToken) {
-                    headers[channelTokenKey] = channelToken;
+                    headers[channelTokenKey ?? 'vendure-token'] = channelToken;
                 }
                 if (tokenMethod === 'bearer') {
                     const authToken = localStorageService.get('authToken');
