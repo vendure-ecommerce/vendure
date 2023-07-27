@@ -1,0 +1,108 @@
+---
+title: 'Plugins'
+sidebar_position: 6
+---
+
+The heart of Vendure is its plugin system. Plugins not only allow you to instantly add new functionality to your
+Vendure server via third-part npm packages, they are also the means by which you build out the custom business
+logic of your application.
+
+Plugins in Vendure allow one to:
+
+- Modify the VendureConfig object, such as defining custom fields on existing entities.
+- Extend the GraphQL APIs, including modifying existing types and adding completely new queries and mutations.
+- Define new database entities and interact directly with the database.
+- Interact with external systems that you need to integrate with.
+- Respond to events such as new orders being placed.
+- Trigger background tasks to run on the worker process.
+
+… and more!
+
+In a typical Vendure application, custom logic and functionality is implemented as a set of plugins
+which are usually independent of one another. For example, there could be a plugin for each of the following:
+wishlists, product reviews, loyalty points, gift cards, etc.
+This allows for a clean separation of concerns and makes it easy to add or remove functionality as needed.
+
+## Core Plugins
+
+Vendure provides a set of core plugins covering common functionality such as assets handling,
+email sending, and search. For documentation on these, see the [Core Plugins reference](/reference/typescript-api/core-plugins/).
+
+## Plugin basics
+
+Here's a bare-minimum example of a plugin:
+
+```ts title="src/plugins/avatar-plugin/avatar.plugin.ts"
+import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    configure: config => {
+        config.customFields.Customer.push({
+            type: 'string',
+            name: 'avatarUrl',
+            label: [{ languageCode: LanguageCode.en, value: 'Avatar URL' }],
+            list: true,
+        });
+        return config;
+    },
+})
+export class AvatarPlugin {}
+```
+
+This plugin does one thing only: it adds a new custom field to the `Customer` entity.
+
+The plugin is then imported into the `VendureConfig`:
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+import { AvatarPlugin } from './plugins/avatar-plugin/avatar.plugin';
+
+export const config: VendureConfig = {
+    // ...
+    // highlight-next-line
+    plugins: [AvatarPlugin],
+};
+```
+
+The key feature is the `@VendurePlugin()` decorator, which marks the class as a Vendure plugin and accepts a configuration
+object on the type [`VendurePluginMetadata`](/reference/typescript-api/plugin/vendure-plugin-metadata/).
+
+A VendurePlugin is actually an enhanced version of a [NestJS Module](https://docs.nestjs.com/modules), and supports
+all the metadata properties that NestJS modules support:
+
+- `imports`: Allows importing other NestJS modules in order to make use of their exported providers.
+- `providers`: The providers (services) that will be instantiated by the Nest injector and that may
+    be shared across this plugin.
+- `controllers`: Controllers allow the plugin to define REST-style endpoints.
+- `exports`: The providers which will be exported from this plugin and made available to other plugins.
+
+Additionally, the `VendurePlugin` decorator adds the following Vendure-specific properties:
+
+- `configuration`: A function which can modify the `VendureConfig` object before the server bootstraps.
+- `shopApiExtensions`: Allows the plugin to extend the GraphQL Shop API with new queries, mutations, resolvers & scalars.
+- `adminApiExtensions`: Allows the plugin to extend the GraphQL Admin API with new queries, mutations, resolvers & scalars.
+- `entities`: Allows the plugin to define new database entities.
+- `compatibility`: Allows the plugin to declare which versions of Vendure it is compatible with.
+
+:::info
+Since a Vendure plugin is a superset of a NestJS module, this means that many NestJS modules are actually
+valid Vendure plugins!
+:::
+
+## Plugin lifecycle
+
+Since a VendurePlugin is built on top of the NestJS module system, any plugin (as well as any providers it defines)
+can make use of any of the [NestJS lifecycle hooks](https://docs.nestjs.com/fundamentals/lifecycle-events):
+
+- onModuleInit
+- onApplicationBootstrap
+- onModuleDestroy
+- beforeApplicationShutdown
+- onApplicationShutdown
+
+:::caution
+Note that lifecycle hooks are run in both the server and worker contexts.
+If you have code that should only run either in the server context or worker context,
+you can inject the [ProcessContext provider](/reference/typescript-api/common/process-context/).
+:::
