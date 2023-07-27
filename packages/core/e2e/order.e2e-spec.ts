@@ -2237,11 +2237,13 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(orderWithPayments?.payments![0].refunds.length).toBe(1);
-            expect(orderWithPayments?.payments![0].refunds[0].total).toBe(PARTIAL_PAYMENT_AMOUNT);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds[0].total).toBe(
+                PARTIAL_PAYMENT_AMOUNT,
+            );
 
-            expect(orderWithPayments?.payments![1].refunds.length).toBe(1);
-            expect(orderWithPayments?.payments![1].refunds[0].total).toBe(
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds[0].total).toBe(
                 productInOrder!.variants[0].priceWithTax - PARTIAL_PAYMENT_AMOUNT,
             );
         });
@@ -2275,14 +2277,16 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(orderWithPayments?.payments![0].refunds.length).toBe(1);
-            expect(orderWithPayments?.payments![0].refunds[0].total).toBe(PARTIAL_PAYMENT_AMOUNT);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds[0].total).toBe(
+                PARTIAL_PAYMENT_AMOUNT,
+            );
 
-            expect(orderWithPayments?.payments![1].refunds.length).toBe(2);
-            expect(orderWithPayments?.payments![1].refunds[0].total).toBe(
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds.length).toBe(2);
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds[0].total).toBe(
                 productInOrder!.variants[0].priceWithTax - PARTIAL_PAYMENT_AMOUNT,
             );
-            expect(orderWithPayments?.payments![1].refunds[1].total).toBe(
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds[1].total).toBe(
                 productInOrder!.variants[0].priceWithTax + order!.shippingWithTax,
             );
         });
