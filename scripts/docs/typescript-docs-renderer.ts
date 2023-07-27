@@ -268,7 +268,7 @@ export class TypescriptDocsRenderer {
         for (const param of params) {
             const type = this.renderType(param.type, knownTypeMap, docsUrl);
             output += `### ${param.name}\n\n`;
-            output += `<MemberInfo kind="parameter" type="${type}" />\n\n`;
+            output += `<MemberInfo kind="parameter" type={\`${type}\`} />\n\n`;
         }
         return output;
     }
@@ -309,7 +309,7 @@ export class TypescriptDocsRenderer {
             output += `\n### ${member.name}\n\n`;
             output += `<MemberInfo kind="${[member.kind].join(
                 ' ',
-            )}" type="${type}" ${defaultParam} ${sinceParam}${experimentalParam} />\n\n`;
+            )}" type={\`${type}\`} ${defaultParam} ${sinceParam}${experimentalParam} />\n\n`;
             output += this.renderDescription(member.description, knownTypeMap, docsUrl);
         }
         return output;
