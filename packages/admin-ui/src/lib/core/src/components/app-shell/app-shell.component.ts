@@ -21,6 +21,7 @@ import { UiLanguageSwitcherDialogComponent } from '../ui-language-switcher-dialo
 export class AppShellComponent implements OnInit {
     userName$: Observable<string>;
     uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
+    direction$: Observable<'ltr' | 'rtl'>;
     availableLanguages: LanguageCode[] = [];
     hideVendureBranding = getAppConfig().hideVendureBranding;
     pageTitle$: Observable<string>;
@@ -50,6 +51,9 @@ export class AppShellComponent implements OnInit {
         this.mainNavExpanded$ = this.dataService.client
             .uiState()
             .stream$.pipe(map(({ uiState }) => uiState.mainNavExpanded));
+        this.direction$ = this.uiLanguageAndLocale$.pipe(
+            map(([languageCode]) => (this.i18nService.isRTL(languageCode) ? 'rtl' : 'ltr')),
+        );
     }
 
     selectUiLanguage() {

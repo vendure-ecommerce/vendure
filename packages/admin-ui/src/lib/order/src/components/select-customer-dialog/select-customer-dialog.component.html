@@ -21,14 +21,18 @@
                         [(ngModel)]="selectedCustomer"
                     >
                         <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                            <span class="item-row">
                             <clr-icon shape="user" class="is-solid"></clr-icon
-                            ><span class="ml2 mr2">{{ item.firstName }} {{ item.lastName }}</span>
+                            ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
                             <vdr-chip>{{ item.emailAddress }}</vdr-chip>
+                            </span>
                         </ng-template>
                         <ng-template ng-option-tmp let-item="item">
+                            <span class="item-row">
                             <clr-icon shape="user" class="is-solid"></clr-icon
-                            ><span class="ml2 mr2">{{ item.firstName }} {{ item.lastName }}</span>
+                            ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
                             <vdr-chip>{{ item.emailAddress }}</vdr-chip>
+                            </span>
                         </ng-template>
                     </ng-select>
                 </div>

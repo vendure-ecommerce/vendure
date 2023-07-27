@@ -6,9 +6,9 @@ import {
     Order,
     OrderService,
     PaymentMethod,
+    PaymentMethodService,
     RequestContext,
     RequestContextService,
-    TransactionalConnection,
 } from '@vendure/core';
 import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 import { Response } from 'express';
@@ -26,7 +26,7 @@ const noPaymentIntentErrorMessage = 'No payment intent in the event payload';
 @Controller('payments')
 export class StripeController {
     constructor(
-        private connection: TransactionalConnection,
+        private paymentMethodService: PaymentMethodService,
         private orderService: OrderService,
         private stripeService: StripeService,
         private requestContextService: RequestContextService,
@@ -124,10 +124,9 @@ export class StripeController {
     }
 
     private async getPaymentMethod(ctx: RequestContext): Promise<PaymentMethod> {
-        const method = (await this.connection.getRepository(ctx, PaymentMethod).find()).find(
+        const method = (await this.paymentMethodService.findAll(ctx)).items.find(
             m => m.handler.code === stripePaymentMethodHandler.code,
         );
-
         if (!method) {
             throw new InternalServerError(`[${loggerCtx}] Could not find Stripe PaymentMethod`);
         }

@@ -48,7 +48,6 @@ import { moveToIndex } from '../helpers/utils/move-to-index';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
-import { FacetValueService } from './facet-value.service';
 import { RoleService } from './role.service';
 
 export type ApplyCollectionFiltersJobData = {
@@ -72,7 +71,6 @@ export class CollectionService implements OnModuleInit {
         private connection: TransactionalConnection,
         private channelService: ChannelService,
         private assetService: AssetService,
-        private facetValueService: FacetValueService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
@@ -142,9 +140,11 @@ export class CollectionService implements OnModuleInit {
                             continue;
                         }
                         job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
-                        this.eventBus.publish(
-                            new CollectionModificationEvent(ctx, collection, affectedVariantIds),
-                        );
+                        if (affectedVariantIds.length) {
+                            this.eventBus.publish(
+                                new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                            );
+                        }
                     }
                 }
             },

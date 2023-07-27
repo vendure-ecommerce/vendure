@@ -1,7 +1,7 @@
 ---
 title: "SimpleGraphQLClient"
 weight: 10
-date: 2023-06-21T06:23:40.796Z
+date: 2023-07-14T16:57:50.810Z
 showtoc: true
 generated: true
 ---
@@ -104,7 +104,7 @@ which make use of REST controllers.{{< /member-description >}}
 
 ### fileUploadMutation
 
-{{< member-info kind="method" type="(options: {         mutation: DocumentNode;         filePaths: string[];         mapVariables: (filePaths: string[]) =&#62; any;     }) => Promise&#60;any&#62;"  >}}
+{{< member-info kind="method" type="(options: {         mutation: DocumentNode;         filePaths: string[];         mapVariables: (filePaths: string[]) =&#62; any;     }) => Promise&#60;any&#62;"  >}}
 
 {{< member-description >}}Perform a file upload mutation.
 

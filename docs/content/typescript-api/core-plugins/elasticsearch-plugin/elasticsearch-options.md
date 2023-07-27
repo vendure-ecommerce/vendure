@@ -1,7 +1,7 @@
 ---
 title: "ElasticsearchOptions"
 weight: 10
-date: 2023-06-21T06:23:40.632Z
+date: 2023-07-14T16:57:50.758Z
 showtoc: true
 generated: true
 ---
@@ -125,7 +125,7 @@ A more complete example can be found in the discussion thread
 
 ### indexMappingProperties
 
-{{< member-info kind="property" type="{         [indexName: string]: object;     }" default="{}"  since="1.2.0" >}}
+{{< member-info kind="property" type="{         [indexName: string]: object;     }" default="{}"  since="1.2.0" >}}
 
 {{< member-description >}}This option allow to redefine or define new properties in mapping. More about elastic
 [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
@@ -182,7 +182,7 @@ indexMappingProperties: {
 
 ### customProductMappings
 
-{{< member-info kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product#product'>Product</a>, <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"  >}}
+{{< member-info kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product#product'>Product</a>, <a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"  >}}
 
 {{< member-description >}}Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
@@ -246,7 +246,7 @@ query SearchProducts($input: SearchInput!) {
 
 ### customProductVariantMappings
 
-{{< member-info kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"  >}}
+{{< member-info kind="property" type="{         [fieldName: string]: CustomMapping&#60;[<a href='/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }"  >}}
 
 {{< member-description >}}This config option defines custom mappings which are accessible when the "groupByProduct"
 input options is set to `false`. In addition, custom product mappings can be accessed by using
@@ -320,7 +320,7 @@ before the `product` object is passed to the `valueFn`.
 
 ### extendSearchInputType
 
-{{< member-info kind="property" type="{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }" default="{}"  since="1.3.0" >}}
+{{< member-info kind="property" type="{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }" default="{}"  since="1.3.0" >}}
 
 {{< member-description >}}Allows the `SearchInput` type to be extended with new input fields. This allows arbitrary
 data to be passed in, which can then be used e.g. in the `mapQuery()` function or
@@ -488,7 +488,7 @@ used when matching against a search term.{{< /member-description >}}
 
 ### mapQuery
 
-{{< member-info kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"  >}}
+{{< member-info kind="property" type="(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/typescript-api/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any"  >}}
 
 {{< member-description >}}This config option allows the the modification of the whole (already built) search query. This allows
 for e.g. wildcard / fuzzy searches on the index.

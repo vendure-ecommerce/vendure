@@ -189,13 +189,6 @@ export class CustomerDetailComponent
                 this.addressCustomFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),
         });
-        // if (this.addressCustomFields.length) {
-        //     const customFieldsGroup = this.formBuilder.group({});
-        //     for (const fieldDef of this.addressCustomFields) {
-        //         customFieldsGroup.addControl(fieldDef.name, new UntypedFormControl(''));
-        //     }
-        //     newAddress.addControl('customFields', customFieldsGroup);
-        // }
         addressFormArray.push(newAddress);
     }
 
@@ -495,7 +488,13 @@ export class CustomerDetailComponent
                     ...rest,
                     countryCode: address.country.code,
                     customFields: this.formBuilder.group(
-                        this.addressCustomFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+                        this.addressCustomFields.reduce(
+                            (hash, field) => ({
+                                ...hash,
+                                [field.name]: address['customFields'][field.name],
+                            }),
+                            {},
+                        ),
                     ),
                 });
                 addressesArray.push(addressGroup);
@@ -504,17 +503,6 @@ export class CustomerDetailComponent
                 }
                 if (address.defaultBillingAddress) {
                     this.defaultBillingAddressId = address.id;
-                }
-
-                if (this.addressCustomFields.length) {
-                    const customFieldsGroup = this.formBuilder.group({});
-                    for (const fieldDef of this.addressCustomFields) {
-                        const key = fieldDef.name;
-                        const value = (address as any).customFields?.[key];
-                        const control = new UntypedFormControl(value);
-                        customFieldsGroup.addControl(key, control);
-                    }
-                    addressGroup.addControl('customFields', customFieldsGroup);
                 }
             }
             this.detailForm.setControl('addresses', addressesArray);

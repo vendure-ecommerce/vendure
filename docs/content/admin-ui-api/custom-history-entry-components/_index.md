@@ -1,7 +1,7 @@
 ---
 title: "Custom History Entry Components"
 weight: 10
-date: 2023-06-08T15:03:34.668Z
+date: 2023-07-14T16:57:51.095Z
 showtoc: false
 generated: true
 ---

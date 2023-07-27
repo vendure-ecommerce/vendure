@@ -17,7 +17,6 @@ h6:not([cds-text]) {
 
 a:link,
 a:visited {
-    color: var(--clr-global-link-color);
     text-decoration: none;
 }
 
@@ -33,11 +32,6 @@ a:visited {
     border: none;
     background: none;
     cursor: pointer;
-}
-
-a:link,
-a:visited {
-    color: var(--clr-btn-link-color);
 }
 
 a:focus,

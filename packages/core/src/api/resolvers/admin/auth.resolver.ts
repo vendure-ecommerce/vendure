@@ -10,7 +10,9 @@ import {
 import { Request, Response } from 'express';
 
 import { NativeAuthStrategyError } from '../../../common/error/generated-graphql-admin-errors';
+import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
+import { Logger } from '../../../config/logger/vendure-logger';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -79,6 +81,17 @@ export class AuthResolver extends BaseAuthResolver {
     }
 
     protected requireNativeAuthStrategy() {
-        return super.requireNativeAuthStrategy() as NativeAuthStrategyError | undefined;
+        const { adminAuthenticationStrategy } = this.configService.authOptions;
+        const nativeAuthStrategyIsConfigured = !!adminAuthenticationStrategy.find(
+            strategy => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
+        );
+        if (!nativeAuthStrategyIsConfigured) {
+            const authStrategyNames = adminAuthenticationStrategy.map(s => s.name).join(', ');
+            const errorMessage =
+                'This GraphQL operation requires that the NativeAuthenticationStrategy be configured for the Admin API.\n' +
+                `Currently the following AuthenticationStrategies are enabled: ${authStrategyNames}`;
+            Logger.error(errorMessage);
+            return new NativeAuthStrategyError();
+        }
     }
 }

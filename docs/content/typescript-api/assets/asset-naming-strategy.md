@@ -1,7 +1,7 @@
 ---
 title: "AssetNamingStrategy"
 weight: 10
-date: 2023-06-21T06:23:37.094Z
+date: 2023-07-14T16:57:49.462Z
 showtoc: true
 generated: true
 ---

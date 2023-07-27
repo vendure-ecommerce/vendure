@@ -84,7 +84,7 @@ export class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlVa
                     return of([]);
                 }
                 return this.dataService.facet
-                    .getFacetValues({ take: 10, filter: { name: { contains: term } } })
+                    .getFacetValues({ take: 100, filter: { name: { contains: term } } })
                     .mapSingle(result => result.facetValues.items);
             }),
             tap(() => (this.searchLoading = false)),
@@ -96,7 +96,7 @@ export class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlVa
                         return of([]);
                     }
                     return this.dataService.facet
-                        .getFacetValues({ take: 10, filter: { id: { in: ids } } }, 'cache-first')
+                        .getFacetValues({ take: 100, filter: { id: { in: ids } } }, 'cache-first')
                         .mapSingle(result => result.facetValues.items);
                 }),
             )

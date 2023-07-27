@@ -1,7 +1,7 @@
 ---
 title: "Calculated"
 weight: 10
-date: 2023-06-21T06:23:36.975Z
+date: 2023-07-14T16:57:49.416Z
 showtoc: true
 generated: true
 ---
@@ -16,8 +16,7 @@ generated: true
 {{< generation-info sourceFile="packages/core/src/common/calculated-decorator.ts" sourceLine="43" packageName="@vendure/core">}}
 
 Used to define calculated entity getters. The decorator simply attaches an array of "calculated"
-property names to the entity's prototype. This array is then used by the {@link CalculatedPropertySubscriber}
-to transfer the getter function from the prototype to the entity instance.
+property names to the entity's prototype. This array is then used by the {@link CalculatedPropertySubscriber}to transfer the getter function from the prototype to the entity instance.
 
 ## Signature
 

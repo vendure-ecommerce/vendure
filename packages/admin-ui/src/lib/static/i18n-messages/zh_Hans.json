@@ -105,6 +105,7 @@
     "facet-values": "特征值列表",
     "facets": "",
     "filter-by-name": "按名字过滤",
+    "filter-by-sku": "按SKU筛选",
     "filter-inheritance": "",
     "filters": "过滤条件",
     "inherit-filters-from-parent": "",
@@ -149,6 +150,7 @@
     "products": "",
     "public": "公开",
     "quick-jump-placeholder": "",
+    "rebuild-search-index": "重建搜索索引",
     "reindex-error": "重建索引失败",
     "reindex-successful": "已成功重建{count}个产品索引，耗时{time}毫秒",
     "reindexing": "正在重建搜索索引",
@@ -457,6 +459,7 @@
     "image-title": "图片标题",
     "insert-image": "插入图片",
     "link-href": "链接",
+    "link-target": "",
     "link-title": "链接标题",
     "remove-link": "删除链接",
     "set-link": "设置链接"

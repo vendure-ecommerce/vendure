@@ -10,7 +10,9 @@ import { BrandingOptions, StaticAssetDefinition, StaticAssetExtension } from './
  *   outputPath: path.join(__dirname, '../admin-ui'),
  *   extensions: [
  *     setBranding({
+ *       // This is used as the branding in the top-left above the navigation
  *       smallLogoPath: path.join(__dirname, 'images/my-logo-sm.png'),
+ *       // This is used on the login page
  *       largeLogoPath: path.join(__dirname, 'images/my-logo-lg.png'),
  *       faviconPath: path.join(__dirname, 'images/my-favicon.ico'),
  *     }),
@@ -26,13 +28,13 @@ export function setBranding(options: BrandingOptions): StaticAssetExtension {
     if (options.smallLogoPath) {
         staticAssets.push({
             path: options.smallLogoPath,
-            rename: 'logo-75px.png',
+            rename: 'logo-top.webp',
         });
     }
     if (options.largeLogoPath) {
         staticAssets.push({
             path: options.largeLogoPath,
-            rename: 'logo-300px.png',
+            rename: 'logo-login.webp',
         });
     }
     if (options.faviconPath) {

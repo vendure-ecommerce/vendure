@@ -1,7 +1,7 @@
 ---
 title: "Event Types"
 weight: 10
-date: 2023-06-21T06:23:38.731Z
+date: 2023-07-14T16:57:50.050Z
 showtoc: true
 generated: true
 ---
@@ -1300,7 +1300,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
 ```
 ## Extends
 
- * <a href='/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes &#62;
+ * <a href='/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes &#62;
 
 
 ## Members

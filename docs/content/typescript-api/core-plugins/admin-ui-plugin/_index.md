@@ -1,7 +1,7 @@
 ---
 title: "AdminUiPlugin"
 weight: 10
-date: 2023-06-21T06:23:40.409Z
+date: 2023-07-14T16:57:50.678Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # AdminUiPlugin
 
-{{< generation-info sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="106" packageName="@vendure/admin-ui-plugin">}}
+{{< generation-info sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="125" packageName="@vendure/admin-ui-plugin">}}
 
 This plugin starts a static server for the Admin UI app, and proxies it via the `/admin/` path of the main Vendure server.
 
@@ -38,6 +38,26 @@ const config: VendureConfig = {
   plugins: [
     AdminUiPlugin.init({ port: 3002 }),
   ],
+};
+```
+
+## Metrics
+
+This plugin also defines a `metricSummary` query which is used by the Admin UI to display the order metrics on the dashboard.
+
+If you are building a stand-alone version of the Admin UI app, and therefore don't need this plugin to server the Admin UI,
+you can still use the `metricSummary` query by adding the `AdminUiPlugin` to the `plugins` array, but without calling the `init()` method:
+
+*Example*
+
+```TypeScript
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+
+const config: VendureConfig = {
+  plugins: [
+    AdminUiPlugin, // <-- no call to .init()
+  ],
+  // ...
 };
 ```
 

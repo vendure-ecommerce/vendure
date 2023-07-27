@@ -523,7 +523,7 @@ describe('Orders resolver', () => {
                 Codegen.GetOrderHistoryQuery,
                 Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, { id: 'T_2', options: { sort: { id: SortOrder.ASC } } });
-            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+            expect(order.history.items.map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
@@ -1668,7 +1668,7 @@ describe('Orders resolver', () => {
                         paymentId: 'T_999',
                     },
                 });
-            }, "No Payment with the id '999' could be found"),
+            }, 'No Payment with the id "999" could be found'),
         );
 
         it('returns error result if payment and order lines do not belong to the same Order', async () => {
@@ -1879,6 +1879,50 @@ describe('Orders resolver', () => {
             refundGuard.assertSuccess(refund2);
             expect(refund2.state).toBe('Settled');
             expect(refund2.total).toBe(order.totalWithTax);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2302
+        it('passes correct amount to createRefund function after cancellation', async () => {
+            const orderResult = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[0].emailAddress,
+                password,
+            );
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentSettled');
+
+            const { cancelOrder } = await adminClient.query<
+                Codegen.CancelOrderMutation,
+                Codegen.CancelOrderMutationVariables
+            >(CANCEL_ORDER, {
+                input: {
+                    orderId: order.id,
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    reason: 'cancel reason 1',
+                },
+            });
+            orderGuard.assertSuccess(cancelOrder);
+
+            const { refundOrder } = await adminClient.query<
+                Codegen.RefundOrderMutation,
+                Codegen.RefundOrderMutationVariables
+            >(REFUND_ORDER, {
+                input: {
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    shipping: order.shipping,
+                    adjustment: 0,
+                    reason: 'foo',
+                    paymentId: order.payments![0].id,
+                },
+            });
+            refundGuard.assertSuccess(refundOrder);
+            expect(refundOrder.state).toBe('Settled');
+            expect(refundOrder.total).toBe(order.totalWithTax);
+            expect(refundOrder.metadata.amount).toBe(order.totalWithTax);
         });
     });
 
@@ -2193,11 +2237,13 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(orderWithPayments?.payments![0].refunds.length).toBe(1);
-            expect(orderWithPayments?.payments![0].refunds[0].total).toBe(PARTIAL_PAYMENT_AMOUNT);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds[0].total).toBe(
+                PARTIAL_PAYMENT_AMOUNT,
+            );
 
-            expect(orderWithPayments?.payments![1].refunds.length).toBe(1);
-            expect(orderWithPayments?.payments![1].refunds[0].total).toBe(
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds[0].total).toBe(
                 productInOrder!.variants[0].priceWithTax - PARTIAL_PAYMENT_AMOUNT,
             );
         });
@@ -2231,14 +2277,16 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(orderWithPayments?.payments![0].refunds.length).toBe(1);
-            expect(orderWithPayments?.payments![0].refunds[0].total).toBe(PARTIAL_PAYMENT_AMOUNT);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments!.sort(sortById)[0].refunds[0].total).toBe(
+                PARTIAL_PAYMENT_AMOUNT,
+            );
 
-            expect(orderWithPayments?.payments![1].refunds.length).toBe(2);
-            expect(orderWithPayments?.payments![1].refunds[0].total).toBe(
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds.length).toBe(2);
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds[0].total).toBe(
                 productInOrder!.variants[0].priceWithTax - PARTIAL_PAYMENT_AMOUNT,
             );
-            expect(orderWithPayments?.payments![1].refunds[1].total).toBe(
+            expect(orderWithPayments?.payments!.sort(sortById)[1].refunds[1].total).toBe(
                 productInOrder!.variants[0].priceWithTax + order!.shippingWithTax,
             );
         });

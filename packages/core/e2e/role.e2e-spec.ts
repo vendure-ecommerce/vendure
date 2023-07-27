@@ -289,7 +289,7 @@ describe('Role resolver', () => {
                         },
                     },
                 );
-            }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be modified`),
+            }, `The role "${SUPER_ADMIN_ROLE_CODE}" cannot be modified`),
         );
 
         it(
@@ -311,7 +311,7 @@ describe('Role resolver', () => {
                         },
                     },
                 );
-            }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
+            }, `The role "${CUSTOMER_ROLE_CODE}" cannot be modified`),
         );
     });
 
@@ -329,7 +329,7 @@ describe('Role resolver', () => {
                     id: customerRole.id,
                 },
             );
-        }, `The role '${CUSTOMER_ROLE_CODE}' cannot be deleted`),
+        }, `The role "${CUSTOMER_ROLE_CODE}" cannot be deleted`),
     );
 
     it(
@@ -346,7 +346,7 @@ describe('Role resolver', () => {
                     id: superAdminRole.id,
                 },
             );
-        }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be deleted`),
+        }, `The role "${SUPER_ADMIN_ROLE_CODE}" cannot be deleted`),
     );
 
     it('deleteRole deletes a role', async () => {

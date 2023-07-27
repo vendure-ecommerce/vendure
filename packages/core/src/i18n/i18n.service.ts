@@ -3,8 +3,8 @@ import { Handler, Request } from 'express';
 import * as fs from 'fs';
 import { GraphQLError } from 'graphql';
 import i18next, { TFunction } from 'i18next';
-import i18nextMiddleware from 'i18next-express-middleware';
 import Backend from 'i18next-fs-backend';
+import i18nextMiddleware from 'i18next-http-middleware';
 import ICU from 'i18next-icu';
 import path from 'path';
 
@@ -56,7 +56,7 @@ export class I18nService implements OnModuleInit {
         return i18next
             .use(i18nextMiddleware.LanguageDetector)
             .use(Backend as any)
-            .use(ICU as any)
+            .use(ICU)
             .init({
                 nsSeparator: false,
                 preload: ['en', 'de', 'ru', 'uk'],
@@ -141,7 +141,7 @@ export class I18nService implements OnModuleInit {
         let translation: string = error.message;
         const key = `errorResult.${error.message}`;
         try {
-            translation = t(key, error as any);
+            translation = t(key, error);
         } catch (e: any) {
             const message = typeof e.message === 'string' ? (e.message as string) : JSON.stringify(e.message);
             translation += ` (Translation format error: ${message})`;

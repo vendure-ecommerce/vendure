@@ -111,8 +111,8 @@ export class FulltextSearchService {
      * Sets the SearchStrategy appropriate to th configured database type.
      */
     private setSearchStrategy() {
-        if (this.options.searchStategy) {
-            this._searchStrategy = this.options.searchStategy;
+        if (this.options.searchStrategy) {
+            this._searchStrategy = this.options.searchStrategy;
         } else {
             switch (this.connection.rawConnection.options.type) {
                 case 'mysql':

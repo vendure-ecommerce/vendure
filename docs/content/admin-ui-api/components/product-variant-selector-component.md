@@ -1,7 +1,7 @@
 ---
 title: "ProductVariantSelectorComponent"
 weight: 10
-date: 2023-06-21T06:23:42.558Z
+date: 2023-07-14T16:57:51.242Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "AdminUiAppDevModeConfig"
 weight: 10
-date: 2023-06-21T06:23:40.397Z
+date: 2023-07-14T16:57:50.674Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # AdminUiAppDevModeConfig
 
-{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="361" packageName="@vendure/common">}}
+{{< generation-info sourceFile="packages/common/src/shared-types.ts" sourceLine="359" packageName="@vendure/common">}}
 
 Information about the Admin UI app dev server.
 

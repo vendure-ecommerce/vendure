@@ -22,8 +22,6 @@ export class RelationCustomerInputComponent implements OnInit {
     @Input() config: RelationCustomFieldConfig;
 
     @ViewChild('selector') template: TemplateRef<any>;
-
-    searchControl = new UntypedFormControl('');
     searchTerm$ = new Subject<string>();
     results$: Observable<Codegen.GetCustomerListQuery['customers']['items']>;
 

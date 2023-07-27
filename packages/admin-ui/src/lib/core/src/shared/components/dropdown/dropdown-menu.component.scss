@@ -15,6 +15,10 @@
         clr-icon {
             margin-right: 3px;
         }
+        &:focus {
+            outline: var(--color-dropdown-item-focus-outline) solid 1px;
+            outline-offset: 1px 0;
+        }
     }
 }
 

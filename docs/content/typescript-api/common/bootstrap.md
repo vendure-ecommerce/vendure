@@ -1,7 +1,7 @@
 ---
 title: "Bootstrap"
 weight: 10
-date: 2023-06-21T06:23:36.963Z
+date: 2023-07-14T16:57:49.412Z
 showtoc: true
 generated: true
 ---

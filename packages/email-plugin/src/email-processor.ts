@@ -29,12 +29,6 @@ import {
 export class EmailProcessor {
     protected emailSender: EmailSender;
     protected generator: EmailGenerator;
-    protected transport:
-        | EmailTransportOptions
-        | ((
-              injector?: Injector,
-              ctx?: RequestContext,
-          ) => EmailTransportOptions | Promise<EmailTransportOptions>);
 
     constructor(
         @Inject(EMAIL_PLUGIN_OPTIONS) protected options: InitializedEmailPluginOptions,
@@ -48,20 +42,6 @@ export class EmailProcessor {
             : new HandlebarsMjmlGenerator();
         if (this.generator.onInit) {
             await this.generator.onInit.call(this.generator, this.options);
-        }
-        if (isDevModeOptions(this.options)) {
-            this.transport = {
-                type: 'file',
-                raw: false,
-                outputPath: this.options.outputPath,
-            };
-        } else {
-            if (!this.options.transport) {
-                throw new InternalServerError(
-                    "When devMode is not set to true, the 'transport' property must be set.",
-                );
-            }
-            this.transport = this.options.transport;
         }
         const transport = await this.getTransportSettings();
         if (transport.type === 'file') {
@@ -81,6 +61,7 @@ export class EmailProcessor {
                 {
                     templateName: data.templateFile,
                     type: data.type,
+                    templateVars: data.templateVars,
                 },
             );
             const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
@@ -106,14 +87,21 @@ export class EmailProcessor {
     }
 
     async getTransportSettings(ctx?: RequestContext): Promise<EmailTransportOptions> {
+        const transport = await resolveTransportSettings(this.options, new Injector(this.moduleRef), ctx);
         if (isDevModeOptions(this.options)) {
+            if (transport && transport.type !== 'file') {
+                Logger.warn(
+                    `The EmailPlugin is running in dev mode. The configured '${transport.type}' transport will be replaced by the 'file' transport.`,
+                    loggerCtx,
+                );
+            }
             return {
                 type: 'file',
                 raw: false,
                 outputPath: this.options.outputPath,
             };
         } else {
-            return resolveTransportSettings(this.options, new Injector(this.moduleRef), ctx);
+            return transport;
         }
     }
 }

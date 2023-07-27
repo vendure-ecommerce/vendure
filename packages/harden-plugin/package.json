@@ -1,6 +1,6 @@
 {
     "name": "@vendure/harden-plugin",
-    "version": "2.0.2",
+    "version": "2.0.5",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
         "graphql-query-complexity": "^0.12.0"
     },
     "devDependencies": {
-        "@vendure/common": "^2.0.2",
-        "@vendure/core": "^2.0.2"
+        "@vendure/common": "^2.0.5",
+        "@vendure/core": "^2.0.5"
     }
 }

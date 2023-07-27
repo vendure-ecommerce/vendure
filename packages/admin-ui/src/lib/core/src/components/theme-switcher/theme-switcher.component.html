@@ -1,4 +1,4 @@
-<button *ngIf="activeTheme$ | async as activeTheme" class="theme-toggle" (click)="toggleTheme(activeTheme)">
+<button *ngIf="activeTheme$ | async as activeTheme" class="theme-toggle">
     <span>{{ 'common.theme' | translate }}</span>
     <div class="theme-icon default" [class.active]="activeTheme === 'default'">
         <clr-icon shape="sun" class="is-solid"></clr-icon>

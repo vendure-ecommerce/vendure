@@ -2,4 +2,4 @@
 
 `npm install @vendure/admin-ui-plugin`
 
-For documentation, see [www.vendure.io/docs/typescript-api/admin-ui-plugin/](https://www.vendure.io/docs/typescript-api/admin-ui-plugin/)
+For documentation, see [docs.vendure.io/typescript-api/core-plugins/admin-ui-plugin/](https://docs.vendure.io/typescript-api/core-plugins/admin-ui-plugin/)

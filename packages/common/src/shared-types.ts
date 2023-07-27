@@ -147,7 +147,6 @@ export type DefaultFormComponentId =
     | 'select-form-input'
     | 'text-form-input'
     | 'textarea-form-input'
-    | 'asset-form-input'
     | 'product-multi-form-input'
     | 'combination-mode-form-input';
 
@@ -177,7 +176,6 @@ type DefaultFormConfigHash = {
     'textarea-form-input': {
         spellcheck?: boolean;
     };
-    'asset-form-input': Record<string, never>;
     'product-multi-form-input': {
         selectionMode?: 'product' | 'variant';
     };
@@ -251,12 +249,19 @@ export interface AdminUiConfig {
     /**
      * @description
      * The header used when using the 'bearer' auth method. Should match the
-     * setting of the server's `authOptions.authTokenHeaderKey` config
-     * option.
+     * setting of the server's `authOptions.authTokenHeaderKey` config option.
      *
      * @default 'vendure-auth-token'
      */
     authTokenHeaderKey: string;
+    /**
+     * @description
+     * The name of the header which contains the channel token. Should match the
+     * setting of the server's `apiOptions.channelTokenKey` config option.
+     *
+     * @default 'vendure-token'
+     */
+    channelTokenKey: string;
     /**
      * @description
      * The default language for the Admin UI. Must be one of the
