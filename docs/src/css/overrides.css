@@ -28,3 +28,9 @@ body {
     --ifm-hero-background-color: transparent;
     --ifm-hero-text-color: var(--ifm-font-color-base);
 }
+
+button.DocSearch-Button {
+    border-radius: 6px;
+    width: 250px;
+    border: 1px solid var(--color-docsearch-border);
+}
