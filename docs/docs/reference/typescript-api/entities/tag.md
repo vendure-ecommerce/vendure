@@ -1,7 +1,6 @@
 ---
 title: "Tag"
 weight: 10
-date: 2023-07-28T12:05:23.001Z
 showtoc: true
 generated: true
 ---

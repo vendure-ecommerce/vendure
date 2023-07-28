@@ -1,7 +1,6 @@
 ---
 title: "Address"
 weight: 10
-date: 2023-07-28T12:05:22.588Z
 showtoc: true
 generated: true
 ---

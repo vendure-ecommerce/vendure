@@ -1,7 +1,6 @@
 ---
 title: "CollectionFilter"
 weight: 10
-date: 2023-07-28T12:05:21.914Z
 showtoc: true
 generated: true
 ---

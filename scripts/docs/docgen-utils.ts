@@ -10,7 +10,6 @@ export function generateFrontMatter(title: string, weight: number, showToc: bool
     return `---
 title: "${titleCase(title.replace(/-/g, ' '))}"
 weight: ${weight}
-date: ${new Date().toISOString()}
 showtoc: ${showToc}
 generated: true
 ---

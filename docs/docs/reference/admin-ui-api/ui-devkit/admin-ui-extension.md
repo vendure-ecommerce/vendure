@@ -1,7 +1,6 @@
 ---
 title: "AdminUiExtension"
 weight: 10
-date: 2023-07-28T12:05:26.737Z
 showtoc: true
 generated: true
 ---
@@ -19,7 +18,7 @@ Defines extensions to the Admin UI application by specifying additional
 Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
 into the application.
 
-See [Extending the Admin UI](/guides/plugins/extending-the-admin-ui/) for
+See [Extending the Admin UI](/guides/extending-the-admin-ui/) for
 detailed instructions.
 
 ```ts title="Signature"
