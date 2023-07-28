@@ -7,8 +7,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/nightOwl');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: 'Vendure Docs',
-    tagline: 'Dinosaurs are cool',
-    favicon: 'img/favicon.ico',
+    tagline: 'For preview only. Actual docs at https://docs.vendure.io',
+    favicon: 'img/logo.webp',
 
     // Set the production url of your site here
     url: 'https://docs.vendure.io',
@@ -42,12 +42,16 @@ const config = {
                     sidebarPath: require.resolve('./sidebars.js'),
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
-                    editUrl:
-                        'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+                    editUrl: 'https://github.com/vendure-ecommerce/vendure/tree/new-docs/docs/',
                 },
                 blog: false,
                 theme: {
-                    customCss: require.resolve('./src/css/custom.css'),
+                    customCss: [
+                        require.resolve('./src/css/custom.css'),
+                        require.resolve('./src/css/layout.css'),
+                        require.resolve('./src/css/overrides.css'),
+                        require.resolve('./src/css/code-blocks.css'),
+                    ],
                 },
             }),
         ],
@@ -57,6 +61,11 @@ const config = {
     themeConfig:
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
+            colorMode: {
+                defaultMode: 'dark',
+                disableSwitch: false,
+                respectPrefersColorScheme: true,
+            },
             // Replace with your project's social card
             image: 'img/docusaurus-social-card.jpg',
             navbar: {
@@ -79,7 +88,7 @@ const config = {
                         label: 'Reference',
                     },
                     {
-                        href: 'https://github.com/facebook/docusaurus',
+                        href: 'https://github.com/vendure-ecommerce/vendure',
                         label: 'GitHub',
                         position: 'right',
                     },
@@ -91,7 +100,6 @@ const config = {
                 },
             },
             footer: {
-                style: 'dark',
                 links: [
                     {
                         title: 'Community',
@@ -107,7 +115,7 @@ const config = {
                         ],
                     },
                 ],
-                copyright: `Copyright © ${new Date().getFullYear()} Vendure GmbH. Built with Docusaurus.`,
+                copyright: `Copyright © ${new Date().getFullYear()} Vendure GmbH.`,
             },
             prism: {
                 theme: lightCodeTheme,
