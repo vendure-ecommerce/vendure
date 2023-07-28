@@ -1,7 +1,7 @@
 ---
 title: "AdminUiAppDevModeConfig"
 weight: 10
-date: 2023-07-26T18:59:59.874Z
+date: 2023-07-28T12:05:24.913Z
 showtoc: true
 generated: true
 ---

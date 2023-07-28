@@ -1,7 +1,7 @@
 ---
 title: "CustomFields"
 weight: 10
-date: 2023-07-26T18:59:54.372Z
+date: 2023-07-28T12:05:21.974Z
 showtoc: true
 generated: true
 ---
@@ -15,7 +15,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="142" packageName="@vendure/core" />
 
-Most entities can have additional fields added to them by defining an array of <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>objects on against the corresponding key.
+Most entities can have additional fields added to them by defining an array of <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>
+objects on against the corresponding key.
 
 *Example*
 

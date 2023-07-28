@@ -1,7 +1,7 @@
 ---
 title: "GenerateMigration"
 weight: 10
-date: 2023-07-26T18:59:57.329Z
+date: 2023-07-28T12:05:23.498Z
 showtoc: true
 generated: true
 ---

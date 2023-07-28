@@ -1,7 +1,7 @@
 ---
 title: "AdminUiAppConfig"
 weight: 10
-date: 2023-07-26T18:59:59.861Z
+date: 2023-07-28T12:05:24.908Z
 showtoc: true
 generated: true
 ---

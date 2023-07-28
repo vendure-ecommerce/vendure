@@ -1,7 +1,7 @@
 ---
 title: "TimeAgoPipe"
 weight: 10
-date: 2023-07-26T19:00:04.061Z
+date: 2023-07-28T12:05:26.725Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "OrderItemPriceCalculationStrategy"
 weight: 10
-date: 2023-07-26T18:59:54.895Z
+date: 2023-07-28T12:05:22.224Z
 showtoc: true
 generated: true
 ---
@@ -60,7 +60,7 @@ A custom OrderItemPriceCalculationStrategy can be used to implement things like:
 * A gift-wrapping service, where a boolean custom field is defined on the OrderLine. If `true`,
   a gift-wrapping surcharge would be added to the price.
 * A product-configurator where e.g. various finishes, colors, and materials can be selected and stored
-  as OrderLine custom fields (see [Customizing models](/guides/developer-guide/customizing-models/#configurable-order-products).
+  as OrderLine custom fields (see [the Custom Fields guide](/guides/concepts/custom-fields/).
 * Price lists or bulk pricing, where different price bands are stored e.g. in a customField on the ProductVariant, and this
   is used to calculate the price based on the current quantity.
 

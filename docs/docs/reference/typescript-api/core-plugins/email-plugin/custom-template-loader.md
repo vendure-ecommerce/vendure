@@ -1,7 +1,7 @@
 ---
 title: "Custom Template Loader"
 weight: 10
-date: 2023-07-26T19:00:00.320Z
+date: 2023-07-28T12:05:25.154Z
 showtoc: true
 generated: true
 ---

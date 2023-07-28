@@ -1,7 +1,7 @@
 ---
 title: "TypedCustomSingleFieldConfig"
 weight: 10
-date: 2023-07-26T18:59:54.367Z
+date: 2023-07-28T12:05:21.971Z
 showtoc: true
 generated: true
 ---

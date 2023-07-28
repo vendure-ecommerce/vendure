@@ -1,7 +1,7 @@
 ---
 title: "AdminUiConfig"
 weight: 10
-date: 2023-07-26T18:59:59.815Z
+date: 2023-07-28T12:05:24.890Z
 showtoc: true
 generated: true
 ---
@@ -132,7 +132,7 @@ A url of a custom image to be used on the login screen, to override the images p
 
 Allows you to provide default reasons for a refund or cancellation. This will be used in the
 refund/cancel dialog. The values can be literal strings (e.g. "Not in stock") or translation
-tokens (see [Adding Admin UI Translations](/guides/plugins/extending-the-admin-ui/adding-ui-translations/)).
+tokens (see [Adding Admin UI Translations](/guides/extending-the-admin-ui/adding-ui-translations/)).
 
 
 </div>

@@ -1,7 +1,7 @@
 ---
 title: "DefaultStockDisplayStrategy"
 weight: 10
-date: 2023-07-26T18:59:54.290Z
+date: 2023-07-28T12:05:21.930Z
 showtoc: true
 generated: true
 ---

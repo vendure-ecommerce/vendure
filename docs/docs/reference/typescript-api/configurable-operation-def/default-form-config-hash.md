@@ -1,7 +1,7 @@
 ---
 title: "DefaultFormConfigHash"
 weight: 10
-date: 2023-07-26T18:59:59.783Z
+date: 2023-07-28T12:05:24.867Z
 showtoc: true
 generated: true
 ---
@@ -109,7 +109,7 @@ type DefaultFormConfigHash = {
 
 ### 'select-form-input'
 
-<MemberInfo kind="property" type={`{         options?: Array&#60;{ value: string; label?: Array&#60;Omit&#60;LocalizedString, '__typename'&#62;&#62; }&#62;;     }`}   />
+<MemberInfo kind="property" type={`{         options?: Array&#60;{ value: string; label?: Array&#60;Omit&#60;LocalizedString, '__typename'&#62;&#62; }&#62;;     }`}   />
 
 
 ### 'text-form-input'
@@ -119,12 +119,12 @@ type DefaultFormConfigHash = {
 
 ### 'textarea-form-input'
 
-<MemberInfo kind="property" type={`{         spellcheck?: boolean;     }`}   />
+<MemberInfo kind="property" type={`{         spellcheck?: boolean;     }`}   />
 
 
 ### 'product-multi-form-input'
 
-<MemberInfo kind="property" type={`{         selectionMode?: 'product' | 'variant';     }`}   />
+<MemberInfo kind="property" type={`{         selectionMode?: 'product' | 'variant';     }`}   />
 
 
 ### 'combination-mode-form-input'

@@ -1,7 +1,7 @@
 ---
 title: "JobBufferStorageStrategy"
 weight: 10
-date: 2023-07-26T18:59:57.092Z
+date: 2023-07-28T12:05:23.386Z
 showtoc: true
 generated: true
 ---

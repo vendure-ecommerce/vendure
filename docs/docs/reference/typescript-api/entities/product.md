@@ -1,7 +1,7 @@
 ---
 title: "Product"
 weight: 10
-date: 2023-07-26T18:59:56.220Z
+date: 2023-07-28T12:05:22.816Z
 showtoc: true
 generated: true
 ---

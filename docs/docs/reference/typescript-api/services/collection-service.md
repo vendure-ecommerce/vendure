@@ -1,7 +1,7 @@
 ---
 title: "CollectionService"
 weight: 10
-date: 2023-07-26T18:59:58.030Z
+date: 2023-07-28T12:05:23.891Z
 showtoc: true
 generated: true
 ---
@@ -13,13 +13,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CollectionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="66" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="65" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/collection#collection'>Collection</a> entities.
 
 ```ts title="Signature"
 class CollectionService implements OnModuleInit {
-  constructor(connection: TransactionalConnection, channelService: ChannelService, assetService: AssetService, facetValueService: FacetValueService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, jobQueueService: JobQueueService, configService: ConfigService, slugValidator: SlugValidator, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, roleService: RoleService)
+  constructor(connection: TransactionalConnection, channelService: ChannelService, assetService: AssetService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, jobQueueService: JobQueueService, configService: ConfigService, slugValidator: SlugValidator, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, roleService: RoleService)
   async findAll(ctx: RequestContext, options?: ListQueryOptions<Collection> & { topLevelOnly?: boolean }, relations?: RelationPaths<Collection>) => Promise<PaginatedList<Translated<Collection>>>;
   async findOne(ctx: RequestContext, collectionId: ID, relations?: RelationPaths<Collection>) => Promise<Translated<Collection> | undefined>;
   async findByIds(ctx: RequestContext, ids: ID[], relations?: RelationPaths<Collection>) => Promise<Array<Translated<Collection>>>;
@@ -51,7 +51,7 @@ class CollectionService implements OnModuleInit {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, facetValueService: <a href='/reference/typescript-api/services/facet-value-service#facetvalueservice'>FacetValueService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, jobQueueService: <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, configService: ConfigService, slugValidator: <a href='/reference/typescript-api/service-helpers/slug-validator#slugvalidator'>SlugValidator</a>, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, roleService: <a href='/reference/typescript-api/services/role-service#roleservice'>RoleService</a>) => CollectionService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, jobQueueService: <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, configService: ConfigService, slugValidator: <a href='/reference/typescript-api/service-helpers/slug-validator#slugvalidator'>SlugValidator</a>, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, roleService: <a href='/reference/typescript-api/services/role-service#roleservice'>RoleService</a>) => CollectionService`}   />
 
 
 ### findAll

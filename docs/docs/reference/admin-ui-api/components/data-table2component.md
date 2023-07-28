@@ -1,7 +1,7 @@
 ---
 title: "DataTable2Component"
 weight: 10
-date: 2023-07-26T19:00:02.830Z
+date: 2023-07-28T12:05:26.458Z
 showtoc: true
 generated: true
 ---

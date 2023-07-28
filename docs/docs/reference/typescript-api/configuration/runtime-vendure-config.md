@@ -1,7 +1,7 @@
 ---
 title: "RuntimeVendureConfig"
 weight: 10
-date: 2023-07-26T18:59:55.509Z
+date: 2023-07-28T12:05:22.508Z
 showtoc: true
 generated: true
 ---

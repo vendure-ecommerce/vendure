@@ -1,7 +1,7 @@
 ---
 title: "ModalService"
 weight: 10
-date: 2023-07-26T19:00:02.399Z
+date: 2023-07-28T12:05:26.320Z
 showtoc: true
 generated: true
 ---

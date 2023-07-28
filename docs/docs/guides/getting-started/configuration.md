@@ -68,7 +68,7 @@ export const config: VendureConfig = {
 
 ### Configuring authentication
 
-Authentication settings are configured with [`VendureConfig.authOptions`](/reference/typescript-api/auth/auth-options/). The most important setting here is whether the storefront client will use cookies or bearer tokens to manage user sessions. For more detail on this topic, see [the Managing Sessions guide]((/(/TODO))).
+Authentication settings are configured with [`VendureConfig.authOptions`](/reference/typescript-api/auth/auth-options/). The most important setting here is whether the storefront client will use cookies or bearer tokens to manage user sessions. For more detail on this topic, see [the Managing Sessions guide](/TODO).
 
 The username and default password of the superadmin user can also be specified here. In production, it is advisable to use environment variables for these settings (see the following section on usage of environment variables).
 
