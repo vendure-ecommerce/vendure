@@ -18,20 +18,20 @@ Contains methods relating to <a href='/reference/typescript-api/entities/product
 
 ```ts title="Signature"
 class ProductService {
-  constructor(connection: TransactionalConnection, channelService: ChannelService, roleService: RoleService, assetService: AssetService, productVariantService: ProductVariantService, facetValueService: FacetValueService, taxRateService: TaxRateService, collectionService: CollectionService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, slugValidator: SlugValidator, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, productOptionGroupService: ProductOptionGroupService)
-  async findAll(ctx: RequestContext, options?: ListQueryOptions<Product>, relations?: RelationPaths<Product>) => Promise<PaginatedList<Translated<Product>>>;
-  async findOne(ctx: RequestContext, productId: ID, relations?: RelationPaths<Product>) => Promise<Translated<Product> | undefined>;
-  async findByIds(ctx: RequestContext, productIds: ID[], relations?: RelationPaths<Product>) => Promise<Array<Translated<Product>>>;
-  async getProductChannels(ctx: RequestContext, productId: ID) => Promise<Channel[]>;
-  getFacetValuesForProduct(ctx: RequestContext, productId: ID) => Promise<Array<Translated<FacetValue>>>;
-  async findOneBySlug(ctx: RequestContext, slug: string, relations?: RelationPaths<Product>) => Promise<Translated<Product> | undefined>;
-  async create(ctx: RequestContext, input: CreateProductInput) => Promise<Translated<Product>>;
-  async update(ctx: RequestContext, input: UpdateProductInput) => Promise<Translated<Product>>;
-  async softDelete(ctx: RequestContext, productId: ID) => Promise<DeletionResponse>;
-  async assignProductsToChannel(ctx: RequestContext, input: AssignProductsToChannelInput) => Promise<Array<Translated<Product>>>;
-  async removeProductsFromChannel(ctx: RequestContext, input: RemoveProductsFromChannelInput) => Promise<Array<Translated<Product>>>;
-  async addOptionGroupToProduct(ctx: RequestContext, productId: ID, optionGroupId: ID) => Promise<Translated<Product>>;
-  async removeOptionGroupFromProduct(ctx: RequestContext, productId: ID, optionGroupId: ID, force?: boolean) => Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>>;
+    constructor(connection: TransactionalConnection, channelService: ChannelService, roleService: RoleService, assetService: AssetService, productVariantService: ProductVariantService, facetValueService: FacetValueService, taxRateService: TaxRateService, collectionService: CollectionService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, slugValidator: SlugValidator, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, productOptionGroupService: ProductOptionGroupService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Product>, relations?: RelationPaths<Product>) => Promise<PaginatedList<Translated<Product>>>;
+    findOne(ctx: RequestContext, productId: ID, relations?: RelationPaths<Product>) => Promise<Translated<Product> | undefined>;
+    findByIds(ctx: RequestContext, productIds: ID[], relations?: RelationPaths<Product>) => Promise<Array<Translated<Product>>>;
+    getProductChannels(ctx: RequestContext, productId: ID) => Promise<Channel[]>;
+    getFacetValuesForProduct(ctx: RequestContext, productId: ID) => Promise<Array<Translated<FacetValue>>>;
+    findOneBySlug(ctx: RequestContext, slug: string, relations?: RelationPaths<Product>) => Promise<Translated<Product> | undefined>;
+    create(ctx: RequestContext, input: CreateProductInput) => Promise<Translated<Product>>;
+    update(ctx: RequestContext, input: UpdateProductInput) => Promise<Translated<Product>>;
+    softDelete(ctx: RequestContext, productId: ID) => Promise<DeletionResponse>;
+    assignProductsToChannel(ctx: RequestContext, input: AssignProductsToChannelInput) => Promise<Array<Translated<Product>>>;
+    removeProductsFromChannel(ctx: RequestContext, input: RemoveProductsFromChannelInput) => Promise<Array<Translated<Product>>>;
+    addOptionGroupToProduct(ctx: RequestContext, productId: ID, optionGroupId: ID) => Promise<Translated<Product>>;
+    removeOptionGroupFromProduct(ctx: RequestContext, productId: ID, optionGroupId: ID, force?: boolean) => Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>>;
 }
 ```
 

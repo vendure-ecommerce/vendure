@@ -19,13 +19,13 @@ bar.
 
 ```ts title="Signature"
 interface NavMenuItem {
-  id: string;
-  label: string;
-  routerLink: RouterLinkDefinition;
-  onClick?: (event: MouseEvent) => void;
-  icon?: string;
-  requiresPermission?: string | ((userPermissions: string[]) => boolean);
-  statusBadge?: Observable<NavMenuBadge>;
+    id: string;
+    label: string;
+    routerLink: RouterLinkDefinition;
+    onClick?: (event: MouseEvent) => void;
+    icon?: string;
+    requiresPermission?: string | ((userPermissions: string[]) => boolean);
+    statusBadge?: Observable<NavMenuBadge>;
 }
 ```
 

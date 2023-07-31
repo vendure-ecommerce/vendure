@@ -50,8 +50,8 @@ export class ExternalSyncResolver {
 
 ```ts title="Signature"
 class PermissionDefinition {
-  constructor(config: PermissionDefinitionConfig)
-  Permission: Permission
+    constructor(config: PermissionDefinitionConfig)
+    Permission: Permission
 }
 ```
 
@@ -108,11 +108,11 @@ export class WishlistResolver {
 
 ```ts title="Signature"
 class CrudPermissionDefinition extends PermissionDefinition {
-  constructor(name: string, descriptionFn?: (operation: 'create' | 'read' | 'update' | 'delete') => string)
-  Create: Permission
-  Read: Permission
-  Update: Permission
-  Delete: Permission
+    constructor(name: string, descriptionFn?: (operation: 'create' | 'read' | 'update' | 'delete') => string)
+    Create: Permission
+    Read: Permission
+    Update: Permission
+    Delete: Permission
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a></code>
@@ -163,10 +163,10 @@ Configures a <a href='/reference/typescript-api/auth/permission-definition#permi
 
 ```ts title="Signature"
 interface PermissionDefinitionConfig {
-  name: string;
-  description?: string;
-  assignable?: boolean;
-  internal?: boolean;
+    name: string;
+    description?: string;
+    assignable?: boolean;
+    internal?: boolean;
 }
 ```
 

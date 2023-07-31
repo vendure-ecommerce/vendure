@@ -18,8 +18,8 @@ Configuration for generating a new migration script via <a href='/reference/type
 
 ```ts title="Signature"
 interface MigrationOptions {
-  name: string;
-  outputDir?: string;
+    name: string;
+    outputDir?: string;
 }
 ```
 

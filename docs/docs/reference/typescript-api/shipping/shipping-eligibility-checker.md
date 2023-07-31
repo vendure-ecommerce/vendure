@@ -34,7 +34,7 @@ const minOrderTotalEligibilityChecker = new ShippingEligibilityChecker({
 
 ```ts title="Signature"
 class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
-  constructor(config: ShippingEligibilityCheckerConfig<T>)
+    constructor(config: ShippingEligibilityCheckerConfig<T>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>

@@ -30,7 +30,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface TaxLineCalculationStrategy extends InjectableStrategy {
-  calculate(args: CalculateTaxLinesArgs): TaxLine[] | Promise<TaxLine[]>;
+    calculate(args: CalculateTaxLinesArgs): TaxLine[] | Promise<TaxLine[]>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -61,10 +61,10 @@ calling external APIs when absolutely necessary.
 
 ```ts title="Signature"
 interface CalculateTaxLinesArgs {
-  ctx: RequestContext;
-  order: Order;
-  orderLine: OrderLine;
-  applicableTaxRate: TaxRate;
+    ctx: RequestContext;
+    order: Order;
+    orderLine: OrderLine;
+    applicableTaxRate: TaxRate;
 }
 ```
 

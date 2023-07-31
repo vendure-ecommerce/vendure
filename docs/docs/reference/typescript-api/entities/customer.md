@@ -20,30 +20,30 @@ have an associated User entity.
 
 ```ts title="Signature"
 class Customer extends VendureEntity implements ChannelAware, HasCustomFields, SoftDeletable {
-  constructor(input?: DeepPartial<Customer>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<Customer>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  @Column({ nullable: true }) @Column({ nullable: true })
+    @Column({ nullable: true })
     title: string;
-  @Column() @Column() firstName: string;
-  @Column() @Column() lastName: string;
-  @Column({ nullable: true }) @Column({ nullable: true })
+    @Column() firstName: string;
+    @Column() lastName: string;
+    @Column({ nullable: true })
     phoneNumber: string;
-  @Column() @Column()
+    @Column()
     emailAddress: string;
-  @ManyToMany(type => CustomerGroup, group => group.customers) @JoinTable() @ManyToMany(type => CustomerGroup, group => group.customers)
+    @ManyToMany(type => CustomerGroup, group => group.customers)
     @JoinTable()
     groups: CustomerGroup[];
-  @OneToMany(type => Address, address => address.customer) @OneToMany(type => Address, address => address.customer)
+    @OneToMany(type => Address, address => address.customer)
     addresses: Address[];
-  @OneToMany(type => Order, order => order.customer) @OneToMany(type => Order, order => order.customer)
+    @OneToMany(type => Order, order => order.customer)
     orders: Order[];
-  @OneToOne(type => User, { eager: true }) @JoinColumn() @OneToOne(type => User, { eager: true })
+    @OneToOne(type => User, { eager: true })
     @JoinColumn()
     user?: User;
-  @Column(type => CustomCustomerFields) @Column(type => CustomCustomerFields)
+    @Column(type => CustomCustomerFields)
     customFields: CustomCustomerFields;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

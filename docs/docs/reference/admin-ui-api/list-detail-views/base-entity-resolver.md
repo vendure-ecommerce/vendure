@@ -43,7 +43,7 @@ export class MyEntityResolver extends BaseEntityResolver<MyEntityFragment> {
 
 ```ts title="Signature"
 class BaseEntityResolver<T> {
-  constructor(router: Router, emptyEntity: T, entityStream: (id: string) => Observable<T | null | undefined>)
+    constructor(router: Router, emptyEntity: T, entityStream: (id: string) => Observable<T | null | undefined>)
 }
 ```
 

@@ -19,7 +19,7 @@ existing Order, the guest Order quantity will replace that of the existing Order
 
 ```ts title="Signature"
 class MergeOrdersStrategy implements OrderMergeStrategy {
-  merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>
@@ -46,7 +46,7 @@ The guest order is discarded and the existing order is used as the active order.
 
 ```ts title="Signature"
 class UseExistingStrategy implements OrderMergeStrategy {
-  merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>
@@ -73,7 +73,7 @@ If the existing order is empty, then the guest order is used. Otherwise the exis
 
 ```ts title="Signature"
 class UseGuestIfExistingEmptyStrategy implements OrderMergeStrategy {
-  merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>
@@ -100,7 +100,7 @@ Any existing order is discarded and the guest order is set as the active order.
 
 ```ts title="Signature"
 class UseGuestStrategy implements OrderMergeStrategy {
-  merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order) => MergedOrderLine[];
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a></code>

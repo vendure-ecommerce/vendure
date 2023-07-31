@@ -19,8 +19,8 @@ and <a href='/reference/typescript-api/promotions/promotion-action#promotionship
 
 ```ts title="Signature"
 class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] | undefined = any> extends ConfigurableOperationDef<T> {
-  readonly readonly priorityValue: number;
-  constructor(config: PromotionActionConfig<T, U>)
+    readonly priorityValue: number;
+    constructor(config: PromotionActionConfig<T, U>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
@@ -68,7 +68,7 @@ const itemPercentageDiscount = new PromotionItemAction({
 
 ```ts title="Signature"
 class PromotionItemAction<T extends ConfigArgs = ConfigArgs, U extends Array<PromotionCondition<any>> = []> extends PromotionAction<T, U> {
-  constructor(config: PromotionItemActionConfig<T, U>)
+    constructor(config: PromotionItemActionConfig<T, U>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;</code>
@@ -109,7 +109,7 @@ const orderPercentageDiscount = new PromotionOrderAction({
 
 ```ts title="Signature"
 class PromotionOrderAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] = []> extends PromotionAction<T, U> {
-  constructor(config: PromotionOrderActionConfig<T, U>)
+    constructor(config: PromotionOrderActionConfig<T, U>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;</code>
@@ -136,7 +136,7 @@ Represents a PromotionAction which applies to the shipping cost of an Order.
 
 ```ts title="Signature"
 class PromotionShippingAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] = []> extends PromotionAction<T, U> {
-  constructor(config: PromotionShippingActionConfig<T, U>)
+    constructor(config: PromotionShippingActionConfig<T, U>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;T, U&#62;</code>
@@ -234,10 +234,10 @@ Configuration for all types of <a href='/reference/typescript-api/promotions/pro
 
 ```ts title="Signature"
 interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionCondition<any>> | undefined> extends ConfigurableOperationDefOptions<T> {
-  priorityValue?: number;
-  conditions?: U extends undefined ? undefined : ConditionTuple<Exclude<U, undefined>>;
-  onActivate?: PromotionActionSideEffectFn<T>;
-  onDeactivate?: PromotionActionSideEffectFn<T>;
+    priorityValue?: number;
+    conditions?: U extends undefined ? undefined : ConditionTuple<Exclude<U, undefined>>;
+    onActivate?: PromotionActionSideEffectFn<T>;
+    onDeactivate?: PromotionActionSideEffectFn<T>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>
@@ -291,7 +291,7 @@ Configuration for a <a href='/reference/typescript-api/promotions/promotion-acti
 
 ```ts title="Signature"
 interface PromotionItemActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
-  execute: ExecutePromotionItemActionFn<T, U>;
+    execute: ExecutePromotionItemActionFn<T, U>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;</code>
@@ -320,7 +320,7 @@ the OrderLine, i.e. the number should be negative.
 
 ```ts title="Signature"
 interface PromotionOrderActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
-  execute: ExecutePromotionOrderActionFn<T, U>;
+    execute: ExecutePromotionOrderActionFn<T, U>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;</code>
@@ -349,7 +349,7 @@ the Order, i.e. the number should be negative.
 
 ```ts title="Signature"
 interface PromotionShippingActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
-  execute: ExecutePromotionShippingActionFn<T, U>;
+    execute: ExecutePromotionShippingActionFn<T, U>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/promotions/promotion-action#promotionactionconfig'>PromotionActionConfig</a>&#60;T, U&#62;</code>

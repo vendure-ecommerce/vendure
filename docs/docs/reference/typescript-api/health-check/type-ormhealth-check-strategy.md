@@ -36,9 +36,9 @@ export const config = {
 
 ```ts title="Signature"
 class TypeORMHealthCheckStrategy implements HealthCheckStrategy {
-  constructor(options?: TypeORMHealthCheckOptions)
-  async init(injector: Injector) => ;
-  getHealthIndicator() => HealthIndicatorFunction;
+    constructor(options?: TypeORMHealthCheckOptions)
+    init(injector: Injector) => ;
+    getHealthIndicator() => HealthIndicatorFunction;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a></code>

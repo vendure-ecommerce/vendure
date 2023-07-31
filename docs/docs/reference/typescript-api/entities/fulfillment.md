@@ -19,17 +19,17 @@ delivered to the Customer after successful payment.
 
 ```ts title="Signature"
 class Fulfillment extends VendureEntity implements HasCustomFields {
-  constructor(input?: DeepPartial<Fulfillment>)
-  @Column('varchar') @Column('varchar') state: FulfillmentState;
-  @Column({ default: '' }) @Column({ default: '' })
+    constructor(input?: DeepPartial<Fulfillment>)
+    @Column('varchar') state: FulfillmentState;
+    @Column({ default: '' })
     trackingCode: string;
-  @Column() @Column()
+    @Column()
     method: string;
-  @Column() @Column()
+    @Column()
     handlerCode: string;
-  @OneToMany(type => FulfillmentLine, fulfillmentLine => fulfillmentLine.fulfillment) @OneToMany(type => FulfillmentLine, fulfillmentLine => fulfillmentLine.fulfillment)
+    @OneToMany(type => FulfillmentLine, fulfillmentLine => fulfillmentLine.fulfillment)
     lines: FulfillmentLine[];
-  @Column(type => CustomFulfillmentFields) @Column(type => CustomFulfillmentFields)
+    @Column(type => CustomFulfillmentFields)
     customFields: CustomFulfillmentFields;
 }
 ```

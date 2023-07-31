@@ -18,7 +18,7 @@ Used to implement a <a href='/reference/admin-ui-api/custom-history-entry-compon
 
 ```ts title="Signature"
 interface CustomerHistoryEntryComponent extends HistoryEntryComponent {
-  customer: CustomerFragment;
+    customer: CustomerFragment;
 }
 ```
 * Extends: <code><a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a></code>

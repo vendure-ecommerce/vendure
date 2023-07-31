@@ -19,25 +19,25 @@ A User represents any authenticated user of the Vendure API. This includes both
 
 ```ts title="Signature"
 class User extends VendureEntity implements HasCustomFields, SoftDeletable {
-  constructor(input?: DeepPartial<User>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<User>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  @Column() @Column()
+    @Column()
     identifier: string;
-  @OneToMany(type => AuthenticationMethod, method => method.user) @OneToMany(type => AuthenticationMethod, method => method.user)
+    @OneToMany(type => AuthenticationMethod, method => method.user)
     authenticationMethods: AuthenticationMethod[];
-  @Column({ default: false }) @Column({ default: false })
+    @Column({ default: false })
     verified: boolean;
-  @ManyToMany(type => Role) @JoinTable() @ManyToMany(type => Role)
+    @ManyToMany(type => Role)
     @JoinTable()
     roles: Role[];
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    @Column({ type: Date, nullable: true })
     lastLogin: Date | null;
-  @Column(type => CustomUserFields) @Column(type => CustomUserFields)
+    @Column(type => CustomUserFields)
     customFields: CustomUserFields;
-  getNativeAuthenticationMethod() => NativeAuthenticationMethod;
-  getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
-  getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
+    getNativeAuthenticationMethod() => NativeAuthenticationMethod;
+    getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
+    getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

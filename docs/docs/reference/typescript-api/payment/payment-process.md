@@ -30,10 +30,10 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface PaymentProcess<State extends keyof CustomPaymentStates | string> extends InjectableStrategy {
-  transitions?: Transitions<State, State | PaymentState> & Partial<Transitions<PaymentState | State>>;
-  onTransitionStart?: OnTransitionStartFn<State | PaymentState, PaymentTransitionData>;
-  onTransitionEnd?: OnTransitionEndFn<State | PaymentState, PaymentTransitionData>;
-  onTransitionError?: OnTransitionErrorFn<State | PaymentState>;
+    transitions?: Transitions<State, State | PaymentState> & Partial<Transitions<PaymentState | State>>;
+    onTransitionStart?: OnTransitionStartFn<State | PaymentState, PaymentTransitionData>;
+    onTransitionEnd?: OnTransitionEndFn<State | PaymentState, PaymentTransitionData>;
+    onTransitionError?: OnTransitionErrorFn<State | PaymentState>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

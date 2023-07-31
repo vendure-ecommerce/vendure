@@ -18,21 +18,21 @@ Contains methods relating to <a href='/reference/typescript-api/entities/role#ro
 
 ```ts title="Signature"
 class RoleService {
-  constructor(connection: TransactionalConnection, channelService: ChannelService, listQueryBuilder: ListQueryBuilder, configService: ConfigService, eventBus: EventBus)
-  async initRoles() => ;
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Role>, relations?: RelationPaths<Role>) => Promise<PaginatedList<Role>>;
-  findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>) => Promise<Role | undefined>;
-  getChannelsForRole(ctx: RequestContext, roleId: ID) => Promise<Channel[]>;
-  getSuperAdminRole(ctx?: RequestContext) => Promise<Role>;
-  getCustomerRole(ctx?: RequestContext) => Promise<Role>;
-  getAllPermissions() => string[];
-  async userHasPermissionOnChannel(ctx: RequestContext, channelId: ID, permission: Permission) => Promise<boolean>;
-  async userHasAnyPermissionsOnChannel(ctx: RequestContext, channelId: ID, permissions: Permission[]) => Promise<boolean>;
-  async userHasAllPermissionsOnChannel(ctx: RequestContext, channelId: ID, permissions: Permission[]) => Promise<boolean>;
-  async create(ctx: RequestContext, input: CreateRoleInput) => Promise<Role>;
-  async update(ctx: RequestContext, input: UpdateRoleInput) => Promise<Role>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  async assignRoleToChannel(ctx: RequestContext, roleId: ID, channelId: ID) => ;
+    constructor(connection: TransactionalConnection, channelService: ChannelService, listQueryBuilder: ListQueryBuilder, configService: ConfigService, eventBus: EventBus)
+    initRoles() => ;
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Role>, relations?: RelationPaths<Role>) => Promise<PaginatedList<Role>>;
+    findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>) => Promise<Role | undefined>;
+    getChannelsForRole(ctx: RequestContext, roleId: ID) => Promise<Channel[]>;
+    getSuperAdminRole(ctx?: RequestContext) => Promise<Role>;
+    getCustomerRole(ctx?: RequestContext) => Promise<Role>;
+    getAllPermissions() => string[];
+    userHasPermissionOnChannel(ctx: RequestContext, channelId: ID, permission: Permission) => Promise<boolean>;
+    userHasAnyPermissionsOnChannel(ctx: RequestContext, channelId: ID, permissions: Permission[]) => Promise<boolean>;
+    userHasAllPermissionsOnChannel(ctx: RequestContext, channelId: ID, permissions: Permission[]) => Promise<boolean>;
+    create(ctx: RequestContext, input: CreateRoleInput) => Promise<Role>;
+    update(ctx: RequestContext, input: UpdateRoleInput) => Promise<Role>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    assignRoleToChannel(ctx: RequestContext, roleId: ID, channelId: ID) => ;
 }
 ```
 

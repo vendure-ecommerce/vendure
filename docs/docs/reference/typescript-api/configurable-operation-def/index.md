@@ -89,14 +89,14 @@ export const customShippingCalculator = new ShippingCalculator({
 
 ```ts title="Signature"
 class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
-  code: string
-  args: T
-  description: LocalizedStringArray
-  constructor(options: ConfigurableOperationDefOptions<T>)
-  async init(injector: Injector) => ;
-  async destroy() => ;
-  toGraphQlType(ctx: RequestContext) => ConfigurableOperationDefinition;
-  protected argsArrayToHash(args: ConfigArg[]) => ConfigArgValues<T>;
+    code: string
+    args: T
+    description: LocalizedStringArray
+    constructor(options: ConfigurableOperationDefOptions<T>)
+    init(injector: Injector) => ;
+    destroy() => ;
+    toGraphQlType(ctx: RequestContext) => ConfigurableOperationDefinition;
+    argsArrayToHash(args: ConfigArg[]) => ConfigArgValues<T>;
 }
 ```
 

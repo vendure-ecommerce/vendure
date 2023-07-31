@@ -19,8 +19,8 @@ shipping methods, payment methods & roles.
 
 ```ts title="Signature"
 class Populator {
-  async populateInitialData(data: InitialData, channel?: Channel) => ;
-  async populateCollections(data: InitialData, channel?: Channel) => ;
+    populateInitialData(data: InitialData, channel?: Channel) => ;
+    populateCollections(data: InitialData, channel?: Channel) => ;
 }
 ```
 

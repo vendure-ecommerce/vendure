@@ -18,7 +18,7 @@ Creates new <a href='/reference/typescript-api/request/request-context#requestco
 
 ```ts title="Signature"
 class RequestContextService {
-  async create(config: {
+    create(config: {
         req?: Request;
         apiType: ApiType;
         channelOrToken?: Channel | string;
@@ -27,7 +27,7 @@ class RequestContextService {
         user?: User;
         activeOrderId?: ID;
     }) => Promise<RequestContext>;
-  async fromRequest(req: Request, info?: GraphQLResolveInfo, requiredPermissions?: Permission[], session?: CachedSession) => Promise<RequestContext>;
+    fromRequest(req: Request, info?: GraphQLResolveInfo, requiredPermissions?: Permission[], session?: CachedSession) => Promise<RequestContext>;
 }
 ```
 

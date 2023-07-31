@@ -23,118 +23,71 @@ is used to govern the transition from one state to another.
 
 ```ts title="Signature"
 class Order extends VendureEntity implements ChannelAware, HasCustomFields {
-  constructor(input?: DeepPartial<Order>)
-  @Column('varchar', { default: OrderType.Regular }) @Column('varchar', { default: OrderType.Regular })
+    constructor(input?: DeepPartial<Order>)
+    @Column('varchar', { default: OrderType.Regular })
     type: OrderType;
-  @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder) @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder)
+    @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder)
     sellerOrders: Order[];
-  @Index() @ManyToOne(type => Order, aggregateOrder => aggregateOrder.sellerOrders) @Index()
+    @Index()
     @ManyToOne(type => Order, aggregateOrder => aggregateOrder.sellerOrders)
     aggregateOrder?: Order;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     aggregateOrderId?: ID;
-  @Column() @Index({ unique: true }) @Column()
+    @Column()
     @Index({ unique: true })
     code: string;
-  @Column('varchar') @Column('varchar') state: OrderState;
-  @Column({ default: true }) @Column({ default: true })
+    @Column('varchar') state: OrderState;
+    @Column({ default: true })
     active: boolean;
-  @Column({ nullable: true }) @Column({ nullable: true })
+    @Column({ nullable: true })
     orderPlacedAt?: Date;
-  @Index() @ManyToOne(type => Customer) @Index()
+    @Index()
     @ManyToOne(type => Customer)
     customer?: Customer;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     customerId?: ID;
-  @OneToMany(type => OrderLine, line => line.order) @OneToMany(type => OrderLine, line => line.order)
+    @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];
-  @OneToMany(type => Surcharge, surcharge => surcharge.order) @OneToMany(type => Surcharge, surcharge => surcharge.order)
+    @OneToMany(type => Surcharge, surcharge => surcharge.order)
     surcharges: Surcharge[];
-  @Column('simple-array') @Column('simple-array')
+    @Column('simple-array')
     couponCodes: string[];
-  @ManyToMany(type => Promotion) @JoinTable() @ManyToMany(type => Promotion)
+    @ManyToMany(type => Promotion)
     @JoinTable()
     promotions: Promotion[];
-  @Column('simple-json') @Column('simple-json') shippingAddress: OrderAddress;
-  @Column('simple-json') @Column('simple-json') billingAddress: OrderAddress;
-  @OneToMany(type => Payment, payment => payment.order) @OneToMany(type => Payment, payment => payment.order)
+    @Column('simple-json') shippingAddress: OrderAddress;
+    @Column('simple-json') billingAddress: OrderAddress;
+    @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
-  @ManyToMany(type => Fulfillment) @JoinTable() @ManyToMany(type => Fulfillment)
+    @ManyToMany(type => Fulfillment)
     @JoinTable()
     fulfillments: Fulfillment[];
-  @Column('varchar') @Column('varchar')
+    @Column('varchar')
     currencyCode: CurrencyCode;
-  @Column(type => CustomOrderFields) @Column(type => CustomOrderFields)
+    @Column(type => CustomOrderFields)
     customFields: CustomOrderFields;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     taxZoneId?: ID;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
-  @OneToMany(type => OrderModification, modification => modification.order) @OneToMany(type => OrderModification, modification => modification.order)
+    @OneToMany(type => OrderModification, modification => modification.order)
     modifications: OrderModification[];
-  @Money() @Money()
+    @Money()
     subTotal: number;
-  @Money() @Money()
+    @Money()
     subTotalWithTax: number;
-  @OneToMany(type => ShippingLine, shippingLine => shippingLine.order) @OneToMany(type => ShippingLine, shippingLine => shippingLine.order)
+    @OneToMany(type => ShippingLine, shippingLine => shippingLine.order)
     shippingLines: ShippingLine[];
-  @Money({ default: 0 }) @Money({ default: 0 })
+    @Money({ default: 0 })
     shipping: number;
-  @Money({ default: 0 }) @Money({ default: 0 })
+    @Money({ default: 0 })
     shippingWithTax: number;
-  @Calculated({ relations: ['lines', 'shippingLines'] }) discounts: Discount[]
-  @Calculated({
-        query: qb =>
-            qb
-                .leftJoin(
-                    qb1 => {
-                        return qb1
-                            .from(Order, 'order')
-                            .select('order.shipping + order.subTotal', 'total')
-                            .addSelect('order.id', 'oid');
-                    },
-                    't1',
-                    't1.oid = order.id',
-                )
-                .addSelect('t1.total', 'total'),
-        expression: 'total',
-    }) total: number
-  @Calculated({
-        query: qb =>
-            qb
-                .leftJoin(
-                    qb1 => {
-                        return qb1
-                            .from(Order, 'order')
-                            .select('order.shippingWithTax + order.subTotalWithTax', 'twt')
-                            .addSelect('order.id', 'oid');
-                    },
-                    't1',
-                    't1.oid = order.id',
-                )
-                .addSelect('t1.twt', 'twt'),
-        expression: 'twt',
-    }) totalWithTax: number
-  @Calculated({
-        relations: ['lines'],
-        query: qb => {
-            qb.leftJoin(
-                qb1 => {
-                    return qb1
-                        .from(Order, 'order')
-                        .select('SUM(lines.quantity)', 'qty')
-                        .addSelect('order.id', 'oid')
-                        .leftJoin('order.lines', 'lines')
-                        .groupBy('order.id');
-                },
-                't1',
-                't1.oid = order.id',
-            ).addSelect('t1.qty', 'qty');
-        },
-        expression: 'qty',
-    }) totalQuantity: number
-  @Calculated({ relations: ['lines'] }) taxSummary: OrderTaxSummary[]
+    discounts: Discount[]
+    total: number
+    totalWithTax: number
+    totalQuantity: number
+    taxSummary: OrderTaxSummary[]
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

@@ -18,24 +18,24 @@ A form control for selecting zones.
 
 ```ts title="Signature"
 class ZoneSelectorComponent implements ControlValueAccessor {
-  @Output() @Output() selectedValuesChange = new EventEmitter<Zone>();
-  @Input() @Input() readonly = false;
-  @Input() @Input() transformControlValueAccessorValue: (value: Zone | undefined) => any = value => value?.id;
-  selectedId$ = new Subject<string>();
-  onChangeFn: (val: any) => void;
-  onTouchFn: () => void;
-  disabled = false;
-  value: string | Zone;
-  zones$ = this.dataService
+    @Output() selectedValuesChange = new EventEmitter<Zone>();
+    @Input() readonly = false;
+    @Input() transformControlValueAccessorValue: (value: Zone | undefined) => any = value => value?.id;
+    selectedId$ = new Subject<string>();
+    onChangeFn: (val: any) => void;
+    onTouchFn: () => void;
+    disabled = false;
+    value: string | Zone;
+    zones$ = this.dataService
         .query(GetZoneSelectorListDocument, { options: { take: 999 } }, 'cache-first')
         .mapSingle(result => result.zones.items);
-  constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
-  onChange(selected: Zone) => ;
-  registerOnChange(fn: any) => ;
-  registerOnTouched(fn: any) => ;
-  setDisabledState(isDisabled: boolean) => void;
-  focus() => ;
-  writeValue(obj: string | Zone | null) => void;
+    constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
+    onChange(selected: Zone) => ;
+    registerOnChange(fn: any) => ;
+    registerOnTouched(fn: any) => ;
+    setDisabledState(isDisabled: boolean) => void;
+    focus() => ;
+    writeValue(obj: string | Zone | null) => void;
 }
 ```
 * Implements: <code>ControlValueAccessor</code>

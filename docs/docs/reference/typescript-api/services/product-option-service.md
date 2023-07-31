@@ -18,12 +18,12 @@ Contains methods relating to <a href='/reference/typescript-api/entities/product
 
 ```ts title="Signature"
 class ProductOptionService {
-  constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translator: TranslatorService)
-  findAll(ctx: RequestContext) => Promise<Array<Translated<ProductOption>>>;
-  findOne(ctx: RequestContext, id: ID) => Promise<Translated<ProductOption> | undefined>;
-  async create(ctx: RequestContext, group: ProductOptionGroup | ID, input: CreateGroupOptionInput | CreateProductOptionInput) => Promise<Translated<ProductOption>>;
-  async update(ctx: RequestContext, input: UpdateProductOptionInput) => Promise<Translated<ProductOption>>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translator: TranslatorService)
+    findAll(ctx: RequestContext) => Promise<Array<Translated<ProductOption>>>;
+    findOne(ctx: RequestContext, id: ID) => Promise<Translated<ProductOption> | undefined>;
+    create(ctx: RequestContext, group: ProductOptionGroup | ID, input: CreateGroupOptionInput | CreateProductOptionInput) => Promise<Translated<ProductOption>>;
+    update(ctx: RequestContext, input: UpdateProductOptionInput) => Promise<Translated<ProductOption>>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
 ```
 

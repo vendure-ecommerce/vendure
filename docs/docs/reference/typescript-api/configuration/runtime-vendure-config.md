@@ -19,19 +19,19 @@ config values have been merged with the <a href='/reference/typescript-api/confi
 
 ```ts title="Signature"
 interface RuntimeVendureConfig extends Required<VendureConfig> {
-  apiOptions: Required<ApiOptions>;
-  assetOptions: Required<AssetOptions>;
-  authOptions: Required<AuthOptions>;
-  catalogOptions: Required<CatalogOptions>;
-  customFields: Required<CustomFields>;
-  entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
-  importExportOptions: Required<ImportExportOptions>;
-  jobQueueOptions: Required<JobQueueOptions>;
-  orderOptions: Required<OrderOptions>;
-  promotionOptions: Required<PromotionOptions>;
-  shippingOptions: Required<ShippingOptions>;
-  taxOptions: Required<TaxOptions>;
-  systemOptions: Required<SystemOptions>;
+    apiOptions: Required<ApiOptions>;
+    assetOptions: Required<AssetOptions>;
+    authOptions: Required<AuthOptions>;
+    catalogOptions: Required<CatalogOptions>;
+    customFields: Required<CustomFields>;
+    entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
+    importExportOptions: Required<ImportExportOptions>;
+    jobQueueOptions: Required<JobQueueOptions>;
+    orderOptions: Required<OrderOptions>;
+    promotionOptions: Required<PromotionOptions>;
+    shippingOptions: Required<ShippingOptions>;
+    taxOptions: Required<TaxOptions>;
+    systemOptions: Required<SystemOptions>;
 }
 ```
 * Extends: <code>Required&#60;<a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>&#62;</code>

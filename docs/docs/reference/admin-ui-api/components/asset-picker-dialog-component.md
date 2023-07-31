@@ -34,29 +34,29 @@ selectAssets() {
 
 ```ts title="Signature"
 class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Dialog<Asset[]> {
-  assets$: Observable<AssetLike[]>;
-  allTags$: Observable<TagFragment[]>;
-  paginationConfig: PaginationInstance = {
+    assets$: Observable<AssetLike[]>;
+    allTags$: Observable<TagFragment[]>;
+    paginationConfig: PaginationInstance = {
         currentPage: 1,
         itemsPerPage: 25,
         totalItems: 1,
     };
-  multiSelect = true;
-  initialTags: string[] = [];
-  resolveWith: (result?: Asset[]) => void;
-  selection: Asset[] = [];
-  searchTerm$ = new BehaviorSubject<string | undefined>(undefined);
-  filterByTags$ = new BehaviorSubject<TagFragment[] | undefined>(undefined);
-  uploading = false;
-  constructor(dataService: DataService, notificationService: NotificationService)
-  ngOnInit() => ;
-  ngAfterViewInit() => ;
-  ngOnDestroy() => void;
-  pageChange(page: number) => ;
-  itemsPerPageChange(itemsPerPage: number) => ;
-  cancel() => ;
-  select() => ;
-  createAssets(files: File[]) => ;
+    multiSelect = true;
+    initialTags: string[] = [];
+    resolveWith: (result?: Asset[]) => void;
+    selection: Asset[] = [];
+    searchTerm$ = new BehaviorSubject<string | undefined>(undefined);
+    filterByTags$ = new BehaviorSubject<TagFragment[] | undefined>(undefined);
+    uploading = false;
+    constructor(dataService: DataService, notificationService: NotificationService)
+    ngOnInit() => ;
+    ngAfterViewInit() => ;
+    ngOnDestroy() => void;
+    pageChange(page: number) => ;
+    itemsPerPageChange(itemsPerPage: number) => ;
+    cancel() => ;
+    select() => ;
+    createAssets(files: File[]) => ;
 }
 ```
 * Implements: <code>OnInit</code>, <code>AfterViewInit</code>, <code>OnDestroy</code>, <code><a href='/reference/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]&#62;</code>

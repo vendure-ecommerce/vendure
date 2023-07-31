@@ -29,7 +29,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface OrderMergeStrategy extends InjectableStrategy {
-  merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): MergedOrderLine[];
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): MergedOrderLine[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -57,9 +57,9 @@ The result of the <a href='/reference/typescript-api/orders/order-merge-strategy
 
 ```ts title="Signature"
 interface MergedOrderLine {
-  orderLineId: ID;
-  quantity: number;
-  customFields?: any;
+    orderLineId: ID;
+    quantity: number;
+    customFields?: any;
 }
 ```
 

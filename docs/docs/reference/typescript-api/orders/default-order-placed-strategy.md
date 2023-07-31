@@ -19,7 +19,7 @@ The default <a href='/reference/typescript-api/orders/order-placed-strategy#orde
 
 ```ts title="Signature"
 class DefaultOrderPlacedStrategy implements OrderPlacedStrategy {
-  shouldSetAsPlaced(ctx: RequestContext, fromState: OrderState, toState: OrderState, order: Order) => boolean;
+    shouldSetAsPlaced(ctx: RequestContext, fromState: OrderState, toState: OrderState, order: Order) => boolean;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a></code>

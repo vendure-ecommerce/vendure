@@ -125,18 +125,18 @@ const config: VendureConfig = {
 
 ```ts title="Signature"
 class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
-  constructor(listener: EmailEventListener<T>, event: Type<Event>)
-  filter(filterFn: (event: Event) => boolean) => EmailEventHandler<T, Event>;
-  setRecipient(setRecipientFn: (event: Event) => string) => EmailEventHandler<T, Event>;
-  setLanguageCode(setLanguageCodeFn: (event: Event) => LanguageCode | undefined) => EmailEventHandler<T, Event>;
-  setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>) => EmailEventHandler<T, Event>;
-  setSubject(defaultSubject: string) => EmailEventHandler<T, Event>;
-  setFrom(from: string) => EmailEventHandler<T, Event>;
-  setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) => ;
-  setAttachments(setAttachmentsFn: SetAttachmentsFn<Event>) => ;
-  addTemplate(config: EmailTemplateConfig) => EmailEventHandler<T, Event>;
-  loadData(loadDataFn: LoadDataFn<Event, R>) => EmailEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>>;
-  setMockEvent(event: Omit<Event, 'ctx' | 'data'>) => EmailEventHandler<T, Event>;
+    constructor(listener: EmailEventListener<T>, event: Type<Event>)
+    filter(filterFn: (event: Event) => boolean) => EmailEventHandler<T, Event>;
+    setRecipient(setRecipientFn: (event: Event) => string) => EmailEventHandler<T, Event>;
+    setLanguageCode(setLanguageCodeFn: (event: Event) => LanguageCode | undefined) => EmailEventHandler<T, Event>;
+    setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>) => EmailEventHandler<T, Event>;
+    setSubject(defaultSubject: string) => EmailEventHandler<T, Event>;
+    setFrom(from: string) => EmailEventHandler<T, Event>;
+    setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) => ;
+    setAttachments(setAttachmentsFn: SetAttachmentsFn<Event>) => ;
+    addTemplate(config: EmailTemplateConfig) => EmailEventHandler<T, Event>;
+    loadData(loadDataFn: LoadDataFn<Event, R>) => EmailEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>>;
+    setMockEvent(event: Omit<Event, 'ctx' | 'data'>) => EmailEventHandler<T, Event>;
 }
 ```
 

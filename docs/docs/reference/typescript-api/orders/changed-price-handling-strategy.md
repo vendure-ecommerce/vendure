@@ -29,7 +29,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface ChangedPriceHandlingStrategy extends InjectableStrategy {
-  handlePriceChange(
+    handlePriceChange(
         ctx: RequestContext,
         current: PriceCalculationResult,
         orderLine: OrderLine,

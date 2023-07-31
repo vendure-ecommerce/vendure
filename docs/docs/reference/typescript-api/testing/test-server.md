@@ -18,11 +18,11 @@ A real Vendure server against which the e2e tests should be run.
 
 ```ts title="Signature"
 class TestServer {
-  public public app: INestApplication;
-  constructor(vendureConfig: Required<VendureConfig>)
-  async init(options: TestServerOptions) => Promise<void>;
-  async bootstrap() => ;
-  async destroy() => ;
+    public app: INestApplication;
+    constructor(vendureConfig: Required<VendureConfig>)
+    init(options: TestServerOptions) => Promise<void>;
+    bootstrap() => ;
+    destroy() => ;
 }
 ```
 

@@ -18,9 +18,9 @@ Utilities available to the onClick handler of an ActionBarItem.
 
 ```ts title="Signature"
 interface OnClickContext {
-  route: ActivatedRoute;
-  dataService: DataService;
-  notificationService: NotificationService;
+    route: ActivatedRoute;
+    dataService: DataService;
+    notificationService: NotificationService;
 }
 ```
 

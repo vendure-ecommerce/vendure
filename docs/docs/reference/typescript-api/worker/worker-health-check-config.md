@@ -18,9 +18,9 @@ Specifies the configuration for the Worker's HTTP health check endpoint.
 
 ```ts title="Signature"
 interface WorkerHealthCheckConfig {
-  port: number;
-  hostname?: string;
-  route?: string;
+    port: number;
+    hostname?: string;
+    route?: string;
 }
 ```
 

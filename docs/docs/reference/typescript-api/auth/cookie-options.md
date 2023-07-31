@@ -20,16 +20,16 @@ to the Express [cookie-session middleware](https://github.com/expressjs/cookie-s
 
 ```ts title="Signature"
 interface CookieOptions {
-  name?: string;
-  secret?: string;
-  path?: string;
-  domain?: string;
-  sameSite?: 'strict' | 'lax' | 'none' | boolean;
-  secure?: boolean;
-  secureProxy?: boolean;
-  httpOnly?: boolean;
-  signed?: boolean;
-  overwrite?: boolean;
+    name?: string;
+    secret?: string;
+    path?: string;
+    domain?: string;
+    sameSite?: 'strict' | 'lax' | 'none' | boolean;
+    secure?: boolean;
+    secureProxy?: boolean;
+    httpOnly?: boolean;
+    signed?: boolean;
+    overwrite?: boolean;
 }
 ```
 

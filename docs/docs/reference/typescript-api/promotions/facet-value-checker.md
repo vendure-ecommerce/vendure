@@ -50,8 +50,8 @@ export const hasFacetValues = new PromotionCondition({
 
 ```ts title="Signature"
 class FacetValueChecker {
-  constructor(connection: TransactionalConnection)
-  async hasFacetValues(orderLine: OrderLine, facetValueIds: ID[], ctx?: RequestContext) => Promise<boolean>;
+    constructor(connection: TransactionalConnection)
+    hasFacetValues(orderLine: OrderLine, facetValueIds: ID[], ctx?: RequestContext) => Promise<boolean>;
 }
 ```
 

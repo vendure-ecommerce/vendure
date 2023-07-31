@@ -19,27 +19,27 @@ then modified afterwards by an administrator.
 
 ```ts title="Signature"
 class OrderModification extends VendureEntity {
-  constructor(input?: DeepPartial<OrderModification>)
-  @Column() @Column()
+    constructor(input?: DeepPartial<OrderModification>)
+    @Column()
     note: string;
-  @Index() @ManyToOne(type => Order, order => order.modifications, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => Order, order => order.modifications, { onDelete: 'CASCADE' })
     order: Order;
-  @OneToMany(type => OrderModificationLine, line => line.modification) @OneToMany(type => OrderModificationLine, line => line.modification)
+    @OneToMany(type => OrderModificationLine, line => line.modification)
     lines: OrderModificationLine[];
-  @OneToMany(type => Surcharge, surcharge => surcharge.orderModification) @OneToMany(type => Surcharge, surcharge => surcharge.orderModification)
+    @OneToMany(type => Surcharge, surcharge => surcharge.orderModification)
     surcharges: Surcharge[];
-  @Money() @Money()
+    @Money()
     priceChange: number;
-  @OneToOne(type => Payment) @JoinColumn() @OneToOne(type => Payment)
+    @OneToOne(type => Payment)
     @JoinColumn()
     payment?: Payment;
-  @OneToOne(type => Refund) @JoinColumn() @OneToOne(type => Refund)
+    @OneToOne(type => Refund)
     @JoinColumn()
     refund?: Refund;
-  @Column('simple-json', { nullable: true }) @Column('simple-json', { nullable: true }) shippingAddressChange: OrderAddress;
-  @Column('simple-json', { nullable: true }) @Column('simple-json', { nullable: true }) billingAddressChange: OrderAddress;
-  @Calculated() isSettled: boolean
+    @Column('simple-json', { nullable: true }) shippingAddressChange: OrderAddress;
+    @Column('simple-json', { nullable: true }) billingAddressChange: OrderAddress;
+    isSettled: boolean
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

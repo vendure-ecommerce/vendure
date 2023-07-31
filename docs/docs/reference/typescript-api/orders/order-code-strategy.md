@@ -46,7 +46,7 @@ class MyOrderCodeStrategy implements OrderCodeStrategy {
 
 ```ts title="Signature"
 interface OrderCodeStrategy extends InjectableStrategy {
-  generate(ctx: RequestContext): string | Promise<string>;
+    generate(ctx: RequestContext): string | Promise<string>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -74,7 +74,7 @@ of 16 uppercase letters and numbers.
 
 ```ts title="Signature"
 class DefaultOrderCodeStrategy implements OrderCodeStrategy {
-  generate(ctx: RequestContext) => string;
+    generate(ctx: RequestContext) => string;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a></code>

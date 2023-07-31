@@ -126,9 +126,9 @@ a given configuration. Caching can be disabled per-request by setting the `?cach
 
 ```ts title="Signature"
 class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
-  static init(options: AssetServerOptions) => Type<AssetServerPlugin>;
-  constructor(processContext: ProcessContext)
-  configure(consumer: MiddlewareConsumer) => ;
+    init(options: AssetServerOptions) => Type<AssetServerPlugin>;
+    constructor(processContext: ProcessContext)
+    configure(consumer: MiddlewareConsumer) => ;
 }
 ```
 * Implements: <code>NestModule</code>, <code>OnApplicationBootstrap</code>

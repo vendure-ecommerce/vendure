@@ -19,9 +19,9 @@ defines how an email will be generated from this event.
 
 ```ts title="Signature"
 class EmailEventListener<T extends string> {
-  public public type: T;
-  constructor(type: T)
-  on(event: Type<Event>) => EmailEventHandler<T, Event>;
+    public type: T;
+    constructor(type: T)
+    on(event: Type<Event>) => EmailEventHandler<T, Event>;
 }
 ```
 

@@ -51,7 +51,7 @@ const config: VendureConfig = {
 
 ```ts title="Signature"
 interface EmailSender extends InjectableStrategy {
-  send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
+    send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -78,7 +78,7 @@ Uses the configured transport to send the generated email.
 
 ```ts title="Signature"
 class NodemailerEmailSender implements EmailSender {
-  async send(email: EmailDetails, options: EmailTransportOptions) => ;
+    send(email: EmailDetails, options: EmailTransportOptions) => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a></code>

@@ -35,7 +35,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface GuestCheckoutStrategy extends InjectableStrategy {
-  setCustomerForOrder(
+    setCustomerForOrder(
         ctx: RequestContext,
         order: Order,
         input: CreateCustomerInput,

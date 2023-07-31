@@ -20,11 +20,11 @@ you should implement <a href='/reference/admin-ui-api/custom-history-entry-compo
 
 ```ts title="Signature"
 interface HistoryEntryComponent {
-  entry: TimelineHistoryEntry;
-  getDisplayType: (entry: TimelineHistoryEntry) => TimelineDisplayType;
-  isFeatured: (entry: TimelineHistoryEntry) => boolean;
-  getName?: (entry: TimelineHistoryEntry) => string | undefined;
-  getIconShape?: (entry: TimelineHistoryEntry) => string | string[] | undefined;
+    entry: TimelineHistoryEntry;
+    getDisplayType: (entry: TimelineHistoryEntry) => TimelineDisplayType;
+    isFeatured: (entry: TimelineHistoryEntry) => boolean;
+    getName?: (entry: TimelineHistoryEntry) => string | undefined;
+    getIconShape?: (entry: TimelineHistoryEntry) => string | string[] | undefined;
 }
 ```
 

@@ -18,11 +18,11 @@ This entity represents a line from an <a href='/reference/typescript-api/entitie
 
 ```ts title="Signature"
 class FulfillmentLine extends OrderLineReference {
-  constructor(input?: DeepPartial<FulfillmentLine>)
-  @Index() @ManyToOne(type => Fulfillment, fulfillment => fulfillment.lines) @Index()
+    constructor(input?: DeepPartial<FulfillmentLine>)
+    @Index()
     @ManyToOne(type => Fulfillment, fulfillment => fulfillment.lines)
     fulfillment: Fulfillment;
-  @EntityId() @EntityId()
+    @EntityId()
     fulfillmentId: ID;
 }
 ```
@@ -60,12 +60,12 @@ This is an abstract base class for entities which reference an <a href='/referen
 
 ```ts title="Signature"
 class OrderLineReference extends VendureEntity {
-  @Column() @Column()
+    @Column()
     quantity: number;
-  @Index() @ManyToOne(type => OrderLine, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => OrderLine, { onDelete: 'CASCADE' })
     orderLine: OrderLine;
-  @EntityId() @EntityId()
+    @EntityId()
     orderLineId: ID;
 }
 ```
@@ -103,11 +103,11 @@ This entity represents a line from an <a href='/reference/typescript-api/entitie
 
 ```ts title="Signature"
 class OrderModificationLine extends OrderLineReference {
-  constructor(input?: DeepPartial<OrderModificationLine>)
-  @Index() @ManyToOne(type => OrderModification, modification => modification.lines) @Index()
+    constructor(input?: DeepPartial<OrderModificationLine>)
+    @Index()
     @ManyToOne(type => OrderModification, modification => modification.lines)
     modification: OrderModification;
-  @EntityId() @EntityId()
+    @EntityId()
     modificationId: ID;
 }
 ```
@@ -145,11 +145,11 @@ This entity represents a line from an <a href='/reference/typescript-api/entitie
 
 ```ts title="Signature"
 class RefundLine extends OrderLineReference {
-  constructor(input?: DeepPartial<RefundLine>)
-  @Index() @ManyToOne(type => Refund, refund => refund.lines) @Index()
+    constructor(input?: DeepPartial<RefundLine>)
+    @Index()
     @ManyToOne(type => Refund, refund => refund.lines)
     refund: Refund;
-  @EntityId() @EntityId()
+    @EntityId()
     refundId: ID;
 }
 ```

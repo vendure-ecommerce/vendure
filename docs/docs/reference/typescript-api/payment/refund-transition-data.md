@@ -18,9 +18,9 @@ The data which is passed to the state transition handlers of the RefundStateMach
 
 ```ts title="Signature"
 interface RefundTransitionData {
-  ctx: RequestContext;
-  order: Order;
-  refund: Refund;
+    ctx: RequestContext;
+    order: Order;
+    refund: Refund;
 }
 ```
 

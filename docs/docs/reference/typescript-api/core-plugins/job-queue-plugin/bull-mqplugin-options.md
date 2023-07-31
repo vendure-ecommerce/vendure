@@ -18,11 +18,11 @@ Configuration options for the <a href='/reference/typescript-api/core-plugins/jo
 
 ```ts title="Signature"
 interface BullMQPluginOptions {
-  connection?: ConnectionOptions;
-  queueOptions?: Exclude<QueueOptions, 'connection'>;
-  workerOptions?: Exclude<WorkerOptions, 'connection'>;
-  setRetries?: (queueName: string, job: Job) => number;
-  setBackoff?: (queueName: string, job: Job) => BackoffOptions | undefined;
+    connection?: ConnectionOptions;
+    queueOptions?: Exclude<QueueOptions, 'connection'>;
+    workerOptions?: Exclude<WorkerOptions, 'connection'>;
+    setRetries?: (queueName: string, job: Job) => number;
+    setBackoff?: (queueName: string, job: Job) => BackoffOptions | undefined;
 }
 ```
 
@@ -104,8 +104,8 @@ Configuration for the backoff function when retrying failed jobs.
 
 ```ts title="Signature"
 interface BackoffOptions {
-  type: 'exponential' | 'fixed';
-  delay: number;
+    type: 'exponential' | 'fixed';
+    delay: number;
 }
 ```
 

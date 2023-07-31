@@ -23,9 +23,9 @@ including:
 
 ```ts title="Signature"
 class OrderCalculator {
-  constructor(configService: ConfigService, zoneService: ZoneService, taxRateService: TaxRateService, shippingMethodService: ShippingMethodService, shippingCalculator: ShippingCalculator, requestContextCache: RequestContextCacheService)
-  async applyPriceAdjustments(ctx: RequestContext, order: Order, promotions: Promotion[], updatedOrderLines: OrderLine[] = [], options?: { recalculateShipping?: boolean }) => Promise<Order>;
-  public calculateOrderTotals(order: Order) => ;
+    constructor(configService: ConfigService, zoneService: ZoneService, taxRateService: TaxRateService, shippingMethodService: ShippingMethodService, shippingCalculator: ShippingCalculator, requestContextCache: RequestContextCacheService)
+    applyPriceAdjustments(ctx: RequestContext, order: Order, promotions: Promotion[], updatedOrderLines: OrderLine[] = [], options?: { recalculateShipping?: boolean }) => Promise<Order>;
+    calculateOrderTotals(order: Order) => ;
 }
 ```
 

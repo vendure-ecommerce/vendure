@@ -25,8 +25,8 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface PasswordHashingStrategy extends InjectableStrategy {
-  hash(plaintext: string): Promise<string>;
-  check(plaintext: string, hash: string): Promise<boolean>;
+    hash(plaintext: string): Promise<string>;
+    check(plaintext: string, hash: string): Promise<boolean>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

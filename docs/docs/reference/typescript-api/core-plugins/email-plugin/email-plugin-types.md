@@ -43,14 +43,14 @@ The final, generated email details to be sent.
 
 ```ts title="Signature"
 interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialized'> {
-  from: string;
-  recipient: string;
-  subject: string;
-  body: string;
-  attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
-  cc?: string;
-  bcc?: string;
-  replyTo?: string;
+    from: string;
+    recipient: string;
+    subject: string;
+    body: string;
+    attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 }
 ```
 
@@ -165,9 +165,9 @@ Optional address-related fields for sending the email.
 
 ```ts title="Signature"
 interface OptionalAddressFields {
-  cc?: string;
-  bcc?: string;
-  replyTo?: string;
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 }
 ```
 

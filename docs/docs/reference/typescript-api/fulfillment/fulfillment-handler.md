@@ -90,7 +90,7 @@ export const shipomaticFulfillmentHandler = new FulfillmentHandler({
 
 ```ts title="Signature"
 class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
-  constructor(config: FulfillmentHandlerConfig<T>)
+    constructor(config: FulfillmentHandlerConfig<T>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
@@ -117,8 +117,8 @@ The configuration object used to instantiate a <a href='/reference/typescript-ap
 
 ```ts title="Signature"
 interface FulfillmentHandlerConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
-  createFulfillment: CreateFulfillmentFn<T>;
-  onFulfillmentTransition?: OnTransitionStartFn<FulfillmentState, FulfillmentTransitionData>;
+    createFulfillment: CreateFulfillmentFn<T>;
+    onFulfillmentTransition?: OnTransitionStartFn<FulfillmentState, FulfillmentTransitionData>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>

@@ -19,8 +19,8 @@ in the case of conflicts, increments a counter suffix.
 
 ```ts title="Signature"
 class DefaultAssetNamingStrategy implements AssetNamingStrategy {
-  generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
-  generatePreviewFileName(ctx: RequestContext, sourceFileName: string, conflictFileName?: string) => string;
+    generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
+    generatePreviewFileName(ctx: RequestContext, sourceFileName: string, conflictFileName?: string) => string;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a></code>

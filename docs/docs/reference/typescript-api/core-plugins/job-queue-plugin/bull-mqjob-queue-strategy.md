@@ -19,16 +19,16 @@ on top of Redis. It should not be used alone, but as part of the <a href='/refer
 
 ```ts title="Signature"
 class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
-  async init(injector: Injector) => Promise<void>;
-  async destroy() => ;
-  async add(job: Job<Data>) => Promise<Job<Data>>;
-  async cancelJob(jobId: string) => Promise<Job | undefined>;
-  async findMany(options?: JobListOptions) => Promise<PaginatedList<Job>>;
-  async findManyById(ids: ID[]) => Promise<Job[]>;
-  async findOne(id: ID) => Promise<Job | undefined>;
-  async removeSettledJobs(queueNames?: string[], olderThan?: Date) => Promise<number>;
-  async start(queueName: string, process: (job: Job<Data>) => Promise<any>) => Promise<void>;
-  async stop(queueName: string, process: (job: Job<Data>) => Promise<any>) => Promise<void>;
+    init(injector: Injector) => Promise<void>;
+    destroy() => ;
+    add(job: Job<Data>) => Promise<Job<Data>>;
+    cancelJob(jobId: string) => Promise<Job | undefined>;
+    findMany(options?: JobListOptions) => Promise<PaginatedList<Job>>;
+    findManyById(ids: ID[]) => Promise<Job[]>;
+    findOne(id: ID) => Promise<Job | undefined>;
+    removeSettledJobs(queueNames?: string[], olderThan?: Date) => Promise<number>;
+    start(queueName: string, process: (job: Job<Data>) => Promise<any>) => Promise<void>;
+    stop(queueName: string, process: (job: Job<Data>) => Promise<any>) => Promise<void>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/job-queue/inspectable-job-queue-strategy#inspectablejobqueuestrategy'>InspectableJobQueueStrategy</a></code>

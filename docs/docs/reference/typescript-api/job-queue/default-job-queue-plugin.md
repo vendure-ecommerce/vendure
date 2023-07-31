@@ -104,7 +104,7 @@ export const config: VendureConfig = {
 
 ```ts title="Signature"
 class DefaultJobQueuePlugin {
-  static init(options: DefaultJobQueueOptions) => Type<DefaultJobQueuePlugin>;
+    init(options: DefaultJobQueueOptions) => Type<DefaultJobQueuePlugin>;
 }
 ```
 
@@ -129,11 +129,11 @@ Configuration options for the DefaultJobQueuePlugin. These values get passed int
 
 ```ts title="Signature"
 interface DefaultJobQueueOptions {
-  pollInterval?: number | ((queueName: string) => number);
-  concurrency?: number;
-  backoffStrategy?: BackoffStrategy;
-  setRetries?: (queueName: string, job: Job) => number;
-  useDatabaseForBuffer?: boolean;
+    pollInterval?: number | ((queueName: string) => number);
+    concurrency?: number;
+    backoffStrategy?: BackoffStrategy;
+    setRetries?: (queueName: string, job: Job) => number;
+    useDatabaseForBuffer?: boolean;
 }
 ```
 

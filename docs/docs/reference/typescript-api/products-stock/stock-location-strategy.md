@@ -28,30 +28,30 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface StockLocationStrategy extends InjectableStrategy {
-  getAvailableStock(
+    getAvailableStock(
         ctx: RequestContext,
         productVariantId: ID,
         stockLevels: StockLevel[],
     ): AvailableStock | Promise<AvailableStock>;
-  forAllocation(
+    forAllocation(
         ctx: RequestContext,
         stockLocations: StockLocation[],
         orderLine: OrderLine,
         quantity: number,
     ): LocationWithQuantity[] | Promise<LocationWithQuantity[]>;
-  forRelease(
+    forRelease(
         ctx: RequestContext,
         stockLocations: StockLocation[],
         orderLine: OrderLine,
         quantity: number,
     ): LocationWithQuantity[] | Promise<LocationWithQuantity[]>;
-  forSale(
+    forSale(
         ctx: RequestContext,
         stockLocations: StockLocation[],
         orderLine: OrderLine,
         quantity: number,
     ): LocationWithQuantity[] | Promise<LocationWithQuantity[]>;
-  forCancellation(
+    forCancellation(
         ctx: RequestContext,
         stockLocations: StockLocation[],
         orderLine: OrderLine,
@@ -109,8 +109,8 @@ The overall available stock for a ProductVariant as determined by the logic of t
 
 ```ts title="Signature"
 interface AvailableStock {
-  stockOnHand: number;
-  stockAllocated: number;
+    stockOnHand: number;
+    stockAllocated: number;
 }
 ```
 
@@ -140,8 +140,8 @@ location should be used in the allocation/sale/release/cancellation of an OrderL
 
 ```ts title="Signature"
 interface LocationWithQuantity {
-  location: StockLocation;
-  quantity: number;
+    location: StockLocation;
+    quantity: number;
 }
 ```
 

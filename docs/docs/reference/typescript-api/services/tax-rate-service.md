@@ -18,13 +18,13 @@ Contains methods relating to <a href='/reference/typescript-api/entities/tax-rat
 
 ```ts title="Signature"
 class TaxRateService {
-  constructor(connection: TransactionalConnection, eventBus: EventBus, listQueryBuilder: ListQueryBuilder, configService: ConfigService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<TaxRate>, relations?: RelationPaths<TaxRate>) => Promise<PaginatedList<TaxRate>>;
-  findOne(ctx: RequestContext, taxRateId: ID, relations?: RelationPaths<TaxRate>) => Promise<TaxRate | undefined>;
-  async create(ctx: RequestContext, input: CreateTaxRateInput) => Promise<TaxRate>;
-  async update(ctx: RequestContext, input: UpdateTaxRateInput) => Promise<TaxRate>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  async getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory) => Promise<TaxRate>;
+    constructor(connection: TransactionalConnection, eventBus: EventBus, listQueryBuilder: ListQueryBuilder, configService: ConfigService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<TaxRate>, relations?: RelationPaths<TaxRate>) => Promise<PaginatedList<TaxRate>>;
+    findOne(ctx: RequestContext, taxRateId: ID, relations?: RelationPaths<TaxRate>) => Promise<TaxRate | undefined>;
+    create(ctx: RequestContext, input: CreateTaxRateInput) => Promise<TaxRate>;
+    update(ctx: RequestContext, input: UpdateTaxRateInput) => Promise<TaxRate>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory) => Promise<TaxRate>;
 }
 ```
 

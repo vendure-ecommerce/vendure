@@ -19,12 +19,12 @@ which a ProductVariant is assigned, there will be a corresponding ProductVariant
 
 ```ts title="Signature"
 class ProductVariantPrice extends VendureEntity {
-  constructor(input?: DeepPartial<ProductVariantPrice>)
-  @Money() @Money() price: number;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true }) channelId: ID;
-  @Column('varchar') @Column('varchar')
+    constructor(input?: DeepPartial<ProductVariantPrice>)
+    @Money() price: number;
+    @EntityId({ nullable: true }) channelId: ID;
+    @Column('varchar')
     currencyCode: CurrencyCode;
-  @Index() @ManyToOne(type => ProductVariant, variant => variant.productVariantPrices, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => ProductVariant, variant => variant.productVariantPrices, { onDelete: 'CASCADE' })
     variant: ProductVariant;
 }

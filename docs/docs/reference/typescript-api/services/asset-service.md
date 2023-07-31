@@ -18,20 +18,20 @@ Contains methods relating to <a href='/reference/typescript-api/entities/asset#a
 
 ```ts title="Signature"
 class AssetService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, tagService: TagService, channelService: ChannelService, roleService: RoleService, customFieldRelationService: CustomFieldRelationService)
-  findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<Asset>) => Promise<Asset | undefined>;
-  findAll(ctx: RequestContext, options?: AssetListOptions, relations?: RelationPaths<Asset>) => Promise<PaginatedList<Asset>>;
-  async getFeaturedAsset(ctx: RequestContext, entity: T) => Promise<Asset | undefined>;
-  async getEntityAssets(ctx: RequestContext, entity: T) => Promise<Asset[] | undefined>;
-  async updateFeaturedAsset(ctx: RequestContext, entity: T, input: EntityAssetInput) => Promise<T>;
-  async updateEntityAssets(ctx: RequestContext, entity: T, input: EntityAssetInput) => Promise<T>;
-  async create(ctx: RequestContext, input: CreateAssetInput) => Promise<CreateAssetResult>;
-  async update(ctx: RequestContext, input: UpdateAssetInput) => Promise<Asset>;
-  async delete(ctx: RequestContext, ids: ID[], force: boolean = false, deleteFromAllChannels: boolean = false) => Promise<DeletionResponse>;
-  async assignToChannel(ctx: RequestContext, input: AssignAssetsToChannelInput) => Promise<Asset[]>;
-  async createFromFileStream(stream: ReadStream, ctx?: RequestContext) => Promise<CreateAssetResult>;
-  async createFromFileStream(stream: Readable, filePath: string, ctx?: RequestContext) => Promise<CreateAssetResult>;
-  async createFromFileStream(stream: ReadStream | Readable, maybeFilePathOrCtx?: string | RequestContext, maybeCtx?: RequestContext) => Promise<CreateAssetResult>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, tagService: TagService, channelService: ChannelService, roleService: RoleService, customFieldRelationService: CustomFieldRelationService)
+    findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<Asset>) => Promise<Asset | undefined>;
+    findAll(ctx: RequestContext, options?: AssetListOptions, relations?: RelationPaths<Asset>) => Promise<PaginatedList<Asset>>;
+    getFeaturedAsset(ctx: RequestContext, entity: T) => Promise<Asset | undefined>;
+    getEntityAssets(ctx: RequestContext, entity: T) => Promise<Asset[] | undefined>;
+    updateFeaturedAsset(ctx: RequestContext, entity: T, input: EntityAssetInput) => Promise<T>;
+    updateEntityAssets(ctx: RequestContext, entity: T, input: EntityAssetInput) => Promise<T>;
+    create(ctx: RequestContext, input: CreateAssetInput) => Promise<CreateAssetResult>;
+    update(ctx: RequestContext, input: UpdateAssetInput) => Promise<Asset>;
+    delete(ctx: RequestContext, ids: ID[], force: boolean = false, deleteFromAllChannels: boolean = false) => Promise<DeletionResponse>;
+    assignToChannel(ctx: RequestContext, input: AssignAssetsToChannelInput) => Promise<Asset[]>;
+    createFromFileStream(stream: ReadStream, ctx?: RequestContext) => Promise<CreateAssetResult>;
+    createFromFileStream(stream: Readable, filePath: string, ctx?: RequestContext) => Promise<CreateAssetResult>;
+    createFromFileStream(stream: ReadStream | Readable, maybeFilePathOrCtx?: string | RequestContext, maybeCtx?: RequestContext) => Promise<CreateAssetResult>;
 }
 ```
 
@@ -127,8 +127,8 @@ to model a featured asset and then a list of assets with a defined order.
 
 ```ts title="Signature"
 interface EntityWithAssets extends VendureEntity {
-  featuredAsset: Asset | null;
-  assets: OrderableAsset[];
+    featuredAsset: Asset | null;
+    assets: OrderableAsset[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -160,8 +160,8 @@ Used when updating entities which implement <a href='/reference/typescript-api/s
 
 ```ts title="Signature"
 interface EntityAssetInput {
-  assetIds?: ID[] | null;
-  featuredAssetId?: ID | null;
+    assetIds?: ID[] | null;
+    featuredAssetId?: ID | null;
 }
 ```
 

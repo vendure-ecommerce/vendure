@@ -25,11 +25,11 @@ detailed instructions.
 interface AdminUiExtension extends Partial<TranslationExtension>,
         Partial<StaticAssetExtension>,
         Partial<GlobalStylesExtension> {
-  id?: string;
-  extensionPath: string;
-  ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
-  pathAlias?: string;
-  exclude?: string[];
+    id?: string;
+    extensionPath: string;
+    ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+    pathAlias?: string;
+    exclude?: string[];
 }
 ```
 * Extends: <code>Partial&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#translationextension'>TranslationExtension</a>&#62;</code>, <code>Partial&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension'>StaticAssetExtension</a>&#62;</code>, <code>Partial&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension'>GlobalStylesExtension</a>&#62;</code>
@@ -169,7 +169,7 @@ without adding new UI functionality, or as part of a full <a href='/reference/ad
 
 ```ts title="Signature"
 interface TranslationExtension {
-  translations: { [languageCode in LanguageCode]?: string };
+    translations: { [languageCode in LanguageCode]?: string };
 }
 ```
 
@@ -205,7 +205,7 @@ Defines extensions which copy static assets to the custom Admin UI application s
 
 ```ts title="Signature"
 interface StaticAssetExtension {
-  staticAssets: StaticAssetDefinition[];
+    staticAssets: StaticAssetDefinition[];
 }
 ```
 
@@ -230,7 +230,7 @@ Defines extensions which add global styles to the custom Admin UI application.
 
 ```ts title="Signature"
 interface GlobalStylesExtension {
-  globalStyles: string[] | string;
+    globalStyles: string[] | string;
 }
 ```
 
@@ -255,7 +255,7 @@ Defines an extension which allows overriding Clarity Design System's Sass variab
 
 ```ts title="Signature"
 interface SassVariableOverridesExtension {
-  sassVariableOverrides: string;
+    sassVariableOverrides: string;
 }
 ```
 
@@ -292,9 +292,9 @@ Configuration defining a single NgModule with which to extend the Admin UI.
 
 ```ts title="Signature"
 interface AdminUiExtensionSharedModule {
-  type: 'shared';
-  ngModuleFileName: string;
-  ngModuleName: string;
+    type: 'shared';
+    ngModuleFileName: string;
+    ngModuleName: string;
 }
 ```
 
@@ -330,10 +330,10 @@ Configuration defining a single NgModule with which to extend the Admin UI.
 
 ```ts title="Signature"
 interface AdminUiExtensionLazyModule {
-  type: 'lazy';
-  route: string;
-  ngModuleFileName: string;
-  ngModuleName: string;
+    type: 'lazy';
+    route: string;
+    ngModuleFileName: string;
+    ngModuleName: string;
 }
 ```
 

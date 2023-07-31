@@ -28,10 +28,10 @@ is equivalent to:
 
 ```ts title="Signature"
 interface ImageTransformPreset {
-  name: string;
-  width: number;
-  height: number;
-  mode: ImageTransformMode;
+    name: string;
+    width: number;
+    height: number;
+    mode: ImageTransformMode;
 }
 ```
 

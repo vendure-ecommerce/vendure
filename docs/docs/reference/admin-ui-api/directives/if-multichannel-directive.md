@@ -27,7 +27,7 @@ configured.
 
 ```ts title="Signature"
 class IfMultichannelDirective extends IfDirectiveBase<[]> {
-  constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, dataService: DataService)
+    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, dataService: DataService)
 }
 ```
 * Extends: <code>IfDirectiveBase&#60;[]&#62;</code>

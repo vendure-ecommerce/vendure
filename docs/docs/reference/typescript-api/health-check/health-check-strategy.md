@@ -55,7 +55,7 @@ export const config = {
 
 ```ts title="Signature"
 interface HealthCheckStrategy extends InjectableStrategy {
-  getHealthIndicator(): HealthIndicatorFunction;
+    getHealthIndicator(): HealthIndicatorFunction;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

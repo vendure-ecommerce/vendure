@@ -76,12 +76,12 @@ export const config = {
 
 ```ts title="Signature"
 class Logger implements LoggerService {
-  static logger: VendureLogger
-  static error(message: string, context?: string, trace?: string) => void;
-  static warn(message: string, context?: string) => void;
-  static info(message: string, context?: string) => void;
-  static verbose(message: string, context?: string) => void;
-  static debug(message: string, context?: string) => void;
+    logger: VendureLogger
+    error(message: string, context?: string, trace?: string) => void;
+    warn(message: string, context?: string) => void;
+    info(message: string, context?: string) => void;
+    verbose(message: string, context?: string) => void;
+    debug(message: string, context?: string) => void;
 }
 ```
 * Implements: <code>LoggerService</code>

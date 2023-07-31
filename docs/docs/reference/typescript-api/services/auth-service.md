@@ -18,11 +18,11 @@ Contains methods relating to <a href='/reference/typescript-api/entities/session
 
 ```ts title="Signature"
 class AuthService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, sessionService: SessionService, eventBus: EventBus)
-  async authenticate(ctx: RequestContext, apiType: ApiType, authenticationMethod: string, authenticationData: any) => Promise<AuthenticatedSession | InvalidCredentialsError | NotVerifiedError>;
-  async createAuthenticatedSessionForUser(ctx: RequestContext, user: User, authenticationStrategyName: string) => Promise<AuthenticatedSession | NotVerifiedError>;
-  async verifyUserPassword(ctx: RequestContext, userId: ID, password: string) => Promise<boolean | InvalidCredentialsError | ShopInvalidCredentialsError>;
-  async destroyAuthenticatedSession(ctx: RequestContext, sessionToken: string) => Promise<void>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, sessionService: SessionService, eventBus: EventBus)
+    authenticate(ctx: RequestContext, apiType: ApiType, authenticationMethod: string, authenticationData: any) => Promise<AuthenticatedSession | InvalidCredentialsError | NotVerifiedError>;
+    createAuthenticatedSessionForUser(ctx: RequestContext, user: User, authenticationStrategyName: string) => Promise<AuthenticatedSession | NotVerifiedError>;
+    verifyUserPassword(ctx: RequestContext, userId: ID, password: string) => Promise<boolean | InvalidCredentialsError | ShopInvalidCredentialsError>;
+    destroyAuthenticatedSession(ctx: RequestContext, sessionToken: string) => Promise<void>;
 }
 ```
 

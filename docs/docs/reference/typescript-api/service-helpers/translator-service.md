@@ -46,8 +46,8 @@ export class ProductService {
 
 ```ts title="Signature"
 class TranslatorService {
-  constructor(configService: ConfigService)
-  translate(translatable: T, ctx: RequestContext, translatableRelations: DeepTranslatableRelations<T> = []) => ;
+    constructor(configService: ConfigService)
+    translate(translatable: T, ctx: RequestContext, translatableRelations: DeepTranslatableRelations<T> = []) => ;
 }
 ```
 

@@ -18,31 +18,31 @@ Configuration options for the <a href='/reference/typescript-api/core-plugins/el
 
 ```ts title="Signature"
 interface ElasticsearchOptions {
-  host?: string;
-  port?: number;
-  connectionAttempts?: number;
-  connectionAttemptInterval?: number;
-  clientOptions?: ClientOptions;
-  indexPrefix?: string;
-  indexSettings?: object;
-  indexMappingProperties?: {
+    host?: string;
+    port?: number;
+    connectionAttempts?: number;
+    connectionAttemptInterval?: number;
+    clientOptions?: ClientOptions;
+    indexPrefix?: string;
+    indexSettings?: object;
+    indexMappingProperties?: {
         [indexName: string]: object;
     };
-  batchSize?: number;
-  searchConfig?: SearchConfig;
-  customProductMappings?: {
+    batchSize?: number;
+    searchConfig?: SearchConfig;
+    customProductMappings?: {
         [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode]>;
     };
-  customProductVariantMappings?: {
+    customProductVariantMappings?: {
         [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode]>;
     };
-  bufferUpdates?: boolean;
-  hydrateProductRelations?: Array<EntityRelationPaths<Product>>;
-  hydrateProductVariantRelations?: Array<EntityRelationPaths<ProductVariant>>;
-  extendSearchInputType?: {
+    bufferUpdates?: boolean;
+    hydrateProductRelations?: Array<EntityRelationPaths<Product>>;
+    hydrateProductVariantRelations?: Array<EntityRelationPaths<ProductVariant>>;
+    extendSearchInputType?: {
         [name: string]: PrimitiveTypeVariations<GraphQlPrimitive>;
     };
-  extendSearchSortType?: string[];
+    extendSearchSortType?: string[];
 }
 ```
 
@@ -371,21 +371,21 @@ Configuration options for the internal Elasticsearch query which is generated wh
 
 ```ts title="Signature"
 interface SearchConfig {
-  facetValueMaxSize?: number;
-  collectionMaxSize?: number;
-  totalItemsMaxSize?: number | boolean;
-  multiMatchType?: 'best_fields' | 'most_fields' | 'cross_fields' | 'phrase' | 'phrase_prefix' | 'bool_prefix';
-  boostFields?: BoostFieldsConfig;
-  priceRangeBucketInterval?: number;
-  mapQuery?: (
+    facetValueMaxSize?: number;
+    collectionMaxSize?: number;
+    totalItemsMaxSize?: number | boolean;
+    multiMatchType?: 'best_fields' | 'most_fields' | 'cross_fields' | 'phrase' | 'phrase_prefix' | 'bool_prefix';
+    boostFields?: BoostFieldsConfig;
+    priceRangeBucketInterval?: number;
+    mapQuery?: (
         query: any,
         input: ElasticSearchInput,
         searchConfig: DeepRequired<SearchConfig>,
         channelId: ID,
         enabledOnly: boolean,
     ) => any;
-  scriptFields?: { [fieldName: string]: CustomScriptMapping<[ElasticSearchInput]> };
-  mapSort?: (sort: ElasticSearchSortInput, input: ElasticSearchInput) => ElasticSearchSortInput;
+    scriptFields?: { [fieldName: string]: CustomScriptMapping<[ElasticSearchInput]> };
+    mapSort?: (sort: ElasticSearchSortInput, input: ElasticSearchInput) => ElasticSearchSortInput;
 }
 ```
 
@@ -655,10 +655,10 @@ Boosting a field acts as a score multiplier for matches against that field.
 
 ```ts title="Signature"
 interface BoostFieldsConfig {
-  productName?: number;
-  productVariantName?: number;
-  description?: number;
-  sku?: number;
+    productName?: number;
+    productVariantName?: number;
+    description?: number;
+    sku?: number;
 }
 ```
 

@@ -38,9 +38,9 @@ calculated columns when sorting, filtering and deriving required relations from 
 
 ```ts title="Signature"
 interface CalculatedColumnQueryInstruction {
-  relations?: string[];
-  query?: (qb: SelectQueryBuilder<any>) => void;
-  expression?: string;
+    relations?: string[];
+    query?: (qb: SelectQueryBuilder<any>) => void;
+    expression?: string;
 }
 ```
 

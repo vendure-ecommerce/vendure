@@ -28,10 +28,10 @@ properties of your VendureConfig.
 
 ```ts title="Signature"
 interface AuthenticationStrategy<Data = unknown> extends InjectableStrategy {
-  readonly name: string;
-  defineInputType(): DocumentNode;
-  authenticate(ctx: RequestContext, data: Data): Promise<User | false | string>;
-  onLogOut?(ctx: RequestContext, user: User): Promise<void>;
+    readonly name: string;
+    defineInputType(): DocumentNode;
+    authenticate(ctx: RequestContext, data: Data): Promise<User | false | string>;
+    onLogOut?(ctx: RequestContext, user: User): Promise<void>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

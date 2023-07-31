@@ -152,8 +152,8 @@ verbose 16/12/22, 14:12 - [HardenPlugin] Query complexity [ProductList]: 35
 
 ```ts title="Signature"
 class HardenPlugin {
-  static static options: HardenPluginOptions;
-  static init(options: HardenPluginOptions) => ;
+    static options: HardenPluginOptions;
+    init(options: HardenPluginOptions) => ;
 }
 ```
 

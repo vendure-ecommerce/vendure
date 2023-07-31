@@ -243,8 +243,8 @@ const { addPaymentToOrder } = await graphQlClient.query(gql`
 
 ```ts title="Signature"
 class BraintreePlugin {
-  static static options: BraintreePluginOptions = {};
-  static init(options: BraintreePluginOptions) => Type<BraintreePlugin>;
+    static options: BraintreePluginOptions = {};
+    init(options: BraintreePluginOptions) => Type<BraintreePlugin>;
 }
 ```
 
@@ -273,9 +273,9 @@ Options for the Braintree plugin.
 
 ```ts title="Signature"
 interface BraintreePluginOptions {
-  environment?: Environment;
-  storeCustomersInBraintree?: boolean;
-  extractMetadata?: (transaction: Transaction) => PaymentMetadata;
+    environment?: Environment;
+    storeCustomersInBraintree?: boolean;
+    extractMetadata?: (transaction: Transaction) => PaymentMetadata;
 }
 ```
 

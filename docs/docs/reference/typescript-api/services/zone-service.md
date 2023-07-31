@@ -18,15 +18,15 @@ Contains methods relating to <a href='/reference/typescript-api/entities/zone#zo
 
 ```ts title="Signature"
 class ZoneService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, eventBus: EventBus, translator: TranslatorService, listQueryBuilder: ListQueryBuilder)
-  async findAll(ctx: RequestContext, options?: ListQueryOptions<Zone>) => Promise<PaginatedList<Zone>>;
-  findOne(ctx: RequestContext, zoneId: ID) => Promise<Zone | undefined>;
-  async getAllWithMembers(ctx: RequestContext) => Promise<Zone[]>;
-  async create(ctx: RequestContext, input: CreateZoneInput) => Promise<Zone>;
-  async update(ctx: RequestContext, input: UpdateZoneInput) => Promise<Zone>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  async addMembersToZone(ctx: RequestContext, { memberIds, zoneId }: MutationAddMembersToZoneArgs) => Promise<Zone>;
-  async removeMembersFromZone(ctx: RequestContext, { memberIds, zoneId }: MutationRemoveMembersFromZoneArgs) => Promise<Zone>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, eventBus: EventBus, translator: TranslatorService, listQueryBuilder: ListQueryBuilder)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Zone>) => Promise<PaginatedList<Zone>>;
+    findOne(ctx: RequestContext, zoneId: ID) => Promise<Zone | undefined>;
+    getAllWithMembers(ctx: RequestContext) => Promise<Zone[]>;
+    create(ctx: RequestContext, input: CreateZoneInput) => Promise<Zone>;
+    update(ctx: RequestContext, input: UpdateZoneInput) => Promise<Zone>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    addMembersToZone(ctx: RequestContext, { memberIds, zoneId }: MutationAddMembersToZoneArgs) => Promise<Zone>;
+    removeMembersFromZone(ctx: RequestContext, { memberIds, zoneId }: MutationRemoveMembersFromZoneArgs) => Promise<Zone>;
 }
 ```
 

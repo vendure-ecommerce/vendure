@@ -42,7 +42,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface OrderByCodeAccessStrategy extends InjectableStrategy {
-  canAccessOrder(ctx: RequestContext, order: Order): boolean | Promise<boolean>;
+    canAccessOrder(ctx: RequestContext, order: Order): boolean | Promise<boolean>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -71,8 +71,8 @@ the Customer owning the Order and anyone within a given time period after placin
 
 ```ts title="Signature"
 class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
-  constructor(anonymousAccessDuration: string)
-  canAccessOrder(ctx: RequestContext, order: Order) => boolean;
+    constructor(anonymousAccessDuration: string)
+    canAccessOrder(ctx: RequestContext, order: Order) => boolean;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-by-code-access-strategy#orderbycodeaccessstrategy'>OrderByCodeAccessStrategy</a></code>

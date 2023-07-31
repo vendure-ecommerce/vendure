@@ -18,30 +18,30 @@ Represents a <a href='/reference/typescript-api/entities/customer#customer'>Cust
 
 ```ts title="Signature"
 class Address extends VendureEntity implements HasCustomFields {
-  constructor(input?: DeepPartial<Address>)
-  @Index() @ManyToOne(type => Customer, customer => customer.addresses) @Index()
+    constructor(input?: DeepPartial<Address>)
+    @Index()
     @ManyToOne(type => Customer, customer => customer.addresses)
     customer: Customer;
-  @Column({ default: '' }) @Column({ default: '' }) fullName: string;
-  @Column({ default: '' }) @Column({ default: '' })
+    @Column({ default: '' }) fullName: string;
+    @Column({ default: '' })
     company: string;
-  @Column() @Column() streetLine1: string;
-  @Column({ default: '' }) @Column({ default: '' })
+    @Column() streetLine1: string;
+    @Column({ default: '' })
     streetLine2: string;
-  @Column({ default: '' }) @Column({ default: '' }) city: string;
-  @Column({ default: '' }) @Column({ default: '' })
+    @Column({ default: '' }) city: string;
+    @Column({ default: '' })
     province: string;
-  @Column({ default: '' }) @Column({ default: '' }) postalCode: string;
-  @Index() @ManyToOne(type => Country) @Index()
+    @Column({ default: '' }) postalCode: string;
+    @Index()
     @ManyToOne(type => Country)
     country: Country;
-  @Column({ default: '' }) @Column({ default: '' })
+    @Column({ default: '' })
     phoneNumber: string;
-  @Column({ default: false }) @Column({ default: false })
+    @Column({ default: false })
     defaultShippingAddress: boolean;
-  @Column({ default: false }) @Column({ default: false })
+    @Column({ default: false })
     defaultBillingAddress: boolean;
-  @Column(type => CustomAddressFields) @Column(type => CustomAddressFields)
+    @Column(type => CustomAddressFields)
     customFields: CustomAddressFields;
 }
 ```

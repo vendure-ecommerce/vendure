@@ -19,12 +19,12 @@ calculating applicable shipping and taxes.
 
 ```ts title="Signature"
 class Zone extends VendureEntity implements HasCustomFields {
-  constructor(input?: DeepPartial<Zone>)
-  @Column() @Column() name: string;
-  @ManyToMany(type => Region) @JoinTable() @ManyToMany(type => Region)
+    constructor(input?: DeepPartial<Zone>)
+    @Column() name: string;
+    @ManyToMany(type => Region)
     @JoinTable()
     members: Region[];
-  @Column(type => CustomZoneFields) @Column(type => CustomZoneFields)
+    @Column(type => CustomZoneFields)
     customFields: CustomZoneFields;
 }
 ```

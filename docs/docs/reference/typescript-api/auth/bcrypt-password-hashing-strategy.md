@@ -18,8 +18,8 @@ A hashing strategy which uses bcrypt (https://en.wikipedia.org/wiki/Bcrypt) to h
 
 ```ts title="Signature"
 class BcryptPasswordHashingStrategy implements PasswordHashingStrategy {
-  hash(plaintext: string) => Promise<string>;
-  check(plaintext: string, hash: string) => Promise<boolean>;
+    hash(plaintext: string) => Promise<string>;
+    check(plaintext: string, hash: string) => Promise<boolean>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/auth/password-hashing-strategy#passwordhashingstrategy'>PasswordHashingStrategy</a></code>

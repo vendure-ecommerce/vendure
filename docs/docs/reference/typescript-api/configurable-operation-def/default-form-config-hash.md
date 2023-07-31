@@ -18,29 +18,29 @@ Used to define the expected arguments for a given default form input component.
 
 ```ts title="Signature"
 type DefaultFormConfigHash = {
-  'boolean-form-input': Record<string, never>;
-  'currency-form-input': Record<string, never>;
-  'customer-group-form-input': Record<string, never>;
-  'date-form-input': { min?: string; max?: string; yearRange?: number };
-  'facet-value-form-input': Record<string, never>;
-  'json-editor-form-input': { height?: string };
-  'html-editor-form-input': { height?: string };
-  'number-form-input': { min?: number; max?: number; step?: number; prefix?: string; suffix?: string };
-  'password-form-input': Record<string, never>;
-  'product-selector-form-input': Record<string, never>;
-  'relation-form-input': Record<string, never>;
-  'rich-text-form-input': Record<string, never>;
-  'select-form-input': {
+    'boolean-form-input': Record<string, never>;
+    'currency-form-input': Record<string, never>;
+    'customer-group-form-input': Record<string, never>;
+    'date-form-input': { min?: string; max?: string; yearRange?: number };
+    'facet-value-form-input': Record<string, never>;
+    'json-editor-form-input': { height?: string };
+    'html-editor-form-input': { height?: string };
+    'number-form-input': { min?: number; max?: number; step?: number; prefix?: string; suffix?: string };
+    'password-form-input': Record<string, never>;
+    'product-selector-form-input': Record<string, never>;
+    'relation-form-input': Record<string, never>;
+    'rich-text-form-input': Record<string, never>;
+    'select-form-input': {
         options?: Array<{ value: string; label?: Array<Omit<LocalizedString, '__typename'>> }>;
     };
-  'text-form-input': { prefix?: string; suffix?: string };
-  'textarea-form-input': {
+    'text-form-input': { prefix?: string; suffix?: string };
+    'textarea-form-input': {
         spellcheck?: boolean;
     };
-  'product-multi-form-input': {
+    'product-multi-form-input': {
         selectionMode?: 'product' | 'variant';
     };
-  'combination-mode-form-input': Record<string, never>;
+    'combination-mode-form-input': Record<string, never>;
 }
 ```
 

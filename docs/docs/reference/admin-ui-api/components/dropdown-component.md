@@ -39,13 +39,13 @@ Used for building dropdown menus.
 
 ```ts title="Signature"
 class DropdownComponent {
-  isOpen = false;
-  public public trigger: ElementRef;
-  @Input() @Input() manualToggle = false;
-  onClick() => ;
-  toggleOpen() => ;
-  onOpenChange(callback: (isOpen: boolean) => void) => ;
-  setTriggerElement(elementRef: ElementRef) => ;
+    isOpen = false;
+    public trigger: ElementRef;
+    @Input() manualToggle = false;
+    onClick() => ;
+    toggleOpen() => ;
+    onOpenChange(callback: (isOpen: boolean) => void) => ;
+    setTriggerElement(elementRef: ElementRef) => ;
 }
 ```
 

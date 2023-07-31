@@ -18,10 +18,10 @@ Options related to the built-in job queue.
 
 ```ts title="Signature"
 interface JobQueueOptions {
-  jobQueueStrategy?: JobQueueStrategy;
-  jobBufferStorageStrategy?: JobBufferStorageStrategy;
-  activeQueues?: string[];
-  prefix?: string;
+    jobQueueStrategy?: JobQueueStrategy;
+    jobBufferStorageStrategy?: JobBufferStorageStrategy;
+    activeQueues?: string[];
+    prefix?: string;
 }
 ```
 

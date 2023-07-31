@@ -35,7 +35,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface TaxZoneStrategy extends InjectableStrategy {
-  determineTaxZone(
+    determineTaxZone(
         ctx: RequestContext,
         zones: Zone[],
         channel: Channel,

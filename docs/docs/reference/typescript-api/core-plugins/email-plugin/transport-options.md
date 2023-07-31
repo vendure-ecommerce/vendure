@@ -34,8 +34,8 @@ The SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
 
 ```ts title="Signature"
 interface SMTPTransportOptions extends SMTPTransport.Options {
-  type: 'smtp';
-  logging?: boolean;
+    type: 'smtp';
+    logging?: boolean;
 }
 ```
 * Extends: <code>SMTPTransport.Options</code>
@@ -100,7 +100,7 @@ See [Nodemailers's SES docs](https://nodemailer.com/transports/ses/) for more de
 
 ```ts title="Signature"
 interface SESTransportOptions extends SESTransport.Options {
-  type: 'ses';
+    type: 'ses';
 }
 ```
 * Extends: <code>SESTransport.Options</code>
@@ -127,9 +127,9 @@ Uses the local Sendmail program to send the email.
 
 ```ts title="Signature"
 interface SendmailTransportOptions {
-  type: 'sendmail';
-  path?: string;
-  newline?: string;
+    type: 'sendmail';
+    path?: string;
+    newline?: string;
 }
 ```
 
@@ -163,9 +163,9 @@ Outputs the email as an HTML file for development purposes.
 
 ```ts title="Signature"
 interface FileTransportOptions {
-  type: 'file';
-  outputPath: string;
-  raw?: boolean;
+    type: 'file';
+    outputPath: string;
+    raw?: boolean;
 }
 ```
 
@@ -200,7 +200,7 @@ or when using a custom <a href='/reference/typescript-api/core-plugins/email-plu
 
 ```ts title="Signature"
 interface NoopTransportOptions {
-  type: 'none';
+    type: 'none';
 }
 ```
 
@@ -224,8 +224,8 @@ Forwards the raw GeneratedEmailContext object to a provided callback, for use in
 
 ```ts title="Signature"
 interface TestingTransportOptions {
-  type: 'testing';
-  onSend: (details: EmailDetails) => void;
+    type: 'testing';
+    onSend: (details: EmailDetails) => void;
 }
 ```
 

@@ -19,10 +19,10 @@ inputs for custom fields, or for configurable arguments.
 
 ```ts title="Signature"
 interface FormInputComponent<C = InputComponentConfig> {
-  isListInput?: boolean;
-  readonly: boolean;
-  formControl: FormControl;
-  config: C;
+    isListInput?: boolean;
+    readonly: boolean;
+    formControl: FormControl;
+    config: C;
 }
 ```
 

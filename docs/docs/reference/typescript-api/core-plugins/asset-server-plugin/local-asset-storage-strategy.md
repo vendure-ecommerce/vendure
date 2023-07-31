@@ -18,14 +18,14 @@ A persistence strategy which saves files to the local file system.
 
 ```ts title="Signature"
 class LocalAssetStorageStrategy implements AssetStorageStrategy {
-  toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;
-  constructor(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string)
-  async writeFileFromStream(fileName: string, data: ReadStream) => Promise<string>;
-  async writeFileFromBuffer(fileName: string, data: Buffer) => Promise<string>;
-  fileExists(fileName: string) => Promise<boolean>;
-  readFileToBuffer(identifier: string) => Promise<Buffer>;
-  readFileToStream(identifier: string) => Promise<Stream>;
-  deleteFile(identifier: string) => Promise<void>;
+    toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;
+    constructor(uploadPath: string, toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string)
+    writeFileFromStream(fileName: string, data: ReadStream) => Promise<string>;
+    writeFileFromBuffer(fileName: string, data: Buffer) => Promise<string>;
+    fileExists(fileName: string) => Promise<boolean>;
+    readFileToBuffer(identifier: string) => Promise<Buffer>;
+    readFileToStream(identifier: string) => Promise<Stream>;
+    deleteFile(identifier: string) => Promise<void>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a></code>

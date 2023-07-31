@@ -19,8 +19,8 @@ United States, the country would be "United States" and the province would be "C
 
 ```ts title="Signature"
 class Province extends Region {
-  constructor(input?: DeepPartial<Province>)
-  readonly readonly type: RegionType = 'province';
+    constructor(input?: DeepPartial<Province>)
+    readonly type: RegionType = 'province';
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/region#region'>Region</a></code>

@@ -18,18 +18,18 @@ The configuration options for the AssetServerPlugin.
 
 ```ts title="Signature"
 interface AssetServerOptions {
-  route: string;
-  assetUploadDir: string;
-  assetUrlPrefix?: string | ((ctx: RequestContext, identifier: string) => string);
-  previewMaxWidth?: number;
-  previewMaxHeight?: number;
-  presets?: ImageTransformPreset[];
-  namingStrategy?: AssetNamingStrategy;
-  previewStrategy?: AssetPreviewStrategy;
-  storageStrategyFactory?: (
+    route: string;
+    assetUploadDir: string;
+    assetUrlPrefix?: string | ((ctx: RequestContext, identifier: string) => string);
+    previewMaxWidth?: number;
+    previewMaxHeight?: number;
+    presets?: ImageTransformPreset[];
+    namingStrategy?: AssetNamingStrategy;
+    previewStrategy?: AssetPreviewStrategy;
+    storageStrategyFactory?: (
         options: AssetServerOptions,
     ) => AssetStorageStrategy | Promise<AssetStorageStrategy>;
-  cacheHeader?: CacheConfig | string;
+    cacheHeader?: CacheConfig | string;
 }
 ```
 

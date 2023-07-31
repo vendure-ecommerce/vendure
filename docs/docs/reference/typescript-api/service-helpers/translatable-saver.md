@@ -41,9 +41,9 @@ export class MyService {
 
 ```ts title="Signature"
 class TranslatableSaver {
-  constructor(connection: TransactionalConnection)
-  async create(options: CreateTranslatableOptions<T>) => Promise<T>;
-  async update(options: UpdateTranslatableOptions<T>) => Promise<T>;
+    constructor(connection: TransactionalConnection)
+    create(options: CreateTranslatableOptions<T>) => Promise<T>;
+    update(options: UpdateTranslatableOptions<T>) => Promise<T>;
 }
 ```
 

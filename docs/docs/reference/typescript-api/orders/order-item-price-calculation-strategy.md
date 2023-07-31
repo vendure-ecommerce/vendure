@@ -65,7 +65,7 @@ A custom OrderItemPriceCalculationStrategy can be used to implement things like:
 
 ```ts title="Signature"
 interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
-  calculateUnitPrice(
+    calculateUnitPrice(
         ctx: RequestContext,
         productVariant: ProductVariant,
         orderLineCustomFields: { [key: string]: any },

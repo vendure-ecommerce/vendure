@@ -54,8 +54,8 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface MoneyStrategy extends InjectableStrategy {
-  readonly moneyColumnOptions: ColumnOptions;
-  round(value: number, quantity?: number): number;
+    readonly moneyColumnOptions: ColumnOptions;
+    round(value: number, quantity?: number): number;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

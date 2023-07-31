@@ -21,70 +21,60 @@ ProductVariants, not Products.
 
 ```ts title="Signature"
 class ProductVariant extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable, ChannelAware {
-  constructor(input?: DeepPartial<ProductVariant>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<ProductVariant>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  name: LocaleString;
-  @Column({ default: true }) @Column({ default: true })
+    name: LocaleString;
+    @Column({ default: true })
     enabled: boolean;
-  @Column() @Column()
+    @Column()
     sku: string;
-  listPrice: number;
-  listPriceIncludesTax: boolean;
-  currencyCode: CurrencyCode;
-  @Calculated({
-        expression: 'productvariant_productVariantPrices.price',
-    }) price: number
-  @Calculated({
-        // Note: this works fine for sorting by priceWithTax, but filtering will return inaccurate
-        // results due to this expression not taking taxes into account. This is because the tax
-        // rate is calculated at run-time in the application layer based on the current context,
-        // and is unknown to the database.
-        expression: 'productvariant_productVariantPrices.price',
-    }) priceWithTax: number
-  taxRateApplied: TaxRate;
-  @Index() @ManyToOne(type => Asset, { onDelete: 'SET NULL' }) @Index()
+    listPrice: number;
+    listPriceIncludesTax: boolean;
+    currencyCode: CurrencyCode;
+    price: number
+    priceWithTax: number
+    taxRateApplied: TaxRate;
+    @Index()
     @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
-  @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
-        onDelete: 'SET NULL',
-    }) @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
+    @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
     assets: ProductVariantAsset[];
-  @Index() @ManyToOne(type => TaxCategory) @Index()
+    @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
-  @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true }) @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
+    @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];
-  @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true }) @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
+    @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductVariant>>;
-  @Index() @ManyToOne(type => Product, product => product.variants) @Index()
+    @Index()
     @ManyToOne(type => Product, product => product.variants)
     product: Product;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     productId: ID;
-  @Column({ default: 0 }) @Column({ default: 0 })
+    @Column({ default: 0 })
     outOfStockThreshold: number;
-  @Column({ default: true }) @Column({ default: true })
+    @Column({ default: true })
     useGlobalOutOfStockThreshold: boolean;
-  @Column({ type: 'varchar', default: GlobalFlag.INHERIT }) @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
+    @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
     trackInventory: GlobalFlag;
-  @OneToMany(type => StockLevel, stockLevel => stockLevel.productVariant) @OneToMany(type => StockLevel, stockLevel => stockLevel.productVariant)
+    @OneToMany(type => StockLevel, stockLevel => stockLevel.productVariant)
     stockLevels: StockLevel[];
-  @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant) @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
+    @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];
-  @ManyToMany(type => ProductOption) @JoinTable() @ManyToMany(type => ProductOption)
+    @ManyToMany(type => ProductOption)
     @JoinTable()
     options: ProductOption[];
-  @ManyToMany(type => FacetValue) @JoinTable() @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue)
     @JoinTable()
     facetValues: FacetValue[];
-  @Column(type => CustomProductVariantFields) @Column(type => CustomProductVariantFields)
+    @Column(type => CustomProductVariantFields)
     customFields: CustomProductVariantFields;
-  @ManyToMany(type => Collection, collection => collection.productVariants) @ManyToMany(type => Collection, collection => collection.productVariants)
+    @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

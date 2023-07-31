@@ -20,8 +20,8 @@ and taxes for an <a href='/reference/typescript-api/entities/order#order'>Order<
 
 ```ts title="Signature"
 class Country extends Region {
-  constructor(input?: DeepPartial<Country>)
-  readonly readonly type: RegionType = 'country';
+    constructor(input?: DeepPartial<Country>)
+    readonly type: RegionType = 'country';
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/region#region'>Region</a></code>

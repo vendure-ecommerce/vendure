@@ -22,38 +22,38 @@ then each assign <a href='/reference/typescript-api/promotions/promotion-action#
 
 ```ts title="Signature"
 class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable, HasCustomFields, Translatable {
-  type = AdjustmentType.PROMOTION;
-  constructor(input?: DeepPartial<Promotion> & {
+    type = AdjustmentType.PROMOTION;
+    constructor(input?: DeepPartial<Promotion> & {
             promotionConditions?: Array<PromotionCondition<any>>;
             promotionActions?: Array<PromotionAction<any>>;
         })
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    @Column({ type: Date, nullable: true })
     startsAt: Date | null;
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    @Column({ type: Date, nullable: true })
     endsAt: Date | null;
-  @Column({ nullable: true }) @Column({ nullable: true })
+    @Column({ nullable: true })
     couponCode: string;
-  @Column({ nullable: true }) @Column({ nullable: true })
+    @Column({ nullable: true })
     perCustomerUsageLimit: number;
-  name: LocaleString;
-  description: LocaleString;
-  @OneToMany(type => PromotionTranslation, translation => translation.base, { eager: true }) @OneToMany(type => PromotionTranslation, translation => translation.base, { eager: true })
+    name: LocaleString;
+    description: LocaleString;
+    @OneToMany(type => PromotionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Promotion>>;
-  @Column() @Column() enabled: boolean;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @Column() enabled: boolean;
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
-  @Column(type => CustomPromotionFields) @Column(type => CustomPromotionFields)
+    @Column(type => CustomPromotionFields)
     customFields: CustomPromotionFields;
-  @Column('simple-json') @Column('simple-json') conditions: ConfigurableOperation[];
-  @Column('simple-json') @Column('simple-json') actions: ConfigurableOperation[];
-  @Column() @Column() priorityScore: number;
-  async apply(ctx: RequestContext, args: ApplyOrderActionArgs | ApplyOrderItemActionArgs | ApplyShippingActionArgs, state?: PromotionState) => Promise<Adjustment | undefined>;
-  async test(ctx: RequestContext, order: Order) => Promise<PromotionTestResult>;
-  async activate(ctx: RequestContext, order: Order) => ;
-  async deactivate(ctx: RequestContext, order: Order) => ;
+    @Column('simple-json') conditions: ConfigurableOperation[];
+    @Column('simple-json') actions: ConfigurableOperation[];
+    @Column() priorityScore: number;
+    apply(ctx: RequestContext, args: ApplyOrderActionArgs | ApplyOrderItemActionArgs | ApplyShippingActionArgs, state?: PromotionState) => Promise<Adjustment | undefined>;
+    test(ctx: RequestContext, order: Order) => Promise<PromotionTestResult>;
+    activate(ctx: RequestContext, order: Order) => ;
+    deactivate(ctx: RequestContext, order: Order) => ;
 }
 ```
 * Extends: <code>AdjustmentSource</code>

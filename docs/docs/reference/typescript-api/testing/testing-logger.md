@@ -66,17 +66,17 @@ beforeEach(async () => {
 
 ```ts title="Signature"
 class TestingLogger<Spy extends (...args: any[]) => any> implements VendureLogger {
-  constructor(createSpyFn: () => Spy)
-  debugSpy: Spy;
-  errorSpy: Spy;
-  infoSpy: Spy;
-  verboseSpy: Spy;
-  warnSpy: Spy;
-  debug(message: string, context?: string) => void;
-  error(message: string, context?: string, trace?: string) => void;
-  info(message: string, context?: string) => void;
-  verbose(message: string, context?: string) => void;
-  warn(message: string, context?: string) => void;
+    constructor(createSpyFn: () => Spy)
+    debugSpy: Spy;
+    errorSpy: Spy;
+    infoSpy: Spy;
+    verboseSpy: Spy;
+    warnSpy: Spy;
+    debug(message: string, context?: string) => void;
+    error(message: string, context?: string, trace?: string) => void;
+    info(message: string, context?: string) => void;
+    verbose(message: string, context?: string) => void;
+    warn(message: string, context?: string) => void;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a></code>

@@ -19,7 +19,7 @@ ShippingLine, and is suitable for the most common scenario of a single shipping 
 
 ```ts title="Signature"
 class DefaultShippingLineAssignmentStrategy implements ShippingLineAssignmentStrategy {
-  assignShippingLineToOrderLines(ctx: RequestContext, shippingLine: ShippingLine, order: Order) => OrderLine[] | Promise<OrderLine[]>;
+    assignShippingLineToOrderLines(ctx: RequestContext, shippingLine: ShippingLine, order: Order) => OrderLine[] | Promise<OrderLine[]>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a></code>

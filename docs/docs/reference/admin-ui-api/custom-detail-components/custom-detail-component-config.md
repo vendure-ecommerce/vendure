@@ -18,8 +18,8 @@ Configures a <a href='/reference/admin-ui-api/custom-detail-components/custom-de
 
 ```ts title="Signature"
 interface CustomDetailComponentConfig {
-  locationId: CustomDetailComponentLocationId;
-  component: Type<CustomDetailComponent>;
+    locationId: CustomDetailComponentLocationId;
+    component: Type<CustomDetailComponent>;
 }
 ```
 

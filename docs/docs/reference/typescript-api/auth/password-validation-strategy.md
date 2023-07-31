@@ -26,7 +26,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface PasswordValidationStrategy extends InjectableStrategy {
-  validate(ctx: RequestContext, password: string): Promise<boolean | string> | boolean | string;
+    validate(ctx: RequestContext, password: string): Promise<boolean | string> | boolean | string;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

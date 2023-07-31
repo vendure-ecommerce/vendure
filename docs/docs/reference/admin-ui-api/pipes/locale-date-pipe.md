@@ -25,8 +25,8 @@ to format dates according to the selected UI language.
 
 ```ts title="Signature"
 class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
-  constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
-  transform(value: unknown, args: unknown[]) => unknown;
+    constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
+    transform(value: unknown, args: unknown[]) => unknown;
 }
 ```
 * Extends: <code>LocaleBasePipe</code>

@@ -19,10 +19,10 @@ A version of the <a href='/reference/admin-ui-api/list-detail-views/base-detail-
 
 ```ts title="Signature"
 class TypedBaseDetailComponent<T extends TypedDocumentNode<any, any>, Field extends keyof ResultOf<T>> extends BaseDetailComponent<NonNullable<ResultOf<T>[Field]>> {
-  protected protected result$: Observable<ResultOf<T>>;
-  protected protected entity: ResultOf<T>[Field];
-  constructor()
-  override init() => ;
+    protected result$: Observable<ResultOf<T>>;
+    protected entity: ResultOf<T>[Field];
+    constructor()
+    init() => ;
 }
 ```
 * Extends: <code><a href='/reference/admin-ui-api/list-detail-views/base-detail-component#basedetailcomponent'>BaseDetailComponent</a>&#60;NonNullable&#60;ResultOf&#60;T&#62;[Field]&#62;&#62;</code>

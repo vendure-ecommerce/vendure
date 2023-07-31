@@ -22,25 +22,25 @@ shipping.
 
 ```ts title="Signature"
 class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletable, HasCustomFields, Translatable {
-  constructor(input?: DeepPartial<ShippingMethod>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<ShippingMethod>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  @Column() @Column() code: string;
-  name: LocaleString;
-  description: LocaleString;
-  @Column('simple-json') @Column('simple-json') checker: ConfigurableOperation;
-  @Column('simple-json') @Column('simple-json') calculator: ConfigurableOperation;
-  @Column() @Column()
+    @Column() code: string;
+    name: LocaleString;
+    description: LocaleString;
+    @Column('simple-json') checker: ConfigurableOperation;
+    @Column('simple-json') calculator: ConfigurableOperation;
+    @Column()
     fulfillmentHandlerCode: string;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
-  @OneToMany(type => ShippingMethodTranslation, translation => translation.base, { eager: true }) @OneToMany(type => ShippingMethodTranslation, translation => translation.base, { eager: true })
+    @OneToMany(type => ShippingMethodTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ShippingMethod>>;
-  @Column(type => CustomShippingMethodFields) @Column(type => CustomShippingMethodFields)
+    @Column(type => CustomShippingMethodFields)
     customFields: CustomShippingMethodFields;
-  async apply(ctx: RequestContext, order: Order) => Promise<ShippingCalculationResult | undefined>;
-  async test(ctx: RequestContext, order: Order) => Promise<boolean>;
+    apply(ctx: RequestContext, order: Order) => Promise<ShippingCalculationResult | undefined>;
+    test(ctx: RequestContext, order: Order) => Promise<boolean>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

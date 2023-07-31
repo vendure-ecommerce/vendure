@@ -21,28 +21,28 @@ It is normally used in combination with the <a href='/reference/admin-ui-api/com
 
 ```ts title="Signature"
 class BaseListComponent<ResultType, ItemType, VariableType extends Record<string, any> = any> implements OnInit, OnDestroy {
-  searchTermControl = new FormControl('');
-  selectionManager = new SelectionManager<any>({
+    searchTermControl = new FormControl('');
+    selectionManager = new SelectionManager<any>({
         multiSelect: true,
         itemsAreEqual: (a, b) => a.id === b.id,
         additiveMode: true,
     });
-  result$: Observable<ResultType>;
-  items$: Observable<ItemType[]>;
-  totalItems$: Observable<number>;
-  itemsPerPage$: Observable<number>;
-  currentPage$: Observable<number>;
-  protected protected destroy$ = new Subject<void>();
-  protected protected refresh$ = new BehaviorSubject<undefined>(undefined);
-  constructor(router: Router, route: ActivatedRoute)
-  setQueryFn(listQueryFn: ListQueryFn<ResultType>, mappingFn: MappingFn<ItemType, ResultType>, onPageChangeFn?: OnPageChangeFn<VariableType>, defaults?: { take: number; skip: number }) => ;
-  protected refreshListOnChanges(streams: Array<Observable<any>>) => ;
-  setPageNumber(page: number) => ;
-  setItemsPerPage(perPage: number) => ;
-  refresh() => ;
-  protected setQueryParam(hash: { [key: string]: any }, options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
-  protected setQueryParam(key: string, value: any, options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
-  protected setQueryParam(keyOrHash: string | { [key: string]: any }, valueOrOptions?: any, maybeOptions?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
+    result$: Observable<ResultType>;
+    items$: Observable<ItemType[]>;
+    totalItems$: Observable<number>;
+    itemsPerPage$: Observable<number>;
+    currentPage$: Observable<number>;
+    protected destroy$ = new Subject<void>();
+    protected refresh$ = new BehaviorSubject<undefined>(undefined);
+    constructor(router: Router, route: ActivatedRoute)
+    setQueryFn(listQueryFn: ListQueryFn<ResultType>, mappingFn: MappingFn<ItemType, ResultType>, onPageChangeFn?: OnPageChangeFn<VariableType>, defaults?: { take: number; skip: number }) => ;
+    refreshListOnChanges(streams: Array<Observable<any>>) => ;
+    setPageNumber(page: number) => ;
+    setItemsPerPage(perPage: number) => ;
+    refresh() => ;
+    setQueryParam(hash: { [key: string]: any }, options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
+    setQueryParam(key: string, value: any, options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
+    setQueryParam(keyOrHash: string | { [key: string]: any }, valueOrOptions?: any, maybeOptions?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
 }
 ```
 * Implements: <code>OnInit</code>, <code>OnDestroy</code>

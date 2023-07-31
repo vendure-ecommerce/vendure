@@ -18,7 +18,7 @@ A default method of determining Zone for tax calculations.
 
 ```ts title="Signature"
 class DefaultTaxZoneStrategy implements TaxZoneStrategy {
-  determineTaxZone(ctx: RequestContext, zones: Zone[], channel: Channel, order?: Order) => Zone;
+    determineTaxZone(ctx: RequestContext, zones: Zone[], channel: Channel, order?: Order) => Zone;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy'>TaxZoneStrategy</a></code>

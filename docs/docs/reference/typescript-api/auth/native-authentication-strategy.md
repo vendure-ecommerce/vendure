@@ -20,11 +20,11 @@ to keep it configured unless there is a specific reason not to.
 
 ```ts title="Signature"
 class NativeAuthenticationStrategy implements AuthenticationStrategy<NativeAuthenticationData> {
-  readonly readonly name = NATIVE_AUTH_STRATEGY_NAME;
-  async init(injector: Injector) => ;
-  defineInputType() => DocumentNode;
-  async authenticate(ctx: RequestContext, data: NativeAuthenticationData) => Promise<User | false>;
-  async verifyUserPassword(ctx: RequestContext, userId: ID, password: string) => Promise<boolean>;
+    readonly name = NATIVE_AUTH_STRATEGY_NAME;
+    init(injector: Injector) => ;
+    defineInputType() => DocumentNode;
+    authenticate(ctx: RequestContext, data: NativeAuthenticationData) => Promise<User | false>;
+    verifyUserPassword(ctx: RequestContext, userId: ID, password: string) => Promise<boolean>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/auth/authentication-strategy#authenticationstrategy'>AuthenticationStrategy</a>&#60;NativeAuthenticationData&#62;</code>

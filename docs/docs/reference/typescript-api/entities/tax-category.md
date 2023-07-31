@@ -18,10 +18,10 @@ A TaxCategory defines what type of taxes to apply to a <a href='/reference/types
 
 ```ts title="Signature"
 class TaxCategory extends VendureEntity implements HasCustomFields {
-  constructor(input?: DeepPartial<TaxCategory>)
-  @Column() @Column() name: string;
-  @Column({ default: false }) @Column({ default: false }) isDefault: boolean;
-  @Column(type => CustomTaxCategoryFields) @Column(type => CustomTaxCategoryFields)
+    constructor(input?: DeepPartial<TaxCategory>)
+    @Column() name: string;
+    @Column({ default: false }) isDefault: boolean;
+    @Column(type => CustomTaxCategoryFields)
     customFields: CustomTaxCategoryFields;
 }
 ```

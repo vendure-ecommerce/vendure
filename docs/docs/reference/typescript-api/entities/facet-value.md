@@ -18,17 +18,17 @@ A particular value of a <a href='/reference/typescript-api/entities/facet#facet'
 
 ```ts title="Signature"
 class FacetValue extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
-  constructor(input?: DeepPartial<FacetValue>)
-  name: LocaleString;
-  @Column() @Column() code: string;
-  @OneToMany(type => FacetValueTranslation, translation => translation.base, { eager: true }) @OneToMany(type => FacetValueTranslation, translation => translation.base, { eager: true })
+    constructor(input?: DeepPartial<FacetValue>)
+    name: LocaleString;
+    @Column() code: string;
+    @OneToMany(type => FacetValueTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<FacetValue>>;
-  @Index() @ManyToOne(type => Facet, group => group.values, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => Facet, group => group.values, { onDelete: 'CASCADE' })
     facet: Facet;
-  @Column(type => CustomFacetValueFields) @Column(type => CustomFacetValueFields)
+    @Column(type => CustomFacetValueFields)
     customFields: CustomFacetValueFields;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

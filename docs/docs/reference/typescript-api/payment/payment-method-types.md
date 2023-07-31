@@ -18,11 +18,11 @@ This object is the return value of the <a href='/reference/typescript-api/paymen
 
 ```ts title="Signature"
 interface CreatePaymentResult {
-  amount: number;
-  state: Exclude<PaymentState, 'Error'>;
-  transactionId?: string;
-  errorMessage?: string;
-  metadata?: PaymentMetadata;
+    amount: number;
+    state: Exclude<PaymentState, 'Error'>;
+    transactionId?: string;
+    errorMessage?: string;
+    metadata?: PaymentMetadata;
 }
 ```
 
@@ -84,11 +84,11 @@ This object is the return value of the <a href='/reference/typescript-api/paymen
 
 ```ts title="Signature"
 interface CreatePaymentErrorResult {
-  amount: number;
-  state: 'Error';
-  transactionId?: string;
-  errorMessage: string;
-  metadata?: PaymentMetadata;
+    amount: number;
+    state: 'Error';
+    transactionId?: string;
+    errorMessage: string;
+    metadata?: PaymentMetadata;
 }
 ```
 
@@ -132,9 +132,9 @@ This object is the return value of the <a href='/reference/typescript-api/paymen
 
 ```ts title="Signature"
 interface CreateRefundResult {
-  state: RefundState;
-  transactionId?: string;
-  metadata?: PaymentMetadata;
+    state: RefundState;
+    transactionId?: string;
+    metadata?: PaymentMetadata;
 }
 ```
 
@@ -169,8 +169,8 @@ has been successfully settled.
 
 ```ts title="Signature"
 interface SettlePaymentResult {
-  success: true;
-  metadata?: PaymentMetadata;
+    success: true;
+    metadata?: PaymentMetadata;
 }
 ```
 
@@ -200,10 +200,10 @@ could not be settled.
 
 ```ts title="Signature"
 interface SettlePaymentErrorResult {
-  success: false;
-  state?: Exclude<PaymentState, 'Settled'>;
-  errorMessage?: string;
-  metadata?: PaymentMetadata;
+    success: false;
+    state?: Exclude<PaymentState, 'Settled'>;
+    errorMessage?: string;
+    metadata?: PaymentMetadata;
 }
 ```
 
@@ -248,8 +248,8 @@ has been successfully cancelled.
 
 ```ts title="Signature"
 interface CancelPaymentResult {
-  success: true;
-  metadata?: PaymentMetadata;
+    success: true;
+    metadata?: PaymentMetadata;
 }
 ```
 
@@ -279,10 +279,10 @@ could not be cancelled.
 
 ```ts title="Signature"
 interface CancelPaymentErrorResult {
-  success: false;
-  state?: Exclude<PaymentState, 'Cancelled'>;
-  errorMessage?: string;
-  metadata?: PaymentMetadata;
+    success: false;
+    state?: Exclude<PaymentState, 'Cancelled'>;
+    errorMessage?: string;
+    metadata?: PaymentMetadata;
 }
 ```
 

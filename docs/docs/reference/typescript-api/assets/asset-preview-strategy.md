@@ -31,7 +31,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface AssetPreviewStrategy extends InjectableStrategy {
-  generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer): Promise<Buffer>;
+    generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer): Promise<Buffer>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

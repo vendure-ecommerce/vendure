@@ -78,7 +78,7 @@ which is exported from `@vendure/admin-ui/core`.
 
 ```ts title="Signature"
 type ConfigArgs = {
-  [name: string]: ConfigArgDef<ConfigArgType>;
+    [name: string]: ConfigArgDef<ConfigArgType>;
 }
 ```
 

@@ -19,7 +19,7 @@ An AuthenticationMethod represents the means by which a <a href='/reference/type
 
 ```ts title="Signature"
 class AuthenticationMethod extends VendureEntity {
-  @Index() @ManyToOne(type => User, user => user.authenticationMethods) @Index()
+    @Index()
     @ManyToOne(type => User, user => user.authenticationMethods)
     user: User;
 }
@@ -49,12 +49,12 @@ Examples of external auth include social logins or corporate identity servers.
 
 ```ts title="Signature"
 class ExternalAuthenticationMethod extends AuthenticationMethod {
-  constructor(input: DeepPartial<ExternalAuthenticationMethod>)
-  @Column() @Column()
+    constructor(input: DeepPartial<ExternalAuthenticationMethod>)
+    @Column()
     strategy: string;
-  @Column() @Column()
+    @Column()
     externalIdentifier: string;
-  @Column('simple-json') @Column('simple-json')
+    @Column('simple-json')
     metadata: any;
 }
 ```
@@ -98,17 +98,17 @@ and password combination to authenticate a User.
 
 ```ts title="Signature"
 class NativeAuthenticationMethod extends AuthenticationMethod {
-  constructor(input?: DeepPartial<NativeAuthenticationMethod>)
-  @Column() @Column()
+    constructor(input?: DeepPartial<NativeAuthenticationMethod>)
+    @Column()
     identifier: string;
-  @Column({ select: false }) @Column({ select: false }) passwordHash: string;
-  @Column({ type: 'varchar', nullable: true }) @Column({ type: 'varchar', nullable: true })
+    @Column({ select: false }) passwordHash: string;
+    @Column({ type: 'varchar', nullable: true })
     verificationToken: string | null;
-  @Column({ type: 'varchar', nullable: true }) @Column({ type: 'varchar', nullable: true })
+    @Column({ type: 'varchar', nullable: true })
     passwordResetToken: string | null;
-  @Column({ type: 'varchar', nullable: true }) @Column({ type: 'varchar', nullable: true })
+    @Column({ type: 'varchar', nullable: true })
     identifierChangeToken: string | null;
-  @Column({ type: 'varchar', nullable: true }) @Column({ type: 'varchar', nullable: true })
+    @Column({ type: 'varchar', nullable: true })
     pendingIdentifier: string | null;
 }
 ```

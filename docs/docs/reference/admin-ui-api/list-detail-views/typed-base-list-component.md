@@ -19,23 +19,23 @@ A version of the <a href='/reference/admin-ui-api/list-detail-views/base-list-co
 
 ```ts title="Signature"
 class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field extends keyof ResultOf<T>, Vars extends { options: { filter: any; sort: any } } = VariablesOf<T>> extends BaseListComponent<ResultOf<T>, ItemOf<ResultOf<T>, Field>, VariablesOf<T>> implements OnInit {
-  availableLanguages$: Observable<LanguageCode[]>;
-  contentLanguage$: Observable<LanguageCode>;
-  protected protected dataService = inject(DataService);
-  protected protected router = inject(Router);
-  protected protected serverConfigService = inject(ServerConfigService);
-  constructor()
-  protected configure(config: {
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
+    protected dataService = inject(DataService);
+    protected router = inject(Router);
+    protected serverConfigService = inject(ServerConfigService);
+    constructor()
+    configure(config: {
         document: T;
         getItems: (data: ResultOf<T>) => { items: Array<ItemOf<ResultOf<T>, Field>>; totalItems: number };
         setVariables?: (skip: number, take: number) => VariablesOf<T>;
         refreshListOnChanges?: Array<Observable<any>>;
     }) => ;
-  ngOnInit() => ;
-  createFilterCollection() => DataTableFilterCollection<NonNullable<NonNullable<Vars['options']>['filter']>>;
-  createSortCollection() => DataTableSortCollection<NonNullable<NonNullable<Vars['options']>['sort']>>;
-  setLanguage(code: LanguageCode) => ;
-  getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>) => CustomFieldConfig[];
+    ngOnInit() => ;
+    createFilterCollection() => DataTableFilterCollection<NonNullable<NonNullable<Vars['options']>['filter']>>;
+    createSortCollection() => DataTableSortCollection<NonNullable<NonNullable<Vars['options']>['sort']>>;
+    setLanguage(code: LanguageCode) => ;
+    getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>) => CustomFieldConfig[];
 }
 ```
 * Extends: <code><a href='/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a>&#60;ResultOf&#60;T&#62;, ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;, VariablesOf&#60;T&#62;&#62;</code>

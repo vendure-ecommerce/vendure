@@ -18,17 +18,17 @@ A minimalistic GraphQL client for populating and querying test data.
 
 ```ts title="Signature"
 class SimpleGraphQLClient {
-  constructor(vendureConfig: Required<VendureConfig>, apiUrl: string = '')
-  setAuthToken(token: string) => ;
-  setChannelToken(token: string | null) => ;
-  getAuthToken() => string;
-  async query(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, queryParams?: QueryParams) => Promise<T>;
-  async fetch(url: string, options: RequestInit = {}) => Promise<Response>;
-  async queryStatus(query: DocumentNode, variables?: V) => Promise<number>;
-  async asUserWithCredentials(username: string, password: string) => ;
-  async asSuperAdmin() => ;
-  async asAnonymousUser() => ;
-  async fileUploadMutation(options: {
+    constructor(vendureConfig: Required<VendureConfig>, apiUrl: string = '')
+    setAuthToken(token: string) => ;
+    setChannelToken(token: string | null) => ;
+    getAuthToken() => string;
+    query(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, queryParams?: QueryParams) => Promise<T>;
+    fetch(url: string, options: RequestInit = {}) => Promise<Response>;
+    queryStatus(query: DocumentNode, variables?: V) => Promise<number>;
+    asUserWithCredentials(username: string, password: string) => ;
+    asSuperAdmin() => ;
+    asAnonymousUser() => ;
+    fileUploadMutation(options: {
         mutation: DocumentNode;
         filePaths: string[];
         mapVariables: (filePaths: string[]) => any;

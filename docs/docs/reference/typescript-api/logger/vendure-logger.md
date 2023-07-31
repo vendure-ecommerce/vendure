@@ -19,12 +19,12 @@ the config.
 
 ```ts title="Signature"
 interface VendureLogger {
-  error(message: string, context?: string, trace?: string): void;
-  warn(message: string, context?: string): void;
-  info(message: string, context?: string): void;
-  verbose(message: string, context?: string): void;
-  debug(message: string, context?: string): void;
-  setDefaultContext?(defaultContext: string): void;
+    error(message: string, context?: string, trace?: string): void;
+    warn(message: string, context?: string): void;
+    info(message: string, context?: string): void;
+    verbose(message: string, context?: string): void;
+    debug(message: string, context?: string): void;
+    setDefaultContext?(defaultContext: string): void;
 }
 ```
 

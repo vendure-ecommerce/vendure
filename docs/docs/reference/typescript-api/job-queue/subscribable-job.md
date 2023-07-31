@@ -21,8 +21,8 @@ the <a href='/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqu
 
 ```ts title="Signature"
 class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
-  constructor(job: Job<T>, jobQueueStrategy: JobQueueStrategy)
-  updates(options?: JobUpdateOptions) => Observable<JobUpdate<T>>;
+    constructor(job: Job<T>, jobQueueStrategy: JobQueueStrategy)
+    updates(options?: JobUpdateOptions) => Observable<JobUpdate<T>>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;T&#62;</code>

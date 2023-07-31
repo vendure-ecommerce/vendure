@@ -119,10 +119,10 @@ export class RedisSessionCachePlugin {
 
 ```ts title="Signature"
 interface SessionCacheStrategy extends InjectableStrategy {
-  set(session: CachedSession): void | Promise<void>;
-  get(sessionToken: string): CachedSession | undefined | Promise<CachedSession | undefined>;
-  delete(sessionToken: string): void | Promise<void>;
-  clear(): void | Promise<void>;
+    set(session: CachedSession): void | Promise<void>;
+    get(sessionToken: string): CachedSession | undefined | Promise<CachedSession | undefined>;
+    delete(sessionToken: string): void | Promise<void>;
+    clear(): void | Promise<void>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -167,10 +167,10 @@ current Session.
 
 ```ts title="Signature"
 type CachedSessionUser = {
-  id: ID;
-  identifier: string;
-  verified: boolean;
-  channelPermissions: UserChannelPermissions[];
+    id: ID;
+    identifier: string;
+    verified: boolean;
+    channelPermissions: UserChannelPermissions[];
 }
 ```
 
@@ -210,14 +210,14 @@ store.
 
 ```ts title="Signature"
 type CachedSession = {
-  cacheExpiry: number;
-  id: ID;
-  token: string;
-  expires: Date;
-  activeOrderId?: ID;
-  authenticationStrategy?: string;
-  user?: CachedSessionUser;
-  activeChannelId?: ID;
+    cacheExpiry: number;
+    id: ID;
+    token: string;
+    expires: Date;
+    activeOrderId?: ID;
+    authenticationStrategy?: string;
+    user?: CachedSessionUser;
+    activeChannelId?: ID;
 }
 ```
 

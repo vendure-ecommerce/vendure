@@ -18,14 +18,14 @@ Contains methods relating to <a href='/reference/typescript-api/entities/country
 
 ```ts title="Signature"
 class CountryService {
-  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, translator: TranslatorService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Country>, relations: RelationPaths<Country> = []) => Promise<PaginatedList<Translated<Country>>>;
-  findOne(ctx: RequestContext, countryId: ID, relations: RelationPaths<Country> = []) => Promise<Translated<Country> | undefined>;
-  findAllAvailable(ctx: RequestContext) => Promise<Array<Translated<Country>>>;
-  async findOneByCode(ctx: RequestContext, countryCode: string) => Promise<Translated<Country>>;
-  async create(ctx: RequestContext, input: CreateCountryInput) => Promise<Translated<Country>>;
-  async update(ctx: RequestContext, input: UpdateCountryInput) => Promise<Translated<Country>>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, translator: TranslatorService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Country>, relations: RelationPaths<Country> = []) => Promise<PaginatedList<Translated<Country>>>;
+    findOne(ctx: RequestContext, countryId: ID, relations: RelationPaths<Country> = []) => Promise<Translated<Country> | undefined>;
+    findAllAvailable(ctx: RequestContext) => Promise<Array<Translated<Country>>>;
+    findOneByCode(ctx: RequestContext, countryCode: string) => Promise<Translated<Country>>;
+    create(ctx: RequestContext, input: CreateCountryInput) => Promise<Translated<Country>>;
+    update(ctx: RequestContext, input: UpdateCountryInput) => Promise<Translated<Country>>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
 ```
 

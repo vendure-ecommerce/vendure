@@ -22,8 +22,8 @@ entities in the Vendure database.
 
 ```ts title="Signature"
 class Importer {
-  parseAndImport(input: string | Stream, ctxOrLanguageCode: RequestContext | LanguageCode, reportProgress: boolean = false) => Observable<ImportProgress>;
-  async importProducts(ctx: RequestContext, rows: ParsedProductWithVariants[], onProgress: OnProgressFn) => Promise<string[]>;
+    parseAndImport(input: string | Stream, ctxOrLanguageCode: RequestContext | LanguageCode, reportProgress: boolean = false) => Observable<ImportProgress>;
+    importProducts(ctx: RequestContext, rows: ParsedProductWithVariants[], onProgress: OnProgressFn) => Promise<string[]>;
 }
 ```
 

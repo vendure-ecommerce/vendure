@@ -26,12 +26,12 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface OrderSellerStrategy extends InjectableStrategy {
-  setOrderLineSellerChannel?(
+    setOrderLineSellerChannel?(
         ctx: RequestContext,
         orderLine: OrderLine,
     ): Channel | undefined | Promise<Channel | undefined>;
-  splitOrder?(ctx: RequestContext, order: Order): SplitOrderContents[] | Promise<SplitOrderContents[]>;
-  afterSellerOrdersCreated?(
+    splitOrder?(ctx: RequestContext, order: Order): SplitOrderContents[] | Promise<SplitOrderContents[]>;
+    afterSellerOrdersCreated?(
         ctx: RequestContext,
         aggregateOrder: Order,
         sellerOrders: Order[],
@@ -95,10 +95,10 @@ The contents of the aggregate Order which make up a single seller Order.
 
 ```ts title="Signature"
 interface SplitOrderContents {
-  channelId: ID;
-  state: OrderState;
-  lines: OrderLine[];
-  shippingLines: ShippingLine[];
+    channelId: ID;
+    state: OrderState;
+    lines: OrderLine[];
+    shippingLines: ShippingLine[];
 }
 ```
 

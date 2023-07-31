@@ -18,34 +18,34 @@ Contains methods relating to <a href='/reference/typescript-api/entities/custome
 
 ```ts title="Signature"
 class CustomerService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, userService: UserService, countryService: CountryService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, historyService: HistoryService, channelService: ChannelService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService)
-  findAll(ctx: RequestContext, options: ListQueryOptions<Customer> | undefined, relations: RelationPaths<Customer> = []) => Promise<PaginatedList<Customer>>;
-  findOne(ctx: RequestContext, id: ID, relations: RelationPaths<Customer> = []) => Promise<Customer | undefined>;
-  findOneByUserId(ctx: RequestContext, userId: ID, filterOnChannel:  = true) => Promise<Customer | undefined>;
-  findAddressesByCustomerId(ctx: RequestContext, customerId: ID) => Promise<Address[]>;
-  async getCustomerGroups(ctx: RequestContext, customerId: ID) => Promise<CustomerGroup[]>;
-  async create(ctx: RequestContext, input: CreateCustomerInput, password?: string) => Promise<ErrorResultUnion<CreateCustomerResult, Customer>>;
-  async update(ctx: RequestContext, input: UpdateCustomerShopInput & { id: ID }) => Promise<Customer>;
-  async update(ctx: RequestContext, input: UpdateCustomerInput) => Promise<ErrorResultUnion<UpdateCustomerResult, Customer>>;
-  async update(ctx: RequestContext, input: UpdateCustomerInput | (UpdateCustomerShopInput & { id: ID })) => Promise<ErrorResultUnion<UpdateCustomerResult, Customer>>;
-  async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput) => Promise<RegisterCustomerAccountResult | EmailAddressConflictError | PasswordValidationError>;
-  async refreshVerificationToken(ctx: RequestContext, emailAddress: string) => Promise<void>;
-  async verifyCustomerEmailAddress(ctx: RequestContext, verificationToken: string, password?: string) => Promise<ErrorResultUnion<VerifyCustomerAccountResult, Customer>>;
-  async requestPasswordReset(ctx: RequestContext, emailAddress: string) => Promise<void>;
-  async resetPassword(ctx: RequestContext, passwordResetToken: string, password: string) => Promise<
+    constructor(connection: TransactionalConnection, configService: ConfigService, userService: UserService, countryService: CountryService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, historyService: HistoryService, channelService: ChannelService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService)
+    findAll(ctx: RequestContext, options: ListQueryOptions<Customer> | undefined, relations: RelationPaths<Customer> = []) => Promise<PaginatedList<Customer>>;
+    findOne(ctx: RequestContext, id: ID, relations: RelationPaths<Customer> = []) => Promise<Customer | undefined>;
+    findOneByUserId(ctx: RequestContext, userId: ID, filterOnChannel:  = true) => Promise<Customer | undefined>;
+    findAddressesByCustomerId(ctx: RequestContext, customerId: ID) => Promise<Address[]>;
+    getCustomerGroups(ctx: RequestContext, customerId: ID) => Promise<CustomerGroup[]>;
+    create(ctx: RequestContext, input: CreateCustomerInput, password?: string) => Promise<ErrorResultUnion<CreateCustomerResult, Customer>>;
+    update(ctx: RequestContext, input: UpdateCustomerShopInput & { id: ID }) => Promise<Customer>;
+    update(ctx: RequestContext, input: UpdateCustomerInput) => Promise<ErrorResultUnion<UpdateCustomerResult, Customer>>;
+    update(ctx: RequestContext, input: UpdateCustomerInput | (UpdateCustomerShopInput & { id: ID })) => Promise<ErrorResultUnion<UpdateCustomerResult, Customer>>;
+    registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput) => Promise<RegisterCustomerAccountResult | EmailAddressConflictError | PasswordValidationError>;
+    refreshVerificationToken(ctx: RequestContext, emailAddress: string) => Promise<void>;
+    verifyCustomerEmailAddress(ctx: RequestContext, verificationToken: string, password?: string) => Promise<ErrorResultUnion<VerifyCustomerAccountResult, Customer>>;
+    requestPasswordReset(ctx: RequestContext, emailAddress: string) => Promise<void>;
+    resetPassword(ctx: RequestContext, passwordResetToken: string, password: string) => Promise<
         User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError
     >;
-  async requestUpdateEmailAddress(ctx: RequestContext, userId: ID, newEmailAddress: string) => Promise<boolean | EmailAddressConflictError>;
-  async updateEmailAddress(ctx: RequestContext, token: string) => Promise<boolean | IdentifierChangeTokenInvalidError | IdentifierChangeTokenExpiredError>;
-  async createOrUpdate(ctx: RequestContext, input: Partial<CreateCustomerInput> & { emailAddress: string }, errorOnExistingUser: boolean = false) => Promise<Customer | EmailAddressConflictError>;
-  async createAddress(ctx: RequestContext, customerId: ID, input: CreateAddressInput) => Promise<Address>;
-  async updateAddress(ctx: RequestContext, input: UpdateAddressInput) => Promise<Address>;
-  async deleteAddress(ctx: RequestContext, id: ID) => Promise<boolean>;
-  async softDelete(ctx: RequestContext, customerId: ID) => Promise<DeletionResponse>;
-  async createAddressesForNewCustomer(ctx: RequestContext, order: Order) => ;
-  async addNoteToCustomer(ctx: RequestContext, input: AddNoteToCustomerInput) => Promise<Customer>;
-  async updateCustomerNote(ctx: RequestContext, input: UpdateCustomerNoteInput) => Promise<HistoryEntry>;
-  async deleteCustomerNote(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    requestUpdateEmailAddress(ctx: RequestContext, userId: ID, newEmailAddress: string) => Promise<boolean | EmailAddressConflictError>;
+    updateEmailAddress(ctx: RequestContext, token: string) => Promise<boolean | IdentifierChangeTokenInvalidError | IdentifierChangeTokenExpiredError>;
+    createOrUpdate(ctx: RequestContext, input: Partial<CreateCustomerInput> & { emailAddress: string }, errorOnExistingUser: boolean = false) => Promise<Customer | EmailAddressConflictError>;
+    createAddress(ctx: RequestContext, customerId: ID, input: CreateAddressInput) => Promise<Address>;
+    updateAddress(ctx: RequestContext, input: UpdateAddressInput) => Promise<Address>;
+    deleteAddress(ctx: RequestContext, id: ID) => Promise<boolean>;
+    softDelete(ctx: RequestContext, customerId: ID) => Promise<DeletionResponse>;
+    createAddressesForNewCustomer(ctx: RequestContext, order: Order) => ;
+    addNoteToCustomer(ctx: RequestContext, input: AddNoteToCustomerInput) => Promise<Customer>;
+    updateCustomerNote(ctx: RequestContext, input: UpdateCustomerNoteInput) => Promise<HistoryEntry>;
+    deleteCustomerNote(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
 ```
 

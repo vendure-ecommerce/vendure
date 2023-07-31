@@ -18,16 +18,16 @@ Contains methods relating to <a href='/reference/typescript-api/entities/payment
 
 ```ts title="Signature"
 class PaymentService {
-  constructor(connection: TransactionalConnection, paymentStateMachine: PaymentStateMachine, refundStateMachine: RefundStateMachine, paymentMethodService: PaymentMethodService, eventBus: EventBus)
-  async create(ctx: RequestContext, input: DeepPartial<Payment>) => Promise<Payment>;
-  async findOneOrThrow(ctx: RequestContext, id: ID, relations: string[] = ['order']) => Promise<Payment>;
-  async transitionToState(ctx: RequestContext, paymentId: ID, state: PaymentState) => Promise<Payment | PaymentStateTransitionError>;
-  getNextStates(payment: Payment) => readonly PaymentState[];
-  async createPayment(ctx: RequestContext, order: Order, amount: number, method: string, metadata: any) => Promise<Payment | IneligiblePaymentMethodError>;
-  async settlePayment(ctx: RequestContext, paymentId: ID) => Promise<PaymentStateTransitionError | Payment>;
-  async cancelPayment(ctx: RequestContext, paymentId: ID) => Promise<PaymentStateTransitionError | Payment>;
-  async createManualPayment(ctx: RequestContext, order: Order, amount: number, input: ManualPaymentInput) => ;
-  async createRefund(ctx: RequestContext, input: RefundOrderInput, order: Order, selectedPayment: Payment) => Promise<Refund | RefundStateTransitionError>;
+    constructor(connection: TransactionalConnection, paymentStateMachine: PaymentStateMachine, refundStateMachine: RefundStateMachine, paymentMethodService: PaymentMethodService, eventBus: EventBus)
+    create(ctx: RequestContext, input: DeepPartial<Payment>) => Promise<Payment>;
+    findOneOrThrow(ctx: RequestContext, id: ID, relations: string[] = ['order']) => Promise<Payment>;
+    transitionToState(ctx: RequestContext, paymentId: ID, state: PaymentState) => Promise<Payment | PaymentStateTransitionError>;
+    getNextStates(payment: Payment) => readonly PaymentState[];
+    createPayment(ctx: RequestContext, order: Order, amount: number, method: string, metadata: any) => Promise<Payment | IneligiblePaymentMethodError>;
+    settlePayment(ctx: RequestContext, paymentId: ID) => Promise<PaymentStateTransitionError | Payment>;
+    cancelPayment(ctx: RequestContext, paymentId: ID) => Promise<PaymentStateTransitionError | Payment>;
+    createManualPayment(ctx: RequestContext, order: Order, amount: number, input: ManualPaymentInput) => ;
+    createRefund(ctx: RequestContext, input: RefundOrderInput, order: Order, selectedPayment: Payment) => Promise<Refund | RefundStateTransitionError>;
 }
 ```
 

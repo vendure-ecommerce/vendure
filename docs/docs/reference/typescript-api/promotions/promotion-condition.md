@@ -20,10 +20,10 @@ is to check the order against a particular predicate function (the `check` funct
 
 ```ts title="Signature"
 class PromotionCondition<T extends ConfigArgs = ConfigArgs, C extends string = string, R extends CheckPromotionConditionResult = any> extends ConfigurableOperationDef<T> {
-  readonly readonly priorityValue: number;
-  code: C
-  constructor(config: PromotionConditionConfig<T, C, R>)
-  async check(ctx: RequestContext, order: Order, args: ConfigArg[], promotion: Promotion) => Promise<R>;
+    readonly priorityValue: number;
+    code: C
+    constructor(config: PromotionConditionConfig<T, C, R>)
+    check(ctx: RequestContext, order: Order, args: ConfigArg[], promotion: Promotion) => Promise<R>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
@@ -68,9 +68,9 @@ This object is used to configure a PromotionCondition.
 
 ```ts title="Signature"
 interface PromotionConditionConfig<T extends ConfigArgs, C extends string, R extends CheckPromotionConditionResult> extends ConfigurableOperationDefOptions<T> {
-  code: C;
-  check: CheckPromotionConditionFn<T, R>;
-  priorityValue?: number;
+    code: C;
+    check: CheckPromotionConditionFn<T, R>;
+    priorityValue?: number;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>

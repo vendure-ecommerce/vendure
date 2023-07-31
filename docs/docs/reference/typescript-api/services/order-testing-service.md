@@ -19,9 +19,9 @@ testing a ShippingMethod or Promotion.
 
 ```ts title="Signature"
 class OrderTestingService {
-  constructor(connection: TransactionalConnection, orderCalculator: OrderCalculator, shippingCalculator: ShippingCalculator, configArgService: ConfigArgService, configService: ConfigService, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
-  async testShippingMethod(ctx: RequestContext, input: TestShippingMethodInput) => Promise<TestShippingMethodResult>;
-  async testEligibleShippingMethods(ctx: RequestContext, input: TestEligibleShippingMethodsInput) => Promise<ShippingMethodQuote[]>;
+    constructor(connection: TransactionalConnection, orderCalculator: OrderCalculator, shippingCalculator: ShippingCalculator, configArgService: ConfigArgService, configService: ConfigService, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
+    testShippingMethod(ctx: RequestContext, input: TestShippingMethodInput) => Promise<TestShippingMethodResult>;
+    testEligibleShippingMethods(ctx: RequestContext, input: TestEligibleShippingMethodsInput) => Promise<ShippingMethodQuote[]>;
 }
 ```
 

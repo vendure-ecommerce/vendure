@@ -25,11 +25,11 @@ function.
 
 ```ts title="Signature"
 class InMemorySessionCacheStrategy implements SessionCacheStrategy {
-  constructor(cacheSize?: number)
-  delete(sessionToken: string) => ;
-  get(sessionToken: string) => ;
-  set(session: CachedSession) => ;
-  clear() => ;
+    constructor(cacheSize?: number)
+    delete(sessionToken: string) => ;
+    get(sessionToken: string) => ;
+    set(session: CachedSession) => ;
+    clear() => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a></code>

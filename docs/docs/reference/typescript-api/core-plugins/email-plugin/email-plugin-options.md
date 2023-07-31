@@ -18,18 +18,18 @@ Configuration for the EmailPlugin.
 
 ```ts title="Signature"
 interface EmailPluginOptions {
-  templatePath?: string;
-  templateLoader?: TemplateLoader;
-  transport:
+    templatePath?: string;
+    templateLoader?: TemplateLoader;
+    transport:
         | EmailTransportOptions
         | ((
               injector?: Injector,
               ctx?: RequestContext,
           ) => EmailTransportOptions | Promise<EmailTransportOptions>);
-  handlers: Array<EmailEventHandler<string, any>>;
-  globalTemplateVars?: { [key: string]: any };
-  emailSender?: EmailSender;
-  emailGenerator?: EmailGenerator;
+    handlers: Array<EmailEventHandler<string, any>>;
+    globalTemplateVars?: { [key: string]: any };
+    emailSender?: EmailSender;
+    emailGenerator?: EmailGenerator;
 }
 ```
 
@@ -90,9 +90,9 @@ Configuration for running the EmailPlugin in development mode.
 
 ```ts title="Signature"
 interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'transport'> {
-  devMode: true;
-  outputPath: string;
-  route: string;
+    devMode: true;
+    outputPath: string;
+    route: string;
 }
 ```
 * Extends: <code>Omit&#60;<a href='/reference/typescript-api/core-plugins/email-plugin/email-plugin-options#emailpluginoptions'>EmailPluginOptions</a>, 'transport'&#62;</code>

@@ -75,44 +75,44 @@ extend the <a href='/reference/admin-ui-api/list-detail-views/base-list-componen
 
 ```ts title="Signature"
 class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
-  @Input() @Input() id: string;
-  @Input() @Input() items: T[];
-  @Input() @Input() itemsPerPage: number;
-  @Input() @Input() currentPage: number;
-  @Input() @Input() totalItems: number;
-  @Input() @Input() emptyStateLabel: string;
-  @Input() @Input() filters: DataTableFilterCollection;
-  @Input() @Input() activeIndex = -1;
-  @Output() @Output() pageChange = new EventEmitter<number>();
-  @Output() @Output() itemsPerPageChange = new EventEmitter<number>();
-  @ContentChildren(DataTable2ColumnComponent) @ContentChildren(DataTable2ColumnComponent) columns: QueryList<DataTable2ColumnComponent<T>>;
-  @ContentChildren(DataTableCustomFieldColumnComponent) @ContentChildren(DataTableCustomFieldColumnComponent)
+    @Input() id: string;
+    @Input() items: T[];
+    @Input() itemsPerPage: number;
+    @Input() currentPage: number;
+    @Input() totalItems: number;
+    @Input() emptyStateLabel: string;
+    @Input() filters: DataTableFilterCollection;
+    @Input() activeIndex = -1;
+    @Output() pageChange = new EventEmitter<number>();
+    @Output() itemsPerPageChange = new EventEmitter<number>();
+    @ContentChildren(DataTable2ColumnComponent) columns: QueryList<DataTable2ColumnComponent<T>>;
+    @ContentChildren(DataTableCustomFieldColumnComponent)
     customFieldColumns: QueryList<DataTableCustomFieldColumnComponent<T>>;
-  @ContentChild(DataTable2SearchComponent) @ContentChild(DataTable2SearchComponent) searchComponent: DataTable2SearchComponent;
-  @ContentChild(BulkActionMenuComponent) @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
-  @ContentChild('vdrDt2CustomSearch') @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
-  @ContentChildren(TemplateRef) @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
-  rowTemplate: TemplateRef<any>;
-  currentStart: number;
-  currentEnd: number;
-  disableSelect = false;
-  showSearchFilterRow = false;
-  protected protected uiLanguage$: Observable<LanguageCode>;
-  constructor(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: DataService)
-  selectionManager: void
-  allColumns: void
-  visibleSortedColumns: void
-  sortedColumns: void
-  ngOnChanges(changes: SimpleChanges) => ;
-  ngOnDestroy() => ;
-  ngAfterContentInit() => void;
-  onColumnReorder(event: { column: DataTable2ColumnComponent<any>; newIndex: number }) => ;
-  onColumnsReset() => ;
-  toggleSearchFilterRow() => ;
-  trackByFn(index: number, item: any) => ;
-  onToggleAllClick() => ;
-  onRowClick(item: T, event: MouseEvent) => ;
-  protected getDataTableConfig() => DataTableConfig;
+    @ContentChild(DataTable2SearchComponent) searchComponent: DataTable2SearchComponent;
+    @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
+    @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
+    @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
+    rowTemplate: TemplateRef<any>;
+    currentStart: number;
+    currentEnd: number;
+    disableSelect = false;
+    showSearchFilterRow = false;
+    protected uiLanguage$: Observable<LanguageCode>;
+    constructor(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: DataService)
+    selectionManager: void
+    allColumns: void
+    visibleSortedColumns: void
+    sortedColumns: void
+    ngOnChanges(changes: SimpleChanges) => ;
+    ngOnDestroy() => ;
+    ngAfterContentInit() => void;
+    onColumnReorder(event: { column: DataTable2ColumnComponent<any>; newIndex: number }) => ;
+    onColumnsReset() => ;
+    toggleSearchFilterRow() => ;
+    trackByFn(index: number, item: any) => ;
+    onToggleAllClick() => ;
+    onRowClick(item: T, event: MouseEvent) => ;
+    getDataTableConfig() => DataTableConfig;
 }
 ```
 * Implements: <code>AfterContentInit</code>, <code>OnChanges</code>, <code>OnDestroy</code>

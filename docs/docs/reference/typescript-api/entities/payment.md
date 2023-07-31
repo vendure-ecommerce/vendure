@@ -19,19 +19,19 @@ defined by the <a href='/reference/typescript-api/payment/payment-state#payments
 
 ```ts title="Signature"
 class Payment extends VendureEntity {
-  constructor(input?: DeepPartial<Payment>)
-  @Column() @Column() method: string;
-  @Money() @Money() amount: number;
-  @Column('varchar') @Column('varchar') state: PaymentState;
-  @Column({ type: 'varchar', nullable: true }) @Column({ type: 'varchar', nullable: true })
+    constructor(input?: DeepPartial<Payment>)
+    @Column() method: string;
+    @Money() amount: number;
+    @Column('varchar') state: PaymentState;
+    @Column({ type: 'varchar', nullable: true })
     errorMessage: string | undefined;
-  @Column({ nullable: true }) @Column({ nullable: true })
+    @Column({ nullable: true })
     transactionId: string;
-  @Column('simple-json') @Column('simple-json') metadata: PaymentMetadata;
-  @Index() @ManyToOne(type => Order, order => order.payments) @Index()
+    @Column('simple-json') metadata: PaymentMetadata;
+    @Index()
     @ManyToOne(type => Order, order => order.payments)
     order: Order;
-  @OneToMany(type => Refund, refund => refund.payment) @OneToMany(type => Refund, refund => refund.payment)
+    @OneToMany(type => Refund, refund => refund.payment)
     refunds: Refund[];
 }
 ```

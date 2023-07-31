@@ -22,12 +22,12 @@ In testing, the use of the FastImporterService approximately doubled the speed o
 
 ```ts title="Signature"
 class FastImporterService {
-  async initialize(channel?: Channel) => ;
-  async createProduct(input: CreateProductInput) => Promise<ID>;
-  async createProductOptionGroup(input: CreateProductOptionGroupInput) => Promise<ID>;
-  async createProductOption(input: CreateProductOptionInput) => Promise<ID>;
-  async addOptionGroupToProduct(productId: ID, optionGroupId: ID) => ;
-  async createProductVariant(input: CreateProductVariantInput) => Promise<ID>;
+    initialize(channel?: Channel) => ;
+    createProduct(input: CreateProductInput) => Promise<ID>;
+    createProductOptionGroup(input: CreateProductOptionGroupInput) => Promise<ID>;
+    createProductOption(input: CreateProductOptionInput) => Promise<ID>;
+    addOptionGroupToProduct(productId: ID, optionGroupId: ID) => ;
+    createProductVariant(input: CreateProductVariantInput) => Promise<ID>;
 }
 ```
 

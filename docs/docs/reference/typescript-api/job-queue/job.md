@@ -21,30 +21,30 @@ add a new Job to a queue.
 
 ```ts title="Signature"
 class Job<T extends JobData<T> = any> {
-  readonly readonly id: number | string | null;
-  readonly readonly queueName: string;
-  readonly readonly retries: number;
-  readonly readonly createdAt: Date;
-  name: string
-  data: T
-  state: JobState
-  progress: number
-  result: any
-  error: any
-  isSettled: boolean
-  startedAt: Date | undefined
-  settledAt: Date | undefined
-  duration: number
-  attempts: number
-  constructor(config: JobConfig<T>)
-  start() => ;
-  setProgress(percent: number) => ;
-  complete(result?: any) => ;
-  fail(err?: any) => ;
-  cancel() => ;
-  defer() => ;
-  on(eventType: JobEventType, listener: JobEventListener<T>) => ;
-  off(eventType: JobEventType, listener: JobEventListener<T>) => ;
+    readonly id: number | string | null;
+    readonly queueName: string;
+    readonly retries: number;
+    readonly createdAt: Date;
+    name: string
+    data: T
+    state: JobState
+    progress: number
+    result: any
+    error: any
+    isSettled: boolean
+    startedAt: Date | undefined
+    settledAt: Date | undefined
+    duration: number
+    attempts: number
+    constructor(config: JobConfig<T>)
+    start() => ;
+    setProgress(percent: number) => ;
+    complete(result?: any) => ;
+    fail(err?: any) => ;
+    cancel() => ;
+    defer() => ;
+    on(eventType: JobEventType, listener: JobEventListener<T>) => ;
+    off(eventType: JobEventType, listener: JobEventListener<T>) => ;
 }
 ```
 

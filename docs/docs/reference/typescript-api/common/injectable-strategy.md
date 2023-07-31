@@ -19,8 +19,8 @@ various strategies used to configure Vendure.
 
 ```ts title="Signature"
 interface InjectableStrategy {
-  init?: (injector: Injector) => void | Promise<void>;
-  destroy?: () => void | Promise<void>;
+    init?: (injector: Injector) => void | Promise<void>;
+    destroy?: () => void | Promise<void>;
 }
 ```
 

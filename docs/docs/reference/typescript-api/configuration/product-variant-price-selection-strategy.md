@@ -25,7 +25,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface ProductVariantPriceSelectionStrategy extends InjectableStrategy {
-  selectPrice(
+    selectPrice(
         ctx: RequestContext,
         prices: ProductVariantPrice[],
     ): ProductVariantPrice | undefined | Promise<ProductVariantPrice | undefined>;
@@ -57,7 +57,7 @@ selects the first price which matches the current currency.
 
 ```ts title="Signature"
 class DefaultProductVariantPriceSelectionStrategy implements ProductVariantPriceSelectionStrategy {
-  selectPrice(ctx: RequestContext, prices: ProductVariantPrice[]) => ;
+    selectPrice(ctx: RequestContext, prices: ProductVariantPrice[]) => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/configuration/product-variant-price-selection-strategy#productvariantpriceselectionstrategy'>ProductVariantPriceSelectionStrategy</a></code>

@@ -24,8 +24,8 @@ Displays a human-readable name for a given ISO 4217 currency code.
 
 ```ts title="Signature"
 class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransform {
-  constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
-  transform(value: any, display: 'full' | 'symbol' | 'name' = 'full', locale?: unknown) => any;
+    constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
+    transform(value: any, display: 'full' | 'symbol' | 'name' = 'full', locale?: unknown) => any;
 }
 ```
 * Extends: <code>LocaleBasePipe</code>

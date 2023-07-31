@@ -20,12 +20,12 @@ you should use this service.
 
 ```ts title="Signature"
 class StockLevelService {
-  constructor(connection: TransactionalConnection, stockLocationService: StockLocationService, configService: ConfigService)
-  async getStockLevel(ctx: RequestContext, productVariantId: ID, stockLocationId: ID) => Promise<StockLevel>;
-  async getStockLevelsForVariant(ctx: RequestContext, productVariantId: ID) => Promise<StockLevel[]>;
-  async getAvailableStock(ctx: RequestContext, productVariantId: ID) => Promise<AvailableStock>;
-  async updateStockOnHandForLocation(ctx: RequestContext, productVariantId: ID, stockLocationId: ID, change: number) => ;
-  async updateStockAllocatedForLocation(ctx: RequestContext, productVariantId: ID, stockLocationId: ID, change: number) => ;
+    constructor(connection: TransactionalConnection, stockLocationService: StockLocationService, configService: ConfigService)
+    getStockLevel(ctx: RequestContext, productVariantId: ID, stockLocationId: ID) => Promise<StockLevel>;
+    getStockLevelsForVariant(ctx: RequestContext, productVariantId: ID) => Promise<StockLevel[]>;
+    getAvailableStock(ctx: RequestContext, productVariantId: ID) => Promise<AvailableStock>;
+    updateStockOnHandForLocation(ctx: RequestContext, productVariantId: ID, stockLocationId: ID, change: number) => ;
+    updateStockAllocatedForLocation(ctx: RequestContext, productVariantId: ID, stockLocationId: ID, change: number) => ;
 }
 ```
 

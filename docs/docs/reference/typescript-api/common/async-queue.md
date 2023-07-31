@@ -19,8 +19,8 @@ race conditions when working on a shared resource such as writing to a database.
 
 ```ts title="Signature"
 class AsyncQueue {
-  constructor(label: string = 'default', concurrency: number = 1)
-  push(task: Task<T>) => Promise<T>;
+    constructor(label: string = 'default', concurrency: number = 1)
+    push(task: Task<T>) => Promise<T>;
 }
 ```
 

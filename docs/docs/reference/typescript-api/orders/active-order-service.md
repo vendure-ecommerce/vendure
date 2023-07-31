@@ -18,13 +18,13 @@ This helper class is used to get a reference to the active Order from the curren
 
 ```ts title="Signature"
 class ActiveOrderService {
-  constructor(sessionService: SessionService, orderService: OrderService, connection: TransactionalConnection, configService: ConfigService)
-  async getOrderFromContext(ctx: RequestContext) => Promise<Order | undefined>;
-  async getOrderFromContext(ctx: RequestContext, createIfNotExists: true) => Promise<Order>;
-  async getOrderFromContext(ctx: RequestContext, createIfNotExists:  = false) => Promise<Order | undefined>;
-  async getActiveOrder(ctx: RequestContext, input: { [strategyName: string]: any } | undefined) => Promise<Order | undefined>;
-  async getActiveOrder(ctx: RequestContext, input: { [strategyName: string]: any } | undefined, createIfNotExists: true) => Promise<Order>;
-  async getActiveOrder(ctx: RequestContext, input: { [strategyName: string]: Record<string, any> | undefined } | undefined, createIfNotExists:  = false) => Promise<Order | undefined>;
+    constructor(sessionService: SessionService, orderService: OrderService, connection: TransactionalConnection, configService: ConfigService)
+    getOrderFromContext(ctx: RequestContext) => Promise<Order | undefined>;
+    getOrderFromContext(ctx: RequestContext, createIfNotExists: true) => Promise<Order>;
+    getOrderFromContext(ctx: RequestContext, createIfNotExists:  = false) => Promise<Order | undefined>;
+    getActiveOrder(ctx: RequestContext, input: { [strategyName: string]: any } | undefined) => Promise<Order | undefined>;
+    getActiveOrder(ctx: RequestContext, input: { [strategyName: string]: any } | undefined, createIfNotExists: true) => Promise<Order>;
+    getActiveOrder(ctx: RequestContext, input: { [strategyName: string]: Record<string, any> | undefined } | undefined, createIfNotExists:  = false) => Promise<Order | undefined>;
 }
 ```
 

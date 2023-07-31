@@ -28,7 +28,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface StockDisplayStrategy extends InjectableStrategy {
-  getStockLevel(
+    getStockLevel(
         ctx: RequestContext,
         productVariant: ProductVariant,
         saleableStockLevel: number,

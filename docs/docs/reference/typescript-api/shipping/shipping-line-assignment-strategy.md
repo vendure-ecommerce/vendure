@@ -30,7 +30,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface ShippingLineAssignmentStrategy extends InjectableStrategy {
-  assignShippingLineToOrderLines(
+    assignShippingLineToOrderLines(
         ctx: RequestContext,
         shippingLine: ShippingLine,
         order: Order,

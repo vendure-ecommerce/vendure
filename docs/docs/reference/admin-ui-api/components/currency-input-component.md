@@ -28,27 +28,27 @@ with the integer cent value in the background.
 
 ```ts title="Signature"
 class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges, OnDestroy {
-  @Input() @Input() disabled = false;
-  @Input() @Input() readonly = false;
-  @Input() @Input() value: number;
-  @Input() @Input() currencyCode = '';
-  @Output() @Output() valueChange = new EventEmitter();
-  prefix$: Observable<string>;
-  suffix$: Observable<string>;
-  hasFractionPart = true;
-  onChange: (val: any) => void;
-  onTouch: () => void;
-  _inputValue: string;
-  constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
-  ngOnInit() => ;
-  ngOnChanges(changes: SimpleChanges) => ;
-  ngOnDestroy() => ;
-  registerOnChange(fn: any) => ;
-  registerOnTouched(fn: any) => ;
-  setDisabledState(isDisabled: boolean) => ;
-  onInput(value: string) => ;
-  onFocus() => ;
-  writeValue(value: any) => void;
+    @Input() disabled = false;
+    @Input() readonly = false;
+    @Input() value: number;
+    @Input() currencyCode = '';
+    @Output() valueChange = new EventEmitter();
+    prefix$: Observable<string>;
+    suffix$: Observable<string>;
+    hasFractionPart = true;
+    onChange: (val: any) => void;
+    onTouch: () => void;
+    _inputValue: string;
+    constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
+    ngOnInit() => ;
+    ngOnChanges(changes: SimpleChanges) => ;
+    ngOnDestroy() => ;
+    registerOnChange(fn: any) => ;
+    registerOnTouched(fn: any) => ;
+    setDisabledState(isDisabled: boolean) => ;
+    onInput(value: string) => ;
+    onFocus() => ;
+    writeValue(value: any) => void;
 }
 ```
 * Implements: <code>ControlValueAccessor</code>, <code>OnInit</code>, <code>OnChanges</code>, <code>OnDestroy</code>

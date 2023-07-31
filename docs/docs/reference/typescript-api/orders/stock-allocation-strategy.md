@@ -26,7 +26,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface StockAllocationStrategy extends InjectableStrategy {
-  shouldAllocateStock(
+    shouldAllocateStock(
         ctx: RequestContext,
         fromState: OrderState,
         toState: OrderState,

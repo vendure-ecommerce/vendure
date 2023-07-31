@@ -19,8 +19,8 @@ A type describing the shape of a paginated list response. In Vendure, almost all
 
 ```ts title="Signature"
 type PaginatedList<T> = {
-  items: T[];
-  totalItems: number;
+    items: T[];
+    totalItems: number;
 }
 ```
 

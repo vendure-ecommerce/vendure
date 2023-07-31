@@ -24,8 +24,8 @@ Displays the state of an order in a colored chip.
 
 ```ts title="Signature"
 class OrderStateLabelComponent {
-  @Input() @Input() state: string;
-  chipColorType: void
+    @Input() state: string;
+    chipColorType: void
 }
 ```
 

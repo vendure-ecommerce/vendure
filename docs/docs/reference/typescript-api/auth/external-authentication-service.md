@@ -19,10 +19,10 @@ external <a href='/reference/typescript-api/auth/authentication-strategy#authent
 
 ```ts title="Signature"
 class ExternalAuthenticationService {
-  constructor(connection: TransactionalConnection, roleService: RoleService, historyService: HistoryService, customerService: CustomerService, administratorService: AdministratorService, channelService: ChannelService)
-  async findCustomerUser(ctx: RequestContext, strategy: string, externalIdentifier: string, checkCurrentChannelOnly:  = true) => Promise<User | undefined>;
-  async findAdministratorUser(ctx: RequestContext, strategy: string, externalIdentifier: string) => Promise<User | undefined>;
-  async createCustomerAndUser(ctx: RequestContext, config: {
+    constructor(connection: TransactionalConnection, roleService: RoleService, historyService: HistoryService, customerService: CustomerService, administratorService: AdministratorService, channelService: ChannelService)
+    findCustomerUser(ctx: RequestContext, strategy: string, externalIdentifier: string, checkCurrentChannelOnly:  = true) => Promise<User | undefined>;
+    findAdministratorUser(ctx: RequestContext, strategy: string, externalIdentifier: string) => Promise<User | undefined>;
+    createCustomerAndUser(ctx: RequestContext, config: {
             strategy: string;
             externalIdentifier: string;
             verified: boolean;
@@ -30,7 +30,7 @@ class ExternalAuthenticationService {
             firstName?: string;
             lastName?: string;
         }) => Promise<User>;
-  async createAdministratorAndUser(ctx: RequestContext, config: {
+    createAdministratorAndUser(ctx: RequestContext, config: {
             strategy: string;
             externalIdentifier: string;
             identifier: string;
@@ -39,7 +39,7 @@ class ExternalAuthenticationService {
             lastName?: string;
             roles: Role[];
         }) => ;
-  async findUser(ctx: RequestContext, strategy: string, externalIdentifier: string) => Promise<User | undefined>;
+    findUser(ctx: RequestContext, strategy: string, externalIdentifier: string) => Promise<User | undefined>;
 }
 ```
 

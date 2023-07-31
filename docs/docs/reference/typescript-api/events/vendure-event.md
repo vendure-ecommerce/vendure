@@ -18,8 +18,8 @@ The base class for all events used by the EventBus system.
 
 ```ts title="Signature"
 class VendureEvent {
-  public readonly public readonly createdAt: Date;
-  constructor()
+    public readonly createdAt: Date;
+    constructor()
 }
 ```
 

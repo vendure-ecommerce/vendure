@@ -22,27 +22,27 @@ A TaxRate defines the rate of tax to apply to a <a href='/reference/typescript-a
 
 ```ts title="Signature"
 class TaxRate extends VendureEntity implements HasCustomFields {
-  constructor(input?: DeepPartial<TaxRate>)
-  @Column() @Column() name: string;
-  @Column() @Column() enabled: boolean;
-  @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() }) @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() }) value: number;
-  @Index() @ManyToOne(type => TaxCategory) @Index()
+    constructor(input?: DeepPartial<TaxRate>)
+    @Column() name: string;
+    @Column() enabled: boolean;
+    @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() }) value: number;
+    @Index()
     @ManyToOne(type => TaxCategory)
     category: TaxCategory;
-  @Index() @ManyToOne(type => Zone) @Index()
+    @Index()
     @ManyToOne(type => Zone)
     zone: Zone;
-  @Index() @ManyToOne(type => CustomerGroup, { nullable: true }) @Index()
+    @Index()
     @ManyToOne(type => CustomerGroup, { nullable: true })
     customerGroup?: CustomerGroup;
-  @Column(type => CustomTaxRateFields) @Column(type => CustomTaxRateFields)
+    @Column(type => CustomTaxRateFields)
     customFields: CustomTaxRateFields;
-  taxComponentOf(grossPrice: number) => number;
-  netPriceOf(grossPrice: number) => number;
-  taxPayableOn(netPrice: number) => number;
-  grossPriceOf(netPrice: number) => number;
-  apply(price: number) => TaxLine;
-  test(zone: Zone, taxCategory: TaxCategory) => boolean;
+    taxComponentOf(grossPrice: number) => number;
+    netPriceOf(grossPrice: number) => number;
+    taxPayableOn(netPrice: number) => number;
+    grossPriceOf(netPrice: number) => number;
+    apply(price: number) => TaxLine;
+    test(zone: Zone, taxCategory: TaxCategory) => boolean;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

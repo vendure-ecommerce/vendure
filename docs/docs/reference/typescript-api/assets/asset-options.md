@@ -20,11 +20,11 @@ The AssetOptions define how assets (images and other files) are named and stored
 
 ```ts title="Signature"
 interface AssetOptions {
-  assetNamingStrategy?: AssetNamingStrategy;
-  assetStorageStrategy?: AssetStorageStrategy;
-  assetPreviewStrategy?: AssetPreviewStrategy;
-  permittedFileTypes?: string[];
-  uploadMaxFileSize?: number;
+    assetNamingStrategy?: AssetNamingStrategy;
+    assetStorageStrategy?: AssetStorageStrategy;
+    assetPreviewStrategy?: AssetPreviewStrategy;
+    permittedFileTypes?: string[];
+    uploadMaxFileSize?: number;
 }
 ```
 

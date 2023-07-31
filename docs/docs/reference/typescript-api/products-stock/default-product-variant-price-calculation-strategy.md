@@ -18,8 +18,8 @@ A default ProductVariant price calculation function.
 
 ```ts title="Signature"
 class DefaultProductVariantPriceCalculationStrategy implements ProductVariantPriceCalculationStrategy {
-  init(injector: Injector) => ;
-  async calculate(args: ProductVariantPriceCalculationArgs) => Promise<PriceCalculationResult>;
+    init(injector: Injector) => ;
+    calculate(args: ProductVariantPriceCalculationArgs) => Promise<PriceCalculationResult>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a></code>

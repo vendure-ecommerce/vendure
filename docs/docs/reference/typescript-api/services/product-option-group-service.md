@@ -18,13 +18,13 @@ Contains methods relating to <a href='/reference/typescript-api/entities/product
 
 ```ts title="Signature"
 class ProductOptionGroupService {
-  constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, productOptionService: ProductOptionService, eventBus: EventBus, translator: TranslatorService)
-  findAll(ctx: RequestContext, filterTerm?: string, relations?: RelationPaths<ProductOptionGroup>) => Promise<Array<Translated<ProductOptionGroup>>>;
-  findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<ProductOptionGroup>) => Promise<Translated<ProductOptionGroup> | undefined>;
-  getOptionGroupsByProductId(ctx: RequestContext, id: ID) => Promise<Array<Translated<ProductOptionGroup>>>;
-  async create(ctx: RequestContext, input: CreateProductOptionGroupInput) => Promise<Translated<ProductOptionGroup>>;
-  async update(ctx: RequestContext, input: UpdateProductOptionGroupInput) => Promise<Translated<ProductOptionGroup>>;
-  async deleteGroupAndOptionsFromProduct(ctx: RequestContext, id: ID, productId: ID) => ;
+    constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, productOptionService: ProductOptionService, eventBus: EventBus, translator: TranslatorService)
+    findAll(ctx: RequestContext, filterTerm?: string, relations?: RelationPaths<ProductOptionGroup>) => Promise<Array<Translated<ProductOptionGroup>>>;
+    findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<ProductOptionGroup>) => Promise<Translated<ProductOptionGroup> | undefined>;
+    getOptionGroupsByProductId(ctx: RequestContext, id: ID) => Promise<Array<Translated<ProductOptionGroup>>>;
+    create(ctx: RequestContext, input: CreateProductOptionGroupInput) => Promise<Translated<ProductOptionGroup>>;
+    update(ctx: RequestContext, input: UpdateProductOptionGroupInput) => Promise<Translated<ProductOptionGroup>>;
+    deleteGroupAndOptionsFromProduct(ctx: RequestContext, id: ID, productId: ID) => ;
 }
 ```
 

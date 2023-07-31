@@ -18,20 +18,20 @@ A grouping of one or more <a href='/reference/typescript-api/entities/product-op
 
 ```ts title="Signature"
 class ProductOptionGroup extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
-  constructor(input?: DeepPartial<ProductOptionGroup>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<ProductOptionGroup>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  name: LocaleString;
-  @Column() @Column()
+    name: LocaleString;
+    @Column()
     code: string;
-  @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true }) @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true })
+    @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductOptionGroup>>;
-  @OneToMany(type => ProductOption, option => option.group) @OneToMany(type => ProductOption, option => option.group)
+    @OneToMany(type => ProductOption, option => option.group)
     options: ProductOption[];
-  @Index() @ManyToOne(type => Product) @Index()
+    @Index()
     @ManyToOne(type => Product)
     product: Product;
-  @Column(type => CustomProductOptionGroupFields) @Column(type => CustomProductOptionGroupFields)
+    @Column(type => CustomProductOptionGroupFields)
     customFields: CustomProductOptionGroupFields;
 }
 ```

@@ -20,10 +20,10 @@ session which is part of the RequestContext.
 
 ```ts title="Signature"
 class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
-  name: 'default-active-order-strategy';
-  async init(injector: Injector) => ;
-  createActiveOrder(ctx: RequestContext) => ;
-  async determineActiveOrder(ctx: RequestContext) => ;
+    name: 'default-active-order-strategy';
+    init(injector: Injector) => ;
+    createActiveOrder(ctx: RequestContext) => ;
+    determineActiveOrder(ctx: RequestContext) => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a></code>

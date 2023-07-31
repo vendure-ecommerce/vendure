@@ -18,11 +18,11 @@ Contains methods relating to <a href='/reference/typescript-api/entities/fulfill
 
 ```ts title="Signature"
 class FulfillmentService {
-  constructor(connection: TransactionalConnection, fulfillmentStateMachine: FulfillmentStateMachine, eventBus: EventBus, configService: ConfigService, customFieldRelationService: CustomFieldRelationService)
-  async create(ctx: RequestContext, orders: Order[], lines: OrderLineInput[], handler: ConfigurableOperationInput) => Promise<Fulfillment | InvalidFulfillmentHandlerError | CreateFulfillmentError>;
-  async getFulfillmentLines(ctx: RequestContext, id: ID) => Promise<FulfillmentLine[]>;
-  async getFulfillmentsLinesForOrderLine(ctx: RequestContext, orderLineId: ID, relations: RelationPaths<FulfillmentLine> = []) => Promise<FulfillmentLine[]>;
-  async transitionToState(ctx: RequestContext, fulfillmentId: ID, state: FulfillmentState) => Promise<
+    constructor(connection: TransactionalConnection, fulfillmentStateMachine: FulfillmentStateMachine, eventBus: EventBus, configService: ConfigService, customFieldRelationService: CustomFieldRelationService)
+    create(ctx: RequestContext, orders: Order[], lines: OrderLineInput[], handler: ConfigurableOperationInput) => Promise<Fulfillment | InvalidFulfillmentHandlerError | CreateFulfillmentError>;
+    getFulfillmentLines(ctx: RequestContext, id: ID) => Promise<FulfillmentLine[]>;
+    getFulfillmentsLinesForOrderLine(ctx: RequestContext, orderLineId: ID, relations: RelationPaths<FulfillmentLine> = []) => Promise<FulfillmentLine[]>;
+    transitionToState(ctx: RequestContext, fulfillmentId: ID, state: FulfillmentState) => Promise<
         | {
               fulfillment: Fulfillment;
               orders: Order[];
@@ -31,7 +31,7 @@ class FulfillmentService {
           }
         | FulfillmentStateTransitionError
     >;
-  getNextStates(fulfillment: Fulfillment) => readonly FulfillmentState[];
+    getNextStates(fulfillment: Fulfillment) => readonly FulfillmentState[];
 }
 ```
 

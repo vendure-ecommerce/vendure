@@ -19,8 +19,8 @@ by passing itself to the `adopt()` method.
 
 ```ts title="Signature"
 class SearchService {
-  adopt(override: Pick<SearchService, 'reindex'>) => ;
-  async reindex(ctx: RequestContext) => Promise<Job>;
+    adopt(override: Pick<SearchService, 'reindex'>) => ;
+    reindex(ctx: RequestContext) => Promise<Job>;
 }
 ```
 

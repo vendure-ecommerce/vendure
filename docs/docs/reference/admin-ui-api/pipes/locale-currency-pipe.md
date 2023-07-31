@@ -25,8 +25,8 @@ locale.
 
 ```ts title="Signature"
 class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform {
-  constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
-  transform(value: unknown, args: unknown[]) => string | unknown;
+    constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
+    transform(value: unknown, args: unknown[]) => string | unknown;
 }
 ```
 * Extends: <code>LocaleBasePipe</code>

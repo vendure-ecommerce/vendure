@@ -18,37 +18,37 @@ A Collection is a grouping of <a href='/reference/typescript-api/entities/produc
 
 ```ts title="Signature"
 class Collection extends VendureEntity implements Translatable, HasCustomFields, ChannelAware, Orderable {
-  constructor(input?: DeepPartial<Collection>)
-  @Column({ default: false }) @Column({ default: false })
+    constructor(input?: DeepPartial<Collection>)
+    @Column({ default: false })
     isRoot: boolean;
-  @Column() @Column()
+    @Column()
     position: number;
-  @Column({ default: false }) @Column({ default: false })
+    @Column({ default: false })
     isPrivate: boolean;
-  name: LocaleString;
-  description: LocaleString;
-  slug: LocaleString;
-  @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true }) @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true })
+    name: LocaleString;
+    description: LocaleString;
+    slug: LocaleString;
+    @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Collection>>;
-  @Index() @ManyToOne(type => Asset, { onDelete: 'SET NULL' }) @Index()
+    @Index()
     @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
-  @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection) @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
+    @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
     assets: CollectionAsset[];
-  @Column('simple-json') @Column('simple-json') filters: ConfigurableOperation[];
-  @Column({ default: true }) @Column({ default: true }) inheritFilters: boolean;
-  @ManyToMany(type => ProductVariant, productVariant => productVariant.collections) @JoinTable() @ManyToMany(type => ProductVariant, productVariant => productVariant.collections)
+    @Column('simple-json') filters: ConfigurableOperation[];
+    @Column({ default: true }) inheritFilters: boolean;
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.collections)
     @JoinTable()
     productVariants: ProductVariant[];
-  @Column(type => CustomCollectionFields) @Column(type => CustomCollectionFields)
+    @Column(type => CustomCollectionFields)
     customFields: CustomCollectionFields;
-  @TreeChildren() @TreeChildren()
+    @TreeChildren()
     children: Collection[];
-  @TreeParent() @TreeParent()
+    @TreeParent()
     parent: Collection;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     parentId: ID;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

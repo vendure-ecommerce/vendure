@@ -18,8 +18,8 @@ An EmailGenerator generates the subject and body details of an email.
 
 ```ts title="Signature"
 interface EmailGenerator<T extends string = any, E extends VendureEvent = any> extends InjectableStrategy {
-  onInit?(options: EmailPluginOptions): void | Promise<void>;
-  generate(
+    onInit?(options: EmailPluginOptions): void | Promise<void>;
+    generate(
         from: string,
         subject: string,
         body: string,
@@ -58,8 +58,8 @@ compiled down to responsive email HTML.
 
 ```ts title="Signature"
 class HandlebarsMjmlGenerator implements EmailGenerator {
-  async onInit(options: InitializedEmailPluginOptions) => ;
-  generate(from: string, subject: string, template: string, templateVars: any) => ;
+    onInit(options: InitializedEmailPluginOptions) => ;
+    generate(from: string, subject: string, template: string, templateVars: any) => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/core-plugins/email-plugin/email-generator#emailgenerator'>EmailGenerator</a></code>

@@ -18,23 +18,23 @@ Contains methods relating to <a href='/reference/typescript-api/entities/promoti
 
 ```ts title="Signature"
 class PromotionService {
-  availableConditions: PromotionCondition[] = [];
-  availableActions: PromotionAction[] = [];
-  constructor(connection: TransactionalConnection, configService: ConfigService, channelService: ChannelService, listQueryBuilder: ListQueryBuilder, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translatableSaver: TranslatableSaver, translator: TranslatorService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Promotion>, relations: RelationPaths<Promotion> = []) => Promise<PaginatedList<Promotion>>;
-  async findOne(ctx: RequestContext, adjustmentSourceId: ID, relations: RelationPaths<Promotion> = []) => Promise<Promotion | undefined>;
-  getPromotionConditions(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  getPromotionActions(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  async createPromotion(ctx: RequestContext, input: CreatePromotionInput) => Promise<ErrorResultUnion<CreatePromotionResult, Promotion>>;
-  async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput) => Promise<ErrorResultUnion<UpdatePromotionResult, Promotion>>;
-  async softDeletePromotion(ctx: RequestContext, promotionId: ID) => Promise<DeletionResponse>;
-  async assignPromotionsToChannel(ctx: RequestContext, input: AssignPromotionsToChannelInput) => Promise<Promotion[]>;
-  async removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) => ;
-  async validateCouponCode(ctx: RequestContext, couponCode: string, customerId?: ID) => Promise<JustErrorResults<ApplyCouponCodeResult> | Promotion>;
-  getActivePromotionsInChannel(ctx: RequestContext) => ;
-  async getActivePromotionsOnOrder(ctx: RequestContext, orderId: ID) => Promise<Promotion[]>;
-  async runPromotionSideEffects(ctx: RequestContext, order: Order, promotionsPre: Promotion[]) => ;
-  async addPromotionsToOrder(ctx: RequestContext, order: Order) => Promise<Order>;
+    availableConditions: PromotionCondition[] = [];
+    availableActions: PromotionAction[] = [];
+    constructor(connection: TransactionalConnection, configService: ConfigService, channelService: ChannelService, listQueryBuilder: ListQueryBuilder, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translatableSaver: TranslatableSaver, translator: TranslatorService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Promotion>, relations: RelationPaths<Promotion> = []) => Promise<PaginatedList<Promotion>>;
+    findOne(ctx: RequestContext, adjustmentSourceId: ID, relations: RelationPaths<Promotion> = []) => Promise<Promotion | undefined>;
+    getPromotionConditions(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    getPromotionActions(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    createPromotion(ctx: RequestContext, input: CreatePromotionInput) => Promise<ErrorResultUnion<CreatePromotionResult, Promotion>>;
+    updatePromotion(ctx: RequestContext, input: UpdatePromotionInput) => Promise<ErrorResultUnion<UpdatePromotionResult, Promotion>>;
+    softDeletePromotion(ctx: RequestContext, promotionId: ID) => Promise<DeletionResponse>;
+    assignPromotionsToChannel(ctx: RequestContext, input: AssignPromotionsToChannelInput) => Promise<Promotion[]>;
+    removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) => ;
+    validateCouponCode(ctx: RequestContext, couponCode: string, customerId?: ID) => Promise<JustErrorResults<ApplyCouponCodeResult> | Promotion>;
+    getActivePromotionsInChannel(ctx: RequestContext) => ;
+    getActivePromotionsOnOrder(ctx: RequestContext, orderId: ID) => Promise<Promotion[]>;
+    runPromotionSideEffects(ctx: RequestContext, order: Order, promotionsPre: Promotion[]) => ;
+    addPromotionsToOrder(ctx: RequestContext, order: Order) => Promise<Order>;
 }
 ```
 

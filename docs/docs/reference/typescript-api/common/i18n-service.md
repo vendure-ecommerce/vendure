@@ -18,8 +18,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ```ts title="Signature"
 class I18nService implements OnModuleInit {
-  addTranslationFile(langKey: string, filePath: string) => void;
-  addTranslation(langKey: string, resources: VendureTranslationResources | any) => void;
+    addTranslationFile(langKey: string, filePath: string) => void;
+    addTranslation(langKey: string, resources: VendureTranslationResources | any) => void;
 }
 ```
 * Implements: <code>OnModuleInit</code>
@@ -51,9 +51,9 @@ I18n resources used for translations
 
 ```ts title="Signature"
 interface VendureTranslationResources {
-  error: any;
-  errorResult: any;
-  message: any;
+    error: any;
+    errorResult: any;
+    message: any;
 }
 ```
 

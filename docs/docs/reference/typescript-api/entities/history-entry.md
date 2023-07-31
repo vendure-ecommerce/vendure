@@ -19,14 +19,14 @@ or a Customer (<a href='/reference/typescript-api/entities/customer-history-entr
 
 ```ts title="Signature"
 class HistoryEntry extends VendureEntity {
-  @Index() @ManyToOne(type => Administrator) @Index()
+    @Index()
     @ManyToOne(type => Administrator)
     administrator?: Administrator;
-  @Column({ nullable: false, type: 'varchar' }) readonly @Column({ nullable: false, type: 'varchar' })
+    @Column({ nullable: false, type: 'varchar' })
     readonly type: HistoryEntryType;
-  @Column() @Column()
+    @Column()
     isPublic: boolean;
-  @Column('simple-json') @Column('simple-json')
+    @Column('simple-json')
     data: any;
 }
 ```

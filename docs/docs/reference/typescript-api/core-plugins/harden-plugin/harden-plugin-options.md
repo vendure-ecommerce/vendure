@@ -18,14 +18,14 @@ Options that can be passed to the `.init()` static method of the HardenPlugin.
 
 ```ts title="Signature"
 interface HardenPluginOptions {
-  maxQueryComplexity?: number;
-  queryComplexityEstimators?: ComplexityEstimator[];
-  logComplexityScore?: boolean;
-  customComplexityFactors?: {
+    maxQueryComplexity?: number;
+    queryComplexityEstimators?: ComplexityEstimator[];
+    logComplexityScore?: boolean;
+    customComplexityFactors?: {
         [path: string]: number;
     };
-  hideFieldSuggestions?: boolean;
-  apiMode?: 'dev' | 'prod';
+    hideFieldSuggestions?: boolean;
+    apiMode?: 'dev' | 'prod';
 }
 ```
 

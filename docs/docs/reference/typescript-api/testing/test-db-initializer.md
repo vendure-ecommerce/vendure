@@ -32,9 +32,9 @@ registerInitializer('cockroachdb', new CockroachDbInitializer());
 
 ```ts title="Signature"
 interface TestDbInitializer<T extends BaseConnectionOptions> {
-  init(testFileName: string, connectionOptions: T): Promise<T>;
-  populate(populateFn: () => Promise<void>): Promise<void>;
-  destroy(): void | Promise<void>;
+    init(testFileName: string, connectionOptions: T): Promise<T>;
+    populate(populateFn: () => Promise<void>): Promise<void>;
+    destroy(): void | Promise<void>;
 }
 ```
 

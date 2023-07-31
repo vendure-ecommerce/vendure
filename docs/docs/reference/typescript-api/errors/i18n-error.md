@@ -25,7 +25,7 @@ a more specific Error class.
 
 ```ts title="Signature"
 class I18nError extends ApolloError {
-  constructor(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: LogLevel = LogLevel.Warn)
+    constructor(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: LogLevel = LogLevel.Warn)
 }
 ```
 * Extends: <code>ApolloError</code>

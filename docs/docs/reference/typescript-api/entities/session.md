@@ -19,19 +19,19 @@ in the case of un-authenticated users, otherwise it is an <a href='/reference/ty
 
 ```ts title="Signature"
 class Session extends VendureEntity {
-  @Index({ unique: true }) @Column() @Index({ unique: true })
+    @Index({ unique: true })
     @Column()
     token: string;
-  @Column() @Column() expires: Date;
-  @Column() @Column() invalidated: boolean;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @Column() expires: Date;
+    @Column() invalidated: boolean;
+    @EntityId({ nullable: true })
     activeOrderId?: ID;
-  @Index() @ManyToOne(type => Order) @Index()
+    @Index()
     @ManyToOne(type => Order)
     activeOrder: Order | null;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     activeChannelId?: ID;
-  @Index() @ManyToOne(type => Channel) @Index()
+    @Index()
     @ManyToOne(type => Channel)
     activeChannel: Channel | null;
 }

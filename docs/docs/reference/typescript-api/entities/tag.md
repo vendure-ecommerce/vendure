@@ -19,8 +19,8 @@ It is used to help organize and filter those entities.
 
 ```ts title="Signature"
 class Tag extends VendureEntity {
-  constructor(input?: DeepPartial<Tag>)
-  @Column() @Column()
+    constructor(input?: DeepPartial<Tag>)
+    @Column()
     value: string;
 }
 ```

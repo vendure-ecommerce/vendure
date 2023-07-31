@@ -19,19 +19,19 @@ in the <a href='/reference/typescript-api/payment/payment-options#paymentoptions
 
 ```ts title="Signature"
 class PaymentMethod extends VendureEntity implements Translatable, ChannelAware, HasCustomFields {
-  constructor(input?: DeepPartial<PaymentMethod>)
-  name: LocaleString;
-  @Column({ default: '' }) @Column({ default: '' }) code: string;
-  description: LocaleString;
-  @OneToMany(type => PaymentMethodTranslation, translation => translation.base, { eager: true }) @OneToMany(type => PaymentMethodTranslation, translation => translation.base, { eager: true })
+    constructor(input?: DeepPartial<PaymentMethod>)
+    name: LocaleString;
+    @Column({ default: '' }) code: string;
+    description: LocaleString;
+    @OneToMany(type => PaymentMethodTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<PaymentMethod>>;
-  @Column() @Column() enabled: boolean;
-  @Column('simple-json', { nullable: true }) @Column('simple-json', { nullable: true }) checker: ConfigurableOperation | null;
-  @Column('simple-json') @Column('simple-json') handler: ConfigurableOperation;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @Column() enabled: boolean;
+    @Column('simple-json', { nullable: true }) checker: ConfigurableOperation | null;
+    @Column('simple-json') handler: ConfigurableOperation;
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
-  @Column(type => CustomPaymentMethodFields) @Column(type => CustomPaymentMethodFields)
+    @Column(type => CustomPaymentMethodFields)
     customFields: CustomPaymentMethodFields;
 }
 ```

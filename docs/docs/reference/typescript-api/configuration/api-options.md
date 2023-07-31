@@ -19,23 +19,23 @@ to be extended with middleware.
 
 ```ts title="Signature"
 interface ApiOptions {
-  hostname?: string;
-  port: number;
-  adminApiPath?: string;
-  shopApiPath?: string;
-  adminApiPlayground?: boolean | any;
-  shopApiPlayground?: boolean | any;
-  adminApiDebug?: boolean;
-  shopApiDebug?: boolean;
-  shopListQueryLimit?: number;
-  adminListQueryLimit?: number;
-  adminApiValidationRules?: Array<(context: ValidationContext) => any>;
-  shopApiValidationRules?: Array<(context: ValidationContext) => any>;
-  channelTokenKey?: string;
-  cors?: boolean | CorsOptions;
-  middleware?: Middleware[];
-  apolloServerPlugins?: PluginDefinition[];
-  introspection?: boolean;
+    hostname?: string;
+    port: number;
+    adminApiPath?: string;
+    shopApiPath?: string;
+    adminApiPlayground?: boolean | any;
+    shopApiPlayground?: boolean | any;
+    adminApiDebug?: boolean;
+    shopApiDebug?: boolean;
+    shopListQueryLimit?: number;
+    adminListQueryLimit?: number;
+    adminApiValidationRules?: Array<(context: ValidationContext) => any>;
+    shopApiValidationRules?: Array<(context: ValidationContext) => any>;
+    channelTokenKey?: string;
+    cors?: boolean | CorsOptions;
+    middleware?: Middleware[];
+    apolloServerPlugins?: PluginDefinition[];
+    introspection?: boolean;
 }
 ```
 

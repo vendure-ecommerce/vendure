@@ -26,9 +26,9 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface JobBufferStorageStrategy extends InjectableStrategy {
-  add(bufferId: string, job: Job): Promise<Job>;
-  bufferSize(bufferIds?: string[]): Promise<{ [bufferId: string]: number }>;
-  flush(bufferIds?: string[]): Promise<{ [bufferId: string]: Job[] }>;
+    add(bufferId: string, job: Job): Promise<Job>;
+    bufferSize(bufferIds?: string[]): Promise<{ [bufferId: string]: number }>;
+    flush(bufferIds?: string[]): Promise<{ [bufferId: string]: Job[] }>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

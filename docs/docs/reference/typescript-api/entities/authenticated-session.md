@@ -18,11 +18,11 @@ An AuthenticatedSession is created upon successful authentication.
 
 ```ts title="Signature"
 class AuthenticatedSession extends Session {
-  constructor(input: DeepPartial<AuthenticatedSession>)
-  @Index() @ManyToOne(type => User) @Index()
+    constructor(input: DeepPartial<AuthenticatedSession>)
+    @Index()
     @ManyToOne(type => User)
     user: User;
-  @Column() @Column()
+    @Column()
     authenticationStrategy: string;
 }
 ```

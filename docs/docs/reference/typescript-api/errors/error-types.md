@@ -18,7 +18,7 @@ This error should be thrown when some unexpected and exceptional case is encount
 
 ```ts title="Signature"
 class InternalServerError extends I18nError {
-  constructor(message: string, variables: { [key: string]: string | number } = {})
+    constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
@@ -45,7 +45,7 @@ This error should be thrown when user input is not as expected.
 
 ```ts title="Signature"
 class UserInputError extends I18nError {
-  constructor(message: string, variables: { [key: string]: string | number } = {})
+    constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
@@ -72,7 +72,7 @@ This error should be thrown when an operation is attempted which is not allowed.
 
 ```ts title="Signature"
 class IllegalOperationError extends I18nError {
-  constructor(message: string, variables: { [key: string]: string | number } = {})
+    constructor(message: string, variables: { [key: string]: string | number } = {})
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
@@ -99,7 +99,7 @@ This error should be thrown when the user's authentication credentials do not ma
 
 ```ts title="Signature"
 class UnauthorizedError extends I18nError {
-  constructor()
+    constructor()
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
@@ -127,7 +127,7 @@ his or her privileges.
 
 ```ts title="Signature"
 class ForbiddenError extends I18nError {
-  constructor(logLevel: LogLevel = LogLevel.Error)
+    constructor(logLevel: LogLevel = LogLevel.Error)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
@@ -155,7 +155,7 @@ channel token.
 
 ```ts title="Signature"
 class ChannelNotFoundError extends I18nError {
-  constructor(token: string)
+    constructor(token: string)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
@@ -183,7 +183,7 @@ the given entityName (Product, User etc.) exists with the provided id.
 
 ```ts title="Signature"
 class EntityNotFoundError extends I18nError {
-  constructor(entityName: keyof typeof coreEntitiesMap | string, id: ID)
+    constructor(entityName: keyof typeof coreEntitiesMap | string, id: ID)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>

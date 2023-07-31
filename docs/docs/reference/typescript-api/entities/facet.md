@@ -23,19 +23,19 @@ the various brands of product, e.g. "Apple", "Samsung", "Dell", "HP" etc.
 
 ```ts title="Signature"
 class Facet extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
-  constructor(input?: DeepPartial<Facet>)
-  name: LocaleString;
-  @Column({ default: false }) @Column({ default: false })
+    constructor(input?: DeepPartial<Facet>)
+    name: LocaleString;
+    @Column({ default: false })
     isPrivate: boolean;
-  @Column({ unique: true }) @Column({ unique: true })
+    @Column({ unique: true })
     code: string;
-  @OneToMany(type => FacetTranslation, translation => translation.base, { eager: true }) @OneToMany(type => FacetTranslation, translation => translation.base, { eager: true })
+    @OneToMany(type => FacetTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Facet>>;
-  @OneToMany(type => FacetValue, value => value.facet) @OneToMany(type => FacetValue, value => value.facet)
+    @OneToMany(type => FacetValue, value => value.facet)
     values: FacetValue[];
-  @Column(type => CustomFacetFields) @Column(type => CustomFacetFields)
+    @Column(type => CustomFacetFields)
     customFields: CustomFacetFields;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

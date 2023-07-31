@@ -24,20 +24,20 @@ API by the use of the `Transaction` decorator.
 
 ```ts title="Signature"
 class TransactionalConnection {
-  constructor(connection: Connection, transactionWrapper: TransactionWrapper)
-  rawConnection: Connection
-  getRepository(target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
-  getRepository(ctx: RequestContext | undefined, target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
-  getRepository(ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined, maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
-  async withTransaction(work: (ctx: RequestContext) => Promise<T>) => Promise<T>;
-  async withTransaction(ctx: RequestContext, work: (ctx: RequestContext) => Promise<T>) => Promise<T>;
-  async withTransaction(ctxOrWork: RequestContext | ((ctx: RequestContext) => Promise<T>), maybeWork?: (ctx: RequestContext) => Promise<T>) => Promise<T>;
-  async startTransaction(ctx: RequestContext, isolationLevel?: TransactionIsolationLevel) => ;
-  async commitOpenTransaction(ctx: RequestContext) => ;
-  async rollBackTransaction(ctx: RequestContext) => ;
-  async getEntityOrThrow(ctx: RequestContext, entityType: Type<T>, id: ID, options: GetEntityOrThrowOptions<T> = {}) => Promise<T>;
-  findOneInChannel(ctx: RequestContext, entity: Type<T>, id: ID, channelId: ID, options: FindOneOptions<T> = {}) => ;
-  findByIdsInChannel(ctx: RequestContext, entity: Type<T>, ids: ID[], channelId: ID, options: FindManyOptions<T>) => ;
+    constructor(connection: Connection, transactionWrapper: TransactionWrapper)
+    rawConnection: Connection
+    getRepository(target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
+    getRepository(ctx: RequestContext | undefined, target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
+    getRepository(ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined, maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
+    withTransaction(work: (ctx: RequestContext) => Promise<T>) => Promise<T>;
+    withTransaction(ctx: RequestContext, work: (ctx: RequestContext) => Promise<T>) => Promise<T>;
+    withTransaction(ctxOrWork: RequestContext | ((ctx: RequestContext) => Promise<T>), maybeWork?: (ctx: RequestContext) => Promise<T>) => Promise<T>;
+    startTransaction(ctx: RequestContext, isolationLevel?: TransactionIsolationLevel) => ;
+    commitOpenTransaction(ctx: RequestContext) => ;
+    rollBackTransaction(ctx: RequestContext) => ;
+    getEntityOrThrow(ctx: RequestContext, entityType: Type<T>, id: ID, options: GetEntityOrThrowOptions<T> = {}) => Promise<T>;
+    findOneInChannel(ctx: RequestContext, entity: Type<T>, id: ID, channelId: ID, options: FindOneOptions<T> = {}) => ;
+    findByIdsInChannel(ctx: RequestContext, entity: Type<T>, ids: ID[], channelId: ID, options: FindManyOptions<T>) => ;
 }
 ```
 

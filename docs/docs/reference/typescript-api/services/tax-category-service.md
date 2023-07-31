@@ -18,12 +18,12 @@ Contains methods relating to <a href='/reference/typescript-api/entities/tax-cat
 
 ```ts title="Signature"
 class TaxCategoryService {
-  constructor(connection: TransactionalConnection, eventBus: EventBus, listQueryBuilder: ListQueryBuilder)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<TaxCategory>) => Promise<PaginatedList<TaxCategory>>;
-  findOne(ctx: RequestContext, taxCategoryId: ID) => Promise<TaxCategory | undefined>;
-  async create(ctx: RequestContext, input: CreateTaxCategoryInput) => Promise<TaxCategory>;
-  async update(ctx: RequestContext, input: UpdateTaxCategoryInput) => Promise<TaxCategory>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    constructor(connection: TransactionalConnection, eventBus: EventBus, listQueryBuilder: ListQueryBuilder)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<TaxCategory>) => Promise<PaginatedList<TaxCategory>>;
+    findOne(ctx: RequestContext, taxCategoryId: ID) => Promise<TaxCategory | undefined>;
+    create(ctx: RequestContext, input: CreateTaxCategoryInput) => Promise<TaxCategory>;
+    update(ctx: RequestContext, input: UpdateTaxCategoryInput) => Promise<TaxCategory>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
 ```
 

@@ -19,11 +19,11 @@ or tax rules.
 
 ```ts title="Signature"
 class CustomerGroup extends VendureEntity implements HasCustomFields {
-  constructor(input?: DeepPartial<CustomerGroup>)
-  @Column() @Column() name: string;
-  @ManyToMany(type => Customer, customer => customer.groups) @ManyToMany(type => Customer, customer => customer.groups)
+    constructor(input?: DeepPartial<CustomerGroup>)
+    @Column() name: string;
+    @ManyToMany(type => Customer, customer => customer.groups)
     customers: Customer[];
-  @Column(type => CustomCustomerGroupFields) @Column(type => CustomCustomerGroupFields)
+    @Column(type => CustomCustomerGroupFields)
     customFields: CustomCustomerGroupFields;
 }
 ```

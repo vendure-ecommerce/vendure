@@ -31,7 +31,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface AssetImportStrategy extends InjectableStrategy {
-  getStreamFromPath(assetPath: string): Readable | Promise<Readable>;
+    getStreamFromPath(assetPath: string): Readable | Promise<Readable>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

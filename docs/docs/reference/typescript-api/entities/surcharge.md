@@ -19,26 +19,26 @@ a ProductVariant. It can be used to e.g. represent payment-related surcharges.
 
 ```ts title="Signature"
 class Surcharge extends VendureEntity {
-  constructor(input?: DeepPartial<Surcharge>)
-  @Column() @Column()
+    constructor(input?: DeepPartial<Surcharge>)
+    @Column()
     description: string;
-  @Money() @Money()
+    @Money()
     listPrice: number;
-  @Column() @Column()
+    @Column()
     listPriceIncludesTax: boolean;
-  @Column() @Column()
+    @Column()
     sku: string;
-  @Column('simple-json') @Column('simple-json')
+    @Column('simple-json')
     taxLines: TaxLine[];
-  @Index() @ManyToOne(type => Order, order => order.surcharges, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => Order, order => order.surcharges, { onDelete: 'CASCADE' })
     order: Order;
-  @Index() @ManyToOne(type => OrderModification, orderModification => orderModification.surcharges) @Index()
+    @Index()
     @ManyToOne(type => OrderModification, orderModification => orderModification.surcharges)
     orderModification: OrderModification;
-  @Calculated() price: number
-  @Calculated() priceWithTax: number
-  @Calculated() taxRate: number
+    price: number
+    priceWithTax: number
+    taxRate: number
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

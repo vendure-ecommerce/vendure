@@ -18,8 +18,8 @@ Options related to importing & exporting data.
 
 ```ts title="Signature"
 interface ImportExportOptions {
-  importAssetsDir?: string;
-  assetImportStrategy?: AssetImportStrategy;
+    importAssetsDir?: string;
+    assetImportStrategy?: AssetImportStrategy;
 }
 ```
 

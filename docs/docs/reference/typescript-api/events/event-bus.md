@@ -56,10 +56,10 @@ export class MyPlugin implements OnApplicationBootstrap {
 
 ```ts title="Signature"
 class EventBus implements OnModuleDestroy {
-  constructor(transactionSubscriber: TransactionSubscriber)
-  publish(event: T) => void;
-  ofType(type: Type<T>) => Observable<T>;
-  filter(predicate: (event: VendureEvent) => boolean) => Observable<T>;
+    constructor(transactionSubscriber: TransactionSubscriber)
+    publish(event: T) => void;
+    ofType(type: Type<T>) => Observable<T>;
+    filter(predicate: (event: VendureEvent) => boolean) => Observable<T>;
 }
 ```
 * Implements: <code>OnModuleDestroy</code>

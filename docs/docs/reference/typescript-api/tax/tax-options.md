@@ -18,8 +18,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ```ts title="Signature"
 interface TaxOptions {
-  taxZoneStrategy?: TaxZoneStrategy;
-  taxLineCalculationStrategy?: TaxLineCalculationStrategy;
+    taxZoneStrategy?: TaxZoneStrategy;
+    taxLineCalculationStrategy?: TaxLineCalculationStrategy;
 }
 ```
 

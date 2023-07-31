@@ -18,8 +18,8 @@ A configuration option for the Cache-Control header in the AssetServerPlugin ass
 
 ```ts title="Signature"
 type CacheConfig = {
-  maxAge: number;
-  restriction?: 'public' | 'private';
+    maxAge: number;
+    restriction?: 'public' | 'private';
 }
 ```
 

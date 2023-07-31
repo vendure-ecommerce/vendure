@@ -19,11 +19,11 @@ the `id` property is defined by the <a href='/reference/typescript-api/configura
 
 ```ts title="Signature"
 class VendureEntity {
-  constructor(input?: DeepPartial<VendureEntity>)
-  @PrimaryGeneratedId() @PrimaryGeneratedId()
+    constructor(input?: DeepPartial<VendureEntity>)
+    @PrimaryGeneratedId()
     id: ID;
-  @CreateDateColumn() @CreateDateColumn() createdAt: Date;
-  @UpdateDateColumn() @UpdateDateColumn() updatedAt: Date;
+    @CreateDateColumn() createdAt: Date;
+    @UpdateDateColumn() updatedAt: Date;
 }
 ```
 

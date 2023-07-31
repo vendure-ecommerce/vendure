@@ -18,12 +18,12 @@ Contains methods relating to <a href='/reference/typescript-api/entities/provinc
 
 ```ts title="Signature"
 class ProvinceService {
-  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, translator: TranslatorService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Province>, relations: RelationPaths<Province> = []) => Promise<PaginatedList<Translated<Province>>>;
-  findOne(ctx: RequestContext, provinceId: ID, relations: RelationPaths<Province> = []) => Promise<Translated<Province> | undefined>;
-  async create(ctx: RequestContext, input: CreateProvinceInput) => Promise<Translated<Province>>;
-  async update(ctx: RequestContext, input: UpdateProvinceInput) => Promise<Translated<Province>>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, translator: TranslatorService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Province>, relations: RelationPaths<Province> = []) => Promise<PaginatedList<Translated<Province>>>;
+    findOne(ctx: RequestContext, provinceId: ID, relations: RelationPaths<Province> = []) => Promise<Translated<Province> | undefined>;
+    create(ctx: RequestContext, input: CreateProvinceInput) => Promise<Translated<Province>>;
+    update(ctx: RequestContext, input: UpdateProvinceInput) => Promise<Translated<Province>>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
 ```
 

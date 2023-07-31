@@ -22,19 +22,19 @@ to notify on new jobs. It is used by the <a href='/reference/typescript-api/job-
 
 ```ts title="Signature"
 class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
-  public public concurrency: number;
-  public public pollInterval: number | ((queueName: string) => number);
-  public public setRetries: (queueName: string, job: Job) => number;
-  public public backOffStrategy?: BackoffStrategy;
-  constructor(config?: PollingJobQueueStrategyConfig)
-  constructor(concurrency?: number, pollInterval?: number)
-  constructor(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number)
-  async start(queueName: string, process: (job: Job<Data>) => Promise<any>) => ;
-  async stop(queueName: string, process: (job: Job<Data>) => Promise<any>) => ;
-  async cancelJob(jobId: ID) => Promise<Job | undefined>;
-  abstract next(queueName: string) => Promise<Job | undefined>;
-  abstract update(job: Job) => Promise<void>;
-  abstract findOne(id: ID) => Promise<Job | undefined>;
+    public concurrency: number;
+    public pollInterval: number | ((queueName: string) => number);
+    public setRetries: (queueName: string, job: Job) => number;
+    public backOffStrategy?: BackoffStrategy;
+    constructor(config?: PollingJobQueueStrategyConfig)
+    constructor(concurrency?: number, pollInterval?: number)
+    constructor(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number)
+    start(queueName: string, process: (job: Job<Data>) => Promise<any>) => ;
+    stop(queueName: string, process: (job: Job<Data>) => Promise<any>) => ;
+    cancelJob(jobId: ID) => Promise<Job | undefined>;
+    next(queueName: string) => Promise<Job | undefined>;
+    update(job: Job) => Promise<void>;
+    findOne(id: ID) => Promise<Job | undefined>;
 }
 ```
 * Extends: <code>InjectableJobQueueStrategy</code>

@@ -57,7 +57,7 @@ export class MyPlugin {
 
 ```ts title="Signature"
 class HealthCheckRegistryService {
-  registerIndicatorFunction(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => ;
+    registerIndicatorFunction(fn: HealthIndicatorFunction | HealthIndicatorFunction[]) => ;
 }
 ```
 

@@ -19,8 +19,8 @@ NavMenuItem's icon.
 
 ```ts title="Signature"
 interface NavMenuBadge {
-  type: NavMenuBadgeType;
-  propagateToSection?: boolean;
+    type: NavMenuBadgeType;
+    propagateToSection?: boolean;
 }
 ```
 

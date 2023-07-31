@@ -52,24 +52,24 @@ export class GlobalSettingsComponent extends BaseDetailComponent<MyEntityFragmen
 
 ```ts title="Signature"
 class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> implements DeactivateAware {
-  entity$: Observable<Entity>;
-  availableLanguages$: Observable<LanguageCode[]>;
-  languageCode$: Observable<LanguageCode>;
-  languageCode: LanguageCode;
-  isNew$: Observable<boolean>;
-  id: string;
-  abstract abstract detailForm: UntypedFormGroup;
-  protected protected destroy$ = new Subject<void>();
-  constructor(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: DataService)
-  init() => ;
-  protected setUpStreams() => ;
-  destroy() => ;
-  setLanguage(code: LanguageCode) => ;
-  canDeactivate() => boolean;
-  protected abstract setFormValues(entity: Entity, languageCode: LanguageCode) => void;
-  protected setCustomFieldFormValues(customFields: CustomFieldConfig[], formGroup: AbstractControl | null, entity: T, currentTranslation?: TranslationOf<T>) => ;
-  protected getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>) => CustomFieldConfig[];
-  protected setQueryParam(key: string, value: any) => ;
+    entity$: Observable<Entity>;
+    availableLanguages$: Observable<LanguageCode[]>;
+    languageCode$: Observable<LanguageCode>;
+    languageCode: LanguageCode;
+    isNew$: Observable<boolean>;
+    id: string;
+    abstract detailForm: UntypedFormGroup;
+    protected destroy$ = new Subject<void>();
+    constructor(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: DataService)
+    init() => ;
+    setUpStreams() => ;
+    destroy() => ;
+    setLanguage(code: LanguageCode) => ;
+    canDeactivate() => boolean;
+    setFormValues(entity: Entity, languageCode: LanguageCode) => void;
+    setCustomFieldFormValues(customFields: CustomFieldConfig[], formGroup: AbstractControl | null, entity: T, currentTranslation?: TranslationOf<T>) => ;
+    getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>) => CustomFieldConfig[];
+    setQueryParam(key: string, value: any) => ;
 }
 ```
 * Implements: <code>DeactivateAware</code>

@@ -23,14 +23,14 @@ a given operation.
 
 ```ts title="Signature"
 class StockLocation extends VendureEntity implements HasCustomFields, ChannelAware {
-  constructor(input: DeepPartial<StockLocation>)
-  @Column() @Column()
+    constructor(input: DeepPartial<StockLocation>)
+    @Column()
     name: string;
-  @Column() @Column()
+    @Column()
     description: string;
-  @Column(type => CustomStockLocationFields) @Column(type => CustomStockLocationFields)
+    @Column(type => CustomStockLocationFields)
     customFields: CustomStockLocationFields;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

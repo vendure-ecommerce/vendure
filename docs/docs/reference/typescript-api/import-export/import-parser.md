@@ -19,7 +19,7 @@ This is used internally by the <a href='/reference/typescript-api/import-export/
 
 ```ts title="Signature"
 class ImportParser {
-  async parseProducts(input: string | Stream, mainLanguage: LanguageCode = this.configService.defaultLanguageCode) => Promise<ParseResult<ParsedProductWithVariants>>;
+    parseProducts(input: string | Stream, mainLanguage: LanguageCode = this.configService.defaultLanguageCode) => Promise<ParseResult<ParsedProductWithVariants>>;
 }
 ```
 
@@ -45,7 +45,7 @@ by the <a href='/reference/typescript-api/import-export/import-parser#importpars
 
 ```ts title="Signature"
 interface ParsedOptionGroup {
-  translations: Array<{
+    translations: Array<{
         languageCode: LanguageCode;
         name: string;
         values: string[];
@@ -74,7 +74,7 @@ by the <a href='/reference/typescript-api/import-export/import-parser#importpars
 
 ```ts title="Signature"
 interface ParsedFacet {
-  translations: Array<{
+    translations: Array<{
         languageCode: LanguageCode;
         facet: string;
         value: string;
@@ -103,14 +103,14 @@ by the <a href='/reference/typescript-api/import-export/import-parser#importpars
 
 ```ts title="Signature"
 interface ParsedProductVariant {
-  sku: string;
-  price: number;
-  taxCategory: string;
-  stockOnHand: number;
-  trackInventory: GlobalFlag;
-  assetPaths: string[];
-  facets: ParsedFacet[];
-  translations: Array<{
+    sku: string;
+    price: number;
+    taxCategory: string;
+    stockOnHand: number;
+    trackInventory: GlobalFlag;
+    assetPaths: string[];
+    facets: ParsedFacet[];
+    translations: Array<{
         languageCode: LanguageCode;
         optionValues: string[];
         customFields: {
@@ -176,10 +176,10 @@ by the <a href='/reference/typescript-api/import-export/import-parser#importpars
 
 ```ts title="Signature"
 interface ParsedProduct {
-  assetPaths: string[];
-  optionGroups: ParsedOptionGroup[];
-  facets: ParsedFacet[];
-  translations: Array<{
+    assetPaths: string[];
+    optionGroups: ParsedOptionGroup[];
+    facets: ParsedFacet[];
+    translations: Array<{
         languageCode: LanguageCode;
         name: string;
         slug: string;
@@ -227,8 +227,8 @@ The data structure into which an import CSV file is parsed by the
 
 ```ts title="Signature"
 interface ParsedProductWithVariants {
-  product: ParsedProduct;
-  variants: ParsedProductVariant[];
+    product: ParsedProduct;
+    variants: ParsedProductVariant[];
 }
 ```
 
@@ -257,9 +257,9 @@ The result returned by the <a href='/reference/typescript-api/import-export/impo
 
 ```ts title="Signature"
 interface ParseResult<T> {
-  results: T[];
-  errors: string[];
-  processed: number;
+    results: T[];
+    errors: string[];
+    processed: number;
 }
 ```
 

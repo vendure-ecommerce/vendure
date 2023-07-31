@@ -19,8 +19,8 @@ when Vendure first bootstraps.
 
 ```ts title="Signature"
 interface SuperadminCredentials {
-  identifier: string;
-  password: string;
+    identifier: string;
+    password: string;
 }
 ```
 

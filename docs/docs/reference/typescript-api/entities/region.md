@@ -20,19 +20,19 @@ Regions can be grouped into <a href='/reference/typescript-api/entities/zone#zon
 
 ```ts title="Signature"
 class Region extends VendureEntity implements Translatable, HasCustomFields {
-  @Column() @Column() code: string;
-  @Column({ nullable: false, type: 'varchar' }) readonly @Column({ nullable: false, type: 'varchar' })
+    @Column() code: string;
+    @Column({ nullable: false, type: 'varchar' })
     readonly type: RegionType;
-  name: LocaleString;
-  @Index() @ManyToOne(type => Region, { nullable: true, onDelete: 'SET NULL' }) @Index()
+    name: LocaleString;
+    @Index()
     @ManyToOne(type => Region, { nullable: true, onDelete: 'SET NULL' })
     parent?: Region;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     parentId?: ID;
-  @Column() @Column() enabled: boolean;
-  @OneToMany(type => RegionTranslation, translation => translation.base, { eager: true }) @OneToMany(type => RegionTranslation, translation => translation.base, { eager: true })
+    @Column() enabled: boolean;
+    @OneToMany(type => RegionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Region>>;
-  @Column(type => CustomRegionFields) @Column(type => CustomRegionFields)
+    @Column(type => CustomRegionFields)
     customFields: CustomRegionFields;
 }
 ```

@@ -19,7 +19,7 @@ based on the applicable <a href='/reference/typescript-api/entities/tax-rate#tax
 
 ```ts title="Signature"
 class DefaultTaxLineCalculationStrategy implements TaxLineCalculationStrategy {
-  calculate(args: CalculateTaxLinesArgs) => TaxLine[];
+    calculate(args: CalculateTaxLinesArgs) => TaxLine[];
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/tax/tax-line-calculation-strategy#taxlinecalculationstrategy'>TaxLineCalculationStrategy</a></code>

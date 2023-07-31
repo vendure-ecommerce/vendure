@@ -18,7 +18,7 @@ Entities which can be assigned to Channels should implement this interface.
 
 ```ts title="Signature"
 interface ChannelAware {
-  channels: Channel[];
+    channels: Channel[];
 }
 ```
 
@@ -42,7 +42,7 @@ Entities which can be soft deleted should implement this interface.
 
 ```ts title="Signature"
 interface SoftDeletable {
-  deletedAt: Date | null;
+    deletedAt: Date | null;
 }
 ```
 
@@ -66,7 +66,7 @@ Entities which can be ordered relative to their siblings in a list.
 
 ```ts title="Signature"
 interface Orderable {
-  position: number;
+    position: number;
 }
 ```
 
@@ -90,7 +90,7 @@ Entities which can have Tags applied to them.
 
 ```ts title="Signature"
 interface Taggable {
-  tags: Tag[];
+    tags: Tag[];
 }
 ```
 
@@ -114,7 +114,7 @@ Entities which have localizable string properties should implement this type.
 
 ```ts title="Signature"
 interface Translatable {
-  translations: Array<Translation<VendureEntity>>;
+    translations: Array<Translation<VendureEntity>>;
 }
 ```
 

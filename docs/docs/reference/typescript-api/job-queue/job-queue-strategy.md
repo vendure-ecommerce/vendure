@@ -27,12 +27,12 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface JobQueueStrategy extends InjectableStrategy {
-  add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>>;
-  start<Data extends JobData<Data> = object>(
+    add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>>;
+    start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void>;
-  stop<Data extends JobData<Data> = object>(
+    stop<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void>;

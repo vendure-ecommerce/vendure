@@ -62,9 +62,9 @@ const config: VendureConfig = {
 
 ```ts title="Signature"
 class AdminUiPlugin implements NestModule {
-  constructor(configService: ConfigService, processContext: ProcessContext)
-  static init(options: AdminUiPluginOptions) => Type<AdminUiPlugin>;
-  async configure(consumer: MiddlewareConsumer) => ;
+    constructor(configService: ConfigService, processContext: ProcessContext)
+    init(options: AdminUiPluginOptions) => Type<AdminUiPlugin>;
+    configure(consumer: MiddlewareConsumer) => ;
 }
 ```
 * Implements: <code>NestModule</code>

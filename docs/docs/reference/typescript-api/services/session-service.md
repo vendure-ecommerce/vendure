@@ -18,16 +18,16 @@ Contains methods relating to <a href='/reference/typescript-api/entities/session
 
 ```ts title="Signature"
 class SessionService implements EntitySubscriberInterface {
-  constructor(connection: TransactionalConnection, configService: ConfigService, orderService: OrderService)
-  async createNewAuthenticatedSession(ctx: RequestContext, user: User, authenticationStrategyName: string) => Promise<AuthenticatedSession>;
-  async createAnonymousSession() => Promise<CachedSession>;
-  async getSessionFromToken(sessionToken: string) => Promise<CachedSession | undefined>;
-  serializeSession(session: AuthenticatedSession | AnonymousSession) => CachedSession;
-  async setActiveOrder(ctx: RequestContext, serializedSession: CachedSession, order: Order) => Promise<CachedSession>;
-  async unsetActiveOrder(ctx: RequestContext, serializedSession: CachedSession) => Promise<CachedSession>;
-  async setActiveChannel(serializedSession: CachedSession, channel: Channel) => Promise<CachedSession>;
-  async deleteSessionsByUser(ctx: RequestContext, user: User) => Promise<void>;
-  async deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID) => Promise<void>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, orderService: OrderService)
+    createNewAuthenticatedSession(ctx: RequestContext, user: User, authenticationStrategyName: string) => Promise<AuthenticatedSession>;
+    createAnonymousSession() => Promise<CachedSession>;
+    getSessionFromToken(sessionToken: string) => Promise<CachedSession | undefined>;
+    serializeSession(session: AuthenticatedSession | AnonymousSession) => CachedSession;
+    setActiveOrder(ctx: RequestContext, serializedSession: CachedSession, order: Order) => Promise<CachedSession>;
+    unsetActiveOrder(ctx: RequestContext, serializedSession: CachedSession) => Promise<CachedSession>;
+    setActiveChannel(serializedSession: CachedSession, channel: Channel) => Promise<CachedSession>;
+    deleteSessionsByUser(ctx: RequestContext, user: User) => Promise<void>;
+    deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID) => Promise<void>;
 }
 ```
 * Implements: <code>EntitySubscriberInterface</code>

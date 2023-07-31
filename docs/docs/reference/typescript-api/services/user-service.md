@@ -18,27 +18,27 @@ Contains methods relating to <a href='/reference/typescript-api/entities/user#us
 
 ```ts title="Signature"
 class UserService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef)
-  async getUserById(ctx: RequestContext, userId: ID) => Promise<User | undefined>;
-  async getUserByEmailAddress(ctx: RequestContext, emailAddress: string, userType?: 'administrator' | 'customer') => Promise<User | undefined>;
-  async createCustomerUser(ctx: RequestContext, identifier: string, password?: string) => Promise<User | PasswordValidationError>;
-  async addNativeAuthenticationMethod(ctx: RequestContext, user: User, identifier: string, password?: string) => Promise<User | PasswordValidationError>;
-  async createAdminUser(ctx: RequestContext, identifier: string, password: string) => Promise<User>;
-  async softDelete(ctx: RequestContext, userId: ID) => ;
-  async setVerificationToken(ctx: RequestContext, user: User) => Promise<User>;
-  async verifyUserByToken(ctx: RequestContext, verificationToken: string, password?: string) => Promise<ErrorResultUnion<VerifyCustomerAccountResult, User>>;
-  async setPasswordResetToken(ctx: RequestContext, emailAddress: string) => Promise<User | undefined>;
-  async resetPasswordByToken(ctx: RequestContext, passwordResetToken: string, password: string) => Promise<
+    constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef)
+    getUserById(ctx: RequestContext, userId: ID) => Promise<User | undefined>;
+    getUserByEmailAddress(ctx: RequestContext, emailAddress: string, userType?: 'administrator' | 'customer') => Promise<User | undefined>;
+    createCustomerUser(ctx: RequestContext, identifier: string, password?: string) => Promise<User | PasswordValidationError>;
+    addNativeAuthenticationMethod(ctx: RequestContext, user: User, identifier: string, password?: string) => Promise<User | PasswordValidationError>;
+    createAdminUser(ctx: RequestContext, identifier: string, password: string) => Promise<User>;
+    softDelete(ctx: RequestContext, userId: ID) => ;
+    setVerificationToken(ctx: RequestContext, user: User) => Promise<User>;
+    verifyUserByToken(ctx: RequestContext, verificationToken: string, password?: string) => Promise<ErrorResultUnion<VerifyCustomerAccountResult, User>>;
+    setPasswordResetToken(ctx: RequestContext, emailAddress: string) => Promise<User | undefined>;
+    resetPasswordByToken(ctx: RequestContext, passwordResetToken: string, password: string) => Promise<
         User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError
     >;
-  async changeUserAndNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) => ;
-  async setIdentifierChangeToken(ctx: RequestContext, user: User) => Promise<User>;
-  async changeIdentifierByToken(ctx: RequestContext, token: string) => Promise<
+    changeUserAndNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) => ;
+    setIdentifierChangeToken(ctx: RequestContext, user: User) => Promise<User>;
+    changeIdentifierByToken(ctx: RequestContext, token: string) => Promise<
         | { user: User; oldIdentifier: string }
         | IdentifierChangeTokenInvalidError
         | IdentifierChangeTokenExpiredError
     >;
-  async updatePassword(ctx: RequestContext, userId: ID, currentPassword: string, newPassword: string) => Promise<boolean | InvalidCredentialsError | PasswordValidationError>;
+    updatePassword(ctx: RequestContext, userId: ID, currentPassword: string, newPassword: string) => Promise<boolean | InvalidCredentialsError | PasswordValidationError>;
 }
 ```
 

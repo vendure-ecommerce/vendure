@@ -24,15 +24,15 @@ This component displays a plain JavaScript object as an expandable tree.
 
 ```ts title="Signature"
 class ObjectTreeComponent implements OnChanges {
-  @Input() @Input() value: { [key: string]: any } | string;
-  @Input() @Input() isArrayItem = false;
-  depth: number;
-  expanded: boolean;
-  valueIsArray: boolean;
-  entries: Array<{ key: string; value: any }>;
-  constructor(parent: ObjectTreeComponent)
-  ngOnChanges() => ;
-  isObject(value: any) => boolean;
+    @Input() value: { [key: string]: any } | string;
+    @Input() isArrayItem = false;
+    depth: number;
+    expanded: boolean;
+    valueIsArray: boolean;
+    entries: Array<{ key: string; value: any }>;
+    constructor(parent: ObjectTreeComponent)
+    ngOnChanges() => ;
+    isObject(value: any) => boolean;
 }
 ```
 * Implements: <code>OnChanges</code>

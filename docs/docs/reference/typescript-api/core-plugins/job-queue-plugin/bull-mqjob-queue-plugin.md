@@ -106,8 +106,8 @@ const config: VendureConfig = {
 
 ```ts title="Signature"
 class BullMQJobQueuePlugin {
-  static static options: BullMQPluginOptions;
-  static init(options: BullMQPluginOptions) => ;
+    static options: BullMQPluginOptions;
+    init(options: BullMQPluginOptions) => ;
 }
 ```
 

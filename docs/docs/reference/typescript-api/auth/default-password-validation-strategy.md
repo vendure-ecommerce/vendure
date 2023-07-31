@@ -24,8 +24,8 @@ this default will be made more strict.
 
 ```ts title="Signature"
 class DefaultPasswordValidationStrategy implements PasswordValidationStrategy {
-  constructor(options: { minLength?: number; regexp?: RegExp })
-  validate(ctx: RequestContext, password: string) => boolean | string;
+    constructor(options: { minLength?: number; regexp?: RegExp })
+    validate(ctx: RequestContext, password: string) => boolean | string;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/auth/password-validation-strategy#passwordvalidationstrategy'>PasswordValidationStrategy</a></code>

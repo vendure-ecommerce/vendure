@@ -82,8 +82,8 @@ export class BlogPostService {
 
 ```ts title="Signature"
 class ListQueryBuilder implements OnApplicationBootstrap {
-  constructor(connection: TransactionalConnection, configService: ConfigService)
-  build(entity: Type<T>, options: ListQueryOptions<T> = {}, extendedOptions: ExtendedListQueryOptions<T> = {}) => SelectQueryBuilder<T>;
+    constructor(connection: TransactionalConnection, configService: ConfigService)
+    build(entity: Type<T>, options: ListQueryOptions<T> = {}, extendedOptions: ExtendedListQueryOptions<T> = {}) => SelectQueryBuilder<T>;
 }
 ```
 * Implements: <code>OnApplicationBootstrap</code>
@@ -115,14 +115,14 @@ Options which can be passed to the ListQueryBuilder's `build()` method.
 
 ```ts title="Signature"
 type ExtendedListQueryOptions<T extends VendureEntity> = {
-  relations?: string[];
-  channelId?: ID;
-  where?: FindOptionsWhere<T>;
-  orderBy?: FindOneOptions<T>['order'];
-  entityAlias?: string;
-  ctx?: RequestContext;
-  customPropertyMap?: { [name: string]: string };
-  ignoreQueryLimits?: boolean;
+    relations?: string[];
+    channelId?: ID;
+    where?: FindOptionsWhere<T>;
+    orderBy?: FindOneOptions<T>['order'];
+    entityAlias?: string;
+    ctx?: RequestContext;
+    customPropertyMap?: { [name: string]: string };
+    ignoreQueryLimits?: boolean;
 }
 ```
 

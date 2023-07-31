@@ -20,11 +20,11 @@ The base class for all entity events used by the EventBus system.
 
 ```ts title="Signature"
 class VendureEntityEvent<Entity, Input = any> extends VendureEvent {
-  public readonly public readonly entity: Entity;
-  public readonly public readonly type: 'created' | 'updated' | 'deleted';
-  public readonly public readonly ctx: RequestContext;
-  public readonly public readonly input?: Input;
-  constructor(entity: Entity, type: 'created' | 'updated' | 'deleted', ctx: RequestContext, input?: Input)
+    public readonly entity: Entity;
+    public readonly type: 'created' | 'updated' | 'deleted';
+    public readonly ctx: RequestContext;
+    public readonly input?: Input;
+    constructor(entity: Entity, type: 'created' | 'updated' | 'deleted', ctx: RequestContext, input?: Input)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>

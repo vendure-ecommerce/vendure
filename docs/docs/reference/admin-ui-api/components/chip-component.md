@@ -27,11 +27,11 @@ A chip component for displaying a label with an optional action icon.
 
 ```ts title="Signature"
 class ChipComponent {
-  @Input() @Input() icon: string;
-  @Input() @Input() invert = false;
-  @Input() @Input() colorFrom = '';
-  @Input() @Input() colorType: 'error' | 'success' | 'warning';
-  @Output() @Output() iconClick = new EventEmitter<MouseEvent>();
+    @Input() icon: string;
+    @Input() invert = false;
+    @Input() colorFrom = '';
+    @Input() colorType: 'error' | 'success' | 'warning';
+    @Output() iconClick = new EventEmitter<MouseEvent>();
 }
 ```
 

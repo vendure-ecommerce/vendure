@@ -19,9 +19,9 @@ Common configuration options used when creating a new instance of a
 
 ```ts title="Signature"
 interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends InjectableStrategy {
-  code: string;
-  args: T;
-  description: LocalizedStringArray;
+    code: string;
+    args: T;
+    description: LocalizedStringArray;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

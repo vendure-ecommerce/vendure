@@ -19,8 +19,8 @@ entities such as <a href='/reference/typescript-api/entities/product#product'>Pr
 
 ```ts title="Signature"
 class SlugValidator {
-  constructor(connection: TransactionalConnection)
-  async validateSlugs(ctx: RequestContext, input: T, translationEntity: Type<E>) => Promise<T>;
+    constructor(connection: TransactionalConnection)
+    validateSlugs(ctx: RequestContext, input: T, translationEntity: Type<E>) => Promise<T>;
 }
 ```
 
@@ -49,8 +49,8 @@ class SlugValidator {
 
 ```ts title="Signature"
 type InputWithSlug = {
-  id?: ID | null;
-  translations?: Array<{
+    id?: ID | null;
+    translations?: Array<{
         id?: ID | null;
         languageCode: LanguageCode;
         slug?: string | null;

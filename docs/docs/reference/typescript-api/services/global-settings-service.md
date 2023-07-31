@@ -18,9 +18,9 @@ Contains methods relating to the {@link GlobalSettings} entity.
 
 ```ts title="Signature"
 class GlobalSettingsService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, requestCache: RequestContextCacheService)
-  async getSettings(ctx: RequestContext) => Promise<GlobalSettings>;
-  async updateSettings(ctx: RequestContext, input: UpdateGlobalSettingsInput) => Promise<GlobalSettings>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, requestCache: RequestContextCacheService)
+    getSettings(ctx: RequestContext) => Promise<GlobalSettings>;
+    updateSettings(ctx: RequestContext, input: UpdateGlobalSettingsInput) => Promise<GlobalSettings>;
 }
 ```
 

@@ -27,7 +27,7 @@ AssetServerPlugin.
 
 ```ts title="Signature"
 class AssetPreviewPipe implements PipeTransform {
-  transform(asset?: AssetFragment, preset: string | number = 'thumb') => string;
+    transform(asset?: AssetFragment, preset: string | number = 'thumb') => string;
 }
 ```
 * Implements: <code>PipeTransform</code>

@@ -24,8 +24,8 @@ Displays a human-readable name for a given region.
 
 ```ts title="Signature"
 class LocaleRegionNamePipe extends LocaleBasePipe implements PipeTransform {
-  constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
-  transform(value: any, locale?: unknown) => string;
+    constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
+    transform(value: any, locale?: unknown) => string;
 }
 ```
 * Extends: <code>LocaleBasePipe</code>

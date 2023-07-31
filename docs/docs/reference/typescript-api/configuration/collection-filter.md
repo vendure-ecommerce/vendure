@@ -56,8 +56,8 @@ export const skuCollectionFilter = new CollectionFilter({
 
 ```ts title="Signature"
 class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
-  constructor(config: CollectionFilterConfig<T>)
-  apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]) => SelectQueryBuilder<ProductVariant>;
+    constructor(config: CollectionFilterConfig<T>)
+    apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]) => SelectQueryBuilder<ProductVariant>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>

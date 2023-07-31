@@ -19,8 +19,8 @@ configure its behavior.
 
 ```ts title="Signature"
 interface ShippingEligibilityCheckerConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
-  check: CheckShippingEligibilityCheckerFn<T>;
-  shouldRunCheck?: ShouldRunCheckFn<T>;
+    check: CheckShippingEligibilityCheckerFn<T>;
+    shouldRunCheck?: ShouldRunCheckFn<T>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>

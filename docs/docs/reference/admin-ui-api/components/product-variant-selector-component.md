@@ -25,13 +25,13 @@ A component for selecting product variants via an autocomplete-style select inpu
 
 ```ts title="Signature"
 class ProductVariantSelectorComponent implements OnInit {
-  searchInput$ = new Subject<string>();
-  searchLoading = false;
-  searchResults$: Observable<ProductSelectorSearchQuery['search']['items']>;
-  @Output() @Output() productSelected = new EventEmitter<ProductSelectorSearchQuery['search']['items'][number]>();
-  constructor(dataService: DataService)
-  ngOnInit() => void;
-  selectResult(product?: ProductSelectorSearchQuery['search']['items'][number]) => ;
+    searchInput$ = new Subject<string>();
+    searchLoading = false;
+    searchResults$: Observable<ProductSelectorSearchQuery['search']['items']>;
+    @Output() productSelected = new EventEmitter<ProductSelectorSearchQuery['search']['items'][number]>();
+    constructor(dataService: DataService)
+    ngOnInit() => void;
+    selectResult(product?: ProductSelectorSearchQuery['search']['items'][number]) => ;
 }
 ```
 * Implements: <code>OnInit</code>

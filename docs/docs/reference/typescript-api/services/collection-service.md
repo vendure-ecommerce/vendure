@@ -18,28 +18,28 @@ Contains methods relating to <a href='/reference/typescript-api/entities/collect
 
 ```ts title="Signature"
 class CollectionService implements OnModuleInit {
-  constructor(connection: TransactionalConnection, channelService: ChannelService, assetService: AssetService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, jobQueueService: JobQueueService, configService: ConfigService, slugValidator: SlugValidator, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, roleService: RoleService)
-  async findAll(ctx: RequestContext, options?: ListQueryOptions<Collection> & { topLevelOnly?: boolean }, relations?: RelationPaths<Collection>) => Promise<PaginatedList<Translated<Collection>>>;
-  async findOne(ctx: RequestContext, collectionId: ID, relations?: RelationPaths<Collection>) => Promise<Translated<Collection> | undefined>;
-  async findByIds(ctx: RequestContext, ids: ID[], relations?: RelationPaths<Collection>) => Promise<Array<Translated<Collection>>>;
-  async findOneBySlug(ctx: RequestContext, slug: string, relations?: RelationPaths<Collection>) => Promise<Translated<Collection> | undefined>;
-  getAvailableFilters(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  async getParent(ctx: RequestContext, collectionId: ID) => Promise<Collection | undefined>;
-  async getChildren(ctx: RequestContext, collectionId: ID) => Promise<Collection[]>;
-  async getBreadcrumbs(ctx: RequestContext, collection: Collection) => Promise<Array<{ name: string; id: ID }>>;
-  async getCollectionsByProductId(ctx: RequestContext, productId: ID, publicOnly: boolean) => Promise<Array<Translated<Collection>>>;
-  async getDescendants(ctx: RequestContext, rootId: ID, maxDepth: number = Number.MAX_SAFE_INTEGER) => Promise<Array<Translated<Collection>>>;
-  getAncestors(collectionId: ID) => Promise<Collection[]>;
-  getAncestors(collectionId: ID, ctx: RequestContext) => Promise<Array<Translated<Collection>>>;
-  async getAncestors(collectionId: ID, ctx?: RequestContext) => Promise<Array<Translated<Collection> | Collection>>;
-  async previewCollectionVariants(ctx: RequestContext, input: PreviewCollectionVariantsInput, options?: ListQueryOptions<ProductVariant>, relations?: RelationPaths<Collection>) => Promise<PaginatedList<ProductVariant>>;
-  async create(ctx: RequestContext, input: CreateCollectionInput) => Promise<Translated<Collection>>;
-  async update(ctx: RequestContext, input: UpdateCollectionInput) => Promise<Translated<Collection>>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  async move(ctx: RequestContext, input: MoveCollectionInput) => Promise<Translated<Collection>>;
-  async getCollectionProductVariantIds(collection: Collection, ctx?: RequestContext) => Promise<ID[]>;
-  async assignCollectionsToChannel(ctx: RequestContext, input: AssignCollectionsToChannelInput) => Promise<Array<Translated<Collection>>>;
-  async removeCollectionsFromChannel(ctx: RequestContext, input: RemoveCollectionsFromChannelInput) => Promise<Array<Translated<Collection>>>;
+    constructor(connection: TransactionalConnection, channelService: ChannelService, assetService: AssetService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, jobQueueService: JobQueueService, configService: ConfigService, slugValidator: SlugValidator, configArgService: ConfigArgService, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, roleService: RoleService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Collection> & { topLevelOnly?: boolean }, relations?: RelationPaths<Collection>) => Promise<PaginatedList<Translated<Collection>>>;
+    findOne(ctx: RequestContext, collectionId: ID, relations?: RelationPaths<Collection>) => Promise<Translated<Collection> | undefined>;
+    findByIds(ctx: RequestContext, ids: ID[], relations?: RelationPaths<Collection>) => Promise<Array<Translated<Collection>>>;
+    findOneBySlug(ctx: RequestContext, slug: string, relations?: RelationPaths<Collection>) => Promise<Translated<Collection> | undefined>;
+    getAvailableFilters(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    getParent(ctx: RequestContext, collectionId: ID) => Promise<Collection | undefined>;
+    getChildren(ctx: RequestContext, collectionId: ID) => Promise<Collection[]>;
+    getBreadcrumbs(ctx: RequestContext, collection: Collection) => Promise<Array<{ name: string; id: ID }>>;
+    getCollectionsByProductId(ctx: RequestContext, productId: ID, publicOnly: boolean) => Promise<Array<Translated<Collection>>>;
+    getDescendants(ctx: RequestContext, rootId: ID, maxDepth: number = Number.MAX_SAFE_INTEGER) => Promise<Array<Translated<Collection>>>;
+    getAncestors(collectionId: ID) => Promise<Collection[]>;
+    getAncestors(collectionId: ID, ctx: RequestContext) => Promise<Array<Translated<Collection>>>;
+    getAncestors(collectionId: ID, ctx?: RequestContext) => Promise<Array<Translated<Collection> | Collection>>;
+    previewCollectionVariants(ctx: RequestContext, input: PreviewCollectionVariantsInput, options?: ListQueryOptions<ProductVariant>, relations?: RelationPaths<Collection>) => Promise<PaginatedList<ProductVariant>>;
+    create(ctx: RequestContext, input: CreateCollectionInput) => Promise<Translated<Collection>>;
+    update(ctx: RequestContext, input: UpdateCollectionInput) => Promise<Translated<Collection>>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    move(ctx: RequestContext, input: MoveCollectionInput) => Promise<Translated<Collection>>;
+    getCollectionProductVariantIds(collection: Collection, ctx?: RequestContext) => Promise<ID[]>;
+    assignCollectionsToChannel(ctx: RequestContext, input: AssignCollectionsToChannelInput) => Promise<Array<Translated<Collection>>>;
+    removeCollectionsFromChannel(ctx: RequestContext, input: RemoveCollectionsFromChannelInput) => Promise<Array<Translated<Collection>>>;
 }
 ```
 * Implements: <code>OnModuleInit</code>

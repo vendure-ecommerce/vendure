@@ -18,13 +18,13 @@ The object used to configure a new page tab.
 
 ```ts title="Signature"
 interface PageTabConfig {
-  location: PageLocationId;
-  tabIcon?: string;
-  route: string;
-  tab: string;
-  priority?: number;
-  component: Type<any> | ReturnType<typeof detailComponentWithResolver>;
-  routeConfig?: Route;
+    location: PageLocationId;
+    tabIcon?: string;
+    route: string;
+    tab: string;
+    priority?: number;
+    component: Type<any> | ReturnType<typeof detailComponentWithResolver>;
+    routeConfig?: Route;
 }
 ```
 

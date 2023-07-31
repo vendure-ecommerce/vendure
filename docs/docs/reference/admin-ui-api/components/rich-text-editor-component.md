@@ -27,19 +27,19 @@ A rich text (HTML) editor based on Prosemirror (https://prosemirror.net/)
 
 ```ts title="Signature"
 class RichTextEditorComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
-  @Input() @Input() label: string;
-  @HostBinding('class.readonly') @HostBinding('class.readonly')
+    @Input() label: string;
+    @HostBinding('class.readonly')
     _readonly = false;
-  onChange: (val: any) => void;
-  onTouch: () => void;
-  constructor(changeDetector: ChangeDetectorRef, prosemirrorService: ProsemirrorService, viewContainerRef: ViewContainerRef, contextMenuService: ContextMenuService)
-  menuElement: HTMLDivElement | null
-  ngAfterViewInit() => ;
-  ngOnDestroy() => ;
-  registerOnChange(fn: any) => ;
-  registerOnTouched(fn: any) => ;
-  setDisabledState(isDisabled: boolean) => ;
-  writeValue(value: any) => ;
+    onChange: (val: any) => void;
+    onTouch: () => void;
+    constructor(changeDetector: ChangeDetectorRef, prosemirrorService: ProsemirrorService, viewContainerRef: ViewContainerRef, contextMenuService: ContextMenuService)
+    menuElement: HTMLDivElement | null
+    ngAfterViewInit() => ;
+    ngOnDestroy() => ;
+    registerOnChange(fn: any) => ;
+    registerOnTouched(fn: any) => ;
+    setDisabledState(isDisabled: boolean) => ;
+    writeValue(value: any) => ;
 }
 ```
 * Implements: <code>ControlValueAccessor</code>, <code>AfterViewInit</code>, <code>OnDestroy</code>

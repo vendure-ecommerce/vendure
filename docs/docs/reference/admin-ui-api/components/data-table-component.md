@@ -74,32 +74,32 @@ extend the <a href='/reference/admin-ui-api/list-detail-views/base-list-componen
 
 ```ts title="Signature"
 class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDestroy {
-  @Input() @Input() items: T[];
-  @Input() @Input() itemsPerPage: number;
-  @Input() @Input() currentPage: number;
-  @Input() @Input() totalItems: number;
-  @Input() @Input() emptyStateLabel: string;
-  @Input() @Input() selectionManager?: SelectionManager<T>;
-  @Output() @Output() pageChange = new EventEmitter<number>();
-  @Output() @Output() itemsPerPageChange = new EventEmitter<number>();
-  @Input() @Input() allSelected: boolean;
-  @Input() @Input() isRowSelectedFn: (item: T) => boolean;
-  @Output() @Output() allSelectChange = new EventEmitter<void>();
-  @Output() @Output() rowSelectChange = new EventEmitter<{ event: MouseEvent; item: T }>();
-  @ContentChildren(DataTableColumnComponent) @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
-  @ContentChildren(TemplateRef) @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
-  rowTemplate: TemplateRef<any>;
-  currentStart: number;
-  currentEnd: number;
-  disableSelect = false;
-  constructor(changeDetectorRef: ChangeDetectorRef)
-  ngOnInit() => ;
-  ngOnChanges(changes: SimpleChanges) => ;
-  ngOnDestroy() => ;
-  ngAfterContentInit() => void;
-  trackByFn(index: number, item: any) => ;
-  onToggleAllClick() => ;
-  onRowClick(item: T, event: MouseEvent) => ;
+    @Input() items: T[];
+    @Input() itemsPerPage: number;
+    @Input() currentPage: number;
+    @Input() totalItems: number;
+    @Input() emptyStateLabel: string;
+    @Input() selectionManager?: SelectionManager<T>;
+    @Output() pageChange = new EventEmitter<number>();
+    @Output() itemsPerPageChange = new EventEmitter<number>();
+    @Input() allSelected: boolean;
+    @Input() isRowSelectedFn: (item: T) => boolean;
+    @Output() allSelectChange = new EventEmitter<void>();
+    @Output() rowSelectChange = new EventEmitter<{ event: MouseEvent; item: T }>();
+    @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
+    @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
+    rowTemplate: TemplateRef<any>;
+    currentStart: number;
+    currentEnd: number;
+    disableSelect = false;
+    constructor(changeDetectorRef: ChangeDetectorRef)
+    ngOnInit() => ;
+    ngOnChanges(changes: SimpleChanges) => ;
+    ngOnDestroy() => ;
+    ngAfterContentInit() => void;
+    trackByFn(index: number, item: any) => ;
+    onToggleAllClick() => ;
+    onRowClick(item: T, event: MouseEvent) => ;
 }
 ```
 * Implements: <code>AfterContentInit</code>, <code>OnChanges</code>, <code>OnInit</code>, <code>OnDestroy</code>

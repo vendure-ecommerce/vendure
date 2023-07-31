@@ -18,11 +18,11 @@ Defines a job queue strategy that can be inspected using the default admin ui
 
 ```ts title="Signature"
 interface InspectableJobQueueStrategy extends JobQueueStrategy {
-  findOne(id: ID): Promise<Job | undefined>;
-  findMany(options?: JobListOptions): Promise<PaginatedList<Job>>;
-  findManyById(ids: ID[]): Promise<Job[]>;
-  removeSettledJobs(queueNames?: string[], olderThan?: Date): Promise<number>;
-  cancelJob(jobId: ID): Promise<Job | undefined>;
+    findOne(id: ID): Promise<Job | undefined>;
+    findMany(options?: JobListOptions): Promise<PaginatedList<Job>>;
+    findManyById(ids: ID[]): Promise<Job[]>;
+    removeSettledJobs(queueNames?: string[], olderThan?: Date): Promise<number>;
+    cancelJob(jobId: ID): Promise<Job | undefined>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a></code>

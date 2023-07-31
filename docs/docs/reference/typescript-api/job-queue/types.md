@@ -44,9 +44,9 @@ Job update options, that you can specify by calling {@link SubscribableJob.updat
 
 ```ts title="Signature"
 type JobUpdateOptions = {
-  pollInterval?: number;
-  timeoutMs?: number;
-  errorOnFail?: boolean;
+    pollInterval?: number;
+    timeoutMs?: number;
+    errorOnFail?: boolean;
 }
 ```
 
@@ -80,8 +80,8 @@ Used to configure a new <a href='/reference/typescript-api/job-queue/#jobqueue'>
 
 ```ts title="Signature"
 interface CreateQueueOptions<T extends JobData<T>> {
-  name: string;
-  process: (job: Job<T>) => Promise<any>;
+    name: string;
+    process: (job: Job<T>) => Promise<any>;
 }
 ```
 
@@ -123,18 +123,18 @@ Used to instantiate a new <a href='/reference/typescript-api/job-queue/job#job'>
 
 ```ts title="Signature"
 interface JobConfig<T extends JobData<T>> {
-  queueName: string;
-  data: T;
-  retries?: number;
-  attempts?: number;
-  id?: ID;
-  state?: JobState;
-  progress?: number;
-  result?: any;
-  error?: any;
-  createdAt?: Date;
-  startedAt?: Date;
-  settledAt?: Date;
+    queueName: string;
+    data: T;
+    retries?: number;
+    attempts?: number;
+    id?: ID;
+    state?: JobState;
+    progress?: number;
+    result?: any;
+    error?: any;
+    createdAt?: Date;
+    startedAt?: Date;
+    settledAt?: Date;
 }
 ```
 

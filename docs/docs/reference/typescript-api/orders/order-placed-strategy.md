@@ -30,7 +30,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface OrderPlacedStrategy extends InjectableStrategy {
-  shouldSetAsPlaced(
+    shouldSetAsPlaced(
         ctx: RequestContext,
         fromState: OrderState,
         toState: OrderState,

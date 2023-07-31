@@ -24,7 +24,7 @@ Formats a number into a human-readable file size string.
 
 ```ts title="Signature"
 class FileSizePipe implements PipeTransform {
-  transform(value: number, useSiUnits:  = true) => any;
+    transform(value: number, useSiUnits:  = true) => any;
 }
 ```
 * Implements: <code>PipeTransform</code>

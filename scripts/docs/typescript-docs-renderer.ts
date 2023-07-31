@@ -19,6 +19,8 @@ import {
     VariableInfo,
 } from './typescript-docgen-types';
 
+const INDENT = '    ';
+
 export class TypescriptDocsRenderer {
     render(pages: DocsPage[], docsUrl: string, outputPath: string, typeMap: TypeMap): number {
         let generatedCount = 0;
@@ -171,7 +173,7 @@ export class TypescriptDocsRenderer {
             output += interfaceInfo.extendsClause.getText() + ' ';
         }
         output += '{\n';
-        output += members.map(member => `  ${member.fullText}`).join('\n');
+        output += members.map(member => `${INDENT}${member.fullText}`).join('\n');
         output += '\n}\n';
         output += '```\n';
 
@@ -196,14 +198,12 @@ export class TypescriptDocsRenderer {
                 if (member.kind === 'method') {
                     const args = member.parameters.map(p => this.renderParameter(p, p.type)).join(', ');
                     if (member.fullText === 'constructor') {
-                        return `  constructor(${args})`;
+                        return `${INDENT}constructor(${args})`;
                     } else {
-                        return `  ${renderModifiers(member.modifiers)}${member.fullText}(${args}) => ${
-                            member.type
-                        };`;
+                        return `${INDENT}${member.fullText}(${args}) => ${member.type};`;
                     }
                 } else {
-                    return `  ${renderModifiers(member.modifiers)}${member.fullText}`;
+                    return `${INDENT}${member.fullText}`;
                 }
             })
             .join('\n');
@@ -220,7 +220,7 @@ export class TypescriptDocsRenderer {
         output += `type ${fullText} = `;
         if (members) {
             output += '{\n';
-            output += members.map(member => `  ${member.fullText}`).join('\n');
+            output += members.map(member => `${INDENT}${member.fullText}`).join('\n');
             output += '\n}\n';
         } else {
             output += type.getText() + '\n';
@@ -238,8 +238,8 @@ export class TypescriptDocsRenderer {
             output += '{\n';
             output += members
                 .map(member => {
-                    let line = member.description ? `  // ${member.description}\n` : '';
-                    line += `  ${member.fullText}`;
+                    let line = member.description ? `${INDENT}// ${member.description}\n` : '';
+                    line += `${INDENT}${member.fullText}`;
                     return line;
                 })
                 .join('\n');

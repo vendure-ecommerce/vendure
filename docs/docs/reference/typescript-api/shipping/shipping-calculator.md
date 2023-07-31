@@ -44,7 +44,7 @@ const flatRateCalculator = new ShippingCalculator({
 
 ```ts title="Signature"
 class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
-  constructor(config: ShippingCalculatorConfig<T>)
+    constructor(config: ShippingCalculatorConfig<T>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
@@ -71,10 +71,10 @@ The return value of the <a href='/reference/typescript-api/shipping/shipping-cal
 
 ```ts title="Signature"
 interface ShippingCalculationResult {
-  price: number;
-  priceIncludesTax: boolean;
-  taxRate: number;
-  metadata?: Record<string, any>;
+    price: number;
+    priceIncludesTax: boolean;
+    taxRate: number;
+    metadata?: Record<string, any>;
 }
 ```
 

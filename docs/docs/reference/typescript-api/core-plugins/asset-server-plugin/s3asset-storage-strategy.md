@@ -32,15 +32,15 @@ See the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3as
 
 ```ts title="Signature"
 class S3AssetStorageStrategy implements AssetStorageStrategy {
-  constructor(s3Config: S3Config, toAbsoluteUrl: (request: Request, identifier: string) => string)
-  async init() => ;
-  destroy?: (() => void | Promise<void>) | undefined;
-  async writeFileFromBuffer(fileName: string, data: Buffer) => ;
-  async writeFileFromStream(fileName: string, data: Readable) => ;
-  async readFileToBuffer(identifier: string) => ;
-  async readFileToStream(identifier: string) => ;
-  async deleteFile(identifier: string) => ;
-  async fileExists(fileName: string) => ;
+    constructor(s3Config: S3Config, toAbsoluteUrl: (request: Request, identifier: string) => string)
+    init() => ;
+    destroy?: (() => void | Promise<void>) | undefined;
+    writeFileFromBuffer(fileName: string, data: Buffer) => ;
+    writeFileFromStream(fileName: string, data: Readable) => ;
+    readFileToBuffer(identifier: string) => ;
+    readFileToStream(identifier: string) => ;
+    deleteFile(identifier: string) => ;
+    fileExists(fileName: string) => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a></code>
@@ -107,10 +107,10 @@ Configuration for connecting to AWS S3.
 
 ```ts title="Signature"
 interface S3Config {
-  credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider;
-  bucket: string;
-  nativeS3Configuration?: any;
-  nativeS3UploadConfiguration?: any;
+    credentials: AwsCredentialIdentity | AwsCredentialIdentityProvider;
+    bucket: string;
+    nativeS3Configuration?: any;
+    nativeS3UploadConfiguration?: any;
 }
 ```
 

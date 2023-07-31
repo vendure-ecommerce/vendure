@@ -25,7 +25,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface ProductVariantPriceCalculationStrategy extends InjectableStrategy {
-  calculate(args: ProductVariantPriceCalculationArgs): Promise<PriceCalculationResult>;
+    calculate(args: ProductVariantPriceCalculationArgs): Promise<PriceCalculationResult>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -52,10 +52,10 @@ The arguments passed the `calculate` method of the configured <a href='/referenc
 
 ```ts title="Signature"
 interface ProductVariantPriceCalculationArgs {
-  inputPrice: number;
-  taxCategory: TaxCategory;
-  activeTaxZone: Zone;
-  ctx: RequestContext;
+    inputPrice: number;
+    taxCategory: TaxCategory;
+    activeTaxZone: Zone;
+    ctx: RequestContext;
 }
 ```
 

@@ -18,11 +18,11 @@ Configuration options for the <a href='/reference/typescript-api/core-plugins/ad
 
 ```ts title="Signature"
 interface AdminUiPluginOptions {
-  route: string;
-  port: number;
-  hostname?: string;
-  app?: AdminUiAppConfig | AdminUiAppDevModeConfig;
-  adminUiConfig?: Partial<AdminUiConfig>;
+    route: string;
+    port: number;
+    hostname?: string;
+    app?: AdminUiAppConfig | AdminUiAppDevModeConfig;
+    adminUiConfig?: Partial<AdminUiConfig>;
 }
 ```
 

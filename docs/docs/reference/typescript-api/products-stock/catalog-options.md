@@ -18,11 +18,11 @@ Options related to products and collections.
 
 ```ts title="Signature"
 interface CatalogOptions {
-  collectionFilters?: Array<CollectionFilter<any>>;
-  productVariantPriceSelectionStrategy?: ProductVariantPriceSelectionStrategy;
-  productVariantPriceCalculationStrategy?: ProductVariantPriceCalculationStrategy;
-  stockDisplayStrategy?: StockDisplayStrategy;
-  stockLocationStrategy?: StockLocationStrategy;
+    collectionFilters?: Array<CollectionFilter<any>>;
+    productVariantPriceSelectionStrategy?: ProductVariantPriceSelectionStrategy;
+    productVariantPriceCalculationStrategy?: ProductVariantPriceCalculationStrategy;
+    stockDisplayStrategy?: StockDisplayStrategy;
+    stockLocationStrategy?: StockLocationStrategy;
 }
 ```
 

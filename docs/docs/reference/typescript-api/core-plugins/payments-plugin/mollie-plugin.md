@@ -123,8 +123,8 @@ capture the payment after a customer authorizes the payment.
 
 ```ts title="Signature"
 class MolliePlugin {
-  static static options: MolliePluginOptions;
-  static init(options: MolliePluginOptions) => typeof MolliePlugin;
+    static options: MolliePluginOptions;
+    init(options: MolliePluginOptions) => typeof MolliePlugin;
 }
 ```
 
@@ -153,8 +153,8 @@ Configuration options for the Mollie payments plugin.
 
 ```ts title="Signature"
 interface MolliePluginOptions {
-  vendureHost: string;
-  useDynamicRedirectUrl?: boolean;
+    vendureHost: string;
+    useDynamicRedirectUrl?: boolean;
 }
 ```
 

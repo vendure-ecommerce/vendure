@@ -19,71 +19,71 @@ quantity ordered, as well as the price and tax information.
 
 ```ts title="Signature"
 class OrderLine extends VendureEntity implements HasCustomFields {
-  constructor(input?: DeepPartial<OrderLine>)
-  @Index() @ManyToOne(type => Channel, { nullable: true, onDelete: 'SET NULL' }) @Index()
+    constructor(input?: DeepPartial<OrderLine>)
+    @Index()
     @ManyToOne(type => Channel, { nullable: true, onDelete: 'SET NULL' })
     sellerChannel?: Channel;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     sellerChannelId?: ID;
-  @Index() @ManyToOne(type => ShippingLine, { nullable: true, onDelete: 'SET NULL' }) @Index()
+    @Index()
     @ManyToOne(type => ShippingLine, { nullable: true, onDelete: 'SET NULL' })
     shippingLine?: ShippingLine;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     shippingLineId?: ID;
-  @Index() @ManyToOne(type => ProductVariant) @Index()
+    @Index()
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
-  @EntityId() @EntityId()
+    @EntityId()
     productVariantId: ID;
-  @Index() @ManyToOne(type => TaxCategory) @Index()
+    @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
-  @Index() @ManyToOne(type => Asset) @Index()
+    @Index()
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
-  @Index() @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
     order: Order;
-  @Column() @Column()
+    @Column()
     quantity: number;
-  @Column({ default: 0 }) @Column({ default: 0 })
+    @Column({ default: 0 })
     orderPlacedQuantity: number;
-  @Money({ nullable: true }) @Money({ nullable: true })
+    @Money({ nullable: true })
     initialListPrice: number;
-  @Money() @Money()
+    @Money()
     listPrice: number;
-  @Column() @Column()
+    @Column()
     listPriceIncludesTax: boolean;
-  @Column('simple-json') @Column('simple-json')
+    @Column('simple-json')
     adjustments: Adjustment[];
-  @Column('simple-json') @Column('simple-json')
+    @Column('simple-json')
     taxLines: TaxLine[];
-  @OneToOne(type => Cancellation, cancellation => cancellation.orderLine) @OneToOne(type => Cancellation, cancellation => cancellation.orderLine)
+    @OneToOne(type => Cancellation, cancellation => cancellation.orderLine)
     cancellation: Cancellation;
-  @Column(type => CustomOrderLineFields) @Column(type => CustomOrderLineFields)
+    @Column(type => CustomOrderLineFields)
     customFields: CustomOrderLineFields;
-  @Calculated() unitPrice: number
-  @Calculated() unitPriceWithTax: number
-  @Calculated() unitPriceChangeSinceAdded: number
-  @Calculated() unitPriceWithTaxChangeSinceAdded: number
-  @Calculated() discountedUnitPrice: number
-  @Calculated() discountedUnitPriceWithTax: number
-  @Calculated() proratedUnitPrice: number
-  @Calculated() proratedUnitPriceWithTax: number
-  @Calculated() unitTax: number
-  @Calculated() proratedUnitTax: number
-  @Calculated() taxRate: number
-  @Calculated() linePrice: number
-  @Calculated() linePriceWithTax: number
-  @Calculated() discountedLinePrice: number
-  @Calculated() discountedLinePriceWithTax: number
-  @Calculated() discounts: Discount[]
-  @Calculated() lineTax: number
-  @Calculated() proratedLinePrice: number
-  @Calculated() proratedLinePriceWithTax: number
-  @Calculated() proratedLineTax: number
-  addAdjustment(adjustment: Adjustment) => ;
-  clearAdjustments(type?: AdjustmentType) => ;
+    unitPrice: number
+    unitPriceWithTax: number
+    unitPriceChangeSinceAdded: number
+    unitPriceWithTaxChangeSinceAdded: number
+    discountedUnitPrice: number
+    discountedUnitPriceWithTax: number
+    proratedUnitPrice: number
+    proratedUnitPriceWithTax: number
+    unitTax: number
+    proratedUnitTax: number
+    taxRate: number
+    linePrice: number
+    linePriceWithTax: number
+    discountedLinePrice: number
+    discountedLinePriceWithTax: number
+    discounts: Discount[]
+    lineTax: number
+    proratedLinePrice: number
+    proratedLinePriceWithTax: number
+    proratedLineTax: number
+    addAdjustment(adjustment: Adjustment) => ;
+    clearAdjustments(type?: AdjustmentType) => ;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

@@ -18,8 +18,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ```ts title="Signature"
 interface PromotionOptions {
-  promotionConditions?: Array<PromotionCondition<any>>;
-  promotionActions?: Array<PromotionAction<any>>;
+    promotionConditions?: Array<PromotionCondition<any>>;
+    promotionActions?: Array<PromotionAction<any>>;
 }
 ```
 

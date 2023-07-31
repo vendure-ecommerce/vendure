@@ -44,8 +44,8 @@ export const config: VendureConfig = {
 
 ```ts title="Signature"
 class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicationShutdown {
-  static static options: DefaultSearchPluginInitOptions = {};
-  static init(options: DefaultSearchPluginInitOptions) => Type<DefaultSearchPlugin>;
+    static options: DefaultSearchPluginInitOptions = {};
+    init(options: DefaultSearchPluginInitOptions) => Type<DefaultSearchPlugin>;
 }
 ```
 * Implements: <code>OnApplicationBootstrap</code>, <code>OnApplicationShutdown</code>

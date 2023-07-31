@@ -19,13 +19,13 @@ the state of Orders, Payments, Fulfillments and Refunds follows a well-defined b
 
 ```ts title="Signature"
 class FSM<T extends string, Data = any> {
-  constructor(config: StateMachineConfig<T, Data>, initialState: T)
-  initialState: T
-  currentState: T
-  async transitionTo(state: T, data: Data) => Promise<{ finalize: () => Promise<any> }>;
-  jumpTo(state: T) => ;
-  getNextStates() => readonly T[];
-  canTransitionTo(state: T) => boolean;
+    constructor(config: StateMachineConfig<T, Data>, initialState: T)
+    initialState: T
+    currentState: T
+    transitionTo(state: T, data: Data) => Promise<{ finalize: () => Promise<any> }>;
+    jumpTo(state: T) => ;
+    getNextStates() => readonly T[];
+    canTransitionTo(state: T) => boolean;
 }
 ```
 

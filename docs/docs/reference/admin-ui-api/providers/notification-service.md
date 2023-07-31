@@ -32,12 +32,12 @@ class MyComponent {
 
 ```ts title="Signature"
 class NotificationService {
-  constructor(i18nService: I18nService, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService)
-  success(message: string, translationVars?: { [key: string]: string | number }) => void;
-  info(message: string, translationVars?: { [key: string]: string | number }) => void;
-  warning(message: string, translationVars?: { [key: string]: string | number }) => void;
-  error(message: string, translationVars?: { [key: string]: string | number }) => void;
-  notify(config: ToastConfig) => void;
+    constructor(i18nService: I18nService, resolver: ComponentFactoryResolver, overlayHostService: OverlayHostService)
+    success(message: string, translationVars?: { [key: string]: string | number }) => void;
+    info(message: string, translationVars?: { [key: string]: string | number }) => void;
+    warning(message: string, translationVars?: { [key: string]: string | number }) => void;
+    error(message: string, translationVars?: { [key: string]: string | number }) => void;
+    notify(config: ToastConfig) => void;
 }
 ```
 
@@ -97,10 +97,10 @@ Configuration for a toast notification.
 
 ```ts title="Signature"
 interface ToastConfig {
-  message: string;
-  translationVars?: { [key: string]: string | number };
-  type?: NotificationType;
-  duration?: number;
+    message: string;
+    translationVars?: { [key: string]: string | number };
+    type?: NotificationType;
+    duration?: number;
 }
 ```
 

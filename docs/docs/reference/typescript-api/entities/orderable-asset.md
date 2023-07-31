@@ -22,13 +22,13 @@ See https://typeorm.io/#/many-to-many-relations/many-to-many-relations-with-cust
 
 ```ts title="Signature"
 class OrderableAsset extends VendureEntity implements Orderable {
-  constructor(input?: DeepPartial<OrderableAsset>)
-  @Column() @Column()
+    constructor(input?: DeepPartial<OrderableAsset>)
+    @Column()
     assetId: ID;
-  @Index() @ManyToOne(type => Asset, { eager: true, onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => Asset, { eager: true, onDelete: 'CASCADE' })
     asset: Asset;
-  @Column() @Column()
+    @Column()
     position: number;
 }
 ```

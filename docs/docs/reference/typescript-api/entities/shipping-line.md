@@ -20,31 +20,31 @@ applied, and the resulting tax on the shipping method.
 
 ```ts title="Signature"
 class ShippingLine extends VendureEntity {
-  constructor(input?: DeepPartial<ShippingLine>)
-  @EntityId() @EntityId()
+    constructor(input?: DeepPartial<ShippingLine>)
+    @EntityId()
     shippingMethodId: ID | null;
-  @Index() @ManyToOne(type => ShippingMethod) @Index()
+    @Index()
     @ManyToOne(type => ShippingMethod)
     shippingMethod: ShippingMethod;
-  @Index() @ManyToOne(type => Order, order => order.shippingLines, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => Order, order => order.shippingLines, { onDelete: 'CASCADE' })
     order: Order;
-  @Money() @Money()
+    @Money()
     listPrice: number;
-  @Column() @Column()
+    @Column()
     listPriceIncludesTax: boolean;
-  @Column('simple-json') @Column('simple-json')
+    @Column('simple-json')
     adjustments: Adjustment[];
-  @Column('simple-json') @Column('simple-json')
+    @Column('simple-json')
     taxLines: TaxLine[];
-  @Calculated() price: number
-  @Calculated() priceWithTax: number
-  @Calculated() discountedPrice: number
-  @Calculated() discountedPriceWithTax: number
-  @Calculated() taxRate: number
-  @Calculated() discounts: Discount[]
-  addAdjustment(adjustment: Adjustment) => ;
-  clearAdjustments() => ;
+    price: number
+    priceWithTax: number
+    discountedPrice: number
+    discountedPriceWithTax: number
+    taxRate: number
+    discounts: Discount[]
+    addAdjustment(adjustment: Adjustment) => ;
+    clearAdjustments() => ;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

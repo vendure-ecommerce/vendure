@@ -19,11 +19,11 @@ level of a <a href='/reference/typescript-api/entities/user#user'>User</a> on a 
 
 ```ts title="Signature"
 class Role extends VendureEntity implements ChannelAware {
-  constructor(input?: DeepPartial<Role>)
-  @Column() @Column() code: string;
-  @Column() @Column() description: string;
-  @Column('simple-array') @Column('simple-array') permissions: Permission[];
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    constructor(input?: DeepPartial<Role>)
+    @Column() code: string;
+    @Column() description: string;
+    @Column('simple-array') permissions: Permission[];
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

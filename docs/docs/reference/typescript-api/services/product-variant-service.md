@@ -18,29 +18,29 @@ Contains methods relating to <a href='/reference/typescript-api/entities/product
 
 ```ts title="Signature"
 class ProductVariantService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, taxCategoryService: TaxCategoryService, facetValueService: FacetValueService, assetService: AssetService, translatableSaver: TranslatableSaver, eventBus: EventBus, listQueryBuilder: ListQueryBuilder, globalSettingsService: GlobalSettingsService, stockMovementService: StockMovementService, stockLevelService: StockLevelService, channelService: ChannelService, roleService: RoleService, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
-  async findAll(ctx: RequestContext, options?: ListQueryOptions<ProductVariant>) => Promise<PaginatedList<Translated<ProductVariant>>>;
-  findOne(ctx: RequestContext, productVariantId: ID, relations?: RelationPaths<ProductVariant>) => Promise<Translated<ProductVariant> | undefined>;
-  findByIds(ctx: RequestContext, ids: ID[]) => Promise<Array<Translated<ProductVariant>>>;
-  getVariantsByProductId(ctx: RequestContext, productId: ID, options: ListQueryOptions<ProductVariant> = {}, relations?: RelationPaths<ProductVariant>) => Promise<PaginatedList<Translated<ProductVariant>>>;
-  getVariantsByCollectionId(ctx: RequestContext, collectionId: ID, options: ListQueryOptions<ProductVariant>, relations: RelationPaths<ProductVariant> = []) => Promise<PaginatedList<Translated<ProductVariant>>>;
-  async getProductVariantChannels(ctx: RequestContext, productVariantId: ID) => Promise<Channel[]>;
-  async getProductVariantPrices(ctx: RequestContext, productVariantId: ID) => Promise<ProductVariantPrice[]>;
-  async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID) => Promise<Translated<ProductVariant>>;
-  getOptionsForVariant(ctx: RequestContext, variantId: ID) => Promise<Array<Translated<ProductOption>>>;
-  getFacetValuesForVariant(ctx: RequestContext, variantId: ID) => Promise<Array<Translated<FacetValue>>>;
-  async getProductForVariant(ctx: RequestContext, variant: ProductVariant) => Promise<Translated<Product>>;
-  async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<number>;
-  async getDisplayStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<string>;
-  async getFulfillableStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<number>;
-  async create(ctx: RequestContext, input: CreateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
-  async update(ctx: RequestContext, input: UpdateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
-  async createOrUpdateProductVariantPrice(ctx: RequestContext, productVariantId: ID, price: number, channelId: ID, currencyCode?: CurrencyCode) => Promise<ProductVariantPrice>;
-  async softDelete(ctx: RequestContext, id: ID | ID[]) => Promise<DeletionResponse>;
-  async hydratePriceFields(ctx: RequestContext, variant: ProductVariant, priceField: F) => Promise<ProductVariant[F]>;
-  async applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext, order?: Order) => Promise<ProductVariant>;
-  async assignProductVariantsToChannel(ctx: RequestContext, input: AssignProductVariantsToChannelInput) => Promise<Array<Translated<ProductVariant>>>;
-  async removeProductVariantsFromChannel(ctx: RequestContext, input: RemoveProductVariantsFromChannelInput) => Promise<Array<Translated<ProductVariant>>>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, taxCategoryService: TaxCategoryService, facetValueService: FacetValueService, assetService: AssetService, translatableSaver: TranslatableSaver, eventBus: EventBus, listQueryBuilder: ListQueryBuilder, globalSettingsService: GlobalSettingsService, stockMovementService: StockMovementService, stockLevelService: StockLevelService, channelService: ChannelService, roleService: RoleService, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<ProductVariant>) => Promise<PaginatedList<Translated<ProductVariant>>>;
+    findOne(ctx: RequestContext, productVariantId: ID, relations?: RelationPaths<ProductVariant>) => Promise<Translated<ProductVariant> | undefined>;
+    findByIds(ctx: RequestContext, ids: ID[]) => Promise<Array<Translated<ProductVariant>>>;
+    getVariantsByProductId(ctx: RequestContext, productId: ID, options: ListQueryOptions<ProductVariant> = {}, relations?: RelationPaths<ProductVariant>) => Promise<PaginatedList<Translated<ProductVariant>>>;
+    getVariantsByCollectionId(ctx: RequestContext, collectionId: ID, options: ListQueryOptions<ProductVariant>, relations: RelationPaths<ProductVariant> = []) => Promise<PaginatedList<Translated<ProductVariant>>>;
+    getProductVariantChannels(ctx: RequestContext, productVariantId: ID) => Promise<Channel[]>;
+    getProductVariantPrices(ctx: RequestContext, productVariantId: ID) => Promise<ProductVariantPrice[]>;
+    getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID) => Promise<Translated<ProductVariant>>;
+    getOptionsForVariant(ctx: RequestContext, variantId: ID) => Promise<Array<Translated<ProductOption>>>;
+    getFacetValuesForVariant(ctx: RequestContext, variantId: ID) => Promise<Array<Translated<FacetValue>>>;
+    getProductForVariant(ctx: RequestContext, variant: ProductVariant) => Promise<Translated<Product>>;
+    getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<number>;
+    getDisplayStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<string>;
+    getFulfillableStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<number>;
+    create(ctx: RequestContext, input: CreateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
+    update(ctx: RequestContext, input: UpdateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
+    createOrUpdateProductVariantPrice(ctx: RequestContext, productVariantId: ID, price: number, channelId: ID, currencyCode?: CurrencyCode) => Promise<ProductVariantPrice>;
+    softDelete(ctx: RequestContext, id: ID | ID[]) => Promise<DeletionResponse>;
+    hydratePriceFields(ctx: RequestContext, variant: ProductVariant, priceField: F) => Promise<ProductVariant[F]>;
+    applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext, order?: Order) => Promise<ProductVariant>;
+    assignProductVariantsToChannel(ctx: RequestContext, input: AssignProductVariantsToChannelInput) => Promise<Array<Translated<ProductVariant>>>;
+    removeProductVariantsFromChannel(ctx: RequestContext, input: RemoveProductVariantsFromChannelInput) => Promise<Array<Translated<ProductVariant>>>;
 }
 ```
 

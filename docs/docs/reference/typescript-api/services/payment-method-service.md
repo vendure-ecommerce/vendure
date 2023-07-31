@@ -18,18 +18,18 @@ Contains methods relating to <a href='/reference/typescript-api/entities/payment
 
 ```ts title="Signature"
 class PaymentMethodService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, configArgService: ConfigArgService, channelService: ChannelService, customFieldRelationService: CustomFieldRelationService, translatableSaver: TranslatableSaver, translator: TranslatorService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<PaymentMethod>, relations: RelationPaths<PaymentMethod> = []) => Promise<PaginatedList<PaymentMethod>>;
-  findOne(ctx: RequestContext, paymentMethodId: ID, relations: RelationPaths<PaymentMethod> = []) => Promise<PaymentMethod | undefined>;
-  async create(ctx: RequestContext, input: CreatePaymentMethodInput) => Promise<PaymentMethod>;
-  async update(ctx: RequestContext, input: UpdatePaymentMethodInput) => Promise<PaymentMethod>;
-  async delete(ctx: RequestContext, paymentMethodId: ID, force: boolean = false) => Promise<DeletionResponse>;
-  async assignPaymentMethodsToChannel(ctx: RequestContext, input: AssignPaymentMethodsToChannelInput) => Promise<Array<Translated<PaymentMethod>>>;
-  async removePaymentMethodsFromChannel(ctx: RequestContext, input: RemovePaymentMethodsFromChannelInput) => Promise<Array<Translated<PaymentMethod>>>;
-  getPaymentMethodEligibilityCheckers(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  getPaymentMethodHandlers(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  async getEligiblePaymentMethods(ctx: RequestContext, order: Order) => Promise<PaymentMethodQuote[]>;
-  async getMethodAndOperations(ctx: RequestContext, method: string) => Promise<{
+    constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, configArgService: ConfigArgService, channelService: ChannelService, customFieldRelationService: CustomFieldRelationService, translatableSaver: TranslatableSaver, translator: TranslatorService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<PaymentMethod>, relations: RelationPaths<PaymentMethod> = []) => Promise<PaginatedList<PaymentMethod>>;
+    findOne(ctx: RequestContext, paymentMethodId: ID, relations: RelationPaths<PaymentMethod> = []) => Promise<PaymentMethod | undefined>;
+    create(ctx: RequestContext, input: CreatePaymentMethodInput) => Promise<PaymentMethod>;
+    update(ctx: RequestContext, input: UpdatePaymentMethodInput) => Promise<PaymentMethod>;
+    delete(ctx: RequestContext, paymentMethodId: ID, force: boolean = false) => Promise<DeletionResponse>;
+    assignPaymentMethodsToChannel(ctx: RequestContext, input: AssignPaymentMethodsToChannelInput) => Promise<Array<Translated<PaymentMethod>>>;
+    removePaymentMethodsFromChannel(ctx: RequestContext, input: RemovePaymentMethodsFromChannelInput) => Promise<Array<Translated<PaymentMethod>>>;
+    getPaymentMethodEligibilityCheckers(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    getPaymentMethodHandlers(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    getEligiblePaymentMethods(ctx: RequestContext, order: Order) => Promise<PaymentMethodQuote[]>;
+    getMethodAndOperations(ctx: RequestContext, method: string) => Promise<{
         paymentMethod: PaymentMethod;
         handler: PaymentMethodHandler;
         checker: PaymentMethodEligibilityChecker | null;

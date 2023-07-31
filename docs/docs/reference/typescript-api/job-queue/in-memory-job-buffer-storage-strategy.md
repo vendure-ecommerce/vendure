@@ -23,10 +23,10 @@ or the <a href='/reference/typescript-api/core-plugins/job-queue-plugin/bull-mqj
 
 ```ts title="Signature"
 class InMemoryJobBufferStorageStrategy implements JobBufferStorageStrategy {
-  protected protected bufferStorage = new Map<string, Set<Job>>();
-  async add(bufferId: string, job: Job) => Promise<Job>;
-  async bufferSize(bufferIds?: string[]) => Promise<{ [bufferId: string]: number }>;
-  async flush(bufferIds?: string[]) => Promise<{ [bufferId: string]: Job[] }>;
+    protected bufferStorage = new Map<string, Set<Job>>();
+    add(bufferId: string, job: Job) => Promise<Job>;
+    bufferSize(bufferIds?: string[]) => Promise<{ [bufferId: string]: number }>;
+    flush(bufferIds?: string[]) => Promise<{ [bufferId: string]: Job[] }>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a></code>

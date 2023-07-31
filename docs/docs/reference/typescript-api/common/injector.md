@@ -21,9 +21,9 @@ Strategies which can be supplied in the VendureConfig.
 
 ```ts title="Signature"
 class Injector {
-  constructor(moduleRef: ModuleRef)
-  get(typeOrToken: Type<T> | string | symbol) => R;
-  resolve(typeOrToken: Type<T> | string | symbol, contextId?: ContextId) => Promise<R>;
+    constructor(moduleRef: ModuleRef)
+    get(typeOrToken: Type<T> | string | symbol) => R;
+    resolve(typeOrToken: Type<T> | string | symbol, contextId?: ContextId) => Promise<R>;
 }
 ```
 

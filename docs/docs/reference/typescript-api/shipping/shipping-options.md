@@ -18,12 +18,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ```ts title="Signature"
 interface ShippingOptions {
-  shippingEligibilityCheckers?: Array<ShippingEligibilityChecker<any>>;
-  shippingCalculators?: Array<ShippingCalculator<any>>;
-  shippingLineAssignmentStrategy?: ShippingLineAssignmentStrategy;
-  customFulfillmentProcess?: Array<FulfillmentProcess<any>>;
-  process?: Array<FulfillmentProcess<any>>;
-  fulfillmentHandlers?: Array<FulfillmentHandler<any>>;
+    shippingEligibilityCheckers?: Array<ShippingEligibilityChecker<any>>;
+    shippingCalculators?: Array<ShippingCalculator<any>>;
+    shippingLineAssignmentStrategy?: ShippingLineAssignmentStrategy;
+    customFulfillmentProcess?: Array<FulfillmentProcess<any>>;
+    process?: Array<FulfillmentProcess<any>>;
+    fulfillmentHandlers?: Array<FulfillmentHandler<any>>;
 }
 ```
 

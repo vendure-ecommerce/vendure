@@ -18,7 +18,7 @@ Options relating to system functions.
 
 ```ts title="Signature"
 interface SystemOptions {
-  healthChecks?: HealthCheckStrategy[];
+    healthChecks?: HealthCheckStrategy[];
 }
 ```
 

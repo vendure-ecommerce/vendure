@@ -25,9 +25,9 @@ Returns `true` if the current user has that permission.
 
 ```ts title="Signature"
 class HasPermissionPipe implements PipeTransform, OnDestroy {
-  constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
-  transform(input: string | string[]) => any;
-  ngOnDestroy() => ;
+    constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
+    transform(input: string | string[]) => any;
+    ngOnDestroy() => ;
 }
 ```
 * Implements: <code>PipeTransform</code>, <code>OnDestroy</code>

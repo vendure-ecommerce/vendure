@@ -18,18 +18,18 @@ Contains methods relating to <a href='/reference/typescript-api/entities/facet-v
 
 ```ts title="Signature"
 class FacetValueService {
-  constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, channelService: ChannelService, eventBus: EventBus, translator: TranslatorService, listQueryBuilder: ListQueryBuilder)
-  findAll(lang: LanguageCode) => Promise<Array<Translated<FacetValue>>>;
-  findAll(ctx: RequestContext, lang: LanguageCode) => Promise<Array<Translated<FacetValue>>>;
-  findAll(ctxOrLang: RequestContext | LanguageCode, lang?: LanguageCode) => Promise<Array<Translated<FacetValue>>>;
-  findAllList(ctx: RequestContext, options?: ListQueryOptions<FacetValue>, relations?: RelationPaths<FacetValue>) => Promise<PaginatedList<Translated<FacetValue>>>;
-  findOne(ctx: RequestContext, id: ID) => Promise<Translated<FacetValue> | undefined>;
-  findByIds(ctx: RequestContext, ids: ID[]) => Promise<Array<Translated<FacetValue>>>;
-  findByFacetId(ctx: RequestContext, id: ID) => Promise<Array<Translated<FacetValue>>>;
-  async create(ctx: RequestContext, facet: Facet, input: CreateFacetValueInput | CreateFacetValueWithFacetInput) => Promise<Translated<FacetValue>>;
-  async update(ctx: RequestContext, input: UpdateFacetValueInput) => Promise<Translated<FacetValue>>;
-  async delete(ctx: RequestContext, id: ID, force: boolean = false) => Promise<DeletionResponse>;
-  async checkFacetValueUsage(ctx: RequestContext, facetValueIds: ID[], channelId?: ID) => Promise<{ productCount: number; variantCount: number }>;
+    constructor(connection: TransactionalConnection, translatableSaver: TranslatableSaver, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, channelService: ChannelService, eventBus: EventBus, translator: TranslatorService, listQueryBuilder: ListQueryBuilder)
+    findAll(lang: LanguageCode) => Promise<Array<Translated<FacetValue>>>;
+    findAll(ctx: RequestContext, lang: LanguageCode) => Promise<Array<Translated<FacetValue>>>;
+    findAll(ctxOrLang: RequestContext | LanguageCode, lang?: LanguageCode) => Promise<Array<Translated<FacetValue>>>;
+    findAllList(ctx: RequestContext, options?: ListQueryOptions<FacetValue>, relations?: RelationPaths<FacetValue>) => Promise<PaginatedList<Translated<FacetValue>>>;
+    findOne(ctx: RequestContext, id: ID) => Promise<Translated<FacetValue> | undefined>;
+    findByIds(ctx: RequestContext, ids: ID[]) => Promise<Array<Translated<FacetValue>>>;
+    findByFacetId(ctx: RequestContext, id: ID) => Promise<Array<Translated<FacetValue>>>;
+    create(ctx: RequestContext, facet: Facet, input: CreateFacetValueInput | CreateFacetValueWithFacetInput) => Promise<Translated<FacetValue>>;
+    update(ctx: RequestContext, input: UpdateFacetValueInput) => Promise<Translated<FacetValue>>;
+    delete(ctx: RequestContext, id: ID, force: boolean = false) => Promise<DeletionResponse>;
+    checkFacetValueUsage(ctx: RequestContext, facetValueIds: ID[], channelId?: ID) => Promise<{ productCount: number; variantCount: number }>;
 }
 ```
 

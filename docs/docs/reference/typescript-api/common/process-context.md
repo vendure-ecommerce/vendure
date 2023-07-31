@@ -38,8 +38,8 @@ export class MyService implements OnApplicationBootstrap {
 
 ```ts title="Signature"
 class ProcessContext {
-  isServer: boolean
-  isWorker: boolean
+    isServer: boolean
+    isWorker: boolean
 }
 ```
 

@@ -18,16 +18,16 @@ Contains methods relating to <a href='/reference/typescript-api/entities/stock-m
 
 ```ts title="Signature"
 class StockMovementService {
-  shippingEligibilityCheckers: ShippingEligibilityChecker[];
-  shippingCalculators: ShippingCalculator[];
-  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, globalSettingsService: GlobalSettingsService, stockLevelService: StockLevelService, eventBus: EventBus, stockLocationService: StockLocationService, configService: ConfigService)
-  getStockMovementsByProductVariantId(ctx: RequestContext, productVariantId: ID, options: StockMovementListOptions) => Promise<PaginatedList<StockMovement>>;
-  async adjustProductVariantStock(ctx: RequestContext, productVariantId: ID, stockOnHandNumberOrInput: number | StockLevelInput[]) => Promise<StockAdjustment[]>;
-  async createAllocationsForOrder(ctx: RequestContext, order: Order) => Promise<Allocation[]>;
-  async createAllocationsForOrderLines(ctx: RequestContext, lines: OrderLineInput[]) => Promise<Allocation[]>;
-  async createSalesForOrder(ctx: RequestContext, lines: OrderLineInput[]) => Promise<Sale[]>;
-  async createCancellationsForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]) => Promise<Cancellation[]>;
-  async createReleasesForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]) => Promise<Release[]>;
+    shippingEligibilityCheckers: ShippingEligibilityChecker[];
+    shippingCalculators: ShippingCalculator[];
+    constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, globalSettingsService: GlobalSettingsService, stockLevelService: StockLevelService, eventBus: EventBus, stockLocationService: StockLocationService, configService: ConfigService)
+    getStockMovementsByProductVariantId(ctx: RequestContext, productVariantId: ID, options: StockMovementListOptions) => Promise<PaginatedList<StockMovement>>;
+    adjustProductVariantStock(ctx: RequestContext, productVariantId: ID, stockOnHandNumberOrInput: number | StockLevelInput[]) => Promise<StockAdjustment[]>;
+    createAllocationsForOrder(ctx: RequestContext, order: Order) => Promise<Allocation[]>;
+    createAllocationsForOrderLines(ctx: RequestContext, lines: OrderLineInput[]) => Promise<Allocation[]>;
+    createSalesForOrder(ctx: RequestContext, lines: OrderLineInput[]) => Promise<Sale[]>;
+    createCancellationsForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]) => Promise<Cancellation[]>;
+    createReleasesForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]) => Promise<Release[]>;
 }
 ```
 

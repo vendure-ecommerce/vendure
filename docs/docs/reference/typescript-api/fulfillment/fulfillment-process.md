@@ -38,11 +38,11 @@ For detailed description of the interface members, see the <a href='/reference/t
 
 ```ts title="Signature"
 interface FulfillmentProcess<State extends keyof CustomFulfillmentStates | string> extends InjectableStrategy {
-  transitions?: Transitions<State, State | FulfillmentState> &
+    transitions?: Transitions<State, State | FulfillmentState> &
         Partial<Transitions<FulfillmentState | State>>;
-  onTransitionStart?: OnTransitionStartFn<State | FulfillmentState, FulfillmentTransitionData>;
-  onTransitionEnd?: OnTransitionEndFn<State | FulfillmentState, FulfillmentTransitionData>;
-  onTransitionError?: OnTransitionErrorFn<State | FulfillmentState>;
+    onTransitionStart?: OnTransitionStartFn<State | FulfillmentState, FulfillmentTransitionData>;
+    onTransitionEnd?: OnTransitionEndFn<State | FulfillmentState, FulfillmentTransitionData>;
+    onTransitionError?: OnTransitionErrorFn<State | FulfillmentState>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

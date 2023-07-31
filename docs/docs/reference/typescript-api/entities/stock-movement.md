@@ -19,17 +19,17 @@ or out.
 
 ```ts title="Signature"
 class StockMovement extends VendureEntity {
-  @Column({ nullable: false, type: 'varchar' }) readonly @Column({ nullable: false, type: 'varchar' })
+    @Column({ nullable: false, type: 'varchar' })
     readonly type: StockMovementType;
-  @Index() @ManyToOne(type => ProductVariant, variant => variant.stockMovements) @Index()
+    @Index()
     @ManyToOne(type => ProductVariant, variant => variant.stockMovements)
     productVariant: ProductVariant;
-  @Index() @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' })
     stockLocation: StockLocation;
-  @EntityId() @EntityId()
+    @EntityId()
     stockLocationId: ID;
-  @Column() @Column()
+    @Column()
     quantity: number;
 }
 ```
@@ -78,9 +78,9 @@ An Allocation is created for each ProductVariant in an Order when the checkout i
 
 ```ts title="Signature"
 class Allocation extends StockMovement {
-  readonly readonly type = StockMovementType.ALLOCATION;
-  constructor(input: DeepPartial<Allocation>)
-  @Index() @ManyToOne(type => OrderLine) @Index()
+    readonly type = StockMovementType.ALLOCATION;
+    constructor(input: DeepPartial<Allocation>)
+    @Index()
     @ManyToOne(type => OrderLine)
     orderLine: OrderLine;
 }
@@ -119,9 +119,9 @@ A Cancellation is created when OrderItems from a fulfilled Order are cancelled.
 
 ```ts title="Signature"
 class Cancellation extends StockMovement {
-  readonly readonly type = StockMovementType.CANCELLATION;
-  constructor(input: DeepPartial<Cancellation>)
-  @ManyToOne(type => OrderLine) @ManyToOne(type => OrderLine)
+    readonly type = StockMovementType.CANCELLATION;
+    constructor(input: DeepPartial<Cancellation>)
+    @ManyToOne(type => OrderLine)
     orderLine: OrderLine;
 }
 ```
@@ -160,9 +160,9 @@ are cancelled.
 
 ```ts title="Signature"
 class Release extends StockMovement {
-  readonly readonly type = StockMovementType.RELEASE;
-  constructor(input: DeepPartial<Release>)
-  @ManyToOne(type => OrderLine) @ManyToOne(type => OrderLine)
+    readonly type = StockMovementType.RELEASE;
+    constructor(input: DeepPartial<Release>)
+    @ManyToOne(type => OrderLine)
     orderLine: OrderLine;
 }
 ```
@@ -200,9 +200,9 @@ A Sale is created when OrderItems are fulfilled.
 
 ```ts title="Signature"
 class Sale extends StockMovement {
-  readonly readonly type = StockMovementType.SALE;
-  constructor(input: DeepPartial<Sale>)
-  @ManyToOne(type => OrderLine) @ManyToOne(type => OrderLine)
+    readonly type = StockMovementType.SALE;
+    constructor(input: DeepPartial<Sale>)
+    @ManyToOne(type => OrderLine)
     orderLine: OrderLine;
 }
 ```
@@ -240,8 +240,8 @@ A StockAdjustment is created when the `stockOnHand` level of a ProductVariant is
 
 ```ts title="Signature"
 class StockAdjustment extends StockMovement {
-  readonly readonly type = StockMovementType.ADJUSTMENT;
-  constructor(input: DeepPartial<StockAdjustment>)
+    readonly type = StockMovementType.ADJUSTMENT;
+    constructor(input: DeepPartial<StockAdjustment>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a></code>

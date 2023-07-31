@@ -31,13 +31,13 @@ export config: VendureConfig = {
 
 ```ts title="Signature"
 class DefaultLogger implements VendureLogger {
-  constructor(options?: { level?: LogLevel; timestamp?: boolean })
-  setDefaultContext(defaultContext: string) => ;
-  error(message: string, context?: string, trace?: string | undefined) => void;
-  warn(message: string, context?: string) => void;
-  info(message: string, context?: string) => void;
-  verbose(message: string, context?: string) => void;
-  debug(message: string, context?: string) => void;
+    constructor(options?: { level?: LogLevel; timestamp?: boolean })
+    setDefaultContext(defaultContext: string) => ;
+    error(message: string, context?: string, trace?: string | undefined) => void;
+    warn(message: string, context?: string) => void;
+    info(message: string, context?: string) => void;
+    verbose(message: string, context?: string) => void;
+    debug(message: string, context?: string) => void;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a></code>

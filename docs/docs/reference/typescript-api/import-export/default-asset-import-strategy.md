@@ -19,12 +19,12 @@ The DefaultAssetImportStrategy is able to import paths from the local filesystem
 
 ```ts title="Signature"
 class DefaultAssetImportStrategy implements AssetImportStrategy {
-  constructor(options?: {
+    constructor(options?: {
             retryDelayMs: number;
             retryCount: number;
         })
-  init(injector: Injector) => ;
-  getStreamFromPath(assetPath: string) => ;
+    init(injector: Injector) => ;
+    getStreamFromPath(assetPath: string) => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/import-export/asset-import-strategy#assetimportstrategy'>AssetImportStrategy</a></code>

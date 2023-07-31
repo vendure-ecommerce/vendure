@@ -26,13 +26,13 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface AssetStorageStrategy extends InjectableStrategy {
-  writeFileFromBuffer(fileName: string, data: Buffer): Promise<string>;
-  writeFileFromStream(fileName: string, data: Stream): Promise<string>;
-  readFileToBuffer(identifier: string): Promise<Buffer>;
-  readFileToStream(identifier: string): Promise<Stream>;
-  deleteFile(identifier: string): Promise<void>;
-  fileExists(fileName: string): Promise<boolean>;
-  toAbsoluteUrl?(request: Request, identifier: string): string;
+    writeFileFromBuffer(fileName: string, data: Buffer): Promise<string>;
+    writeFileFromStream(fileName: string, data: Stream): Promise<string>;
+    readFileToBuffer(identifier: string): Promise<Buffer>;
+    readFileToStream(identifier: string): Promise<Stream>;
+    deleteFile(identifier: string): Promise<void>;
+    fileExists(fileName: string): Promise<boolean>;
+    toAbsoluteUrl?(request: Request, identifier: string): string;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

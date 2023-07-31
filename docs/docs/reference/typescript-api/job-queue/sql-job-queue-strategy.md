@@ -19,15 +19,15 @@ This strategy is used by the <a href='/reference/typescript-api/job-queue/defaul
 
 ```ts title="Signature"
 class SqlJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
-  init(injector: Injector) => ;
-  destroy() => ;
-  async add(job: Job<Data>) => Promise<Job<Data>>;
-  async next(queueName: string) => Promise<Job | undefined>;
-  async update(job: Job<any>) => Promise<void>;
-  async findMany(options?: JobListOptions) => Promise<PaginatedList<Job>>;
-  async findOne(id: ID) => Promise<Job | undefined>;
-  async findManyById(ids: ID[]) => Promise<Job[]>;
-  async removeSettledJobs(queueNames: string[] = [], olderThan?: Date) => ;
+    init(injector: Injector) => ;
+    destroy() => ;
+    add(job: Job<Data>) => Promise<Job<Data>>;
+    next(queueName: string) => Promise<Job | undefined>;
+    update(job: Job<any>) => Promise<void>;
+    findMany(options?: JobListOptions) => Promise<PaginatedList<Job>>;
+    findOne(id: ID) => Promise<Job | undefined>;
+    findManyById(ids: ID[]) => Promise<Job[]>;
+    removeSettledJobs(queueNames: string[] = [], olderThan?: Date) => ;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy'>PollingJobQueueStrategy</a></code>

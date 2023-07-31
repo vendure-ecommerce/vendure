@@ -19,8 +19,8 @@ pages of the Admin UI.
 
 ```ts title="Signature"
 interface CustomDetailComponent {
-  entity$: Observable<any>;
-  detailForm: UntypedFormGroup;
+    entity$: Observable<any>;
+    detailForm: UntypedFormGroup;
 }
 ```
 

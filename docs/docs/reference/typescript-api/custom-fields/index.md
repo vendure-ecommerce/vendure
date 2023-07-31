@@ -37,33 +37,33 @@ bootstrap({
 
 ```ts title="Signature"
 interface CustomFields {
-  Address?: CustomFieldConfig[];
-  Administrator?: CustomFieldConfig[];
-  Asset?: CustomFieldConfig[];
-  Channel?: CustomFieldConfig[];
-  Collection?: CustomFieldConfig[];
-  Customer?: CustomFieldConfig[];
-  CustomerGroup?: CustomFieldConfig[];
-  Facet?: CustomFieldConfig[];
-  FacetValue?: CustomFieldConfig[];
-  Fulfillment?: CustomFieldConfig[];
-  GlobalSettings?: CustomFieldConfig[];
-  Order?: CustomFieldConfig[];
-  OrderLine?: CustomFieldConfig[];
-  PaymentMethod?: CustomFieldConfig[];
-  Product?: CustomFieldConfig[];
-  ProductOption?: CustomFieldConfig[];
-  ProductOptionGroup?: CustomFieldConfig[];
-  ProductVariant?: CustomFieldConfig[];
-  Promotion?: CustomFieldConfig[];
-  Region?: CustomFieldConfig[];
-  Seller?: CustomFieldConfig[];
-  ShippingMethod?: CustomFieldConfig[];
-  StockLocation?: CustomFieldConfig[];
-  TaxCategory?: CustomFieldConfig[];
-  TaxRate?: CustomFieldConfig[];
-  User?: CustomFieldConfig[];
-  Zone?: CustomFieldConfig[];
+    Address?: CustomFieldConfig[];
+    Administrator?: CustomFieldConfig[];
+    Asset?: CustomFieldConfig[];
+    Channel?: CustomFieldConfig[];
+    Collection?: CustomFieldConfig[];
+    Customer?: CustomFieldConfig[];
+    CustomerGroup?: CustomFieldConfig[];
+    Facet?: CustomFieldConfig[];
+    FacetValue?: CustomFieldConfig[];
+    Fulfillment?: CustomFieldConfig[];
+    GlobalSettings?: CustomFieldConfig[];
+    Order?: CustomFieldConfig[];
+    OrderLine?: CustomFieldConfig[];
+    PaymentMethod?: CustomFieldConfig[];
+    Product?: CustomFieldConfig[];
+    ProductOption?: CustomFieldConfig[];
+    ProductOptionGroup?: CustomFieldConfig[];
+    ProductVariant?: CustomFieldConfig[];
+    Promotion?: CustomFieldConfig[];
+    Region?: CustomFieldConfig[];
+    Seller?: CustomFieldConfig[];
+    ShippingMethod?: CustomFieldConfig[];
+    StockLocation?: CustomFieldConfig[];
+    TaxCategory?: CustomFieldConfig[];
+    TaxRate?: CustomFieldConfig[];
+    User?: CustomFieldConfig[];
+    Zone?: CustomFieldConfig[];
 }
 ```
 

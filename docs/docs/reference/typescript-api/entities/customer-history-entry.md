@@ -18,8 +18,8 @@ Represents an event in the history of a particular <a href='/reference/typescrip
 
 ```ts title="Signature"
 class CustomerHistoryEntry extends HistoryEntry {
-  constructor(input: DeepPartial<CustomerHistoryEntry>)
-  @Index() @ManyToOne(type => Customer, { onDelete: 'CASCADE' }) @Index()
+    constructor(input: DeepPartial<CustomerHistoryEntry>)
+    @Index()
     @ManyToOne(type => Customer, { onDelete: 'CASCADE' })
     customer: Customer;
 }

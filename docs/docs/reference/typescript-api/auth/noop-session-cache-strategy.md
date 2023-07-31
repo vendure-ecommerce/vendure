@@ -19,10 +19,10 @@ so the session will always be taken from the database.
 
 ```ts title="Signature"
 class NoopSessionCacheStrategy implements SessionCacheStrategy {
-  clear() => ;
-  delete(sessionToken: string) => ;
-  get(sessionToken: string) => ;
-  set(session: CachedSession) => ;
+    clear() => ;
+    delete(sessionToken: string) => ;
+    get(sessionToken: string) => ;
+    set(session: CachedSession) => ;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a></code>

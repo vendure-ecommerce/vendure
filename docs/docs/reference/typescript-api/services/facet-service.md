@@ -18,18 +18,18 @@ Contains methods relating to <a href='/reference/typescript-api/entities/facet#f
 
 ```ts title="Signature"
 class FacetService {
-  constructor(connection: TransactionalConnection, facetValueService: FacetValueService, translatableSaver: TranslatableSaver, listQueryBuilder: ListQueryBuilder, configService: ConfigService, channelService: ChannelService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translator: TranslatorService, roleService: RoleService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Facet>, relations?: RelationPaths<Facet>) => Promise<PaginatedList<Translated<Facet>>>;
-  findOne(ctx: RequestContext, facetId: ID, relations?: RelationPaths<Facet>) => Promise<Translated<Facet> | undefined>;
-  findByCode(facetCode: string, lang: LanguageCode) => Promise<Translated<Facet> | undefined>;
-  findByCode(ctx: RequestContext, facetCode: string, lang: LanguageCode) => Promise<Translated<Facet> | undefined>;
-  findByCode(ctxOrFacetCode: RequestContext | string, facetCodeOrLang: string | LanguageCode, lang?: LanguageCode) => Promise<Translated<Facet> | undefined>;
-  async findByFacetValueId(ctx: RequestContext, id: ID) => Promise<Translated<Facet> | undefined>;
-  async create(ctx: RequestContext, input: CreateFacetInput) => Promise<Translated<Facet>>;
-  async update(ctx: RequestContext, input: UpdateFacetInput) => Promise<Translated<Facet>>;
-  async delete(ctx: RequestContext, id: ID, force: boolean = false) => Promise<DeletionResponse>;
-  async assignFacetsToChannel(ctx: RequestContext, input: AssignFacetsToChannelInput) => Promise<Array<Translated<Facet>>>;
-  async removeFacetsFromChannel(ctx: RequestContext, input: RemoveFacetsFromChannelInput) => Promise<Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>>>;
+    constructor(connection: TransactionalConnection, facetValueService: FacetValueService, translatableSaver: TranslatableSaver, listQueryBuilder: ListQueryBuilder, configService: ConfigService, channelService: ChannelService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translator: TranslatorService, roleService: RoleService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Facet>, relations?: RelationPaths<Facet>) => Promise<PaginatedList<Translated<Facet>>>;
+    findOne(ctx: RequestContext, facetId: ID, relations?: RelationPaths<Facet>) => Promise<Translated<Facet> | undefined>;
+    findByCode(facetCode: string, lang: LanguageCode) => Promise<Translated<Facet> | undefined>;
+    findByCode(ctx: RequestContext, facetCode: string, lang: LanguageCode) => Promise<Translated<Facet> | undefined>;
+    findByCode(ctxOrFacetCode: RequestContext | string, facetCodeOrLang: string | LanguageCode, lang?: LanguageCode) => Promise<Translated<Facet> | undefined>;
+    findByFacetValueId(ctx: RequestContext, id: ID) => Promise<Translated<Facet> | undefined>;
+    create(ctx: RequestContext, input: CreateFacetInput) => Promise<Translated<Facet>>;
+    update(ctx: RequestContext, input: UpdateFacetInput) => Promise<Translated<Facet>>;
+    delete(ctx: RequestContext, id: ID, force: boolean = false) => Promise<DeletionResponse>;
+    assignFacetsToChannel(ctx: RequestContext, input: AssignFacetsToChannelInput) => Promise<Array<Translated<Facet>>>;
+    removeFacetsFromChannel(ctx: RequestContext, input: RemoveFacetsFromChannelInput) => Promise<Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>>>;
 }
 ```
 

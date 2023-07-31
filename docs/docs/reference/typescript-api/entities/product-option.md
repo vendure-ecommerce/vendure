@@ -18,19 +18,19 @@ A ProductOption is used to differentiate <a href='/reference/typescript-api/enti
 
 ```ts title="Signature"
 class ProductOption extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
-  constructor(input?: DeepPartial<ProductOption>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<ProductOption>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  name: LocaleString;
-  @Column() @Column() code: string;
-  @OneToMany(type => ProductOptionTranslation, translation => translation.base, { eager: true }) @OneToMany(type => ProductOptionTranslation, translation => translation.base, { eager: true })
+    name: LocaleString;
+    @Column() code: string;
+    @OneToMany(type => ProductOptionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductOption>>;
-  @Index() @ManyToOne(type => ProductOptionGroup, group => group.options) @Index()
+    @Index()
     @ManyToOne(type => ProductOptionGroup, group => group.options)
     group: ProductOptionGroup;
-  @EntityId() @EntityId()
+    @EntityId()
     groupId: ID;
-  @Column(type => CustomProductOptionFields) @Column(type => CustomProductOptionFields)
+    @Column(type => CustomProductOptionFields)
     customFields: CustomProductOptionFields;
 }
 ```

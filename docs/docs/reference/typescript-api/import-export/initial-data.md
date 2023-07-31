@@ -18,14 +18,14 @@ An object defining initial settings for a new Vendure installation.
 
 ```ts title="Signature"
 interface InitialData {
-  defaultLanguage: LanguageCode;
-  defaultZone: string;
-  roles?: RoleDefinition[];
-  countries: CountryDefinition[];
-  taxRates: Array<{ name: string; percentage: number }>;
-  shippingMethods: Array<{ name: string; price: number }>;
-  paymentMethods: Array<{ name: string; handler: ConfigurableOperationInput }>;
-  collections: CollectionDefinition[];
+    defaultLanguage: LanguageCode;
+    defaultZone: string;
+    roles?: RoleDefinition[];
+    countries: CountryDefinition[];
+    taxRates: Array<{ name: string; percentage: number }>;
+    shippingMethods: Array<{ name: string; price: number }>;
+    paymentMethods: Array<{ name: string; handler: ConfigurableOperationInput }>;
+    collections: CollectionDefinition[];
 }
 ```
 

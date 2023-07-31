@@ -19,24 +19,24 @@ such as Products.
 
 ```ts title="Signature"
 class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFields {
-  constructor(input?: DeepPartial<Asset>)
-  @Column() @Column() name: string;
-  @Column('varchar') @Column('varchar') type: AssetType;
-  @Column() @Column() mimeType: string;
-  @Column({ default: 0 }) @Column({ default: 0 }) width: number;
-  @Column({ default: 0 }) @Column({ default: 0 }) height: number;
-  @Column() @Column() fileSize: number;
-  @Column() @Column() source: string;
-  @Column() @Column() preview: string;
-  @Column('simple-json', { nullable: true }) @Column('simple-json', { nullable: true })
+    constructor(input?: DeepPartial<Asset>)
+    @Column() name: string;
+    @Column('varchar') type: AssetType;
+    @Column() mimeType: string;
+    @Column({ default: 0 }) width: number;
+    @Column({ default: 0 }) height: number;
+    @Column() fileSize: number;
+    @Column() source: string;
+    @Column() preview: string;
+    @Column('simple-json', { nullable: true })
     focalPoint?: { x: number; y: number };
-  @ManyToMany(type => Tag) @JoinTable() @ManyToMany(type => Tag)
+    @ManyToMany(type => Tag)
     @JoinTable()
     tags: Tag[];
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
-  @Column(type => CustomAssetFields) @Column(type => CustomAssetFields)
+    @Column(type => CustomAssetFields)
     customFields: CustomAssetFields;
 }
 ```

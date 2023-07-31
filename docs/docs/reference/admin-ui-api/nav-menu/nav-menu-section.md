@@ -19,14 +19,14 @@ A NavMenuSection is a grouping of links in the main
 
 ```ts title="Signature"
 interface NavMenuSection {
-  id: string;
-  label: string;
-  items: NavMenuItem[];
-  icon?: string;
-  displayMode?: 'regular' | 'settings';
-  requiresPermission?: string | ((userPermissions: string[]) => boolean);
-  collapsible?: boolean;
-  collapsedByDefault?: boolean;
+    id: string;
+    label: string;
+    items: NavMenuItem[];
+    icon?: string;
+    displayMode?: 'regular' | 'settings';
+    requiresPermission?: string | ((userPermissions: string[]) => boolean);
+    collapsible?: boolean;
+    collapsedByDefault?: boolean;
 }
 ```
 

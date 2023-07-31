@@ -19,9 +19,9 @@ and clients for the Shop API and Admin API.
 
 ```ts title="Signature"
 interface TestEnvironment {
-  server: TestServer;
-  adminClient: SimpleGraphQLClient;
-  shopClient: SimpleGraphQLClient;
+    server: TestServer;
+    adminClient: SimpleGraphQLClient;
+    shopClient: SimpleGraphQLClient;
 }
 ```
 

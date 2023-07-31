@@ -20,7 +20,7 @@ with the asset path. This service is used internally by the <a href='/reference/
 
 ```ts title="Signature"
 class AssetImporter {
-  async getAssets(assetPaths: string[], ctx?: RequestContext) => Promise<{ assets: Asset[]; errors: string[] }>;
+    getAssets(assetPaths: string[], ctx?: RequestContext) => Promise<{ assets: Asset[]; errors: string[] }>;
 }
 ```
 

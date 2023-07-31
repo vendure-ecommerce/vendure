@@ -18,10 +18,10 @@ This object is created by calling the <a href='/reference/typescript-api/worker/
 
 ```ts title="Signature"
 class VendureWorker {
-  public public app: INestApplicationContext;
-  constructor(app: INestApplicationContext)
-  async startJobQueue() => Promise<VendureWorker>;
-  async startHealthCheckServer(healthCheckConfig: WorkerHealthCheckConfig) => Promise<VendureWorker>;
+    public app: INestApplicationContext;
+    constructor(app: INestApplicationContext)
+    startJobQueue() => Promise<VendureWorker>;
+    startHealthCheckServer(healthCheckConfig: WorkerHealthCheckConfig) => Promise<VendureWorker>;
 }
 ```
 

@@ -20,17 +20,17 @@ specific permissions of the Administrator are determined by the assigned
 
 ```ts title="Signature"
 class Administrator extends VendureEntity implements SoftDeletable, HasCustomFields {
-  constructor(input?: DeepPartial<Administrator>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<Administrator>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  @Column() @Column() firstName: string;
-  @Column() @Column() lastName: string;
-  @Column({ unique: true }) @Column({ unique: true })
+    @Column() firstName: string;
+    @Column() lastName: string;
+    @Column({ unique: true })
     emailAddress: string;
-  @OneToOne(type => User) @JoinColumn() @OneToOne(type => User)
+    @OneToOne(type => User)
     @JoinColumn()
     user: User;
-  @Column(type => CustomAdministratorFields) @Column(type => CustomAdministratorFields)
+    @Column(type => CustomAdministratorFields)
     customFields: CustomAdministratorFields;
 }
 ```

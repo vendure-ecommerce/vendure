@@ -18,9 +18,9 @@ The data which is passed to the state transition handlers of the FulfillmentStat
 
 ```ts title="Signature"
 interface FulfillmentTransitionData {
-  ctx: RequestContext;
-  orders: Order[];
-  fulfillment: Fulfillment;
+    ctx: RequestContext;
+    orders: Order[];
+    fulfillment: Fulfillment;
 }
 ```
 

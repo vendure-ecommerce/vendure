@@ -251,9 +251,9 @@ const config: VendureConfig = {
 
 ```ts title="Signature"
 class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
-  static init(options: EmailPluginOptions | EmailPluginDevModeOptions) => Type<EmailPlugin>;
-  async onApplicationShutdown() => ;
-  configure(consumer: MiddlewareConsumer) => ;
+    init(options: EmailPluginOptions | EmailPluginDevModeOptions) => Type<EmailPlugin>;
+    onApplicationShutdown() => ;
+    configure(consumer: MiddlewareConsumer) => ;
 }
 ```
 * Implements: <code>OnApplicationBootstrap</code>, <code>OnApplicationShutdown</code>, <code>NestModule</code>

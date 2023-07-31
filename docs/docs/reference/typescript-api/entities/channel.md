@@ -32,38 +32,38 @@ In Vendure, Channels have a number of different uses, such as:
 
 ```ts title="Signature"
 class Channel extends VendureEntity {
-  constructor(input?: DeepPartial<Channel>)
-  @Column({ unique: true }) @Column({ unique: true })
+    constructor(input?: DeepPartial<Channel>)
+    @Column({ unique: true })
     code: string;
-  @Column({ unique: true }) @Column({ unique: true })
+    @Column({ unique: true })
     token: string;
-  @Column({ default: '', nullable: true }) @Column({ default: '', nullable: true })
+    @Column({ default: '', nullable: true })
     description: string;
-  @Index() @ManyToOne(type => Seller) @Index()
+    @Index()
     @ManyToOne(type => Seller)
     seller?: Seller;
-  @EntityId({ nullable: true }) @EntityId({ nullable: true })
+    @EntityId({ nullable: true })
     sellerId?: ID;
-  @Column('varchar') @Column('varchar') defaultLanguageCode: LanguageCode;
-  @Column({ type: 'simple-array', nullable: true }) @Column({ type: 'simple-array', nullable: true })
+    @Column('varchar') defaultLanguageCode: LanguageCode;
+    @Column({ type: 'simple-array', nullable: true })
     availableLanguageCodes: LanguageCode[];
-  @Index() @ManyToOne(type => Zone) @Index()
+    @Index()
     @ManyToOne(type => Zone)
     defaultTaxZone: Zone;
-  @Index() @ManyToOne(type => Zone) @Index()
+    @Index()
     @ManyToOne(type => Zone)
     defaultShippingZone: Zone;
-  @Column('varchar') @Column('varchar')
+    @Column('varchar')
     defaultCurrencyCode: CurrencyCode;
-  @Column({ type: 'simple-array', nullable: true }) @Column({ type: 'simple-array', nullable: true })
+    @Column({ type: 'simple-array', nullable: true })
     availableCurrencyCodes: CurrencyCode[];
-  @Column({ default: true }) @Column({ default: true })
+    @Column({ default: true })
     trackInventory: boolean;
-  @Column({ default: 0 }) @Column({ default: 0 })
+    @Column({ default: 0 })
     outOfStockThreshold: number;
-  @Column(type => CustomChannelFields) @Column(type => CustomChannelFields)
+    @Column(type => CustomChannelFields)
     customFields: CustomChannelFields;
-  @Column() @Column() pricesIncludeTax: boolean;
+    @Column() pricesIncludeTax: boolean;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>

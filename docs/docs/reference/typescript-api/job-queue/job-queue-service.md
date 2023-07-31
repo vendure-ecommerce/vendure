@@ -48,14 +48,14 @@ class VideoTranscoderService {
 
 ```ts title="Signature"
 class JobQueueService implements OnModuleDestroy {
-  constructor(configService: ConfigService, jobBufferService: JobBufferService)
-  async createQueue(options: CreateQueueOptions<Data>) => Promise<JobQueue<Data>>;
-  async start() => Promise<void>;
-  addBuffer(buffer: JobBuffer<any>) => ;
-  removeBuffer(buffer: JobBuffer<any>) => ;
-  bufferSize(forBuffers: Array<JobBuffer<any> | string>) => Promise<{ [bufferId: string]: number }>;
-  flush(forBuffers: Array<JobBuffer<any> | string>) => Promise<Job[]>;
-  getJobQueues() => GraphQlJobQueue[];
+    constructor(configService: ConfigService, jobBufferService: JobBufferService)
+    createQueue(options: CreateQueueOptions<Data>) => Promise<JobQueue<Data>>;
+    start() => Promise<void>;
+    addBuffer(buffer: JobBuffer<any>) => ;
+    removeBuffer(buffer: JobBuffer<any>) => ;
+    bufferSize(forBuffers: Array<JobBuffer<any> | string>) => Promise<{ [bufferId: string]: number }>;
+    flush(forBuffers: Array<JobBuffer<any> | string>) => Promise<Job[]>;
+    getJobQueues() => GraphQlJobQueue[];
 }
 ```
 * Implements: <code>OnModuleDestroy</code>

@@ -18,21 +18,21 @@ The AuthOptions define how authentication and authorization is managed.
 
 ```ts title="Signature"
 interface AuthOptions {
-  disableAuth?: boolean;
-  tokenMethod?: 'cookie' | 'bearer' | ReadonlyArray<'cookie' | 'bearer'>;
-  cookieOptions?: CookieOptions;
-  authTokenHeaderKey?: string;
-  sessionDuration?: string | number;
-  sessionCacheStrategy?: SessionCacheStrategy;
-  sessionCacheTTL?: number;
-  requireVerification?: boolean;
-  verificationTokenDuration?: string | number;
-  superadminCredentials?: SuperadminCredentials;
-  shopAuthenticationStrategy?: AuthenticationStrategy[];
-  adminAuthenticationStrategy?: AuthenticationStrategy[];
-  customPermissions?: PermissionDefinition[];
-  passwordHashingStrategy?: PasswordHashingStrategy;
-  passwordValidationStrategy?: PasswordValidationStrategy;
+    disableAuth?: boolean;
+    tokenMethod?: 'cookie' | 'bearer' | ReadonlyArray<'cookie' | 'bearer'>;
+    cookieOptions?: CookieOptions;
+    authTokenHeaderKey?: string;
+    sessionDuration?: string | number;
+    sessionCacheStrategy?: SessionCacheStrategy;
+    sessionCacheTTL?: number;
+    requireVerification?: boolean;
+    verificationTokenDuration?: string | number;
+    superadminCredentials?: SuperadminCredentials;
+    shopAuthenticationStrategy?: AuthenticationStrategy[];
+    adminAuthenticationStrategy?: AuthenticationStrategy[];
+    customPermissions?: PermissionDefinition[];
+    passwordHashingStrategy?: PasswordHashingStrategy;
+    passwordValidationStrategy?: PasswordValidationStrategy;
 }
 ```
 

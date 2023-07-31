@@ -35,9 +35,9 @@ export const config = {
 
 ```ts title="Signature"
 class HttpHealthCheckStrategy implements HealthCheckStrategy {
-  constructor(options: HttpHealthCheckOptions)
-  async init(injector: Injector) => ;
-  getHealthIndicator() => HealthIndicatorFunction;
+    constructor(options: HttpHealthCheckOptions)
+    init(injector: Injector) => ;
+    getHealthIndicator() => HealthIndicatorFunction;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a></code>

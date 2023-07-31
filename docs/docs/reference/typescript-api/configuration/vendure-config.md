@@ -19,26 +19,26 @@ All possible configuration options are defined by the
 
 ```ts title="Signature"
 interface VendureConfig {
-  apiOptions: ApiOptions;
-  assetOptions?: AssetOptions;
-  authOptions: AuthOptions;
-  catalogOptions?: CatalogOptions;
-  customFields?: CustomFields;
-  dbConnectionOptions: DataSourceOptions;
-  defaultChannelToken?: string | null;
-  defaultLanguageCode?: LanguageCode;
-  entityIdStrategy?: EntityIdStrategy<any>;
-  entityOptions?: EntityOptions;
-  importExportOptions?: ImportExportOptions;
-  orderOptions?: OrderOptions;
-  paymentOptions: PaymentOptions;
-  plugins?: Array<DynamicModule | Type<any>>;
-  promotionOptions?: PromotionOptions;
-  shippingOptions?: ShippingOptions;
-  logger?: VendureLogger;
-  taxOptions?: TaxOptions;
-  jobQueueOptions?: JobQueueOptions;
-  systemOptions?: SystemOptions;
+    apiOptions: ApiOptions;
+    assetOptions?: AssetOptions;
+    authOptions: AuthOptions;
+    catalogOptions?: CatalogOptions;
+    customFields?: CustomFields;
+    dbConnectionOptions: DataSourceOptions;
+    defaultChannelToken?: string | null;
+    defaultLanguageCode?: LanguageCode;
+    entityIdStrategy?: EntityIdStrategy<any>;
+    entityOptions?: EntityOptions;
+    importExportOptions?: ImportExportOptions;
+    orderOptions?: OrderOptions;
+    paymentOptions: PaymentOptions;
+    plugins?: Array<DynamicModule | Type<any>>;
+    promotionOptions?: PromotionOptions;
+    shippingOptions?: ShippingOptions;
+    logger?: VendureLogger;
+    taxOptions?: TaxOptions;
+    jobQueueOptions?: JobQueueOptions;
+    systemOptions?: SystemOptions;
 }
 ```
 

@@ -18,11 +18,11 @@ The state of a Job in the JobQueue
 
 ```ts title="Signature"
 enum JobState {
-  CANCELLED = 'CANCELLED'
-  COMPLETED = 'COMPLETED'
-  FAILED = 'FAILED'
-  PENDING = 'PENDING'
-  RETRYING = 'RETRYING'
-  RUNNING = 'RUNNING'
+    CANCELLED = 'CANCELLED'
+    COMPLETED = 'COMPLETED'
+    FAILED = 'FAILED'
+    PENDING = 'PENDING'
+    RETRYING = 'RETRYING'
+    RUNNING = 'RUNNING'
 }
 ```

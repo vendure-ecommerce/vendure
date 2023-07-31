@@ -69,7 +69,7 @@ export const examplePaymentHandler = new PaymentMethodHandler({
 
 ```ts title="Signature"
 class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
-  constructor(config: PaymentMethodConfigOptions<T>)
+    constructor(config: PaymentMethodConfigOptions<T>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>

@@ -21,8 +21,8 @@ to be effectively cached.
 
 ```ts title="Signature"
 class DataService {
-  query(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => QueryResult<T, V>;
-  mutate(mutation: DocumentNode | TypedDocumentNode<T, V>, variables?: V, update?: MutationUpdaterFn<T>) => Observable<T>;
+    query(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => QueryResult<T, V>;
+    mutate(mutation: DocumentNode | TypedDocumentNode<T, V>, variables?: V, update?: MutationUpdaterFn<T>) => Observable<T>;
 }
 ```
 
@@ -82,14 +82,14 @@ for convenience.
 
 ```ts title="Signature"
 class QueryResult<T, V extends Record<string, any> = Record<string, any>> {
-  constructor(queryRef: QueryRef<T, V>, apollo: Apollo)
-  completed$ = new Subject<void>();
-  refetchOnChannelChange() => QueryResult<T, V>;
-  single$: Observable<T>
-  stream$: Observable<T>
-  ref: QueryRef<T, V>
-  mapSingle(mapFn: (item: T) => R) => Observable<R>;
-  mapStream(mapFn: (item: T) => R) => Observable<R>;
+    constructor(queryRef: QueryRef<T, V>, apollo: Apollo)
+    completed$ = new Subject<void>();
+    refetchOnChannelChange() => QueryResult<T, V>;
+    single$: Observable<T>
+    stream$: Observable<T>
+    ref: QueryRef<T, V>
+    mapSingle(mapFn: (item: T) => R) => Observable<R>;
+    mapStream(mapFn: (item: T) => R) => Observable<R>;
 }
 ```
 

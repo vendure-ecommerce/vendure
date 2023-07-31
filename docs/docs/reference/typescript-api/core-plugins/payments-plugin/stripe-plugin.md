@@ -158,8 +158,8 @@ under "Test in a local environment".
 
 ```ts title="Signature"
 class StripePlugin {
-  static static options: StripePluginOptions;
-  static init(options: StripePluginOptions) => Type<StripePlugin>;
+    static options: StripePluginOptions;
+    init(options: StripePluginOptions) => Type<StripePlugin>;
 }
 ```
 
@@ -188,8 +188,8 @@ Configuration options for the Stripe payments plugin.
 
 ```ts title="Signature"
 interface StripePluginOptions {
-  storeCustomersInStripe?: boolean;
-  metadata?: (
+    storeCustomersInStripe?: boolean;
+    metadata?: (
         injector: Injector,
         ctx: RequestContext,
         order: Order,

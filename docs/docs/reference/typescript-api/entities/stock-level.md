@@ -19,20 +19,20 @@ at a particular <a href='/reference/typescript-api/entities/stock-location#stock
 
 ```ts title="Signature"
 class StockLevel extends VendureEntity {
-  constructor(input: DeepPartial<StockLevel>)
-  @Index() @ManyToOne(type => ProductVariant, productVariant => productVariant.stockLevels, { onDelete: 'CASCADE' }) @Index()
+    constructor(input: DeepPartial<StockLevel>)
+    @Index()
     @ManyToOne(type => ProductVariant, productVariant => productVariant.stockLevels, { onDelete: 'CASCADE' })
     productVariant: ProductVariant;
-  @EntityId() @EntityId()
+    @EntityId()
     productVariantId: ID;
-  @Index() @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' }) @Index()
+    @Index()
     @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' })
     stockLocation: StockLocation;
-  @EntityId() @EntityId()
+    @EntityId()
     stockLocationId: ID;
-  @Column() @Column()
+    @Column()
     stockOnHand: number;
-  @Column() @Column()
+    @Column()
     stockAllocated: number;
 }
 ```

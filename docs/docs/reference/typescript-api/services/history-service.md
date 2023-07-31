@@ -113,15 +113,15 @@ It is also possible to define a UI component to display custom history entry typ
 
 ```ts title="Signature"
 class HistoryService {
-  constructor(connection: TransactionalConnection, administratorService: AdministratorService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus)
-  async getHistoryForOrder(ctx: RequestContext, orderId: ID, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise<PaginatedList<OrderHistoryEntry>>;
-  async createHistoryEntryForOrder(args: CreateOrderHistoryEntryArgs<T>, isPublic:  = true) => Promise<OrderHistoryEntry>;
-  async getHistoryForCustomer(ctx: RequestContext, customerId: ID, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise<PaginatedList<CustomerHistoryEntry>>;
-  async createHistoryEntryForCustomer(args: CreateCustomerHistoryEntryArgs<T>, isPublic:  = false) => Promise<CustomerHistoryEntry>;
-  async updateOrderHistoryEntry(ctx: RequestContext, args: UpdateOrderHistoryEntryArgs<T>) => ;
-  async deleteOrderHistoryEntry(ctx: RequestContext, id: ID) => Promise<void>;
-  async updateCustomerHistoryEntry(ctx: RequestContext, args: UpdateCustomerHistoryEntryArgs<T>) => ;
-  async deleteCustomerHistoryEntry(ctx: RequestContext, id: ID) => Promise<void>;
+    constructor(connection: TransactionalConnection, administratorService: AdministratorService, listQueryBuilder: ListQueryBuilder, eventBus: EventBus)
+    getHistoryForOrder(ctx: RequestContext, orderId: ID, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise<PaginatedList<OrderHistoryEntry>>;
+    createHistoryEntryForOrder(args: CreateOrderHistoryEntryArgs<T>, isPublic:  = true) => Promise<OrderHistoryEntry>;
+    getHistoryForCustomer(ctx: RequestContext, customerId: ID, publicOnly: boolean, options?: HistoryEntryListOptions) => Promise<PaginatedList<CustomerHistoryEntry>>;
+    createHistoryEntryForCustomer(args: CreateCustomerHistoryEntryArgs<T>, isPublic:  = false) => Promise<CustomerHistoryEntry>;
+    updateOrderHistoryEntry(ctx: RequestContext, args: UpdateOrderHistoryEntryArgs<T>) => ;
+    deleteOrderHistoryEntry(ctx: RequestContext, id: ID) => Promise<void>;
+    updateCustomerHistoryEntry(ctx: RequestContext, args: UpdateCustomerHistoryEntryArgs<T>) => ;
+    deleteCustomerHistoryEntry(ctx: RequestContext, id: ID) => Promise<void>;
 }
 ```
 

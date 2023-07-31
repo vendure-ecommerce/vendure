@@ -25,8 +25,8 @@ e.g. "12ms", "33s", "2:03m"
 
 ```ts title="Signature"
 class DurationPipe implements PipeTransform {
-  constructor(i18nService: I18nService)
-  transform(value: number) => string;
+    constructor(i18nService: I18nService)
+    transform(value: number) => string;
 }
 ```
 * Implements: <code>PipeTransform</code>

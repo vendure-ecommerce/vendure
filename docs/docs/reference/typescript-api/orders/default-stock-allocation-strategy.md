@@ -19,7 +19,7 @@ Allocates stock when the Order transitions from `ArrangingPayment` to either
 
 ```ts title="Signature"
 class DefaultStockAllocationStrategy implements StockAllocationStrategy {
-  shouldAllocateStock(ctx: RequestContext, fromState: OrderState, toState: OrderState, order: Order) => boolean | Promise<boolean>;
+    shouldAllocateStock(ctx: RequestContext, fromState: OrderState, toState: OrderState, order: Order) => boolean | Promise<boolean>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy'>StockAllocationStrategy</a></code>

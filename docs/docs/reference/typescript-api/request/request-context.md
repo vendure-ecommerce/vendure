@@ -35,22 +35,22 @@ myQuery(@Ctx() ctx: RequestContext) {
 
 ```ts title="Signature"
 class RequestContext {
-  static empty() => RequestContext;
-  static deserialize(ctxObject: SerializedRequestContext) => RequestContext;
-  userHasPermissions(permissions: Permission[]) => boolean;
-  serialize() => SerializedRequestContext;
-  copy() => RequestContext;
-  req: Request | undefined
-  apiType: ApiType
-  channel: Channel
-  channelId: ID
-  languageCode: LanguageCode
-  currencyCode: CurrencyCode
-  session: CachedSession | undefined
-  activeUserId: ID | undefined
-  isAuthorized: boolean
-  authorizedAsOwnerOnly: boolean
-  translate(key: string, variables?: { [k: string]: any }) => string;
+    empty() => RequestContext;
+    deserialize(ctxObject: SerializedRequestContext) => RequestContext;
+    userHasPermissions(permissions: Permission[]) => boolean;
+    serialize() => SerializedRequestContext;
+    copy() => RequestContext;
+    req: Request | undefined
+    apiType: ApiType
+    channel: Channel
+    channelId: ID
+    languageCode: LanguageCode
+    currencyCode: CurrencyCode
+    session: CachedSession | undefined
+    activeUserId: ID | undefined
+    isAuthorized: boolean
+    authorizedAsOwnerOnly: boolean
+    translate(key: string, variables?: { [k: string]: any }) => string;
 }
 ```
 

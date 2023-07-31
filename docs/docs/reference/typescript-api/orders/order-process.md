@@ -30,10 +30,10 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface OrderProcess<State extends keyof CustomOrderStates | string> extends InjectableStrategy {
-  transitions?: Transitions<State, State | OrderState> & Partial<Transitions<OrderState | State>>;
-  onTransitionStart?: OnTransitionStartFn<State | OrderState, OrderTransitionData>;
-  onTransitionEnd?: OnTransitionEndFn<State | OrderState, OrderTransitionData>;
-  onTransitionError?: OnTransitionErrorFn<State | OrderState>;
+    transitions?: Transitions<State, State | OrderState> & Partial<Transitions<OrderState | State>>;
+    onTransitionStart?: OnTransitionStartFn<State | OrderState, OrderTransitionData>;
+    onTransitionEnd?: OnTransitionEndFn<State | OrderState, OrderTransitionData>;
+    onTransitionError?: OnTransitionErrorFn<State | OrderState>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -77,16 +77,16 @@ options are set to `true`.
 
 ```ts title="Signature"
 interface DefaultOrderProcessOptions {
-  checkModificationPayments?: boolean;
-  checkAdditionalPaymentsAmount?: boolean;
-  checkAllVariantsExist?: boolean;
-  arrangingPaymentRequiresContents?: boolean;
-  arrangingPaymentRequiresCustomer?: boolean;
-  arrangingPaymentRequiresShipping?: boolean;
-  arrangingPaymentRequiresStock?: boolean;
-  checkPaymentsCoverTotal?: boolean;
-  checkAllItemsBeforeCancel?: boolean;
-  checkFulfillmentStates?: boolean;
+    checkModificationPayments?: boolean;
+    checkAdditionalPaymentsAmount?: boolean;
+    checkAllVariantsExist?: boolean;
+    arrangingPaymentRequiresContents?: boolean;
+    arrangingPaymentRequiresCustomer?: boolean;
+    arrangingPaymentRequiresShipping?: boolean;
+    arrangingPaymentRequiresStock?: boolean;
+    checkPaymentsCoverTotal?: boolean;
+    checkAllItemsBeforeCancel?: boolean;
+    checkFulfillmentStates?: boolean;
 }
 ```
 
@@ -254,8 +254,8 @@ This is the object passed to the <a href='/reference/typescript-api/orders/order
 
 ```ts title="Signature"
 interface OrderTransitionData {
-  ctx: RequestContext;
-  order: Order;
+    ctx: RequestContext;
+    order: Order;
 }
 ```
 

@@ -20,7 +20,7 @@ to maintain an order without requiring authentication and a registered account b
 
 ```ts title="Signature"
 class AnonymousSession extends Session {
-  constructor(input: DeepPartial<AnonymousSession>)
+    constructor(input: DeepPartial<AnonymousSession>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/session#session'>Session</a></code>

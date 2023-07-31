@@ -19,8 +19,8 @@ when using the <a href='/reference/typescript-api/data-access/entity-hydrator#en
 
 ```ts title="Signature"
 interface HydrateOptions<Entity extends VendureEntity> {
-  relations: Array<EntityRelationPaths<Entity>>;
-  applyProductVariantPrices?: boolean;
+    relations: Array<EntityRelationPaths<Entity>>;
+    applyProductVariantPrices?: boolean;
 }
 ```
 

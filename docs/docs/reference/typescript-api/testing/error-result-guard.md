@@ -42,10 +42,10 @@ it('errors when quantity is negative', async () => {
 
 ```ts title="Signature"
 class ErrorResultGuard<T> {
-  constructor(testFn: (input: T) => boolean)
-  isSuccess(input: T | any) => input is T;
-  assertSuccess(input: T | R) => asserts input is T;
-  assertErrorResult(input: T | R) => asserts input is R;
+    constructor(testFn: (input: T) => boolean)
+    isSuccess(input: T | any) => input is T;
+    assertSuccess(input: T | R) => asserts input is T;
+    assertErrorResult(input: T | R) => asserts input is R;
 }
 ```
 

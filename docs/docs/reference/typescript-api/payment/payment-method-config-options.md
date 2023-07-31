@@ -18,11 +18,11 @@ Defines the object which is used to construct the <a href='/reference/typescript
 
 ```ts title="Signature"
 interface PaymentMethodConfigOptions<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
-  createPayment: CreatePaymentFn<T>;
-  settlePayment: SettlePaymentFn<T>;
-  cancelPayment?: CancelPaymentFn<T>;
-  createRefund?: CreateRefundFn<T>;
-  onStateTransitionStart?: OnTransitionStartFn<PaymentState, PaymentTransitionData>;
+    createPayment: CreatePaymentFn<T>;
+    settlePayment: SettlePaymentFn<T>;
+    cancelPayment?: CancelPaymentFn<T>;
+    createRefund?: CreateRefundFn<T>;
+    onStateTransitionStart?: OnTransitionStartFn<PaymentState, PaymentTransitionData>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>

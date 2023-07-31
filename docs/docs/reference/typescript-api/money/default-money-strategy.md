@@ -19,10 +19,10 @@ The storage configuration and rounding logic replicates the behaviour of Vendure
 
 ```ts title="Signature"
 class DefaultMoneyStrategy implements MoneyStrategy {
-  readonly readonly moneyColumnOptions: ColumnOptions = {
+    readonly moneyColumnOptions: ColumnOptions = {
         type: 'int',
     };
-  round(value: number, quantity:  = 1) => number;
+    round(value: number, quantity:  = 1) => number;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a></code>

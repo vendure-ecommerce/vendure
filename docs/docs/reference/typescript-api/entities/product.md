@@ -19,31 +19,31 @@ providing an overall name, description etc.
 
 ```ts title="Signature"
 class Product extends VendureEntity implements Translatable, HasCustomFields, ChannelAware, SoftDeletable {
-  constructor(input?: DeepPartial<Product>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<Product>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  name: LocaleString;
-  slug: LocaleString;
-  description: LocaleString;
-  @Column({ default: true }) @Column({ default: true })
+    name: LocaleString;
+    slug: LocaleString;
+    description: LocaleString;
+    @Column({ default: true })
     enabled: boolean;
-  @Index() @ManyToOne(type => Asset, { onDelete: 'SET NULL' }) @Index()
+    @Index()
     @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
-  @OneToMany(type => ProductAsset, productAsset => productAsset.product) @OneToMany(type => ProductAsset, productAsset => productAsset.product)
+    @OneToMany(type => ProductAsset, productAsset => productAsset.product)
     assets: ProductAsset[];
-  @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true }) @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true })
+    @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Product>>;
-  @OneToMany(type => ProductVariant, variant => variant.product) @OneToMany(type => ProductVariant, variant => variant.product)
+    @OneToMany(type => ProductVariant, variant => variant.product)
     variants: ProductVariant[];
-  @OneToMany(type => ProductOptionGroup, optionGroup => optionGroup.product) @OneToMany(type => ProductOptionGroup, optionGroup => optionGroup.product)
+    @OneToMany(type => ProductOptionGroup, optionGroup => optionGroup.product)
     optionGroups: ProductOptionGroup[];
-  @ManyToMany(type => FacetValue) @JoinTable() @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue)
     @JoinTable()
     facetValues: FacetValue[];
-  @Column(type => CustomProductFields) @Column(type => CustomProductFields)
+    @Column(type => CustomProductFields)
     customFields: CustomProductFields;
-  @ManyToMany(type => Channel) @JoinTable() @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 }

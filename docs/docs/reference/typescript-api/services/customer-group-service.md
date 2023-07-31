@@ -18,15 +18,15 @@ Contains methods relating to <a href='/reference/typescript-api/entities/custome
 
 ```ts title="Signature"
 class CustomerGroupService {
-  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, historyService: HistoryService, eventBus: EventBus, customFieldRelationService: CustomFieldRelationService)
-  findAll(ctx: RequestContext, options?: CustomerGroupListOptions, relations: RelationPaths<CustomerGroup> = []) => Promise<PaginatedList<CustomerGroup>>;
-  findOne(ctx: RequestContext, customerGroupId: ID, relations: RelationPaths<CustomerGroup> = []) => Promise<CustomerGroup | undefined>;
-  getGroupCustomers(ctx: RequestContext, customerGroupId: ID, options?: CustomerListOptions) => Promise<PaginatedList<Customer>>;
-  async create(ctx: RequestContext, input: CreateCustomerGroupInput) => Promise<CustomerGroup>;
-  async update(ctx: RequestContext, input: UpdateCustomerGroupInput) => Promise<CustomerGroup>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  async addCustomersToGroup(ctx: RequestContext, input: MutationAddCustomersToGroupArgs) => Promise<CustomerGroup>;
-  async removeCustomersFromGroup(ctx: RequestContext, input: MutationRemoveCustomersFromGroupArgs) => Promise<CustomerGroup>;
+    constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, historyService: HistoryService, eventBus: EventBus, customFieldRelationService: CustomFieldRelationService)
+    findAll(ctx: RequestContext, options?: CustomerGroupListOptions, relations: RelationPaths<CustomerGroup> = []) => Promise<PaginatedList<CustomerGroup>>;
+    findOne(ctx: RequestContext, customerGroupId: ID, relations: RelationPaths<CustomerGroup> = []) => Promise<CustomerGroup | undefined>;
+    getGroupCustomers(ctx: RequestContext, customerGroupId: ID, options?: CustomerListOptions) => Promise<PaginatedList<Customer>>;
+    create(ctx: RequestContext, input: CreateCustomerGroupInput) => Promise<CustomerGroup>;
+    update(ctx: RequestContext, input: UpdateCustomerGroupInput) => Promise<CustomerGroup>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    addCustomersToGroup(ctx: RequestContext, input: MutationAddCustomersToGroupArgs) => Promise<CustomerGroup>;
+    removeCustomersFromGroup(ctx: RequestContext, input: MutationRemoveCustomersFromGroupArgs) => Promise<CustomerGroup>;
 }
 ```
 

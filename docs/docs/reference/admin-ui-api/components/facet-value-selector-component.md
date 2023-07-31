@@ -37,26 +37,26 @@ this.facets = this.dataService
 
 ```ts title="Signature"
 class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @Output() @Output() selectedValuesChange = new EventEmitter<FacetValueFragment[]>();
-  @Input() @Input() readonly = false;
-  @Input() @Input() transformControlValueAccessorValue: (value: FacetValueFragment[]) => any[] = value => value;
-  searchInput$ = new Subject<string>();
-  searchLoading = false;
-  searchResults$: Observable<FacetValueFragment[]>;
-  selectedIds$ = new Subject<string[]>();
-  onChangeFn: (val: any) => void;
-  onTouchFn: () => void;
-  disabled = false;
-  value: Array<string | FacetValueFragment>;
-  constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
-  ngOnInit() => void;
-  ngOnDestroy() => ;
-  onChange(selected: FacetValueFragment[]) => ;
-  registerOnChange(fn: any) => ;
-  registerOnTouched(fn: any) => ;
-  setDisabledState(isDisabled: boolean) => void;
-  focus() => ;
-  writeValue(obj: string | FacetValueFragment[] | Array<string | number> | null) => void;
+    @Output() selectedValuesChange = new EventEmitter<FacetValueFragment[]>();
+    @Input() readonly = false;
+    @Input() transformControlValueAccessorValue: (value: FacetValueFragment[]) => any[] = value => value;
+    searchInput$ = new Subject<string>();
+    searchLoading = false;
+    searchResults$: Observable<FacetValueFragment[]>;
+    selectedIds$ = new Subject<string[]>();
+    onChangeFn: (val: any) => void;
+    onTouchFn: () => void;
+    disabled = false;
+    value: Array<string | FacetValueFragment>;
+    constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
+    ngOnInit() => void;
+    ngOnDestroy() => ;
+    onChange(selected: FacetValueFragment[]) => ;
+    registerOnChange(fn: any) => ;
+    registerOnTouched(fn: any) => ;
+    setDisabledState(isDisabled: boolean) => void;
+    focus() => ;
+    writeValue(obj: string | FacetValueFragment[] | Array<string | number> | null) => void;
 }
 ```
 * Implements: <code>OnInit</code>, <code>OnDestroy</code>, <code>ControlValueAccessor</code>

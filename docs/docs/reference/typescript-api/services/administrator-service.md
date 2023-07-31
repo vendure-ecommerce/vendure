@@ -18,14 +18,14 @@ Contains methods relating to <a href='/reference/typescript-api/entities/adminis
 
 ```ts title="Signature"
 class AdministratorService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, listQueryBuilder: ListQueryBuilder, passwordCipher: PasswordCipher, userService: UserService, roleService: RoleService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, requestContextService: RequestContextService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Administrator>, relations?: RelationPaths<Administrator>) => Promise<PaginatedList<Administrator>>;
-  findOne(ctx: RequestContext, administratorId: ID, relations?: RelationPaths<Administrator>) => Promise<Administrator | undefined>;
-  findOneByUserId(ctx: RequestContext, userId: ID, relations?: RelationPaths<Administrator>) => Promise<Administrator | undefined>;
-  async create(ctx: RequestContext, input: CreateAdministratorInput) => Promise<Administrator>;
-  async update(ctx: RequestContext, input: UpdateAdministratorInput) => Promise<Administrator>;
-  async assignRole(ctx: RequestContext, administratorId: ID, roleId: ID) => Promise<Administrator>;
-  async softDelete(ctx: RequestContext, id: ID) => ;
+    constructor(connection: TransactionalConnection, configService: ConfigService, listQueryBuilder: ListQueryBuilder, passwordCipher: PasswordCipher, userService: UserService, roleService: RoleService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, requestContextService: RequestContextService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Administrator>, relations?: RelationPaths<Administrator>) => Promise<PaginatedList<Administrator>>;
+    findOne(ctx: RequestContext, administratorId: ID, relations?: RelationPaths<Administrator>) => Promise<Administrator | undefined>;
+    findOneByUserId(ctx: RequestContext, userId: ID, relations?: RelationPaths<Administrator>) => Promise<Administrator | undefined>;
+    create(ctx: RequestContext, input: CreateAdministratorInput) => Promise<Administrator>;
+    update(ctx: RequestContext, input: UpdateAdministratorInput) => Promise<Administrator>;
+    assignRole(ctx: RequestContext, administratorId: ID, roleId: ID) => Promise<Administrator>;
+    softDelete(ctx: RequestContext, id: ID) => ;
 }
 ```
 

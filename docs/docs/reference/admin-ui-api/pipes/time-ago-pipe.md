@@ -24,8 +24,8 @@ Converts a date into the format "3 minutes ago", "5 hours ago" etc.
 
 ```ts title="Signature"
 class TimeAgoPipe implements PipeTransform {
-  constructor(i18nService: I18nService)
-  transform(value: string | Date, nowVal?: string | Date) => string;
+    constructor(i18nService: I18nService)
+    transform(value: string | Date, nowVal?: string | Date) => string;
 }
 ```
 * Implements: <code>PipeTransform</code>

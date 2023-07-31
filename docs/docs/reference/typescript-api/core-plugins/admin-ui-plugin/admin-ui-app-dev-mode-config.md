@@ -18,10 +18,10 @@ Information about the Admin UI app dev server.
 
 ```ts title="Signature"
 interface AdminUiAppDevModeConfig {
-  sourcePath: string;
-  port: number;
-  route?: string;
-  compile: () => Promise<void>;
+    sourcePath: string;
+    port: number;
+    route?: string;
+    compile: () => Promise<void>;
 }
 ```
 

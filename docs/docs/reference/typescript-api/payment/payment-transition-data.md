@@ -19,9 +19,9 @@ a new `PaymentMethodHandler`
 
 ```ts title="Signature"
 interface PaymentTransitionData {
-  ctx: RequestContext;
-  payment: Payment;
-  order: Order;
+    ctx: RequestContext;
+    payment: Payment;
+    order: Order;
 }
 ```
 

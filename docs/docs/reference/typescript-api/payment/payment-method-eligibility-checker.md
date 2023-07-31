@@ -34,7 +34,7 @@ const ccPaymentEligibilityChecker = new PaymentMethodEligibilityChecker({
 
 ```ts title="Signature"
 class PaymentMethodEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
-  constructor(config: PaymentMethodEligibilityCheckerConfig<T>)
+    constructor(config: PaymentMethodEligibilityCheckerConfig<T>)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
@@ -62,7 +62,7 @@ configure its behavior.
 
 ```ts title="Signature"
 interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
-  check: CheckPaymentMethodEligibilityCheckerFn<T>;
+    check: CheckPaymentMethodEligibilityCheckerFn<T>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions'>ConfigurableOperationDefOptions</a>&#60;T&#62;</code>

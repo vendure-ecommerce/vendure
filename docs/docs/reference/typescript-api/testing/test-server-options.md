@@ -18,10 +18,10 @@ Configuration options used to initialize an instance of the <a href='/reference/
 
 ```ts title="Signature"
 interface TestServerOptions {
-  productsCsvPath?: string;
-  initialData: InitialData;
-  customerCount?: number;
-  logging?: boolean;
+    productsCsvPath?: string;
+    initialData: InitialData;
+    customerCount?: number;
+    logging?: boolean;
 }
 ```
 

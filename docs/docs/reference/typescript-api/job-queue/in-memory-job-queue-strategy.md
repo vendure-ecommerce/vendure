@@ -33,17 +33,17 @@ Completed jobs will be evicted from the store every 2 hours to prevent a memory 
 
 ```ts title="Signature"
 class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
-  protected protected jobs = new Map<ID, Job>();
-  protected protected unsettledJobs: { [queueName: string]: Array<{ job: Job; updatedAt: Date }> } = {};
-  init(injector: Injector) => ;
-  destroy() => ;
-  async add(job: Job<Data>) => Promise<Job<Data>>;
-  async findOne(id: ID) => Promise<Job | undefined>;
-  async findMany(options?: JobListOptions) => Promise<PaginatedList<Job>>;
-  async findManyById(ids: ID[]) => Promise<Job[]>;
-  async next(queueName: string, waitingJobs: Job[] = []) => Promise<Job | undefined>;
-  async update(job: Job) => Promise<void>;
-  async removeSettledJobs(queueNames: string[] = [], olderThan?: Date) => Promise<number>;
+    protected jobs = new Map<ID, Job>();
+    protected unsettledJobs: { [queueName: string]: Array<{ job: Job; updatedAt: Date }> } = {};
+    init(injector: Injector) => ;
+    destroy() => ;
+    add(job: Job<Data>) => Promise<Job<Data>>;
+    findOne(id: ID) => Promise<Job | undefined>;
+    findMany(options?: JobListOptions) => Promise<PaginatedList<Job>>;
+    findManyById(ids: ID[]) => Promise<Job[]>;
+    next(queueName: string, waitingJobs: Job[] = []) => Promise<Job | undefined>;
+    update(job: Job) => Promise<void>;
+    removeSettledJobs(queueNames: string[] = [], olderThan?: Date) => Promise<number>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy'>PollingJobQueueStrategy</a></code>

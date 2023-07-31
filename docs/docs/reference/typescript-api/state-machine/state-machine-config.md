@@ -18,10 +18,10 @@ The config object used to instantiate a new <a href='/reference/typescript-api/s
 
 ```ts title="Signature"
 interface StateMachineConfig<T extends string, Data = undefined> {
-  readonly transitions: Transitions<T>;
-  onTransitionStart?: OnTransitionStartFn<T, Data>;
-  onTransitionEnd?: OnTransitionEndFn<T, Data>;
-  onError?: OnTransitionErrorFn<T>;
+    readonly transitions: Transitions<T>;
+    onTransitionStart?: OnTransitionStartFn<T, Data>;
+    onTransitionEnd?: OnTransitionEndFn<T, Data>;
+    onError?: OnTransitionErrorFn<T>;
 }
 ```
 

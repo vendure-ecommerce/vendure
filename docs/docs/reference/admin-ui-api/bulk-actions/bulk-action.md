@@ -20,16 +20,16 @@ For a full example, see the <a href='/reference/admin-ui-api/bulk-actions/regist
 
 ```ts title="Signature"
 interface BulkAction<ItemType = any, ComponentType = any> {
-  location: BulkActionLocationId;
-  label: string;
-  getTranslationVars?: (
+    location: BulkActionLocationId;
+    label: string;
+    getTranslationVars?: (
         context: BulkActionFunctionContext<ItemType, ComponentType>,
     ) => Record<string, string | number> | Promise<Record<string, string | number>>;
-  icon?: string;
-  iconClass?: string;
-  onClick: (context: BulkActionClickContext<ItemType, ComponentType>) => void;
-  isVisible?: (context: BulkActionFunctionContext<ItemType, ComponentType>) => boolean | Promise<boolean>;
-  requiresPermission?: string | ((userPermissions: string[]) => boolean);
+    icon?: string;
+    iconClass?: string;
+    onClick: (context: BulkActionClickContext<ItemType, ComponentType>) => void;
+    isVisible?: (context: BulkActionFunctionContext<ItemType, ComponentType>) => boolean | Promise<boolean>;
+    requiresPermission?: string | ((userPermissions: string[]) => boolean);
 }
 ```
 
@@ -163,10 +163,10 @@ of the BulkAction definition.
 
 ```ts title="Signature"
 interface BulkActionFunctionContext<ItemType, ComponentType> {
-  selection: ItemType[];
-  hostComponent: ComponentType;
-  injector: Injector;
-  route: ActivatedRoute;
+    selection: ItemType[];
+    hostComponent: ComponentType;
+    injector: Injector;
+    route: ActivatedRoute;
 }
 ```
 
@@ -209,8 +209,8 @@ This is the argument which gets passed to the `onClick` function of a BulkAction
 
 ```ts title="Signature"
 interface BulkActionClickContext<ItemType, ComponentType> extends BulkActionFunctionContext<ItemType, ComponentType> {
-  clearSelection: () => void;
-  event: MouseEvent;
+    clearSelection: () => void;
+    event: MouseEvent;
 }
 ```
 * Extends: <code><a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;</code>

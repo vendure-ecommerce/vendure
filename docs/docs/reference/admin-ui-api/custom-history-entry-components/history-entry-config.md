@@ -18,8 +18,8 @@ Configuration for registering a custom <a href='/reference/admin-ui-api/custom-h
 
 ```ts title="Signature"
 interface HistoryEntryConfig {
-  type: string;
-  component: Type<HistoryEntryComponent>;
+    type: string;
+    component: Type<HistoryEntryComponent>;
 }
 ```
 

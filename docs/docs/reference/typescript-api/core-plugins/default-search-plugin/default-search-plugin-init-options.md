@@ -18,9 +18,9 @@ Options which configure the behaviour of the DefaultSearchPlugin
 
 ```ts title="Signature"
 interface DefaultSearchPluginInitOptions {
-  indexStockStatus?: boolean;
-  bufferUpdates?: boolean;
-  searchStrategy?: SearchStrategy;
+    indexStockStatus?: boolean;
+    bufferUpdates?: boolean;
+    searchStrategy?: SearchStrategy;
 }
 ```
 

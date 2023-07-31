@@ -27,8 +27,8 @@ only contain less than 800 files.
 
 ```ts title="Signature"
 class HashedAssetNamingStrategy extends DefaultAssetNamingStrategy {
-  generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
-  generatePreviewFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
+    generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
+    generatePreviewFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string) => string;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a></code>

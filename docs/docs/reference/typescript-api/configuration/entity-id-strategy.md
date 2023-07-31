@@ -19,9 +19,9 @@ for all entities. This is the default strategy used by Vendure.
 
 ```ts title="Signature"
 class AutoIncrementIdStrategy implements EntityIdStrategy<'increment'> {
-  readonly readonly primaryKeyType = 'increment';
-  decodeId(id: string) => number;
-  encodeId(primaryKey: number) => string;
+    readonly primaryKeyType = 'increment';
+    decodeId(id: string) => number;
+    encodeId(primaryKey: number) => string;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;'increment'&#62;</code>
@@ -78,9 +78,9 @@ a fresh database.
 
 ```ts title="Signature"
 interface EntityIdStrategy<T extends 'increment' | 'uuid'> extends InjectableStrategy {
-  readonly primaryKeyType: T;
-  encodeId: (primaryKey: PrimaryKeyType<T>) => string;
-  decodeId: (id: string) => PrimaryKeyType<T>;
+    readonly primaryKeyType: T;
+    encodeId: (primaryKey: PrimaryKeyType<T>) => string;
+    decodeId: (id: string) => PrimaryKeyType<T>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
@@ -142,9 +142,9 @@ export const config: VendureConfig = {
 
 ```ts title="Signature"
 class UuidIdStrategy implements EntityIdStrategy<'uuid'> {
-  readonly readonly primaryKeyType = 'uuid';
-  decodeId(id: string) => string;
-  encodeId(primaryKey: string) => string;
+    readonly primaryKeyType = 'uuid';
+    decodeId(id: string) => string;
+    encodeId(primaryKey: string) => string;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;'uuid'&#62;</code>

@@ -38,8 +38,8 @@ EmailPlugin.init({
 
 ```ts title="Signature"
 interface TemplateLoader {
-  loadTemplate(injector: Injector, ctx: RequestContext, input: LoadTemplateInput): Promise<string>;
-  loadPartials?(): Promise<Partial[]>;
+    loadTemplate(injector: Injector, ctx: RequestContext, input: LoadTemplateInput): Promise<string>;
+    loadPartials?(): Promise<Partial[]>;
 }
 ```
 

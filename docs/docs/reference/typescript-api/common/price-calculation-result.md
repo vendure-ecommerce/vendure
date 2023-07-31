@@ -19,8 +19,8 @@ The result of the price calculation from the <a href='/reference/typescript-api/
 
 ```ts title="Signature"
 type PriceCalculationResult = {
-  price: number;
-  priceIncludesTax: boolean;
+    price: number;
+    priceIncludesTax: boolean;
 }
 ```
 

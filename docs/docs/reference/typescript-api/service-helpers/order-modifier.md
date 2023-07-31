@@ -25,13 +25,13 @@ of these Order-related methods into a more clearly-delineated set of classes.
 
 ```ts title="Signature"
 class OrderModifier {
-  constructor(connection: TransactionalConnection, configService: ConfigService, orderCalculator: OrderCalculator, paymentService: PaymentService, countryService: CountryService, stockMovementService: StockMovementService, productVariantService: ProductVariantService, customFieldRelationService: CustomFieldRelationService, promotionService: PromotionService, eventBus: EventBus, entityHydrator: EntityHydrator, historyService: HistoryService, translator: TranslatorService)
-  async constrainQuantityToSaleable(ctx: RequestContext, variant: ProductVariant, quantity: number, existingQuantity:  = 0) => ;
-  async getExistingOrderLine(ctx: RequestContext, order: Order, productVariantId: ID, customFields?: { [key: string]: any }) => Promise<OrderLine | undefined>;
-  async getOrCreateOrderLine(ctx: RequestContext, order: Order, productVariantId: ID, customFields?: { [key: string]: any }) => ;
-  async updateOrderLineQuantity(ctx: RequestContext, orderLine: OrderLine, quantity: number, order: Order) => Promise<OrderLine>;
-  async cancelOrderByOrderLines(ctx: RequestContext, input: CancelOrderInput, lineInputs: OrderLineInput[]) => ;
-  async modifyOrder(ctx: RequestContext, input: ModifyOrderInput, order: Order) => Promise<JustErrorResults<ModifyOrderResult> | { order: Order; modification: OrderModification }>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, orderCalculator: OrderCalculator, paymentService: PaymentService, countryService: CountryService, stockMovementService: StockMovementService, productVariantService: ProductVariantService, customFieldRelationService: CustomFieldRelationService, promotionService: PromotionService, eventBus: EventBus, entityHydrator: EntityHydrator, historyService: HistoryService, translator: TranslatorService)
+    constrainQuantityToSaleable(ctx: RequestContext, variant: ProductVariant, quantity: number, existingQuantity:  = 0) => ;
+    getExistingOrderLine(ctx: RequestContext, order: Order, productVariantId: ID, customFields?: { [key: string]: any }) => Promise<OrderLine | undefined>;
+    getOrCreateOrderLine(ctx: RequestContext, order: Order, productVariantId: ID, customFields?: { [key: string]: any }) => ;
+    updateOrderLineQuantity(ctx: RequestContext, orderLine: OrderLine, quantity: number, order: Order) => Promise<OrderLine>;
+    cancelOrderByOrderLines(ctx: RequestContext, input: CancelOrderInput, lineInputs: OrderLineInput[]) => ;
+    modifyOrder(ctx: RequestContext, input: ModifyOrderInput, order: Order) => Promise<JustErrorResults<ModifyOrderResult> | { order: Order; modification: OrderModification }>;
 }
 ```
 

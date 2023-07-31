@@ -18,10 +18,10 @@ Defines payment-related options in the <a href='/reference/typescript-api/config
 
 ```ts title="Signature"
 interface PaymentOptions {
-  paymentMethodHandlers: PaymentMethodHandler[];
-  paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
-  customPaymentProcess?: Array<PaymentProcess<any>>;
-  process?: Array<PaymentProcess<any>>;
+    paymentMethodHandlers: PaymentMethodHandler[];
+    paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
+    customPaymentProcess?: Array<PaymentProcess<any>>;
+    process?: Array<PaymentProcess<any>>;
 }
 ```
 

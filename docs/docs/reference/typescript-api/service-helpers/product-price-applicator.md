@@ -41,8 +41,8 @@ export class MyCustomService {
 
 ```ts title="Signature"
 class ProductPriceApplicator {
-  constructor(configService: ConfigService, taxRateService: TaxRateService, zoneService: ZoneService, requestCache: RequestContextCacheService)
-  async applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext, order?: Order) => Promise<ProductVariant>;
+    constructor(configService: ConfigService, taxRateService: TaxRateService, zoneService: ZoneService, requestCache: RequestContextCacheService)
+    applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext, order?: Order) => Promise<ProductVariant>;
 }
 ```
 

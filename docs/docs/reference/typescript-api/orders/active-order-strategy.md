@@ -131,10 +131,10 @@ export const config = {
 
 ```ts title="Signature"
 interface ActiveOrderStrategy<InputType extends Record<string, any> | void = void> extends InjectableStrategy {
-  readonly name: string;
-  defineInputType?: () => DocumentNode;
-  createActiveOrder?: (ctx: RequestContext, input: InputType) => Promise<Order>;
-  determineActiveOrder(ctx: RequestContext, input: InputType): Promise<Order | undefined>;
+    readonly name: string;
+    defineInputType?: () => DocumentNode;
+    createActiveOrder?: (ctx: RequestContext, input: InputType) => Promise<Order>;
+    determineActiveOrder(ctx: RequestContext, input: InputType): Promise<Order | undefined>;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

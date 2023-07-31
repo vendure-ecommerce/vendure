@@ -43,9 +43,9 @@ export const config: VendureConfig = {
 
 ```ts title="Signature"
 interface Middleware {
-  handler: MiddlewareHandler;
-  route: string;
-  beforeListen?: boolean;
+    handler: MiddlewareHandler;
+    route: string;
+    beforeListen?: boolean;
 }
 ```
 

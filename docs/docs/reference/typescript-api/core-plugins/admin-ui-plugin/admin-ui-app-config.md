@@ -18,9 +18,9 @@ Configures the path to a custom-build of the Admin UI app.
 
 ```ts title="Signature"
 interface AdminUiAppConfig {
-  path: string;
-  route?: string;
-  compile?: () => Promise<void>;
+    path: string;
+    route?: string;
+    compile?: () => Promise<void>;
 }
 ```
 

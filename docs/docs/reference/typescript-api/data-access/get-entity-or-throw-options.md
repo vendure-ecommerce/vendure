@@ -18,10 +18,10 @@ Options used by the <a href='/reference/typescript-api/data-access/transactional
 
 ```ts title="Signature"
 interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
-  channelId?: ID;
-  retries?: number;
-  retryDelay?: number;
-  includeSoftDeleted?: boolean;
+    channelId?: ID;
+    retries?: number;
+    retryDelay?: number;
+    includeSoftDeleted?: boolean;
 }
 ```
 * Extends: <code>FindOneOptions&#60;T&#62;</code>

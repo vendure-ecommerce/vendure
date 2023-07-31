@@ -20,21 +20,21 @@ managed without the need to re-build the application.
 
 ```ts title="Signature"
 interface AdminUiConfig {
-  apiHost: string | 'auto';
-  apiPort: number | 'auto';
-  adminApiPath: string;
-  tokenMethod: 'cookie' | 'bearer';
-  authTokenHeaderKey: string;
-  channelTokenKey: string;
-  defaultLanguage: LanguageCode;
-  defaultLocale?: string;
-  availableLanguages: LanguageCode[];
-  loginUrl?: string;
-  brand?: string;
-  hideVendureBranding?: boolean;
-  hideVersion?: boolean;
-  loginImageUrl?: string;
-  cancellationReasons?: string[];
+    apiHost: string | 'auto';
+    apiPort: number | 'auto';
+    adminApiPath: string;
+    tokenMethod: 'cookie' | 'bearer';
+    authTokenHeaderKey: string;
+    channelTokenKey: string;
+    defaultLanguage: LanguageCode;
+    defaultLocale?: string;
+    availableLanguages: LanguageCode[];
+    loginUrl?: string;
+    brand?: string;
+    hideVendureBranding?: boolean;
+    hideVersion?: boolean;
+    loginImageUrl?: string;
+    cancellationReasons?: string[];
 }
 ```
 

@@ -35,9 +35,9 @@ export const config: VendureConfig = {
 
 ```ts title="Signature"
 class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
-  init(injector: Injector) => ;
-  constructor(options?: DefaultGuestCheckoutStrategyOptions)
-  async setCustomerForOrder(ctx: RequestContext, order: Order, input: CreateCustomerInput) => Promise<ErrorResultUnion<SetCustomerForOrderResult, Customer>>;
+    init(injector: Injector) => ;
+    constructor(options?: DefaultGuestCheckoutStrategyOptions)
+    setCustomerForOrder(ctx: RequestContext, order: Order, input: CreateCustomerInput) => Promise<ErrorResultUnion<SetCustomerForOrderResult, Customer>>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a></code>
@@ -74,8 +74,8 @@ Options available for the <a href='/reference/typescript-api/orders/default-gues
 
 ```ts title="Signature"
 interface DefaultGuestCheckoutStrategyOptions {
-  allowGuestCheckouts?: boolean;
-  allowGuestCheckoutForRegisteredCustomers?: boolean;
+    allowGuestCheckouts?: boolean;
+    allowGuestCheckoutForRegisteredCustomers?: boolean;
 }
 ```
 

@@ -18,14 +18,14 @@ Contains methods relating to <a href='/reference/typescript-api/entities/tag#tag
 
 ```ts title="Signature"
 class TagService {
-  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Tag>) => Promise<PaginatedList<Tag>>;
-  findOne(ctx: RequestContext, tagId: ID) => Promise<Tag | undefined>;
-  create(ctx: RequestContext, input: CreateTagInput) => ;
-  async update(ctx: RequestContext, input: UpdateTagInput) => ;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  async valuesToTags(ctx: RequestContext, values: string[]) => Promise<Tag[]>;
-  getTagsForEntity(ctx: RequestContext, entity: Type<VendureEntity & Taggable>, id: ID) => Promise<Tag[]>;
+    constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Tag>) => Promise<PaginatedList<Tag>>;
+    findOne(ctx: RequestContext, tagId: ID) => Promise<Tag | undefined>;
+    create(ctx: RequestContext, input: CreateTagInput) => ;
+    update(ctx: RequestContext, input: UpdateTagInput) => ;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    valuesToTags(ctx: RequestContext, values: string[]) => Promise<Tag[]>;
+    getTagsForEntity(ctx: RequestContext, entity: Type<VendureEntity & Taggable>, id: ID) => Promise<Tag[]>;
 }
 ```
 

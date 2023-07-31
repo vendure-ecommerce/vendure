@@ -18,12 +18,12 @@ Options relating to the internal handling of entities.
 
 ```ts title="Signature"
 interface EntityOptions {
-  entityIdStrategy?: EntityIdStrategy<any>;
-  moneyStrategy?: MoneyStrategy;
-  channelCacheTtl?: number;
-  zoneCacheTtl?: number;
-  taxRateCacheTtl?: number;
-  metadataModifiers?: EntityMetadataModifier[];
+    entityIdStrategy?: EntityIdStrategy<any>;
+    moneyStrategy?: MoneyStrategy;
+    channelCacheTtl?: number;
+    zoneCacheTtl?: number;
+    taxRateCacheTtl?: number;
+    metadataModifiers?: EntityMetadataModifier[];
 }
 ```
 

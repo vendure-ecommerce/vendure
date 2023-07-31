@@ -18,13 +18,13 @@ Contains methods relating to <a href='/reference/typescript-api/entities/seller#
 
 ```ts title="Signature"
 class SellerService {
-  constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, customFieldRelationService: CustomFieldRelationService)
-  async initSellers() => ;
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Seller>) => Promise<PaginatedList<Seller>>;
-  findOne(ctx: RequestContext, sellerId: ID) => Promise<Seller | undefined>;
-  async create(ctx: RequestContext, input: CreateSellerInput) => ;
-  async update(ctx: RequestContext, input: UpdateSellerInput) => ;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    constructor(connection: TransactionalConnection, listQueryBuilder: ListQueryBuilder, eventBus: EventBus, customFieldRelationService: CustomFieldRelationService)
+    initSellers() => ;
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Seller>) => Promise<PaginatedList<Seller>>;
+    findOne(ctx: RequestContext, sellerId: ID) => Promise<Seller | undefined>;
+    create(ctx: RequestContext, input: CreateSellerInput) => ;
+    update(ctx: RequestContext, input: UpdateSellerInput) => ;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
 }
 ```
 

@@ -20,8 +20,8 @@ to the constructor (defaults to `2`).
 
 ```ts title="Signature"
 class DefaultStockDisplayStrategy implements StockDisplayStrategy {
-  constructor(lowStockLevel: number = 2)
-  getStockLevel(ctx: RequestContext, productVariant: ProductVariant, saleableStockLevel: number) => string;
+    constructor(lowStockLevel: number = 2)
+    getStockLevel(ctx: RequestContext, productVariant: ProductVariant, saleableStockLevel: number) => string;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/products-stock/stock-display-strategy#stockdisplaystrategy'>StockDisplayStrategy</a></code>

@@ -26,8 +26,8 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface AssetNamingStrategy extends InjectableStrategy {
-  generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string): string;
-  generatePreviewFileName(ctx: RequestContext, sourceFileName: string, conflictFileName?: string): string;
+    generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string): string;
+    generatePreviewFileName(ctx: RequestContext, sourceFileName: string, conflictFileName?: string): string;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>

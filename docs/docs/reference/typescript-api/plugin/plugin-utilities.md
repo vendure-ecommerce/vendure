@@ -60,11 +60,11 @@ Options to configure proxy middleware via <a href='/reference/typescript-api/plu
 
 ```ts title="Signature"
 interface ProxyOptions {
-  label: string;
-  route: string;
-  port: number;
-  hostname?: string;
-  basePath?: string;
+    label: string;
+    route: string;
+    port: number;
+    hostname?: string;
+    basePath?: string;
 }
 ```
 

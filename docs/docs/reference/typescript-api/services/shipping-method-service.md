@@ -18,18 +18,18 @@ Contains methods relating to <a href='/reference/typescript-api/entities/shippin
 
 ```ts title="Signature"
 class ShippingMethodService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, listQueryBuilder: ListQueryBuilder, channelService: ChannelService, configArgService: ConfigArgService, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translator: TranslatorService)
-  findAll(ctx: RequestContext, options?: ListQueryOptions<ShippingMethod>, relations: RelationPaths<ShippingMethod> = []) => Promise<PaginatedList<Translated<ShippingMethod>>>;
-  async findOne(ctx: RequestContext, shippingMethodId: ID, includeDeleted:  = false, relations: RelationPaths<ShippingMethod> = []) => Promise<Translated<ShippingMethod> | undefined>;
-  async create(ctx: RequestContext, input: CreateShippingMethodInput) => Promise<Translated<ShippingMethod>>;
-  async update(ctx: RequestContext, input: UpdateShippingMethodInput) => Promise<Translated<ShippingMethod>>;
-  async softDelete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  async assignShippingMethodsToChannel(ctx: RequestContext, input: AssignShippingMethodsToChannelInput) => Promise<Array<Translated<ShippingMethod>>>;
-  async removeShippingMethodsFromChannel(ctx: RequestContext, input: RemoveShippingMethodsFromChannelInput) => Promise<Array<Translated<ShippingMethod>>>;
-  getShippingEligibilityCheckers(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  getShippingCalculators(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  getFulfillmentHandlers(ctx: RequestContext) => ConfigurableOperationDefinition[];
-  async getActiveShippingMethods(ctx: RequestContext) => Promise<ShippingMethod[]>;
+    constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, listQueryBuilder: ListQueryBuilder, channelService: ChannelService, configArgService: ConfigArgService, translatableSaver: TranslatableSaver, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, translator: TranslatorService)
+    findAll(ctx: RequestContext, options?: ListQueryOptions<ShippingMethod>, relations: RelationPaths<ShippingMethod> = []) => Promise<PaginatedList<Translated<ShippingMethod>>>;
+    findOne(ctx: RequestContext, shippingMethodId: ID, includeDeleted:  = false, relations: RelationPaths<ShippingMethod> = []) => Promise<Translated<ShippingMethod> | undefined>;
+    create(ctx: RequestContext, input: CreateShippingMethodInput) => Promise<Translated<ShippingMethod>>;
+    update(ctx: RequestContext, input: UpdateShippingMethodInput) => Promise<Translated<ShippingMethod>>;
+    softDelete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    assignShippingMethodsToChannel(ctx: RequestContext, input: AssignShippingMethodsToChannelInput) => Promise<Array<Translated<ShippingMethod>>>;
+    removeShippingMethodsFromChannel(ctx: RequestContext, input: RemoveShippingMethodsFromChannelInput) => Promise<Array<Translated<ShippingMethod>>>;
+    getShippingEligibilityCheckers(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    getShippingCalculators(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    getFulfillmentHandlers(ctx: RequestContext) => ConfigurableOperationDefinition[];
+    getActiveShippingMethods(ctx: RequestContext) => Promise<ShippingMethod[]>;
 }
 ```
 

@@ -50,8 +50,8 @@ await this.entityHydrator
 
 ```ts title="Signature"
 class EntityHydrator {
-  constructor(connection: TransactionalConnection, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
-  async hydrate(ctx: RequestContext, target: Entity, options: HydrateOptions<Entity>) => Promise<Entity>;
+    constructor(connection: TransactionalConnection, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
+    hydrate(ctx: RequestContext, target: Entity, options: HydrateOptions<Entity>) => Promise<Entity>;
 }
 ```
 

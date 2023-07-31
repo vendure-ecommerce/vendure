@@ -177,7 +177,7 @@ This `SearchResponsePriceData` type allows you to query data about the range of 
 
 ```ts title="Signature"
 class ElasticsearchPlugin implements OnApplicationBootstrap {
-  static init(options: ElasticsearchOptions) => Type<ElasticsearchPlugin>;
+    init(options: ElasticsearchOptions) => Type<ElasticsearchPlugin>;
 }
 ```
 * Implements: <code>OnApplicationBootstrap</code>

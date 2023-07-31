@@ -18,10 +18,10 @@ A checkbox input. The default input component for `boolean` fields.
 
 ```ts title="Signature"
 class BooleanFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'boolean-form-input';
-  readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'boolean-form-input'>;
+    static readonly id: DefaultFormComponentId = 'boolean-form-input';
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'boolean-form-input'>;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -64,9 +64,9 @@ with `text` type fields.
 
 ```ts title="Signature"
 class HtmlEditorFormInputComponent extends BaseCodeEditorFormInputComponent implements FormInputComponent, AfterViewInit, OnInit {
-  static readonly static readonly id: DefaultFormComponentId = 'html-editor-form-input';
-  constructor(changeDetector: ChangeDetectorRef)
-  ngOnInit() => ;
+    static readonly id: DefaultFormComponentId = 'html-editor-form-input';
+    constructor(changeDetector: ChangeDetectorRef)
+    ngOnInit() => ;
 }
 ```
 * Extends: <code>BaseCodeEditorFormInputComponent</code>
@@ -107,9 +107,9 @@ with `text` type fields.
 
 ```ts title="Signature"
 class JsonEditorFormInputComponent extends BaseCodeEditorFormInputComponent implements FormInputComponent, AfterViewInit, OnInit {
-  static readonly static readonly id: DefaultFormComponentId = 'json-editor-form-input';
-  constructor(changeDetector: ChangeDetectorRef)
-  ngOnInit() => ;
+    static readonly id: DefaultFormComponentId = 'json-editor-form-input';
+    constructor(changeDetector: ChangeDetectorRef)
+    ngOnInit() => ;
 }
 ```
 * Extends: <code>BaseCodeEditorFormInputComponent</code>
@@ -149,15 +149,15 @@ A special input used to display the "Combination mode" AND/OR toggle.
 
 ```ts title="Signature"
 class CombinationModeFormInputComponent implements FormInputComponent, OnInit {
-  static readonly static readonly id: DefaultFormComponentId = 'combination-mode-form-input';
-  readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'combination-mode-form-input'>;
-  selectable$: Observable<boolean>;
-  constructor(configurableInputComponent: ConfigurableInputComponent)
-  ngOnInit() => ;
-  setCombinationModeAnd() => ;
-  setCombinationModeOr() => ;
+    static readonly id: DefaultFormComponentId = 'combination-mode-form-input';
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'combination-mode-form-input'>;
+    selectable$: Observable<boolean>;
+    constructor(configurableInputComponent: ConfigurableInputComponent)
+    ngOnInit() => ;
+    setCombinationModeAnd() => ;
+    setCombinationModeOr() => ;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
@@ -224,12 +224,12 @@ An input for monetary values. Should be used with `int` type fields.
 
 ```ts title="Signature"
 class CurrencyFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'currency-form-input';
-  @Input() @Input() readonly: boolean;
-  formControl: UntypedFormControl;
-  currencyCode$: Observable<CurrencyCode>;
-  config: DefaultFormComponentConfig<'currency-form-input'>;
-  constructor(dataService: DataService)
+    static readonly id: DefaultFormComponentId = 'currency-form-input';
+    @Input() readonly: boolean;
+    formControl: UntypedFormControl;
+    currencyCode$: Observable<CurrencyCode>;
+    config: DefaultFormComponentConfig<'currency-form-input'>;
+    constructor(dataService: DataService)
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -282,15 +282,15 @@ Should be used with `ID` type fields which represent Customer IDs.
 
 ```ts title="Signature"
 class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
-  static readonly static readonly id: DefaultFormComponentId = 'customer-group-form-input';
-  @Input() @Input() readonly: boolean;
-  formControl: FormControl<string | { id: string }>;
-  customerGroups$: Observable<GetCustomerGroupsQuery['customerGroups']['items']>;
-  config: DefaultFormComponentConfig<'customer-group-form-input'>;
-  constructor(dataService: DataService)
-  ngOnInit() => ;
-  selectGroup(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
-  compareWith(o1: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>, o2: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
+    static readonly id: DefaultFormComponentId = 'customer-group-form-input';
+    @Input() readonly: boolean;
+    formControl: FormControl<string | { id: string }>;
+    customerGroups$: Observable<GetCustomerGroupsQuery['customerGroups']['items']>;
+    config: DefaultFormComponentConfig<'customer-group-form-input'>;
+    constructor(dataService: DataService)
+    ngOnInit() => ;
+    selectGroup(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
+    compareWith(o1: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>, o2: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
@@ -357,13 +357,13 @@ Allows selection of a datetime. Default input for `datetime` type fields.
 
 ```ts title="Signature"
 class DateFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'date-form-input';
-  @Input() @Input() readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'date-form-input'>;
-  min: void
-  max: void
-  yearRange: void
+    static readonly id: DefaultFormComponentId = 'date-form-input';
+    @Input() readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'date-form-input'>;
+    min: void
+    max: void
+    yearRange: void
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -421,12 +421,12 @@ Should be used with `ID` type **list** fields which represent FacetValue IDs.
 
 ```ts title="Signature"
 class FacetValueFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'facet-value-form-input';
-  readonly readonly isListInput = true;
-  readonly: boolean;
-  formControl: UntypedFormControl;
-  config: InputComponentConfig;
-  valueTransformFn = (values: FacetValueFragment[]) => {
+    static readonly id: DefaultFormComponentId = 'facet-value-form-input';
+    readonly isListInput = true;
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: InputComponentConfig;
+    valueTransformFn = (values: FacetValueFragment[]) => {
         const isUsedInConfigArg = this.config.__typename === 'ConfigArgDefinition';
         if (isUsedInConfigArg) {
             return JSON.stringify(values.map(s => s.id));
@@ -485,15 +485,15 @@ Displays a number input. Default input for `int` and `float` type fields.
 
 ```ts title="Signature"
 class NumberFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'number-form-input';
-  @Input() @Input() readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'number-form-input'>;
-  prefix: void
-  suffix: void
-  min: void
-  max: void
-  step: void
+    static readonly id: DefaultFormComponentId = 'number-form-input';
+    @Input() readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'number-form-input'>;
+    prefix: void
+    suffix: void
+    min: void
+    max: void
+    step: void
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -560,10 +560,10 @@ Displays a password text input. Should be used with `string` type fields.
 
 ```ts title="Signature"
 class PasswordFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'password-form-input';
-  readonly: boolean;
-  formControl: UntypedFormControl;
-  config: InputComponentConfig;
+    static readonly id: DefaultFormComponentId = 'password-form-input';
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: InputComponentConfig;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -606,16 +606,16 @@ Should be used with `ID` type **list** fields which represent ProductVariant IDs
 
 ```ts title="Signature"
 class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
-  static readonly static readonly id: DefaultFormComponentId = 'product-selector-form-input';
-  readonly readonly isListInput = true;
-  readonly: boolean;
-  formControl: FormControl<Array<string | { id: string }>>;
-  config: DefaultFormComponentUiConfig<'product-selector-form-input'>;
-  selection$: Observable<Array<GetProductVariantQuery['productVariant']>>;
-  constructor(dataService: DataService)
-  ngOnInit() => ;
-  addProductVariant(product: ProductSelectorSearchQuery['search']['items'][number]) => ;
-  removeProductVariant(id: string) => ;
+    static readonly id: DefaultFormComponentId = 'product-selector-form-input';
+    readonly isListInput = true;
+    readonly: boolean;
+    formControl: FormControl<Array<string | { id: string }>>;
+    config: DefaultFormComponentUiConfig<'product-selector-form-input'>;
+    selection$: Observable<Array<GetProductVariantQuery['productVariant']>>;
+    constructor(dataService: DataService)
+    ngOnInit() => ;
+    addProductVariant(product: ProductSelectorSearchQuery['search']['items'][number]) => ;
+    removeProductVariant(id: string) => ;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
@@ -689,10 +689,10 @@ implementation will need to be defined. See <a href='/reference/admin-ui-api/cus
 
 ```ts title="Signature"
 class RelationFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'relation-form-input';
-  @Input() @Input() readonly: boolean;
-  formControl: UntypedFormControl;
-  config: RelationCustomFieldConfig;
+    static readonly id: DefaultFormComponentId = 'relation-form-input';
+    @Input() readonly: boolean;
+    formControl: UntypedFormControl;
+    config: RelationCustomFieldConfig;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -734,10 +734,10 @@ Uses the <a href='/reference/admin-ui-api/components/rich-text-editor-component#
 
 ```ts title="Signature"
 class RichTextFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'rich-text-form-input';
-  readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'rich-text-form-input'>;
+    static readonly id: DefaultFormComponentId = 'rich-text-form-input';
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'rich-text-form-input'>;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -780,15 +780,15 @@ Uses a select input to allow the selection of a string value. Should be used wit
 
 ```ts title="Signature"
 class SelectFormInputComponent implements FormInputComponent, OnInit {
-  static readonly static readonly id: DefaultFormComponentId = 'select-form-input';
-  @Input() @Input() readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'select-form-input'> & CustomFieldConfigFragment;
-  uiLanguage$: Observable<LanguageCode>;
-  options: void
-  constructor(dataService: DataService)
-  ngOnInit() => ;
-  trackByFn(index: number, item: any) => ;
+    static readonly id: DefaultFormComponentId = 'select-form-input';
+    @Input() readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'select-form-input'> & CustomFieldConfigFragment;
+    uiLanguage$: Observable<LanguageCode>;
+    options: void
+    constructor(dataService: DataService)
+    ngOnInit() => ;
+    trackByFn(index: number, item: any) => ;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
@@ -855,12 +855,12 @@ Uses a regular text form input. This is the default input for `string` and `loca
 
 ```ts title="Signature"
 class TextFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'text-form-input';
-  readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'text-form-input'>;
-  prefix: void
-  suffix: void
+    static readonly id: DefaultFormComponentId = 'text-form-input';
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'text-form-input'>;
+    prefix: void
+    suffix: void
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>
@@ -912,11 +912,11 @@ Uses textarea form input. This is the default input for `text` type fields.
 
 ```ts title="Signature"
 class TextareaFormInputComponent implements FormInputComponent {
-  static readonly static readonly id: DefaultFormComponentId = 'textarea-form-input';
-  readonly: boolean;
-  formControl: UntypedFormControl;
-  config: DefaultFormComponentConfig<'textarea-form-input'>;
-  spellcheck: boolean
+    static readonly id: DefaultFormComponentId = 'textarea-form-input';
+    readonly: boolean;
+    formControl: UntypedFormControl;
+    config: DefaultFormComponentConfig<'textarea-form-input'>;
+    spellcheck: boolean
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>

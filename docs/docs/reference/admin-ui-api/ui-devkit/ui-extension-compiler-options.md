@@ -18,13 +18,13 @@ Options to configure how the Admin UI should be compiled.
 
 ```ts title="Signature"
 interface UiExtensionCompilerOptions {
-  outputPath: string;
-  extensions: Extension[];
-  devMode?: boolean;
-  baseHref?: string;
-  watchPort?: number;
-  command?: 'yarn' | 'npm';
-  additionalProcessArguments?: UiExtensionCompilerProcessArgument[];
+    outputPath: string;
+    extensions: Extension[];
+    devMode?: boolean;
+    baseHref?: string;
+    watchPort?: number;
+    command?: 'yarn' | 'npm';
+    additionalProcessArguments?: UiExtensionCompilerProcessArgument[];
 }
 ```
 

@@ -19,7 +19,7 @@ the ProductVariant without performing any calculations
 
 ```ts title="Signature"
 class DefaultOrderItemPriceCalculationStrategy implements OrderItemPriceCalculationStrategy {
-  calculateUnitPrice(ctx: RequestContext, productVariant: ProductVariant) => PriceCalculationResult | Promise<PriceCalculationResult>;
+    calculateUnitPrice(ctx: RequestContext, productVariant: ProductVariant) => PriceCalculationResult | Promise<PriceCalculationResult>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a></code>

@@ -18,20 +18,20 @@ Contains methods relating to <a href='/reference/typescript-api/entities/channel
 
 ```ts title="Signature"
 class ChannelService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, globalSettingsService: GlobalSettingsService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, listQueryBuilder: ListQueryBuilder)
-  async assignToCurrentChannel(entity: T, ctx: RequestContext) => Promise<T>;
-  async assignToChannels(ctx: RequestContext, entityType: Type<T>, entityId: ID, channelIds: ID[]) => Promise<T>;
-  async removeFromChannels(ctx: RequestContext, entityType: Type<T>, entityId: ID, channelIds: ID[]) => Promise<T | undefined>;
-  async getChannelFromToken(token: string) => Promise<Channel>;
-  async getChannelFromToken(ctx: RequestContext, token: string) => Promise<Channel>;
-  async getChannelFromToken(ctxOrToken: RequestContext | string, token?: string) => Promise<Channel>;
-  async getDefaultChannel(ctx?: RequestContext) => Promise<Channel>;
-  findAll(ctx: RequestContext, options?: ListQueryOptions<Channel>, relations?: RelationPaths<Channel>) => Promise<PaginatedList<Channel>>;
-  findOne(ctx: RequestContext, id: ID) => Promise<Channel | undefined>;
-  async create(ctx: RequestContext, input: CreateChannelInput) => Promise<ErrorResultUnion<CreateChannelResult, Channel>>;
-  async update(ctx: RequestContext, input: UpdateChannelInput) => Promise<ErrorResultUnion<UpdateChannelResult, Channel>>;
-  async delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-  public isChannelAware(entity: VendureEntity) => entity is VendureEntity & ChannelAware;
+    constructor(connection: TransactionalConnection, configService: ConfigService, globalSettingsService: GlobalSettingsService, customFieldRelationService: CustomFieldRelationService, eventBus: EventBus, listQueryBuilder: ListQueryBuilder)
+    assignToCurrentChannel(entity: T, ctx: RequestContext) => Promise<T>;
+    assignToChannels(ctx: RequestContext, entityType: Type<T>, entityId: ID, channelIds: ID[]) => Promise<T>;
+    removeFromChannels(ctx: RequestContext, entityType: Type<T>, entityId: ID, channelIds: ID[]) => Promise<T | undefined>;
+    getChannelFromToken(token: string) => Promise<Channel>;
+    getChannelFromToken(ctx: RequestContext, token: string) => Promise<Channel>;
+    getChannelFromToken(ctxOrToken: RequestContext | string, token?: string) => Promise<Channel>;
+    getDefaultChannel(ctx?: RequestContext) => Promise<Channel>;
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Channel>, relations?: RelationPaths<Channel>) => Promise<PaginatedList<Channel>>;
+    findOne(ctx: RequestContext, id: ID) => Promise<Channel | undefined>;
+    create(ctx: RequestContext, input: CreateChannelInput) => Promise<ErrorResultUnion<CreateChannelResult, Channel>>;
+    update(ctx: RequestContext, input: UpdateChannelInput) => Promise<ErrorResultUnion<UpdateChannelResult, Channel>>;
+    delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
+    isChannelAware(entity: VendureEntity) => entity is VendureEntity & ChannelAware;
 }
 ```
 

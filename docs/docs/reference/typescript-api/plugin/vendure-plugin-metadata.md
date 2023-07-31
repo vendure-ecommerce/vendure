@@ -21,11 +21,11 @@ extra properties specific to Vendure.
 
 ```ts title="Signature"
 interface VendurePluginMetadata extends ModuleMetadata {
-  configuration?: PluginConfigurationFn;
-  shopApiExtensions?: APIExtensionDefinition;
-  adminApiExtensions?: APIExtensionDefinition;
-  entities?: Array<Type<any>> | (() => Array<Type<any>>);
-  compatibility?: string;
+    configuration?: PluginConfigurationFn;
+    shopApiExtensions?: APIExtensionDefinition;
+    adminApiExtensions?: APIExtensionDefinition;
+    entities?: Array<Type<any>> | (() => Array<Type<any>>);
+    compatibility?: string;
 }
 ```
 * Extends: <code>ModuleMetadata</code>
@@ -87,9 +87,9 @@ An object which allows a plugin to extend the Vendure GraphQL API.
 
 ```ts title="Signature"
 interface APIExtensionDefinition {
-  schema?: DocumentNode | (() => DocumentNode | undefined);
-  resolvers?: Array<Type<any>> | (() => Array<Type<any>>);
-  scalars?: Record<string, GraphQLScalarType> | (() => Record<string, GraphQLScalarType>);
+    schema?: DocumentNode | (() => DocumentNode | undefined);
+    resolvers?: Array<Type<any>> | (() => Array<Type<any>>);
+    scalars?: Record<string, GraphQLScalarType> | (() => Record<string, GraphQLScalarType>);
 }
 ```
 

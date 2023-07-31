@@ -36,8 +36,8 @@ AssetServerPlugin.init({
 
 ```ts title="Signature"
 class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
-  constructor(config?: SharpAssetPreviewConfig)
-  async generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer) => Promise<Buffer>;
+    constructor(config?: SharpAssetPreviewConfig)
+    generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer) => Promise<Buffer>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a></code>
@@ -71,13 +71,13 @@ overlay will be generated.
 
 ```ts title="Signature"
 interface SharpAssetPreviewConfig {
-  maxHeight?: number;
-  maxWidth?: number;
-  jpegOptions?: sharp.JpegOptions;
-  pngOptions?: sharp.PngOptions;
-  webpOptions?: sharp.WebpOptions;
-  gifOptions?: sharp.GifOptions;
-  avifOptions?: sharp.AvifOptions;
+    maxHeight?: number;
+    maxWidth?: number;
+    jpegOptions?: sharp.JpegOptions;
+    pngOptions?: sharp.PngOptions;
+    webpOptions?: sharp.WebpOptions;
+    gifOptions?: sharp.GifOptions;
+    avifOptions?: sharp.AvifOptions;
 }
 ```
 

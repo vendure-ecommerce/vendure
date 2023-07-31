@@ -19,11 +19,11 @@ By default, a single-channel Vendure installation will have a single default Sel
 
 ```ts title="Signature"
 class Seller extends VendureEntity implements SoftDeletable, HasCustomFields {
-  constructor(input?: DeepPartial<Seller>)
-  @Column({ type: Date, nullable: true }) @Column({ type: Date, nullable: true })
+    constructor(input?: DeepPartial<Seller>)
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
-  @Column() @Column() name: string;
-  @Column(type => CustomSellerFields) @Column(type => CustomSellerFields)
+    @Column() name: string;
+    @Column(type => CustomSellerFields)
     customFields: CustomSellerFields;
 }
 ```

@@ -22,7 +22,7 @@ multiplying the unit price, rather than before (as is the case with the <a href=
 
 ```ts title="Signature"
 class BigIntMoneyStrategy implements MoneyStrategy {
-  readonly readonly moneyColumnOptions: ColumnOptions = {
+    readonly moneyColumnOptions: ColumnOptions = {
         type: 'bigint',
         transformer: {
             to: (entityValue: number) => {
@@ -43,7 +43,7 @@ class BigIntMoneyStrategy implements MoneyStrategy {
             },
         },
     };
-  round(value: number, quantity:  = 1) => number;
+    round(value: number, quantity:  = 1) => number;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a></code>

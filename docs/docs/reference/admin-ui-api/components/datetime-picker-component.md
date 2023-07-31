@@ -24,44 +24,44 @@ A form input for selecting datetime values.
 
 ```ts title="Signature"
 class DatetimePickerComponent implements ControlValueAccessor, AfterViewInit, OnInit, OnDestroy {
-  @Input() @Input() yearRange;
-  @Input() @Input() weekStartDay: DayOfWeek = 'mon';
-  @Input() @Input() timeGranularityInterval = 5;
-  @Input() @Input() min: string | null = null;
-  @Input() @Input() max: string | null = null;
-  @Input() @Input() readonly = false;
-  @ViewChild('dropdownComponent', { static: true }) @ViewChild('dropdownComponent', { static: true }) dropdownComponent: DropdownComponent;
-  @ViewChild('datetimeInput', { static: true }) @ViewChild('datetimeInput', { static: true }) datetimeInput: ElementRef<HTMLInputElement>;
-  @ViewChild('calendarTable') @ViewChild('calendarTable') calendarTable: ElementRef<HTMLTableElement>;
-  disabled = false;
-  calendarView$: Observable<CalendarView>;
-  current$: Observable<CurrentView>;
-  selected$: Observable<Date | null>;
-  selectedHours$: Observable<number | null>;
-  selectedMinutes$: Observable<number | null>;
-  years: number[];
-  weekdays: string[] = [];
-  hours: number[];
-  minutes: number[];
-  constructor(changeDetectorRef: ChangeDetectorRef, datetimePickerService: DatetimePickerService)
-  ngOnInit() => ;
-  ngAfterViewInit() => void;
-  ngOnDestroy() => void;
-  registerOnChange(fn: any) => ;
-  registerOnTouched(fn: any) => ;
-  setDisabledState(isDisabled: boolean) => ;
-  writeValue(value: string | null) => ;
-  prevMonth() => ;
-  nextMonth() => ;
-  selectToday() => ;
-  setYear(event: Event) => ;
-  setMonth(event: Event) => ;
-  selectDay(day: DayCell) => ;
-  clearValue() => ;
-  handleCalendarKeydown(event: KeyboardEvent) => ;
-  setHour(event: Event) => ;
-  setMinute(event: Event) => ;
-  closeDatepicker() => ;
+    @Input() yearRange;
+    @Input() weekStartDay: DayOfWeek = 'mon';
+    @Input() timeGranularityInterval = 5;
+    @Input() min: string | null = null;
+    @Input() max: string | null = null;
+    @Input() readonly = false;
+    @ViewChild('dropdownComponent', { static: true }) dropdownComponent: DropdownComponent;
+    @ViewChild('datetimeInput', { static: true }) datetimeInput: ElementRef<HTMLInputElement>;
+    @ViewChild('calendarTable') calendarTable: ElementRef<HTMLTableElement>;
+    disabled = false;
+    calendarView$: Observable<CalendarView>;
+    current$: Observable<CurrentView>;
+    selected$: Observable<Date | null>;
+    selectedHours$: Observable<number | null>;
+    selectedMinutes$: Observable<number | null>;
+    years: number[];
+    weekdays: string[] = [];
+    hours: number[];
+    minutes: number[];
+    constructor(changeDetectorRef: ChangeDetectorRef, datetimePickerService: DatetimePickerService)
+    ngOnInit() => ;
+    ngAfterViewInit() => void;
+    ngOnDestroy() => void;
+    registerOnChange(fn: any) => ;
+    registerOnTouched(fn: any) => ;
+    setDisabledState(isDisabled: boolean) => ;
+    writeValue(value: string | null) => ;
+    prevMonth() => ;
+    nextMonth() => ;
+    selectToday() => ;
+    setYear(event: Event) => ;
+    setMonth(event: Event) => ;
+    selectDay(day: DayCell) => ;
+    clearValue() => ;
+    handleCalendarKeydown(event: KeyboardEvent) => ;
+    setHour(event: Event) => ;
+    setMinute(event: Event) => ;
+    closeDatepicker() => ;
 }
 ```
 * Implements: <code>ControlValueAccessor</code>, <code>AfterViewInit</code>, <code>OnInit</code>, <code>OnDestroy</code>

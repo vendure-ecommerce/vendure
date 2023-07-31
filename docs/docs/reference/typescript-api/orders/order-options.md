@@ -18,20 +18,20 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ```ts title="Signature"
 interface OrderOptions {
-  orderItemsLimit?: number;
-  orderLineItemsLimit?: number;
-  orderItemPriceCalculationStrategy?: OrderItemPriceCalculationStrategy;
-  process?: Array<OrderProcess<any>>;
-  stockAllocationStrategy?: StockAllocationStrategy;
-  mergeStrategy?: OrderMergeStrategy;
-  checkoutMergeStrategy?: OrderMergeStrategy;
-  orderCodeStrategy?: OrderCodeStrategy;
-  orderByCodeAccessStrategy?: OrderByCodeAccessStrategy;
-  changedPriceHandlingStrategy?: ChangedPriceHandlingStrategy;
-  orderPlacedStrategy?: OrderPlacedStrategy;
-  activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
-  orderSellerStrategy?: OrderSellerStrategy;
-  guestCheckoutStrategy?: GuestCheckoutStrategy;
+    orderItemsLimit?: number;
+    orderLineItemsLimit?: number;
+    orderItemPriceCalculationStrategy?: OrderItemPriceCalculationStrategy;
+    process?: Array<OrderProcess<any>>;
+    stockAllocationStrategy?: StockAllocationStrategy;
+    mergeStrategy?: OrderMergeStrategy;
+    checkoutMergeStrategy?: OrderMergeStrategy;
+    orderCodeStrategy?: OrderCodeStrategy;
+    orderByCodeAccessStrategy?: OrderByCodeAccessStrategy;
+    changedPriceHandlingStrategy?: ChangedPriceHandlingStrategy;
+    orderPlacedStrategy?: OrderPlacedStrategy;
+    activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
+    orderSellerStrategy?: OrderSellerStrategy;
+    guestCheckoutStrategy?: GuestCheckoutStrategy;
 }
 ```
 

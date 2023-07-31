@@ -19,9 +19,9 @@ embedding the specified component within.
 
 ```ts title="Signature"
 class ModalService {
-  constructor(componentFactoryResolver: ComponentFactoryResolver, overlayHostService: OverlayHostService)
-  fromComponent(component: Type<T> & Type<Dialog<R>>, options?: ModalOptions<T>) => Observable<R | undefined>;
-  dialog(config: DialogConfig<T>) => Observable<T | undefined>;
+    constructor(componentFactoryResolver: ComponentFactoryResolver, overlayHostService: OverlayHostService)
+    fromComponent(component: Type<T> & Type<Dialog<R>>, options?: ModalOptions<T>) => Observable<R | undefined>;
+    dialog(config: DialogConfig<T>) => Observable<T | undefined>;
 }
 ```
 
@@ -95,7 +95,7 @@ this interface.
 
 ```ts title="Signature"
 interface Dialog<R = any> {
-  resolveWith: (result?: R) => void;
+    resolveWith: (result?: R) => void;
 }
 ```
 
@@ -121,11 +121,11 @@ Configures a generic modal dialog.
 
 ```ts title="Signature"
 interface DialogConfig<T> {
-  title: string;
-  body?: string;
-  translationVars?: { [key: string]: string | number };
-  buttons: Array<DialogButtonConfig<T>>;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+    title: string;
+    body?: string;
+    translationVars?: { [key: string]: string | number };
+    buttons: Array<DialogButtonConfig<T>>;
+    size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 ```
 
@@ -169,10 +169,10 @@ Options to configure the behaviour of the modal.
 
 ```ts title="Signature"
 interface ModalOptions<T> {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  verticalAlign?: 'top' | 'center' | 'bottom';
-  closable?: boolean;
-  locals?: Partial<T>;
+    size?: 'sm' | 'md' | 'lg' | 'xl';
+    verticalAlign?: 'top' | 'center' | 'bottom';
+    closable?: boolean;
+    locals?: Partial<T>;
 }
 ```
 
