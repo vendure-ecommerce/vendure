@@ -47,9 +47,6 @@ import {
 import { createIndices, getClient, getIndexNameByAlias } from './indexing-utils';
 import { MutableRequestContext } from './mutable-request-context';
 
-const REINDEX_CHUNK_SIZE = 2500;
-const REINDEX_OPERATION_CHUNK_SIZE = 3000;
-
 export const defaultProductRelations: Array<EntityRelationPaths<Product>> = [
     'featuredAsset',
     'facetValues',
@@ -273,6 +270,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     let operations: BulkVariantOperation[] = [];
 
                     productIds = await this.connection
+                        .rawConnection
                         .getRepository(Product)
                         .createQueryBuilder('product')
                         .select('product.id')
@@ -679,6 +677,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     ): Promise<BulkVariantOperation[]> {
         const channels = await this.requestContextCache.get(ctx, 'elastic-index-all-channels', () =>
             this.connection
+                .rawConnection
                 .getRepository(Channel)
                 .createQueryBuilder('channel')
                 .select('channel.id')
