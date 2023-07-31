@@ -170,7 +170,7 @@ indexMappingProperties: {
 
 {{< /member-description >}}
 
-### reindexProductChunkSize
+### reindexProductsChunkSize
 
 {{< member-info kind="property" type="number" default="500"  >}}
 
