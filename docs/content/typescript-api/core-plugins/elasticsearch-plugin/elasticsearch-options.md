@@ -166,13 +166,23 @@ indexMappingProperties: {
     type: 'integer',
   }
 }
-```{{< /member-description >}}
+```
 
-### batchSize
+{{< /member-description >}}
 
-{{< member-info kind="property" type="number" default="2000"  >}}
+### reindexProductChunkSize
 
-{{< member-description >}}Batch size for bulk operations (e.g. when rebuilding the indices).{{< /member-description >}}
+{{< member-info kind="property" type="number" default="500"  >}}
+
+{{< member-description >}}Products limit chunk size for each loop iteration when indexing products.{{< /member-description >}}
+
+### reindexBulkOperationSizeLimit
+
+{{< member-info kind="property" type="number" default="3000"  >}}
+
+{{< member-description >}}Index operations are performed in bulk, with each bulk operation 
+containing a number of individualindex operations. This option sets the maximum number of operations 
+in the memory buffer before abulk operation is executed.{{< /member-description >}}
 
 ### searchConfig
 
