@@ -60,6 +60,41 @@ export class ProductService {
     is used to access the database, and the `TranslatorService` is used to translate the Product entity into the current
     language.
 
+## Using core services
+
+All the internal Vendure services can be used in your own plugins and scripts. They are listed in the [Services API reference](/reference/typescript-api/services/) and
+can be imported from the `@vendure/core` package.
+
+To make use of a core service in your own plugin, you need to ensure your plugin is importing the `PluginCommonModule` and
+then inject the desired service into your own service's constructor:
+
+```ts title="src/my-plugin/my.plugin.ts"
+import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { MyService } from './services/my.service';
+
+@VendurePlugin({
+    // highlight-start
+    imports: [PluginCommonModule],
+    providers: [MyService],
+    // highlight-end
+})
+export class MyPlugin {}
+```
+
+```ts title="src/my-plugin/services/my.service.ts"
+import { Injectable } from '@nestjs/common';
+import { ProductService } from '@vendure/core';
+
+@Injectable()
+export class MyService {
+
+    // highlight-next-line
+    constructor(private productService: ProductService) {}
+
+    // you can now use the productService methods
+}
+```
+
 ## Accessing the database
 
 One of the main responsibilities of the service layer is to interact with the database. For this, you will be using
