@@ -160,28 +160,13 @@ A [`Channel`](/reference/typescript-api/entities/channel/) represents a distinct
 - **Distinct sales channels**: Each channel can represent a sales channel of a single business, with one channel for the online
   store, one for selling via Amazon, one for selling via Facebook etc.
 
+:::info
+Channels are covered in much more detail in the dedicated [Channels guide](/guides/core-concepts/channels/).
+:::
+
 There is _always_ the **default channel**, which cannot be deleted. This channel is the parent of all other channels, and also
 contains all entities in the entire application, no matter which channel they are associated with. This means that channel-aware
 entities are always associated with the default channel and _may_ additionally be associated with other channels.
 
 ![Channels](./channels.webp)
 
-Many entities are channel-aware, meaning that they can be associated with a multiple channels. The following entities are channel-aware:
-
-- [`Asset`](/reference/typescript-api/entities/asset/)
-- [`Collection`](/reference/typescript-api/entities/collection/)
-- [`Customer`](/reference/typescript-api/entities/customer-group/)
-- [`Facet`](/reference/typescript-api/entities/facet/)
-- [`FacetValue`](/reference/typescript-api/entities/facet-value/)
-- [`Order`](/reference/typescript-api/entities/order/)
-- [`PaymentMethod`](/reference/typescript-api/entities/payment-method/)
-- [`Product`](/reference/typescript-api/entities/product/)
-- [`ProductVariant`](/reference/typescript-api/entities/product-variant/)
-- [`Promotion`](/reference/typescript-api/entities/promotion/)
-- [`Role`](/reference/typescript-api/entities/role/)
-- [`ShippingMethod`](/reference/typescript-api/entities/shipping-method/)
-- [`StockLocation`](/reference/typescript-api/entities/stock-location/)
-
-Each channel is also assigned a single [`Seller`](/reference/typescript-api/entities/seller/). This entity is used to represent
-the vendor or seller of the products in the channel. This is useful for implementing a marketplace, where each channel represents
-a distinct vendor.
