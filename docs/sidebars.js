@@ -16,9 +16,9 @@ const sidebars = {
     // By default, Docusaurus generates a sidebar from the docs folder structure
     learnSidebar: [
         {
-            type: 'doc',
-            label: 'Installation',
-            id: 'guides/getting-started/installation',
+            type: 'category',
+            label: 'Getting Started',
+            items: ['guides/getting-started/installation/index', 'guides/getting-started/first-steps/index'],
         },
         {
             type: 'category',
@@ -26,7 +26,6 @@ const sidebars = {
             items: [
                 'guides/developer-guide/overview/index',
                 'guides/developer-guide/configuration/index',
-                'guides/developer-guide/data-model/index',
                 'guides/developer-guide/the-api-layer/index',
                 'guides/developer-guide/the-service-layer/index',
                 'guides/developer-guide/strategies-configurable-operations/index',

@@ -54,7 +54,7 @@ export interface S3Config {
  * Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
  *
  * ```sh
- * npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
+ * npm install \@aws-sdk/client-s3 \@aws-sdk/lib-storage
  * ```
  *
  * @example

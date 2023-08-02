@@ -152,13 +152,13 @@ Using type `any` in order to avoid the need to include `aws-sdk` dependency in g
 
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/s3-asset-storage-strategy.ts" sourceLine="119" packageName="@vendure/asset-server-plugin" />
 
-Returns a configured instance of the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>
-`storageStrategyFactory` property.
+Returns a configured instance of the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a> which can then be passed to the <a href='/reference/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>`storageStrategyFactory` property.
 
 Before using this strategy, make sure you have the `@aws-sdk/client-s3` and `@aws-sdk/lib-storage` package installed:
 
 ```sh
-npm install
+npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
+```
 
 *Example*
 

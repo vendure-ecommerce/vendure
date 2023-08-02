@@ -363,7 +363,7 @@ export class ProductsController {
 The `@Controller()` decorator takes a path argument which is the base path for all the endpoints defined in the controller.
 In this case, the path is `products`, so the endpoint will be available at `/products`.
 
-The controller can be registered with a plugin:
+The controller can be registered with a [plugin](/guides/developer-guide/plugins/):
 
 ```ts title="src/plugins/rest/products.plugin.ts"
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';

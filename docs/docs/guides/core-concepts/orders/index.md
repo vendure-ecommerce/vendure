@@ -8,9 +8,14 @@ import TabItem from '@theme/TabItem';
 
 In Vendure, the [`Order`](/reference/typescript-api/entities/order/) entity represents the entire lifecycle of an order, from the moment a customer adds an item to their cart, through to the point where the order is completed and the customer has received their goods.
 
-The `Order` contains all the information about the order, such as the items (represented by the `OrderLine` entity), shipping address, payment method, shipping method, and so on.
+An [`Order`](/reference/typescript-api/entities/order/) is composed of one or more [`OrderLines`](/reference/typescript-api/entities/order-line/).
+Each order line represents a single product variant, and contains information such as the quantity, price, tax rate, etc.
 
-![Order entity](../../developer-guide/data-model/order.webp)
+In turn, the order is associated with a [`Customer`](/reference/typescript-api/entities/customer/) and contains information such as
+the shipping address, billing address, shipping method, payment method, etc.
+
+![Order](./order.webp)
+
 
 ## The Order Process
 

@@ -23,7 +23,7 @@ This is useful for a number of use-cases, including:
 
 Every Vendure server always has a **default Channel**, which contains _all_ entities. Subsequent channels can then contain a subset of channel-aware entities.
 
-![Channels high level](../../developer-guide/data-model/channels.webp)
+![Channels high level](./channels.webp)
 
 ## Channel-aware entities
 

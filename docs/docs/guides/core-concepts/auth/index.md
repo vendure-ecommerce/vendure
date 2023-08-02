@@ -1,22 +1,107 @@
 ---
-title: 'Authentication'
+title: 'Auth'
 ---
 
-Authentication is the process of determining the identity of a user. Common ways of authenticating a user are by asking the user for secret credentials (username & password) or by a third-party authentication provider such as Facebook or Google login.
+**Authentication** is the process of determining the identity of a user. Common ways of authenticating a user are by asking the user for secret credentials (username & password) or by a third-party authentication provider such as Facebook or Google login.
 
-By default, Vendure uses a username/email address and password to authenticate users, but also supports a wide range of authentication methods via configurable AuthenticationStrategies.
+**Authorization** is a related concept, which means that once we have verified the identity of a user, we can then determine what that user is allowed to do. For example, a user may be authorized to view a product, but not to edit it.
+
+The term **auth** is shorthand for _both_ authentication and authorization.
+
+Auth in Vendure applies to both **administrators** and **customers**. Authentication is controlled by the configured `AuthenticationStrategies`, and authorization is controlled by the configured `Roles` and `Permissions`.
+
+## Administrator auth
+
+Administrators are required to authenticate before they can perform any operations in the Admin API.
+
+Here is a diagram of the parts that make up Administrator authentication:
+
+![Administrator authentication](./admin.webp)
+
+Roles can be created to allow fine-grained control over what a particular administrator has access to (see the section below).
+
+## Customer auth
+
+Customer only need to authenticate if they want to access a restricted operation related to their account, such as 
+viewing past orders or updating an address.
+
+Here are the parts that make up Customer authentication:
+
+![Customer authentication](./customer.webp)
+
+### Guest customers
+
+Vendure also supports **guest customers**, meaning that a customer can place an order without needing to register an account, and thus not getting an
+associated user or role. A guest customer, having no roles and thus no permissions, is then unable to view past orders or access any other restricted API
+operations.
+
+However, a guest customer can at a later point register an account using the same email address, at which point they will get a user with the "Customer" role,
+and be able to view their past orders.
+
+
+## Roles & Permissions
+
+Both the `Customer` and `Administrator` entities relate to a single [`User`](/reference/typescript-api/entities/user/) entity which in turn has one or more [`Roles`](/reference/typescript-api/entities/role/) for controlling permissions.
+
+
+![Administrators & Roles](./admin-role.webp)
+
+In the example above, the administrator Sam Bailey has two roles assigned: "Order Manager" and "Catalog Manager". An administrator
+can have any number of roles assigned, and the permissions of all roles are combined to determine the permissions of the
+administrator. In this way, you can have fine-grained control over which administrators can perform which actions.
+
+There are 2 special roles which are created by default and cannot be changed:
+
+- **SuperAdmin**: This role has all permissions, and cannot be edited or deleted. It is assigned to the first administrator
+  created when the server is started.
+- **Customer**: This role is assigned to all registered customers.
+
+
+All other roles can be user-defined. Here's an example of an "Inventory Manager" role being defined in the Admin UI:
+
+![Inventory Manager role](./roles.webp)
+
+
+
+## Native authentication
+
+By default, Vendure uses a username/email address and password to authenticate users, which is implemented by the [`NativeAuthenticationStrategy`](/reference/typescript-api/auth/native-authentication-strategy/).
+
+There is a `login` mutation available in both the Shop API and Admin API which allows a customer or administrator to authenticate using
+native authentication:
+
+```graphql title="Admin API"
+mutation {
+  login(username: "superadmin", password: "superadmin") {
+    ...on CurrentUser {
+      id
+      identifier
+    }
+    ...on ErrorResult {
+      errorCode
+      message
+    }
+  }
+}
+```
 
 :::info
 See the [Managing Sessions guide](/TODO) for how to manage authenticated sessions in your storefront/client applications.
 :::
 
-## Adding support for external authentication
+## External authentication
 
-This is done via the [`VendureConfig.authOptions` object](/reference/typescript-api/auth/auth-options/#shopauthenticationstrategy):
+In addition to the built-in `NativeAuthenticationStrategy`, it is possible to define a custom [`AuthenticationStrategy`](/reference/typescript-api/auth/authentication-strategy) which allows your Vendure server to support other authentication methods such as:
+
+- Social logins (Facebook, Google, GitHub, etc.)
+- Single Sign-On (SSO) providers such as Keycloak, Auth0, etc.
+- Alternative factors such as SMS, TOTP, etc.
+
+Custom authentication strategies are set via the [`VendureConfig.authOptions` object](/reference/typescript-api/auth/auth-options/#shopauthenticationstrategy):
 
 ```ts title="vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { NativeAuthenticationStrategy } from './plugins/authentication/native-authentication-strategy';
+import { VendureConfig, NativeAuthenticationStrategy } from '@vendure/core';
+
 import { FacebookAuthenticationStrategy } from './plugins/authentication/facebook-authentication-strategy';
 import { GoogleAuthenticationStrategy } from './plugins/authentication/google-authentication-strategy';
 import { KeycloakAuthenticationStrategy } from './plugins/authentication/keycloak-authentication-strategy';
@@ -42,11 +127,13 @@ The other strategies would be custom-built (or provided by future npm packages) 
 
 Let's take a look at a couple of examples of what a custom AuthenticationStrategy implementation would look like.
 
-## Example: Google authentication
+## Custom authentication examples
+
+### Google authentication
 
 This example demonstrates how to implement a Google login flow.
 
-### Storefront setup
+#### Storefront setup
 
 In your storefront, you need to integrate the Google sign-in button as described in ["Integrating Google Sign-In into your web app"](https://developers.google.com/identity/sign-in/web/sign-in). Successful authentication will result in a `onSignIn` function being called in your app. It will look something like this:
 
@@ -70,7 +157,7 @@ function onSignIn(googleUser) {
 }
 ```
 
-### Backend
+#### Backend
 
 On the backend, you'll need to define an AuthenticationStrategy to take the authorization token provided by the
 storefront in the `authenticate` mutation, and use it to get the necessary personal information on that user from
@@ -158,11 +245,11 @@ export class GoogleAuthenticationStrategy implements AuthenticationStrategy<Goog
 }
 ```
 
-## Example: Facebook authentication
+### Facebook authentication
 
 This example demonstrates how to implement a Facebook login flow.
 
-### Storefront setup
+#### Storefront setup
 
 In this example, we are assuming the use of the [Facebook SDK for JavaScript](https://developers.facebook.com/docs/javascript/) in the storefront.
 
@@ -224,6 +311,8 @@ export const FBLoginButton = () => {
   );
 };
 ```
+
+#### Backend
 
 ```ts title="/src/plugins/authentication/facebook-authentication-strategy.ts"
 import {
@@ -325,13 +414,13 @@ export class FacebookAuthenticationStrategy implements AuthenticationStrategy<Fa
 }
 ```
 
-## Example: Keycloak authentication
+### Keycloak authentication
 
 Here's an example of an AuthenticationStrategy intended to be used on the Admin API. The use-case is when the company has an existing identity server for employees, and you'd like your Vendure shop admins to be able to authenticate with their existing accounts.
 
 This example uses [Keycloak](https://www.keycloak.org/), a popular open-source identity management server. To get your own Keycloak server up and running in minutes, follow the [Keycloak on Docker](https://www.keycloak.org/getting-started/getting-started-docker) guide.
 
-### Configure a login page & Admin UI
+#### Configure a login page & Admin UI
 
 In this example, we'll assume the login page is hosted at `http://intranet/login`. We'll also assume that a "login to Vendure" button has been added to that page and that the page is using the [Keycloak JavaScript adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter), which can be used to get the current user's authorization token:
 
@@ -379,7 +468,7 @@ export const config: VendureConfig = {
 };
 ```
 
-### Backend
+#### Backend
 
 First we will need to be making an HTTP call to our Keycloak server to validate the token and get the user's details. We'll use the [`node-fetch`](https://www.npmjs.com/package/node-fetch) library to make the HTTP call:
 
