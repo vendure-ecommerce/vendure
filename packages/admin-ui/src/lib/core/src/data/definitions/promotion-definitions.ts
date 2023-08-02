@@ -16,6 +16,7 @@ export const PROMOTION_FRAGMENT = gql`
         enabled
         couponCode
         perCustomerUsageLimit
+        usageLimit
         startsAt
         endsAt
         conditions {
