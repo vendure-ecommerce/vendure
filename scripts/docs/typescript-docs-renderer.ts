@@ -30,7 +30,7 @@ export class TypescriptDocsRenderer {
 
         for (const page of pages) {
             let markdown = '';
-            markdown += generateFrontMatter(page.title, 10);
+            markdown += generateFrontMatter(page.title);
             const declarationsByWeight = page.declarations.sort((a, b) => a.weight - b.weight);
             for (const info of declarationsByWeight) {
                 switch (info.kind) {
@@ -65,9 +65,13 @@ export class TypescriptDocsRenderer {
             for (const subCategory of page.category) {
                 pathParts.push(subCategory);
                 const indexFile = path.join(outputPath, ...pathParts, 'index.md');
-                if (!fs.existsSync(indexFile)) {
+                const exists = fs.existsSync(indexFile);
+                const existingContent = exists && fs.readFileSync(indexFile).toString();
+                const hasActualContent = existingContent && existingContent.includes('isDefaultIndex: false');
+                if (!exists && !hasActualContent) {
                     const indexFileContent =
-                        generateFrontMatter(subCategory, 10, false) + `\n\n# ${subCategory}`;
+                        generateFrontMatter(subCategory, true) +
+                        `\n\nimport DocCardList from '@theme/DocCardList';\n\n<DocCardList />`;
                     fs.writeFileSync(indexFile, indexFileContent);
                     generatedCount++;
                 }

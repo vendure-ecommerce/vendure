@@ -1,7 +1,6 @@
 ---
 title: "I18nError"
-weight: 10
-showtoc: true
+isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->

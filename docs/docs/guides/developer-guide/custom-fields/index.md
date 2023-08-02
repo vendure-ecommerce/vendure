@@ -1029,7 +1029,7 @@ const config = {
 ## TypeScript Typings
 
 Because custom fields are generated at run-time, TypeScript has no way of knowing about them based on your
-VendureConfig. Consider the example above - let's say we have a [plugin]({{< relref "/guides/plugins" >}}) which needs to
+VendureConfig. Consider the example above - let's say we have a [plugin](/guides/developer-guide/plugins/) which needs to
 access the custom field values on a Product entity.
 
 Attempting to access the custom field will result in a TS compiler error:

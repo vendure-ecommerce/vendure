@@ -30,7 +30,7 @@
     --color-graphql-identifier: rgb(227, 17, 108);
     --color-members-border: var(--ifm-color-secondary);
     --docusaurus-highlighted-code-line-bg: #e0f1ff;
-    --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>')
+    --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>');
     --body-background: white;
     --ifm-footer-background-color: #edf2f5;
     --color-docsearch-border: #b7b7c3;
@@ -46,6 +46,7 @@
     --ifm-color-primary-lighter: hsl(196 100% 75%);
     --ifm-color-primary-lightest: hsl(196 100% 90%);
     --ifm-navbar-background-color: #00021211;
+    --ifm-card-background-color: transparent;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
     --color-graphql-comment: #6ea372;
     --color-graphql-identifier: rgb(255, 121, 198);

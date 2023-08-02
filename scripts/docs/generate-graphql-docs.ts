@@ -48,11 +48,11 @@ generateGraphqlDocs(outputPath);
 
 function generateGraphqlDocs(hugoOutputPath: string) {
     const timeStart = +new Date();
-    let queriesOutput = generateFrontMatter('Queries', 1) + '\n\n';
-    let mutationsOutput = generateFrontMatter('Mutations', 2) + '\n\n';
-    let objectTypesOutput = generateFrontMatter('Types', 3) + '\n\n';
-    let inputTypesOutput = generateFrontMatter('Input Objects', 4) + '\n\n';
-    let enumsOutput = generateFrontMatter('Enums', 5) + '\n\n';
+    let queriesOutput = generateFrontMatter('Queries') + '\n\n';
+    let mutationsOutput = generateFrontMatter('Mutations') + '\n\n';
+    let objectTypesOutput = generateFrontMatter('Types') + '\n\n';
+    let inputTypesOutput = generateFrontMatter('Input Objects') + '\n\n';
+    let enumsOutput = generateFrontMatter('Enums') + '\n\n';
     const sortByName = (a: { name: string }, b: { name: string }) => (a.name < b.name ? -1 : 1);
     const sortedTypes = Object.values(schema.getTypeMap()).sort(sortByName);
     for (const type of sortedTypes) {

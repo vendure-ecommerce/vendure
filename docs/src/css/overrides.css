@@ -15,7 +15,7 @@ body {
 
 
 @media screen and (min-width: 996px) {
-    .docs-wrapper article {
+    .docs-wrapper article:not(.col) {
         margin-left: 32px;
     }
 }

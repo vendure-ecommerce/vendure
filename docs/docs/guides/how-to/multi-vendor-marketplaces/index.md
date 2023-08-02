@@ -15,23 +15,23 @@ This guide introduces the major concepts & APIs you will need to understand in o
 
 All the concepts presented here have been implemented in our [example multi-vendor plugin](https://github.com/vendure-ecommerce/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin). The guides here will refer to specific parts of this plugin which you should consult to get a full understanding of how an implementation would look.
 
-{{< alert warning >}}
+:::caution
 **Note:** the [example multi-vendor plugin](https://github.com/vendure-ecommerce/vendure/tree/master/packages/dev-server/example-plugins/multivendor-plugin) is for educational purposes only, and for the sake of clarity leaves out several parts that would be required in a production-ready solution, such as email verification and setup of a real payment solution.
-{{< /alert >}}
+:::
 
-{{< figure src="./aggregate-order.webp" title="The Admin UI Aggregate Order screen" >}}
+![The Admin UI Aggregate Order screen](./aggregate-order.webp)
 
 ## Sellers, Channels & Roles
 
-The core of Vendure's multi-vendor support is Channels. Read the [Channels guide]({{< relref "/guides/developer-guide/channels" >}}) to get a more detailed understanding of how they work.
+The core of Vendure's multi-vendor support is Channels. Read the [Channels guide](/guides/core-concepts/channels/) to get a more detailed understanding of how they work.
 
-Each Channel is assigned to a [Seller]({{< relref "seller" >}}), which is another term for the vendor who is selling things in our marketplace.
+Each Channel is assigned to a [Seller](/reference/typescript-api/entities/seller/), which is another term for the vendor who is selling things in our marketplace.
 
 So the first thing to do is to implement a way to create a new Channel and Seller.
 
 In the multi-vendor plugin, we have defined a new mutation in the Shop API which allows a new seller to register on our marketplace:
 
-```graphql
+```graphql title="Shop API"
 mutation RegisterSeller {
   registerNewSeller(input: {
     shopName: "Bob's Parts",
@@ -51,18 +51,18 @@ mutation RegisterSeller {
 
 Executing the `registerNewSeller` mutation does the following:
 
-- Create a new [Seller]({{< relref "seller" >}}) representing the shop "Bob's Parts"
-- Create a new [Channel]({{< relref "channel" >}}) and associate it with the new Seller
-- Create a [Role]({{< relref "role" >}}) & [Administrator]({{< relref "administrator" >}}) for Bob to access his shop admin account
-- Create a [ShippingMethod]({{< relref "shipping-method" >}}) for Bob's shop
-- Create a [StockLocation]({{< relref "stock-location" >}}) for Bob's shop
+- Create a new [Seller](/reference/typescript-api/entities/seller/) representing the shop "Bob's Parts"
+- Create a new [Channel](/reference/typescript-api/entities/channel) and associate it with the new Seller
+- Create a [Role](/reference/typescript-api/entities/role) & [Administrator](/reference/typescript-api/entities/administrator) for Bob to access his shop admin account
+- Create a [ShippingMethod](/reference/typescript-api/entities/shipping-method) for Bob's shop
+- Create a [StockLocation](/reference/typescript-api/entities/stock-location) for Bob's shop
 
 Bob can now log in to the Admin UI using the provided credentials and begin creating products to sell!
 
 
 ## Assigning OrderLines to the correct Seller
 
-In order to correctly split the Order later, we need to assign each added OrderLine to the correct Seller. This is done with the [OrderSellerStrategy]({{< relref "order-seller-strategy" >}}) API, and specifically the `setOrderLineSellerChannel()` method.
+In order to correctly split the Order later, we need to assign each added OrderLine to the correct Seller. This is done with the [OrderSellerStrategy](/reference/typescript-api/orders/order-seller-strategy/) API, and specifically the `setOrderLineSellerChannel()` method.
 
 The following logic will run any time the `addItemToOrder` mutation is executed from our storefront:
 
@@ -92,7 +92,7 @@ The end result is that each OrderLine in the Order will have its `sellerChannelI
 
 ## Shipping
 
-When it comes time to choose a ShippingMethod for the Order, we need to ensure that the customer can only choose from the ShippingMethods which are supported by the Seller. To do this, we need to implement a [ShippingEligibilityChecker]({{< relref "shipping-eligibility-checker" >}}) which will filter the available ShippingMethods based on the `sellerChannelId` properties of the OrderLines.
+When it comes time to choose a ShippingMethod for the Order, we need to ensure that the customer can only choose from the ShippingMethods which are supported by the Seller. To do this, we need to implement a [ShippingEligibilityChecker](/reference/typescript-api/shipping/shipping-eligibility-checker/) which will filter the available ShippingMethods based on the `sellerChannelId` properties of the OrderLines.
 
 Here's how we do it in the example plugin:
 
@@ -136,7 +136,7 @@ mutation SetShippingMethod($ids: [ID!]!) {
 }
 ```
 
-Now we need a way to assign the correct method to each line in an Order. This is done with the [ShippingLineAssignmentStrategy]({{< relref "shipping-line-assignment-strategy" >}}) API.
+Now we need a way to assign the correct method to each line in an Order. This is done with the [ShippingLineAssignmentStrategy](/reference/typescript-api/shipping/shipping-line-assignment-strategy/) API.
 
 We will again be relying on the `sellerChannelId` property of the OrderLines to determine which ShippingMethod to assign to each line. Here's how we do it in the example plugin:
 
@@ -173,13 +173,13 @@ When it comes to payments, there are many different ways that a multi-vendor mar
 
 In the example plugin, we have implemented a simplified version of a service like [Stripe Connect](https://stripe.com/connect), whereby each Seller has a `connectedAccountId` (we auto-generate a random string for the example when registering the Seller). When configuring the plugin we also specify a "platform fee" percentage, which is the percentage of the total Order value which the marketplace will collect as a fee. The remaining amount is then split between the Sellers.
 
-The [OrderSellerStrategy]({{< relref "order-seller-strategy" >}}) API contains two methods which are used to first split the Order from a single order into one _Aggregate Order_ and multiple _Seller Orders_, and then to calculate the platform fee for each of the Seller Orders:
+The [OrderSellerStrategy](/reference/typescript-api/orders/order-seller-strategy/) API contains two methods which are used to first split the Order from a single order into one _Aggregate Order_ and multiple _Seller Orders_, and then to calculate the platform fee for each of the Seller Orders:
 
 - `OrderSellerStrategy.splitOrder`: Splits the OrderLines and ShippingLines of the Order into multiple groups, one for each Seller.
 - `OrderSellerStrategy.afterSellerOrdersCreated`: This method is run on every Seller Order created after the split, and we can use this to assign the platform fees to the Seller Order.
 
 ## Custom OrderProcess
 
-Finally, we need a custom [OrderProcess]({{< relref "order-process" >}}) which will help keep the state of the resulting Aggregate Order and its Seller Orders in sync. For example, we want to make sure that the Aggregate Order cannot be transitioned to the `Shipped` state unless all of its Seller Orders are also in the `Shipped` state.
+Finally, we need a custom [OrderProcess](/reference/typescript-api/orders/order-process/) which will help keep the state of the resulting Aggregate Order and its Seller Orders in sync. For example, we want to make sure that the Aggregate Order cannot be transitioned to the `Shipped` state unless all of its Seller Orders are also in the `Shipped` state.
 
 Conversely, we can automatically set the state of the Aggregate Order to `Shipped` once all of its Seller Orders are in the `Shipped` state.
