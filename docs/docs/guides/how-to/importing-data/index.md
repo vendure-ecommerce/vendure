@@ -265,7 +265,7 @@ Running this script will populate the database with the test data like when you 
 
 If you require more control over how your data is being imported - for example if you also need to import data into custom entities, or import customer or order information - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts](/guides/advanced-topics/stand-alone-scripts).
 
-In addition to all of the services available in the [Service Layer](/reference/typescript-api/service-layer/), the following specialized import services are available:
+In addition to all the services available in the [Service Layer](/guides/developer-guide/the-service-layer/), the following specialized import services are available:
 
 * [`ImportParser`](/reference/typescript-api/import-export/import-parser): Used to parse the CSV file into an array of objects.
 * [`FastImporterService`](/reference/typescript-api/import-export/fast-importer-service): Used to create new products & variants in bulk, optimized for speed.
