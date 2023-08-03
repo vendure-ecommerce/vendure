@@ -57,6 +57,10 @@
     --color-docsearch-border: #232347;
 }
 
+html[data-theme='light'] {
+    --ifm-background-color: #ffffff;
+}
+
 html[data-theme='dark'] {
     --ifm-background-color: #000212;
 }

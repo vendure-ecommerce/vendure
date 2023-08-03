@@ -10,7 +10,7 @@
     --color-generation-label-bg: var(--ifm-color-secondary);
 }
 [data-theme='dark'] {
-    --color-generation-label-bg: #444;
+    --color-generation-label-bg: #232323;
 }
 
 .label {
