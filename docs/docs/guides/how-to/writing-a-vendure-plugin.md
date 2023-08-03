@@ -72,7 +72,7 @@ First let's create the file to house the entity:
 By convention, we'll store the entity definitions in the `entities` directory of the plugin. Again, this is not a requirement, but it is a good way to keep your plugin organized.
 
 ```ts title="src/plugins/wishlist-plugin/entities/wishlist-item.entity.ts"
-import { DeepPartial, ID, ProductVariant, VendureEntity } from '@vendure/core';
+import { DeepPartial, ID, ProductVariant, VendureEntity, EntityId } from '@vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -84,7 +84,7 @@ export class WishlistItem extends VendureEntity {
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
 
-    @Column()
+    @EntityId()
     productVariantId: ID;
 }
 ```

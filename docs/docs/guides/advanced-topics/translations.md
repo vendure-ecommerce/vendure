@@ -3,9 +3,9 @@ title: "Translation"
 showtoc: true
 ---
 
-# Translation
+This section describes how to add new translations to the Vendure server.
 
-Using [`addTranslation`]({{< relref "i18n-service" >}}#addtranslation) inside the `onApplicationBootstrap` ([Nestjs lifecycle hooks](https://docs.nestjs.com/fundamentals/lifecycle-events)) of a Plugin is the easiest way to add new translations.
+Using [`addTranslation`](/reference/typescript-api/common/i18n-service/#addtranslation) inside the `onApplicationBootstrap` ([Nestjs lifecycle hooks](https://docs.nestjs.com/fundamentals/lifecycle-events)) of a Plugin is the easiest way to add new translations.
 While Vendure is only using `error`, `errorResult` and `message` resource keys you are free to use your own.
 
 ## Translatable Error

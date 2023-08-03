@@ -29,7 +29,7 @@ if (!customer) {
 
 In the GraphQL APIs, these errors are returned in the standard `errors` array:
 
-```JSON
+```json
 {
   "errors": [
     {
@@ -125,4 +125,4 @@ mutation ApplyCoupon($code: String!) {
 
 This ensures that your client code is aware of and handles all the usual error cases.
 
-You can see all the ErrorResult types returned by the Shop API mutations in the [Shop API Mutations docs]({{< relref "/reference/graphql-api/shop/mutations" >}}). 
+You can see all the ErrorResult types returned by the Shop API mutations in the [Shop API Mutations docs](/reference/graphql-api/shop/mutations). 

@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 Database migrations are needed whenever the database schema changes. This can be caused by:
 
 * changes to the [custom fields](/guides/developer-guide/custom-fields/) configuration.
-* new [database entities defined by plugins](/reference/typescript-api/plugin/vendure-plugin-metadata#entities)
+* new [database entities defined by plugins](/guides/how-to/database-entity/)
 * occasional changes to the core Vendure database schema when updating to newer versions
 
 ## Synchronize vs migrate

@@ -31,11 +31,14 @@ Then run `npm install` or `yarn install` depending on which package manager you 
 
 ## Admin UI changes
 
-If you are using UI extensions to create your own custom Admin UI using the [`compileUiExtensions`]({{< relref "compile-ui-extensions" >}}) function, then you'll need to **delete and re-compile your admin-ui directory after upgrading** (this is the directory specified by the [`outputPath`]({{< relref "ui-extension-compiler-options" >}}#outputpath) property).
+If you are using UI extensions to create your own custom Admin UI using the [`compileUiExtensions`](/reference/admin-ui-api/ui-devkit/compile-ui-extensions/) function, then you'll need to **delete and re-compile your admin-ui directory after upgrading** (this is the directory specified by the [`outputPath`](/reference/admin-ui-api/ui-devkit/ui-extension-compiler-options#outputpath) property).
 
 ## Breaking changes
 
 Vendure follows the [SemVer convention](https://semver.org/) for version numbering. This means that breaking changes will only be introduced with changes to the major version (the first of the 3 digits in the version).
+
+However, we will occasionally upgrade underlying dependencies on minor versions, which may also require changes to your code in certain circumstances. If so, this will
+also be clearly noted in the changelog.
 
 ### What kinds of breaking changes can be expected?
 
@@ -57,7 +60,7 @@ For any database schema changes, it is advised to:
 
 1. Read the changelog breaking changes entries to see what changes to expect
 2. **Important:** Make a backup of your database!
-3. Create a new database migration as described in the [Migrations guide]({{< relref "migrations" >}})
+3. Create a new database migration as described in the [Migrations guide](/guides/developer-guide/migrations/)
 4. Manually check the migration script. In some cases manual action is needed to customize the script in order to correctly migrate your existing data.
 5. Test the migration script against non-production data.
 6. Only when you have verified that the migration works as expected, run it against your production database.

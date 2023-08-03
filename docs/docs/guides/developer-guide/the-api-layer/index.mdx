@@ -340,62 +340,7 @@ field in the GraphQL schema, or if the method name is different, a name can be p
 ## REST endpoints
 
 Although Vendure is primarily a GraphQL-based API, it is possible to add REST endpoints to the API. This is useful if
-you need to integrate with a third-party service which only supports REST, or if you need to provide a REST API for
+you need to integrate with a third-party service or client application which only supports REST, for example.
 
-In order to create REST endpoints, you need to create a plugin (see the [plugin developer guide](/guides/developer-guide/plugins/))
-which includes a [NestJS controller](https://docs.nestjs.com/controllers). Here's a simple example:
-
-```ts title="src/plugins/rest/api/products.controller.ts"
-import { Controller, Get } from '@nestjs/common';
-import { Ctx, ProductService, RequestContext } from '@vendure/core';
-
-@Controller('products')
-export class ProductsController {
-    constructor(private productService: ProductService) {}
-
-    @Get()
-    findAll(@Ctx() ctx: RequestContext) {
-        return this.productService.findAll(ctx);
-    }
-}
-```
-
-The `@Controller()` decorator takes a path argument which is the base path for all the endpoints defined in the controller.
-In this case, the path is `products`, so the endpoint will be available at `/products`.
-
-The controller can be registered with a [plugin](/guides/developer-guide/plugins/):
-
-```ts title="src/plugins/rest/products.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
-import { ProductsController } from './api/products.controller';
-
-@VendurePlugin({
-    imports: [PluginCommonModule],
-    // highlight-next-line
-    controllers: [ProductsController],
-})
-export class ProductsRestPlugin {}
-```
-
-And finally, the plugin is added to the `VendureConfig`:
-
-```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { ProductsRestPlugin } from './plugins/rest/products.plugin';
-
-export const config: VendureConfig = {
-    // ...
-    plugins: [
-        // highlight-next-line
-        ProductsRestPlugin,
-    ],
-};
-```
-
-Now when the server is started, the REST endpoint will be available at `http://localhost:3000/products`.
-
-:::tip
-The following Vendure decorators can also be used with NestJS controllers: `@Allow()`, `@Transaction()`, `@Ctx()`.
-
-Additionally, NestJS supports a number of other REST decorators detailed in the [NestJS controllers guide](https://docs.nestjs.com/controllers#request-object)
-:::
+Creating a REST endpoint is covered in detail in the [Add a REST endpoint
+guide](/guides/how-to/rest-endpoint/).

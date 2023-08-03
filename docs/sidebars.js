@@ -45,6 +45,7 @@ const sidebars = {
                 'guides/developer-guide/the-api-layer/index',
                 'guides/developer-guide/the-service-layer/index',
                 'guides/developer-guide/custom-fields/index',
+                'guides/developer-guide/events/index',
                 'guides/developer-guide/strategies-configurable-operations/index',
                 'guides/developer-guide/worker-job-queue/index',
                 'guides/developer-guide/plugins/index',

@@ -1,5 +1,6 @@
 ---
 title: "Storefront Migration"
+sidebar_position: 3
 ---
 
 # Storefront migration

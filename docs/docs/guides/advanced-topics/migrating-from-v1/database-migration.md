@@ -1,6 +1,6 @@
 ---
 title: "Database Migration"
-weight: 0
+sidebar_position: 1
 ---
 
 # v2 Database Migration

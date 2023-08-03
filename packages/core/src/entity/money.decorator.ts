@@ -20,6 +20,7 @@ const moneyColumnRegistry = new Map<any, MoneyColumnConfig[]>();
  * This allows the column type to be defined by the configured {@link MoneyStrategy}.
  *
  * @docsCategory money
+ * @docsPage Money Decorator
  * @since 2.0.0
  */
 export function Money(options?: MoneyColumnOptions) {
