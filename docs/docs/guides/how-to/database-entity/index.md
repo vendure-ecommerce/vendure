@@ -47,7 +47,7 @@ In this example, we are making use of the following TypeORM decorators:
 
 There is an additional Vendure-specific decorator:
 
-* [`@EntityId()`](/reference/typescript-api/entities/entity-id/) marks a property as the ID of another entity. In this case, the `productId` property is the ID of the `Product` entity. The reason that we have a special decorator for this is that Vendure supports both numeric and string IDs, and the `@EntityId()` decorator will automatically set the database column to be the correct type. This `productId` is not _necessary_, but it is a useful convention to allow access to the ID of the associated entity without having to perform a database join.
+* [`@EntityId()`](/reference/typescript-api/configuration/entity-id-decorator) marks a property as the ID of another entity. In this case, the `productId` property is the ID of the `Product` entity. The reason that we have a special decorator for this is that Vendure supports both numeric and string IDs, and the `@EntityId()` decorator will automatically set the database column to be the correct type. This `productId` is not _necessary_, but it is a useful convention to allow access to the ID of the associated entity without having to perform a database join.
 
 ## Register the entity
 

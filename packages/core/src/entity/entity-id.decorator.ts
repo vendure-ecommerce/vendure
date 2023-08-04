@@ -30,9 +30,13 @@ export function PrimaryGeneratedId() {
 }
 
 /**
+ * @description
  * Decorates a property which points to another entity by ID. This custom decorator is needed
  * because we do not know the data type of the ID column until runtime, when we have access
  * to the configured EntityIdStrategy.
+ *
+ * @docsCategory configuration
+ * @docsPage EntityId Decorator
  */
 export function EntityId(options?: IdColumnOptions) {
     return (entity: any, propertyName: string) => {
