@@ -2,6 +2,10 @@
 title: Connect to the API
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Stackblitz from '@site/src/components/Stackblitz';
+
 The first thing you'll need to do is to connect your storefront app to the **Shop API**. The Shop API is a GraphQL API
 that provides access to the products, collections, customer data, and exposes mutations that allow you to add items to
 the cart, checkout, manage customer accounts, and more.
@@ -19,18 +23,26 @@ GraphQL requests are made over HTTP, so you can use any HTTP client such as the 
 * [Apollo Client](https://www.apollographql.com/docs/react): A full-featured client which includes a caching layer and React integration.
 * [urql](https://formidable.com/open-source/urql/): The highly customizable and versatile GraphQL client for React, Svelte, Vue, or plain JavaScript
 * [graphql-request](https://github.com/jasonkuhrt/graphql-request): Minimal GraphQL client supporting Node and browsers for scripts or simple apps
+* [TanStack Query](https://tanstack.com/query/latest): Powerful asynchronous state management for TS/JS, React, Solid, Vue and Svelte, which can be combined with `graphql-request`.
 
-Here are some examples of how to use these clients to connect to the Shop API.
+Here are some examples of how to use these clients to connect to the Shop API:
+
+## Examples
 
 ### Fetch
 
 First we'll look at a plain Fetch-based implementation, to show you that there's no special magic to a GraphQL request - it's just a POST request with a JSON body.
 
-```ts
+
+<Tabs>
+<TabItem value="client.ts" label="client.ts" default>
+
+```ts title="src/client.ts"
 export function query(document: string, variables: Record<string, any> = {}) {
     return fetch('https://localhost:3000/shop-api', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           query: document,
           variables,
@@ -40,3 +52,307 @@ export function query(document: string, variables: Record<string, any> = {}) {
       .catch((err) => console.log(err));
 }
 ```
+
+</TabItem>
+<TabItem value="index.ts" label="index.ts" default>
+
+This function can then be used to make a GraphQL query:
+
+
+```ts title="src/index.ts"
+import { query } from './client';
+
+const document = `
+    query GetProducts($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                id
+                name
+                slug
+                description
+                featuredAsset {
+                    preview
+                }
+            }
+        }
+    }
+`;
+
+query(document, {
+    options: {
+        take: 10,
+        skip: 0,
+    },
+}).then((res) => console.log(res));
+```
+
+</TabItem>
+<TabItem value="result" label="result">
+
+```json title="console log"
+{
+  "data": {
+    "products": {
+      "items": [
+        {
+          "id": "1",
+          "name": "Laptop",
+          "slug": "laptop",
+          "featuredAsset": {
+            "preview": "https://demo.vendure.io/assets/preview/71/derick-david-409858-unsplash__preview.jpg"
+          }
+        },
+        {
+          "id": "2",
+          "name": "Tablet",
+          "slug": "tablet",
+          "featuredAsset": {
+            "preview": "https://demo.vendure.io/assets/preview/b8/kelly-sikkema-685291-unsplash__preview.jpg"
+          }
+        },
+        {
+          "id": "3",
+          "name": "Wireless Optical Mouse",
+          "slug": "cordless-mouse",
+          "featuredAsset": {
+            "preview": "https://demo.vendure.io/assets/preview/a1/oscar-ivan-esquivel-arteaga-687447-unsplash__preview.jpg"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+As you can see, the basic implementation with `fetch` is quite straightforward. It is also lacking some features that other,
+dedicated client libraries will provide.
+
+### Apollo Client
+
+Here's an example configuration for [Apollo Client](https://www.apollographql.com/docs/react/) with a React app.
+
+Follow the [getting started instructions](https://www.apollographql.com/docs/react/get-started) to install the required
+packages.
+
+
+<Tabs>
+<TabItem value="client.ts" label="client.ts" default>
+
+```ts title="src/client.ts"
+import {
+    ApolloClient,
+    ApolloLink,
+    HttpLink,
+    InMemoryCache,
+} from '@apollo/client'
+import { setContext } from '@apollo/client/link/context'
+
+// If using bearer-token based session management, we'll store the token
+// in localStorage using this key.
+const AUTH_TOKEN_KEY = 'auth_token';
+
+const httpLink = new HttpLink({
+    uri: `${process.env.NEXT_PUBLIC_URL_SHOP_API}/shop-api`,
+    // This is required if using cookie-based session management,
+    // so that any cookies get sent with the request.
+    credentials: 'include',
+});
+
+// This part is used to check for and store the session token
+// if it is returned by the server.
+const afterwareLink = new ApolloLink((operation, forward) => {
+    return forward(operation).map((response) => {
+        const context = operation.getContext();
+        const authHeader = context.response.headers.get('vendure-auth-token');
+        if (authHeader) {
+            // If the auth token has been returned by the Vendure
+            // server, we store it in localStorage
+            localStorage.setItem(AUTH_TOKEN_KEY, authHeader);
+        }
+        return response;
+    });
+});
+
+export const client = new ApolloClient({
+    link: ApolloLink.from([
+        // If we have stored the authToken from a previous
+        // response, we attach it to all subsequent requests.
+        setContext(() => {
+            const authToken = localStorage.getItem(AUTH_TOKEN_KEY)
+            if (authToken) {
+                return {
+                    headers: {
+                        authorization: `Bearer ${authToken}`,
+                    },
+                }
+            }
+        }),
+        afterwareLink,
+        httpLink,
+    ]),
+    cache: new InMemoryCache(),
+})
+```
+
+</TabItem>
+<TabItem value='index.tsx' label='index.tsx'>
+
+```tsx title="src/index.tsx"
+import React from 'react';
+import * as ReactDOM from 'react-dom/client';
+import { ApolloProvider } from '@apollo/client';
+import App from './App';
+import { client } from './client';
+
+// Supported in React 18+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+root.render(
+    <ApolloProvider client={client}>
+        <App />
+    </ApolloProvider>,
+);
+```
+
+</TabItem>
+<TabItem value="App.tsx" label="App.tsx">
+
+```tsx title="src/App.tsx"
+import { useQuery, gql } from '@apollo/client';
+
+const GET_PRODUCTS = gql`
+    query GetProducts($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                id
+                name
+                slug
+                featuredAsset {
+                    preview
+                }
+            }
+        }
+    }
+`;
+
+export default function App() {
+    const { loading, error, data } = useQuery(GET_PRODUCTS, {
+        variables: { options: { take: 3 } },
+    });
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error : {error.message}</p>;
+
+    return data.products.items.map(({ id, name, slug, featuredAsset }) => (
+        <div key={id}>
+            <h3>{name}</h3>
+            <img width="400" height="250" alt="location-reference" src={`${featuredAsset.preview}?preset=medium`} />
+        </div>
+    ));
+}
+```
+
+</TabItem>
+</Tabs>
+
+
+Here's a live version of this example:
+
+<Stackblitz id='vendure-docs-apollo-client' />
+
+### TanStack Query
+
+Here's an example using [@tanstack/query](https://tanstack.com/query/latest) in combination with [graphql-request](https://github.com/jasonkuhrt/graphql-request) based on [this guide](https://tanstack.com/query/v4/docs/react/graphql):
+
+
+<Tabs>
+<TabItem value="App.tsx" label="App.tsx" default>
+
+```tsx title="src/App.tsx"
+import * as React from 'react';
+import { gql, request } from 'graphql-request';
+import { useQuery } from '@tanstack/react-query';
+
+const GET_PRODUCTS = gql`
+    query GetProducts($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                id
+                name
+                slug
+                featuredAsset {
+                    preview
+                }
+            }
+        }
+    }
+`;
+
+export default function App() {
+    const { data } = useQuery({
+        queryKey: ['products'],
+        queryFn: async () =>
+            request(
+                'https://demo.vendure.io/shop-api',
+                GET_PRODUCTS,
+                { options: { take: 3 } }
+            ),
+    });
+
+    return data ? (
+        data.products.items.map(({ id, name, slug, featuredAsset }) => (
+            <div key={id}>
+                <h3>{name}</h3>
+                <img
+                    width="400"
+                    height="250"
+                    alt="location-reference"
+                    src={`${featuredAsset.preview}?preset=medium`}
+                />
+            </div>
+        ))
+    ) : (
+        <>Loading...</>
+    );
+}
+
+```
+
+</TabItem>
+
+
+<TabItem value="index.tsx" label="index.tsx" default>
+
+```ts title="src/index.tsx"
+import * as React from 'react';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+import App from './App';
+
+// Create a client
+const queryClient = new QueryClient();
+
+const rootElement = document.getElementById('root');
+const root = createRoot(rootElement);
+
+root.render(
+    <StrictMode>
+        <QueryClientProvider client={queryClient}>
+            <App />
+        </QueryClientProvider>
+    </StrictMode>
+);
+```
+
+</TabItem>
+</Tabs>
+
+Here's a live version of this example:
+
+<Stackblitz id='vendure-docs-tanstack-query' />
+
