@@ -1,7 +1,7 @@
 ---
 title: "UserService"
 weight: 10
-date: 2023-07-04T11:02:13.560Z
+date: 2023-07-14T16:57:50.627Z
 showtoc: true
 generated: true
 ---
@@ -115,7 +115,7 @@ flow.{{< /member-description >}}
 
 ### resetPasswordByToken
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"  >}}
 
 {{< member-description >}}Verifies a passwordResetToken by looking for a User which has previously had it set using the
 `setPasswordResetToken()` method, and checks that the token is valid and has not expired.
@@ -138,7 +138,7 @@ flow.{{< /member-description >}}
 
 ### changeIdentifierByToken
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;"  >}}
 
 {{< member-description >}}Changes the User identifier as part of the storefront flow used by Customers to set a
 new email address, with the token previously set using the `setIdentifierChangeToken()` method.{{< /member-description >}}

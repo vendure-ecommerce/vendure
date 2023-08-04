@@ -4,6 +4,7 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { roundMoney } from '../../common/round-money';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { VendureEntity } from '../base/base.entity';
 import { Money } from '../money.decorator';
@@ -48,12 +49,16 @@ export class Surcharge extends VendureEntity {
 
     @Calculated()
     get price(): number {
-        return this.listPriceIncludesTax ? netPriceOf(this.listPrice, this.taxRate) : this.listPrice;
+        return roundMoney(
+            this.listPriceIncludesTax ? netPriceOf(this.listPrice, this.taxRate) : this.listPrice,
+        );
     }
 
     @Calculated()
     get priceWithTax(): number {
-        return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
+        return roundMoney(
+            this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate),
+        );
     }
 
     @Calculated()

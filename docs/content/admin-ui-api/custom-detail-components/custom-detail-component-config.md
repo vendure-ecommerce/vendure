@@ -1,7 +1,7 @@
 ---
 title: "CustomDetailComponentConfig"
 weight: 10
-date: 2023-07-04T11:02:14.945Z
+date: 2023-07-14T16:57:51.090Z
 showtoc: true
 generated: true
 ---

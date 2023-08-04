@@ -1,7 +1,7 @@
 ---
 title: "Error Types"
 weight: 10
-date: 2023-07-04T11:02:11.622Z
+date: 2023-07-14T16:57:49.428Z
 showtoc: true
 generated: true
 ---

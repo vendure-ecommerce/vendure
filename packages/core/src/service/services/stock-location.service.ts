@@ -26,6 +26,7 @@ import { OrderLine, StockLevel } from '../../entity/index';
 import { StockLocation } from '../../entity/stock-location/stock-location.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { RequestContextService } from '../helpers/request-context/request-context.service';
+import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
@@ -75,6 +76,7 @@ export class StockLocationService {
             new StockLocation({
                 name: input.name,
                 description: input.description ?? '',
+                customFields: input.customFields ?? {},
             }),
         );
         await this.channelService.assignToCurrentChannel(stockLocation, ctx);
@@ -84,13 +86,8 @@ export class StockLocationService {
 
     async update(ctx: RequestContext, input: UpdateStockLocationInput): Promise<StockLocation> {
         const stockLocation = await this.connection.getEntityOrThrow(ctx, StockLocation, input.id);
-        if (input.name) {
-            stockLocation.name = input.name;
-        }
-        if (input.description) {
-            stockLocation.description = input.description;
-        }
-        return this.connection.getRepository(ctx, StockLocation).save(stockLocation);
+        const updatedStockLocation = patchEntity(stockLocation, input);
+        return this.connection.getRepository(ctx, StockLocation).save(updatedStockLocation);
     }
 
     async delete(ctx: RequestContext, input: DeleteStockLocationInput): Promise<DeletionResponse> {

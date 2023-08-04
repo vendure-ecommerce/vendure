@@ -1,7 +1,7 @@
 ---
 title: "AdminUiConfig"
 weight: 10
-date: 2023-07-04T11:02:13.639Z
+date: 2023-07-14T16:57:50.664Z
 showtoc: true
 generated: true
 ---
@@ -78,6 +78,13 @@ option.{{< /member-description >}}
 {{< member-description >}}The header used when using the 'bearer' auth method. Should match the
 setting of the server's `authOptions.authTokenHeaderKey` config
 option.{{< /member-description >}}
+
+### channelTokenKey
+
+{{< member-info kind="property" type="string" default="'vendure-token'"  >}}
+
+{{< member-description >}}The name of the header which contains the channel token. Should match the
+setting of the server's `apiOptions.channelTokenKey` config option.{{< /member-description >}}
 
 ### defaultLanguage
 

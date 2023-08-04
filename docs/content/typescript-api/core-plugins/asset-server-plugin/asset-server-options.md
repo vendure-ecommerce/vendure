@@ -1,7 +1,7 @@
 ---
 title: "AssetServerOptions"
 weight: 10
-date: 2023-07-04T11:02:13.735Z
+date: 2023-07-14T16:57:50.708Z
 showtoc: true
 generated: true
 ---
@@ -94,7 +94,7 @@ the <a href='/typescript-api/core-plugins/asset-server-plugin/sharp-asset-previe
 
 ### storageStrategyFactory
 
-{{< member-info kind="property" type="(         options: <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>,     ) =&#62; <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> | Promise&#60;<a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>&#62;" default="() =&#62; <a href='/typescript-api/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a>"  >}}
+{{< member-info kind="property" type="(         options: <a href='/typescript-api/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>,     ) =&#62; <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> | Promise&#60;<a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>&#62;" default="() =&#62; <a href='/typescript-api/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a>"  >}}
 
 {{< member-description >}}A function which can be used to configure an <a href='/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>. This is useful e.g. if you wish to store your assets
 using a cloud storage provider. By default, the <a href='/typescript-api/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a> is used.{{< /member-description >}}

@@ -303,7 +303,7 @@ export class PaymentService {
             .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
         for (const line of input.lines) {
             const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
-            if (orderLine && 0 < orderLine.quantity) {
+            if (orderLine && 0 < orderLine.orderPlacedQuantity) {
                 refundOrderLinesTotal += line.quantity * orderLine.proratedUnitPriceWithTax;
             }
         }

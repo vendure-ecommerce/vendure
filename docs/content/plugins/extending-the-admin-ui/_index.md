@@ -100,3 +100,33 @@ plugins: [
 }
 ```
 {{< /alert >}}
+{{< alert warning >}}
+**Also note:** When you use compileUiExtensions to compile the Angular App, a new directory will be created to host the compiled Admin-UI app. The name and location of the app is specified by the "outputPath" which is set in the compileUiExtensions options object. Make sure to **exlcude** the admin-ui directory from typescript's transpilation since code there is already transpiled.
+```json
+{
+  "exclude": [
+    "node_modules",
+    "migration.ts",
+    "admin-ui" // <-- add this
+  ],
+}
+```
+{{< /alert >}}
+
+{{< alert "primary" >}}
+To compile the angular app ahead of time (for production) and copy the dist folder to Vendure's output dist folder, include the following commands in your packages.json scripts:
+```json
+{
+  "scripts": {
+    "copy": "npx copyfiles -u 1 'src/__admin-ui/dist/**/*' dist",
+    "build": "tsc && yarn copy",
+    "build:admin": "rimraf admin-ui && npx ts-node src/compile-admin-ui.ts",
+  }
+}
+```
+"build:admin" will remove the admin-ui folder and run the compileUiExtensions function to generate the admin-ui Angular app.
+Make sure to install copyfiles before running the "copy" command:
+```bash
+yarn install copyfiles
+```
+{{< /alert >}}

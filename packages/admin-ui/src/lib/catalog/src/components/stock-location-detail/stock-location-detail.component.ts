@@ -62,7 +62,7 @@ export class StockLocationDetailComponent
     extends TypedBaseDetailComponent<typeof GetStockLocationDetailDocument, 'stockLocation'>
     implements OnInit, OnDestroy
 {
-    customFields = this.getCustomFieldConfig('TaxRate');
+    customFields = this.getCustomFieldConfig('StockLocation');
     detailForm = this.formBuilder.group({
         name: ['', Validators.required],
         description: [''],
@@ -96,11 +96,10 @@ export class StockLocationDetailComponent
         if (!name) {
             return;
         }
-        const formValue = this.detailForm.value;
         const input = {
             name,
             description,
-            customFields: formValue.customFields,
+            customFields,
         } satisfies CreateStockLocationInput;
         this.dataService.mutate(CreateStockLocationDocument, { input }).subscribe(
             data => {

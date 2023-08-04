@@ -81,7 +81,7 @@ export class ProductDetailComponent
         enabled: true,
         name: ['', Validators.required],
         autoUpdateVariantNames: true,
-        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
+        slug: ['', unicodePatternValidator(/^[\p{Letter}0-9._-]+$/)],
         description: '',
         facetValueIds: [[] as string[]],
         customFields: this.formBuilder.group(

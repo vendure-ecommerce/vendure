@@ -249,12 +249,19 @@ export interface AdminUiConfig {
     /**
      * @description
      * The header used when using the 'bearer' auth method. Should match the
-     * setting of the server's `authOptions.authTokenHeaderKey` config
-     * option.
+     * setting of the server's `authOptions.authTokenHeaderKey` config option.
      *
      * @default 'vendure-auth-token'
      */
     authTokenHeaderKey: string;
+    /**
+     * @description
+     * The name of the header which contains the channel token. Should match the
+     * setting of the server's `apiOptions.channelTokenKey` config option.
+     *
+     * @default 'vendure-token'
+     */
+    channelTokenKey: string;
     /**
      * @description
      * The default language for the Admin UI. Must be one of the
