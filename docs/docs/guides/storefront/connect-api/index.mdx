@@ -1,0 +1,42 @@
+---
+title: Connect to the API
+---
+
+The first thing you'll need to do is to connect your storefront app to the **Shop API**. The Shop API is a GraphQL API
+that provides access to the products, collections, customer data, and exposes mutations that allow you to add items to
+the cart, checkout, manage customer accounts, and more.
+
+:::tip
+You can explore the Shop API by opening the GraphQL Playground in your browser at
+[`http://localhost:3000/shop-api`](http://localhost:3000/shop-api) when your Vendure
+server is running locally.
+:::
+
+## Select a GraphQL client
+
+GraphQL requests are made over HTTP, so you can use any HTTP client such as the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) to make requests to the Shop API. However, there are also a number of specialized GraphQL clients which can make working with GraphQL APIs easier. Here are some popular options:
+
+* [Apollo Client](https://www.apollographql.com/docs/react): A full-featured client which includes a caching layer and React integration.
+* [urql](https://formidable.com/open-source/urql/): The highly customizable and versatile GraphQL client for React, Svelte, Vue, or plain JavaScript
+* [graphql-request](https://github.com/jasonkuhrt/graphql-request): Minimal GraphQL client supporting Node and browsers for scripts or simple apps
+
+Here are some examples of how to use these clients to connect to the Shop API.
+
+### Fetch
+
+First we'll look at a plain Fetch-based implementation, to show you that there's no special magic to a GraphQL request - it's just a POST request with a JSON body.
+
+```ts
+export function query(document: string, variables: Record<string, any> = {}) {
+    return fetch('https://localhost:3000/shop-api', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          query: document,
+          variables,
+        }),
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+}
+```
