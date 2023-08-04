@@ -1,0 +1,141 @@
+.nav-group-header {
+    font-size: 20px !important;
+}
+.nav-link {
+    font-size: 16px !important;
+}
+
+.nav-link span {
+    margin-right: 6px !important;
+}
+
+.section-header {
+    padding-right: 16px !important;
+    padding-left: 32px !important;
+}
+
+.dropdown-content-wrapper{
+    direction: rtl !important;
+}
+
+.dropdown-item {
+    padding-right: 12px !important;
+    padding-left: 12px !important;
+}
+
+.dropdown-item clr-icon {
+    margin-left: 6px !important;
+}
+
+.theme-toggle{
+  display: contents !important;
+}
+
+.theme-toggle span{
+    margin-right: 25px !important;
+  }
+
+  .theme-icon.default.active {
+    position: relative !important;
+    left: 64px !important;
+  }
+
+  .theme-icon.dark{
+    position: relative !important;
+    left: 64px !important;
+  }
+
+  .login-wrapper-inner {
+    flex-direction: row-reverse;
+  }
+
+  .login-wrapper-form {
+    direction: rtl;
+  }
+
+  .dropdown-menu .dropdown-header{
+    text-align: right;
+  }
+
+.button-small{
+    font-size: 14px;
+  }
+
+.flex .button-small{
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+  }
+
+.page-title h1 {
+  font-size: 26px;
+  margin-right: 32px;
+  }
+
+.table thead tr th {
+    text-align: right !important;
+  }
+
+.table thead tr th:first-child {
+    padding-right: 48px !important;
+    padding-left: 8px !important;
+  }
+
+.table tbody tr td {
+text-align: right !important;
+}
+
+.is-warning {
+    transform: rotate(360deg) scaleX(-1);
+}
+
+.modal-content {
+direction: rtl;
+}
+
+vdr-timeline-entry .entry .entry-body {
+    margin-right: 20px;
+}
+
+vdr-timeline-entry .entry .entry-body .name {
+    margin-right: 12px;
+}
+
+.visible-toggle.clr-control-label{
+    margin-right: 30px;
+}
+
+.clr-toggle-wrapper input[type=checkbox]:checked + label::before {
+    right: -42px !important;
+    left: 0 !important;
+}
+
+.header-title-row .ml-3 {
+ margin-right: 24px;
+}
+
+.calendar-button {
+    border: 1px solid var(--color-weight-300) !important;
+}
+
+.selected-datetime {
+
+
+}
+
+.input-wrapper input:not([type=checkbox]):not([type=radio]) {
+    border-bottom-left-radius: 0px !important;
+    border-bottom-right-radius: 4px !important;
+    border-top-left-radius: 0px !important;
+    border-top-right-radius: 4px !important;
+    border-right: 1px solid var(--color-weight-300) !important;
+    border-left: 0px !important;
+}
+
+.clr-toggle-wrapper .clr-control-label {
+    margin-right: 42px;
+    margin-left: 0px;
+}
+
+vdr-ab-left > clr-checkbox-wrapper {
+    margin-right: 16px;
+}
