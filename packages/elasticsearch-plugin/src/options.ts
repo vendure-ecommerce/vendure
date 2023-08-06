@@ -712,7 +712,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     indexPrefix: 'vendure-',
     indexSettings: {},
     indexMappingProperties: {},
-    reindexProductsChunkSize: 500,
+    reindexProductsChunkSize: 2500,
     reindexBulkOperationSizeLimit: 3000,
     searchConfig: {
         facetValueMaxSize: 50,
