@@ -530,8 +530,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         });
 
         updatedProductVariants.forEach(variant => (variant.product = product!));
-        if (!product.enabled)
+        if (!product.enabled) {
             updatedProductVariants.forEach(v => (v.enabled = false));
+        }
 
         Logger.debug(`Updating Product (${productId})`, loggerCtx)
         const languageVariants: LanguageCode[] = []
