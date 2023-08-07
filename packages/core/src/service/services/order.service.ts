@@ -1233,7 +1233,7 @@ export class OrderService {
         ctx: RequestContext,
         input: FulfillOrderInput,
     ) {
-        const linesToBeFulfilled = await this.connection
+        const existingFulfillmentLines = await this.connection
             .getRepository(ctx, FulfillmentLine)
             .createQueryBuilder('fulfillmentLine')
             .leftJoinAndSelect('fulfillmentLine.orderLine', 'orderLine')
@@ -1244,13 +1244,25 @@ export class OrderService {
             .andWhere('fulfillment.state != :state', { state: 'Cancelled' })
             .getMany();
 
-        for (const lineToBeFulfilled of linesToBeFulfilled) {
-            const unfulfilledQuantity = lineToBeFulfilled.orderLine.quantity - lineToBeFulfilled.quantity;
-            const lineInput = input.lines.find(l =>
-                idsAreEqual(l.orderLineId, lineToBeFulfilled.orderLine.id),
+        for (const inputLine of input.lines) {
+            const existingFulfillmentLine = existingFulfillmentLines.find(l =>
+                idsAreEqual(l.orderLineId, inputLine.orderLineId),
             );
-            if (unfulfilledQuantity < (lineInput?.quantity ?? 0)) {
-                return true;
+            if (existingFulfillmentLine) {
+                const unfulfilledQuantity =
+                    existingFulfillmentLine.orderLine.quantity - existingFulfillmentLine.quantity;
+                if (unfulfilledQuantity < inputLine.quantity) {
+                    return true;
+                }
+            } else {
+                const orderLine = await this.connection.getEntityOrThrow(
+                    ctx,
+                    OrderLine,
+                    inputLine.orderLineId,
+                );
+                if (orderLine.quantity < inputLine.quantity) {
+                    return true;
+                }
             }
         }
         return false;
