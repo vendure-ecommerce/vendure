@@ -69,7 +69,8 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
     getUnfulfilledCount(line: OrderDetailFragment['lines'][number]): number {
         const fulfilled =
             this.order.fulfillments
-                ?.map(f => f.lines)
+                ?.filter(f => f.state !== 'Cancelled')
+                .map(f => f.lines)
                 .flat()
                 .filter(row => row.orderLineId === line.id)
                 .reduce((sum, row) => sum + row.quantity, 0) ?? 0;
@@ -81,12 +82,15 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
             (total, { fulfillCount }) => total + fulfillCount,
             0,
         );
+        const fulfillmentQuantityIsValid = Object.values(this.fulfillmentQuantities).every(
+            ({ fulfillCount, max }) => fulfillCount <= max,
+        );
         const formIsValid =
             configurableOperationValueIsValid(
                 this.fulfillmentHandlerDef,
                 this.fulfillmentHandlerControl.value,
             ) && this.fulfillmentHandlerControl.valid;
-        return formIsValid && 0 < totalCount;
+        return formIsValid && 0 < totalCount && fulfillmentQuantityIsValid;
     }
 
     select() {

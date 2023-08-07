@@ -1,5 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { mergeConfig, Order, Product, ProductVariant } from '@vendure/core';
+import {
+    ChannelService,
+    EntityHydrator,
+    mergeConfig,
+    Order,
+    Product,
+    ProductVariant,
+    RequestContext,
+    ActiveOrderService,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -11,6 +20,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { HydrationTestPlugin } from './fixtures/test-plugins/hydration-test-plugin';
 import { UpdateChannelMutation, UpdateChannelMutationVariables } from './graphql/generated-e2e-admin-types';
 import {
+    AddItemToOrderDocument,
     AddItemToOrderMutation,
     AddItemToOrderMutationVariables,
     UpdatedOrderFragment,
@@ -224,6 +234,60 @@ describe('Entity hydration', () => {
 
         expect(hydrateChannel.customFields.thumb).toBeDefined();
         expect(hydrateChannel.customFields.thumb.id).toBe('T_2');
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2013
+    describe('hydration of OrderLine ProductVariantPrices', () => {
+        let order: Order | undefined;
+
+        it('Create order with 3 items', async () => {
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            await shopClient.query(AddItemToOrderDocument, {
+                productVariantId: '1',
+                quantity: 1,
+            });
+            await shopClient.query(AddItemToOrderDocument, {
+                productVariantId: '2',
+                quantity: 1,
+            });
+            const { addItemToOrder } = await shopClient.query(AddItemToOrderDocument, {
+                productVariantId: '3',
+                quantity: 1,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+            const channel = await server.app.get(ChannelService).getDefaultChannel();
+            // This is ugly, but in our real life example we use a CTX constructed by Vendure
+            const ctx = new RequestContext({
+                channel,
+                authorizedAsOwnerOnly: true,
+                apiType: 'shop',
+                isAuthorized: true,
+                session: {
+                    activeOrderId: addItemToOrder.id,
+                    activeChannelId: 1,
+                    user: {
+                        id: 2,
+                    },
+                } as any,
+            });
+            order = await server.app.get(ActiveOrderService).getActiveOrder(ctx, undefined);
+            await server.app.get(EntityHydrator).hydrate(ctx, order!, {
+                relations: ['lines.productVariant'],
+                applyProductVariantPrices: true,
+            });
+        });
+
+        it('Variant of orderLine 1 has a price', async () => {
+            expect(order!.lines[0].productVariant.priceWithTax).toBeGreaterThan(0);
+        });
+
+        it('Variant of orderLine 2 has a price', async () => {
+            expect(order!.lines[1].productVariant.priceWithTax).toBeGreaterThan(0);
+        });
+
+        it('Variant of orderLine 3 has a price', async () => {
+            expect(order!.lines[1].productVariant.priceWithTax).toBeGreaterThan(0);
+        });
     });
 });
 
