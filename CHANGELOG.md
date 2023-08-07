@@ -18,6 +18,7 @@
 * **core** Improved CockroachDB compatibility for DefaultSearchPlugin ([b8d8dec](https://github.com/vendure-ecommerce/vendure/commit/b8d8dec))
 * **core** Publish AccountRegistrationEvent when creating Customer via admin ([e0bd036](https://github.com/vendure-ecommerce/vendure/commit/e0bd036))
 * **core** Use MoneyStrategy in Surcharges (#2294) ([efee8ec](https://github.com/vendure-ecommerce/vendure/commit/efee8ec)), closes [#2294](https://github.com/vendure-ecommerce/vendure/issues/2294)
+* **payments-plugin**: Only find payment methods in the current channel ([bbea69](https://github.com/vendure-ecommerce/vendure/commit/bbea69)), closes [#2308](https://github.com/vendure-ecommerce/vendure/issues/2308)
 
 #### Features
 

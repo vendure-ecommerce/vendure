@@ -8,7 +8,7 @@
     border: 1px solid var(--clr-btn-default-border-color, #0072a3);
     border-radius: var(--clr-btn-border-radius, 0.15rem);
     padding: 6px;
-    text-align: left;
+    text-align: start;
     margin: 6px;
     &:hover {
         cursor: pointer;
@@ -32,5 +32,5 @@ vdr-select-toggle {
 }
 
 .content {
-    margin-left: 24px;
+    margin-inline-start: 24px;
 }
