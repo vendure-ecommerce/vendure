@@ -53,8 +53,8 @@
 
 .toggle-label {
     flex: 1;
-    margin-left: 6px;
-    text-align: left;
+    margin-inline-start: 6px;
+    text-align: start;
     font-size: 12px;
 
     &:not(.disabled) {

@@ -1,12 +1,12 @@
 :host {
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
 }
 
 button.theme-toggle {
     position: relative;
-    padding-left: 20px;
+    padding-inline-start: 20px;
     border: none;
     background: transparent;
     color: var(--clr-dropdown-item-color);

@@ -5,7 +5,7 @@
 }
 
 .entry-list {
-    margin-left: calc(var(--space-unit) * 2);
+    margin-inline-start: calc(var(--space-unit) * 2);
 }
 
 .note-entry {
@@ -34,7 +34,7 @@ textarea.note {
     flex: 1;
     height: 36px;
     border-radius: 3px;
-    margin-right: 6px;
+    margin-inline-end: 6px;
 }
 .note-text {
     color: var(--color-grey-800);

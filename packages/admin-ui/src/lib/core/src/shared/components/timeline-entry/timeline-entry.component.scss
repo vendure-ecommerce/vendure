@@ -17,7 +17,7 @@
     display: flex;
 }
 .timeline {
-    border-left: 2px solid var(--color-timeline-thread);
+    border-inline-start: 2px solid var(--color-timeline-thread);
     padding-bottom: 8px;
     position: relative;
 
@@ -27,7 +27,7 @@
         width: 2px;
         height: 32px;
         left: -2px;
-        border-left: 2px solid var(--color-timeline-thread);
+        border-inline-start: 2px solid var(--color-timeline-thread);
     }
     &:after {
         content: '';
@@ -76,9 +76,9 @@
 .entry-body {
     flex: 1;
     padding-top: 24px;
-    padding-left: 12px;
+    padding-inline-start: 12px;
     line-height: 16px;
-    margin-left: 12px;
+    margin-inline-start: 12px;
     color: var(--color-text-200);
     overflow: visible;
     max-height: 100px;
@@ -104,7 +104,7 @@
     .time {
     }
     .name {
-        margin-left: 12px;
+        margin-inline-start: 12px;
     }
 }
 

@@ -132,7 +132,7 @@ clr-input-container.expand {
 }
 
 select {
-    padding-right: 24px !important;
+    padding-inline-end: 24px !important;
 }
 
 .select::after,
@@ -171,7 +171,7 @@ select {
 .ng-select.ng-select-single > .ng-select-container {
     //padding-top: 9px;
     input {
-        padding-left: 0 !important;
+        padding-inline-start: 0 !important;
     }
 }
 .ng-select.ng-select-focused > .ng-select-container {

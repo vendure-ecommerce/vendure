@@ -19,7 +19,7 @@
         margin-top: 24px;
         @media screen and (min-width: $breakpoint-small) {
             margin-top: 0;
-            margin-left: 24px;
+            margin-inline-start: 24px;
             width: 250px;
         }
         clr-input-container {
