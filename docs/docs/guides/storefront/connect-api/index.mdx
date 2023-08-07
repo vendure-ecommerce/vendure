@@ -25,13 +25,97 @@ GraphQL requests are made over HTTP, so you can use any HTTP client such as the 
 * [graphql-request](https://github.com/jasonkuhrt/graphql-request): Minimal GraphQL client supporting Node and browsers for scripts or simple apps
 * [TanStack Query](https://tanstack.com/query/latest): Powerful asynchronous state management for TS/JS, React, Solid, Vue and Svelte, which can be combined with `graphql-request`.
 
-Here are some examples of how to use these clients to connect to the Shop API:
+
+## Managing Sessions
+
+Vendure supports two ways to manage user sessions: **cookies** and **bearer token**. The method you choose depends on your requirements, and is specified by the [`authOptions.tokenMethod` property](/reference/typescript-api/auth/auth-options/#tokenmethod) of the VendureConfig. By default, both are enabled on the server:
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+
+export const config: VendureConfig = {
+    // ...
+    authOptions: {
+        // highlight-next-line
+        tokenMethod: ['bearer', 'cookie'],
+    },
+};
+```
+
+### Cookie-based sessions
+
+Using cookies is the simpler approach for browser-based applications, since the browser will manage the cookies for you automatically.
+
+1. Enable the `credentials` option in your HTTP client. This allows the browser to send the session cookie with each request.
+
+    For example, if using a fetch-based client (such as [Apollo client](https://www.apollographql.com/docs/react/recipes/authentication/#cookie)) you would set `credentials: 'include'` or if using [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials), you would set `withCredentials: true`
+
+2. When using cookie-based sessions, you should set the [`authOptions.cookieOptions.secret` property](/reference/typescript-api/auth/cookie-options#secret) to some secret string which will be used to sign the cookies sent to clients to prevent tampering. This string could be hard-coded in your config file, or (better) reside in an environment variable:
+
+    ```ts title="src/vendure-config.ts"
+    import { VendureConfig } from '@vendure/core';
+
+    export const config: VendureConfig = {
+        // ...
+        authOptions: {
+            tokenMethod: ['bearer', 'cookie'],
+            // highlight-start
+            cookieOptions: {
+                secret: process.env.COOKIE_SESSION_SECRET
+            }
+            // highlight-end
+        }
+    }
+    ```
+
+:::caution
+**SameSite cookies**
+
+When using cookies to manage sessions, you need to be aware of the SameSite cookie policy. This policy is designed to prevent cross-site request forgery (CSRF) attacks, but can cause problems when using a headless storefront app which is hosted on a different domain to the Vendure server. See [this article](https://web.dev/samesite-cookies-explained/) for more information.
+:::
+
+### Bearer-token sessions
+
+Using bearer tokens involves a bit more work on your part: you'll need to manually read response headers to get the token, and once you have it you'll have to manually add it to the headers of each request.
+
+The workflow would be as follows:
+
+1. Certain mutations and queries initiate a session (e.g. logging in, adding an item to an order etc.). When this happens, the response will contain a HTTP header which [by default is called `'vendure-auth-token'`](/reference/typescript-api/auth/auth-options#authtokenheaderkey).
+2. So your http client would need to check for the presence of this header each time it receives a response from the server.
+3. If the `'vendure-auth-token'` header is present, read the value and store it because this is your bearer token.
+4. Attach this bearer token to each subsequent request as `Authorization: Bearer <token>`.
+
+Here's a simplified example of how that would look:
+
+```ts
+let token: string | undefined = localStorage.getItem('token')
+
+export async function request(query: string, variables: any) {
+     // If we already know the token, set the Authorization header.
+     const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+     const response = await someGraphQlClient(query, variables, headers);
+
+     // Check the response headers to see if Vendure has set the
+     // auth token. The header key "vendure-auth-token" may be set to
+     // a custom value with the authOptions.authTokenHeaderKey config option.
+     const authToken = response.headers.get('vendure-auth-token');
+     if (authToken != null) {
+         token = authToken;
+     }
+     return response.data;
+}
+```
+
+
 
 ## Examples
 
+Here are some examples of how to set up clients to connect to the Shop API:
+
 ### Fetch
 
-First we'll look at a plain Fetch-based implementation, to show you that there's no special magic to a GraphQL request - it's just a POST request with a JSON body.
+First we'll look at a plain [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)-based implementation, to show you that there's no special magic to a GraphQL request - it's just a POST request with a JSON body.
 
 
 <Tabs>
@@ -127,7 +211,7 @@ query(document, {
 </TabItem>
 </Tabs>
 
-As you can see, the basic implementation with `fetch` is quite straightforward. It is also lacking some features that other,
+As you can see, the basic implementation with `fetch` is quite straightforward. However, it is also lacking some features that other,
 dedicated client libraries will provide.
 
 ### Apollo Client
