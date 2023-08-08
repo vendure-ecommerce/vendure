@@ -3,6 +3,7 @@ import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { unique } from '@vendure/common/lib/unique';
 import {
+    asyncObservable,
     Asset,
     Collection,
     EntityRelationPaths,
@@ -46,7 +47,6 @@ import type {
 
 import { createIndices, getClient, getIndexNameByAlias } from './indexing-utils';
 import { MutableRequestContext } from './mutable-request-context';
-import { asyncObservable } from "@vendure/core/src";
 
 export const defaultProductRelations: Array<EntityRelationPaths<Product>> = [
     'featuredAsset',
