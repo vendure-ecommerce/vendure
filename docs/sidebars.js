@@ -93,7 +93,12 @@ const sidebars = {
             customProps: {
                 icon: icon.shoppingBag,
             },
-            items: ['guides/storefront/storefront-starters/index', 'guides/storefront/connect-api/index'],
+            items: [
+                'guides/storefront/storefront-starters/index',
+                'guides/storefront/connect-api/index',
+                'guides/storefront/navigation-menu/index',
+                'guides/storefront/listing-products/index',
+            ],
         },
         {
             type: 'category',
