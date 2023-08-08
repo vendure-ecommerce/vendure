@@ -208,7 +208,7 @@ export function query(document: string, variables: Record<string, any> = {}) {
     // highlight-start
     return fetch(endpoint, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers,
         credentials: 'include',
         body: JSON.stringify({
             query: document,

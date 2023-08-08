@@ -98,6 +98,8 @@ const sidebars = {
                 'guides/storefront/connect-api/index',
                 'guides/storefront/navigation-menu/index',
                 'guides/storefront/listing-products/index',
+                'guides/storefront/product-detail/index',
+                'guides/storefront/active-order/index',
             ],
         },
         {

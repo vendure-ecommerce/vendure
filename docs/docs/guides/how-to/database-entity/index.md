@@ -108,7 +108,7 @@ In addition to the decorators described above, there are many other decorators p
 
 There is also another Vendure-specific decorator for representing monetary values specifically:
 
-- [`@Money()`](/reference/typescript-api/money/money-decorator): This works together with the [`MoneyStrategy`](/reference/typescript-api/money/money-strategy) to allow configurable control over how monetary values are stored in the database.
+- [`@Money()`](/reference/typescript-api/money/money-decorator): This works together with the [`MoneyStrategy`](/reference/typescript-api/money/money-strategy) to allow configurable control over how monetary values are stored in the database. For more information see the [Money & Currency guide](/guides/core-concepts/money/#the-money-decorator).
 
 :::info
 The full list of TypeORM decorators can be found in the [TypeORM decorator reference](https://typeorm.io/decorator-reference)
