@@ -94,7 +94,7 @@ yarn dev
 npm run dev
 ```
 
-You should not be able to access:
+You should now be able to access:
 
 * The Vendure Admin GraphQL API: [http://localhost:3000/admin-api](http://localhost:3000/admin-api)
 * The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)

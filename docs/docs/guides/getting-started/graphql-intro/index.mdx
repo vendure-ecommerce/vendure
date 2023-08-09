@@ -33,10 +33,10 @@ query {
 
 ## GraphQL vs REST
 
-If you are familiar with REST-style APIs, you may be wondering how GraphQL differs from REST. Here are the key ways in which GraphQL differs from REST:
+If you are familiar with REST-style APIs, you may be wondering how GraphQL differs. Here are the key ways in which GraphQL differs from REST:
 
 - GraphQL uses **a single endpoint**, whereas REST uses a different endpoint for each resource.
-- GraphQL allows you to **specify exactly which fields** you want to fetch, whereas REST APIs usually all fields by default.
+- GraphQL allows you to **specify exactly which fields** you want to fetch, whereas REST APIs usually return all fields by default.
 - GraphQL allows you to fetch data from **multiple resources** in a single request (e.g. "fetch a customer including their last 5 orders"), whereas REST APIs usually require you to make multiple requests.
 - GraphQL APIs are always defined by a **statically typed schema**, whereas REST APIs do not have this guarantee.
 
@@ -96,7 +96,7 @@ type OrderLine {
 }
 ```
 
-Here the `Order` type has a field called `customer` which is of type `Customer`. The `Order` type also has a field called `lines` which is an array of `OrderLine` objects.
+Here the `Order` type has a field called `customer` which is of type `Customer`. The `Order` type also has a field called `lines` which is a list (an array) of `OrderLine` objects.
 
 In GraphQL, lists are denoted by square brackets (`[]`). The `!` symbol inside the square brackets indicates that the list cannot contain `null` values.
 
@@ -124,26 +124,26 @@ Here's a mutation type:
 
 ```graphql
 type Mutation {
-  updateCustomerName(customerId: ID!, name: String!): Customer!
+  updateCustomerEmail(customerId: ID!, email: String!): Customer!
 }
 ```
 
-This defines a `updateCustomerName` field on the `Mutation` type. This field takes two arguments, `customerId` and `name`, and returns a `Customer` object.
+This defines a `updateCustomerEmail` field on the `Mutation` type. This field takes two arguments, `customerId` and `email`, and returns a `Customer` object.
 It would be used to update the name of the specified customer.
 
 ### Input types
 
-Input types are used to pass complex (non-scalar) data to queries or mutations. For example, the `updateCustomerName` mutation above could be re-written
+Input types are used to pass complex (non-scalar) data to queries or mutations. For example, the `updateCustomerEmail` mutation above could be re-written
 to use an input type:
 
 ```graphql
 type Mutation {
-  updateCustomerName(input: UpdateCustomerNameInput!): Customer!
+  updateCustomerEmail(input: UpdateCustomerEmailInput!): Customer!
 }
 
-input UpdateCustomerNameInput {
+input UpdateCustomerEmailInput {
   customerId: ID!
-  name: String!
+  email: String!
 }
 ```
 
@@ -168,10 +168,10 @@ type Query {
 }
 
 type Mutation {
-  updateCustomerName(input: UpdateCustomerNameInput!): Customer!
+  updateCustomerEmail(input: UpdateCustomerEmailInput!): Customer!
 }
 
-input UpdateCustomerNameInput {
+input UpdateCustomerEmailInput {
   customerId: ID!
   name: String!
 }
@@ -244,7 +244,7 @@ Here's an example mutation operation to update the first customer's email:
 
 ```graphql
 mutation {
-  updateCustomerName(input: {
+  updateCustomerEmail(input: {
     customerId: "1",
     email: "john.smith@email.com"
   }) {
@@ -261,7 +261,7 @@ mutation {
 ```json
 {
   "data": {
-    "updateCustomerName": {
+    "updateCustomerEmail": {
       "id": "1",
       "name": "John Smith",
       // highlight-next-line
@@ -292,7 +292,7 @@ query GetCustomers {
 
 ### Variables
 
-Operations can also have **variables**. Variables are used to pass input values into the operation. In the example `updateCustomerName` mutation
+Operations can also have **variables**. Variables are used to pass input values into the operation. In the example `updateCustomerEmail` mutation
 operation above, we are passing an input object specifying the `customerId` and `email`. However, in that example they are hard-coded into the
 operation. In a real application, you would want to pass those values in dynamically.
 
@@ -303,9 +303,9 @@ Here's how we can re-write the above mutation operation to use variables:
 
 ```graphql
 // highlight-next-line
-mutation UpdateCustomerName($input: UpdateCustomerNameInput!) {
+mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
   // highlight-next-line
-  updateCustomerName(input: $input) {
+  updateCustomerEmail(input: $input) {
     id
     name
     email
@@ -331,7 +331,7 @@ mutation UpdateCustomerName($input: UpdateCustomerNameInput!) {
 ```json
 {
   "data": {
-    "updateCustomerName": {
+    "updateCustomerEmail": {
       "id": "1",
       "name": "John Smith",
       // highlight-next-line
@@ -368,8 +368,8 @@ query GetCustomers{
 ```
 
 ```graphql
-mutation UpdateCustomerName($input: UpdateCustomerNameInput!) {
-  updateCustomerName(input: $input) {
+mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
+  updateCustomerEmail(input: $input) {
     ...CustomerFields
   }
 }
@@ -384,11 +384,11 @@ email address, we want to return an error type if the email address is already i
 
 ```graphql
 type Mutation {
-  updateCustomerName(input: UpdateCustomerNameInput!): UpdateCustomerNameResult!
+  updateCustomerEmail(input: UpdateCustomerEmailInput!): UpdateCustomerEmailResult!
 }
 
 // highlight-next-line
-union UpdateCustomerNameResult = Customer | EmailAddressInUseError
+union UpdateCustomerEmailResult = Customer | EmailAddressInUseError
 
 type EmailAddressInUseError {
   errorCode: String!
@@ -406,8 +406,8 @@ Now, when we perform this mutation, we need alter the way we select the fields i
 <TabItem value="Mutation" label="Mutation" default>
 
 ```graphql
-mutation UpdateCustomerName($input: UpdateCustomerNameInput!) {
-  updateCustomerName(input: $input) {
+mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
+  updateCustomerEmail(input: $input) {
     __typename
     ... on Customer {
       id
@@ -428,7 +428,7 @@ mutation UpdateCustomerName($input: UpdateCustomerNameInput!) {
 ```json
 {
   "data": {
-    "updateCustomerName": {
+    "updateCustomerEmail": {
       "__typename": "Customer",
       "id": "1",
       "name": "John Smith",
@@ -444,7 +444,7 @@ mutation UpdateCustomerName($input: UpdateCustomerNameInput!) {
 ```json
 {
   "data": {
-    "updateCustomerName": {
+    "updateCustomerEmail": {
       "__typename": "EmailAddressInUseError",
       "errorCode": "EMAIL_ADDRESS_IN_USE",
       "message": "The email address is already in use"
@@ -462,8 +462,8 @@ determining which type was returned in the response in your client application.
 :::tip
 The above operation could also be written to use the `CustomerFields` fragment we defined earlier:
 ```graphql
-mutation UpdateCustomerName($input: UpdateCustomerNameInput!) {
-  updateCustomerName(input: $input) {
+mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
+  updateCustomerEmail(input: $input) {
     // highlight-next-line
     ...CustomerFields
     ... on EmailAddressInUseError {
