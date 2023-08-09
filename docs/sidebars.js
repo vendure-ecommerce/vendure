@@ -104,6 +104,8 @@ const sidebars = {
                 'guides/storefront/listing-products/index',
                 'guides/storefront/product-detail/index',
                 'guides/storefront/active-order/index',
+                'guides/storefront/checkout-flow/index',
+                'guides/storefront/customer-accounts/index',
             ],
         },
         {
