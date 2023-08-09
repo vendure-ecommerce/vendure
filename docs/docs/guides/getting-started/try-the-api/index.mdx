@@ -165,13 +165,18 @@ For more information about `ErrorResult` and the handling of errors in Vendure, 
 The Admin API exposes all the functionality required to manage the store. It is used by the Admin UI, but can also be used
 by integrations and custom scripts.
 
+:::note
+The examples in this section are not interactive, due to security settings on our demo server,
+but you can paste them into your local GraphQL playground.
+:::
+
 Open the GraphQL Playground at [http://localhost:3000/admin-api](http://localhost:3000/admin-api).
 
 ### Logging in
 
 Most Admin API operations are restricted to authenticated users. So first of all we'll need to log in.
 
-<Playground api="admin" server="demo" document={`
+```graphql title="Admin API"
 mutation {
   login(username: "superadmin", password: "superadmin") {
     ...on CurrentUser {
@@ -184,34 +189,38 @@ mutation {
     }
   }
 }
-`} />
+```
 
 ### Fetch a product
 
 The Admin API exposes a lot more information about products than you can get from the Shop API:
 
-<Playground api="admin" server="demo" document={`
+```graphql title="Admin API"
 query {
   product(id: 42) {
+    // highlight-next-line
     enabled
     name
     variants {
       id
       name
+      // highlight-next-line
       enabled
       prices {
         currencyCode
         price
       }
+      // highlight-start
       stockLevels {
         stockLocationId
         stockOnHand
         stockAllocated
       }
+      // highlight-end
     }
   }
 }
-`} />
+```
 
 :::info
 GraphQL is statically typed and uses a **schema** containing information about all the available queries, mutations and types. In the

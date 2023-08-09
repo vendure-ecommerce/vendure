@@ -8,6 +8,7 @@ export default function Playground(props: {
     const urlEncoded = encodeURIComponent(props.document.trim());
     return (
         <iframe
+            loading="lazy"
             style={{
                 width: '100%',
                 minHeight: '500px',
