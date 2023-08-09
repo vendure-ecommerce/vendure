@@ -68,7 +68,8 @@ If you select MySQL, MariaDB or Postgres, you need to make sure you:
 The final prompt will ask whether to populate your new Vendure server with some sample product data.
 
 **We recommend you do so**, as it will give you a good starting point for exploring the APIs which we will cover 
-in the [next section](/guides/getting-started/first-steps/).
+in the [Try the API section](/guides/getting-started/try-the-api/), as well as providing some data to use when
+building your own storefront.
 
 ![Vendure Create step 2](./create-2.webp)
 
@@ -101,7 +102,9 @@ You should not be able to access:
 
 Congratulations! 🥳 You now have a fully-functional Vendure server running locally.
 
-Now you can explore Vendure by following our [Try The API guide](/guides/getting-started/first-steps/) to learn how to interact with the server.
+Now you can explore Vendure by following our [Try the API guide](/guides/getting-started/try-the-api/) to learn how to interact with the server.
+
+If you are new to GraphQL, you should also check out our [Introducing GraphQL guide](/guides/getting-started/graphql-intro/).
 
 :::tip
 Open the Admin UI at [http://localhost:3000/admin](http://localhost:3000/admin) in your browser and log in with the superadmin credentials you specified, which default to:

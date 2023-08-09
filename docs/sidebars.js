@@ -31,7 +31,11 @@ const sidebars = {
         {
             type: 'category',
             label: 'Getting Started',
-            items: ['guides/getting-started/installation/index', 'guides/getting-started/first-steps/index'],
+            items: [
+                'guides/getting-started/installation/index',
+                'guides/getting-started/graphql-intro/index',
+                'guides/getting-started/try-the-api/index',
+            ],
             customProps: {
                 icon: icon.bolt,
             },

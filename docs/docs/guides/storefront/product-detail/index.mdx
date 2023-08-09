@@ -223,11 +223,16 @@ fragment UpdatedOrder on Order {
   state
   totalQuantity
   totalWithTax
+  currencyCode
   lines {
     id
     unitPriceWithTax
     quantity
     linePriceWithTax
+    productVariant {
+      id
+      name
+    }
   }
 }
 ```
@@ -273,7 +278,7 @@ fragment UpdatedOrder on Order {
 
 There are some important things to note about this mutation:
 
-- Because the `addItemToOrder` mutation returns a union type, we need to use a [fragment](/guides/core-concepts/graphql/#fragments) to specify the fields we want to return.
+- Because the `addItemToOrder` mutation returns a union type, we need to use a [fragment](/TODO) to specify the fields we want to return.
 In this case we have defined a fragment called `UpdatedOrder` which contains the fields we are interested in.
 - If any [expected errors](/guides/advanced-topics/error-handling) occur, the mutation will return an `ErrorResult` object. We'll be able to
 see the `errorCode` and `message` fields in the response, so that we can display a meaningful error message to the user.
@@ -287,4 +292,4 @@ of the returned type. This means that we can check whether `__typename === 'Orde
 
 Here's an example that brings together all of the above concepts:
 
-<Stackblitz id="vendure-docs-product-detail-page" />
+<Stackblitz id="vendure-docs-product-detail" />

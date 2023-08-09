@@ -1,0 +1,251 @@
+---
+title: Introducing GraphQL
+---
+import Playground from '@site/src/components/Playground';
+
+:::info
+This is an introduction to GraphQL for those who are new to it. If you are already familiar with GraphQL, you may choose
+to skip this section.
+:::
+
+## What is GraphQL?
+
+From [graphql.org](https://graphql.org/):
+
+> GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data. GraphQL provides a complete and understandable description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.
+
+To put it simply: GraphQL allows you to fetch data from an API via _queries_, and to update data via _mutations_.
+
+Here's a GraphQL query which fetches the product with the slug "football":
+
+<Playground api="shop" document={`
+query {
+  product(slug: "football") {
+    id
+    name
+    slug
+  }
+}
+`} />
+
+
+## GraphQL vs REST
+
+If you are familiar with REST-style APIs, you may be wondering how GraphQL differs from REST. Here are the key ways in which GraphQL differs from REST:
+
+- GraphQL uses **a single endpoint**, whereas REST uses a different endpoint for each resource.
+- GraphQL allows you to **specify exactly which fields** you want to fetch, whereas REST APIs usually all fields by default.
+- GraphQL allows you to fetch data from **multiple resources** in a single request (e.g. "fetch a customer including their last 5 orders"), whereas REST APIs usually require you to make multiple requests.
+- GraphQL APIs are always defined by a **statically typed schema**, whereas REST APIs do not have this guarantee.
+
+## Why GraphQL?
+
+Both GraphQL and REST are valid approaches to building an API. These are some of the reasons we chose GraphQL when building Vendure:
+
+- **No over-fetching**: With REST, you often end up fetching more data than you need. For example, if you want to fetch a list of products, you might end up fetching the product name, description, price, and other fields. With GraphQL, you can specify exactly which fields you want to fetch, so you only fetch the data you need. This
+    can result in a significant reduction in the amount of data transferred over the network.
+- **Many resources in a single request**: Very often, a single page in a web app will need to fetch data from multiple resources. For example, a product detail page might need to fetch the product, the product's variants, the product's collections, the product's reviews, and the product's images. With REST, this would require multiple requests. With GraphQL, you can fetch all of this data in a single request.
+- **Static typing**: GraphQL APIs are always defined by a statically typed schema. This means that you can be sure that the data you receive from the API will always be in the format you expect.
+- **Developer tooling**: The schema definition allows for powerful developer tooling. For example, the GraphQL Playground above with auto-complete and full documentation is generated automatically from the schema definition. You can also get auto-complete and type-checking directly in your IDE.
+- **Code generation**: TypeScript types can be generated automatically from the schema definition. This means that you can be sure that your frontend code is always in sync with the API. This end-to-end type safety is extremely valuable, especially when working on large projects or with teams.
+- **Extensible**: Vendure is designed with extensibility in mind, and GraphQL is a perfect fit. You can extend the GraphQL API with your own custom queries, mutations, and types. You can also extend the built-in types with your own custom fields, or supply you own custom logic to resolve existing fields.
+
+## GraphQL Terminology
+
+Let's clear up some of the terminology used in GraphQL.
+
+### Types & Fields
+
+GraphQL has a type system which works in a similar way to other statically typed languages like TypeScript.
+
+Here is an example of a GraphQL type:
+
+```graphql
+type Customer {
+  id: ID!
+  name: String!
+  email: String!
+}
+```
+
+The `Customer` is an **object type**, and it has three **fields**: `id`, `name`, and `email`. Each field has a **type** (e.g. `ID!` or `String!`), which
+can refer to either a **scalar type** (a "primitive" type which does not have any fields, but represents a single value) or another object type.
+
+GraphQL has a number of built-in scalar types, including `ID`, `String`, `Int`, `Float`, `Boolean`. Vendure further defines a few custom scalar types: `DateTime`, `JSON`, `Upload` & `Money`.
+It is also possible to define your own custom scalar types if required.
+
+The `!` symbol after the type name indicates that the field is **required** (it cannot be `null`). If a field does not have the `!` symbol, it is **optional** (it can be `null`).
+
+Here's another example of a couple of types:
+
+```graphql
+type Order {
+  id: ID!
+  orderPlacedAt: DateTime
+  isActive: Boolean!
+  customer: Customer!
+  lines: [OrderLine!]!
+}
+
+type OrderLine {
+  id: ID!
+  productId: ID!
+  quantity: Int!
+}
+```
+
+Here the `Order` type has a field called `customer` which is of type `Customer`. The `Order` type also has a field called `lines` which is an array of `OrderLine` objects.
+
+In GraphQL, lists are denoted by square brackets (`[]`). The `!` symbol inside the square brackets indicates that the list cannot contain `null` values.
+
+:::note
+The types given here are not the actual types used in the Vendure GraphQL schema, but are used here for illustrative purposes.
+:::
+
+### Query & Mutation types
+
+There are two special types in GraphQL: `Query` and `Mutation`. These are the entry points into the API.
+
+The `Query` type is used for fetching data, and the `Mutation` type is used for updating data.
+
+Here is an example of a query type:
+
+```graphql
+type Query {
+  customers: [Customer!]!
+}
+```
+
+This defines a `customers` field on the `Query` type. This field returns a list of `Customer` objects.
+
+Here's a mutation type:
+
+```graphql
+type Mutation {
+  updateCustomerName(customerId: ID!, name: String!): Customer!
+}
+```
+
+This defines a `updateCustomerName` field on the `Mutation` type. This field takes two arguments, `customerId` and `name`, and returns a `Customer` object.
+It would be used to update the name of the specified customer.
+
+### Input types
+
+Input types are used to pass complex (non-scalar) data to queries or mutations. For example, the `updateCustomerName` mutation above could be re-written
+to use an input type:
+
+```graphql
+type Mutation {
+  updateCustomerName(input: UpdateCustomerNameInput!): Customer!
+}
+
+input UpdateCustomerNameInput {
+  customerId: ID!
+  name: String!
+}
+```
+
+Input types look just like object types, but with the `input` keyword rather than `type`.
+
+### Schema
+
+The schema is the complete definition of the GraphQL API. It defines the types, fields, queries and mutations which are available.
+
+In a GraphQL API like Vendure, you can only query data according to the fields which are defined in the schema.
+
+Here is a complete, minimal schema:
+
+```graphql
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  customers: [Customer!]!
+}
+
+type Mutation {
+  updateCustomerName(input: UpdateCustomerNameInput!): Customer!
+}
+
+input UpdateCustomerNameInput {
+  customerId: ID!
+  name: String!
+}
+
+type Customer {
+  id: ID!
+  name: String!
+  email: String!
+}
+```
+
+The schema above tells you _everything_ that you can do with the API. You can fetch a list of customers, and you can update a customer's name.
+
+:::info
+The schema is one of the key benefits of GraphQL. It allows advanced tooling to be built around the API, such as autocomplete in IDEs, and
+automatic code generation.
+
+It also ensures that only valid queries can be made against the API.
+:::
+
+### Resolvers
+
+The schema defines the _shape_ of the data, but it does not define _how_ the data is fetched. This is the job of the resolvers.
+
+A resolver is a function which is responsible for fetching the data for a particular field. For example, the `customers` field on the `Query` type
+would be resolved by a function which fetches the list of customers from the database.
+
+To get started with Vendure's APIs, you don't need to know much about resolvers beyond this basic understanding. However,
+later on you may want to write your own custom resolvers to extend the API. This is covered in the [Extending the GraphQL API guide](/guides/how-to/extend-graphql-api/).
+
+:::info
+This is just a very brief overview. For a complete introduction to all parts of the GraphQL type system, see [Schemas & Types](https://graphql.org/learn/schema/)
+section of the official documentation.
+:::
+
+## Querying data
+
+Now that we have a basic understanding of the GraphQL type system, let's look at how we can use it to query data from the Vendure API.
+
+In REST terms, a GraphQL query is equivalent to a GET request. It is used to fetch data from the API. Queries should not change any
+data on the server.
+
+This is a GraphQL Playground running on a real Vendure server. You can run the query by clicking the "play" button in the
+middle of the two panes.
+
+<Playground api="shop" document={`
+query {
+  product(slug: "football") {
+    id
+    name
+    slug
+  }
+}
+`} />
+
+Let's get familiar with the schema:
+
+1. Hover your mouse over any field to see its type, and in the case of the `product` field itself, you'll see documentation about what it does.
+2. Add a new line after `slug` and press `Ctrl / ⌘` + `space` to see the available fields. At the bottom of the field list, you'll see the type of that field.
+3. Try adding the `description` field and press play. You should see the product's description in the response.
+4. Try adding `variants` to the field list. You'll see a red warning in the left edge, and hovering over `variants` will inform
+you that it must have a selection of subfields. This is because the `variants` field refers to an **object type**, so we must select
+which fields of that object type we want to fetch. For example:
+  ```graphql
+  query {
+    product(slug: "football") {
+      id
+      name
+      slug
+      variants {
+        sku
+        priceWithTax
+      }
+    }
+  }
+  ```
+
+
+
