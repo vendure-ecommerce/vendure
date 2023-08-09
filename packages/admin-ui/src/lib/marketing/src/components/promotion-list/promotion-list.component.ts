@@ -81,7 +81,7 @@ export class PromotionListComponent
             {
                 name: 'usageLimit',
                 type: { kind: 'number' },
-                label: _('marketing.limit'),
+                label: _('marketing.usage-limit'),
                 filterField: 'usageLimit',
             },
         ])
