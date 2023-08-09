@@ -105,7 +105,7 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
     await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
         productVariantId: 'T_5',
-        quantity: 10,
+        quantity: 1,
     });
     const ctx = new RequestContext({
         apiType: 'admin',
