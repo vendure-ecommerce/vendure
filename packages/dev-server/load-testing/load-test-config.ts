@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import {
-    addForeignKeyIndices,
     defaultConfig,
     DefaultJobQueuePlugin,
     DefaultLogger,
@@ -58,9 +57,6 @@ export function getLoadTestConfig(
         dbConnectionOptions: {
             ...connectionOptions,
             synchronize: true,
-        },
-        entityOptions: {
-            metadataModifiers: [addForeignKeyIndices],
         },
         authOptions: {
             tokenMethod,
