@@ -6,6 +6,7 @@ type Promotion implements Node {
     endsAt: DateTime
     couponCode: String
     perCustomerUsageLimit: Int
+    usageLimit: Int
     name: String!
     description: String!
     enabled: Boolean!

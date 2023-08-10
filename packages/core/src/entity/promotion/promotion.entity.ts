@@ -95,6 +95,9 @@ export class Promotion
     @Column({ nullable: true })
     perCustomerUsageLimit: number;
 
+    @Column({ nullable: true })
+    usageLimit: number;
+
     name: LocaleString;
 
     description: LocaleString;

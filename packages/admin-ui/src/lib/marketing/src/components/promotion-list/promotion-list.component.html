@@ -99,5 +99,14 @@
             {{ promotion.perCustomerUsageLimit }}
         </ng-template>
     </vdr-dt2-column>
+    <vdr-dt2-column
+        [heading]="'marketing.per-customer-limit' | translate"
+        [sort]="sorts.get('usageLimit')"
+        [hiddenByDefault]="true"
+    >
+        <ng-template let-promotion="item">
+            {{ promotion.usageLimit }}
+        </ng-template>
+    </vdr-dt2-column>
     <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" [sorts]="sorts" />
 </vdr-data-table-2>

@@ -876,6 +876,7 @@ export type CreatePromotionInput = {
   perCustomerUsageLimit?: InputMaybe<Scalars['Int']>;
   startsAt?: InputMaybe<Scalars['DateTime']>;
   translations: Array<PromotionTranslationInput>;
+  usageLimit?: InputMaybe<Scalars['Int']>;
 };
 
 export type CreatePromotionResult = MissingConditionsError | Promotion;
@@ -4713,6 +4714,7 @@ export type Promotion = Node & {
   startsAt?: Maybe<Scalars['DateTime']>;
   translations: Array<PromotionTranslation>;
   updatedAt: Scalars['DateTime'];
+  usageLimit?: Maybe<Scalars['Int']>;
 };
 
 export type PromotionFilterParameter = {
@@ -4726,6 +4728,7 @@ export type PromotionFilterParameter = {
   perCustomerUsageLimit?: InputMaybe<NumberOperators>;
   startsAt?: InputMaybe<DateOperators>;
   updatedAt?: InputMaybe<DateOperators>;
+  usageLimit?: InputMaybe<NumberOperators>;
 };
 
 export type PromotionList = PaginatedList & {
@@ -4757,6 +4760,7 @@ export type PromotionSortParameter = {
   perCustomerUsageLimit?: InputMaybe<SortOrder>;
   startsAt?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+  usageLimit?: InputMaybe<SortOrder>;
 };
 
 export type PromotionTranslation = {
@@ -6287,6 +6291,7 @@ export type UpdatePromotionInput = {
   perCustomerUsageLimit?: InputMaybe<Scalars['Int']>;
   startsAt?: InputMaybe<Scalars['DateTime']>;
   translations?: InputMaybe<Array<PromotionTranslationInput>>;
+  usageLimit?: InputMaybe<Scalars['Int']>;
 };
 
 export type UpdatePromotionResult = MissingConditionsError | Promotion;
