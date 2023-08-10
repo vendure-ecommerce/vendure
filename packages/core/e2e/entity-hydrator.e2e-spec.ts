@@ -257,13 +257,14 @@ describe('Entity hydration', () => {
             orderResultGuard.assertSuccess(addItemToOrder);
             const channel = await server.app.get(ChannelService).getDefaultChannel();
             // This is ugly, but in our real life example we use a CTX constructed by Vendure
+            const internalOrderId = +addItemToOrder.id.replace(/^\D+/g, '');
             const ctx = new RequestContext({
                 channel,
                 authorizedAsOwnerOnly: true,
                 apiType: 'shop',
                 isAuthorized: true,
                 session: {
-                    activeOrderId: addItemToOrder.id,
+                    activeOrderId: internalOrderId,
                     activeChannelId: 1,
                     user: {
                         id: 2,
