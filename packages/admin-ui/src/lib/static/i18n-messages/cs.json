@@ -481,9 +481,12 @@
     "create-new-promotion": "Nová propagace",
     "ends-at": "Končí",
     "per-customer-limit": "Limit za zákazníka",
+    "per-customer-limit-tooltip": "Maximální počet použití tohoto promočního kódu jedním zákazníkem",
     "promotion": "",
     "search-by-name-or-coupon-code": "",
-    "starts-at": "Začíná"
+    "starts-at": "Začíná",
+    "usage-limit": "Celkový limit použití",
+    "usage-limit-tooltip": "Maximální počet použití tohoto promočního kódu celkově"
   },
   "nav": {
     "administrators": "Administrátoři",

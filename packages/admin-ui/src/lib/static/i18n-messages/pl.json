@@ -481,9 +481,12 @@
     "create-new-promotion": "Utwórz nową promocje",
     "ends-at": "Kończy się",
     "per-customer-limit": "Limit klientów",
+    "per-customer-limit-tooltip": "Maksymalna liczba razy, kiedy ta promocja może być użyta przez pojedynczego klienta",
     "promotion": "",
     "search-by-name-or-coupon-code": "",
-    "starts-at": "Zaczyna się"
+    "starts-at": "Zaczyna się",
+    "usage-limit": "Ograniczenie całkowitego użycia",
+    "usage-limit-tooltip": "Maksymalna liczba razy, kiedy ta promocja może być użyta ogółem"
   },
   "nav": {
     "administrators": "Administratorzy",
