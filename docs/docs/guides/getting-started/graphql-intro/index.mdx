@@ -6,6 +6,8 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::info
+Vendure uses [GraphQL](https://graphql.org/) as its API layer.
+
 This is an introduction to GraphQL for those who are new to it. If you are already familiar with GraphQL, you may choose
 to skip this section.
 :::
@@ -173,7 +175,7 @@ type Mutation {
 
 input UpdateCustomerEmailInput {
   customerId: ID!
-  name: String!
+  email: String!
 }
 
 type Customer {
@@ -520,8 +522,11 @@ which fields of that object type we want to fetch. For example:
       name
       slug
       variants {
+        // highlight-start
+        # Sub-fields are required for object types
         sku
         priceWithTax
+        // highlight-end
       }
     }
   }

@@ -113,10 +113,19 @@ Open the Admin UI at [http://localhost:3000/admin](http://localhost:3000/admin) 
 * **password**: superadmin
 :::
 
-## Troubleshooting
+### Troubleshooting
 
 If you encounter any issues during installation, you can get a more detailed output by setting the log level to `verbose`:
 
 ```sh
 npx @vendure/create my-shop --log-level verbose
 ```
+
+## Set up a storefront
+
+Once you have a Vendure server running, you can set up a storefront to interact with it! 
+
+We have a number of storefront starter kits available for you to use - head over to the [Storefront Starters](/guides/storefront/storefront-starters/)
+page to learn more.
+
+![Remix storefront](../../storefront/storefront-starters/remix-storefront.webp)
