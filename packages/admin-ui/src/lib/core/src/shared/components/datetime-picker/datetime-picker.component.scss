@@ -12,17 +12,17 @@ input.selected-datetime {
     flex: 1;
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
-    border-right: none !important;
+    border-inline-end: none !important;
 }
 
 button.clear-value-button {
     margin: 0;
     border-radius: 0;
-    border-left: none;
+    border-inline-start: none;
     border: none;
     border-top: 1px solid var(--color-weight-200);
     border-bottom: 1px solid var(--color-weight-200);
-    border-right: 1px solid var(--color-weight-200);
+    border-inline-end: 1px solid var(--color-weight-200);
     background-color: var(--color-button-bg);
     color: var(--color-text-100);
     display: none;
@@ -37,7 +37,7 @@ button.calendar-button {
     border-bottom-left-radius: 0;
     border: 1px solid var(--color-weight-200);
     border-radius: var(--border-radius-sm);
-    border-left: none;
+    border-inline-start: none;
     height: 100%;
     background-color: var(--color-button-bg);
     color: var(--color-text-100);

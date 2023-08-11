@@ -169,7 +169,7 @@
                 <tbody>
                     <tr *ngFor="let row of order.taxSummary">
                         <td>{{ row.description }}</td>
-                        <td>{{ row.taxRate / 100 | percent }}</td>
+                        <td>{{ row.taxRate / 100 | percent:'0.0-2' }}</td>
                         <td>{{ row.taxBase | localeCurrency : order.currencyCode }}</td>
                         <td>{{ row.taxTotal | localeCurrency : order.currencyCode }}</td>
                     </tr>

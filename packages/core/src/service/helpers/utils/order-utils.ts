@@ -44,7 +44,10 @@ export function totalCoveredByPayments(order: Order, state?: PaymentState | Paym
  * Returns true if all (non-cancelled) OrderItems are delivered.
  */
 export function orderItemsAreDelivered(order: Order) {
-    return getOrderLinesFulfillmentStates(order).every(state => state === 'Delivered');
+    return (
+        getOrderLinesFulfillmentStates(order).every(state => state === 'Delivered') &&
+        !isOrderPartiallyFulfilled(order)
+    );
 }
 
 /**
@@ -52,7 +55,10 @@ export function orderItemsAreDelivered(order: Order) {
  */
 export function orderItemsArePartiallyDelivered(order: Order) {
     const states = getOrderLinesFulfillmentStates(order);
-    return states.some(state => state === 'Delivered') && !states.every(state => state === 'Delivered');
+    return (
+        states.some(state => state === 'Delivered') &&
+        (!states.every(state => state === 'Delivered') || isOrderPartiallyFulfilled(order))
+    );
 }
 
 function getOrderLinesFulfillmentStates(order: Order): Array<FulfillmentState | undefined> {
@@ -65,7 +71,7 @@ function getOrderLinesFulfillmentStates(order: Order): Array<FulfillmentState | 
                     idsAreEqual(fl.orderLineId, line.id),
                 );
                 const totalFulfilled = summate(matchingFulfillmentLines, 'quantity');
-                if (totalFulfilled === line.quantity) {
+                if (0 < totalFulfilled) {
                     return matchingFulfillmentLines.map(l => l.fulfillment.state);
                 } else {
                     return undefined;
@@ -81,14 +87,20 @@ function getOrderLinesFulfillmentStates(order: Order): Array<FulfillmentState | 
  */
 export function orderItemsArePartiallyShipped(order: Order) {
     const states = getOrderLinesFulfillmentStates(order);
-    return states.some(state => state === 'Shipped') && !states.every(state => state === 'Shipped');
+    return (
+        states.some(state => state === 'Shipped') &&
+        (!states.every(state => state === 'Shipped') || isOrderPartiallyFulfilled(order))
+    );
 }
 
 /**
  * Returns true if all (non-cancelled) OrderItems are shipped.
  */
 export function orderItemsAreShipped(order: Order) {
-    return getOrderLinesFulfillmentStates(order).every(state => state === 'Shipped');
+    return (
+        getOrderLinesFulfillmentStates(order).every(state => state === 'Shipped') &&
+        !isOrderPartiallyFulfilled(order)
+    );
 }
 
 /**
@@ -105,6 +117,19 @@ function getOrderFulfillmentLines(order: Order): FulfillmentLine[] {
             (fulfillmentLines, fulfillment) => [...fulfillmentLines, ...fulfillment.lines],
             [] as FulfillmentLine[],
         );
+}
+
+/**
+ * Returns true if Fulfillments exist for only some but not all of the
+ * order items.
+ */
+function isOrderPartiallyFulfilled(order: Order) {
+    const fulfillmentLines = getOrderFulfillmentLines(order);
+    const lines = fulfillmentLines.reduce((acc, item) => {
+        acc[item.orderLineId] = (acc[item.orderLineId] || 0) + item.quantity;
+        return acc;
+    }, {} as { [orderLineId: string]: number });
+    return order.lines.some(line => line.quantity > lines[line.id]);
 }
 
 export async function getOrdersFromLines(

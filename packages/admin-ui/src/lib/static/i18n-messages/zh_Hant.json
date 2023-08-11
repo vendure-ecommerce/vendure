@@ -481,9 +481,12 @@
     "create-new-promotion": "新增促销產品",
     "ends-at": "結束時間",
     "per-customer-limit": "領取上限",
+    "per-customer-limit-tooltip": "單一客戶可以使用此優惠的最大次數",
     "promotion": "",
     "search-by-name-or-coupon-code": "",
-    "starts-at": "開始時間"
+    "starts-at": "開始時間",
+    "usage-limit": "總使用限制",
+    "usage-limit-tooltip": "此優惠的總使用次數上限"
   },
   "nav": {
     "administrators": "管理員",

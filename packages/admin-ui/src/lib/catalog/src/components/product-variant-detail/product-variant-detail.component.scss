@@ -6,7 +6,7 @@
 
 vdr-product-variant-quick-jump {
     flex: 1;
-    margin-right: calc(var(--space-unit) * 2);
+    margin-inline-end: calc(var(--space-unit) * 2);
 }
 .stock-levels, .prices {
     margin-top: calc(var(--space-unit) * 2);

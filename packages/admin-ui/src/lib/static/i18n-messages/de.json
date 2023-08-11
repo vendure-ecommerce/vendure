@@ -459,7 +459,7 @@
     "image-title": "Titel",
     "insert-image": "Bild einfügen",
     "link-href": "Link 'href'",
-    "link-target": "",
+    "link-target": "Link 'target'",
     "link-title": "Link 'title'",
     "remove-link": "Entfernen",
     "set-link": "Link setzen"
@@ -481,9 +481,12 @@
     "create-new-promotion": "Neue Werbeaktion erstellen",
     "ends-at": "Endet am",
     "per-customer-limit": "Begrenzung pro Kunde",
+    "per-customer-limit-tooltip": "Maximale Anzahl der Verwendungen dieser Aktion pro einzelnen Kunden",
     "promotion": "Werbeaktion",
     "search-by-name-or-coupon-code": "Suche nach Name oder Gutscheincode",
-    "starts-at": "Beginnt am"
+    "starts-at": "Beginnt am",
+    "usage-limit": "Gesamtnutzungslimit",
+    "usage-limit-tooltip": "Maximale Anzahl der Gesamtverwendungen dieser Aktion"
   },
   "nav": {
     "administrators": "Administratoren",

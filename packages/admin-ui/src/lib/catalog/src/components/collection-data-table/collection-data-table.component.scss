@@ -1,12 +1,12 @@
 @import 'variables';
 
 .bulk-actions {
-    margin-left: calc(var(--space-unit) * 6);
+    margin-inline-start: calc(var(--space-unit) * 6);
     @media screen and (min-width: $breakpoint-medium) {
-        margin-left: calc(var(--space-unit) * 9.5);
+        margin-inline-start: calc(var(--space-unit) * 9.5);
     }
     @media screen and (min-width: $breakpoint-large) {
-        margin-left: calc(var(--space-unit) * 11.5);
+        margin-inline-start: calc(var(--space-unit) * 11.5);
     }
     background-color: var(--color-surface-bg);
 }

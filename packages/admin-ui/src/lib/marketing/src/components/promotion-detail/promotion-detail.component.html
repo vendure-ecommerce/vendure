@@ -81,6 +81,7 @@
                     </vdr-form-field>
                     <vdr-form-field
                         [label]="'marketing.per-customer-limit' | translate"
+                        [tooltip]="'marketing.per-customer-limit-tooltip' | translate"
                         for="perCustomerUsageLimit"
                     >
                         <input
@@ -90,6 +91,20 @@
                             min="1"
                             max="999"
                             formControlName="perCustomerUsageLimit"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field
+                        [label]="'marketing.usage-limit' | translate"
+                        [tooltip]="'marketing.usage-limit-tooltip' | translate"
+                        for="usageLimit"
+                    >
+                        <input
+                            id="usageLimit"
+                            [readonly]="!('UpdatePromotion' | hasPermission)"
+                            type="number"
+                            min="1"
+                            max="9999999"
+                            formControlName="usageLimit"
                         />
                     </vdr-form-field>
                 </div>

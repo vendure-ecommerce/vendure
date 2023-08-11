@@ -12,12 +12,12 @@
 @include table-base-styles;
 
 .bulk-actions {
-    margin-left: calc(var(--space-unit) * 5);
+    margin-inline-start: calc(var(--space-unit) * 5);
     @media screen and (min-width: $breakpoint-medium) {
-        margin-left: calc(var(--space-unit) * 8.5);
+        margin-inline-start: calc(var(--space-unit) * 8.5);
     }
     @media screen and (min-width: $breakpoint-large) {
-        margin-left: calc(var(--space-unit) * 10.5);
+        margin-inline-start: calc(var(--space-unit) * 10.5);
     }
     background-color: var(--color-surface-bg);
     z-index: 10;
@@ -56,7 +56,7 @@ table.no-select {
 .sort-toggle {
     display: flex;
     align-items: center;
-    margin-left: calc(var(--space-unit) * 0.5);
+    margin-inline-start: calc(var(--space-unit) * 0.5);
     button {
         border: 0;
         border-radius: var(--border-radius-lg);
@@ -69,7 +69,7 @@ table.no-select {
         }
     }
     .sort-label {
-        margin-left: calc(var(--space-unit) * 0.5);
+        margin-inline-start: calc(var(--space-unit) * 0.5);
         font-size: 10px;
         color: var(--color-primary-600);
         font-weight: 400;
@@ -117,7 +117,7 @@ th.filter-row {
 }
 .filter-row-wrapper {
     padding: calc(var(--space-unit) * 4);
-    padding-left: 0;
+    padding-inline-start: 0;
     max-height: 150px;
     transition: max-height 0.2s, padding 0.2s, opacity 0.2s;
     &.hidden {
@@ -169,8 +169,8 @@ vdr-empty-placeholder {
     align-items: baseline;
     justify-content: space-between;
     margin-top: var(--space-unit);
-    margin-left: var(--surface-margin-left);
-    margin-right: var(--space-unit);
+    margin-inline-start: var(--surface-margin-left);
+    margin-inline-end: var(--space-unit);
 }
 .total-items-count {
     font-size: var(--font-size-xs);

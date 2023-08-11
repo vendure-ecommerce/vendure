@@ -459,7 +459,7 @@
     "image-title": "Titre",
     "insert-image": "Insérer image",
     "link-href": "Adresse du lien",
-    "link-target": "",
+    "link-target": "Target du lien",
     "link-title": "Titre du lien",
     "remove-link": "Retirer le lien",
     "set-link": "Définir lien"
@@ -481,9 +481,12 @@
     "create-new-promotion": "Creer nouvelle promotion",
     "ends-at": "Termine au",
     "per-customer-limit": "Limite par client",
+    "per-customer-limit-tooltip": "Nombre maximum de fois où cette promotion peut être utilisée par un seul client",
     "promotion": "Promotion",
     "search-by-name-or-coupon-code": "Rechercher dans le nom ou dans le code des coupons",
-    "starts-at": "Débute au"
+    "starts-at": "Débute au",
+    "usage-limit": "Limite totale d'utilisation",
+    "usage-limit-tooltip": "Nombre maximum de fois où cette promotion peut être utilisée au total"
   },
   "nav": {
     "administrators": "Administrateurs",

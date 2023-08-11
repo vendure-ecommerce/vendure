@@ -30,14 +30,14 @@
     tr th:first-of-type {
         text-align: center;
         @media screen and (min-width: $breakpoint-medium) {
-            padding-left: var(--surface-margin-left);
-            text-align: left;
+            padding-inline-start: var(--surface-margin-left);
+            text-align: start;
         }
     }
 
     th:last-of-type,
     td:last-of-type {
-        border-right: 1px solid var(--color-weight-200);
+        border-inline-end: 1px solid var(--color-weight-200);
     }
 
     tr:first-of-type th:last-of-type {

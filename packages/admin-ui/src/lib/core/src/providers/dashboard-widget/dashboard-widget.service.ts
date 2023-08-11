@@ -28,15 +28,19 @@ export class DashboardWidgetService {
         this.registry.set(id, config);
     }
 
-    getAvailableIds(currentUserPermissions: Permission[]): string[] {
-        const hasAllPermissions = (requiredPerms: string[], userPerms: string[]): boolean => requiredPerms.every(p => userPerms.includes(p));
+    getAvailableWidgets(
+        currentUserPermissions: Permission[],
+    ): Array<{ id: string; config: DashboardWidgetConfig }> {
+        const hasAllPermissions = (requiredPerms: string[], userPerms: string[]): boolean =>
+            requiredPerms.every(p => userPerms.includes(p));
 
         return [...this.registry.entries()]
-            .filter(([id, config]) => (
+            .filter(
+                ([id, config]) =>
                     !config.requiresPermissions ||
-                    hasAllPermissions(config.requiresPermissions, currentUserPermissions)
-                ))
-            .map(([id]) => id);
+                    hasAllPermissions(config.requiresPermissions, currentUserPermissions),
+            )
+            .map(([id, config]) => ({ id, config }));
     }
 
     getWidgetById(id: string) {

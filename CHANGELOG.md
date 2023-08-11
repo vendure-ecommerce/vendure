@@ -1,3 +1,22 @@
+## <small>2.0.6 (2023-08-11)</small>
+
+
+#### Fixes
+
+* **admin-ui** Apply max dimensions to relation asset preview ([8169c4e](https://github.com/vendure-ecommerce/vendure/commit/8169c4e)), closes [#2320](https://github.com/vendure-ecommerce/vendure/issues/2320)
+* **admin-ui** Correctly display decimal tax rate in order summary ([1f507fa](https://github.com/vendure-ecommerce/vendure/commit/1f507fa)), closes [#2339](https://github.com/vendure-ecommerce/vendure/issues/2339)
+* **admin-ui** Correctly display widget titles in dropdown ([59a1d5d](https://github.com/vendure-ecommerce/vendure/commit/59a1d5d)), closes [#2334](https://github.com/vendure-ecommerce/vendure/issues/2334)
+* **admin-ui** Fix error when saving multiple new variant options ([e5ad0ee](https://github.com/vendure-ecommerce/vendure/commit/e5ad0ee)), closes [#2326](https://github.com/vendure-ecommerce/vendure/issues/2326)
+* **admin-ui** Fix header overlap on empty data tables ([ada153e](https://github.com/vendure-ecommerce/vendure/commit/ada153e)), closes [#2323](https://github.com/vendure-ecommerce/vendure/issues/2323) [#2325](https://github.com/vendure-ecommerce/vendure/issues/2325)
+* **admin-ui** Fix updating variant tax category ([ff29e9a](https://github.com/vendure-ecommerce/vendure/commit/ff29e9a)), closes [#2336](https://github.com/vendure-ecommerce/vendure/issues/2336)
+* **admin-ui** Fix width of affixed inputs ([75d51ed](https://github.com/vendure-ecommerce/vendure/commit/75d51ed))
+* **admin-ui** Fulfillment button takes existing state into account ([ef357cd](https://github.com/vendure-ecommerce/vendure/commit/ef357cd))
+* **admin-ui** Fulfillment dialog enforces max quantity ([571b157](https://github.com/vendure-ecommerce/vendure/commit/571b157)), closes [#2329](https://github.com/vendure-ecommerce/vendure/issues/2329)
+* **admin-ui** Prevent product creation without variants ([3364559](https://github.com/vendure-ecommerce/vendure/commit/3364559)), closes [#2337](https://github.com/vendure-ecommerce/vendure/issues/2337)
+* **core** Fix entity hydration of nested array entities ([55009a5](https://github.com/vendure-ecommerce/vendure/commit/55009a5)), closes [#2013](https://github.com/vendure-ecommerce/vendure/issues/2013)
+* **core** Fix logic relating to partial fulfillments ([6f48ee2](https://github.com/vendure-ecommerce/vendure/commit/6f48ee2)), closes [#2324](https://github.com/vendure-ecommerce/vendure/issues/2324) [#2191](https://github.com/vendure-ecommerce/vendure/issues/2191)
+* **core** Prevent fulfillments with too great a quantity ([579459a](https://github.com/vendure-ecommerce/vendure/commit/579459a)), closes [#2329](https://github.com/vendure-ecommerce/vendure/issues/2329)
+
 ## <small>2.0.5 (2023-07-27)</small>
 
 
@@ -18,6 +37,7 @@
 * **core** Improved CockroachDB compatibility for DefaultSearchPlugin ([b8d8dec](https://github.com/vendure-ecommerce/vendure/commit/b8d8dec))
 * **core** Publish AccountRegistrationEvent when creating Customer via admin ([e0bd036](https://github.com/vendure-ecommerce/vendure/commit/e0bd036))
 * **core** Use MoneyStrategy in Surcharges (#2294) ([efee8ec](https://github.com/vendure-ecommerce/vendure/commit/efee8ec)), closes [#2294](https://github.com/vendure-ecommerce/vendure/issues/2294)
+* **payments-plugin**: Only find payment methods in the current channel ([bbea69](https://github.com/vendure-ecommerce/vendure/commit/bbea69)), closes [#2308](https://github.com/vendure-ecommerce/vendure/issues/2308)
 
 #### Features
 

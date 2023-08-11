@@ -13,7 +13,7 @@
         display: flex;
         align-items: center;
         clr-icon {
-            margin-right: 3px;
+            margin-inline-end: 3px;
         }
         &:focus {
             outline: var(--color-dropdown-item-focus-outline) solid 1px;

@@ -103,9 +103,9 @@ vdr-select-toggle {
             transition: opacity 0.3s, visibility 0s;
         }
         ul {
-            text-align: left;
+            text-align: start;
             list-style-type: none;
-            margin-left: 12px;
+            margin-inline-start: 12px;
             li {
                 font-size: 12px;
             }

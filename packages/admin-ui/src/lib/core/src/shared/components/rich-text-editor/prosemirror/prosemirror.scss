@@ -67,12 +67,12 @@
     }
 
     .ProseMirror-menuitem {
-        margin-right: 3px;
+        margin-inline-end: 3px;
         display: inline-block;
     }
 
     .ProseMirror-menuseparator {
-        border-right: 1px solid var(--color-component-border-200);
+        border-inline-end: 1px solid var(--color-component-border-200);
         margin: 0 12px 0 8px;
         height: 18px;
     }
@@ -88,7 +88,7 @@
         vertical-align: 1px;
         cursor: pointer;
         position: relative;
-        padding-right: 15px;
+        padding-inline-end: 15px;
     }
 
     .ProseMirror-menu-dropdown-wrap {
@@ -99,8 +99,8 @@
 
     .ProseMirror-menu-dropdown:after {
         content: '';
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
+        border-inline-start: 4px solid transparent;
+        border-inline-end: 4px solid transparent;
         border-top: 4px solid currentColor;
         opacity: 0.6;
         position: absolute;
@@ -133,14 +133,14 @@
 
     .ProseMirror-menu-submenu-wrap {
         position: relative;
-        margin-right: 4px;
+        margin-inline-end: 4px;
     }
 
     .ProseMirror-menu-submenu-label:after {
         content: '';
         border-top: 4px solid transparent;
         border-bottom: 4px solid transparent;
-        border-left: 4px solid currentColor;
+        border-inline-start: 4px solid currentColor;
         opacity: 0.6;
         position: absolute;
         right: -8px;
@@ -240,15 +240,15 @@
 
     .ProseMirror ul,
     .ProseMirror ol {
-        padding-left: 30px;
+        padding-inline-start: 30px;
         list-style-position: initial;
     }
 
     .ProseMirror blockquote {
-        padding-left: 1em;
-        border-left: 3px solid var(--color-grey-100);
-        margin-left: 0;
-        margin-right: 0;
+        padding-inline-start: 1em;
+        border-inline-start: 3px solid var(--color-grey-100);
+        margin-inline-start: 0;
+        margin-inline-end: 0;
     }
 
     .ProseMirror-prompt {
@@ -408,7 +408,7 @@
         align-items: center;
         clr-icon,
         .custom-icon {
-            margin-right: 4px;
+            margin-inline-end: 4px;
             color: var(--color-text-200);
         }
         .hr-icon {

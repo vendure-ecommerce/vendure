@@ -17,7 +17,7 @@
     grid-template-columns: repeat(auto-fill, 125px);
     grid-template-rows: repeat(auto-fill, 200px);
     grid-gap: 10px 20px;
-    padding-left: 12px;
+    padding-inline-start: 12px;
     padding-top: 12px;
     padding-bottom: 64px;
     overflow-y: auto;
@@ -62,7 +62,7 @@ vdr-select-toggle {
         flex: 1;
         overflow-y: auto;
         .item-row {
-            padding-left: 3px;
+            padding-inline-start: 3px;
             &:hover {
                 background-color: var(--color-component-bg-200);
             }
