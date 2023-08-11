@@ -15,6 +15,7 @@ import {
     SelectionManager,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 
@@ -296,14 +297,15 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     addOptionToVariant(variant: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number]) {
+        const optionIds = [
+            ...variant.options.map(o => o.id),
+            ...Object.values(this.optionsToAddToVariant[variant.id]),
+        ];
         this.dataService.product
             .updateProductVariants([
                 {
                     id: variant.id,
-                    optionIds: [
-                        ...variant.options.map(o => o.id),
-                        ...Object.values(this.optionsToAddToVariant[variant.id]),
-                    ],
+                    optionIds: unique(optionIds),
                 },
             ])
             .subscribe(({ updateProductVariants }) => {
