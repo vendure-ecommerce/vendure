@@ -1,5 +1,6 @@
 ## 2.1.0-next.0 (2023-08-11)
 
+Includes all changes from v2.0.6, plus:
 
 #### Features
 
