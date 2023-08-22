@@ -32,14 +32,17 @@ body {
 .navbar-sidebar {
     background-color: var(--ifm-background-color);
 }
-
 .navbar {
-    backdrop-filter: blur(20px);
+    background-color: var(--navbar-background-color-mobile);
 }
 
 @media screen and (min-width: 996px) {
     .docs-wrapper article:not(.col) {
         margin-left: 32px;
+    }
+    .navbar {
+        backdrop-filter: blur(20px);
+        background-color: var(--ifm-navbar-background-color);
     }
 }
 

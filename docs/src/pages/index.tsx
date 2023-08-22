@@ -26,7 +26,7 @@ export default function Home(): JSX.Element {
                     ></path>
                     <path
                         stroke="currentColor"
-                        stroke-width="2"
+                        strokeWidth="2"
                         d="M530 39c5.523 0 10-4.477 10-10s-4.477-10-10-10-10 4.477-10 10 4.477 10 10 10Z"
                     ></path>
                     <path

@@ -23,6 +23,7 @@
     --ifm-color-primary-lighter: hsl(196 100% 75%);
     --ifm-color-primary-lightest: hsl(196 100% 90%);
     --ifm-navbar-background-color: #ffffff11;
+    --navbar-background-color-mobile: #ffffffee;
     --ifm-color-content: var(--ifm-color-emphasis-800);
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
@@ -46,6 +47,7 @@
     --ifm-color-primary-lighter: hsl(196 100% 75%);
     --ifm-color-primary-lightest: hsl(196 100% 90%);
     --ifm-navbar-background-color: #00021211;
+    --navbar-background-color-mobile: #000212ee;
     --ifm-card-background-color: transparent;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
     --color-graphql-comment: #6ea372;
