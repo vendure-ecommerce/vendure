@@ -76,6 +76,7 @@ export type CachedSession = {
  * }
  * const loggerCtx = 'RedisSessionCacheStrategy';
  * const DEFAULT_NAMESPACE = 'vendure-session-cache';
+ * const DEFAULT_TTL = 86400;
  *
  * export class RedisSessionCacheStrategy implements SessionCacheStrategy {
  *   private client: Redis;
@@ -107,7 +108,7 @@ export type CachedSession = {
  *
  *   async set(session: CachedSession) {
  *     try {
- *       await this.client.set(this.namespace(session.token), JSON.stringify(session));
+ *       await this.client.set(this.namespace(session.token), JSON.stringify(session), 'EX', DEFAULT_TTL);
  *     } catch (e: any) {
  *       Logger.error(`Could not set cached session: ${e.message}`, loggerCtx);
  *     }

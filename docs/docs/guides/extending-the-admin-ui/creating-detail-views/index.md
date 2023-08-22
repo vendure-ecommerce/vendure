@@ -18,7 +18,7 @@ Let's say you have a plugin which adds a new entity to the database called `Prod
 The detail component itself is an Angular component which extends the [BaseDetailComponent]({{< relref "base-detail-component" >}}) or [TypedBaseDetailComponent]({{< relref "typed-base-detail-component" >}}) class.
 
 ```ts
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { TypedBaseDetailComponent, LanguageCode } from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
@@ -47,7 +47,7 @@ export const GET_REVIEW_DETAIL = gql`
   styleUrls: ['./review-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof GetReviewDetailDocument> implements OnInit, OnDestroy {
+export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof GetReviewDetailDocument, 'review'> implements OnInit, OnDestroy {
   detailForm = this.formBuilder.group({
     title: [''],
     rating: [1],
@@ -207,7 +207,7 @@ import { GetReviewDocument, GetReviewDetailQuery } from './generated-types';
             const review$ = inject(DataService)
               .query(GetReviewDocument, { id: route.paramMap.get('id') })
               .mapStream(data => data.review);
-            return of({ detail: { entity: review$ } });
+            return of({ entity: review$ });
           },
         },
         data: {
@@ -220,7 +220,7 @@ import { GetReviewDocument, GetReviewDetailQuery } from './generated-types';
                 link: ['/extensions', 'reviews'],
               },
               {
-                label: `${entity.title}`,
+                label: `${entity?.title ?? 'New Review'}`,
                 link: [],
               },
             ]),

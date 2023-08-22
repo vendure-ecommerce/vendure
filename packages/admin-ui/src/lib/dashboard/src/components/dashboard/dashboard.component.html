@@ -9,10 +9,10 @@
             <vdr-dropdown-menu vdrPosition="bottom-right">
                 <button
                     vdrDropdownItem
-                    *ngFor="let id of availableWidgetIds$ | async"
-                    (click)="addWidget(id)"
+                    *ngFor="let widget of availableWidgets$ | async"
+                    (click)="addWidget(widget.id)"
                 >
-                    {{ id }}
+                    {{ (widget.config.title ?? widget.id) | translate }}
                 </button>
             </vdr-dropdown-menu>
         </vdr-dropdown>

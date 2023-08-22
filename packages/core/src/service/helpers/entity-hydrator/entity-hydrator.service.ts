@@ -212,20 +212,34 @@ export class EntityHydrator {
         entity: VendureEntity,
         path: string[],
     ): VendureEntity | VendureEntity[] | undefined {
-        let relation: any = entity;
-        for (let i = 0; i < path.length; i++) {
-            const part = path[i];
-            const isLast = i === path.length - 1;
-            if (relation[part]) {
-                relation =
-                    Array.isArray(relation[part]) && relation[part].length && !isLast
-                        ? relation[part][0]
-                        : relation[part];
-            } else {
+        let isArrayResult = false;
+        const result: VendureEntity[] = [];
+
+        function visit(parent: any, parts: string[]): any {
+            if (parts.length === 0) {
                 return;
             }
+            const part = parts.shift() as string;
+            const target = parent[part];
+            if (Array.isArray(target)) {
+                isArrayResult = true;
+                if (parts.length === 0) {
+                    result.push(...target);
+                } else {
+                    for (const item of target) {
+                        visit(item, parts.slice());
+                    }
+                }
+            } else {
+                if (parts.length === 0) {
+                    result.push(target);
+                } else {
+                    visit(target, parts.slice());
+                }
+            }
         }
-        return relation;
+        visit(entity, path.slice());
+        return isArrayResult ? result : result[0];
     }
 
     private getRelationEntityTypeAtPath(entity: VendureEntity, path: string): Type<VendureEntity> {
