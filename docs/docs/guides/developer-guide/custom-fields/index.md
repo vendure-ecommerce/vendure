@@ -40,7 +40,7 @@ With the example config above, the following will occur:
 
 1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide](/TODO).
 2. The GraphQL APIs will be modified to add the custom fields to the `Product` and `User` types respectively.
-3. If you are using the [AdminUiPlugin](/reference/typescript-api/core-plugins/admin-ui-plugin/), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited, and the list view data tables will allow custom field columns to be added, sorted and filtered.
+3. If you are using the [AdminUiPlugin](/reference/core-plugins/admin-ui-plugin/), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited, and the list view data tables will allow custom field columns to be added, sorted and filtered.
 
 ![custom-fields-data-table.webp](custom-fields-data-table.webp)
 

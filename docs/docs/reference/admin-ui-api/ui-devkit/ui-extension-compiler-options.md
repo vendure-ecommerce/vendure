@@ -56,7 +56,7 @@ Allows the baseHref of the compiled Admin UI app to be set. This determines the 
 of the app, for example with the default value of `'/admin/'`, the Admin UI app
 will be configured to be served from `http://<host>/admin/`.
 
-Note: if you are using this in conjunction with the <a href='/reference/typescript-api/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a> then you should
+Note: if you are using this in conjunction with the <a href='/reference/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a> then you should
 also set the `route` option to match this value.
 
 *Example*

@@ -703,9 +703,9 @@ Here's a live example of faceted search. Try searching for terms like "shoe", "p
 ## Listing custom product data
 
 If you have defined custom fields on the `Product` or `ProductVariant` entity, you might want to include these in the
-search results. With the [`DefaultSearchPlugin`](/reference/typescript-api/core-plugins/default-search-plugin/) this is
+search results. With the [`DefaultSearchPlugin`](/reference/typescript-api/default-search-plugin/) this is
 not possible, as this plugin is designed to be a minimal and simple search implementation.
 
-Instead, you can use the [`ElasticsearchPlugin`](/reference/typescript-api/core-plugins/elasticsearch-plugin/) which
+Instead, you can use the [`ElasticsearchPlugin`](/reference/core-plugins/elasticsearch-plugin/) which
 provides advanced features which allow you to index custom data. The Elasticsearch plugin is designed as a drop-in
 replacement for the `DefaultSearchPlugin`, so you can simply swap out the plugins in your `vendure-config.ts` file.

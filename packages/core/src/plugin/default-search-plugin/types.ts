@@ -10,7 +10,7 @@ import { SearchStrategy } from './search-strategy/search-strategy';
  * @description
  * Options which configure the behaviour of the DefaultSearchPlugin
  *
- * @docsCategory core plugins/DefaultSearchPlugin
+ * @docsCategory DefaultSearchPlugin
  */
 export interface DefaultSearchPluginInitOptions {
     /**

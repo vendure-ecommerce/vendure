@@ -48,12 +48,12 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 
 ### availableLanguages$
 
-<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;`}   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/common/language-code#languagecode'>LanguageCode</a>[]&#62;`}   />
 
 
 ### contentLanguage$
 
-<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
 
 
 ### dataService
@@ -98,7 +98,7 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 
 ### setLanguage
 
-<MemberInfo kind="method" type={`(code: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => `}   />
+<MemberInfo kind="method" type={`(code: <a href='/reference/common/language-code#languagecode'>LanguageCode</a>) => `}   />
 
 
 ### getCustomFieldConfig

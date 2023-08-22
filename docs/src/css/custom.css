@@ -82,3 +82,12 @@ html[data-theme='dark'] {
 .members-wrapper > h3 {
     margin-top: 42px;
 }
+
+.sidebar-section-header {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    opacity: 0.6;
+    padding: var(--ifm-menu-link-padding-vertical)
+         var(--ifm-menu-link-padding-horizontal);
+}

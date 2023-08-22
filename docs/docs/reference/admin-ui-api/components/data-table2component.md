@@ -227,7 +227,7 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 
 ### uiLanguage$
 
-<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
 
 
 ### constructor

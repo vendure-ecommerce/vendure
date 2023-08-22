@@ -449,7 +449,7 @@ vendureLoginButton.addEventListener('click', () => {
 });
 ```
 
-We also need to tell the Admin UI application about the custom login URL, since we have no need for the default "username/password" login form. This can be done by setting the [`loginUrl` property](/reference/typescript-api/core-plugins/admin-ui-plugin/admin-ui-config/#loginurl) in the AdminUiConfig:
+We also need to tell the Admin UI application about the custom login URL, since we have no need for the default "username/password" login form. This can be done by setting the [`loginUrl` property](/reference/core-plugins/admin-ui-plugin/admin-ui-config/#loginurl) in the AdminUiConfig:
 
 ```ts title="/src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';

@@ -220,7 +220,7 @@ Note that in the variables above, we did **not** specify a password, as this wil
 If a password _does_ get passed at this step, then it won't be needed at the verification step. This is a decision
 you can make based on the desired user experience of your storefront.
 
-Upon registration, the [EmailPlugin](/reference/typescript-api/core-plugins/email-plugin/) will generate an email to the
+Upon registration, the [EmailPlugin](/reference/core-plugins/email-plugin/) will generate an email to the
 customer containing a link to the verification page. In a default Vendure installation this is set in the vendure config file:
 
 ```ts title="src/vendure-config.ts"

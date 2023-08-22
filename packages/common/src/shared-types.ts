@@ -209,7 +209,7 @@ export type CustomFieldsObject = { [key: string]: any };
  * The values are loaded at run-time by the Admin UI app, and allow core configuration to be
  * managed without the need to re-build the application.
  *
- * @docsCategory core plugins/AdminUiPlugin
+ * @docsCategory common/AdminUi
  */
 export interface AdminUiConfig {
     /**
@@ -333,7 +333,7 @@ export interface AdminUiConfig {
  * @description
  * Configures the path to a custom-build of the Admin UI app.
  *
- * @docsCategory core plugins/AdminUiPlugin
+ * @docsCategory common/AdminUi
  */
 export interface AdminUiAppConfig {
     /**
@@ -361,7 +361,7 @@ export interface AdminUiAppConfig {
  * @description
  * Information about the Admin UI app dev server.
  *
- * @docsCategory core plugins/AdminUiPlugin
+ * @docsCategory common/AdminUi
  */
 export interface AdminUiAppDevModeConfig {
     /**

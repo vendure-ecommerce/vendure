@@ -16,20 +16,37 @@ interface DocsSectionConfig {
 
 const sections: DocsSectionConfig[] = [
     {
-        sourceDirs: [
-            'packages/core/src/',
-            'packages/common/src/',
-            'packages/admin-ui-plugin/src/',
-            'packages/asset-server-plugin/src/',
-            'packages/email-plugin/src/',
-            'packages/elasticsearch-plugin/src/',
-            'packages/job-queue-plugin/src/',
-            'packages/payments-plugin/src/',
-            'packages/testing/src/',
-            'packages/harden-plugin/src/',
-        ],
+        sourceDirs: ['packages/core/src/', 'packages/common/src/', 'packages/testing/src/'],
         exclude: [/generated-shop-types/],
         outputPath: 'typescript-api',
+    },
+    {
+        sourceDirs: ['packages/admin-ui-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/asset-server-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/email-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/elasticsearch-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/job-queue-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/payments-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/harden-plugin/src/'],
+        outputPath: '',
     },
     {
         sourceDirs: ['packages/admin-ui/src/lib/', 'packages/ui-devkit/src/'],
@@ -78,7 +95,7 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
         for (const page of docsPages) {
             const { category, fileName, declarations } = page;
             for (const declaration of declarations) {
-                const pathToTypeDoc = `reference/${outputPath}/${
+                const pathToTypeDoc = `reference/${outputPath ? `${outputPath}/` : ''}${
                     category ? category.map(part => normalizeForUrlPart(part)).join('/') + '/' : ''
                 }${fileName === 'index' ? '' : fileName}#${toHash(declaration.title)}`;
                 globalTypeMap.set(declaration.title, pathToTypeDoc);

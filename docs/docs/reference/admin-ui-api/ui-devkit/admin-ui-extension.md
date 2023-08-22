@@ -176,7 +176,7 @@ interface TranslationExtension {
 
 ### translations
 
-<MemberInfo kind="property" type={`{ [languageCode in <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]?: string }`}   />
+<MemberInfo kind="property" type={`{ [languageCode in <a href='/reference/common/language-code#languagecode'>LanguageCode</a>]?: string }`}   />
 
 Optional object defining any translation files for the Admin UI. The value should be an object with
 the key as a 2-character [ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),

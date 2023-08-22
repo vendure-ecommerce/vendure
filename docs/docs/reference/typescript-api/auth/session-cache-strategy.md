@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SessionCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="154" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="155" packageName="@vendure/core" />
 
 This strategy defines how sessions get cached. Since most requests will need the Session
 object for permissions data, it can become a bottleneck to go to the database and do a multi-join
@@ -45,6 +45,7 @@ export interface RedisSessionCachePluginOptions {
 }
 const loggerCtx = 'RedisSessionCacheStrategy';
 const DEFAULT_NAMESPACE = 'vendure-session-cache';
+const DEFAULT_TTL = 86400;
 
 export class RedisSessionCacheStrategy implements SessionCacheStrategy {
   private client: Redis;
@@ -76,7 +77,7 @@ export class RedisSessionCacheStrategy implements SessionCacheStrategy {
 
   async set(session: CachedSession) {
     try {
-      await this.client.set(this.namespace(session.token), JSON.stringify(session));
+      await this.client.set(this.namespace(session.token), JSON.stringify(session), 'EX', DEFAULT_TTL);
     } catch (e: any) {
       Logger.error(`Could not set cached session: ${e.message}`, loggerCtx);
     }

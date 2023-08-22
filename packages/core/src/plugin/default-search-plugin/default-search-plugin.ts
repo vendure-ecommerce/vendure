@@ -64,7 +64,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  * };
  * ```
  *
- * @docsCategory core plugins/DefaultSearchPlugin
+ * @docsCategory DefaultSearchPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],

@@ -254,7 +254,7 @@ class CurrencyFormInputComponent implements FormInputComponent {
 
 ### currencyCode$
 
-<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>&#62;`}   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/common/currency-code#currencycode'>CurrencyCode</a>&#62;`}   />
 
 
 ### config
@@ -818,7 +818,7 @@ class SelectFormInputComponent implements FormInputComponent, OnInit {
 
 ### uiLanguage$
 
-<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
 
 
 ### options

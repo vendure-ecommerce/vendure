@@ -25,7 +25,7 @@ export class TypescriptDocsRenderer {
     render(pages: DocsPage[], docsUrl: string, outputPath: string, typeMap: TypeMap): number {
         let generatedCount = 0;
         if (!fs.existsSync(outputPath)) {
-            fs.mkdirSync(outputPath);
+            fs.ensureDirSync(outputPath);
         }
 
         for (const page of pages) {

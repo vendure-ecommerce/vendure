@@ -20,9 +20,9 @@ const IS_DEV = process.env.APP_ENV === 'dev';
 
 The `APP_ENV` environment variable can then be set using the admin dashboard of your hosting provider:
 
-{{< figure src="./env-var-ui.webp" title="A typical UI for setting env vars" >}}
+![A typical UI for setting env vars](./env-var-ui.webp)
 
-If you are using [Docker or Kubernetes]({{< relref "using-docker" >}}), they include their own methods of setting environment variables.
+If you are using [Docker or Kubernetes](/guides/deployment/using-docker), they include their own methods of setting environment variables.
 
 ## Superadmin credentials
 
@@ -45,7 +45,7 @@ export const config: VendureConfig = {
 
 ## API hardening
 
-It is recommended that you install and configure the [HardenPlugin]({{< relref "/reference/typescript-api/core-plugins/harden-plugin" >}}) for all production deployments. This plugin locks down your schema (disabling introspection and field suggestions) and protects your Shop API against malicious queries that could otherwise overwhelm your server.
+It is recommended that you install and configure the [HardenPlugin]({{< relref "/reference/core-plugins/harden-plugin" >}}) for all production deployments. This plugin locks down your schema (disabling introspection and field suggestions) and protects your Shop API against malicious queries that could otherwise overwhelm your server.
 
 Install the plugin: 
 
@@ -78,7 +78,7 @@ export const config: VendureConfig = {
 ```
 
 {{< alert primary >}}
-For a detailed explanation of how to best configure this plugin, see the [HardenPlugin docs]({{< relref "/reference/typescript-api/core-plugins/harden-plugin" >}}).
+For a detailed explanation of how to best configure this plugin, see the [HardenPlugin docs]({{< relref "/reference/core-plugins/harden-plugin" >}}).
 {{< /alert >}}
 
 ## ID Strategy
