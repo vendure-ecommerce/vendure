@@ -84,17 +84,17 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
 
 ### availableLanguages$
 
-<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/common/language-code#languagecode'>LanguageCode</a>[]&#62;`}   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]&#62;`}   />
 
 
 ### languageCode$
 
-<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
+<MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
 
 
 ### languageCode
 
-<MemberInfo kind="property" type={`<a href='/reference/common/language-code#languagecode'>LanguageCode</a>`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>`}   />
 
 
 ### isNew$
@@ -139,7 +139,7 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
 
 ### setLanguage
 
-<MemberInfo kind="method" type={`(code: <a href='/reference/common/language-code#languagecode'>LanguageCode</a>) => `}   />
+<MemberInfo kind="method" type={`(code: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => `}   />
 
 
 ### canDeactivate
@@ -149,7 +149,7 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
 
 ### setFormValues
 
-<MemberInfo kind="method" type={`(entity: Entity, languageCode: <a href='/reference/common/language-code#languagecode'>LanguageCode</a>) => void`}   />
+<MemberInfo kind="method" type={`(entity: Entity, languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>) => void`}   />
 
 
 ### setCustomFieldFormValues

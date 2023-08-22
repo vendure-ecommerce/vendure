@@ -42,6 +42,7 @@ const sections: DocsSectionConfig[] = [
     },
     {
         sourceDirs: ['packages/payments-plugin/src/'],
+        exclude: [/generated-shop-types/],
         outputPath: '',
     },
     {

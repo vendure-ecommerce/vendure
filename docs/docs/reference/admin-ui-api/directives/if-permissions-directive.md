@@ -31,7 +31,7 @@ class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>>
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, dataService: DataService, changeDetectorRef: ChangeDetectorRef)
 }
 ```
-* Extends: <code>IfDirectiveBase&#60;Array&#60;<a href='/reference/common/permission#permission'>Permission</a>[] | null&#62;&#62;</code>
+* Extends: <code>IfDirectiveBase&#60;Array&#60;<a href='/reference/typescript-api/common/permission#permission'>Permission</a>[] | null&#62;&#62;</code>
 
 
 

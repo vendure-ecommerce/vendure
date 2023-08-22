@@ -166,6 +166,7 @@ const sidebars = {
         {
             type: 'category',
             label: 'Core Plugins',
+            link: { type: 'doc', id: 'reference/core-plugins/index' },
             customProps: {
                 viewBox: '0 0 128 128',
                 icon: icon.tsLogo,
