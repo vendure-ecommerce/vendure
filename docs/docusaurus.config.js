@@ -7,7 +7,6 @@ const darkCodeTheme = require('prism-react-renderer/themes/nightOwl');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: 'Vendure Docs',
-    tagline: 'For preview only. Actual docs at https://docs.vendure.io',
     favicon: 'img/logo.webp',
 
     // Set the production url of your site here
@@ -89,6 +88,11 @@ const config = {
                         label: 'Reference',
                     },
                     {
+                        href: 'https://vendure.io',
+                        label: 'vendure.io',
+                        position: 'right',
+                    },
+                    {
                         href: 'https://github.com/vendure-ecommerce/vendure',
                         label: 'GitHub',
                         position: 'right',
@@ -103,6 +107,19 @@ const config = {
             footer: {
                 links: [
                     {
+                        title: 'Resources',
+                        items: [
+                            {
+                                label: 'vendure.io',
+                                href: 'https://www.vendure.io',
+                            },
+                            {
+                                label: 'GitHub',
+                                href: 'https://github.com/vendure-ecommerce/vendure',
+                            },
+                        ],
+                    },
+                    {
                         title: 'Community',
                         items: [
                             {
@@ -112,6 +129,10 @@ const config = {
                             {
                                 label: 'Twitter',
                                 href: 'https://twitter.com/vendure_io',
+                            },
+                            {
+                                label: 'YouTube',
+                                href: 'https://www.youtube.com/@vendure_io',
                             },
                         ],
                     },

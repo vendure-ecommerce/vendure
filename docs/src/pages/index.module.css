@@ -4,20 +4,41 @@
  */
 
 .heroBanner {
-  padding: 4rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+    padding: 4rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tagline {
+    font-size: 2rem;
+    text-align: center;
+}
+
+.description {
+    margin: 1rem 0;
+    font-size: 1.3rem;
+    max-width: 600px;
+    text-align: center;
+    opacity: 0.8;
 }
 
 @media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+    .heroBanner {
+        padding: 2rem;
+    }
+    .ctaButtons {
+        flex-direction: column;
+        gap: 24px;
+    }
 }
 
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ctaButtons {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    max-width: 800px;
+    margin: auto;
+    padding-bottom: 4rem;
 }
+

@@ -33,12 +33,13 @@ body {
     background-color: var(--ifm-background-color);
 }
 
+.navbar {
+    backdrop-filter: blur(20px);
+}
+
 @media screen and (min-width: 996px) {
     .docs-wrapper article:not(.col) {
         margin-left: 32px;
-    }
-    .navbar {
-        backdrop-filter: blur(20px);
     }
 }
 
