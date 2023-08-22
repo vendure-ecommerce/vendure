@@ -45,7 +45,7 @@ export const config: VendureConfig = {
 
 ## API hardening
 
-It is recommended that you install and configure the [HardenPlugin]({{< relref "/reference/core-plugins/harden-plugin" >}}) for all production deployments. This plugin locks down your schema (disabling introspection and field suggestions) and protects your Shop API against malicious queries that could otherwise overwhelm your server.
+It is recommended that you install and configure the [HardenPlugin](/reference/core-plugins/harden-plugin/) for all production deployments. This plugin locks down your schema (disabling introspection and field suggestions) and protects your Shop API against malicious queries that could otherwise overwhelm your server.
 
 Install the plugin: 
 
@@ -77,9 +77,9 @@ export const config: VendureConfig = {
 };
 ```
 
-{{< alert primary >}}
-For a detailed explanation of how to best configure this plugin, see the [HardenPlugin docs]({{< relref "/reference/core-plugins/harden-plugin" >}}).
-{{< /alert >}}
+:::info
+For a detailed explanation of how to best configure this plugin, see the [HardenPlugin docs](/reference/core-plugins/harden-plugin/).
+:::
 
 ## ID Strategy
 
@@ -87,18 +87,18 @@ By default, Vendure uses auto-increment integer IDs as entity primary keys. Whil
 
 For this reason you should consider using the UuidIdStrategy for production.
 
-```ts
+```ts title="src/vendure-config.ts"
 import { UuidIdStrategy, VendureConfig } from '@vendure/core';
-  
+
 export const config: VendureConfig = {
-  entityOptions: {
+    entityOptions: {
         entityIdStrategy: new UuidIdStrategy(),
-  },
-  // ...
+    },
+    // ...
 }
 ```
 
-Another option, if you wish to stick with integer IDs, is to create a custom [EntityIdStrategy]({{< relref "entity-id-strategy" >}}) which uses the `encodeId()` and `decodeId()` methods to obfuscate the sequential nature of the ID.
+Another option, if you wish to stick with integer IDs, is to create a custom [EntityIdStrategy](/reference/typescript-api/configuration/entity-id-strategy/) which uses the `encodeId()` and `decodeId()` methods to obfuscate the sequential nature of the ID.
 
 ## Database Timezone
 

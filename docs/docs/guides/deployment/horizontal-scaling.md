@@ -13,7 +13,7 @@ This type of scaling has two main advantages:
 1. It can enable increased throughput (requests/second) by distributing the incoming requests between multiple instances.
 2. It can increase resilience because if a single instance fails, the other instances will still be able to service requests.
 
-As discussed in the [Server resource requirements guide]({{< relref "server-resource-requirements" >}}), horizontal scaling can be the most cost-effective way of deploying your Vendure server due to the single-threaded nature of Node.js.
+As discussed in the [Server resource requirements guide](/guides/deployment/server-resource-requirements), horizontal scaling can be the most cost-effective way of deploying your Vendure server due to the single-threaded nature of Node.js.
 
 In Vendure, both the server and the worker can be scaled horizontally. Scaling the server will increase the throughput of the GraphQL APIs, whereas scaling the worker can increase the speed with which the job queue is processed by allowing more jobs to be run in parallel.
 
@@ -21,10 +21,10 @@ In Vendure, both the server and the worker can be scaled horizontally. Scaling t
 
 In order to run Vendure in a multi-instance configuration, there are some important configuration changes you'll need to make. The key consideration in configuring Vendure for this scenario is to ensure that any persistent state is managed externally from the Node process, and is shared by all instances. Namely:
 
-* The JobQueue should be stored externally using the [DefaultJobQueuePlugin]({{< relref "default-job-queue-plugin" >}}) (which stores jobs in the database) or the [BullMQJobQueuePlugin]({{< relref "bull-mqjob-queue-plugin" >}}) (which stores jobs in Redis), or some other custom JobQueueStrategy. **Note:** the BullMQJobQueuePlugin is much more efficient than the DefaultJobQueuePlugin, and is recommended for production applications.
-* A custom [SessionCacheStrategy]({{< relref "session-cache-strategy" >}}) must be used which stores the session cache externally (such as in the database or Redis), since the default strategy stores the cache in-memory and will cause inconsistencies in multi-instance setups. [Example Redis-based SessionCacheStrategy]({{< relref "session-cache-strategy" >}})
+* The JobQueue should be stored externally using the [DefaultJobQueuePlugin](/reference/typescript-api/job-queue/default-job-queue-plugin/) (which stores jobs in the database) or the [BullMQJobQueuePlugin](/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin) (which stores jobs in Redis), or some other custom JobQueueStrategy. **Note:** the BullMQJobQueuePlugin is much more efficient than the DefaultJobQueuePlugin, and is recommended for production applications.
+* A custom [SessionCacheStrategy](/reference/typescript-api/auth/session-cache-strategy/) must be used which stores the session cache externally (such as in the database or Redis), since the default strategy stores the cache in-memory and will cause inconsistencies in multi-instance setups. [Example Redis-based SessionCacheStrategy](/reference/typescript-api/auth/session-cache-strategy/)
 * When using cookies to manage sessions, make sure all instances are using the _same_ cookie secret:
-    ```ts
+    ```ts title="src/vendure-config.ts"
     const config: VendureConfig = {
       authOptions: {
         cookieOptions: {
@@ -33,7 +33,7 @@ In order to run Vendure in a multi-instance configuration, there are some import
       }
     }
     ```
-* Channel and Zone data gets cached in-memory as this data is used in virtually every request. The cache time-to-live defaults to 30 seconds, which is probably fine for most cases, but it can be configured in the [EntityOptions]({{< relref "entity-options" >}}#channelcachettl).
+* Channel and Zone data gets cached in-memory as this data is used in virtually every request. The cache time-to-live defaults to 30 seconds, which is probably fine for most cases, but it can be configured in the [EntityOptions](/reference/typescript-api/configuration/entity-options/#channelcachettl).
 
 ## Using Docker or Kubernetes
 
@@ -42,7 +42,7 @@ One way of implementing horizontal scaling is to use Docker to wrap your Vendure
 Some hosting providers allow you to provide a Docker image and will then run multiple instances of that image. Kubernetes can also be used to manage multiple instances
 of a Docker image.
 
-For a more complete guide, see the [Using Docker guide]({{< relref "using-docker" >}}).
+For a more complete guide, see the [Using Docker guide](/guides/deployment/using-docker).
 
 ## Using PM2
 
@@ -64,7 +64,7 @@ The above command will start a cluster of 4 instances. You can also instruct PM2
 
 Note that if you are using pm2 inside a Docker container, you should use the `pm2-runtime` command:
 
-```Dockerfile
+```dockerfile
 # ... your existing Dockerfile config
 RUN npm install pm2 -g
 

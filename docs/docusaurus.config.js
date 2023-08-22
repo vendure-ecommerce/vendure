@@ -121,6 +121,7 @@ const config = {
             prism: {
                 theme: lightCodeTheme,
                 darkTheme: darkCodeTheme,
+                additionalLanguages: ['docker', 'bash'],
             },
             typesense: {
                 // Replace this with the name of your index/collection.

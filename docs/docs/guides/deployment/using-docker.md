@@ -9,13 +9,13 @@ weight: 3
 [Docker](https://docs.docker.com/) is a technology which allows you to run your Vendure application inside a [container](https://docs.docker.com/get-started/#what-is-a-container).
 The default installation with `@vendure/create` includes a sample Dockerfile:
 
-```Dockerfile
+```dockerfile title="Dockerfile"
 FROM node:16
 
 WORKDIR /usr/src/app
 
 COPY package.json ./
-COPY package-lock.json ./
+COPY package-lock.json ./ 
 RUN npm install --production
 COPY . .
 RUN npm run build
@@ -166,7 +166,7 @@ REQUEST: GET http://localhost:3000/health
 }
 ```
 
-Health checks are built on the [Nestjs Terminus module](https://docs.nestjs.com/recipes/terminus). You can also add your own health checks by creating plugins that make use of the [HealthCheckRegistryService]({{< relref "health-check-registry-service" >}}).
+Health checks are built on the [Nestjs Terminus module](https://docs.nestjs.com/recipes/terminus). You can also add your own health checks by creating plugins that make use of the [HealthCheckRegistryService](/reference/typescript-api/health-check/health-check-registry-service/).
 
 ### Worker
 
@@ -174,11 +174,11 @@ Although the worker is not designed as an HTTP server, it contains a minimal HTT
 
 ```ts
 bootstrapWorker(config)
-  .then(worker => worker.startJobQueue())
-  .then(worker => worker.startHealthCheckServer({ port: 3020 }))
-  .catch(err => {
-    console.log(err);
-  });
+    .then(worker => worker.startJobQueue())
+    .then(worker => worker.startHealthCheckServer({ port: 3020 }))
+    .catch(err => {
+        console.log(err);
+    });
 ```
 This will make the `/health` endpoint available. When the worker instance is running, it will return the following:
 
