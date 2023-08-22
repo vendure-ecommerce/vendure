@@ -8,7 +8,7 @@ weight: 5
 
 ## Adding ActionBar buttons
 
-It may not always make sense to navigate to your extension view from the main nav menu. For example, an "order invoice" extension that allows you to print invoices for orders. In this case, you can add new buttons to the "ActionBar", which is the horizontal section at the top of each screen containing the primary actions for that view. This is done using the [addActionBarItem function]({{< relref "add-action-bar-item" >}}).
+It may not always make sense to navigate to your extension view from the main nav menu. For example, an "order invoice" extension that allows you to print invoices for orders. In this case, you can add new buttons to the "ActionBar", which is the horizontal section at the top of each screen containing the primary actions for that view. This is done using the [addActionBarItem function](/reference/admin-ui-api/action-bar/add-action-bar-item/).
 
 ### ActionBar Example
 
@@ -36,7 +36,7 @@ export class SharedExtensionModule {}
 
 ![./ui-extensions-actionbar.webp](./ui-extensions-actionbar.webp)
 
-In each list or detail view in the app, the ActionBar has a unique `locationId` which is how the app knows in which view to place your button. The complete list of available locations into which you can add new ActionBar can be found in the [ActionBarLocationId docs]({{< relref "action-bar-location-id" >}}).
+In each list or detail view in the app, the ActionBar has a unique `locationId` which is how the app knows in which view to place your button. The complete list of available locations into which you can add new ActionBar can be found in the [ActionBarLocationId docs](/reference/admin-ui-api/action-bar/action-bar-location-id/).
 
 ### Adding onClick Actions to ActionBar buttons
 
@@ -91,7 +91,7 @@ Use cases for bulk actions include things like:
 
 ### Bulk Action Example
 
-A bulk action must be provided to a [ui-extension shared module]({{< relref "extending-the-admin-ui" >}}#lazy-vs-shared-modules) using the [`registerBulkAction` function]({{< relref "register-bulk-action" >}})
+A bulk action must be provided to a [ui-extension shared module](/guides/extending-the-admin-ui/introduction/#lazy-vs-shared-modules) using the [`registerBulkAction` function](/reference/admin-ui-api/bulk-actions/register-bulk-action/)
 
 ```ts
 import { NgModule } from '@angular/core';
@@ -156,8 +156,3 @@ registerBulkAction({
   // ...
 });
 ```
-
-Related API docs:
-
-- [`registerBulkAction`]({{< relref "register-bulk-action" >}})
-- [`BulkAction`]({{< relref "bulk-action" >}})

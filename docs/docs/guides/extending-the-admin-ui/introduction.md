@@ -1,8 +1,8 @@
 ---
-title: 'Extending the Admin UI'
+title: 'Introduction'
 ---
 
-# Extending the Admin UI
+# Extending the Admin UI: Introduction
 
 When creating a plugin, you may wish to extend the Admin UI in order to expose a graphical interface to the plugin's functionality.
 

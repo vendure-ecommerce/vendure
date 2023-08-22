@@ -15,7 +15,7 @@ Let's say you have a plugin which adds a new entity to the database called `Prod
 
 ### Use the PaginatedList interface
 
-To use the standardized list component, you need to make sure your plugin exposes this list in the GraphQL API following the [PaginatedList interface]({{< relref "paginated-list" >}}):
+To use the standardized list component, you need to make sure your plugin exposes this list in the GraphQL API following the [PaginatedList interface](/reference/typescript-api/common/paginated-list/):
 
 ```graphql
 type ProductReview implements Node {
@@ -36,11 +36,11 @@ type ProductReviewList implements PaginatedList {
 }
 ```
 
-See the [ListQueryBuilder docs]({{< relref "list-query-builder" >}}) for more information on how to implement this in your server plugin code.
+See the [ListQueryBuilder docs](/reference/typescript-api/data-access/list-query-builder/) for more information on how to implement this in your server plugin code.
 
 ### Create the list component
 
-The list component itself is an Angular component which extends the [BaseListComponent]({{< relref "base-list-component" >}}) or [TypedBaseListComponent]({{< relref "typed-base-list-component" >}}) class.
+The list component itself is an Angular component which extends the [BaseListComponent](/reference/admin-ui-api/list-detail-views/base-list-component/) or [TypedBaseListComponent](/reference/admin-ui-api/list-detail-views/typed-base-list-component) class.
 
 This example assumes you have set up your project to use [GraphQL Code Generator](https://the-guild.dev/graphql/codegen) with the [TypedDocumentNode plugin](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
 
@@ -139,7 +139,7 @@ export class ReviewListComponent extends TypedBaseListComponent<typeof GetReview
 
 ### Create the template
 
-This is the standard layout for any list view. The main functionality is provided by the [DataTable2Component]({{< relref "data-table2component" >}}).
+This is the standard layout for any list view. The main functionality is provided by the [DataTable2Component](/reference/admin-ui-api/components/data-table2component/).
 
 ```html
 <vdr-page-header>
@@ -232,4 +232,4 @@ This is the standard layout for any list view. The main functionality is provide
 
 ### Route config
 
-For an example of how the route config would look for this list view component, see the full example in the [Creating detail views guide]({{< relref "creating-detail-views" >}}#route-config).
+For an example of how the route config would look for this list view component, see the full example in the [Creating detail views guide](/guides/extending-the-admin-ui/creating-detail-views/#route-config).

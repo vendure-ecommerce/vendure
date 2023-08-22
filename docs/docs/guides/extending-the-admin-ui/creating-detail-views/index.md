@@ -15,7 +15,7 @@ Let's say you have a plugin which adds a new entity to the database called `Prod
 
 ### Extend the TypedBaseDetailComponent class
 
-The detail component itself is an Angular component which extends the [BaseDetailComponent]({{< relref "base-detail-component" >}}) or [TypedBaseDetailComponent]({{< relref "typed-base-detail-component" >}}) class.
+The detail component itself is an Angular component which extends the [BaseDetailComponent](/reference/admin-ui-api/list-detail-views/base-detail-component/) or [TypedBaseDetailComponent](/reference/admin-ui-api/list-detail-views/typed-base-detail-component) class.
 
 ```ts
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';

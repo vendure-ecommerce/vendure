@@ -7,9 +7,9 @@ weight: 1
 
 Although the Admin UI is an Angular app, it is possible to create UI extensions using any web technology - React, Vue, plain JavaScript, etc.
 
-{{< alert "primary" >}}
+:::info
 For working examples of a UI extensions built with **Vue** and **React**, see the [real-world-vendure ui extensions](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/ui-extensions)
-{{< /alert >}}
+:::
 
 There is still a small amount of Angular "glue code" needed to let the compiler know how to integrate your extension, so let's take a look at how this is done.
 
@@ -42,93 +42,90 @@ In this example, we will work with the following folder structure, and use Creat
 
 Here's the Angular code needed to tell the compiler where to find your extension:
 
-```ts
-// ui-extension/modules/react-extension.module.ts
-
+```ts title="src/ui-extension/modules/react-extension.module.ts"
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { hostExternalFrame } from '@vendure/admin-ui/core';
 
 @NgModule({
-  imports: [
-    RouterModule.forChild([
-      hostExternalFrame({
-        path: '',
+    imports: [
+        RouterModule.forChild([
+            hostExternalFrame({
+                path: '',
 
-        // You can also use parameters which allow the app
-        // to have dynamic routing, e.g.
-        // path: ':slug'
-        // Then you can use the getActivatedRoute() function from the
-        // UiDevkitClient in order to access the value of the "slug"
-        // parameter.
+                // You can also use parameters which allow the app
+                // to have dynamic routing, e.g.
+                // path: ':slug'
+                // Then you can use the getActivatedRoute() function from the
+                // UiDevkitClient in order to access the value of the "slug"
+                // parameter.
 
-        breadcrumbLabel: 'React App',
-        // This is the URL to the compiled React app index.
-        // The next step will explain the "assets/react-app" path.
-        extensionUrl: './assets/react-app/index.html',
-        openInNewTab: false,
-      }),
-    ]),
-  ],
+                breadcrumbLabel: 'React App',
+                // This is the URL to the compiled React app index.
+                // The next step will explain the "assets/react-app" path.
+                extensionUrl: './assets/react-app/index.html',
+                openInNewTab: false,
+            }),
+        ]),
+    ],
 })
 export class ReactUiExtensionModule {}
 ```
 
-{{< alert "primary" >}}
-Note: If you are using **Create React App**, you should additionally update your package.json file to include the [homepage property](https://create-react-app.dev/docs/deployment/#building-for-relative-paths) so that it works when run from the admin ui assets directory:
+:::note
+If you are using **Create React App**, you should additionally update your package.json file to include the [homepage property](https://create-react-app.dev/docs/deployment/#building-for-relative-paths) so that it works when run from the admin ui assets directory:
 `"homepage": "/admin/assets/react-app/"`
-{{< /alert >}}
+:::
 
 ## 4. Define the AdminUiExtension config
 
-Next we will define an [AdminUiExtension]({{< relref "admin-ui-extension" >}}) object which is passed to the `compileUiExtensions()` function in your Vendure config:
+Next we will define an [AdminUiExtension](/reference/admin-ui-api/ui-devkit/admin-ui-extension/) object which is passed to the `compileUiExtensions()` function in your Vendure config:
 
-```ts
-// vendure-config.ts
+```ts title="src/vendure-config.ts"
 import path from 'path';
 import { VendureConfig } from '@vendure/core';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 
 export const config: VendureConfig = {
-  // ...
-  plugins: [
-    AdminUiPlugin.init({
-      route: "admin",
-      port: 3002,
-      app: compileUiExtensions({
-        outputPath: path.join(__dirname, '../admin-ui'),
-        extensions: [{
-          // Points to the path containing our Angular "glue code" module
-          extensionPath: path.join(__dirname, 'ui-extension/modules'),
-          ngModules: [
-            {
-              // We want to lazy-load our extension...
-              type: 'lazy',
-              // ...when the `/admin/extensions/react-ui`
-              // route is activated
-              route: 'react-ui',
-              // The filename of the extension module
-              // relative to the `extensionPath` above
-              ngModuleFileName: 'react-extension.module.ts',
-              // The name of the extension module class exported
-              // from the module file.
-              ngModuleName: 'ReactUiExtensionModule',
-            },
-          ],
-          staticAssets: [
-            // This is where we tell the compiler to copy the compiled React app
-            // artifacts over to the Admin UI's `/static` directory. In this case we
-            // also rename "build" to "react-app". This is why the `extensionUrl`
-            // in the module config points to './assets/react-app/index.html'.
-            { path: path.join(__dirname, 'ui-extension/react-app/build'), rename: 'react-app' },
-          ],
-        }],
-        devMode: true,
-      }),
-    }),
-  ]
-}
+    // ...
+    plugins: [
+        AdminUiPlugin.init({
+            route: 'admin',
+            port: 3002,
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, '../admin-ui'),
+                extensions: [{
+                    // Points to the path containing our Angular "glue code" module
+                    extensionPath: path.join(__dirname, 'ui-extension/modules'),
+                    ngModules: [
+                        {
+                            // We want to lazy-load our extension...
+                            type: 'lazy',
+                            // ...when the `/admin/extensions/react-ui`
+                            // route is activated
+                            route: 'react-ui',
+                            // The filename of the extension module
+                            // relative to the `extensionPath` above
+                            ngModuleFileName: 'react-extension.module.ts',
+                            // The name of the extension module class exported
+                            // from the module file.
+                            ngModuleName: 'ReactUiExtensionModule',
+                        },
+                    ],
+                    staticAssets: [
+                        // This is where we tell the compiler to copy the compiled React app
+                        // artifacts over to the Admin UI's `/static` directory. In this case we
+                        // also rename "build" to "react-app". This is why the `extensionUrl`
+                        // in the module config points to './assets/react-app/index.html'.
+                        {path: path.join(__dirname, 'ui-extension/react-app/build'), rename: 'react-app'},
+                    ],
+                }],
+                devMode: true,
+            }),
+        }),
+    ]
+};
 ```
 
 ## 5. Build your extension
@@ -172,14 +169,14 @@ If your extension does not have a build step, you can still include the theme st
 
 ### UiDevkitClient
 
-The `@vendure/ui-devkit` package provides a number of helper methods which allow your extension to seamlessly interact with the underlying Admin UI infrastructure, collectively known as the [UiDevkitClient]({{< relref "ui-devkit-client" >}}). The client allows your extension to:
+The `@vendure/ui-devkit` package provides a number of helper methods which allow your extension to seamlessly interact with the underlying Admin UI infrastructure, collectively known as the [UiDevkitClient](/reference/admin-ui-api/ui-devkit/ui-devkit-client/). The client allows your extension to:
 
 * Make GraphQL queries & mutations, without the need for your own HTTP or GraphQL client, with full integration with the Admin UI client-side GraphQL cache.
 * Display toast notifications.
 
 #### setTargetOrigin
 
-The UiDevkitClient uses the browser's [postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) to communicate between the Admin UI app and your extension. For security reasons this communication channel is restricted to a specific domain (where your extension app will be running from). To configure this, use the [setTargetOrigin]({{< relref "ui-devkit-client" >}}#settargetorigin) function:
+The UiDevkitClient uses the browser's [postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) to communicate between the Admin UI app and your extension. For security reasons this communication channel is restricted to a specific domain (where your extension app will be running from). To configure this, use the [setTargetOrigin](/reference/admin-ui-api/ui-devkit/ui-devkit-client/#settargetorigin) function:
 
 ```ts
 import { setTargetOrigin } from '@vendure/ui-devkit';
@@ -213,7 +210,7 @@ const disableProduct = (id: string) => {
 
 If your extension does not have a build step, you can still include the UiDevkitClient as a local resource, which will expose a `VendureUiClient` global object:
 
-```HTML
+```html
 <!-- src/ui-extension/plain-js-app/index.html -->
 <head>
   <script src="../devkit/ui-devkit.js"></script>
@@ -237,4 +234,4 @@ If your extension does not have a build step, you can still include the UiDevkit
 
 ## Next Steps
 
-Now you have created your extension, you need a way for your admin to access it. See [Adding Navigation Items]({{< relref "../modifying-navigation-items" >}})
+Now you have created your extension, you need a way for your admin to access it. See [Adding Navigation Items](/guides/extending-the-admin-ui/modifying-navigation-items/)

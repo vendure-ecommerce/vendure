@@ -5,7 +5,7 @@ weight: 6
 
 # Custom Detail Components
 
-Most of the detail views can be extended with custom Angular components using the [registerCustomDetailComponent function]({{< relref "register-custom-detail-component" >}}).
+Most of the detail views can be extended with custom Angular components using the [registerCustomDetailComponent function](/reference/admin-ui-api/custom-detail-components/register-custom-detail-component/).
 
 Any components registered in this way will appear below the main detail form.
 
@@ -60,5 +60,5 @@ export class ProductInfoComponent implements CustomDetailComponent, OnInit {
 export class SharedExtensionModule {}
 ```
 
-The valid locations for embedding custom detail components can be found in the [CustomDetailComponentLocationId docs]({{< relref "custom-detail-component-location-id" >}}).
+The valid locations for embedding custom detail components can be found in the [CustomDetailComponentLocationId docs](/reference/admin-ui-api/custom-detail-components/custom-detail-component-location-id).
 

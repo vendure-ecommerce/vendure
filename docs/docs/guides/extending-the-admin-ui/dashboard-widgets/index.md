@@ -8,7 +8,7 @@ Dashboard widgets are components which can be added to the Admin UI dashboard. T
 
 The Admin UI comes with a handful of widgets, and you can also create your own widgets.
 
-{{< figure src="./dashboard-widgets.webp" caption="Dashboard widgets" >}}
+![Dashboard widgets](./dashboard-widgets.webp)
 
 ## Example: Reviews Widget
 
@@ -18,9 +18,9 @@ To notify administrators about new reviews that need approval, we'll create a da
 
 ### Create the widget
 
-A dashboard widget is an Angular component. This example features a simplified UI, just to illustrate the overall strucutre:
+A dashboard widget is an Angular component. This example features a simplified UI, just to illustrate the overall structure:
 
-```ts
+```ts title="src/plugins/reviews/ui/components/reviews-widget/reviews-widget.component.ts"
 import { Component, NgModule, OnInit } from '@angular/core';
 import { DataService, SharedModule } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
@@ -72,35 +72,38 @@ export class ReviewsWidgetComponent implements OnInit {
 export class ReviewsWidgetModule {}
 ```
 
-{{% alert %}}
-Note that we also need to define an `NgModule` for this component. This is because we will be lazy-loading the component at run-time, and the NgModule is required for us to use shared providers (e.g. `DataService`) and any shared components, directives or pipes defined in the `@vendure/admin-ui/core` package.
-{{% /alert %}}
+:::note
+We also need to define an `NgModule` for this component. This is because we will be lazy-loading the component at run-time, and the NgModule is required for us to use shared providers (e.g. `DataService`) and any shared components, directives or pipes defined in the `@vendure/admin-ui/core` package.
+:::
 
 ### Register the widget
 
-Our widget now needs to be registered as part of a [shared module]({{< relref "extending-the-admin-ui" >}}#lazy-vs-shared-modules):
+Our widget now needs to be registered as part of a [shared module](/guides/extending-the-admin-ui/introduction#lazy-vs-shared-modules):
 
-```ts
+```ts title="src/plugins/reviews/ui/shared-ui-extension.module.ts"
 import { NgModule } from '@angular/core';
 import { registerDashboardWidget } from '@vendure/admin-ui/core';
 import { reviewPermission } from '../constants';
 
 @NgModule({
-  imports: [],
-  declarations: [],
-  providers: [
-    registerDashboardWidget('reviews', {
-      title: 'Latest reviews',
-      supportedWidths: [4, 6, 8, 12],
-      requiresPermissions: [reviewPermission.Read],
-      loadComponent: () =>
-        import('./reviews-widget/reviews-widget.component').then(
-          m => m.ReviewsWidgetComponent,
-        ),
-    }),
-  ],
+    imports: [],
+    declarations: [],
+    providers: [
+        // highlight-start
+        registerDashboardWidget('reviews', {
+            title: 'Latest reviews',
+            supportedWidths: [4, 6, 8, 12],
+            requiresPermissions: [reviewPermission.Read],
+            loadComponent: () =>
+                import('./reviews-widget/reviews-widget.component').then(
+                    m => m.ReviewsWidgetComponent,
+                ),
+        }),
+        // highlight-end
+    ],
 })
-export class MySharedUiExtensionModule {}
+export class MySharedUiExtensionModule {
+}
 ```
 
 * **`title`** This is the title of the widget that will be displayed in the widget header.
@@ -114,25 +117,27 @@ Once registered, the reviews widget will be available to select by administrator
 
 While administrators can customize which widgets they want to display on the dashboard, and the layout of those widgets, you can also set a default layout:
 
-```ts
+```ts title="src/plugins/reviews/ui/shared-ui-extension.module.ts"
 import { NgModule } from '@angular/core';
 import { registerDashboardWidget, setDashboardWidgetLayout } from '@vendure/admin-ui/core';
 import { reviewPermission } from '../constants';
 
 @NgModule({
-  imports: [],
-  declarations: [],
-  providers: [
-    registerDashboardWidget('reviews', {
-      // omitted for brevity
-    }),
-    setDashboardWidgetLayout([
-      { id: 'welcome', width: 12 },
-      { id: 'orderSummary', width: 4 },
-      { id: 'latestOrders', width: 8 },
-      { id: 'reviews', width: 6 },
-    ]),
-  ],
+    imports: [],
+    declarations: [],
+    providers: [
+        registerDashboardWidget('reviews', {
+            // omitted for brevity
+        }),
+        // highlight-start
+        setDashboardWidgetLayout([
+            {id: 'welcome', width: 12},
+            {id: 'orderSummary', width: 4},
+            {id: 'latestOrders', width: 8},
+            {id: 'reviews', width: 6},
+        ]),
+        // highlight-end
+    ],
 })
 export class MySharedUiExtensionModule {}
 ```
@@ -148,21 +153,23 @@ Sometimes you may wish to alter the permissions settings of the default widgets 
 For example, the "order summary" widget has a default permission requirement of "ReadOrder". If you want to limit the availability to e.g. the SuperAdmin role, you can do so
 by overriding the definition like this:
 
-```ts
+```ts title="src/plugins/reviews/ui/shared-ui-extension.module.ts"
 import { NgModule } from '@angular/core';
 import { registerDashboardWidget } from '@vendure/admin-ui/core';
 import { OrderSummaryWidgetComponent } from '@vendure/admin-ui/dashboard';
 
 @NgModule({
-  imports: [],
-  declarations: [],
-  providers: [
-    registerDashboardWidget('orderSummary', {
-      title: 'dashboard.orders-summary',
-      loadComponent: () => OrderSummaryWidgetComponent,
-      requiresPermissions: ['SuperAdmin'],
-    }),
-  ],
+    imports: [],
+    declarations: [],
+    providers: [
+        // highlight-start
+        registerDashboardWidget('orderSummary', {
+            title: 'dashboard.orders-summary',
+            loadComponent: () => OrderSummaryWidgetComponent,
+            requiresPermissions: ['SuperAdmin'],
+        }),
+        // highlight-end
+    ],
 })
 export class MySharedUiExtensionModule {}
 ```

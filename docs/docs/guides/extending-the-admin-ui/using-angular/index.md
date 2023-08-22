@@ -7,9 +7,9 @@ weight: 0
 
 Writing your UI extensions with Angular results in the best-optimized and most seamless UI extensions, since you can re-use shared components exported by the `@vendure/admin-ui/core` library, and the Angular framework itself is already present in the app.
 
-{{< alert warning >}}
-**Note:** an understanding of [Angular](https://angular.io/) is necessary for successfully working with Angular-based UI extensions. Try [Angular's "Getting Started" guide](https://angular.io/start) to learn more.
-{{< /alert >}}
+:::note
+An understanding of [Angular](https://angular.io/) is necessary for successfully working with Angular-based UI extensions. Try [Angular's "Getting Started" guide](https://angular.io/start) to learn more.
+:::
 
 ## 1. Install `@vendure/ui-devkit`
 
@@ -27,16 +27,15 @@ npm install @vendure/ui-devkit
 
 Here's a very simple Angular component which displays a greeting:
 
-```ts
-// project/ui-extensions/greeter.component.ts
+```ts title="src/plugins/greeter/ui/components/greeter/greeter.component.ts"
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'greeter',
-  template: `<vdr-page-block><h1>{{ greeting }}</h1></vdr-page-block>`,
+    selector: 'greeter',
+    template: `<vdr-page-block><h1>{{ greeting }}</h1></vdr-page-block>`,
 })
 export class GreeterComponent {
-  greeting = 'Hello!';
+    greeting = 'Hello!';
 }
 ```
 
@@ -46,64 +45,62 @@ The `<vdr-page-block>` is just a wrapper that sets the layout and max width of y
 
 Next we need to declare an Angular module to house the component:
 
-```ts
-// project/ui-extensions/greeter.module.ts
+```ts title="src/plugins/greeter/ui/greeter.module.ts"
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '@vendure/admin-ui/core';
 import { GreeterComponent } from './greeter.component';
 
 @NgModule({
-  imports: [
-    SharedModule,
-    RouterModule.forChild([{
-      path: '',
-      pathMatch: 'full',
-      component: GreeterComponent,
-      data: { breadcrumb: 'Greeter' },
-    }]),
-  ],
-  declarations: [GreeterComponent],
+    imports: [
+        SharedModule,
+        RouterModule.forChild([{
+            path: '',
+            pathMatch: 'full',
+            component: GreeterComponent,
+            data: {breadcrumb: 'Greeter'},
+        }]),
+    ],
+    declarations: [GreeterComponent],
 })
 export class GreeterModule {}
 ```
 
-{{< alert "primary" >}}
-**Note:** The `SharedModule` should, in general, always be imported by your extension modules. It provides the basic Angular
+:::note
+The `SharedModule` should, in general, always be imported by your extension modules. It provides the basic Angular
 directives and other common functionality that any extension would require.
-{{< /alert >}}
+:::
 
 ## 4. Pass the extension to the `compileUiExtensions` function
 
 Now we need to tell the `compileUiExtensions` function where to find the extension, and which file contains the NgModule itself (since a non-trivial UI extension will likely contain multiple files).
 
-```ts
-// project/vendure-config.ts
+```ts title="src/vendure-config.ts"
 import path from 'path';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { VendureConfig } from '@vendure/core';
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 
 export const config: VendureConfig = {
-  // ...
-  plugins: [
-    AdminUiPlugin.init({
-      port: 5001,
-      app: compileUiExtensions({
-        outputPath: path.join(__dirname, '../admin-ui'),
-        extensions: [{
-          extensionPath: path.join(__dirname, 'ui-extensions'),
-          ngModules: [{
-            type: 'lazy',
-            route: 'greet',
-            ngModuleFileName: 'greeter.module.ts',
-            ngModuleName: 'GreeterModule',
-          }],
-        }],
-      }),
-    }),
-  ],
-}
+    // ...
+    plugins: [
+        AdminUiPlugin.init({
+            port: 5001,
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, '../admin-ui'),
+                extensions: [{
+                    extensionPath: path.join(__dirname, 'ui-extensions'),
+                    ngModules: [{
+                        type: 'lazy',
+                        route: 'greet',
+                        ngModuleFileName: 'greeter.module.ts',
+                        ngModuleName: 'GreeterModule',
+                    }],
+                }],
+            }),
+        }),
+    ],
+};
 ```
 
 ## 5. Start the server to compile
@@ -112,15 +109,11 @@ The `compileUiExtensions()` function returns a `compile()` function which will b
 
 Next, these source files will be run through the Angular compiler, the output of which will be visible in the console.
 
-{{< alert "warning" >}}
-**Note:** The first time the compiler is run, an additional step ([compatibility compiler](https://angular.io/guide/ivy#ivy-and-libraries)) is run to make sure all dependencies work with the latest version of Angular. This step can take up to a few minutes.
-{{< /alert >}}
-
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greet` and you should see the component with the "Hello!" header:
 
 ![./ui-extensions-greeter.webp](./ui-extensions-greeter.webp)
 
-{{< alert warning >}}
+:::caution
 **Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`. You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array:
 ```json
 {
@@ -129,9 +122,4 @@ Now go to the Admin UI app in your browser and log in. You should now be able to
   ]
 }
 ```
-{{< /alert >}}
-
-
-## Next Steps
-
-Now you have created your new route, you need a way for your admin to access it. See [Adding Navigation Items]({{< relref "../modifying-navigation-items" >}})
+:::
