@@ -5,7 +5,7 @@ weight: 6
 
 # Custom History Timeline Components
 
-The Order & Customer detail pages feature a timeline of history entries. Since v1.9.0 it is possible to define custom history entry types - see the [HistoryService docs](0/reference/typescript-api/services/history-service/) for an example.
+The Order & Customer detail pages feature a timeline of history entries. Since v1.9.0 it is possible to define custom history entry types - see the [HistoryService docs](/reference/typescript-api/services/history-service/) for an example.
 
 You can also define a custom Angular component to render any timeline entry using the [registerHistoryEntryComponent function](/reference/admin-ui-api/custom-history-entry-components/register-history-entry-component/).
 
