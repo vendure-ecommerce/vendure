@@ -1,6 +1,7 @@
 export * from './finite-state-machine/finite-state-machine';
 export * from './finite-state-machine/types';
 export * from './async-queue';
+export * from './calculated-decorator';
 export * from './error/errors';
 export * from './error/error-result';
 export * from './error/generated-graphql-admin-errors';
