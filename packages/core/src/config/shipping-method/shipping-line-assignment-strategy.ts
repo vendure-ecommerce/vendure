@@ -19,6 +19,33 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
  *
  * :::
  *
+ * Here's an example of a custom ShippingLineAssignmentStrategy which assigns digital products to a
+ * different ShippingLine to physical products:
+ *
+ * ```ts
+ * import {
+ *     Order,
+ *     OrderLine,
+ *     RequestContext,
+ *     ShippingLine,
+ *     ShippingLineAssignmentStrategy,
+ * } from '\@vendure/core';
+ *
+ * export class DigitalShippingLineAssignmentStrategy implements ShippingLineAssignmentStrategy {
+ *     assignShippingLineToOrderLines(
+ *         ctx: RequestContext,
+ *         shippingLine: ShippingLine,
+ *         order: Order,
+ *     ): OrderLine[] | Promise<OrderLine[]> {
+ *         if (shippingLine.shippingMethod.customFields.isDigital) {
+ *             return order.lines.filter(l => l.productVariant.customFields.isDigital);
+ *         } else {
+ *             return order.lines.filter(l => !l.productVariant.customFields.isDigital);
+ *         }
+ *     }
+ * }
+ * ```
+ *
  * @since 2.0.0
  * @docsCategory shipping
  */
