@@ -80,12 +80,13 @@ class Channel extends VendureEntity {
 
 <MemberInfo kind="property" type={`string`}   />
 
-
+The name of the Channel. For example "US Webstore" or "German Webstore".
 ### token
 
 <MemberInfo kind="property" type={`string`}   />
 
-
+A unique token (string) used to identify the Channel in the `vendure-token` header of the
+GraphQL API requests.
 ### description
 
 <MemberInfo kind="property" type={`string`}   />

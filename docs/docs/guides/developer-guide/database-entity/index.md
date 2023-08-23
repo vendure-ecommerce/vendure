@@ -117,4 +117,4 @@ The full list of TypeORM decorators can be found in the [TypeORM decorator refer
 
 ## Corresponding GraphQL type
 
-Once you have defined a new DB entity, it is likely that you want to expose it in your GraphQL API. Here's how to [define a new type in your GraphQL API](/guides/how-to/extend-graphql-api/#defining-a-new-type).
+Once you have defined a new DB entity, it is likely that you want to expose it in your GraphQL API. Here's how to [define a new type in your GraphQL API](/guides/developer-guide/extend-graphql-api/#defining-a-new-type).

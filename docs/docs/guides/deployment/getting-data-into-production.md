@@ -43,7 +43,7 @@ Set the `DB_SYNCHRONIZE` variable to `true` on first start, and then after the s
 
 ## Importing initial & catalog data
 
-Importing initial and catalog data can be handled by Vendure `populate()` helper function - see the [Importing Product Data guide](/guides/how-to/importing-data/).
+Importing initial and catalog data can be handled by Vendure `populate()` helper function - see the [Importing Product Data guide](/guides/developer-guide/importing-data/).
 
 ## Importing other data
 

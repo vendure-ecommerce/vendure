@@ -87,9 +87,10 @@ html[data-theme='dark'] {
 
 .sidebar-section-header {
     text-transform: uppercase;
-    /*font-weight: bold;*/
+    font-weight: bold;
     font-size: 12px;
-    opacity: 0.6;
+    opacity: 0.8;
+    color: var(--ifm-color-primary-dark);
     padding: var(--ifm-menu-link-padding-vertical)
          var(--ifm-menu-link-padding-horizontal);
 }

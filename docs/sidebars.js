@@ -77,10 +77,20 @@ const sidebars = {
                 'guides/developer-guide/worker-job-queue/index',
                 {
                     type: 'html',
+                    value: 'Extend',
+                    className: 'sidebar-section-header',
+                },
+                'guides/developer-guide/rest-endpoint/index',
+                'guides/developer-guide/custom-permissions/index',
+                'guides/developer-guide/database-entity/index',
+                'guides/developer-guide/extend-graphql-api/index',
+                {
+                    type: 'html',
                     value: 'Advanced Topics',
                     className: 'sidebar-section-header',
                 },
                 'guides/developer-guide/db-subscribers/index',
+                'guides/developer-guide/importing-data/index',
                 'guides/developer-guide/logging/index',
                 {
                     type: 'category',
@@ -89,6 +99,7 @@ const sidebars = {
                 },
                 'guides/developer-guide/stand-alone-scripts/index',
                 'guides/developer-guide/translations/index',
+                'guides/developer-guide/uploading-files/index',
             ],
             customProps: {
                 icon: icon.angleBrackets,
