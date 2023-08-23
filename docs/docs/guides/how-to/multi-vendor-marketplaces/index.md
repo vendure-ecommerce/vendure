@@ -1,6 +1,5 @@
 ---
 title: "Multi-vendor Marketplaces"
-showtoc: true
 ---
 
 # Multi-vendor Marketplaces

@@ -1,0 +1,192 @@
+---
+title: "Paginated lists"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Vendure's list queries follow a set pattern which allows for pagination, filtering & sorting. This guide will demonstrate how
+to implement your own paginated list queries.
+
+## API definition
+
+Let's start with defining the GraphQL schema for our query. In this example, we'll image that we have defined a [custom entity](/guides/developer-guide/database-entity/) to
+represent a `ProductReview`. We want to be able to query a list of reviews in the Admin API. Here's how the schema definition
+would look:
+
+```ts title="src/plugins/reviews/api/api-extensions.ts"
+import gql from 'graphql-tag';
+
+export const adminApiExtensions = gql`
+type ProductReview implements Node {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  product: Product!
+  productId: ID!
+  text: String!
+  rating: Float!
+}
+
+type ProductReviewList implements PaginatedList {
+  items: [ProductReview!]!
+  totalItems: Int!
+}
+
+# Generated at run-time by Vendure
+input ProductReviewListOptions
+
+extend type Query {
+   productReviews(options: ProductReviewListOptions): ProductReviewList!
+}
+`;
+```
+
+Note that we need to follow these conventions:
+
+- The type must implement the `Node` interface, i.e. it must have an `id: ID!` field.
+- The list type must be named `<EntityName>List` and must implement the `PaginatedList` interface.
+- The list options input type must be named `<EntityName>ListOptions`.
+
+Given this schema, at runtime Vendure will automatically generate the `ProductReviewListOptions` input type, including all the
+filtering & sorting fields. This means that we don't need to define the input type ourselves.
+
+## Resolver
+
+Next, we need to define the resolver for the query.
+
+```ts title="src/plugins/reviews/api/admin.resolver.ts"
+import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Ctx, PaginatedList, RequestContext } from '@vendure/core';
+
+import { ProductReview } from '../entities/product-review.entity';
+import { ProductReviewService } from '../services/product-review.service';
+
+@Resolver()
+export class ProductReviewAdminResolver {
+    constructor(private productReviewService: ProductReviewService) {}
+
+    @Query()
+    async productReviews(
+        @Ctx() ctx: RequestContext,
+        @Args() args: any,
+    ): Promise<PaginatedList<ProductReview>> {
+        return this.productReviewService.findAll(ctx, args.options || undefined);
+    }
+}
+```
+
+## Service
+
+Finally, we need to implement the `findAll()` method on the `ProductReviewService`. Here we will use the
+[`ListQueryBuilder`](/reference/typescript-api/data-access/list-query-builder/) to build the list query. The
+`ListQueryBuilder` will take care of
+
+```ts title="src/plugins/reviews/services/product-review.service.ts"
+import { Injectable } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/typeorm';
+import { ListQueryBuilder, ListQueryOptions, PaginatedList, RequestContext } from '@vendure/core';
+
+import { ProductReview } from '../entities/product-review.entity';
+
+@Injectable()
+export class ProductReviewService {
+    constructor(
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
+
+    findAll(ctx: RequestContext, options?: ListQueryOptions<ProductReview>): Promise<PaginatedList<ProductReview>> {
+        return this.listQueryBuilder
+            .build(ProductReview, options, { relations: ['product'], ctx })
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({ items, totalItems }));
+    }
+}
+```
+
+## Usage
+
+Given the above parts of the plugin, we can now query the list of reviews in the Admin API:
+
+
+<Tabs>
+<TabItem value="Query" label="Query" default>
+
+```graphql
+query {
+  productReviews(
+    options: {
+      // highlight-start
+      skip: 0
+      take: 10
+      sort: {
+        createdAt: DESC
+      }
+      filter: {
+        rating: {
+          between: { start: 3, end: 5 }
+        }
+      }
+      // highlight-end
+  ) {
+    totalItems
+    items {
+      id
+      createdAt
+      product {
+        name
+      }
+      text
+      rating
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Response" label="Response" >
+
+```json
+{
+  "data": {
+    "productReviews": {
+      "totalItems": 3,
+      "items": [
+        {
+          "id": "12",
+          "createdAt": "2023-08-23T12:00:00Z",
+          "product": {
+            "name": "Smartphone X"
+          },
+          "text": "The best phone I've ever had!",
+          "rating": 5
+        },
+        {
+          "id": "42",
+          "createdAt": "2023-08-22T15:30:00Z",
+          "product": {
+            "name": "Laptop Y"
+          },
+          "text": "Impressive performance and build quality.",
+          "rating": 4
+        },
+        {
+          "id": "33",
+          "createdAt": "2023-08-21T09:45:00Z",
+          "product": {
+            "name": "Headphones Z"
+          },
+          "text": "Decent sound quality but uncomfortable.",
+          "rating": 3
+        }
+      ]
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+In the above example, we are querying the first 10 reviews, sorted by `createdAt` in descending order, and filtered to only
+include reviews with a rating between 3 and 5.
