@@ -1,7 +1,8 @@
+import { ApolloServerPlugin } from '@apollo/server';
+import { RenderPageOptions } from '@apollographql/graphql-playground-html';
 import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { PluginDefinition } from 'apollo-server-core';
 import { ValidationContext } from 'graphql';
 import { DataSourceOptions } from 'typeorm';
 
@@ -96,7 +97,7 @@ export interface ApiOptions {
      *
      * @default false
      */
-    adminApiPlayground?: boolean | any;
+    adminApiPlayground?: boolean | RenderPageOptions;
     /**
      * @description
      * The playground config to the shop GraphQL API
@@ -104,7 +105,7 @@ export interface ApiOptions {
      *
      * @default false
      */
-    shopApiPlayground?: boolean | any;
+    shopApiPlayground?: boolean | RenderPageOptions;
     /**
      * @description
      * The debug config to the admin GraphQL API
@@ -186,7 +187,7 @@ export interface ApiOptions {
      *
      * @default []
      */
-    apolloServerPlugins?: PluginDefinition[];
+    apolloServerPlugins?: ApolloServerPlugin[];
     /**
      * @description
      * Controls whether introspection of the GraphQL APIs is enabled. For production, it is recommended to disable
