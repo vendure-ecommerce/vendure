@@ -47,4 +47,4 @@ Importing initial and catalog data can be handled by Vendure `populate()` helper
 
 ## Importing other data
 
-Any kinds of data not covered by the `populate()` function can be imported using a custom script, which can use any Vendure service or service defined by your custom plugins to populate data in any way you like. See the [Stand-alone scripts guide](/guides/advanced-topics/stand-alone-scripts).
+Any kinds of data not covered by the `populate()` function can be imported using a custom script, which can use any Vendure service or service defined by your custom plugins to populate data in any way you like. See the [Stand-alone scripts guide](/guides/developer-guide/stand-alone-scripts/).

@@ -263,7 +263,7 @@ Running this script will populate the database with the test data like when you 
 
 ### Custom populate scripts
 
-If you require more control over how your data is being imported - for example if you also need to import data into custom entities, or import customer or order information - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts](/guides/advanced-topics/stand-alone-scripts).
+If you require more control over how your data is being imported - for example if you also need to import data into custom entities, or import customer or order information - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts](/guides/developer-guide/stand-alone-scripts/).
 
 In addition to all the services available in the [Service Layer](/guides/developer-guide/the-service-layer/), the following specialized import services are available:
 

@@ -384,7 +384,7 @@ export class FieldOverrideExampleResolver {
 
 When dealing with operations that return a GraphQL union type, there is an extra step needed.
 
-Union types are commonly returned from mutations in the Vendure APIs. For more detail on this see the section on [ErrorResults](/guides/advanced-topics/error-handling#expected-errors-errorresults). For example: 
+Union types are commonly returned from mutations in the Vendure APIs. For more detail on this see the section on [ErrorResults](/guides/developer-guide/error-handling#expected-errors-errorresults). For example: 
 
 ```graphql
 type MyCustomErrorResult implements ErrorResult {

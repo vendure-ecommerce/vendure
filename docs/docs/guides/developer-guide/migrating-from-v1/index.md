@@ -1,6 +1,7 @@
 ---
 title: "Migrating from v1"
 weight: 2
+sidebar_position: 1
 ---
 
 # Migrating from Vendure 1 to 2

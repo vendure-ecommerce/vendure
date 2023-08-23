@@ -8,6 +8,10 @@ write any types for your API calls.
 
 To do this, we will use [Graphql Code Generator](https://the-guild.dev/graphql/codegen).
 
+:::note
+Code generation can be used when building a storefront _as well as_ when building backend plugins.
+:::
+
 ## Installation
 
 Follow the installation instructions in the [GraphQL Code Generator Quick Start](https://the-guild.dev/graphql/codegen/docs/getting-started/installation).
@@ -143,3 +147,7 @@ export default function App() {
 In the above example, the type information all works out of the box because the `graphql-request` library from v5.0.0
 has built-in support for the [`TypedDocumentNode`](https://github.com/dotansimha/graphql-typed-document-node) type,
 as do the latest versions of most of the popular GraphQL client libraries, such as Apollo Client & Urql.
+
+:::note
+In the documentation examples on other pages, we do not assume the use of code generation in order to keep the examples as simple as possible.
+:::

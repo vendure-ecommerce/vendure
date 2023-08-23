@@ -1,6 +1,6 @@
 ---
 title: "Breaking API Changes"
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Breaking API Changes

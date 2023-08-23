@@ -87,9 +87,15 @@ html[data-theme='dark'] {
 
 .sidebar-section-header {
     text-transform: uppercase;
-    font-weight: bold;
+    /*font-weight: bold;*/
     font-size: 12px;
     opacity: 0.6;
     padding: var(--ifm-menu-link-padding-vertical)
          var(--ifm-menu-link-padding-horizontal);
+}
+
+.sidebar-section-divider {
+    border-bottom: 1px solid var(--ifm-font-color-base);
+    opacity: 0.2;
+    margin: 6px 12px;
 }
