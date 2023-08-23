@@ -38,7 +38,7 @@ const config = {
 
 With the example config above, the following will occur:
 
-1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide](/TODO).
+1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide](/guides/developer-guide/migrations/).
 2. The GraphQL APIs will be modified to add the custom fields to the `Product` and `User` types respectively.
 3. If you are using the [AdminUiPlugin](/reference/core-plugins/admin-ui-plugin/), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited, and the list view data tables will allow custom field columns to be added, sorted and filtered.
 
@@ -909,7 +909,7 @@ This table shows the default form input component used for each custom field typ
 
 The Admin UI app has built-in selection components for "relation" custom fields that reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will see a generic relation component which allows you to manually enter the ID of the entity you wish to select.
 
-If the generic selector is not suitable, or is you wish to replace one of the built-in selector components, you can create a UI extension that defines a custom field control for that custom field. You can read more about this in the [custom form input guide](/TODO)
+If the generic selector is not suitable, or is you wish to replace one of the built-in selector components, you can create a UI extension that defines a custom field control for that custom field. You can read more about this in the [custom form input guide](/guides/extending-the-admin-ui/custom-form-inputs/)
 :::
 
 ### Specifying the input component
@@ -995,7 +995,7 @@ The various configuration options for each of the built-in form input  (e.g. `su
 
 ### Custom form input components
 
-If none of the built-in form input components are suitable, you can create your own. This is a more advanced topic which is covered in detail in the [Custom Form Input Components](/TODO) guide.
+If none of the built-in form input components are suitable, you can create your own. This is a more advanced topic which is covered in detail in the [Custom Form Input Components](/guides/extending-the-admin-ui/custom-form-inputs/) guide.
 
 
 ## Tabbed custom fields
