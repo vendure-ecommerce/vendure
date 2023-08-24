@@ -40,7 +40,7 @@ import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    configure: config => {
+    configuration: config => {
         config.customFields.Customer.push({
             type: 'string',
             name: 'avatarUrl',
@@ -174,7 +174,7 @@ We'll start by creating a new directory to house our plugin, add create the main
             ├── wishlist.plugin.ts
 ```
 
-```ts title="src/plugins/reviews-plugin/reviews.plugin.ts"
+```ts title="src/plugins/wishlist-plugin/wishlist.plugin.ts"
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
