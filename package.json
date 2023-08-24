@@ -10,7 +10,6 @@
     "watch:core-common": "lerna run --scope @vendure/common --scope @vendure/core watch --parallel",
     "lint": "yarn eslint --fix",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
-    "bootstrap": "lerna bootstrap",
     "docs:generate-typescript-docs": "ts-node scripts/docs/generate-typescript-docs.ts",
     "docs:generate-graphql-docs": "ts-node scripts/docs/generate-graphql-docs.ts --api=shop && ts-node scripts/docs/generate-graphql-docs.ts --api=admin",
     "docs:update-build-info": "ts-node scripts/docs/update-build-info.ts",
