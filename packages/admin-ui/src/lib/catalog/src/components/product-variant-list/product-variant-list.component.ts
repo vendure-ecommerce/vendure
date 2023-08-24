@@ -19,6 +19,7 @@ export class ProductVariantListComponent
     @Input() hideLanguageSelect = false;
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilters([
             {
@@ -26,12 +27,6 @@ export class ProductVariantListComponent
                 type: { kind: 'text' },
                 label: _('common.name'),
                 filterField: 'name',
-            },
-            {
-                name: 'id',
-                type: { kind: 'text' },
-                label: _('common.id'),
-                filterField: 'id',
             },
             {
                 name: 'enabled',

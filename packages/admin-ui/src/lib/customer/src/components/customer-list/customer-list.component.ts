@@ -38,6 +38,7 @@ export class CustomerListComponent
     implements OnInit
 {
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'firstName',

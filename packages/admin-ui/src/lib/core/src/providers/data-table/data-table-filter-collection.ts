@@ -2,11 +2,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Subject } from 'rxjs';
 import extend from 'just-extend';
+import { Subject } from 'rxjs';
 import {
     CustomFieldConfig,
     DateOperators,
+    IdOperators,
     NumberOperators,
     StringOperators,
 } from '../../common/generated-types';
@@ -15,6 +16,7 @@ import {
     DataTableFilterBooleanType,
     DataTableFilterCustomType,
     DataTableFilterDateRangeType,
+    DataTableFilterIDType,
     DataTableFilterNumberType,
     DataTableFilterOptions,
     DataTableFilterSelectType,
@@ -44,6 +46,10 @@ export class FilterWithValue<Type extends DataTableFilterType = DataTableFilterT
         for (const fn of this.onUpdateFns) {
             fn(value);
         }
+    }
+
+    isId(): this is FilterWithValue<DataTableFilterIDType> {
+        return this.filter.type.kind === 'id';
     }
 
     isText(): this is FilterWithValue<DataTableFilterTextType> {
@@ -110,6 +116,20 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             this.addFilter(config);
         }
         return this;
+    }
+
+    addIdFilter(): FilterInput extends {
+        id?: IdOperators | null;
+    }
+        ? DataTableFilterCollection<FilterInput>
+        : never {
+        this.addFilter({
+            name: 'id',
+            type: { kind: 'id' },
+            label: _('common.id'),
+            filterField: 'id',
+        });
+        return this as any;
     }
 
     addDateFilters(): FilterInput extends {
@@ -219,14 +239,22 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
         return this;
     }
 
-    serializeValue<Type extends DataTableFilterType>(
+    serialize(): string {
+        return this.#activeFilters
+            .map(
+                (filterWithValue, i) =>
+                    `${filterWithValue.filter.name}:${this.serializeValue(filterWithValue)}`,
+            )
+            .join(';');
+    }
+
+    private serializeValue<Type extends DataTableFilterType>(
         filterWithValue: FilterWithValue<Type>,
     ): string | undefined {
-        const valueAsType = <T extends DataTableFilter<any, any>>(
-            _filter: T,
-            _value: DataTableFilterValue<any>,
-        ): T extends DataTableFilter<any, infer R> ? DataTableFilterValue<R> : any => _value;
-
+        if (filterWithValue.isId()) {
+            const val = filterWithValue.value;
+            return `${val?.operator},${val?.term}`;
+        }
         if (filterWithValue.isText()) {
             const val = filterWithValue.value;
             return `${val?.operator},${val?.term}`;
@@ -249,8 +277,15 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
         }
     }
 
-    deserializeValue(filter: DataTableFilter, value: string): DataTableFilterValue<DataTableFilterType> {
+    private deserializeValue(
+        filter: DataTableFilter,
+        value: string,
+    ): DataTableFilterValue<DataTableFilterType> {
         switch (filter.type.kind) {
+            case 'id': {
+                const [operator, term] = value.split(',') as [keyof StringOperators, string];
+                return { operator, term };
+            }
             case 'text': {
                 const [operator, term] = value.split(',') as [keyof StringOperators, string];
                 return { operator, term };
@@ -273,15 +308,6 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             default:
                 assertNever(filter.type);
         }
-    }
-
-    private serialize(): string {
-        return this.#activeFilters
-            .map(
-                (filterWithValue, i) =>
-                    `${filterWithValue.filter.name}:${this.serializeValue(filterWithValue)}`,
-            )
-            .join(';');
     }
 
     private onActivateFilter(filter: DataTableFilter<any, any>, value: DataTableFilterValue<any>) {

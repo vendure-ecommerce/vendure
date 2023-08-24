@@ -32,8 +32,8 @@ export class SellerListComponent
 {
     readonly customFields = this.getCustomFieldConfig('Seller');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
-
         .addFilter({
             name: 'name',
             type: { kind: 'text' },

@@ -36,6 +36,7 @@ export class RoleListComponent
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'code',
