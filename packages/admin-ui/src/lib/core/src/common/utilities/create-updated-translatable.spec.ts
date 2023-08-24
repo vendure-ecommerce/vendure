@@ -184,11 +184,11 @@ describe('createUpdatedTranslatable()', () => {
 
     it('coerces empty customFields to correct type', () => {
         const customFieldConfig: CustomFieldConfig[] = [
-            { name: 'a', type: 'boolean', list: false },
-            { name: 'b', type: 'int', list: false },
-            { name: 'c', type: 'float', list: false },
-            { name: 'd', type: 'datetime', list: false },
-            { name: 'e', type: 'string', list: false },
+            { name: 'a', type: 'boolean', list: false, nullable: false },
+            { name: 'b', type: 'int', list: false, nullable: false },
+            { name: 'c', type: 'float', list: false, nullable: false },
+            { name: 'd', type: 'datetime', list: false, nullable: false },
+            { name: 'e', type: 'string', list: false, nullable: false },
         ];
 
         const formValue = {
