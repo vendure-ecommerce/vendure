@@ -29,6 +29,6 @@
     },
     "dependencies": {
         "date-fns": "^2.30.0",
-        "fs-extra": "^10.0.0"
+        "fs-extra": "^11.1.1"
     }
 }
