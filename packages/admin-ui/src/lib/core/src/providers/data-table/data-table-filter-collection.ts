@@ -4,6 +4,7 @@ import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import extend from 'just-extend';
 import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import {
     CustomFieldConfig,
     DateOperators,
@@ -82,7 +83,7 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     #activeFilters: FilterWithValue[] = [];
     #valueChanges$ = new Subject<FilterWithValue[]>();
     #connectedToRouter = false;
-    valueChanges = this.#valueChanges$.asObservable();
+    valueChanges = this.#valueChanges$.asObservable().pipe(debounceTime(10));
     readonly #filtersQueryParamName = 'filters';
 
     constructor(private router: Router) {}
@@ -217,25 +218,41 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     }
 
     connectToRoute(route: ActivatedRoute) {
-        this.valueChanges.subscribe(value => {
+        this.valueChanges.subscribe(() => {
             this.router.navigate(['./'], {
                 queryParams: { [this.#filtersQueryParamName]: this.serialize(), page: 1 },
                 relativeTo: route,
                 queryParamsHandling: 'merge',
             });
         });
-        const filterQueryParams = (route.snapshot.queryParamMap.get(this.#filtersQueryParamName) ?? '')
-            .split(';')
-            .map(value => value.split(':'))
-            .map(([name, value]) => ({ name, value }));
-        for (const { name, value } of filterQueryParams) {
-            const filter = this.getFilter(name);
-            if (filter) {
-                const val = this.deserializeValue(filter, value);
-                this.#activeFilters.push(this.createFacetWithValue(filter, val));
-            }
-        }
+
+        route.queryParamMap
+            .pipe(
+                map(params => params.get(this.#filtersQueryParamName)),
+                distinctUntilChanged(),
+                startWith(route.snapshot.queryParamMap.get(this.#filtersQueryParamName) ?? ''),
+            )
+            .subscribe(value => {
+                this.#activeFilters = [];
+                if (value === '') {
+                    this.#valueChanges$.next(this.#activeFilters);
+                    return;
+                }
+                const filterQueryParams = (value ?? '')
+                    .split(';')
+                    .map(value => value.split(':'))
+                    .map(([name, value]) => ({ name, value }));
+                for (const { name, value } of filterQueryParams) {
+                    const filter = this.getFilter(name);
+                    if (filter) {
+                        const val = this.deserializeValue(filter, value);
+                        filter.activate(val);
+                    }
+                }
+            });
+
         this.#connectedToRouter = true;
+
         return this;
     }
 
@@ -311,11 +328,11 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     }
 
     private onActivateFilter(filter: DataTableFilter<any, any>, value: DataTableFilterValue<any>) {
-        this.#activeFilters.push(this.createFacetWithValue(filter, value));
+        this.#activeFilters.push(this.createFilterWithValue(filter, value));
         this.#valueChanges$.next(this.#activeFilters);
     }
 
-    private createFacetWithValue(
+    private createFilterWithValue(
         filter: DataTableFilter<any, any>,
         value: DataTableFilterValue<DataTableFilterType>,
     ) {
