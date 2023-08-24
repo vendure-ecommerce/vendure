@@ -217,7 +217,7 @@ describe('createUpdatedTranslatable()', () => {
         expect(result.customFields.c).toBe(0);
         expect(result.customFields.d instanceof Date).toBe(true);
         expect(result.customFields.e).toBe('');
-        expect(result.customFields.e).toBe(null);
+        expect(result.customFields.f).toBe(null);
         expect(result.customFields.g).toBe(null);
     });
 });
