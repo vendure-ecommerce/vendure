@@ -189,6 +189,8 @@ describe('createUpdatedTranslatable()', () => {
             { name: 'c', type: 'float', list: false, nullable: false },
             { name: 'd', type: 'datetime', list: false, nullable: false },
             { name: 'e', type: 'string', list: false, nullable: false },
+            { name: 'f', type: 'int', list: false, nullable: true },
+            { name: 'g', type: 'datetime', list: false, nullable: true },
         ];
 
         const formValue = {
@@ -198,6 +200,8 @@ describe('createUpdatedTranslatable()', () => {
                 c: '',
                 d: '',
                 e: '',
+                f: '',
+                g: '',
             },
         };
 
@@ -213,5 +217,7 @@ describe('createUpdatedTranslatable()', () => {
         expect(result.customFields.c).toBe(0);
         expect(result.customFields.d instanceof Date).toBe(true);
         expect(result.customFields.e).toBe('');
+        expect(result.customFields.e).toBe(null);
+        expect(result.customFields.g).toBe(null);
     });
 });
