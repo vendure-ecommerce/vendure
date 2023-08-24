@@ -39,7 +39,9 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
                 newTranslatedCustomFields[field.name] = value;
             } else {
                 newCustomFields[field.name] =
-                    value === '' ? getDefaultValue(field.type as CustomFieldType) : value;
+                    value === ''
+                        ? getDefaultValue(field.type as CustomFieldType, field.nullable ?? true)
+                        : value;
             }
         }
         newTranslation.customFields = newTranslatedCustomFields;
@@ -59,7 +61,7 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
     return newTranslatable;
 }
 
-function getDefaultValue(type: CustomFieldType): any {
+function getDefaultValue(type: CustomFieldType, isNullable?: boolean): any {
     switch (type) {
         case 'localeString':
         case 'string':
@@ -70,9 +72,9 @@ function getDefaultValue(type: CustomFieldType): any {
             return false;
         case 'float':
         case 'int':
-            return 0;
+            return isNullable ? null : 0;
         case 'datetime':
-            return new Date();
+            return isNullable ? null : new Date();
         case 'relation':
             return null;
         default:
