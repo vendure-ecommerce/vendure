@@ -3,6 +3,13 @@
     <ng-container *ngIf="filterWithValue.isSelect()">
         {{ filterWithValue.value?.join(', ') }}
     </ng-container>
+    <ng-container *ngIf="filterWithValue.isId()">
+        <span *ngIf="filterWithValue.value?.operator === 'eq'">{{ 'common.operator-eq' | translate }}</span>
+        <span *ngIf="filterWithValue.value?.operator === 'notEq'">{{
+            'common.operator-not-eq' | translate
+        }}</span>
+        <span> "{{ filterWithValue.value?.term }}"</span>
+    </ng-container>
     <ng-container *ngIf="filterWithValue.isText()">
         <span *ngIf="filterWithValue.value?.operator === 'contains'">{{
             'common.operator-contains' | translate

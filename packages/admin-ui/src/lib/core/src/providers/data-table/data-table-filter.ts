@@ -5,9 +5,14 @@ import { FormInputComponent } from '../../common/component-registry-types';
 import {
     BooleanOperators,
     DateOperators,
+    IdOperators,
     NumberOperators,
     StringOperators,
 } from '../../common/generated-types';
+
+export interface DataTableFilterIDType {
+    kind: 'id';
+}
 
 export interface DataTableFilterTextType {
     kind: 'text';
@@ -41,6 +46,13 @@ export interface DataTableFilterCustomType {
 }
 
 export type KindValueMap = {
+    id: {
+        raw: {
+            operator: keyof IdOperators;
+            term: string;
+        };
+        input: IdOperators;
+    };
     text: {
         raw: {
             operator: keyof StringOperators;
@@ -55,6 +67,7 @@ export type KindValueMap = {
     custom: { raw: any; input: any };
 };
 export type DataTableFilterType =
+    | DataTableFilterIDType
     | DataTableFilterTextType
     | DataTableFilterSelectType
     | DataTableFilterBooleanType
@@ -137,6 +150,10 @@ export class DataTableFilter<
                 return {
                     [value.operator]: value.term,
                 };
+            case 'id':
+                return {
+                    [value.operator]: value.term,
+                };
             case 'custom': {
                 return value;
             }
@@ -162,6 +179,10 @@ export class DataTableFilter<
         if (this.onActivate) {
             this.onActivate(this, value);
         }
+    }
+
+    isId(): this is DataTableFilter<FilterInput, DataTableFilterIDType> {
+        return this.type.kind === 'id';
     }
 
     isText(): this is DataTableFilter<FilterInput, DataTableFilterTextType> {

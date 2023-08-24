@@ -11,7 +11,7 @@ import {
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { FormInputComponent } from '../../../common/component-registry-types';
-import { DateOperators, LanguageCode } from '../../../common/generated-types';
+import { DateOperators } from '../../../common/generated-types';
 import { DataTableFilter, KindValueMap } from '../../../providers/data-table/data-table-filter';
 import {
     DataTableFilterCollection,
@@ -71,6 +71,20 @@ export class DataTableFiltersComponent implements AfterViewInit {
 
     selectFilter(filter: DataTableFilter, value?: any) {
         this.selectedFilter = filter;
+        if (filter.isId()) {
+            this.formControl = new FormGroup(
+                {
+                    operator: new FormControl(value?.operator ?? 'eq'),
+                    term: new FormControl(value?.term ?? ''),
+                },
+                control => {
+                    if (!control.value.term) {
+                        return { noSelection: true };
+                    }
+                    return null;
+                },
+            );
+        }
         if (filter.isText()) {
             this.formControl = new FormGroup(
                 {
@@ -177,6 +191,12 @@ export class DataTableFiltersComponent implements AfterViewInit {
                 value = options as KindValueMap[typeof type.kind]['raw'];
                 break;
             case 'text':
+                value = {
+                    operator: this.formControl.value.operator,
+                    term: this.formControl.value.term,
+                } as KindValueMap[typeof type.kind]['raw'];
+                break;
+            case 'id':
                 value = {
                     operator: this.formControl.value.operator,
                     term: this.formControl.value.term,

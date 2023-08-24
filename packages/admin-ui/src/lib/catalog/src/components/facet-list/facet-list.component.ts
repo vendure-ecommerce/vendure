@@ -38,6 +38,7 @@ export class FacetListComponent
 
     readonly customFields = this.getCustomFieldConfig('Facet');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'visibility',

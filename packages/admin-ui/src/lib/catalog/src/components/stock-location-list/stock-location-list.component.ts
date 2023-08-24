@@ -33,14 +33,9 @@ export class StockLocationListComponent
 {
     readonly customFields = this.getCustomFieldConfig('StockLocation');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilters([
-            {
-                name: 'id',
-                type: { kind: 'text' },
-                label: _('common.id'),
-                filterField: 'id',
-            },
             {
                 name: 'enabled',
                 type: { kind: 'text' },

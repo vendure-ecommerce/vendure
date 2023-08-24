@@ -30,6 +30,7 @@ export class CollectionListComponent
     expandedIds: string[] = [];
     readonly customFields = this.getCustomFieldConfig('Collection');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'slug',

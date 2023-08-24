@@ -64,6 +64,17 @@
                             <input type="text" formControlName="term" />
                         </div>
                     </div>
+                    <div *ngSwitchCase="'id'">
+                        <div [formGroup]="formControl">
+                            <div>
+                                <select name="options" formControlName="operator" class="mb-1">
+                                    <option value="eq">{{ 'common.operator-eq' | translate }}</option>
+                                    <option value="notEq">{{ 'common.operator-not-eq' | translate }}</option>
+                                </select>
+                            </div>
+                            <input type="text" formControlName="term" />
+                        </div>
+                    </div>
                     <div *ngSwitchCase="'number'">
                         <div [formGroup]="formControl">
                             <div>

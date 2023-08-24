@@ -50,6 +50,7 @@ export class AdministratorListComponent extends TypedBaseListComponent<
 > {
     readonly customFields = this.getCustomFieldConfig('Administrator');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'firstName',
