@@ -136,7 +136,7 @@ function generateScalars(schema: GraphQLSchema, config: any): string {
     const scalarMap = buildScalars(schema, config.scalars);
     const allScalars = Object.keys(scalarMap)
         .map(scalarName => {
-            const scalarValue = scalarMap[scalarName].type;
+            const scalarValue = scalarMap[scalarName].output.type;
             const scalarType = schema.getType(scalarName);
 
             return `  ${scalarName}: ${scalarValue};`;
