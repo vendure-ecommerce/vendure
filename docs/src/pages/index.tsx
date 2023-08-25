@@ -44,6 +44,16 @@ export default function Home(): JSX.Element {
                 </div>
             </div>
             <main>
+                <div>
+                    <p className={styles.betaNotice}>
+                        This is a developer preview of our new documentation site. If you have any feedback,
+                        please comment on{' '}
+                        <a href="https://github.com/vendure-ecommerce/vendure/issues/2299" target="_blank">
+                            this GitHub issue
+                        </a>{' '}
+                        or let us know via our <a href="https://vendure.io/community">Discord community</a>.
+                    </p>
+                </div>
                 <div className={styles.ctaButtons}>
                     <Link className="button button--secondary" to="/guides/getting-started/installation/">
                         Get Started

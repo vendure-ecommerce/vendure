@@ -30,6 +30,15 @@
     border: 1px solid var(--ifm-color-warning-darkest);
 }
 
+.betaNotice {
+    max-width: 600px;
+    margin: 0 auto 4rem;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--ifm-color-warning-darkest);
+    background-color: #d99e0022;
+}
+
 .description {
     margin: 1rem 0;
     font-size: 1.3rem;
