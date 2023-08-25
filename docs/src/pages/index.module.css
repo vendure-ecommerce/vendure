@@ -13,6 +13,21 @@
 .tagline {
     font-size: 2rem;
     text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.betaBadge {
+    background-color: var(--ifm-badge-background-color);
+    border-radius: var(--ifm-badge-border-radius);
+    color: var(--ifm-badge-color);
+    font-size: 75%;
+    font-weight: var(--ifm-font-weight-bold);
+    line-height: 1;
+    padding: var(--ifm-badge-padding-vertical) var(--ifm-badge-padding-horizontal);
+    color: var(--ifm-color-warning-darkest);
+    border: 1px solid var(--ifm-color-warning-darkest);
 }
 
 .description {
@@ -41,4 +56,3 @@
     margin: auto;
     padding-bottom: 4rem;
 }
-
