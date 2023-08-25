@@ -131,7 +131,7 @@ export class SimpleGraphQLClient {
 
     /**
      * @description
-     * Attemps to log in with the specified credentials.
+     * Attempts to log in with the specified credentials.
      */
     async asUserWithCredentials(username: string, password: string) {
         // first log out as the current user
