@@ -1,4 +1,5 @@
 import { LanguageCode, PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
+import { json } from 'body-parser';
 import { gql } from 'graphql-tag';
 
 import { STRIPE_PLUGIN_OPTIONS } from './constants';
