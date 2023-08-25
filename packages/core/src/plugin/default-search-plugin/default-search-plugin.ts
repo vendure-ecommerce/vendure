@@ -43,10 +43,10 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  * plugin, then make sure this one is used, otherwise you will not be able to search products via the
  * [`search` query](/reference/graphql-api/shop/queries#search).
  *
- * {{% alert "warning" %}}
+ * :::caution
  * Note that the quality of the fulltext search capabilities varies depending on the underlying database being used. For example,
  * the MySQL & Postgres implementations will typically yield better results than the SQLite implementation.
- * {{% /alert %}}
+ * :::
  *
  *
  * @example
