@@ -2,10 +2,31 @@
     <ng-content select="vdr-bulk-action-menu"></ng-content>
 </div>
 <div class="table-wrapper">
-    <table
-        class=""
-        [class.no-select]="disableSelect"
-    >
+    <div class="preset-tabs" *ngIf="filters && filterPresets.length">
+        <div
+            *ngFor="let preset of filterPresets"
+            class="preset-tab"
+            [class.active]="preset.value === serializedActiveFilters"
+        >
+            <a
+                [routerLink]="['./']"
+                [queryParams]="preset.value === serializedActiveFilters ? {} : { filters: preset.value }"
+            >
+                <div>{{ preset.name }}</div>
+            </a>
+            <vdr-dropdown>
+                <button class="icon-button" vdrDropdownTrigger>
+                    <clr-icon shape="ellipsis-vertical" size="12" />
+                </button>
+                <vdr-dropdown-menu vdrPosition="bottom-left">
+                    <button vdrDropdownItem (click)="deleteFilterPreset(preset.name)">
+                        <clr-icon shape="trash" class="is-danger"></clr-icon>{{ 'common.delete' | translate }}
+                    </button>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
+        </div>
+    </div>
+    <table class="" [class.no-select]="disableSelect">
         <thead [class.items-selected]="selectionManager?.selection.length">
             <tr class="heading-row">
                 <th *ngIf="selectionManager" class="selection-col">
@@ -60,6 +81,7 @@
                     <div class="filter-row-wrapper" [class.hidden]="!showSearchFilterRow">
                         <ng-container *ngTemplateOutlet="searchComponent?.template"></ng-container>
                         <ng-container *ngTemplateOutlet="customSearchTemplate"></ng-container>
+                        <div *ngIf="filterPresets.length"></div>
                         <ng-container *ngIf="filters">
                             <div class="filters">
                                 <vdr-data-table-filters
@@ -73,6 +95,37 @@
                                     [filters]="filters"
                                     class="mt-1"
                                 ></vdr-data-table-filters>
+                                <vdr-dropdown #addPresetDropdown>
+                                    <button
+                                        class="add-preset-button mt-1"
+                                        vdrDropdownTrigger
+                                        [class.visible]="filters.activeFilters.length > 0 && !selectedFilterPreset"
+                                        [disabled]="filters.activeFilters.length === 0 || !!selectedFilterPreset"
+                                    >
+                                        <clr-icon shape="floppy"/>
+                                        <div>{{ 'common.save-filter-preset' | translate }}</div>
+                                    </button>
+                                    <vdr-dropdown-menu
+                                        vdrPosition="bottom-left"
+                                        [cdkTrapFocus]="true"
+                                        [cdkTrapFocusAutoCapture]="true"
+                                    >
+                                        <form class="mx-1">
+                                            <div>
+                                                <input
+                                                    type="text"
+                                                    [placeholder]="'common.filter-preset-name' | translate"
+                                                    [formControl]="filterPresetName"
+                                                />
+                                            </div>
+                                            <div class="preset-create-row">
+                                                <button class="button mt-2" (click)="saveFilterPreset()">
+                                                    {{ 'common.create' | translate }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </vdr-dropdown-menu>
+                                </vdr-dropdown>
                             </div>
                         </ng-container>
                     </div>

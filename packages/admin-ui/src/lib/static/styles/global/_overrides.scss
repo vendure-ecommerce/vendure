@@ -79,6 +79,10 @@ button.icon-button {
     background: none;
     cursor: pointer;
     color: var(--color-icon-button);
+    border-radius: var(--border-radius);
+    &:hover {
+        color: var(--color-icon-button-hover);
+    }
 }
 
 @media screen and (min-width: $breakpoint-small) {

@@ -234,7 +234,7 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             )
             .subscribe(value => {
                 this.#activeFilters = [];
-                if (value === '') {
+                if (value === '' || value === null) {
                     this.#valueChanges$.next(this.#activeFilters);
                     return;
                 }

@@ -1,5 +1,5 @@
 @import 'variables';
-@import "mixins";
+@import 'mixins';
 
 :host {
     display: block;
@@ -26,6 +26,7 @@
     top: 5px;
     height: 40px;
 }
+
 .table-wrapper {
     display: block;
     overflow-y: hidden;
@@ -33,9 +34,11 @@
     width: 100%;
     max-width: var(--surface-width);
 }
+
 table {
     width: 100%;
 }
+
 table.no-select {
     user-select: none;
 }
@@ -57,6 +60,7 @@ table.no-select {
     display: flex;
     align-items: center;
     margin-inline-start: calc(var(--space-unit) * 0.5);
+
     button {
         border: 0;
         border-radius: var(--border-radius-lg);
@@ -64,10 +68,12 @@ table.no-select {
         padding: 0 2px;
         cursor: pointer;
         background-color: transparent;
+
         &.active {
             color: var(--color-primary-700);
         }
     }
+
     .sort-label {
         margin-inline-start: calc(var(--space-unit) * 0.5);
         font-size: 10px;
@@ -75,6 +81,7 @@ table.no-select {
         font-weight: 400;
     }
 }
+
 .toggle-search-filter-row {
     position: absolute;
     top: -12px;
@@ -82,12 +89,14 @@ table.no-select {
     @media screen and (min-width: $breakpoint-large) {
         left: 8px;
     }
+
     &.active {
         background-color: var(--color-primary-700);
         color: var(--color-primary-100);
         border-color: var(--color-primary-700);
     }
 }
+
 th.filter-row {
     position: relative;
     font-size: var(--font-size-base);
@@ -115,11 +124,76 @@ th.filter-row {
         gap: calc(var(--space-unit) * 0.5);
     }
 }
+
+.preset-tabs {
+    padding-inline-start: var(--surface-margin-left);
+    margin: var(--space-unit) 0;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-bottom: 1px solid var(--color-component-border-100);
+}
+
+.preset-tab {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 0.5);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    text-transform: none;
+    padding-inline-end: calc(var(--space-unit) * 1);
+    border-bottom: 1px solid var(--color-weight-300);
+    margin-bottom: -1px;
+    cursor: pointer;
+
+    > a {
+        padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2);
+        padding-inline-end: 0;
+        color: var(--color-weight-600);
+    }
+
+    &.active {
+        border-bottom-color: var(--color-text-active);
+
+        > a {
+            color: var(--color-text-active);
+        }
+    }
+}
+
+.preset-tab-link {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-unit) * 0.5);
+}
+
+.add-preset-button {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    gap: 6px;
+    align-items: center;
+    border: none;
+    padding: 0 var(--space-unit);
+    height: calc(var(--space-unit) * 3);
+    font-size: var(--font-size-xs);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--color-button-small-bg);
+    color: var(--color-button-small-text);
+    opacity: 0;
+    transition: opacity 0.2s;
+    &.visible {
+        opacity: 1;
+    }
+}
+
 .filter-row-wrapper {
     padding: calc(var(--space-unit) * 4);
     padding-inline-start: 0;
     max-height: 150px;
     transition: max-height 0.2s, padding 0.2s, opacity 0.2s;
+
     &.hidden {
         max-height: 0px;
         padding-top: 0;
@@ -128,7 +202,6 @@ th.filter-row {
         opacity: 0;
     }
 }
-
 
 .cell-link {
     display: block;
@@ -145,12 +218,15 @@ td.active {
     align-items: center;
     line-height: var(--font-size-sm);
     color: var(--color-weight-700);
+
     &.left {
         justify-content: flex-start;
     }
+
     &.center {
         justify-content: center;
     }
+
     &.right {
         justify-content: flex-end;
     }
@@ -172,11 +248,18 @@ vdr-empty-placeholder {
     margin-inline-start: var(--surface-margin-left);
     margin-inline-end: var(--space-unit);
 }
+
 .total-items-count {
     font-size: var(--font-size-xs);
 }
+
 @container (max-width: 500px) {
     .total-items-count {
         display: none;
     }
+}
+
+.preset-create-row {
+    display: flex;
+    justify-content: flex-end;
 }

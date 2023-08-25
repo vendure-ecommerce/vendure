@@ -106,7 +106,7 @@ export class DataTableFiltersComponent implements AfterViewInit {
                     amount: new FormControl(value?.amount ?? ''),
                 },
                 control => {
-                    if (!control.value.amount) {
+                    if (control.value.amount == null) {
                         return { noSelection: true };
                     }
                     return null;

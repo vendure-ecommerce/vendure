@@ -6,22 +6,28 @@ import {
     ContentChild,
     ContentChildren,
     EventEmitter,
+    inject,
     Input,
     OnChanges,
     OnDestroy,
+    OnInit,
     Output,
     QueryList,
     SimpleChanges,
     TemplateRef,
+    ViewChild,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { PaginationService } from 'ngx-pagination';
-import { Observable, Subscription } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { LanguageCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
 import { DataTableConfig, LocalStorageService } from '../../../providers/local-storage/local-storage.service';
 import { BulkActionMenuComponent } from '../bulk-action-menu/bulk-action-menu.component';
+import { DropdownComponent } from '../dropdown/dropdown.component';
 
 import { DataTable2ColumnComponent } from './data-table-column.component';
 import { DataTableCustomFieldColumnComponent } from './data-table-custom-field-column.component';
@@ -96,7 +102,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService],
 })
-export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
+export class DataTable2Component<T> implements OnInit, AfterContentInit, OnChanges, OnDestroy {
     @Input() id: string;
     @Input() items: T[];
     @Input() itemsPerPage: number;
@@ -114,7 +120,11 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     @ContentChild(DataTable2SearchComponent) searchComponent: DataTable2SearchComponent;
     @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
     @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
+    @ViewChild('addPresetDropdown') addPresetDropdown: DropdownComponent;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
+
+    route = inject(ActivatedRoute);
+
     rowTemplate: TemplateRef<any>;
     currentStart: number;
     currentEnd: number;
@@ -122,8 +132,12 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     // which allows shift-click multi-row selection
     disableSelect = false;
     showSearchFilterRow = false;
+    filterPresetName = new FormControl('');
+    filterPresets: Array<{ name: string; value: string }> = [];
+    serializedActiveFilters: string;
+    selectedFilterPreset: string | undefined;
     protected uiLanguage$: Observable<LanguageCode>;
-    private subscription: Subscription | undefined;
+    protected destroy$ = new Subject<void>();
 
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
@@ -175,6 +189,19 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
         }
     };
 
+    ngOnInit() {
+        this.filterPresets = this.getFilterPreset();
+        this.route.queryParamMap
+            .pipe(
+                map(qpm => qpm.get('filters')),
+                distinctUntilChanged(),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => {
+                this.getSerializedActiveFilters();
+            });
+    }
+
     ngOnChanges(changes: SimpleChanges) {
         if (changes.items) {
             this.currentStart = this.itemsPerPage * (this.currentPage - 1);
@@ -184,24 +211,22 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     }
 
     ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
         if (this.selectionManager) {
             document.removeEventListener('keydown', this.shiftDownHandler);
             document.removeEventListener('keyup', this.shiftUpHandler);
         }
-        this.subscription?.unsubscribe();
     }
 
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
-        const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
+        const dataTableConfig = this.getDataTableConfig();
 
         if (!this.id) {
             console.warn(`No id was assigned to the data table component`);
         }
         const updateColumnVisibility = () => {
-            if (!dataTableConfig[this.id]) {
-                dataTableConfig[this.id] = { visibility: [], order: {}, showSearchFilterRow: false };
-            }
             dataTableConfig[this.id].visibility = this.allColumns
                 .filter(c => (c.visible && c.hiddenByDefault) || (!c.visible && !c.hiddenByDefault))
                 .map(c => c.id);
@@ -223,24 +248,25 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
             });
             this.selectionManager.setCurrentItems(this.items);
         }
-        this.showSearchFilterRow = dataTableConfig?.[this.id]?.showSearchFilterRow ?? false;
+        this.showSearchFilterRow =
+            !!this.filters?.activeFilters.length ||
+            (dataTableConfig?.[this.id]?.showSearchFilterRow ?? false);
         this.columns.changes.subscribe(() => {
             this.changeDetectorRef.markForCheck();
         });
 
-        this.subscription = this.selectionManager?.selectionChanges$.subscribe(() =>
-            this.changeDetectorRef.markForCheck(),
-        );
+        this.selectionManager?.selectionChanges$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.changeDetectorRef.markForCheck());
 
-        if (this.selectionManager && this.subscription) {
-            const channelSub = this.dataService.client
+        if (this.selectionManager) {
+            this.dataService.client
                 .userStatus()
                 .mapStream(({ userStatus }) => userStatus.activeChannelId)
-                .pipe(distinctUntilChanged())
-                .subscribe(activeChannelId => {
+                .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+                .subscribe(() => {
                     this.selectionManager?.clearSelection();
                 });
-            this.subscription?.add(channelSub);
         }
     }
 
@@ -285,11 +311,65 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
         this.selectionManager?.toggleSelection(item, event);
     }
 
+    saveFilterPreset() {
+        const name = this.filterPresetName.value;
+        if (this.filters && name) {
+            const value = this.filters.serialize();
+            const dataTableConfig = this.getDataTableConfig();
+            if (!dataTableConfig[this.id].filterPresets) {
+                dataTableConfig[this.id].filterPresets = [];
+            }
+            const existingName = dataTableConfig[this.id].filterPresets.find(p => p.name === name);
+            if (existingName) {
+                existingName.value = value;
+            } else {
+                dataTableConfig[this.id].filterPresets.push({
+                    name,
+                    value: this.filters.serialize(),
+                });
+            }
+            this.localStorageService.set('dataTableConfig', dataTableConfig);
+            this.filterPresetName.setValue('');
+            this.filterPresets = this.getFilterPreset();
+            this.addPresetDropdown.toggleOpen();
+            this.getSerializedActiveFilters();
+        }
+    }
+
+    deleteFilterPreset(name: string) {
+        const dataTableConfig = this.getDataTableConfig();
+        dataTableConfig[this.id].filterPresets = dataTableConfig[this.id].filterPresets.filter(
+            p => p.name !== name,
+        );
+        this.localStorageService.set('dataTableConfig', dataTableConfig);
+        this.filterPresets = this.getFilterPreset();
+        this.getSerializedActiveFilters();
+    }
+
+    private getSerializedActiveFilters(): void {
+        const dataTableConfig = this.getDataTableConfig();
+        this.serializedActiveFilters = this.filters.serialize();
+        this.selectedFilterPreset = dataTableConfig[this.id].filterPresets.find(
+            p => p.value === this.serializedActiveFilters,
+        )?.name;
+        this.changeDetectorRef.markForCheck();
+    }
+
     protected getDataTableConfig(): DataTableConfig {
         const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
         if (!dataTableConfig[this.id]) {
-            dataTableConfig[this.id] = { visibility: [], order: {}, showSearchFilterRow: false };
+            dataTableConfig[this.id] = {
+                visibility: [],
+                order: {},
+                showSearchFilterRow: false,
+                filterPresets: [],
+            };
         }
         return dataTableConfig;
+    }
+
+    private getFilterPreset(): Array<{ name: string; value: string }> {
+        const dataTableConfig = this.getDataTableConfig();
+        return dataTableConfig[this.id].filterPresets ?? [];
     }
 }
