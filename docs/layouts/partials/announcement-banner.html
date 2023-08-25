@@ -1,6 +1,6 @@
 <script>
   function bannerComponent() {
-    const bannerId = 4;
+    const bannerId = 5;
     const key = `banner-${bannerId}-dismissed`;
     const bannerDismissed = localStorage.getItem(key) ?? false;
     return {
@@ -15,7 +15,7 @@
 <div class="relative bg-gradient-to-r from-blue-600 via-indigo-700 to-blue-900" x-data="bannerComponent()" x-show="visible" x-cloak>
   <div class="max-w-7xl mx-auto py-1 px-3 sm:px-6 lg:px-8">
     <div class="pr-16 sm:text-center sm:px-16">
-      <p class="text-xs md:text-sm lg:text-base text-white"  @click="dismiss()">
+      <p class="text-xs md:text-sm lg:text-base text-white">
           {{ .content | safeHTML }}
       </p>
     </div>
