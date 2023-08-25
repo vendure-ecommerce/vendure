@@ -10,28 +10,25 @@ import {
     Input,
     OnChanges,
     OnDestroy,
-    OnInit,
     Output,
     QueryList,
     SimpleChanges,
     TemplateRef,
-    ViewChild,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { PaginationService } from 'ngx-pagination';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { LanguageCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
 import { DataTableConfig, LocalStorageService } from '../../../providers/local-storage/local-storage.service';
 import { BulkActionMenuComponent } from '../bulk-action-menu/bulk-action-menu.component';
-import { DropdownComponent } from '../dropdown/dropdown.component';
 
 import { DataTable2ColumnComponent } from './data-table-column.component';
 import { DataTableCustomFieldColumnComponent } from './data-table-custom-field-column.component';
 import { DataTable2SearchComponent } from './data-table-search.component';
+import { FilterPresetService } from './filter-preset.service';
 
 /**
  * @description
@@ -100,9 +97,9 @@ import { DataTable2SearchComponent } from './data-table-search.component';
     templateUrl: 'data-table2.component.html',
     styleUrls: ['data-table2.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [PaginationService],
+    providers: [PaginationService, FilterPresetService],
 })
-export class DataTable2Component<T> implements OnInit, AfterContentInit, OnChanges, OnDestroy {
+export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     @Input() id: string;
     @Input() items: T[];
     @Input() itemsPerPage: number;
@@ -120,10 +117,10 @@ export class DataTable2Component<T> implements OnInit, AfterContentInit, OnChang
     @ContentChild(DataTable2SearchComponent) searchComponent: DataTable2SearchComponent;
     @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
     @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
-    @ViewChild('addPresetDropdown') addPresetDropdown: DropdownComponent;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
 
     route = inject(ActivatedRoute);
+    filterPresetService = inject(FilterPresetService);
 
     rowTemplate: TemplateRef<any>;
     currentStart: number;
@@ -132,10 +129,7 @@ export class DataTable2Component<T> implements OnInit, AfterContentInit, OnChang
     // which allows shift-click multi-row selection
     disableSelect = false;
     showSearchFilterRow = false;
-    filterPresetName = new FormControl('');
-    filterPresets: Array<{ name: string; value: string }> = [];
-    serializedActiveFilters: string;
-    selectedFilterPreset: string | undefined;
+
     protected uiLanguage$: Observable<LanguageCode>;
     protected destroy$ = new Subject<void>();
 
@@ -188,19 +182,6 @@ export class DataTable2Component<T> implements OnInit, AfterContentInit, OnChang
             this.changeDetectorRef.markForCheck();
         }
     };
-
-    ngOnInit() {
-        this.filterPresets = this.getFilterPreset();
-        this.route.queryParamMap
-            .pipe(
-                map(qpm => qpm.get('filters')),
-                distinctUntilChanged(),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(() => {
-                this.getSerializedActiveFilters();
-            });
-    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.items) {
@@ -311,50 +292,6 @@ export class DataTable2Component<T> implements OnInit, AfterContentInit, OnChang
         this.selectionManager?.toggleSelection(item, event);
     }
 
-    saveFilterPreset() {
-        const name = this.filterPresetName.value;
-        if (this.filters && name) {
-            const value = this.filters.serialize();
-            const dataTableConfig = this.getDataTableConfig();
-            if (!dataTableConfig[this.id].filterPresets) {
-                dataTableConfig[this.id].filterPresets = [];
-            }
-            const existingName = dataTableConfig[this.id].filterPresets.find(p => p.name === name);
-            if (existingName) {
-                existingName.value = value;
-            } else {
-                dataTableConfig[this.id].filterPresets.push({
-                    name,
-                    value: this.filters.serialize(),
-                });
-            }
-            this.localStorageService.set('dataTableConfig', dataTableConfig);
-            this.filterPresetName.setValue('');
-            this.filterPresets = this.getFilterPreset();
-            this.addPresetDropdown.toggleOpen();
-            this.getSerializedActiveFilters();
-        }
-    }
-
-    deleteFilterPreset(name: string) {
-        const dataTableConfig = this.getDataTableConfig();
-        dataTableConfig[this.id].filterPresets = dataTableConfig[this.id].filterPresets.filter(
-            p => p.name !== name,
-        );
-        this.localStorageService.set('dataTableConfig', dataTableConfig);
-        this.filterPresets = this.getFilterPreset();
-        this.getSerializedActiveFilters();
-    }
-
-    private getSerializedActiveFilters(): void {
-        const dataTableConfig = this.getDataTableConfig();
-        this.serializedActiveFilters = this.filters.serialize();
-        this.selectedFilterPreset = dataTableConfig[this.id].filterPresets.find(
-            p => p.value === this.serializedActiveFilters,
-        )?.name;
-        this.changeDetectorRef.markForCheck();
-    }
-
     protected getDataTableConfig(): DataTableConfig {
         const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
         if (!dataTableConfig[this.id]) {
@@ -366,10 +303,5 @@ export class DataTable2Component<T> implements OnInit, AfterContentInit, OnChang
             };
         }
         return dataTableConfig;
-    }
-
-    private getFilterPreset(): Array<{ name: string; value: string }> {
-        const dataTableConfig = this.getDataTableConfig();
-        return dataTableConfig[this.id].filterPresets ?? [];
     }
 }
