@@ -204,7 +204,6 @@ describe('Stripe payments', () => {
             'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
             'metadata[orderId]': '1',
             'metadata[orderCode]': activeOrder?.code,
-            'metadata[customerEmail]': customers[0].emailAddress,
         });
         expect(createStripePaymentIntent).toEqual('test-client-secret');
         StripePlugin.options.metadata = undefined;
