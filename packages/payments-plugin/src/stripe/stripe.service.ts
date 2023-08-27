@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import { ConfigArg } from '@vendure/common/lib/generated-types';
 import {
     Ctx,
@@ -28,8 +27,7 @@ export class StripeService {
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
         @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
-        private moduleRef: ModuleRef,
-    ) {}
+    ) { }
 
     async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string> {
         let customerId: string | undefined;
@@ -41,9 +39,6 @@ export class StripeService {
         const amountInMinorUnits = getAmountInStripeMinorUnits(order);
 
         const metadata = sanitizeMetadata({
-            ...(typeof this.options.metadata === 'function'
-                ? await this.options.metadata(new Injector(this.moduleRef), ctx, order)
-                : {}),
             channelToken: ctx.channel.token,
             orderId: order.id,
             orderCode: order.code,
