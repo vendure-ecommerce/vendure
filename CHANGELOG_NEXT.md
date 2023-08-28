@@ -1,3 +1,27 @@
+## 2.1.0-next.1 (2023-08-28)
+
+
+#### Fixes
+
+* **admin-ui** Correct handling of ID filters in data tables ([0e05496](https://github.com/vendure-ecommerce/vendure/commit/0e05496))
+* **admin-ui** Data table filters react to page navigation ([39832bd](https://github.com/vendure-ecommerce/vendure/commit/39832bd))
+* **core** Fix circular dependency issue in SQLiteSearchStrategy ([f2e2e32](https://github.com/vendure-ecommerce/vendure/commit/f2e2e32))
+
+#### Features
+
+* **admin-ui** Add data table filter presets functionality ([a656ef2](https://github.com/vendure-ecommerce/vendure/commit/a656ef2))
+* **admin-ui** Implement drag-and-drop reorder of filter presets ([8e06705](https://github.com/vendure-ecommerce/vendure/commit/8e06705))
+* **admin-ui** Implement filter preset renaming ([8b52e6f](https://github.com/vendure-ecommerce/vendure/commit/8b52e6f))
+* **admin-ui** Implement relative date filtering ([d07a5f3](https://github.com/vendure-ecommerce/vendure/commit/d07a5f3))
+* **admin-ui** Update to Angular v16.2 ([608d5d3](https://github.com/vendure-ecommerce/vendure/commit/608d5d3))
+* **core** Update NestJS to v10, Apollo Server v4 ([b675fda](https://github.com/vendure-ecommerce/vendure/commit/b675fda))
+
+
+### BREAKING CHANGE
+
+* The update of Apollo Server to v4 includes some breaking changes if you have
+defined any custom ApolloServerPlugins. See the Apollo migration guide for full details:
+https://www.apollographql.com/docs/apollo-server/migration/
 ## 2.1.0-next.0 (2023-08-11)
 
 Includes all changes from v2.0.6, plus:
