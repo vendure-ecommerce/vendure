@@ -152,8 +152,9 @@ export class FacetValueService {
                 ctx,
                 relations: relations ?? ['facet'],
                 channelId: ctx.channelId,
+                entityAlias: 'facetValue',
             })
-            .andWhere('facetId = :id', { id })
+            .andWhere('facetValue.facetId = :id', { id })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {
