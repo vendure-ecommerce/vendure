@@ -286,9 +286,13 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             return val ? '1' : '0';
         } else if (filterWithValue.isDateRange()) {
             const val = filterWithValue.value;
-            const start = val.start ? new Date(val.start).getTime() : '';
-            const end = val.end ? new Date(val.end).getTime() : '';
-            return `${start},${end}`;
+            if (val.mode === 'relative') {
+                return `${val.mode},${val.relativeValue},${val.relativeUnit}`;
+            } else {
+                const start = val.start ? new Date(val.start).getTime() : '';
+                const end = val.end ? new Date(val.end).getTime() : '';
+                return `${start},${end}`;
+            }
         } else if (filterWithValue.isCustom()) {
             return filterWithValue.filter.type.serializeValue(filterWithValue.value);
         }
@@ -316,10 +320,23 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             case 'boolean':
                 return value === '1';
             case 'dateRange':
-                const [startTimestamp, endTimestamp] = value.split(',');
-                const start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
-                const end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
-                return { start, end };
+                let mode = 'relative';
+                let relativeValue: number | undefined;
+                let relativeUnit: 'day' | 'month' | 'year' | undefined;
+                let start: string | undefined;
+                let end: string | undefined;
+                if (value.startsWith('relative')) {
+                    mode = 'relative';
+                    const [_, relativeValueStr, relativeUnitStr] = value.split(',');
+                    relativeValue = Number(relativeValueStr);
+                    relativeUnit = relativeUnitStr as 'day' | 'month' | 'year';
+                } else {
+                    mode = 'range';
+                    const [startTimestamp, endTimestamp] = value.split(',');
+                    start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
+                    end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
+                }
+                return { mode, relativeValue, relativeUnit, start, end };
             case 'custom':
                 return filter.type.deserializeValue(value);
             default:

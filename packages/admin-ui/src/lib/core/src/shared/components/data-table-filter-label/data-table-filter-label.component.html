@@ -31,16 +31,29 @@
         <span *ngIf="!filterWithValue?.value">{{ 'common.boolean-false' | translate }}</span>
     </ng-container>
     <ng-container *ngIf="filterWithValue.isDateRange()">
-        <span *ngIf="filterWithValue.value?.start && filterWithValue.value?.end">
-            {{ filterWithValue.value?.start | localeDate : 'shortDate' }} -
-            {{ filterWithValue.value?.end | localeDate : 'shortDate' }}
-        </span>
-        <span *ngIf="filterWithValue.value?.start && !filterWithValue.value?.end">
-            > {{ filterWithValue.value?.start | localeDate : 'shortDate' }}
-        </span>
-        <span *ngIf="filterWithValue.value?.end && !filterWithValue.value?.start">
-            < {{ filterWithValue.value?.end | localeDate : 'shortDate' }}
-        </span>
+        <ng-container *ngIf="filterWithValue.value.mode === 'relative'">
+            <span *ngIf="filterWithValue.value.relativeUnit === 'day'">
+                {{ 'datetime.relative-past-days' | translate: { count: filterWithValue.value.relativeValue } }}
+            </span>
+            <span *ngIf="filterWithValue.value.relativeUnit === 'month'">
+                {{ 'datetime.relative-past-months' | translate: { count: filterWithValue.value.relativeValue } }}
+            </span>
+            <span *ngIf="filterWithValue.value.relativeUnit === 'year'">
+                {{ 'datetime.relative-past-years' | translate: { count: filterWithValue.value.relativeValue } }}
+            </span>
+        </ng-container>
+        <ng-container *ngIf="filterWithValue.value.mode === 'range'">
+            <span *ngIf="filterWithValue.value?.start && filterWithValue.value?.end">
+                {{ filterWithValue.value?.start | localeDate : 'shortDate' }} -
+                {{ filterWithValue.value?.end | localeDate : 'shortDate' }}
+            </span>
+            <span *ngIf="filterWithValue.value?.start && !filterWithValue.value?.end">
+                > {{ filterWithValue.value?.start | localeDate : 'shortDate' }}
+            </span>
+            <span *ngIf="filterWithValue.value?.end && !filterWithValue.value?.start">
+                < {{ filterWithValue.value?.end | localeDate : 'shortDate' }}
+            </span>
+        </ng-container>
     </ng-container>
     <ng-container *ngIf="filterWithValue.isNumber()">
         <span *ngIf="filterWithValue.value?.operator === 'eq'"> = </span>

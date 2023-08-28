@@ -122,15 +122,19 @@ export class DataTableFiltersComponent implements AfterViewInit {
         } else if (filter.isDateRange()) {
             this.formControl = new FormGroup(
                 {
+                    mode: new FormControl('relative'),
+                    relativeValue: new FormControl(value?.relativeValue ?? 30),
+                    relativeUnit: new FormControl(value?.relativeUnit ?? 'day'),
                     start: new FormControl(value?.start ?? null),
                     end: new FormControl(value?.end ?? null),
                 },
                 control => {
                     const val = control.value;
-                    if (val.start && val.end && val.start > val.end) {
+                    const mode = val.mode;
+                    if (mode === 'range' && val.start && val.end && val.start > val.end) {
                         return { invalidRange: true };
                     }
-                    if (!val.start && !val.end) {
+                    if (mode === 'range' && !val.start && !val.end) {
                         return { noSelection: true };
                     }
                     return null;
@@ -158,23 +162,18 @@ export class DataTableFiltersComponent implements AfterViewInit {
                 value = !!this.formControl.value as KindValueMap[typeof type.kind]['raw'];
                 break;
             case 'dateRange': {
-                let dateOperators: DateOperators;
+                const mode = this.formControl.value.mode ?? 'relative';
+                const relativeValue = this.formControl.value.relativeValue ?? 30;
+                const relativeUnit = this.formControl.value.relativeUnit ?? 'day';
                 const start = this.formControl.value.start ?? undefined;
                 const end = this.formControl.value.end ?? undefined;
-                if (start && end) {
-                    dateOperators = {
-                        between: { start, end },
-                    };
-                } else if (start) {
-                    dateOperators = {
-                        after: start,
-                    };
-                } else {
-                    dateOperators = {
-                        before: end,
-                    };
-                }
-                value = { start, end } as KindValueMap[typeof type.kind]['raw'];
+                value = {
+                    mode,
+                    relativeValue,
+                    relativeUnit,
+                    start,
+                    end,
+                } as KindValueMap[typeof type.kind]['raw'];
                 break;
             }
             case 'number':
