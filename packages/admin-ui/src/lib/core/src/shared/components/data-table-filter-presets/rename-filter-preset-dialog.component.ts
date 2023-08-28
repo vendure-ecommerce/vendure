@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FilterPresetService } from '@vendure/admin-ui/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Dialog } from '../../../providers/modal/modal.types';
 
 @Component({
