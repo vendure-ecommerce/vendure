@@ -1,3 +1,10 @@
+## 2.1.0-next.2 (2023-08-28)
+
+
+#### Fixes
+
+* **core** Fix resolution of facet valueList for postgres ([1d8fe47](https://github.com/vendure-ecommerce/vendure/commit/1d8fe47))
+
 ## 2.1.0-next.1 (2023-08-28)
 
 
