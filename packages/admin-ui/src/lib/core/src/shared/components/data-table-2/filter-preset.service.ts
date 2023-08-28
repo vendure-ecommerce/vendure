@@ -1,3 +1,4 @@
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { DataTableConfig, LocalStorageService } from '../../../providers/local-storage/local-storage.service';
@@ -55,5 +56,14 @@ export class FilterPresetService {
         ].filterPresets.filter(p => p.name !== config.name);
         this.localStorageService.set('dataTableConfig', dataTableConfig);
         this._presetChanges.next(dataTableConfig[config.dataTableId].filterPresets);
+    }
+
+    reorderPresets(dataTableId: string, fromIndex: number, toIndex: number) {
+        const presets = this.getFilterPresets(dataTableId);
+        moveItemInArray(presets, fromIndex, toIndex);
+        const dataTableConfig = this.getDataTableConfig(dataTableId);
+        dataTableConfig[dataTableId].filterPresets = presets;
+        this.localStorageService.set('dataTableConfig', dataTableConfig);
+        this._presetChanges.next(presets);
     }
 }

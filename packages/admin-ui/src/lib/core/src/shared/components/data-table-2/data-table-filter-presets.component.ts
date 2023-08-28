@@ -1,3 +1,4 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
@@ -48,5 +49,9 @@ export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
             name,
         });
         this.serializedActiveFilters = this.filters.serialize();
+    }
+
+    drop(event: CdkDragDrop<any>) {
+        this.filterPresetService.reorderPresets(this.dataTableId, event.previousIndex, event.currentIndex);
     }
 }
