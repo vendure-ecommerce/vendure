@@ -302,6 +302,7 @@
     "remove": "Remove",
     "remove-from-channel": "Remove from current channel",
     "remove-item-from-list": "Remove item from list",
+    "rename-filter-preset": "Rename preset",
     "reset-columns": "Reset columns",
     "results-count": "{ count } {count, plural, one {result} other {results}}",
     "sample-formatting": "Sample formatting",

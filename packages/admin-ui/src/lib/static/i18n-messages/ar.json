@@ -302,6 +302,7 @@
     "remove": "إزالة",
     "remove-from-channel": "إزالة من القناة الحالية",
     "remove-item-from-list": "إزالة العنصر من القائمة",
+    "rename-filter-preset": "إعادة تسمية الضبط",
     "reset-columns": "إعادة تعيين الأعمدة",
     "results-count": "{ count } {count, plural, one {نتيجة واحدة} other {من النتائج}}",
     "sample-formatting": "تنسيق العينة",

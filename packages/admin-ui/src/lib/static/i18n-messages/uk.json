@@ -302,6 +302,7 @@
     "remove": "Видалити",
     "remove-from-channel": "",
     "remove-item-from-list": "Видалити позицію зі списку",
+    "rename-filter-preset": "Перейменувати пресет",
     "reset-columns": "",
     "results-count": "{ count } {count, plural, one {результат} other {результатів}}",
     "sample-formatting": "",

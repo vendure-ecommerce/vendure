@@ -173,6 +173,7 @@ import { CurrencyCodeSelectorComponent } from './components/currency-code-select
 import { LanguageCodeSelectorComponent } from './components/language-code-selector/language-code-selector.component';
 import { DataTableFilterPresetsComponent } from './components/data-table-filter-presets/data-table-filter-presets.component';
 import { AddFilterPresetButtonComponent } from './components/data-table-filter-presets/add-filter-preset-button.component';
+import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -353,6 +354,7 @@ const DYNAMIC_FORM_INPUTS = [
         ...DYNAMIC_FORM_INPUTS,
         DataTableFilterPresetsComponent,
         AddFilterPresetButtonComponent,
+        RenameFilterPresetDialogComponent,
     ],
     providers: [
         // This needs to be shared, since lazy-loaded

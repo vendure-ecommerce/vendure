@@ -302,6 +302,7 @@
     "remove": "Usuń",
     "remove-from-channel": "",
     "remove-item-from-list": "",
+    "rename-filter-preset": "Zmień nazwę preselekcji",
     "reset-columns": "",
     "results-count": "{ count } {count, plural, one {wynik} other {wyników}}",
     "sample-formatting": "",

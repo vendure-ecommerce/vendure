@@ -302,6 +302,7 @@
     "remove": "Entfernen",
     "remove-from-channel": "Aus dem Kanal entfernen",
     "remove-item-from-list": "Artikel von Liste entfernen",
+    "rename-filter-preset": "Voreinstellung umbenennen",
     "reset-columns": "Spalten zurücksetzen",
     "results-count": "{ count } {count, plural, one {Ergebnis} other {Ergebnisse}}",
     "sample-formatting": "Beispiel Formatierung",

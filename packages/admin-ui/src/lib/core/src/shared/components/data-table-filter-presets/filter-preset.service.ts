@@ -66,4 +66,16 @@ export class FilterPresetService {
         this.localStorageService.set('dataTableConfig', dataTableConfig);
         this._presetChanges.next(presets);
     }
+
+    renameFilterPreset(config: { dataTableId: string; oldName: string; newName: string }) {
+        const dataTableConfig = this.getDataTableConfig(config.dataTableId);
+        const filterPresets = dataTableConfig[config.dataTableId].filterPresets ?? [];
+        const existingName = filterPresets.find(p => p.name === config.oldName);
+        if (existingName) {
+            existingName.name = config.newName;
+            dataTableConfig[config.dataTableId].filterPresets = filterPresets;
+            this.localStorageService.set('dataTableConfig', dataTableConfig);
+            this._presetChanges.next(filterPresets);
+        }
+    }
 }

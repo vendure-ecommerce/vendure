@@ -4,7 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, startWith, takeUntil } from 'rxjs/operators';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
+import { ModalService } from '../../../providers/modal/modal.service';
 import { FilterPresetService } from './filter-preset.service';
+import { RenameFilterPresetDialogComponent } from './rename-filter-preset-dialog.component';
 
 @Component({
     selector: 'vdr-data-table-filter-presets',
@@ -20,7 +22,11 @@ export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
 
     private destroy$ = new Subject<void>();
 
-    constructor(private route: ActivatedRoute, private filterPresetService: FilterPresetService) {}
+    constructor(
+        private route: ActivatedRoute,
+        private filterPresetService: FilterPresetService,
+        private modalService: ModalService,
+    ) {}
     ngOnInit() {
         this.route.queryParamMap
             .pipe(
@@ -49,6 +55,25 @@ export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
             name,
         });
         this.serializedActiveFilters = this.filters.serialize();
+    }
+
+    renameFilterPreset(name: string) {
+        this.modalService
+            .fromComponent(RenameFilterPresetDialogComponent, {
+                closable: true,
+                locals: {
+                    name,
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    this.filterPresetService.renameFilterPreset({
+                        dataTableId: this.dataTableId,
+                        oldName: name,
+                        newName: result,
+                    });
+                }
+            });
     }
 
     drop(event: CdkDragDrop<any>) {

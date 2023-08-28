@@ -302,6 +302,7 @@
     "remove": "移除",
     "remove-from-channel": "",
     "remove-item-from-list": "",
+    "rename-filter-preset": "重新命名預設",
     "reset-columns": "",
     "results-count": "{count, plural, =0{無} other {{count}個篩選結果}}",
     "sample-formatting": "",

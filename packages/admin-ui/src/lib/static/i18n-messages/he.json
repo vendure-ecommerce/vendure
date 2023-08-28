@@ -302,6 +302,7 @@
     "remove": "הסר",
     "remove-from-channel": "הסר מהערוץ הנוכחי",
     "remove-item-from-list": "הסר פריט מהרשימה",
+    "rename-filter-preset": "שינוי שם להגדרה",
     "reset-columns": "אפס עמודות",
     "results-count": "{ count } {count, plural, one {תוצאה} other {תוצאות}}",
     "sample-formatting": "פורמט דוגמא",

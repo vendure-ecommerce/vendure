@@ -302,6 +302,7 @@
     "remove": "Borrar",
     "remove-from-channel": "Borrar del canal",
     "remove-item-from-list": "Eliminar elemento de la lista",
+    "rename-filter-preset": "Renombrar preestablecido",
     "reset-columns": "Reajustar las columnas al estado inicial",
     "results-count": "{ count } {count, plural, one {resultado} other {resultados}}",
     "sample-formatting": "Formato de ejemplo",

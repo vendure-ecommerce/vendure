@@ -28,6 +28,10 @@
                     <clr-icon shape="ellipsis-vertical" size="12"/>
                 </button>
                 <vdr-dropdown-menu vdrPosition="bottom-left">
+                    <button vdrDropdownItem (click)="renameFilterPreset(preset.name)">
+                        <clr-icon shape="edit"></clr-icon>
+                        {{ 'common.rename-filter-preset' | translate }}
+                    </button>
                     <button vdrDropdownItem (click)="deleteFilterPreset(preset.name)">
                         <clr-icon shape="trash" class="is-danger"></clr-icon>
                         {{ 'common.delete' | translate }}

@@ -302,6 +302,7 @@
     "remove": "删除",
     "remove-from-channel": "",
     "remove-item-from-list": "从列表中移除",
+    "rename-filter-preset": "重命名预设",
     "reset-columns": "",
     "results-count": "{count, plural, =0{无} other {{count}个过滤结果}}",
     "sample-formatting": "",

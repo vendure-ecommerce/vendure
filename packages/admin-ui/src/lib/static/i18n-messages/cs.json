@@ -302,6 +302,7 @@
     "remove": "Smazat",
     "remove-from-channel": "",
     "remove-item-from-list": "Odebrat položku ze seznamu",
+    "rename-filter-preset": "Přejmenovat předvolbu",
     "reset-columns": "",
     "results-count": "{ count } {count, plural, one {výsledek} other {výsledků/y}}",
     "sample-formatting": "",

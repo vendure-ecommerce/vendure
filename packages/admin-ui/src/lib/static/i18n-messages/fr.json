@@ -302,6 +302,7 @@
     "remove": "Retirer",
     "remove-from-channel": "Retirer du canal",
     "remove-item-from-list": "Retirer l'article de la liste",
+    "rename-filter-preset": "Renommer le préréglage",
     "reset-columns": "RAZ colonnes",
     "results-count": "{ count } {count, plural, one {result} other {results}}",
     "sample-formatting": "Exemple de mise en forme",

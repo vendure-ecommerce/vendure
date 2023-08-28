@@ -302,6 +302,7 @@
     "remove": "Удалить",
     "remove-from-channel": "Удалить из канала",
     "remove-item-from-list": "Удалить позицию из списка",
+    "rename-filter-preset": "Переименовать пресет",
     "reset-columns": "Сброс колонок",
     "results-count": "{ count } {count, plural, one {результат} other {результатов}}",
     "sample-formatting": "Пример форматирования",
