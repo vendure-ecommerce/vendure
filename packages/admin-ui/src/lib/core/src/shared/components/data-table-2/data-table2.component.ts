@@ -25,10 +25,10 @@ import { DataTableFilterCollection } from '../../../providers/data-table/data-ta
 import { DataTableConfig, LocalStorageService } from '../../../providers/local-storage/local-storage.service';
 import { BulkActionMenuComponent } from '../bulk-action-menu/bulk-action-menu.component';
 
+import { FilterPresetService } from '../data-table-filter-presets/filter-preset.service';
 import { DataTable2ColumnComponent } from './data-table-column.component';
 import { DataTableCustomFieldColumnComponent } from './data-table-custom-field-column.component';
 import { DataTable2SearchComponent } from './data-table-search.component';
-import { FilterPresetService } from './filter-preset.service';
 
 /**
  * @description

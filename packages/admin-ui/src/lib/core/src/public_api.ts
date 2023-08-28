@@ -136,13 +136,13 @@ export * from './shared/components/custom-field-control/custom-field-control.com
 export * from './shared/components/customer-label/customer-label.component';
 export * from './shared/components/data-table/data-table-column.component';
 export * from './shared/components/data-table/data-table.component';
-export * from './shared/components/data-table-2/add-filter-preset-button.component';
+export * from './shared/components/data-table-filter-presets/add-filter-preset-button.component';
 export * from './shared/components/data-table-2/data-table-column.component';
 export * from './shared/components/data-table-2/data-table-custom-field-column.component';
-export * from './shared/components/data-table-2/data-table-filter-presets.component';
+export * from './shared/components/data-table-filter-presets/data-table-filter-presets.component';
 export * from './shared/components/data-table-2/data-table-search.component';
 export * from './shared/components/data-table-2/data-table2.component';
-export * from './shared/components/data-table-2/filter-preset.service';
+export * from './shared/components/data-table-filter-presets/filter-preset.service';
 export * from './shared/components/data-table-column-picker/data-table-column-picker.component';
 export * from './shared/components/data-table-filter-label/data-table-filter-label.component';
 export * from './shared/components/data-table-filters/custom-filter-component.directive';
