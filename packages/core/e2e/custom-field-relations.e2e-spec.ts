@@ -1,4 +1,5 @@
 import {
+    assertFound,
     Asset,
     Collection,
     Country,
@@ -11,15 +12,21 @@ import {
     LogLevel,
     manualFulfillmentHandler,
     mergeConfig,
+    PluginCommonModule,
     Product,
     ProductOption,
     ProductOptionGroup,
     ProductVariant,
+    RequestContext,
     ShippingMethod,
+    TransactionalConnection,
+    VendureEntity,
+    VendurePlugin,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { Repository } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -27,6 +34,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { TestPlugin1636_1664 } from './fixtures/test-plugins/issue-1636-1664/issue-1636-1664-plugin';
+import { TestCustomEntity, WithCustomEntity } from './fixtures/test-plugins/with-custom-entity';
 import { AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
@@ -107,7 +115,7 @@ const customConfig = mergeConfig(testConfig(), {
         timezone: 'Z',
     },
     customFields: customFieldConfig,
-    plugins: [TestPlugin1636_1664],
+    plugins: [TestPlugin1636_1664, WithCustomEntity],
 });
 
 describe('Custom field relations', () => {
@@ -1179,5 +1187,55 @@ describe('Custom field relations', () => {
 
         expect(updateCustomerAddress.customFields.single).toEqual(null);
         expect(updateCustomerAddress.customFields.multi).toEqual([{ id: 'T_1' }]);
+    });
+
+    describe('bi-direction relations', () => {
+        let customEntityRepository: Repository<TestCustomEntity>;
+        let customEntity: TestCustomEntity;
+        let collectionIdInternal: number;
+
+        beforeAll(async () => {
+            customEntityRepository = server.app
+                .get(TransactionalConnection)
+                .getRepository(RequestContext.empty(), TestCustomEntity);
+
+            const customEntityId = (await customEntityRepository.save({})).id;
+
+            const { createCollection } = await adminClient.query(gql`
+                    mutation {
+                        createCollection(
+                            input: {
+                                translations: [
+                                    { languageCode: en, name: "Test", description: "test", slug: "test" }
+                                ]
+                                filters: []
+                                customFields: { customEntityListIds: [${customEntityId}] customEntityId: ${customEntityId} }
+                            }
+                        ) {
+                            id
+                        }
+                    }
+                `);
+            collectionIdInternal = parseInt(createCollection.id.replace('T_', ''), 10);
+
+            customEntity = await assertFound(
+                customEntityRepository.findOne({
+                    where: { id: customEntityId },
+                    relations: ['customEntityListInverse', 'customEntityInverse'],
+                }),
+            );
+        });
+
+        it('can create inverse relation for list=false', () => {
+            expect(customEntity.customEntityInverse).toEqual([
+                expect.objectContaining({ id: collectionIdInternal }),
+            ]);
+        });
+
+        it('can create inverse relation for list=true', () => {
+            expect(customEntity.customEntityListInverse).toEqual([
+                expect.objectContaining({ id: collectionIdInternal }),
+            ]);
+        });
     });
 });

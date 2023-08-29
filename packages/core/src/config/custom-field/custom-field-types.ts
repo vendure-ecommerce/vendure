@@ -96,7 +96,12 @@ export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', Graph
 export type RelationCustomFieldConfig = TypedCustomFieldConfig<
     'relation',
     Omit<GraphQLRelationCustomFieldConfig, 'entity' | 'scalarFields'>
-> & { entity: Type<VendureEntity>; graphQLType?: string; eager?: boolean };
+> & {
+    entity: Type<VendureEntity>;
+    graphQLType?: string;
+    eager?: boolean;
+    inverseSide: string | ((object: VendureEntity) => any);
+};
 
 /**
  * @description
@@ -180,6 +185,8 @@ export type CustomFieldConfig =
  *
  * * `entity: VendureEntity`: The entity which this custom field is referencing
  * * `eager?: boolean`: Whether to [eagerly load](https://typeorm.io/#/eager-and-lazy-relations) the relation. Defaults to false.
+ * * `inverseSide?: inverseSide: string | ((object: any) => any`: The inverse side for
+ *     [bi-directional relations](https://typeorm.io/many-to-many-relations#bi-directional-relations)
  * * `graphQLType?: string`: The name of the GraphQL type that corresponds to the entity.
  *     Can be omitted if it is the same, which is usually the case.
  *
