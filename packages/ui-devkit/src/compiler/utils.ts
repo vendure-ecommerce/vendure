@@ -12,6 +12,7 @@ import {
     Extension,
     GlobalStylesExtension,
     SassVariableOverridesExtension,
+    SharedUiProvidersExtension,
     StaticAssetDefinition,
     StaticAssetExtension,
     TranslationExtension,
@@ -94,6 +95,10 @@ export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExt
 
 export function isAdminUiExtension(input: Extension): input is AdminUiExtension {
     return input.hasOwnProperty('extensionPath');
+}
+
+export function isSharedUiProvidersExtension(input: Extension): input is SharedUiProvidersExtension {
+    return input.hasOwnProperty('sharedProviders');
 }
 
 export function isTranslationExtension(input: Extension): input is TranslationExtension {

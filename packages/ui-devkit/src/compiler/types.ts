@@ -5,7 +5,8 @@ export type Extension =
     | TranslationExtension
     | StaticAssetExtension
     | GlobalStylesExtension
-    | SassVariableOverridesExtension;
+    | SassVariableOverridesExtension
+    | SharedUiProvidersExtension;
 
 /**
  * @description
@@ -80,6 +81,19 @@ export interface SassVariableOverridesExtension {
      * default values defined in Clarity.
      */
     sassVariableOverrides: string;
+}
+
+/**
+ * @description
+ * Defines an extension which contains only shared providers such as nav menu items, custom form inputs,
+ * custom detail components, action bar items, custom history entry components.
+ *
+ * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
+ */
+export interface SharedUiProvidersExtension {
+    id: string;
+    sharedProviders: string;
 }
 
 /**
@@ -316,6 +330,27 @@ export interface UiExtensionCompilerOptions {
      * translations with which to extend the Admin UI.
      */
     extensions: Extension[];
+    /**
+     * @description
+     * Allows you to manually specify the path to the Angular CLI compiler script. This can be useful in scenarios
+     * where for some reason the built-in start/build scripts are unable to locate the `ng` command.
+     *
+     * This option should not usually be required.
+     *
+     * @example
+     * ```ts
+     * compileUiExtensions({
+     *     ngCompilerPath: path.join(__dirname, '../../node_modules/@angular/cli/bin/ng.js'),
+     *     outputPath: path.join(__dirname, '../admin-ui'),
+     *     extensions: [
+     *       // ...
+     *     ],
+     * })
+     * ```
+     *
+     * @since 2.1.0
+     */
+    ngCompilerPath?: string | undefined;
     /**
      * @description
      * Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI
