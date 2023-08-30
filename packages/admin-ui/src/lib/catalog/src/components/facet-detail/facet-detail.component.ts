@@ -16,6 +16,7 @@ import {
     FACET_WITH_VALUES_FRAGMENT,
     FacetWithValuesFragment,
     findTranslation,
+    getCustomFieldsDefaults,
     GetFacetDetailDocument,
     LanguageCode,
     ModalService,
@@ -57,9 +58,7 @@ export class FacetDetailComponent
             code: ['', Validators.required],
             name: '',
             visible: true,
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
+            customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
         }),
         values: this.formBuilder.array<{
             id: string;

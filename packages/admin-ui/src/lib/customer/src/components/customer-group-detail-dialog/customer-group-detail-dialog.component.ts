@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import {
     CreateCustomerGroupInput,
     CustomFieldConfig,
     Dialog,
+    getCustomFieldsDefaults,
     ServerConfigService,
-    UpdateCustomerGroupInput,
 } from '@vendure/admin-ui/core';
 
 @Component({
@@ -27,9 +27,7 @@ export class CustomerGroupDetailDialogComponent implements Dialog<CreateCustomer
     ngOnInit() {
         this.form = this.formBuilder.group({
             name: [this.group.name, Validators.required],
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
+            customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
         });
         if (this.customFields.length) {
             const customFieldsGroup = this.form.get('customFields') as UntypedFormGroup;

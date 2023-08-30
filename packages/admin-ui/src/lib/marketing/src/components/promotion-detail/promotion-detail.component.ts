@@ -11,6 +11,7 @@ import {
     encodeConfigArgValue,
     findTranslation,
     getConfigArgValue,
+    getCustomFieldsDefaults,
     getDefaultConfigArgValue,
     GetPromotionDetailDocument,
     LanguageCode,
@@ -54,9 +55,7 @@ export class PromotionDetailComponent
         endsAt: null,
         conditions: this.formBuilder.array([]),
         actions: this.formBuilder.array([]),
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];

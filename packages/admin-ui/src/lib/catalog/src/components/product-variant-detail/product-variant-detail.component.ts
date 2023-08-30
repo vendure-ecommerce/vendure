@@ -8,6 +8,7 @@ import {
     CurrencyCode,
     DataService,
     findTranslation,
+    getCustomFieldsDefaults,
     GetProductVariantDetailDocument,
     GetProductVariantDetailQuery,
     GlobalFlag,
@@ -83,9 +84,7 @@ export class ProductVariantDetailComponent
         outOfStockThreshold: 0,
         trackInventory: GlobalFlag.TRUE,
         facetValueIds: [],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     stockLevelsForm = this.formBuilder.array<
         FormGroup<{
