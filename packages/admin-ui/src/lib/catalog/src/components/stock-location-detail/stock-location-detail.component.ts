@@ -5,6 +5,7 @@ import {
     CreateStockLocationDocument,
     CreateStockLocationInput,
     DataService,
+    getCustomFieldsDefaults,
     GetStockLocationDetailDocument,
     NotificationService,
     StockLocationDetailFragment,
@@ -66,9 +67,7 @@ export class StockLocationDetailComponent
     detailForm = this.formBuilder.group({
         name: ['', Validators.required],
         description: [''],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
 
     constructor(

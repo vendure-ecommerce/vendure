@@ -1,9 +1,9 @@
 import { CustomFieldsObject, CustomFieldType } from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { CustomFieldConfig, LanguageCode } from '../generated-types';
 
 import { findTranslation } from './find-translation';
+import { getDefaultValue } from './custom-field-default-value';
 
 export interface TranslatableUpdateOptions<T extends { translations: any[] } & MayHaveCustomFields> {
     translatable: T;
@@ -59,27 +59,6 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
         newTranslatable.translations.push(newTranslation);
     }
     return newTranslatable;
-}
-
-function getDefaultValue(type: CustomFieldType, isNullable?: boolean): any {
-    switch (type) {
-        case 'localeString':
-        case 'string':
-        case 'text':
-        case 'localeText':
-            return '';
-        case 'boolean':
-            return false;
-        case 'float':
-        case 'int':
-            return isNullable ? null : 0;
-        case 'datetime':
-            return isNullable ? null : new Date();
-        case 'relation':
-            return null;
-        default:
-            assertNever(type);
-    }
 }
 
 /**

@@ -10,7 +10,6 @@ import { FormBuilder, UntypedFormArray, UntypedFormControl, Validators } from '@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Asset,
-    Collection,
     COLLECTION_FRAGMENT,
     CollectionDetailQueryDocument,
     CollectionFragment,
@@ -23,6 +22,7 @@ import {
     encodeConfigArgValue,
     findTranslation,
     getConfigArgValue,
+    getCustomFieldsDefaults,
     LanguageCode,
     LocalStorageService,
     ModalService,
@@ -66,9 +66,7 @@ export class CollectionDetailComponent
         visible: false,
         inheritFilters: true,
         filters: this.formBuilder.array([]),
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];

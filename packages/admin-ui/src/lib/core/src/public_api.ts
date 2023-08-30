@@ -16,6 +16,7 @@ export * from './common/title-setter';
 export * from './common/utilities/bulk-action-utils';
 export * from './common/utilities/configurable-operation-utils';
 export * from './common/utilities/create-updated-translatable';
+export * from './common/utilities/custom-field-default-value';
 export * from './common/utilities/find-translation';
 export * from './common/utilities/get-default-ui-language';
 export * from './common/utilities/interpolate-description';

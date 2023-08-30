@@ -5,6 +5,7 @@ import { ResultOf } from '@graphql-typed-document-node/core';
 import {
     DataService,
     GetCustomerGroupDetailDocument,
+    getCustomFieldsDefaults,
     ModalService,
     NotificationService,
     TypedBaseDetailComponent,
@@ -38,9 +39,7 @@ export class CustomerGroupDetailComponent
     customFields = this.getCustomFieldConfig('CustomerGroup');
     detailForm = this.formBuilder.group({
         name: '',
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
 
     constructor(

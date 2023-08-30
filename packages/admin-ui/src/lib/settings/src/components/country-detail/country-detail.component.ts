@@ -8,6 +8,7 @@ import {
     DataService,
     findTranslation,
     GetCountryDetailDocument,
+    getCustomFieldsDefaults,
     LanguageCode,
     NotificationService,
     Permission,
@@ -42,9 +43,7 @@ export class CountryDetailComponent
         code: ['', Validators.required],
         name: ['', Validators.required],
         enabled: [true],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateCountry];
 

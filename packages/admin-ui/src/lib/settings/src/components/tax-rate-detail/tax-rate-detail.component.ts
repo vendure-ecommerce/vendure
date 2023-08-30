@@ -5,13 +5,13 @@ import {
     CreateTaxRateInput,
     CustomerGroup,
     DataService,
+    getCustomFieldsDefaults,
     GetTaxRateDetailDocument,
     LanguageCode,
     NotificationService,
     Permission,
     TAX_RATE_FRAGMENT,
     TaxCategoryFragment,
-    TaxRate,
     TaxRateFragment,
     TypedBaseDetailComponent,
     UpdateTaxRateInput,
@@ -47,9 +47,7 @@ export class TaxRateDetailComponent
         taxCategoryId: ['', Validators.required],
         zoneId: ['', Validators.required],
         customerGroupId: [''],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     taxCategories$: Observable<TaxCategoryFragment[]>;
     groups$: Observable<CustomerGroup[]>;

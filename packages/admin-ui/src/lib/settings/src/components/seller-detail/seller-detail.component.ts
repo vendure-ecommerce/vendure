@@ -4,6 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     CreateSellerInput,
     DataService,
+    getCustomFieldsDefaults,
     GetSellerDetailDocument,
     LanguageCode,
     NotificationService,
@@ -42,9 +43,7 @@ export class SellerDetailComponent
     customFields = this.getCustomFieldConfig('Seller');
     detailForm = this.formBuilder.group({
         name: ['', Validators.required],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     readonly updatePermission = [Permission.SuperAdmin, Permission.UpdateSeller, Permission.CreateSeller];
 
