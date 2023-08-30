@@ -9,4 +9,5 @@
     [asset]="assetWithTags"
     (assetChange)="assetChanges = $event"
     (editClick)="resolveWith()"
+    [assets]="assetsWithTags$ | async"
 ></vdr-asset-preview>
