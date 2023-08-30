@@ -112,6 +112,16 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * ```
      */
     customPropertyMap?: { [name: string]: string };
+    /**
+     * @description
+     * When set to `true`, the configured `shopListQueryLimit` and `adminListQueryLimit` values will be ignored,
+     * allowing unlimited results to be returned. Use caution when exposing an unlimited list query to the public,
+     * as it could become a vector for a denial of service attack if an attacker requests a very large list.
+     *
+     * @since 2.0.2
+     * @default false
+     */
+    ignoreQueryLimits?: boolean;
 };
 
 /**
@@ -206,7 +216,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     ): SelectQueryBuilder<T> {
         const apiType = extendedOptions.ctx?.apiType ?? 'shop';
         const rawConnection = this.connection.rawConnection;
-        const { take, skip } = this.parseTakeSkipParams(apiType, options);
+        const { take, skip } = this.parseTakeSkipParams(apiType, options, extendedOptions.ignoreQueryLimits);
 
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
@@ -285,9 +295,14 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     private parseTakeSkipParams(
         apiType: ApiType,
         options: ListQueryOptions<any>,
+        ignoreQueryLimits = false,
     ): { take: number; skip: number } {
         const { shopListQueryLimit, adminListQueryLimit } = this.configService.apiOptions;
-        const takeLimit = apiType === 'admin' ? adminListQueryLimit : shopListQueryLimit;
+        const takeLimit = ignoreQueryLimits
+            ? Number.MAX_SAFE_INTEGER
+            : apiType === 'admin'
+            ? adminListQueryLimit
+            : shopListQueryLimit;
         if (options.take && options.take > takeLimit) {
             throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
         }

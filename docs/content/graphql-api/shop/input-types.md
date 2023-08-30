@@ -1,7 +1,7 @@
 ---
 title: "Input Objects"
 weight: 4
-date: 2023-06-13T12:30:59.547Z
+date: 2023-07-04T11:02:06.199Z
 showtoc: true
 generated: true
 ---

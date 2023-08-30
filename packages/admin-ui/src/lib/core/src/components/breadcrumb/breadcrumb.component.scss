@@ -8,11 +8,12 @@
 .breadcrumbs {
     list-style-type: none;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     overflow-x: auto;
     max-width: 100vw;
     line-height: 100%;
-    height: 40px;
+    min-height: 40px;
     padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2.5);
     font-size: var(--font-size-sm);
     background-color: var(--color-page-header-item-bg);
@@ -27,6 +28,10 @@
         &:last-child {
             font-weight: 600;
         }
+
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 .breadcrumbs:not(.mobile) {

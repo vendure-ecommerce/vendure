@@ -23,7 +23,8 @@
 ::ng-deep .has-prefix > {
     input[type="text"], input[type="number"] {
         border-top-left-radius: 0 !important;
-        border-bottom-left-radius: 0 !important
+        border-bottom-left-radius: 0 !important;
+        width: 100%;
     }
 }
 
@@ -37,6 +38,7 @@
     input[type="text"], input[type="number"] {
         border-top-right-radius: 0 !important;
         border-bottom-right-radius: 0 !important;
+        width: 100%;
     }
 }
 

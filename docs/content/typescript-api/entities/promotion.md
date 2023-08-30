@@ -1,7 +1,7 @@
 ---
 title: "Promotion"
 weight: 10
-date: 2023-06-13T12:31:09.510Z
+date: 2023-07-14T16:57:49.967Z
 showtoc: true
 generated: true
 ---
@@ -82,7 +82,7 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 
 ### constructor
 
-{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/promotion#promotion'>Promotion</a>&#62; &#38; {             promotionConditions?: Array&#60;<a href='/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;;             promotionActions?: Array&#60;<a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;;         }) => Promotion"  >}}
+{{< member-info kind="method" type="(input?: DeepPartial&#60;<a href='/typescript-api/entities/promotion#promotion'>Promotion</a>&#62; &#38; {             promotionConditions?: Array&#60;<a href='/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;;             promotionActions?: Array&#60;<a href='/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;;         }) => Promotion"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

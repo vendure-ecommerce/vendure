@@ -1,7 +1,7 @@
 ---
 title: "FulfillmentService"
 weight: 10
-date: 2023-06-13T12:31:10.665Z
+date: 2023-07-14T16:57:50.394Z
 showtoc: true
 generated: true
 ---
@@ -66,7 +66,7 @@ class FulfillmentService {
 
 ### transitionToState
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fulfillmentId: <a href='/typescript-api/common/id#id'>ID</a>, state: <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>) => Promise&#60;         | {               fulfillment: <a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>;               orders: <a href='/typescript-api/entities/order#order'>Order</a>[];               fromState: <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;               toState: <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;           }         | FulfillmentStateTransitionError     &#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fulfillmentId: <a href='/typescript-api/common/id#id'>ID</a>, state: <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>) => Promise&#60;         | {               fulfillment: <a href='/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>;               orders: <a href='/typescript-api/entities/order#order'>Order</a>[];               fromState: <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;               toState: <a href='/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;           }         | FulfillmentStateTransitionError     &#62;"  >}}
 
 {{< member-description >}}Transitions the specified Fulfillment to a new state and upon successful transition
 publishes a <a href='/typescript-api/events/event-types#fulfillmentstatetransitionevent'>FulfillmentStateTransitionEvent</a>.{{< /member-description >}}

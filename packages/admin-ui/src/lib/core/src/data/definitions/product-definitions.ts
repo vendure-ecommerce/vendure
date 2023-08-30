@@ -616,6 +616,15 @@ export const DELETE_PRODUCT_VARIANT = gql`
     }
 `;
 
+export const DELETE_PRODUCT_VARIANTS = gql`
+    mutation DeleteProductVariants($ids: [ID!]!) {
+        deleteProductVariants(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_PRODUCT_VARIANT_OPTIONS = gql`
     query GetProductVariantOptions($id: ID!) {
         product(id: $id) {

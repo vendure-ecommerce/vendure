@@ -75,8 +75,8 @@ export class LocaleStringHydrator {
                 }
                 if (localeStringProp === 'customFields') {
                     (entity as any)[localeStringProp] = Object.assign(
-                        (entity as any)[localeStringProp],
-                        (translated as any)[localeStringProp],
+                        (entity as any)[localeStringProp] ?? {},
+                        (translated as any)[localeStringProp] ?? {},
                     );
                 } else {
                     (entity as any)[localeStringProp] = (translated as any)[localeStringProp];

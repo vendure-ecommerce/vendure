@@ -861,7 +861,7 @@ describe('Stock control', () => {
 
             expect(addFulfillmentToOrder.errorCode).toBe(AdminErrorCode.INSUFFICIENT_STOCK_ON_HAND_ERROR);
             expect(addFulfillmentToOrder.message).toBe(
-                "Cannot create a Fulfillment as 'Laptop 15 inch 16GB' has insufficient stockOnHand (3)",
+                'Cannot create a Fulfillment as "Laptop 15 inch 16GB" has insufficient stockOnHand (3)',
             );
         });
 

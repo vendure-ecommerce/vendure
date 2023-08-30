@@ -1,7 +1,7 @@
 ---
 title: "DefaultAssetImportStrategy"
 weight: 10
-date: 2023-06-13T12:31:08.133Z
+date: 2023-07-14T16:57:49.460Z
 showtoc: true
 generated: true
 ---
@@ -39,7 +39,7 @@ class DefaultAssetImportStrategy implements AssetImportStrategy {
 
 ### constructor
 
-{{< member-info kind="method" type="(options?: {             retryDelayMs: number;             retryCount: number;         }) => DefaultAssetImportStrategy"  >}}
+{{< member-info kind="method" type="(options?: {             retryDelayMs: number;             retryCount: number;         }) => DefaultAssetImportStrategy"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 

@@ -18,7 +18,7 @@ Let's say you have a plugin which adds a new entity to the database called `Prod
 The detail component itself is an Angular component which extends the [BaseDetailComponent]({{< relref "base-detail-component" >}}) or [TypedBaseDetailComponent]({{< relref "typed-base-detail-component" >}}) class.
 
 ```TypeScript
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { TypedBaseDetailComponent, LanguageCode } from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
@@ -47,7 +47,7 @@ export const GET_REVIEW_DETAIL = gql`
   styleUrls: ['./review-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof GetReviewDetailDocument> implements OnInit, OnDestroy {
+export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof GetReviewDetailDocument, 'review'> implements OnInit, OnDestroy {
   detailForm = this.formBuilder.group({
     title: [''],
     rating: [1],
@@ -149,4 +149,87 @@ Here is the standard layout for detail views:
     </vdr-page-detail-layout>
   </form>
 </vdr-page-body>
+```
+
+### Route config
+
+The `TypedBaseDetailComponent` expects that the entity detail data is resolved as part of loading the route. The data needs to be loaded in a very specific object shape:
+
+```TypeScript
+interface DetailResolveData {
+    detail: {
+        entity: Observable<Entity>;
+    };
+}
+```
+
+Here's how the routing would look for a typical list & detail view:
+
+```TypeScript
+import { inject, NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { DataService, SharedModule } from '@vendure/admin-ui/core';
+import { Observable, of } from "rxjs";
+import { map } from 'rxjs/operators';
+
+import { ReviewDetailComponent } from './components/review-detail/review-detail.component';
+import { ReviewListComponent } from './components/review-list/review-list.component';
+import { GetReviewDocument, GetReviewDetailQuery } from './generated-types';
+
+@NgModule({
+  imports: [
+    SharedModule,
+    RouterModule.forChild([
+      // This defines the route for the list view  
+      {
+        path: '',
+        pathMatch: 'full',
+        component: ReviewListComponent,
+        data: {
+          breadcrumb: [
+            {
+              label: 'Reviews',
+              link: [],
+            },
+          ],
+        },
+      },
+        
+      // This defines the route for the detail view  
+      {
+        path: ':id',
+        component: ReviewDetailComponent,
+        resolve: {
+          detail: route => {
+            // Here we are using the DataService to load the detail data
+            // from the API. The `GetReviewDocument` is a generated GraphQL
+            // TypedDocumentNode.  
+            const review$ = inject(DataService)
+              .query(GetReviewDocument, { id: route.paramMap.get('id') })
+              .mapStream(data => data.review);
+            return of({ entity: review$ });
+          },
+        },
+        data: {
+          breadcrumb: (
+            data: { detail: { entity: Observable<NonNullable<GetReviewDetailQuery['review']>> } },
+          ) => data.detail.entity.pipe(
+            map((entity) => [
+              {
+                label: 'Reviews',
+                link: ['/extensions', 'reviews'],
+              },
+              {
+                label: `${entity?.title ?? 'New Review'}`,
+                link: [],
+              },
+            ]),
+          ),
+        },
+      },
+    ]),
+  ],
+  declarations: [ReviewListComponent, ReviewDetailComponent],
+})
+export class ReviewsUiLazyModule {}
 ```

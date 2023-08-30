@@ -113,7 +113,6 @@ export class ChannelDetailComponent
             !code ||
             !token ||
             !defaultLanguageCode ||
-            !pricesIncludeTax ||
             !defaultCurrencyCode ||
             !defaultShippingZoneId ||
             !defaultTaxZoneId
@@ -124,7 +123,7 @@ export class ChannelDetailComponent
             code,
             token,
             defaultLanguageCode,
-            pricesIncludeTax,
+            pricesIncludeTax: !!pricesIncludeTax,
             defaultCurrencyCode,
             defaultShippingZoneId,
             defaultTaxZoneId,
@@ -233,6 +232,8 @@ export class ChannelDetailComponent
     }
 
     private generateToken(): string {
-        return Array.from(crypto.getRandomValues(new Uint8Array(10))).map(b => b.toString(16).padStart(2, '0')).join('');
+        return Array.from(crypto.getRandomValues(new Uint8Array(10)))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
     }
 }

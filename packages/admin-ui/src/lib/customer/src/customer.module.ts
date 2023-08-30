@@ -8,6 +8,7 @@ import {
     GetCustomerGroupDetailDocument,
     PageService,
     SharedModule,
+    SortOrder,
 } from '@vendure/admin-ui/core';
 
 import { AddCustomerToGroupDialogComponent } from './components/add-customer-to-group-dialog/add-customer-to-group-dialog.component';
@@ -80,6 +81,13 @@ export class CustomerModule {
                 component: CustomerDetailComponent,
                 query: CustomerDetailQueryDocument,
                 entityKey: 'customer',
+                variables: {
+                    orderListOptions: {
+                        sort: {
+                            orderPlacedAt: SortOrder.DESC,
+                        },
+                    },
+                },
                 getBreadcrumbs: entity => [
                     {
                         label: entity

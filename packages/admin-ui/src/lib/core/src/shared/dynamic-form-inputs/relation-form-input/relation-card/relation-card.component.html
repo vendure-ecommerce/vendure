@@ -4,7 +4,7 @@
             <ng-container *ngTemplateOutlet="previewTemplate; context: { entity: entity }"></ng-container>
         </div>
         <div class="detail">
-            <div class="pl3">
+            <div class="pl-1">
                 <ng-container *ngTemplateOutlet="detailTemplate; context: { entity: entity }"></ng-container>
             </div>
             <button *ngIf="!readonly" class="button-small m-1" (click)="select.emit()">

@@ -1,7 +1,7 @@
 ---
 title: "DefaultSearchPluginInitOptions"
 weight: 10
-date: 2023-06-13T12:31:10.144Z
+date: 2023-07-14T16:57:50.205Z
 showtoc: true
 generated: true
 ---
@@ -23,7 +23,7 @@ Options which configure the behaviour of the DefaultSearchPlugin
 interface DefaultSearchPluginInitOptions {
   indexStockStatus?: boolean;
   bufferUpdates?: boolean;
-  searchStategy?: SearchStrategy;
+  searchStrategy?: SearchStrategy;
 }
 ```
 ## Members
@@ -49,7 +49,7 @@ Collections, as the buffering allows better control over when these expensive jo
 and also performs optimizations to minimize the amount of work that needs to be performed by
 the worker.{{< /member-description >}}
 
-### searchStategy
+### searchStrategy
 
 {{< member-info kind="property" type="SearchStrategy" default="undefined"  since="1.6.0" >}}
 

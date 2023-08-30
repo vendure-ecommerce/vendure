@@ -116,7 +116,7 @@ async function createGraphQLOptions(
             new IdCodecPlugin(idCodecService),
             new TranslateErrorsPlugin(i18nService),
             new AssetInterceptorPlugin(configService),
-            ApolloServerPluginLandingPageGraphQLPlayground(),
+            ...(options.playground ? [ApolloServerPluginLandingPageGraphQLPlayground()] : []),
             ...configService.apiOptions.apolloServerPlugins,
         ],
         validationRules: options.validationRules,

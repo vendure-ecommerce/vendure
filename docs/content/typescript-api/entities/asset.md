@@ -1,7 +1,7 @@
 ---
 title: "Asset"
 weight: 10
-date: 2023-06-13T12:31:09.162Z
+date: 2023-07-14T16:57:49.833Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "DefaultStockAllocationStrategy"
 weight: 10
-date: 2023-06-13T12:31:08.510Z
+date: 2023-07-14T16:57:49.608Z
 showtoc: true
 generated: true
 ---

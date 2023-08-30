@@ -19,6 +19,10 @@ generatePastOrders()
     .then(() => process.exit(0))
     .catch(() => process.exit(1));
 
+const DAYS_TO_COVER = 30;
+
+// This script generates a large number of past Orders over the past <DAYS_TO_COVER> days.
+// It is useful for testing scenarios where there are a large number of Orders in the system.
 async function generatePastOrders() {
     const { app } = await bootstrapWorker(devConfig);
     const requestContextService = app.get(RequestContextService);
@@ -38,7 +42,6 @@ async function generatePastOrders() {
     const { items: variants } = await productVariantService.findAll(ctxAdmin, { take: 500 });
     const { items: customers } = await customerService.findAll(ctxAdmin, { take: 500 }, ['user']);
 
-    const DAYS_TO_COVER = 30;
     for (let i = DAYS_TO_COVER; i > 0; i--) {
         const numberOfOrders = Math.floor(Math.random() * 10) + 5;
         Logger.info(

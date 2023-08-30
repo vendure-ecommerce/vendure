@@ -2,6 +2,7 @@
 
 :host {
     display: inline-block;
+    overflow: hidden;
 }
 
 .wrapper {
@@ -50,7 +51,7 @@
     padding: 5px 8px;
     white-space: nowrap;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 2px;
 }
 

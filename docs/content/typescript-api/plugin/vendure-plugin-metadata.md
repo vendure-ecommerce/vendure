@@ -1,7 +1,7 @@
 ---
 title: "VendurePluginMetadata"
 weight: 10
-date: 2023-06-13T12:31:10.160Z
+date: 2023-07-14T16:57:50.211Z
 showtoc: true
 generated: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "BulkAction"
 weight: 10
-date: 2023-06-13T12:31:12.809Z
+date: 2023-07-14T16:57:51.079Z
 showtoc: true
 generated: true
 ---
@@ -51,7 +51,7 @@ interface BulkAction<ItemType = any, ComponentType = any> {
 
 ### getTranslationVars
 
-{{< member-info kind="property" type="(         context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"  >}}
+{{< member-info kind="property" type="(         context: <a href='/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;"  >}}
 
 {{< member-description >}}An optional function that should resolve to a map of translation variables which can be
 used when translating the `label` string.{{< /member-description >}}

@@ -10,13 +10,24 @@
         <vdr-ab-right>
             <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
             <a
-                class="btn btn-primary"
+                class="button primary mr-1"
                 [routerLink]="['./create']"
                 *vdrIfPermissions="['CreateCatalog', 'CreateProduct']"
             >
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-new-product' | translate }}
             </a>
+            <vdr-dropdown>
+                <button class="icon-button" vdrDropdownTrigger>
+                    <clr-icon shape="ellipsis-vertical"></clr-icon>
+                </button>
+                <vdr-dropdown-menu vdrPosition="bottom-right">
+                    <button type="button" vdrDropdownItem (click)="rebuildSearchIndex()">
+                        <clr-icon shape="refresh" class=""></clr-icon>
+                        {{ 'catalog.rebuild-search-index' | translate }}
+                    </button>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

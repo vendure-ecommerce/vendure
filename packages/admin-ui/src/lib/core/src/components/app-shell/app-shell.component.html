@@ -1,7 +1,7 @@
-<div class="app-container">
+<div class="app-container" [dir]="direction$ | async">
     <div class="left-nav" [class.expanded]="mainNavExpanded$ | async">
         <div class="branding">
-            <a [routerLink]="['/']" *ngIf="!hideVendureBranding"><img src="assets/logo.svg" class="logo" style="max-width: 100px" /></a>
+            <a [routerLink]="['/']" *ngIf="!hideVendureBranding"><img src="assets/logo-top.webp" class="logo" style="max-width: 100px" /></a>
             <div class="collapse-menu">
                 <button class="" (click)="collapseNav()">
                     <clr-icon shape="window-close" size="24"></clr-icon>
@@ -35,7 +35,7 @@
                     <vdr-breadcrumb></vdr-breadcrumb>
                 </div>
                 <div class="universal-search flex-spacer"></div>
-                <div class="mr-1">
+                <div class="mx-1">
                     <vdr-alerts></vdr-alerts>
                 </div>
                 <div>
@@ -48,7 +48,6 @@
                     ></vdr-user-menu>
                 </div>
             </div>
-            <!--<vdr-page-title [value]="(pageTitle$ | async) || '' | translate"></vdr-page-title>-->
             <div class="content-area"><router-outlet></router-outlet></div>
         </div>
     </div>

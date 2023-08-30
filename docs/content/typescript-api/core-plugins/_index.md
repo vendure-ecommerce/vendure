@@ -1,7 +1,7 @@
 ---
 title: "Core Plugins"
 weight: 10
-date: 2023-06-07T09:42:22.748Z
+date: 2023-07-14T16:57:50.205Z
 showtoc: false
 generated: true
 ---

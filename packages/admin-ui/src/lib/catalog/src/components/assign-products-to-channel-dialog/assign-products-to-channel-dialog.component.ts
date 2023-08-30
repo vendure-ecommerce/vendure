@@ -6,10 +6,10 @@ import {
     Dialog,
     GetChannelsQuery,
     ItemOf,
+    LogicalOperator,
     NotificationService,
-    ProductVariantFragment,
 } from '@vendure/admin-ui/core';
-import { combineLatest, from, Observable } from 'rxjs';
+import { combineLatest, from, lastValueFrom, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
 type Channel = ItemOf<GetChannelsQuery, 'channels'>;
@@ -115,21 +115,18 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
         this.resolveWith();
     }
 
-    private async getTopVariants(take: number): Promise<ProductVariantFragment[]> {
-        const variants: ProductVariantFragment[] = [];
-
-        for (let i = 0; i < this.productIds.length && variants.length < take; i++) {
-            const productVariants = await this.dataService.product
-                .getProduct(this.productIds[i], { take: this.isProductVariantMode ? undefined : take })
-                .mapSingle(({ product }) => {
-                    const _variants = product ? product.variantList.items : [];
-                    return _variants.filter(v =>
-                        this.isProductVariantMode ? this.productVariantIds?.includes(v.id) : true,
-                    );
-                })
-                .toPromise();
-            variants.push(...(productVariants || []));
-        }
-        return variants.slice(0, take);
+    private async getTopVariants(take: number) {
+        return (
+            await lastValueFrom(
+                this.dataService.product.getProductVariants({
+                    filterOperator: LogicalOperator.OR,
+                    filter: {
+                        productId: { in: this.productIds },
+                        id: { in: this.productVariantIds },
+                    },
+                    take,
+                }).single$,
+            )
+        ).productVariants.items;
     }
 }

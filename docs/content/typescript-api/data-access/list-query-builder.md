@@ -1,7 +1,7 @@
 ---
 title: "ListQueryBuilder"
 weight: 10
-date: 2023-06-13T12:31:10.232Z
+date: 2023-07-14T16:57:50.237Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # ListQueryBuilder
 
-{{< generation-info sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="189" packageName="@vendure/core">}}
+{{< generation-info sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="199" packageName="@vendure/core">}}
 
 This helper class is used when fetching entities the database from queries which return a <a href='/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
 These queries all follow the same format:
@@ -130,6 +130,7 @@ type ExtendedListQueryOptions<T extends VendureEntity> = {
   entityAlias?: string;
   ctx?: RequestContext;
   customPropertyMap?: { [name: string]: string };
+  ignoreQueryLimits?: boolean;
 }
 ```
 ## Members
@@ -231,6 +232,14 @@ query {
   }
 }
 ```{{< /member-description >}}
+
+### ignoreQueryLimits
+
+{{< member-info kind="property" type="boolean" default="false"  since="2.0.2" >}}
+
+{{< member-description >}}When set to `true`, the configured `shopListQueryLimit` and `adminListQueryLimit` values will be ignored,
+allowing unlimited results to be returned. Use caution when exposing an unlimited list query to the public,
+as it could become a vector for a denial of service attack if an attacker requests a very large list.{{< /member-description >}}
 
 
 </div>

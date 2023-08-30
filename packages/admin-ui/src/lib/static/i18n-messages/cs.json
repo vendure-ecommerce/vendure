@@ -105,6 +105,7 @@
     "facet-values": "Hodnoty atributů",
     "facets": "",
     "filter-by-name": "Filtrovat dle jména",
+    "filter-by-sku": "",
     "filter-inheritance": "",
     "filters": "Filtry",
     "inherit-filters-from-parent": "",
@@ -149,6 +150,7 @@
     "products": "",
     "public": "Veřejný",
     "quick-jump-placeholder": "",
+    "rebuild-search-index": "Obnovit vyhledávací index",
     "reindex-error": "Při regeneraci vyhledávacího indexu došlo k chybě",
     "reindex-successful": "Zaindexováno: {count, plural, one {varianta produktu} other {{count} variant produktu}} během {time}ms",
     "reindexing": "Regenerovat vyhledávací index",
@@ -457,6 +459,7 @@
     "image-title": "Titulek",
     "insert-image": "Vložit obrázek",
     "link-href": "Odkaz",
+    "link-target": "",
     "link-title": "Odkaz titulky",
     "remove-link": "Odebrat odkaz",
     "set-link": "Nastavit odkaz"

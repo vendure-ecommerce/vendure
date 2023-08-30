@@ -1,4 +1,4 @@
-import { Attrs, DOMParser, DOMSerializer, Node, NodeSpec } from 'prosemirror-model';
+import { Attrs, DOMParser, DOMSerializer, Node, NodeSpec, Mark, MarkSpec } from 'prosemirror-model';
 import { NodeViewConstructor } from 'prosemirror-view';
 
 export const iframeNode: NodeSpec = {
@@ -29,9 +29,10 @@ export const iframeNode: NodeSpec = {
                         name: node.name,
                         referrerpolicy: node.referrerPolicy,
                         src: node.src,
-                        srcdoc: node.srcdoc || undefined,
                         title: node.title ?? '',
                         width: node.width,
+                        // Note: we do not allow the `srcdoc` attribute to be
+                        // set as it presents an XSS attack vector
                     };
                     if (node.sandbox.length) {
                         attrs.sandbox = node.sandbox;
@@ -43,7 +44,7 @@ export const iframeNode: NodeSpec = {
         },
     ],
     toDOM(node) {
-        return ['iframe', { ...node.attrs }];
+        return ['iframe', { ...node.attrs, sandbox: 'allow-scripts allow-same-origin' }];
     },
 };
 
@@ -56,4 +57,43 @@ export const iframeNodeView: NodeViewConstructor = (node, view, getPos, decorati
     return {
         dom: wrapper,
     };
+};
+
+export const linkMark: MarkSpec = {
+    attrs: {
+        href: {},
+        title: { default: null },
+        target: { default: null },
+        rel: { default: null },
+        download: { default: null },
+        type: { default: null },
+    },
+    inclusive: false,
+    parseDOM: [
+        {
+            tag: 'a[href]',
+            getAttrs(dom: HTMLElement | string) {
+                if (typeof dom !== 'string') {
+                    return {
+                        href: dom.getAttribute('href'),
+                        title: dom.getAttribute('title'),
+                        target: dom.getAttribute('target'),
+                        rel: dom.getAttribute('rel'),
+                        download: dom.getAttribute('download'),
+                        type: dom.getAttribute('type'),
+                    };
+                } else {
+                    return null;
+                }
+            },
+        },
+    ],
+    toDOM(node) {
+        const { href, title, target, rel, download, type } = node.attrs;
+        const attrs = { href, title, rel, download, type };
+        if (target) {
+            attrs['target'] = target;
+        }
+        return ['a', attrs, 0];
+    },
 };

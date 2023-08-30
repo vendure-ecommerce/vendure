@@ -257,10 +257,9 @@ export class OrderDetailComponent
     }
 
     canAddFulfillment(order: OrderDetailFragment): boolean {
-        const allFulfillmentLines: FulfillmentFragment['lines'] = (order.fulfillments ?? []).reduce(
-            (all, fulfillment) => [...all, ...fulfillment.lines],
-            [] as FulfillmentFragment['lines'],
-        );
+        const allFulfillmentLines: FulfillmentFragment['lines'] = (order.fulfillments ?? [])
+            .filter(fulfillment => fulfillment.state !== 'Cancelled')
+            .reduce((all, fulfillment) => [...all, ...fulfillment.lines], [] as FulfillmentFragment['lines']);
         let allItemsFulfilled = true;
         for (const line of order.lines) {
             const totalFulfilledCount = allFulfillmentLines

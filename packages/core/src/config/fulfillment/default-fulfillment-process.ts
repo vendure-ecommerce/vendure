@@ -89,7 +89,10 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
     },
     async onTransitionEnd(fromState, toState, { ctx, fulfillment, orders }) {
         if (toState === 'Cancelled') {
-            const orderLineInput = fulfillment.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity }));
+            const orderLineInput = fulfillment.lines.map(l => ({
+                orderLineId: l.orderLineId,
+                quantity: l.quantity,
+            }));
             await stockMovementService.createCancellationsForOrderLines(ctx, orderLineInput);
             // const lines = await groupOrderItemsIntoLines(ctx, orderLineInput);
             await stockMovementService.createAllocationsForOrderLines(ctx, orderLineInput);

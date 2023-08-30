@@ -1,7 +1,7 @@
 ---
 title: "RequestContextService"
 weight: 10
-date: 2023-06-13T12:31:10.321Z
+date: 2023-07-14T16:57:50.263Z
 showtoc: true
 generated: true
 ---
@@ -26,6 +26,7 @@ class RequestContextService {
         apiType: ApiType;
         channelOrToken?: Channel | string;
         languageCode?: LanguageCode;
+        currencyCode?: CurrencyCode;
         user?: User;
         activeOrderId?: ID;
     }) => Promise<RequestContext>;
@@ -36,7 +37,7 @@ class RequestContextService {
 
 ### create
 
-{{< member-info kind="method" type="(config: {         req?: Request;         apiType: <a href='/typescript-api/request/api-type#apitype'>ApiType</a>;         channelOrToken?: <a href='/typescript-api/entities/channel#channel'>Channel</a> | string;         languageCode?: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         user?: <a href='/typescript-api/entities/user#user'>User</a>;         activeOrderId?: <a href='/typescript-api/common/id#id'>ID</a>;     }) => Promise&#60;<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>&#62;"  since="1.5.0" >}}
+{{< member-info kind="method" type="(config: {         req?: Request;         apiType: <a href='/typescript-api/request/api-type#apitype'>ApiType</a>;         channelOrToken?: <a href='/typescript-api/entities/channel#channel'>Channel</a> | string;         languageCode?: <a href='/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         currencyCode?: <a href='/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>;         user?: <a href='/typescript-api/entities/user#user'>User</a>;         activeOrderId?: <a href='/typescript-api/common/id#id'>ID</a>;     }) => Promise&#60;<a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>&#62;"  since="1.5.0" >}}
 
 {{< member-description >}}Creates a RequestContext based on the config provided. This can be useful when interacting
 with services outside the request-response cycle, for example in stand-alone scripts or in

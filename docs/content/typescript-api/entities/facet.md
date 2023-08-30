@@ -1,7 +1,7 @@
 ---
 title: "Facet"
 weight: 10
-date: 2023-06-13T12:31:09.273Z
+date: 2023-07-14T16:57:49.872Z
 showtoc: true
 generated: true
 ---

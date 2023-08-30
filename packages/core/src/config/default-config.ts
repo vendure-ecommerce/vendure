@@ -3,6 +3,7 @@ import {
     DEFAULT_AUTH_TOKEN_HEADER_KEY,
     SUPER_ADMIN_USER_IDENTIFIER,
     SUPER_ADMIN_USER_PASSWORD,
+    DEFAULT_CHANNEL_TOKEN_KEY,
 } from '@vendure/common/lib/shared-constants';
 
 import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
@@ -71,7 +72,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         shopApiDebug: false,
         shopListQueryLimit: 100,
         shopApiValidationRules: [],
-        channelTokenKey: 'vendure-token',
+        channelTokenKey: DEFAULT_CHANNEL_TOKEN_KEY,
         cors: {
             origin: true,
             credentials: true,
@@ -86,6 +87,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         cookieOptions: {
             secret: Math.random().toString(36).substr(3),
             httpOnly: true,
+            sameSite: 'lax',
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',

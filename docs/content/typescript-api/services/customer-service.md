@@ -1,7 +1,7 @@
 ---
 title: "CustomerService"
 weight: 10
-date: 2023-06-13T12:31:10.550Z
+date: 2023-07-14T16:57:50.347Z
 showtoc: true
 generated: true
 ---
@@ -155,7 +155,7 @@ a token which can be used in the `resetPassword()` method.{{< /member-descriptio
 
 ### resetPassword
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"  >}}
 
 {{< member-description >}}Given a valid password reset token created by a call to the `requestPasswordReset()` method,
 this method will change the Customer's password to that given as the `password` argument.{{< /member-description >}}

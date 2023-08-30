@@ -1,7 +1,7 @@
 ---
 title: "DefaultFormComponentId"
 weight: 10
-date: 2023-06-13T12:31:11.678Z
+date: 2023-07-14T16:57:50.658Z
 showtoc: true
 generated: true
 ---
@@ -36,7 +36,6 @@ type DefaultFormComponentId = | 'boolean-form-input'
     | 'select-form-input'
     | 'text-form-input'
     | 'textarea-form-input'
-    | 'asset-form-input'
     | 'product-multi-form-input'
     | 'combination-mode-form-input'
 ```

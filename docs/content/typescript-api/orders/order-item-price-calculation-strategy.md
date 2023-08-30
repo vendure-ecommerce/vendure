@@ -1,7 +1,7 @@
 ---
 title: "OrderItemPriceCalculationStrategy"
 weight: 10
-date: 2023-06-13T12:31:08.594Z
+date: 2023-07-14T16:57:49.638Z
 showtoc: true
 generated: true
 ---
@@ -85,8 +85,7 @@ interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
 the price for a single unit.
 
 Note: if you have any `relation` type custom fields defined on the OrderLine entity, they will only be
-passed in to this method if they are set to `eager: true`. Otherwise, you can use the <a href='/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>
-to join the missing relations.
+passed in to this method if they are set to `eager: true`. Otherwise, you can use the <a href='/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>to join the missing relations.
 
 Note: the `quantity` argument was added in v2.0.0{{< /member-description >}}
 

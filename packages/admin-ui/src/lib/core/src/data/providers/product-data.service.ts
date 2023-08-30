@@ -16,6 +16,7 @@ import {
     DELETE_PRODUCT,
     DELETE_PRODUCT_OPTION,
     DELETE_PRODUCT_VARIANT,
+    DELETE_PRODUCT_VARIANTS,
     DELETE_PRODUCTS,
     DELETE_TAG,
     GET_ASSET,
@@ -265,6 +266,15 @@ export class ProductDataService {
             Codegen.DeleteProductVariantMutationVariables
         >(DELETE_PRODUCT_VARIANT, {
             id,
+        });
+    }
+
+    deleteProductVariants(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteProductVariantsMutation,
+            Codegen.DeleteProductVariantsMutationVariables
+        >(DELETE_PRODUCT_VARIANTS, {
+            ids,
         });
     }
 

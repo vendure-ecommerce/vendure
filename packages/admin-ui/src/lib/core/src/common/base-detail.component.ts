@@ -249,11 +249,12 @@ export function detailComponentWithResolver<
     query: T;
     entityKey: R;
     getBreadcrumbs?: (entity: ResultOf<T>[R]) => BreadcrumbValue;
+    variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
 }) {
-    const resolveFn: ResolveFn<{ entity: Observable<ResultOf<T>[Field] | null>; result?: ResultOf<T> }> = (
-        route,
-        state,
-    ) => {
+    const resolveFn: ResolveFn<{
+        entity: Observable<ResultOf<T>[Field] | null>;
+        result?: ResultOf<T>;
+    }> = route => {
         const router = inject(Router);
         const dataService = inject(DataService);
         const id = route.paramMap.get('id');
@@ -268,7 +269,7 @@ export function detailComponentWithResolver<
             return of({ entity: of(null) });
         } else {
             const result$ = dataService
-                .query(config.query, { id })
+                .query(config.query, { id, ...(config.variables ?? {}) })
                 .refetchOnChannelChange()
                 .stream$.pipe(takeUntil(navigateAway$), shareReplay(1));
             const entity$ = result$.pipe(map(result => result[config.entityKey]));

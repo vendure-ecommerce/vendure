@@ -1,7 +1,7 @@
 ---
 title: "UserService"
 weight: 10
-date: 2023-06-13T12:31:11.572Z
+date: 2023-07-14T16:57:50.627Z
 showtoc: true
 generated: true
 ---
@@ -13,7 +13,7 @@ generated: true
 
 # UserService
 
-{{< generation-info sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="36" packageName="@vendure/core">}}
+{{< generation-info sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="37" packageName="@vendure/core">}}
 
 Contains methods relating to <a href='/typescript-api/entities/user#user'>User</a> entities.
 
@@ -21,7 +21,7 @@ Contains methods relating to <a href='/typescript-api/entities/user#user'>User</
 
 ```TypeScript
 class UserService {
-  constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator)
+  constructor(connection: TransactionalConnection, configService: ConfigService, roleService: RoleService, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef)
   async getUserById(ctx: RequestContext, userId: ID) => Promise<User | undefined>;
   async getUserByEmailAddress(ctx: RequestContext, emailAddress: string, userType?: 'administrator' | 'customer') => Promise<User | undefined>;
   async createCustomerUser(ctx: RequestContext, identifier: string, password?: string) => Promise<User | PasswordValidationError>;
@@ -34,7 +34,7 @@ class UserService {
   async resetPasswordByToken(ctx: RequestContext, passwordResetToken: string, password: string) => Promise<
         User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError
     >;
-  async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) => ;
+  async changeUserAndNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) => ;
   async setIdentifierChangeToken(ctx: RequestContext, user: User) => Promise<User>;
   async changeIdentifierByToken(ctx: RequestContext, token: string) => Promise<
         | { user: User; oldIdentifier: string }
@@ -48,7 +48,7 @@ class UserService {
 
 ### constructor
 
-{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, roleService: <a href='/typescript-api/services/role-service#roleservice'>RoleService</a>, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator) => UserService"  >}}
+{{< member-info kind="method" type="(connection: <a href='/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, roleService: <a href='/typescript-api/services/role-service#roleservice'>RoleService</a>, passwordCipher: PasswordCipher, verificationTokenGenerator: VerificationTokenGenerator, moduleRef: ModuleRef) => UserService"  >}}
 
 {{< member-description >}}{{< /member-description >}}
 
@@ -115,14 +115,14 @@ flow.{{< /member-description >}}
 
 ### resetPasswordByToken
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;"  >}}
 
 {{< member-description >}}Verifies a passwordResetToken by looking for a User which has previously had it set using the
 `setPasswordResetToken()` method, and checks that the token is valid and has not expired.
 
 If valid, the User's credentials will be updated with the new password.{{< /member-description >}}
 
-### changeNativeIdentifier
+### changeUserAndNativeIdentifier
 
 {{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, userId: <a href='/typescript-api/common/id#id'>ID</a>, newIdentifier: string) => "  >}}
 
@@ -138,7 +138,7 @@ flow.{{< /member-description >}}
 
 ### changeIdentifierByToken
 
-{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;"  >}}
+{{< member-info kind="method" type="(ctx: <a href='/typescript-api/request/request-context#requestcontext'>RequestContext</a>, token: string) => Promise&#60;         | { user: <a href='/typescript-api/entities/user#user'>User</a>; oldIdentifier: string }         | IdentifierChangeTokenInvalidError         | IdentifierChangeTokenExpiredError     &#62;"  >}}
 
 {{< member-description >}}Changes the User identifier as part of the storefront flow used by Customers to set a
 new email address, with the token previously set using the `setIdentifierChangeToken()` method.{{< /member-description >}}

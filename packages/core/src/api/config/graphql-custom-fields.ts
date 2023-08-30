@@ -255,10 +255,11 @@ export function addActiveAdministratorCustomFields(
     administratorCustomFields: CustomFieldConfig[],
 ) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    const writableCustomFields = administratorCustomFields?.filter(field => field.readonly !== true);
     const extension = `
         extend input UpdateActiveAdministratorInput {
             customFields: ${
-                0 < administratorCustomFields?.length ? 'UpdateAdministratorCustomFieldsInput' : 'JSON'
+                0 < writableCustomFields?.length ? 'UpdateAdministratorCustomFieldsInput' : 'JSON'
             }
         }
     `;

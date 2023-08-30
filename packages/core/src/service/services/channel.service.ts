@@ -85,8 +85,22 @@ export class ChannelService {
             ttl: this.configService.entityOptions.channelCacheTtl,
             refresh: {
                 fn: async ctx => {
-                    const { items } = await this.findAll(ctx);
-                    return items;
+                    const result = await this.listQueryBuilder
+                        .build(
+                            Channel,
+                            {},
+                            {
+                                ctx,
+                                relations: ['defaultShippingZone', 'defaultTaxZone'],
+                                ignoreQueryLimits: true,
+                            },
+                        )
+                        .getManyAndCount()
+                        .then(([items, totalItems]) => ({
+                            items,
+                            totalItems,
+                        }));
+                    return result.items;
                 },
                 defaultArgs: [RequestContext.empty()],
             },
@@ -279,6 +293,7 @@ export class ChannelService {
         if (!channel) {
             throw new EntityNotFoundError('Channel', input.id);
         }
+        const originalDefaultCurrencyCode = channel.defaultCurrencyCode;
         const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
         if (isGraphQlErrorResult(defaultLanguageValidationResult)) {
             return defaultLanguageValidationResult;
@@ -304,6 +319,24 @@ export class ChannelService {
         }
         if (input.currencyCode) {
             updatedChannel.defaultCurrencyCode = input.currencyCode;
+        }
+        if (input.currencyCode || input.defaultCurrencyCode) {
+            const newCurrencyCode = input.defaultCurrencyCode || input.currencyCode;
+            if (originalDefaultCurrencyCode !== newCurrencyCode) {
+                // When updating the default currency code for a Channel, we also need to update
+                // and ProductVariantPrices in that channel which use the old currency code.
+                const qb = this.connection
+                    .getRepository(ctx, ProductVariantPrice)
+                    .createQueryBuilder('pvp')
+                    .update()
+                    .where('channelId = :channelId', { channelId: channel.id })
+                    .andWhere('currencyCode = :currencyCode', {
+                        currencyCode: originalDefaultCurrencyCode,
+                    })
+                    .set({ currencyCode: newCurrencyCode });
+
+                await qb.execute();
+            }
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);

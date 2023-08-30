@@ -1,7 +1,7 @@
 ---
 title: "DetailComponentWithResolver"
 weight: 10
-date: 2023-06-13T12:31:12.757Z
+date: 2023-07-14T16:57:51.046Z
 showtoc: true
 generated: true
 ---
@@ -49,12 +49,13 @@ function detailComponentWithResolver<T extends TypedDocumentNode<any, { id: stri
     query: T;
     entityKey: R;
     getBreadcrumbs?: (entity: ResultOf<T>[R]) => BreadcrumbValue;
+    variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
 }): void
 ```
 ## Parameters
 
 ### config
 
-{{< member-info kind="parameter" type="{     component: Type&#60;<a href='/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>&#60;T, Field&#62;&#62;;     query: T;     entityKey: R;     getBreadcrumbs?: (entity: ResultOf&#60;T&#62;[R]) =&#62; BreadcrumbValue; }" >}}
+{{< member-info kind="parameter" type="{     component: Type&#60;<a href='/admin-ui-api/list-detail-views/typed-base-detail-component#typedbasedetailcomponent'>TypedBaseDetailComponent</a>&#60;T, Field&#62;&#62;;     query: T;     entityKey: R;     getBreadcrumbs?: (entity: ResultOf&#60;T&#62;[R]) =&#62; BreadcrumbValue;     variables?: T extends TypedDocumentNode&#60;any, infer V&#62; ? Omit&#60;V, 'id'&#62; : never; }" >}}
 
 </div>
