@@ -71,7 +71,7 @@ export class AssetGalleryComponent implements OnChanges {
             .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',
                 closable: true,
-                locals: { asset },
+                locals: { asset, assets: this.assets },
             })
             .subscribe();
     }

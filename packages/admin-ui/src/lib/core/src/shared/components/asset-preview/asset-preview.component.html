@@ -107,7 +107,7 @@
         </vdr-card>
     </vdr-page-detail-sidebar>
     <div class="carousel-container">
-    <button (click)="previousImage()" [class.disabled]="disablePreviousButton"><clr-icon shape="caret left" class="color-weight-800"></clr-icon
+    <button *ngIf="showSlideButtons" (click)="previousImage()" [class.disabled]="disablePreviousButton"><clr-icon shape="caret left" class="color-weight-800"></clr-icon
         ></button>
     <div class="preview-image" #previewDiv [class.centered]="centered">
         <div class="image-wrapper">
@@ -142,7 +142,7 @@
             </div>
         </div>
     </div>
-    <button (click)="nextImage()" [class.disabled]="disableNextButton"><clr-icon shape="caret right" class="color-weight-800"></clr-icon
+    <button  *ngIf="showSlideButtons" (click)="nextImage()" [class.disabled]="disableNextButton"><clr-icon shape="caret right" class="color-weight-800"></clr-icon
         ></button>
     </div>
 </vdr-page-detail-layout>

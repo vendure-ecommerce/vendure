@@ -54,6 +54,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     previewAssetIndex = 0;
     disableNextButton = false;
     disablePreviousButton = false;
+    showSlideButtons = false;
     @ViewChild('imageElement', { static: true }) private imageElementRef: ElementRef<HTMLImageElement>;
     @ViewChild('previewDiv', { static: true }) private previewDivRef: ElementRef<HTMLDivElement>;
     private subscription: Subscription;
@@ -77,7 +78,13 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         const { focalPoint } = this.asset;
-        this.previewAssetIndex = this.assets.findIndex(asset => asset.id === this.asset.id) || 0;
+        if (this.assets?.length) {
+            this.showSlideButtons = true;
+            this.previewAssetIndex = this.assets.findIndex(asset => asset.id === this.asset.id) || 0;
+        } else {
+            this.showSlideButtons = false;
+            this.updateButtonAccessibility();
+        }
         this.updateButtonAccessibility();
         this.form.get('name')?.setValue(this.asset.name);
         this.form.get('tags')?.setValue(this.asset.tags?.map(t => t.value));
@@ -226,8 +233,8 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     }
 
     updateButtonAccessibility() {
-        this.disableNextButton = this.assets[this.previewAssetIndex + 1]?.id ? false : true;
-        this.disablePreviousButton = this.assets[this.previewAssetIndex - 1]?.id ? false : true;
+        this.disableNextButton = this.assets?.[this.previewAssetIndex + 1]?.id ? false : true;
+        this.disablePreviousButton = this.assets?.[this.previewAssetIndex - 1]?.id ? false : true;
     }
 
 
