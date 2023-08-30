@@ -106,6 +106,9 @@
             <vdr-page-entity-info *ngIf="asset as entity" [entity]="entity"></vdr-page-entity-info>
         </vdr-card>
     </vdr-page-detail-sidebar>
+    <div class="carousel-container">
+    <button (click)="previousImage()" [class.disabled]="disablePreviousButton"><clr-icon shape="caret left" class="color-weight-800"></clr-icon
+        ></button>
     <div class="preview-image" #previewDiv [class.centered]="centered">
         <div class="image-wrapper">
             <vdr-focal-point-control
@@ -138,5 +141,8 @@
                 </button>
             </div>
         </div>
+    </div>
+    <button (click)="nextImage()" [class.disabled]="disableNextButton"><clr-icon shape="caret right" class="color-weight-800"></clr-icon
+        ></button>
     </div>
 </vdr-page-detail-layout>
