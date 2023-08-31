@@ -12,6 +12,7 @@ import {
 } from './constants';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
+    AdminUiExtension,
     AdminUiExtensionLazyModule,
     AdminUiExtensionSharedModule,
     AdminUiExtensionWithId,
@@ -38,14 +39,16 @@ import {
 export async function setupScaffold(outputPath: string, extensions: Extension[]) {
     deleteExistingExtensionModules(outputPath);
 
-    const adminUiExtensions = extensions.filter(isAdminUiExtension);
-    const sharedUiProvidersExtensions = extensions.filter(isSharedUiProvidersExtension);
+    const adminUiExtensions = extensions.filter(
+        (e): e is AdminUiExtension | SharedUiProvidersExtension =>
+            isAdminUiExtension(e) || isSharedUiProvidersExtension(e),
+    );
     const normalizedExtensions = normalizeExtensions(adminUiExtensions);
 
     const modulePathMapping = generateModulePathMapping(normalizedExtensions);
     copyAdminUiSource(outputPath, modulePathMapping);
 
-    await copyExtensionModules(outputPath, [...normalizedExtensions, ...sharedUiProvidersExtensions]);
+    await copyExtensionModules(outputPath, normalizedExtensions);
 
     const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
     await copyStaticAssets(outputPath, staticAssetExtensions);
@@ -91,11 +94,8 @@ function generateModulePathMapping(extensions: AdminUiExtensionWithId[]) {
  * Copies all files from the extensionPaths of the configured extensions into the
  * admin-ui source tree.
  */
-async function copyExtensionModules(
-    outputPath: string,
-    extensions: Array<AdminUiExtensionWithId | SharedUiProvidersExtension>,
-) {
-    const adminUiExtensions = extensions.filter(isAdminUiExtension) as AdminUiExtensionWithId[];
+async function copyExtensionModules(outputPath: string, extensions: AdminUiExtensionWithId[]) {
+    const adminUiExtensions = extensions.filter(isAdminUiExtension);
     const sharedUiProvidersExtensions = extensions.filter(isSharedUiProvidersExtension);
     const extensionRoutesSource = generateLazyExtensionRoutes(adminUiExtensions);
     fs.writeFileSync(path.join(outputPath, EXTENSION_ROUTES_FILE), extensionRoutesSource, 'utf8');
@@ -103,22 +103,31 @@ async function copyExtensionModules(
     fs.writeFileSync(path.join(outputPath, SHARED_EXTENSIONS_FILE), sharedExtensionModulesSource, 'utf8');
 
     for (const extension of adminUiExtensions) {
+        if (!extension.extensionPath) {
+            continue;
+        }
         const dest = path.join(outputPath, MODULES_OUTPUT_DIR, extension.id);
         if (!extension.exclude) {
             fs.copySync(extension.extensionPath, dest);
             continue;
         }
 
-        const exclude = extension.exclude
-            .map(e => globSync(path.join(extension.extensionPath, e)))
-            .flatMap(e => e);
+        const exclude =
+            extension.exclude?.map(e => globSync(path.join(extension.extensionPath, e))).flatMap(e => e) ??
+            [];
         fs.copySync(extension.extensionPath, dest, {
             filter: name => name === extension.extensionPath || exclude.every(e => e !== name),
         });
     }
     for (const extension of sharedUiProvidersExtensions) {
-        const dest = path.join(outputPath, MODULES_OUTPUT_DIR, `${extension.id}.ts`);
-        fs.copySync(extension.sharedProviders, dest);
+        if (extension.sharedProviders) {
+            let i = 0;
+            for (const filePath of extension.sharedProviders) {
+                const dest = path.join(outputPath, MODULES_OUTPUT_DIR, `${extension.id}_${i}.ts`);
+                fs.copySync(filePath, dest);
+                i++;
+            }
+        }
     }
 }
 
@@ -215,7 +224,11 @@ ${adminUiExtensions
     )
     .join('')}
 ${sharedProviderExtensions
-    .map((m, i) => `import SharedProviders${i} from './extensions/${m.id}';\n`)
+    .map((m, i) =>
+        m.sharedProviders
+            .map((f, j) => `import SharedProviders_${i}_${j} from './extensions/${m.id}_${i}';\n`)
+            .join(''),
+    )
     .join('')}
 
 @NgModule({
@@ -227,7 +240,9 @@ ${sharedProviderExtensions
                 .join(', '),
         )
         .join(', ')}],
-    providers: [${sharedProviderExtensions.map((m, i) => `...SharedProviders${i}`).join(', ')}],
+    providers: [${sharedProviderExtensions
+        .map((m, i) => m.sharedProviders.map((f, j) => `...SharedProviders_${i}_${j}`))
+        .join(', ')}],
 })
 export class SharedExtensionsModule {}
 `;

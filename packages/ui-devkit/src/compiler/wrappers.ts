@@ -3,10 +3,11 @@ import path from 'path';
 
 import { SharedUiProvidersExtension } from './types';
 
-export function uiExtensions(filePath: string): SharedUiProvidersExtension {
+export function uiExtensions(options: { id?: string; files: string | string[] }): SharedUiProvidersExtension {
+    const files = Array.isArray(options.files) ? options.files : [options.files];
     return {
-        id: getIdFromFilePath(filePath),
-        sharedProviders: filePath,
+        id: options.id || getIdFromFilePath(files[0]),
+        sharedProviders: files,
     };
 }
 

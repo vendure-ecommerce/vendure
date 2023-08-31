@@ -80,7 +80,9 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
  * If not defined by the user, a deterministic ID is generated
  * from a hash of the extension config.
  */
-export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExtensionWithId[] {
+export function normalizeExtensions(
+    extensions?: Array<AdminUiExtension | SharedUiProvidersExtension>,
+): AdminUiExtensionWithId[] {
     return (extensions || []).map(e => {
         let id = e.id;
         if (!id) {
@@ -89,7 +91,15 @@ export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExt
             id = hash.digest('hex');
         }
 
-        return { staticAssets: [], translations: {}, globalStyles: [], ...e, id };
+        return {
+            staticAssets: [],
+            translations: {},
+            globalStyles: [],
+            extensionPath: '',
+            ngModules: [],
+            ...e,
+            id,
+        };
     });
 }
 

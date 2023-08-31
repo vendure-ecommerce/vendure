@@ -93,7 +93,7 @@ export interface SassVariableOverridesExtension {
  */
 export interface SharedUiProvidersExtension {
     id: string;
-    sharedProviders: string;
+    sharedProviders: string[];
 }
 
 /**
@@ -112,7 +112,8 @@ export interface SharedUiProvidersExtension {
 export interface AdminUiExtension
     extends Partial<TranslationExtension>,
         Partial<StaticAssetExtension>,
-        Partial<GlobalStylesExtension> {
+        Partial<GlobalStylesExtension>,
+        Partial<SharedUiProvidersExtension> {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
@@ -148,8 +149,7 @@ export interface AdminUiExtension
      * well as linting.
      *
      * @example
-     * ```ts
-     * // packages/common-ui-module/src/ui/ui-shared.module.ts
+     * ```ts title="packages/common-ui-module/src/ui/ui-shared.module.ts"
      * import { NgModule } from '\@angular/core';
      * import { SharedModule } from '\@vendure/admin-ui/core';
      * import { CommonUiComponent } from './components/common-ui/common-ui.component';
@@ -164,13 +164,13 @@ export interface AdminUiExtension
      * export class CommonSharedUiModule {}
      * ```
      *
-     * ```ts
-     * // packages/common-ui-module/src/index.ts
+     * ```ts title="packages/common-ui-module/src/index.ts"
      * import path from 'path';
      *
      * import { AdminUiExtension } from '\@vendure/ui-devkit/compiler';
      *
      * export const uiExtensions: AdminUiExtension = {
+     *   // highlight-next-line
      *   pathAlias: '\@common-ui-module',     // this is the important part
      *   extensionPath: path.join(__dirname, 'ui'),
      *   ngModules: [
@@ -183,25 +183,26 @@ export interface AdminUiExtension
      * };
      * ```
      *
-     * ```json
-     * // tsconfig.json
+     * ```json title="tsconfig.json"
      * {
      *   "compilerOptions": {
      *     "baseUrl": ".",
      *     "paths": {
+     *       // highlight-next-line
      *       "\@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
      *     }
      *   }
      * }
      * ```
      *
-     * ```ts
-     * // packages/sample-plugin/src/ui/ui-extension.module.ts
+     * ```ts title="packages/sample-plugin/src/ui/ui-extension.module.ts"
      * import { NgModule } from '\@angular/core';
      * import { SharedModule } from '\@vendure/admin-ui/core';
+     * // highlight-start
      * // the import below works both in the context of the custom Admin UI app as well as the main project
      * // '\@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
      * import { CommonSharedUiModule, CommonUiComponent } from '\@common-ui-module/ui-shared.module';
+     * // highlight-end
      *
      * \@NgModule({
      *   imports: [
