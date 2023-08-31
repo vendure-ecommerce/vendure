@@ -12,7 +12,6 @@ import {
     Extension,
     GlobalStylesExtension,
     SassVariableOverridesExtension,
-    SharedUiProvidersExtension,
     StaticAssetDefinition,
     StaticAssetExtension,
     TranslationExtension,
@@ -80,9 +79,7 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
  * If not defined by the user, a deterministic ID is generated
  * from a hash of the extension config.
  */
-export function normalizeExtensions(
-    extensions?: Array<AdminUiExtension | SharedUiProvidersExtension>,
-): AdminUiExtensionWithId[] {
+export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExtensionWithId[] {
     return (extensions || []).map(e => {
         let id = e.id;
         if (!id) {
@@ -95,8 +92,6 @@ export function normalizeExtensions(
             staticAssets: [],
             translations: {},
             globalStyles: [],
-            extensionPath: '',
-            ngModules: [],
             ...e,
             id,
         };
@@ -105,10 +100,6 @@ export function normalizeExtensions(
 
 export function isAdminUiExtension(input: Extension): input is AdminUiExtension {
     return input.hasOwnProperty('extensionPath');
-}
-
-export function isSharedUiProvidersExtension(input: Extension): input is SharedUiProvidersExtension {
-    return input.hasOwnProperty('sharedProviders');
 }
 
 export function isTranslationExtension(input: Extension): input is TranslationExtension {

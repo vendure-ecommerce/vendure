@@ -52,6 +52,8 @@
         "@rollup/plugin-node-resolve": "^15.2.1",
         "@types/fs-extra": "^11.0.1",
         "@vendure/core": "2.1.0-next.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "rimraf": "^3.0.2",
         "rollup": "^3.28.1",
         "rollup-plugin-terser": "^7.0.2",

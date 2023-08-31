@@ -19,7 +19,6 @@ import {
     Extension,
     GlobalStylesExtension,
     SassVariableOverridesExtension,
-    SharedUiProvidersExtension,
     StaticAssetExtension,
 } from './types';
 import {
@@ -28,7 +27,6 @@ import {
     isAdminUiExtension,
     isGlobalStylesExtension,
     isSassVariableOverridesExtension,
-    isSharedUiProvidersExtension,
     isStaticAssetExtension,
     isTranslationExtension,
     logger,
@@ -39,10 +37,7 @@ import {
 export async function setupScaffold(outputPath: string, extensions: Extension[]) {
     deleteExistingExtensionModules(outputPath);
 
-    const adminUiExtensions = extensions.filter(
-        (e): e is AdminUiExtension | SharedUiProvidersExtension =>
-            isAdminUiExtension(e) || isSharedUiProvidersExtension(e),
-    );
+    const adminUiExtensions = extensions.filter((e): e is AdminUiExtension => isAdminUiExtension(e));
     const normalizedExtensions = normalizeExtensions(adminUiExtensions);
 
     const modulePathMapping = generateModulePathMapping(normalizedExtensions);
@@ -96,7 +91,6 @@ function generateModulePathMapping(extensions: AdminUiExtensionWithId[]) {
  */
 async function copyExtensionModules(outputPath: string, extensions: AdminUiExtensionWithId[]) {
     const adminUiExtensions = extensions.filter(isAdminUiExtension);
-    const sharedUiProvidersExtensions = extensions.filter(isSharedUiProvidersExtension);
     const extensionRoutesSource = generateLazyExtensionRoutes(adminUiExtensions);
     fs.writeFileSync(path.join(outputPath, EXTENSION_ROUTES_FILE), extensionRoutesSource, 'utf8');
     const sharedExtensionModulesSource = generateSharedExtensionModule(extensions);
@@ -118,16 +112,6 @@ async function copyExtensionModules(outputPath: string, extensions: AdminUiExten
         fs.copySync(extension.extensionPath, dest, {
             filter: name => name === extension.extensionPath || exclude.every(e => e !== name),
         });
-    }
-    for (const extension of sharedUiProvidersExtensions) {
-        if (extension.sharedProviders) {
-            let i = 0;
-            for (const filePath of extension.sharedProviders) {
-                const dest = path.join(outputPath, MODULES_OUTPUT_DIR, `${extension.id}_${i}.ts`);
-                fs.copySync(filePath, dest);
-                i++;
-            }
-        }
     }
 }
 
@@ -190,7 +174,7 @@ export async function copyGlobalStyleFile(outputPath: string, stylePath: string)
 function generateLazyExtensionRoutes(extensions: AdminUiExtensionWithId[]): string {
     const routes: string[] = [];
     for (const extension of extensions) {
-        for (const module of extension.ngModules) {
+        for (const module of extension.ngModules ?? []) {
             if (module.type === 'lazy') {
                 routes.push(`  {
     path: 'extensions/${module.route}',
@@ -200,33 +184,38 @@ function generateLazyExtensionRoutes(extensions: AdminUiExtensionWithId[]): stri
   }`);
             }
         }
+        for (const route of extension.routes ?? []) {
+            routes.push(`  {
+    path: 'extensions/${route.route}',
+    loadChildren: () => import('./extensions/${extension.id}/${path.basename(route.filePath, '.ts')}'),
+  }`);
+        }
     }
     return `export const extensionRoutes = [${routes.join(',\n')}];\n`;
 }
 
-function generateSharedExtensionModule(
-    extensions: Array<AdminUiExtensionWithId | SharedUiProvidersExtension>,
-) {
-    const sharedProviderExtensions = extensions.filter((e): e is SharedUiProvidersExtension =>
-        e.hasOwnProperty('sharedProviders'),
-    );
-    const adminUiExtensions = extensions.filter((e): e is AdminUiExtensionWithId =>
-        e.hasOwnProperty('extensionPath'),
-    );
+function generateSharedExtensionModule(extensions: AdminUiExtensionWithId[]) {
+    const adminUiExtensions = extensions.filter(isAdminUiExtension);
     return `import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 ${adminUiExtensions
     .map(e =>
         e.ngModules
-            .filter(m => m.type === 'shared')
+            ?.filter(m => m.type === 'shared')
             .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';\n`)
             .join(''),
     )
     .join('')}
-${sharedProviderExtensions
+${adminUiExtensions
     .map((m, i) =>
-        m.sharedProviders
-            .map((f, j) => `import SharedProviders_${i}_${j} from './extensions/${m.id}_${i}';\n`)
+        (m.sharedProviders ?? [])
+            .map(
+                (f, j) =>
+                    `import SharedProviders_${i}_${j} from './extensions/${m.id}/${path.basename(
+                        f,
+                        '.ts',
+                    )}';\n`,
+            )
             .join(''),
     )
     .join('')}
@@ -235,13 +224,13 @@ ${sharedProviderExtensions
     imports: [CommonModule, ${adminUiExtensions
         .map(e =>
             e.ngModules
-                .filter(m => m.type === 'shared')
+                ?.filter(m => m.type === 'shared')
                 .map(m => m.ngModuleName)
                 .join(', '),
         )
         .join(', ')}],
-    providers: [${sharedProviderExtensions
-        .map((m, i) => m.sharedProviders.map((f, j) => `...SharedProviders_${i}_${j}`))
+    providers: [${adminUiExtensions
+        .map((m, i) => (m.sharedProviders ?? []).map((f, j) => `...SharedProviders_${i}_${j}`))
         .join(', ')}],
 })
 export class SharedExtensionsModule {}

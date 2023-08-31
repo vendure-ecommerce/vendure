@@ -5,8 +5,7 @@ export type Extension =
     | TranslationExtension
     | StaticAssetExtension
     | GlobalStylesExtension
-    | SassVariableOverridesExtension
-    | SharedUiProvidersExtension;
+    | SassVariableOverridesExtension;
 
 /**
  * @description
@@ -85,19 +84,6 @@ export interface SassVariableOverridesExtension {
 
 /**
  * @description
- * Defines an extension which contains only shared providers such as nav menu items, custom form inputs,
- * custom detail components, action bar items, custom history entry components.
- *
- * @docsCategory UiDevkit
- * @docsPage AdminUiExtension
- */
-export interface SharedUiProvidersExtension {
-    id: string;
-    sharedProviders: string[];
-}
-
-/**
- * @description
  * Defines extensions to the Admin UI application by specifying additional
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
@@ -112,8 +98,7 @@ export interface SharedUiProvidersExtension {
 export interface AdminUiExtension
     extends Partial<TranslationExtension>,
         Partial<StaticAssetExtension>,
-        Partial<GlobalStylesExtension>,
-        Partial<SharedUiProvidersExtension> {
+        Partial<GlobalStylesExtension> {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
@@ -132,8 +117,22 @@ export interface AdminUiExtension
     /**
      * @description
      * One or more Angular modules which extend the default Admin UI.
+     *
+     * @deprecated use `routes` instead of lazy modules, and `sharedProviders` instead of shared modules.
      */
-    ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+    ngModules?: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+
+    /**
+     * @description
+     * Defines an extension which contains only shared providers such as nav menu items, custom form inputs,
+     * custom detail components, action bar items, custom history entry components.
+     */
+    sharedProviders?: string[];
+
+    routes?: Array<{
+        route: string;
+        filePath: string;
+    }>;
 
     /**
      * @description
