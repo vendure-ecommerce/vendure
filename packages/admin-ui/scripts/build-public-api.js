@@ -20,6 +20,7 @@ const MODULES = [
     'order',
     'settings',
     'system',
+    'react',
 ];
 
 for (const moduleDir of MODULES) {
