@@ -1,6 +1,6 @@
 import { Injectable, InjectionToken, Type } from '@angular/core';
 
-import { FormInputComponent, InputComponentConfig } from '../../common/component-registry-types';
+import { FormInputComponent } from '../../common/component-registry-types';
 
 export const INPUT_COMPONENT_OPTIONS = new InjectionToken<{ component?: any }>('INPUT_COMPONENT_OPTIONS');
 

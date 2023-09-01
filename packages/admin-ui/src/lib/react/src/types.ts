@@ -8,6 +8,6 @@ export interface ReactFormInputProps {
     config: CustomField & Record<string, any>;
 }
 
-export interface HostedReactComponentContext extends ReactFormInputProps {
+export type HostedReactComponentContext<T extends Record<string, any> = Record<string, any>> = {
     injector: Injector;
-}
+} & T;

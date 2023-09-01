@@ -1,7 +1,7 @@
-import { addNavMenuItem, addNavMenuSection } from '@vendure/admin-ui/core';
+import { addNavMenuSection } from '@vendure/admin-ui/core';
 import { registerReactFormInputComponent } from '@vendure/admin-ui/react';
 
-import { ReactNumberInput } from './ReactNumberInput';
+import { ReactNumberInput } from './components/ReactNumberInput';
 
 export default [
     addNavMenuSection(
@@ -12,22 +12,18 @@ export default [
                 {
                     id: 'greeter',
                     label: 'Greeter',
-                    routerLink: ['/extensions/greet'],
+                    routerLink: ['/extensions/example/greet'],
                     icon: 'cursor-hand-open',
+                },
+                {
+                    id: 'products',
+                    label: 'Products',
+                    routerLink: ['/extensions/example/products'],
+                    icon: 'checkbox-list',
                 },
             ],
         },
-        // Add this section before the "settings" section
         'settings',
-    ),
-    addNavMenuItem(
-        {
-            id: 'reviews',
-            label: 'Product Reviews',
-            routerLink: ['/extensions/reviews'],
-            icon: 'star',
-        },
-        'marketing',
     ),
     registerReactFormInputComponent('react-number-input', ReactNumberInput),
 ];

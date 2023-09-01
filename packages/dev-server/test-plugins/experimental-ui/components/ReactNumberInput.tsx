@@ -5,8 +5,9 @@ import React from 'react';
 export function ReactNumberInput({ readonly }: ReactFormInputProps) {
     const { value, setFormValue } = useFormControl();
     const notificationService = useInjector(NotificationService);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = +e.target.value;
+        const val = +(e.target as any).value;
         if (val === 0) {
             notificationService.error('Cannot be zero');
         } else {

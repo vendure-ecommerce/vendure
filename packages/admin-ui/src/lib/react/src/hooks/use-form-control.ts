@@ -1,6 +1,7 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { HostedComponentContext } from '../react-component-host.directive';
+import { HostedReactComponentContext, ReactFormInputProps } from '../types';
 
 /**
  * @description
@@ -10,6 +11,9 @@ export function useFormControl() {
     const context = useContext(HostedComponentContext);
     if (!context) {
         throw new Error('No HostedComponentContext found');
+    }
+    if (!isFormInputContext(context)) {
+        throw new Error('useFormControl() can only be used in a form input component');
     }
     const { formControl, config } = context;
     const [value, setValue] = useState(formControl.value ?? 0);
@@ -29,6 +33,12 @@ export function useFormControl() {
     }
 
     return { value, setFormValue };
+}
+
+function isFormInputContext(
+    context: HostedReactComponentContext,
+): context is HostedReactComponentContext<ReactFormInputProps> {
+    return context.config && context.formControl;
 }
 
 function coerceFormValue(value: any, type: CustomFieldType) {
