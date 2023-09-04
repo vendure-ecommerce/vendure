@@ -15,6 +15,7 @@ export const HostedComponentContext = createContext<HostedReactComponentContext 
 export class ReactComponentHostDirective<Comp extends ElementType> {
     @Input('vdrReactComponentHost') reactComponent: Comp;
     @Input() props: ComponentProps<Comp>;
+    @Input() context: Record<string, any> = {};
 
     private root: Root | null = null;
 
@@ -31,7 +32,7 @@ export class ReactComponentHostDirective<Comp extends ElementType> {
             createElement(
                 HostedComponentContext.Provider,
                 {
-                    value: { ...this.props, injector: this.injector },
+                    value: { ...this.props, ...this.context, injector: this.injector },
                 },
                 createElement(Comp, this.props),
             ),

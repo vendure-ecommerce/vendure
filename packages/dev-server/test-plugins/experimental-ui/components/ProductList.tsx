@@ -1,9 +1,7 @@
 import { NotificationService } from '@vendure/admin-ui/core';
-import { useInjector, useMutation, useQuery } from '@vendure/admin-ui/react';
+import { Link, useInjector, useMutation, useQuery } from '@vendure/admin-ui/react';
 import gql from 'graphql-tag';
 import React from 'react';
-
-import { Link } from './Link';
 
 const GET_PRODUCTS = gql`
     query GetProducts($skip: Int, $take: Int) {

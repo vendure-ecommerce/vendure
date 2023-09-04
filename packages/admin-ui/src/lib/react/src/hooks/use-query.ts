@@ -1,11 +1,45 @@
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { DocumentNode } from 'graphql/index';
-import { useContext, useState, useCallback, useEffect } from 'react';
-import { firstValueFrom, lastValueFrom, Observable } from 'rxjs';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { firstValueFrom, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HostedComponentContext } from '../react-component-host.directive';
 
+/**
+ * @description
+ * A React hook which provides access to the results of a GraphQL query.
+ *
+ * @example
+ * ```ts
+ * import { useQuery } from '@vendure/admin-ui/react';
+ * import { gql } from 'graphql-tag';
+ *
+ * const GET_PRODUCT = gql`
+ *    query GetProduct($id: ID!) {
+ *      product(id: $id) {
+ *        id
+ *        name
+ *        description
+ *      }
+ *    }`;
+ *
+ * export const MyComponent = () => {
+ *     const { data, loading, error } = useQuery(GET_PRODUCT, { id: '1' });
+ *
+ *     if (loading) return <div>Loading...</div>;
+ *     if (error) return <div>Error! { error }</div>;
+ *     return (
+ *         <div>
+ *             <h1>{data.product.name}</h1>
+ *             <p>{data.product.description}</p>
+ *         </div>
+ *     );
+ * };
+ * ```
+ *
+ * @docsCategory react-hooks
+ */
 export function useQuery<T, V extends Record<string, any> = Record<string, any>>(
     query: DocumentNode | TypedDocumentNode<T, V>,
     variables?: V,
@@ -22,6 +56,51 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
     return { data, loading, error, refetch } as const;
 }
 
+/**
+ * @description
+ * A React hook which allows you to execute a GraphQL mutation.
+ *
+ * @example
+ * ```ts
+ * import { useMutation } from '@vendure/admin-ui/react';
+ * import { gql } from 'graphql-tag';
+ *
+ * const UPDATE_PRODUCT = gql`
+ *   mutation UpdateProduct($input: UpdateProductInput!) {
+ *     updateProduct(input: $input) {
+ *     id
+ *     name
+ *   }
+ * }`;
+ *
+ * export const MyComponent = () => {
+ *     const [updateProduct, { data, loading, error }] = useMutation(UPDATE_PRODUCT);
+ *
+ *     const handleClick = () => {
+ *         updateProduct({
+ *             input: {
+ *                 id: '1',
+ *                 name: 'New name',
+ *             },
+ *         }).then(result => {
+ *             // do something with the result
+ *         });
+ *     };
+ *
+ *     if (loading) return <div>Loading...</div>;
+ *     if (error) return <div>Error! { error }</div>;
+ *
+ *     return (
+ *     <div>
+ *         <button onClick={handleClick}>Update product</button>
+ *         {data && <div>Product updated!</div>}
+ *     </div>
+ *     );
+ * };
+ * ```
+ *
+ * @docsCategory react-hooks
+ */
 export function useMutation<T, V extends Record<string, any> = Record<string, any>>(
     mutation: DocumentNode | TypedDocumentNode<T, V>,
 ) {

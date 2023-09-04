@@ -1,11 +1,32 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { useContext, useEffect, useState } from 'react';
 import { HostedComponentContext } from '../react-component-host.directive';
-import { HostedReactComponentContext, ReactFormInputProps } from '../types';
+import { HostedReactComponentContext, ReactFormInputOptions } from '../types';
 
 /**
  * @description
  * Provides access to the current FormControl value and a method to update the value.
+ *
+ * @example
+ * ```ts
+ * import { useFormControl, ReactFormInputProps } from '@vendure/admin-ui/react';
+ * import React from 'react';
+ *
+ * export function ReactNumberInput({ readonly }: ReactFormInputProps) {
+ *     const { value, setFormValue } = useFormControl();
+ *
+ *     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ *         setFormValue(val);
+ *     };
+ *     return (
+ *         <div>
+ *             <input readOnly={readonly} type="number" onChange={handleChange} value={value} />
+ *         </div>
+ *     );
+ * }
+ * ```
+ *
+ * @docsCategory react-hooks
  */
 export function useFormControl() {
     const context = useContext(HostedComponentContext);
@@ -37,7 +58,7 @@ export function useFormControl() {
 
 function isFormInputContext(
     context: HostedReactComponentContext,
-): context is HostedReactComponentContext<ReactFormInputProps> {
+): context is HostedReactComponentContext<ReactFormInputOptions> {
     return context.config && context.formControl;
 }
 

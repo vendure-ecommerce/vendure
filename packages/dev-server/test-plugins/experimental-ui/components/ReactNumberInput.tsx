@@ -1,8 +1,8 @@
 import { NotificationService } from '@vendure/admin-ui/core';
-import { useFormControl, ReactFormInputProps, useInjector } from '@vendure/admin-ui/react';
+import { useFormControl, ReactFormInputOptions, useInjector } from '@vendure/admin-ui/react';
 import React from 'react';
 
-export function ReactNumberInput({ readonly }: ReactFormInputProps) {
+export function ReactNumberInput({ readonly }: ReactFormInputOptions) {
     const { value, setFormValue } = useFormControl();
     const notificationService = useInjector(NotificationService);
 
