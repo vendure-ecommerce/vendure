@@ -1,7 +1,6 @@
 import { Injector } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BreadcrumbValue, CustomField } from '@vendure/admin-ui/core';
-import { Subject } from 'rxjs';
+import { CustomField, PageMetadataService } from '@vendure/admin-ui/core';
 
 export interface ReactFormInputOptions {
     formControl: FormControl;
@@ -12,12 +11,10 @@ export interface ReactFormInputOptions {
 export interface ReactFormInputProps extends ReactFormInputOptions {}
 
 export interface ReactRouteComponentOptions {
-    component: any;
-    title$: Subject<string | undefined>;
-    breadcrumb$: Subject<BreadcrumbValue>;
     props?: Record<string, any>;
 }
 
 export type HostedReactComponentContext<T extends Record<string, any> = Record<string, any>> = {
     injector: Injector;
+    pageMetadataService?: PageMetadataService;
 } & T;

@@ -9,25 +9,31 @@ import { BreadcrumbValue } from '../providers/breadcrumb/breadcrumb.service';
 import { ROUTE_COMPONENT_OPTIONS, RouteComponent } from './components/route.component';
 import { RouteComponentOptions } from './types';
 
+export type RegisterRouteComponentOptions<
+    Component extends any | BaseDetailComponent<Entity>,
+    Entity extends { id: string; updatedAt?: string },
+    T extends DocumentNode | TypedDocumentNode<any, { id: string }>,
+    Field extends keyof ResultOf<T>,
+    R extends Field,
+> = {
+    component: Type<Component> | Component;
+    title?: string;
+    breadcrumb?: BreadcrumbValue;
+    path?: string;
+    query?: T;
+    getBreadcrumbs?: (entity: Exclude<ResultOf<T>[R], 'Query'>) => BreadcrumbValue;
+    entityKey?: Component extends BaseDetailComponent<Entity> ? R : undefined;
+    variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
+    routeConfig?: Route;
+} & (Component extends BaseDetailComponent<Entity> ? { entityKey: R } : unknown);
+
 export function registerRouteComponent<
     Component extends any | BaseDetailComponent<Entity>,
     Entity extends { id: string; updatedAt?: string },
     T extends DocumentNode | TypedDocumentNode<any, { id: string }>,
     Field extends keyof ResultOf<T>,
     R extends Field,
->(
-    options: {
-        component: Type<Component>;
-        title?: string;
-        breadcrumb?: BreadcrumbValue;
-        path?: string;
-        query?: T;
-        getBreadcrumbs?: (entity: Exclude<ResultOf<T>[R], 'Query'>) => BreadcrumbValue;
-        entityKey?: Component extends BaseDetailComponent<Entity> ? R : undefined;
-        variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
-        routeConfig?: Route;
-    } & (Component extends BaseDetailComponent<Entity> ? { entityKey: R } : unknown),
-) {
+>(options: RegisterRouteComponentOptions<Component, Entity, T, Field, R>) {
     const { query, entityKey, variables, getBreadcrumbs } = options;
 
     const breadcrumbSubject$ = new BehaviorSubject<BreadcrumbValue>(options.breadcrumb ?? '');

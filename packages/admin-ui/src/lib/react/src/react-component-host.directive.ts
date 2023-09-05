@@ -1,4 +1,5 @@
-import { Directive, ElementRef, Injector, Input } from '@angular/core';
+import { Directive, ElementRef, Injector, Input, Optional } from '@angular/core';
+import { PageMetadataService } from '@vendure/admin-ui/core';
 import { ComponentProps, createContext, createElement, ElementType } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { HostedReactComponentContext } from './types';
@@ -19,7 +20,11 @@ export class ReactComponentHostDirective<Comp extends ElementType> {
 
     private root: Root | null = null;
 
-    constructor(private host: ElementRef, private injector: Injector) {}
+    constructor(
+        private host: ElementRef,
+        private injector: Injector,
+        @Optional() private pageMetadataService?: PageMetadataService,
+    ) {}
 
     async ngOnChanges() {
         const Comp = this.reactComponent;
@@ -32,7 +37,12 @@ export class ReactComponentHostDirective<Comp extends ElementType> {
             createElement(
                 HostedComponentContext.Provider,
                 {
-                    value: { ...this.props, ...this.context, injector: this.injector },
+                    value: {
+                        ...this.props,
+                        ...this.context,
+                        injector: this.injector,
+                        pageMetadataService: this.pageMetadataService,
+                    },
                 },
                 createElement(Comp, this.props),
             ),

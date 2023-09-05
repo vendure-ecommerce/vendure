@@ -8,4 +8,5 @@ export * from './hooks/use-query';
 export * from './providers';
 export * from './react-component-host.directive';
 export * from './react-components/Link';
+export * from './register-react-route-component';
 export * from './types';

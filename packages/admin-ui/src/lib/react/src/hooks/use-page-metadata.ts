@@ -33,10 +33,10 @@ export function usePageMetadata() {
         HostedComponentContext,
     ) as HostedReactComponentContext<ReactRouteComponentOptions>;
     const setBreadcrumb = (newValue: BreadcrumbValue) => {
-        context.breadcrumb$.next(newValue);
+        context.pageMetadataService?.setBreadcrumbs(newValue);
     };
     const setTitle = (newTitle: string) => {
-        context.title$.next(newTitle);
+        context.pageMetadataService?.setTitle(newTitle);
     };
 
     return {

@@ -1,14 +1,16 @@
 import { Component, inject, InjectionToken } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { Observable, combineLatest, switchMap, of } from 'rxjs';
+import { combineLatest, Observable, of, switchMap } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { BreadcrumbValue } from '../../providers/breadcrumb/breadcrumb.service';
 import { SharedModule } from '../../shared/shared.module';
 import { PageMetadataService } from '../providers/page-metadata.service';
-import { RouteComponentOptions } from '../types';
+import { AngularRouteComponentOptions } from '../types';
 
-export const ROUTE_COMPONENT_OPTIONS = new InjectionToken<RouteComponentOptions>('ROUTE_COMPONENT_OPTIONS');
+export const ROUTE_COMPONENT_OPTIONS = new InjectionToken<AngularRouteComponentOptions>(
+    'ROUTE_COMPONENT_OPTIONS',
+);
 
 @Component({
     selector: 'vdr-route-component',
@@ -16,16 +18,14 @@ export const ROUTE_COMPONENT_OPTIONS = new InjectionToken<RouteComponentOptions>
         <vdr-page-header>
             <vdr-page-title *ngIf="title$ | async as title" [title]="title"></vdr-page-title>
         </vdr-page-header>
-        <vdr-page-body><ng-container *ngComponentOutlet="component" /></vdr-page-body>
+        <vdr-page-body><ng-content /></vdr-page-body>
     `,
     standalone: true,
     imports: [SharedModule],
     providers: [PageMetadataService],
 })
 export class RouteComponent {
-    protected component = inject(ROUTE_COMPONENT_OPTIONS).component;
     protected title$: Observable<string | undefined>;
-    protected context = inject(ROUTE_COMPONENT_OPTIONS);
 
     constructor(private route: ActivatedRoute) {
         const breadcrumbLabel$ = this.route.data.pipe(

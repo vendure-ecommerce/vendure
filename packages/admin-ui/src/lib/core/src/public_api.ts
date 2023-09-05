@@ -74,6 +74,7 @@ export * from './data/utils/add-custom-fields';
 export * from './data/utils/get-server-location';
 export * from './data/utils/remove-readonly-custom-fields';
 export * from './data/utils/transform-relation-custom-field-inputs';
+export * from './extension/components/angular-route.component';
 export * from './extension/components/route.component';
 export * from './extension/providers/page-metadata.service';
 export * from './extension/register-route-component';
