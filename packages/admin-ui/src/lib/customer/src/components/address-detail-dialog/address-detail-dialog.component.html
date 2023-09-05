@@ -1,5 +1,6 @@
 <ng-template vdrDialogTitle>
-<span>{{ 'customer.create-new-address' | translate }}</span>
+<span *ngIf="addressForm.get('streetLine1')?.value">{{ 'customer.edit-address' | translate }}</span>
+<span *ngIf="!addressForm.get('streetLine1')?.value">{{ 'customer.create-new-address' | translate }}</span>
 </ng-template>
 
 <vdr-address-form
