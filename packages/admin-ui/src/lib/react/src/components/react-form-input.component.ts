@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CustomField, FormInputComponent, INPUT_COMPONENT_OPTIONS } from '@vendure/admin-ui/core';
 import { ReactComponentHostDirective } from '../react-component-host.directive';
@@ -7,6 +7,8 @@ import { ReactFormInputOptions } from '../types';
 @Component({
     selector: 'vdr-react-form-input-component',
     template: ` <div [vdrReactComponentHost]="reactComponent" [context]="context" [props]="context"></div> `,
+    styleUrls: ['./react-global-styles.scss'],
+    encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [ReactComponentHostDirective],
 })

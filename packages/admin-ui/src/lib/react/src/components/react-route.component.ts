@@ -1,4 +1,4 @@
-import { Component, inject, InjectionToken } from '@angular/core';
+import { Component, inject, InjectionToken, ViewEncapsulation } from '@angular/core';
 import { ROUTE_COMPONENT_OPTIONS, RouteComponent, SharedModule } from '@vendure/admin-ui/core';
 import { ReactComponentHostDirective } from '../react-component-host.directive';
 import { ReactRouteComponentOptions } from '../types';
@@ -14,6 +14,8 @@ export const REACT_ROUTE_COMPONENT_OPTIONS = new InjectionToken<ReactRouteCompon
             ><div [vdrReactComponentHost]="reactComponent" [props]="props"></div
         ></vdr-route-component>
     `,
+    styleUrls: ['./react-global-styles.scss'],
+    encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [ReactComponentHostDirective, RouteComponent, SharedModule],
 })
