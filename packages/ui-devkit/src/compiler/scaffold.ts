@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { spawn } from 'child_process';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import * as fs from 'fs-extra';
 import { globSync } from 'glob';
 import * as path from 'path';
@@ -29,9 +29,7 @@ import {
     isSassVariableOverridesExtension,
     isStaticAssetExtension,
     isTranslationExtension,
-    logger,
     normalizeExtensions,
-    shouldUseYarn,
 } from './utils';
 
 export async function setupScaffold(outputPath: string, extensions: Extension[]) {
@@ -208,7 +206,7 @@ ${adminUiExtensions
     .join('')}
 ${adminUiExtensions
     .map((m, i) =>
-        (m.sharedProviders ?? [])
+        (m.providers ?? [])
             .map(
                 (f, j) =>
                     `import SharedProviders_${i}_${j} from './extensions/${m.id}/${path.basename(
@@ -228,9 +226,11 @@ ${adminUiExtensions
                 .map(m => m.ngModuleName)
                 .join(', '),
         )
+        .filter(val => !!val)
         .join(', ')}],
     providers: [${adminUiExtensions
-        .map((m, i) => (m.sharedProviders ?? []).map((f, j) => `...SharedProviders_${i}_${j}`))
+        .filter(notNullOrUndefined)
+        .map((m, i) => (m.providers ?? []).map((f, j) => `...SharedProviders_${i}_${j}`))
         .join(', ')}],
 })
 export class SharedExtensionsModule {}

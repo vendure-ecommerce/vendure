@@ -118,17 +118,23 @@ export interface AdminUiExtension
      * @description
      * One or more Angular modules which extend the default Admin UI.
      *
-     * @deprecated use `routes` instead of lazy modules, and `sharedProviders` instead of shared modules.
+     * @deprecated use `routes` instead of lazy modules, and `providers` instead of shared modules in combination
+     * with Angular standalone components.
      */
     ngModules?: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
 
     /**
      * @description
-     * Defines an extension which contains only shared providers such as nav menu items, custom form inputs,
+     * Defines the paths to a file that exports an array of shared providers such as nav menu items, custom form inputs,
      * custom detail components, action bar items, custom history entry components.
      */
-    sharedProviders?: string[];
+    providers?: string[];
 
+    /**
+     * @description
+     * Defines routes that will be lazy-loaded at the `/extensions/` route. The filePath should point to a file
+     * relative to the `extensionPath` which exports an array of Angular route definitions.
+     */
     routes?: Array<{
         route: string;
         filePath: string;
