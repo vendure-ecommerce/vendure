@@ -2,10 +2,12 @@
     <ng-content select="vdr-bulk-action-menu"></ng-content>
 </div>
 <div class="table-wrapper">
-    <table
-        class=""
-        [class.no-select]="disableSelect"
-    >
+    <vdr-data-table-filter-presets
+        *ngIf="filters"
+        [filters]="filters"
+        [dataTableId]="id"
+    ></vdr-data-table-filter-presets>
+    <table class="" [class.no-select]="disableSelect">
         <thead [class.items-selected]="selectionManager?.selection.length">
             <tr class="heading-row">
                 <th *ngIf="selectionManager" class="selection-col">
@@ -76,6 +78,10 @@
                                     [filters]="filters"
                                     class="mt-1"
                                 ></vdr-data-table-filters>
+                                <vdr-add-filter-preset-button
+                                    [filters]="filters"
+                                    [dataTableId]="id"
+                                ></vdr-add-filter-preset-button>
                             </div>
                         </ng-container>
                     </div>

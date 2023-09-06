@@ -317,6 +317,9 @@ const DECLARATIONS = [
     AssignToChannelDialogComponent,
     CurrencyCodeSelectorComponent,
     LanguageCodeSelectorComponent,
+    DataTableFilterPresetsComponent,
+    AddFilterPresetButtonComponent,
+    RenameFilterPresetDialogComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -349,13 +352,7 @@ const DYNAMIC_FORM_INPUTS = [
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [
-        ...DECLARATIONS,
-        ...DYNAMIC_FORM_INPUTS,
-        DataTableFilterPresetsComponent,
-        AddFilterPresetButtonComponent,
-        RenameFilterPresetDialogComponent,
-    ],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which
