@@ -19,7 +19,7 @@ import {
 
 @Component({
     selector: 'vdr-order-history-entry-host',
-    template: ` <vdr-timeline-entry
+    template: `<vdr-timeline-entry
         [displayType]="instance.getDisplayType(entry)"
         [iconShape]="instance.getIconShape && instance.getIconShape(entry)"
         [createdAt]="entry.createdAt"

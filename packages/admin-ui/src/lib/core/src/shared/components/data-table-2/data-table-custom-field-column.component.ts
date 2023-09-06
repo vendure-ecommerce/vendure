@@ -24,10 +24,6 @@ export class DataTableCustomFieldColumnComponent<T> extends DataTable2ColumnComp
             .stream$.pipe(map(({ uiState }) => uiState.language));
     }
 
-    get id(): string {
-        return this.customField.name.toLowerCase().replace(/ /g, '-');
-    }
-
     ngOnInit() {
         this.uiLanguage$.subscribe(uiLanguage => {
             this.heading =
@@ -38,6 +34,7 @@ export class DataTableCustomFieldColumnComponent<T> extends DataTable2ColumnComp
         });
         this.hiddenByDefault = true;
         this.sort = this.sorts?.get(this.customField.name);
+        this.id = this.customField.name;
         super.ngOnInit();
     }
 }

@@ -30,13 +30,13 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     />
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-channel="item">
             {{ channel.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -45,7 +45,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -53,7 +53,7 @@
             {{ channel.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.code' | translate" [optional]="false" [sort]="sorts.get('code')">
+    <vdr-dt2-column [heading]="'common.code' | translate" id="code" [optional]="false" [sort]="sorts.get('code')">
         <ng-template let-channel="item">
             <a class="button-ghost" [routerLink]="['./', channel.id]"
                 ><span>{{ channel.code | channelCodeToLabel | translate }}</span>
@@ -61,7 +61,7 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'settings.channel-token' | translate" [sort]="sorts.get('token')">
+    <vdr-dt2-column [heading]="'settings.channel-token' | translate" id="channel-token" [sort]="sorts.get('token')">
         <ng-template let-channel="item">
             {{ channel.token }}
         </ng-template>

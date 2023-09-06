@@ -170,17 +170,17 @@
                     (itemsPerPageChange)="setOrderItemsPerPage($event)"
                     (pageChange)="setOrderCurrentPage($event)"
                 >
-                    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+                    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
                         <ng-template let-order="item">
                             {{ order.id }}
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+                    <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at" [hiddenByDefault]="true">
                         <ng-template let-order="item">
                             {{ order.createdAt | localeDate : 'short' }}
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'common.code' | translate" [optional]="false">
+                    <vdr-dt2-column [heading]="'common.code' | translate" id="code" [optional]="false">
                         <ng-template let-order="item">
                             <a class="button-ghost" [routerLink]="['/orders', order.id]"
                                 ><span>{{ order.code }}</span>
@@ -188,27 +188,27 @@
                             </a>
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'order.order-type' | translate" [hiddenByDefault]="true">
+                    <vdr-dt2-column [heading]="'order.order-type' | translate" id="order-type" [hiddenByDefault]="true">
                         <ng-template let-order="item">
                             <vdr-chip>{{ order.type }}</vdr-chip>
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'order.state' | translate">
+                    <vdr-dt2-column [heading]="'order.state' | translate" id="state">
                         <ng-template let-order="item">
                             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'order.total' | translate">
+                    <vdr-dt2-column [heading]="'order.total' | translate" id="total">
                         <ng-template let-order="item">
                             {{ order.totalWithTax | localeCurrency : order.currencyCode }}
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'common.updated-at' | translate">
+                    <vdr-dt2-column [heading]="'common.updated-at' | translate" id="updated-at">
                         <ng-template let-order="item">
                             {{ order.updatedAt | timeAgo }}
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'order.placed-at' | translate">
+                    <vdr-dt2-column [heading]="'order.placed-at' | translate" id="placed-at">
                         <ng-template let-order="item">
                             {{ order.orderPlacedAt | localeDate : 'short' }}
                         </ng-template>

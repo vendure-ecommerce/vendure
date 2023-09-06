@@ -47,70 +47,17 @@
         [hostComponent]="this"
         [selectionManager]="selectionManager"
     ></vdr-bulk-action-menu>
-    <!--<ng-template #vdrDt2CustomSearch>
-            <div class="search-form">
-                <vdr-product-search-input
-                    #productSearchInputComponent
-                    [facetValueResults]="facetValues$ | async"
-                    (searchTermChange)="setSearchTerm($event)"
-                    (facetValueChange)="setFacetValueIds($event)"
-                ></vdr-product-search-input>
-                <vdr-dropdown class="search-settings-menu mr3">
-                    <button
-                        type="button"
-                        class="icon-button search-index-button"
-                        [title]="
-                            (pendingSearchIndexUpdates
-                                ? 'catalog.pending-search-index-updates'
-                                : 'catalog.search-index-controls'
-                            ) | translate
-                        "
-                        vdrDropdownTrigger
-                    >
-                        <clr-icon shape="cog"></clr-icon>
-                        <vdr-status-badge *ngIf="pendingSearchIndexUpdates" type="warning"></vdr-status-badge>
-                    </button>
-                    <vdr-dropdown-menu vdrPosition="bottom-right">
-                        <h4 class="dropdown-header">{{ 'catalog.search-index-controls' | translate }}</h4>
-                        <ng-container *ngIf="pendingSearchIndexUpdates">
-                            <button
-                                type="button"
-                                class="run-updates-button"
-                                vdrDropdownItem
-                                (click)="runPendingSearchIndexUpdates()"
-                                [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
-                            >
-                                <vdr-status-badge type="warning"></vdr-status-badge>
-                                {{
-                                    'catalog.run-pending-search-index-updates'
-                                        | translate : { count: pendingSearchIndexUpdates }
-                                }}
-                            </button>
-                            <div class="dropdown-divider"></div>
-                        </ng-container>
-                        <button
-                            type="button"
-                            vdrDropdownItem
-                            (click)="rebuildSearchIndex()"
-                            [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
-                        >
-                            {{ 'catalog.rebuild-search-index' | translate }}
-                        </button>
-                    </vdr-dropdown-menu>
-                </vdr-dropdown>
-            </div>
-        </ng-template>-->
     <vdr-dt2-search
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     />
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true" [sort]="sorts.get('id')">
         <ng-template let-product="item">
             {{ product.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -119,7 +66,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -127,7 +74,7 @@
             {{ product.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.image' | translate">
+    <vdr-dt2-column [heading]="'common.image' | translate" id="image">
         <ng-template let-product="item">
             <div class="image-placeholder">
                 <img
@@ -142,7 +89,7 @@
             </div>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'catalog.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column [heading]="'catalog.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
         <ng-template let-product="item">
             <a class="button-ghost" [routerLink]="['./', product.id]"
                 ><span>{{ product.name }}</span
@@ -150,12 +97,12 @@
             /></a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.slug' | translate" [sort]="sorts.get('slug')">
+    <vdr-dt2-column [heading]="'common.slug' | translate" id="slug" [sort]="sorts.get('slug')">
         <ng-template let-product="item">
             {{ product.slug }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.enabled' | translate">
+    <vdr-dt2-column [heading]="'common.enabled' | translate" id="enabled">
         <ng-template let-product="item">
             <vdr-chip *ngIf="product.enabled" colorType="success">{{
                 'common.enabled' | translate
@@ -165,7 +112,7 @@
             }}</vdr-chip>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'catalog.number-of-variants' | translate">
+    <vdr-dt2-column [heading]="'catalog.number-of-variants' | translate" id="number-of-variants">
         <ng-template let-product="item">
             {{ 'catalog.variant-count' | translate : { count: product.variantList?.totalItems } }}
         </ng-template>
