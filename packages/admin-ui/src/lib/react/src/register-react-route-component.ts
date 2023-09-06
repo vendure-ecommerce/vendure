@@ -15,6 +15,12 @@ type RegisterReactRouteComponentOptions<
     props?: Record<string, any>;
 };
 
+/**
+ * @description
+ * Registers a React component to be used as a route component.
+ *
+ * @docsCategory react-extensions
+ */
 export function registerReactRouteComponent<
     Entity extends { id: string; updatedAt?: string },
     T extends DocumentNode | TypedDocumentNode<any, { id: string }>,
