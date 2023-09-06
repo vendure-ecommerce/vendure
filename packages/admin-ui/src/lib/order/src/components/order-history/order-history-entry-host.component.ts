@@ -1,6 +1,5 @@
 import {
     Component,
-    ComponentFactoryResolver,
     ComponentRef,
     EventEmitter,
     Input,
@@ -42,18 +41,14 @@ export class OrderHistoryEntryHostComponent implements OnInit, OnDestroy {
     instance: OrderHistoryEntryComponent;
     private componentRef: ComponentRef<OrderHistoryEntryComponent>;
 
-    constructor(
-        private componentFactoryResolver: ComponentFactoryResolver,
-        private historyEntryComponentService: HistoryEntryComponentService,
-    ) {}
+    constructor(private historyEntryComponentService: HistoryEntryComponentService) {}
 
     ngOnInit(): void {
         const componentType = this.historyEntryComponentService.getComponent(
             this.entry.type,
         ) as Type<OrderHistoryEntryComponent>;
 
-        const factory = this.componentFactoryResolver.resolveComponentFactory(componentType);
-        const componentRef = this.portalRef.createComponent(factory);
+        const componentRef = this.portalRef.createComponent(componentType);
         componentRef.instance.entry = this.entry;
         componentRef.instance.order = this.order;
         this.instance = componentRef.instance;
