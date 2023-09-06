@@ -4,14 +4,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactory,
-    ComponentFactoryResolver,
     ComponentRef,
     Injector,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
+    Provider,
     QueryList,
     SimpleChanges,
     Type,
@@ -37,10 +36,7 @@ import { switchMap, take, takeUntil } from 'rxjs/operators';
 import { FormInputComponent } from '../../../common/component-registry-types';
 import { ConfigArgDefinition, CustomFieldConfig } from '../../../common/generated-types';
 import { getConfigArgValue } from '../../../common/utilities/configurable-operation-utils';
-import {
-    ComponentRegistryService,
-    INPUT_COMPONENT_OPTIONS,
-} from '../../../providers/component-registry/component-registry.service';
+import { ComponentRegistryService } from '../../../providers/component-registry/component-registry.service';
 
 type InputListItem = {
     id: number;
@@ -78,7 +74,7 @@ export class DynamicFormInputComponent
     private listId = 1;
     private listFormArray = new FormArray([] as Array<FormControl<any>>);
     private componentType: Type<FormInputComponent>;
-    private componentOptions?: any;
+    private componentProviders: Provider[] = [];
     private onChange: (val: any) => void;
     private onTouch: () => void;
     private renderList$ = new Subject<void>();
@@ -86,7 +82,6 @@ export class DynamicFormInputComponent
 
     constructor(
         private componentRegistryService: ComponentRegistryService,
-        private componentFactoryResolver: ComponentFactoryResolver,
         private changeDetectorRef: ChangeDetectorRef,
         private injector: Injector,
     ) {}
@@ -96,7 +91,7 @@ export class DynamicFormInputComponent
         const component = this.componentRegistryService.getInputComponent(componentId);
         if (component) {
             this.componentType = component.type;
-            this.componentOptions = component.options;
+            this.componentProviders = component.providers;
         } else {
             // eslint-disable-next-line no-console
             console.error(
@@ -113,14 +108,13 @@ export class DynamicFormInputComponent
 
     ngAfterViewInit() {
         if (this.componentType) {
-            const factory = this.componentFactoryResolver.resolveComponentFactory(this.componentType);
             const injector = Injector.create({
-                providers: [{ provide: INPUT_COMPONENT_OPTIONS, useValue: this.componentOptions }],
+                providers: this.componentProviders,
                 parent: this.injector,
             });
 
             // create a temp instance to check the value of `isListInput`
-            const cmpRef = factory.create(injector);
+            const cmpRef = this.singleViewContainer.createComponent(this.componentType, { injector });
             const isListInputComponent = cmpRef.instance.isListInput ?? false;
             cmpRef.destroy();
 
@@ -132,7 +126,6 @@ export class DynamicFormInputComponent
             this.renderAsList = this.def.list && !isListInputComponent;
             if (!this.renderAsList) {
                 this.singleComponentRef = this.renderInputComponent(
-                    factory,
                     injector,
                     this.singleViewContainer,
                     this.control,
@@ -151,7 +144,6 @@ export class DynamicFormInputComponent
                             if (listItem) {
                                 this.listFormArray.push(listItem.control);
                                 listItem.componentRef = this.renderInputComponent(
-                                    factory,
                                     injector,
                                     ref,
                                     listItem.control,
@@ -254,12 +246,11 @@ export class DynamicFormInputComponent
     }
 
     private renderInputComponent(
-        factory: ComponentFactory<FormInputComponent>,
         injector: Injector,
         viewContainerRef: ViewContainerRef,
         formControl: UntypedFormControl,
     ) {
-        const componentRef = viewContainerRef.createComponent(factory, undefined, injector);
+        const componentRef = viewContainerRef.createComponent(this.componentType, { injector });
         const { instance } = componentRef;
         instance.config = simpleDeepClone(this.def);
         instance.formControl = formControl;

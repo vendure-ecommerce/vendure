@@ -1,8 +1,13 @@
-import { Component, inject, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, inject, InjectionToken, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CustomField, FormInputComponent, INPUT_COMPONENT_OPTIONS } from '@vendure/admin-ui/core';
+import { CustomField, FormInputComponent } from '@vendure/admin-ui/core';
+import { ElementType } from 'react';
 import { ReactComponentHostDirective } from '../react-component-host.directive';
 import { ReactFormInputOptions } from '../types';
+
+export const REACT_INPUT_COMPONENT_OPTIONS = new InjectionToken<{
+    component: ElementType;
+}>('REACT_INPUT_COMPONENT_OPTIONS');
 
 @Component({
     selector: 'vdr-react-form-input-component',
@@ -20,7 +25,7 @@ export class ReactFormInputComponent implements FormInputComponent, OnInit {
 
     protected context: ReactFormInputOptions;
 
-    protected reactComponent = inject(INPUT_COMPONENT_OPTIONS).component;
+    protected reactComponent = inject(REACT_INPUT_COMPONENT_OPTIONS).component;
 
     ngOnInit() {
         this.context = {

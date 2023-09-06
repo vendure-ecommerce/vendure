@@ -9,7 +9,10 @@ import {
     REACT_CUSTOM_DETAIL_COMPONENT_OPTIONS,
     ReactCustomDetailComponent,
 } from './components/react-custom-detail.component';
-import { ReactFormInputComponent } from './components/react-form-input.component';
+import {
+    REACT_INPUT_COMPONENT_OPTIONS,
+    ReactFormInputComponent,
+} from './components/react-form-input.component';
 
 /**
  * @description
@@ -22,7 +25,14 @@ export function registerReactFormInputComponent(id: string, component: ElementTy
         provide: APP_INITIALIZER,
         multi: true,
         useFactory: (registry: ComponentRegistryService) => () => {
-            registry.registerInputComponent(id, ReactFormInputComponent, { component });
+            registry.registerInputComponent(id, ReactFormInputComponent, [
+                {
+                    provide: REACT_INPUT_COMPONENT_OPTIONS,
+                    useValue: {
+                        component,
+                    },
+                },
+            ]);
         },
         deps: [ComponentRegistryService],
     };
