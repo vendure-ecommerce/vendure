@@ -37,6 +37,7 @@ export class CustomerListComponent
     extends TypedBaseListComponent<typeof CustomerListQueryDocument, 'customers'>
     implements OnInit
 {
+    readonly customFields = this.getCustomFieldConfig('Customer');
     readonly filters = this.createFilterCollection()
         .addIdFilter()
         .addDateFilters()
@@ -58,6 +59,7 @@ export class CustomerListComponent
             label: _('customer.email-address'),
             filterField: 'emailAddress',
         })
+        .addCustomFieldFilters(this.customFields)
         .connectToRoute(this.route);
 
     readonly sorts = this.createSortCollection()
@@ -66,6 +68,7 @@ export class CustomerListComponent
         .addSort({ name: 'updatedAt' })
         .addSort({ name: 'lastName' })
         .addSort({ name: 'emailAddress' })
+        .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
     constructor() {
