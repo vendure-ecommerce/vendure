@@ -43,6 +43,7 @@ export class AddFilterPresetButtonComponent implements OnInit, OnDestroy {
                 takeUntil(this.destroy$),
             ),
             this.filterPresetService.presetChanges$,
+            this.filters.valueChanges,
         ).subscribe(() => {
             this.changeDetector.markForCheck();
             this.updateSelectedFilterPreset();

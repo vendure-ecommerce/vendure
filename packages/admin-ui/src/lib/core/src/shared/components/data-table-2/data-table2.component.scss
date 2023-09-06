@@ -31,6 +31,7 @@
     display: block;
     overflow-y: hidden;
     overflow-x: auto;
+    position: relative;
     width: 100%;
     max-width: var(--surface-width);
 }

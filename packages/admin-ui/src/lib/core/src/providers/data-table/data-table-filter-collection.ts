@@ -218,14 +218,6 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     }
 
     connectToRoute(route: ActivatedRoute) {
-        this.valueChanges.subscribe(() => {
-            this.router.navigate(['./'], {
-                queryParams: { [this.#filtersQueryParamName]: this.serialize(), page: 1 },
-                relativeTo: route,
-                queryParamsHandling: 'merge',
-            });
-        });
-
         route.queryParamMap
             .pipe(
                 map(params => params.get(this.#filtersQueryParamName)),

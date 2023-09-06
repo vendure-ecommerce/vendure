@@ -1,12 +1,12 @@
-<div class="bulk-actions">
-    <ng-content select="vdr-bulk-action-menu"></ng-content>
-</div>
+<vdr-data-table-filter-presets
+    *ngIf="filters"
+    [filters]="filters"
+    [dataTableId]="id"
+></vdr-data-table-filter-presets>
 <div class="table-wrapper">
-    <vdr-data-table-filter-presets
-        *ngIf="filters"
-        [filters]="filters"
-        [dataTableId]="id"
-    ></vdr-data-table-filter-presets>
+    <div class="bulk-actions">
+        <ng-content select="vdr-bulk-action-menu"></ng-content>
+    </div>
     <table class="" [class.no-select]="disableSelect">
         <thead [class.items-selected]="selectionManager?.selection.length">
             <tr class="heading-row">

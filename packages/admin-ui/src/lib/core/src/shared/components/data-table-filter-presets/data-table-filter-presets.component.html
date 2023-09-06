@@ -19,7 +19,7 @@
             </div>
             <a
                 [routerLink]="['./']"
-                [queryParams]="preset.value === serializedActiveFilters ? {} : { filters: preset.value }"
+                [queryParams]="preset.value === serializedActiveFilters ? {} : { filters: preset.value, page: 1 }"
             >
                 <div>{{ preset.name }}</div>
             </a>
