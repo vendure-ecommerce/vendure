@@ -1,5 +1,6 @@
 import { addNavMenuSection } from '@vendure/admin-ui/core';
-import { registerReactFormInputComponent } from '@vendure/admin-ui/react';
+import { registerReactFormInputComponent, registerReactCustomDetailComponent } from '@vendure/admin-ui/react';
+import { CustomDetailComponent } from './components/CustomDetailComponent';
 
 import { ReactNumberInput } from './components/ReactNumberInput';
 
@@ -26,4 +27,11 @@ export default [
         'settings',
     ),
     registerReactFormInputComponent('react-number-input', ReactNumberInput),
+    registerReactCustomDetailComponent({
+        component: CustomDetailComponent,
+        locationId: 'product-detail',
+        props: {
+            foo: 'bar',
+        },
+    }),
 ];

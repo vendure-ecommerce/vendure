@@ -1,5 +1,5 @@
 import { NotificationService } from '@vendure/admin-ui/core';
-import { useInjector, usePageMetadata } from '@vendure/admin-ui/react';
+import { Card, useInjector, usePageMetadata } from '@vendure/admin-ui/react';
 import React, { useState, useEffect } from 'react';
 
 export function Greeter(props: { name: string }) {
@@ -22,23 +22,43 @@ export function Greeter(props: { name: string }) {
 
     return (
         <div className="page-block">
-            <h2>Hello {props.name}</h2>
-            <button className="button primary" onClick={handleClick}>
-                Click me
-            </button>
+            <Card title={`Hello ${props.name}`}>
+                <button className="button primary" onClick={handleClick}>
+                    Click me
+                </button>
 
-            <div className="card">
-                <input value={titleValue} onInput={e => setTitleValue((e.target as any).value)} />
-                <button className="button secondary" onClick={() => setTitle(titleValue)}>
-                    Set title
-                </button>
-            </div>
-            <div className="card">
-                <input value={breadcrumbValue} onInput={e => setBreadcrumbValue((e.target as any).value)} />
-                <button className="button secondary" onClick={() => setBreadcrumb(breadcrumbValue)}>
-                    Set breadcrumb
-                </button>
-            </div>
+                <div className="form-grid">
+                    <div>
+                        <input value={titleValue} onInput={e => setTitleValue((e.target as any).value)} />
+                        <button className="button secondary" onClick={() => setTitle(titleValue)}>
+                            Set title
+                        </button>
+                    </div>
+                    <div>
+                        <input
+                            value={breadcrumbValue}
+                            onInput={e => setBreadcrumbValue((e.target as any).value)}
+                        />
+                        <button className="button secondary" onClick={() => setBreadcrumb(breadcrumbValue)}>
+                            Set breadcrumb
+                        </button>
+                    </div>
+                </div>
+            </Card>
+
+            <Card title={'Buttons'}>
+                <div className="flex center" style={{ gap: '12px' }}>
+                    <button className="button primary">Primary</button>
+                    <button className="button secondary">Secondary</button>
+                    <button className="button success">Success</button>
+                    <button className="button warning">Warning</button>
+                    <button className="button danger">Danger</button>
+                    <button className="button-ghost">Ghost</button>
+                    <button className="button-small">Small</button>
+                </div>
+            </Card>
+
+            <Card title={'Testing the card'}>Yolo</Card>
         </div>
     );
 }
