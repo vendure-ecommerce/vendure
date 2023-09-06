@@ -22,7 +22,7 @@ import {
  *     standalone: true,
  * })
  * export class CustomTableComponent implements CustomColumnComponent {
- *     @Input() rowItem: any;
+ *     \@Input() rowItem: any;
  * }
  * ```
  *

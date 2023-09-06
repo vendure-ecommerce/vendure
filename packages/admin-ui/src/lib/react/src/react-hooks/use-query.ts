@@ -12,7 +12,7 @@ import { HostedComponentContext } from '../directives/react-component-host.direc
  *
  * @example
  * ```ts
- * import { useQuery } from '@vendure/admin-ui/react';
+ * import { useQuery } from '\@vendure/admin-ui/react';
  * import { gql } from 'graphql-tag';
  *
  * const GET_PRODUCT = gql`
@@ -62,7 +62,7 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
  *
  * @example
  * ```ts
- * import { useMutation } from '@vendure/admin-ui/react';
+ * import { useMutation } from '\@vendure/admin-ui/react';
  * import { gql } from 'graphql-tag';
  *
  * const UPDATE_PRODUCT = gql`

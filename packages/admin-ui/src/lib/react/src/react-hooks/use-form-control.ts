@@ -9,7 +9,7 @@ import { HostedReactComponentContext, ReactFormInputOptions } from '../types';
  *
  * @example
  * ```ts
- * import { useFormControl, ReactFormInputProps } from '@vendure/admin-ui/react';
+ * import { useFormControl, ReactFormInputProps } from '\@vendure/admin-ui/react';
  * import React from 'react';
  *
  * export function ReactNumberInput({ readonly }: ReactFormInputProps) {

@@ -9,7 +9,7 @@ import { HostedReactComponentContext, ReactRouteComponentOptions } from '../type
  *
  * @example
  * ```ts
- * import { usePageMetadata } from '@vendure/admin-ui/react';
+ * import { usePageMetadata } from '\@vendure/admin-ui/react';
  * import { useEffect } from 'react';
  *
  * export const MyComponent = () => {
