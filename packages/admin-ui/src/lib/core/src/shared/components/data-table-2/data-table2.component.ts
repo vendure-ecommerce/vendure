@@ -27,6 +27,11 @@ import { BulkActionMenuComponent } from '../bulk-action-menu/bulk-action-menu.co
 
 import { FilterPresetService } from '../data-table-filter-presets/filter-preset.service';
 import { DataTable2ColumnComponent } from './data-table-column.component';
+import {
+    DataTableComponentConfig,
+    DataTableCustomComponentService,
+    DataTableLocationId,
+} from './data-table-custom-component.service';
 import { DataTableCustomFieldColumnComponent } from './data-table-custom-field-column.component';
 import { DataTable2SearchComponent } from './data-table-search.component';
 
@@ -100,7 +105,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
     providers: [PaginationService, FilterPresetService],
 })
 export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
-    @Input() id: string;
+    @Input() id: DataTableLocationId;
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
@@ -121,6 +126,8 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
 
     route = inject(ActivatedRoute);
     filterPresetService = inject(FilterPresetService);
+    dataTableCustomComponentService = inject(DataTableCustomComponentService);
+    protected customComponents = new Map<string, DataTableComponentConfig>();
 
     rowTemplate: TemplateRef<any>;
     currentStart: number;
@@ -219,6 +226,13 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
                 column.setVisibility(column.hiddenByDefault);
             }
             column.onColumnChange(updateColumnVisibility);
+            const customComponent = this.dataTableCustomComponentService.getCustomComponentsFor(
+                this.id,
+                column.id,
+            );
+            if (customComponent) {
+                this.customComponents.set(column.id, customComponent);
+            }
         });
 
         if (this.selectionManager) {

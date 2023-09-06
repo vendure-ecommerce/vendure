@@ -8,10 +8,10 @@ import { DataTableSort } from '../../../providers/data-table/data-table-sort';
     exportAs: 'row',
 })
 export class DataTable2ColumnComponent<T> implements OnInit {
+    @Input() id: string;
     /**
      * When set to true, this column will expand to use available width
      */
-    @Input() id: string;
     @Input() expand = false;
     @Input() heading: string;
     @Input() align: 'left' | 'right' | 'center' = 'left';
