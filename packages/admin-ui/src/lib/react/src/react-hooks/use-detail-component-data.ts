@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { ReactCustomDetailComponentContext } from '../components/react-custom-detail.component';
-import { HostedComponentContext } from '../react-component-host.directive';
+import { HostedComponentContext } from '../directives/react-component-host.directive';
 import { HostedReactComponentContext } from '../types';
 
 /**

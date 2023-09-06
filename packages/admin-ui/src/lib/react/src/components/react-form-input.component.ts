@@ -2,7 +2,7 @@ import { Component, inject, InjectionToken, OnInit, ViewEncapsulation } from '@a
 import { FormControl } from '@angular/forms';
 import { CustomField, FormInputComponent } from '@vendure/admin-ui/core';
 import { ElementType } from 'react';
-import { ReactComponentHostDirective } from '../react-component-host.directive';
+import { ReactComponentHostDirective } from '../directives/react-component-host.directive';
 import { ReactFormInputOptions } from '../types';
 
 export const REACT_INPUT_COMPONENT_OPTIONS = new InjectionToken<{

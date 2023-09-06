@@ -1,7 +1,7 @@
 import { APP_INITIALIZER, FactoryProvider } from '@angular/core';
 
-import { BulkActionRegistryService } from './bulk-action-registry.service';
-import { BulkAction } from './bulk-action-types';
+import { BulkActionRegistryService } from '../providers/bulk-action-registry/bulk-action-registry.service';
+import { BulkAction } from '../providers/bulk-action-registry/bulk-action-types';
 
 /**
  * @description

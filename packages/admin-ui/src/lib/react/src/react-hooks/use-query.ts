@@ -4,7 +4,7 @@ import { DocumentNode } from 'graphql/index';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { firstValueFrom, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { HostedComponentContext } from '../react-component-host.directive';
+import { HostedComponentContext } from '../directives/react-component-host.directive';
 
 /**
  * @description

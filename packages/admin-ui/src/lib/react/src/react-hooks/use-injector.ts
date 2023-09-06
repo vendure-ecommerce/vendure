@@ -1,6 +1,6 @@
 import { ProviderToken } from '@angular/core';
 import { useContext } from 'react';
-import { HostedComponentContext } from '../react-component-host.directive';
+import { HostedComponentContext } from '../directives/react-component-host.directive';
 
 /**
  * @description

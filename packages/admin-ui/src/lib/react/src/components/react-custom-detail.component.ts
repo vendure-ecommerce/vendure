@@ -3,7 +3,7 @@ import { FormGroup, UntypedFormGroup } from '@angular/forms';
 import { CustomDetailComponent } from '@vendure/admin-ui/core';
 import { ElementType } from 'react';
 import { Observable } from 'rxjs';
-import { ReactComponentHostDirective } from '../react-component-host.directive';
+import { ReactComponentHostDirective } from '../directives/react-component-host.directive';
 
 export const REACT_CUSTOM_DETAIL_COMPONENT_OPTIONS = new InjectionToken<{
     component: ElementType;

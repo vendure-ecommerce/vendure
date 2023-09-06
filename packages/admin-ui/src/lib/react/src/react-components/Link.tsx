@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import React, { PropsWithChildren } from 'react';
-import { useInjector } from '../hooks/use-injector';
+import { useInjector } from '../react-hooks/use-injector';
 
 /**
  * @description

@@ -1,6 +1,6 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { useContext, useEffect, useState } from 'react';
-import { HostedComponentContext } from '../react-component-host.directive';
+import { HostedComponentContext } from '../directives/react-component-host.directive';
 import { HostedReactComponentContext, ReactFormInputOptions } from '../types';
 
 /**
