@@ -168,8 +168,21 @@
         >
             <div class="cell-content" [ngClass]="column.align">
                 <ng-container
-                    *ngTemplateOutlet="column.template; context: { item: item, depth: depth }"
-                ></ng-container>
+                    *ngIf="customComponents.get(column.id) as componentConfig; else defaultComponent"
+                >
+                    <ng-container
+                        *ngComponentOutlet="
+                            componentConfig.config.component;
+                            inputs: { rowItem: item };
+                            injector: componentConfig.injector
+                        "
+                    ></ng-container>
+                </ng-container>
+                <ng-template #defaultComponent>
+                    <ng-container
+                        *ngTemplateOutlet="column.template; context: { item: item, depth: depth }"
+                    ></ng-container>
+                </ng-template>
             </div>
         </td>
         <td [class.active]="activeIndex === absoluteIndex[item.id]"><!-- column select --></td>
