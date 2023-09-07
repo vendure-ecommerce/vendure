@@ -65,7 +65,7 @@ input:not([type='checkbox']):not([type='radio']),
 textarea,
 select {
     border-radius: var(--border-radius-input) !important;
-    border: 1px solid var(--color-weight-300);
+    border: 1px solid var(--color-weight-200);
     padding: 5px !important;
     transition: background-color 0.2s, box-shadow 0.2s !important;
     &:focus {
@@ -149,7 +149,7 @@ select {
     color: var(--color-text-100);
     line-height: initial;
     position: initial !important;
-    border: 1px solid var(--color-weight-300);
+    border: 1px solid var(--color-weight-200);
 }
 .ng-select .ng-select-container .ng-value-container {
     //padding-top: 0;

@@ -48,15 +48,6 @@ table.no-select {
     width: 24px;
 }
 
-//.heading-row th {
-//    border-bottom: 1px solid var(--color-weight-200);
-//    font-size: var(--font-size-xs);
-//    font-weight: 600;
-//    text-transform: uppercase;
-//    position: relative;
-//    white-space: nowrap;
-//}
-
 .sort-toggle {
     display: flex;
     align-items: center;
@@ -115,7 +106,7 @@ th.filter-row {
     }
 
     &.active {
-        border-bottom: 1px solid var(--color-weight-200);
+        border-bottom: 1px solid var(--color-table-header-border);
     }
 
     .filters {
