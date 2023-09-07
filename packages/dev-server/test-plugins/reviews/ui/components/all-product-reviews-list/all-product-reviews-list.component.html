@@ -32,11 +32,11 @@
     <vdr-dt2-search [searchTermControl]="searchTermControl" searchTermPlaceholder="Filter by author name" />
 
     <!-- Here we define all the available columns -->
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-review="item">{{ review.id }}</ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -45,7 +45,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -53,7 +53,7 @@
             {{ review.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.image' | translate">
+    <vdr-dt2-column [heading]="'common.image' | translate" id="image">
         <ng-template let-review="item">
             <div class="image-placeholder">
                 <img
