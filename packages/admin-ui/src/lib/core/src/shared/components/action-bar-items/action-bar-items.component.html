@@ -1,4 +1,4 @@
-<vdr-ui-extension-point [locationId]="locationId" api="actionBar">
+<vdr-ui-extension-point [locationId]="locationId" api="actionBar" [leftPx]="-24">
     <ng-container *ngFor="let item of items$ | async">
         <button
             *vdrIfPermissions="item.requiresPermission"

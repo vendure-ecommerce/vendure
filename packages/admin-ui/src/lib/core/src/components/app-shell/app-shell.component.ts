@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, isDevMode, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 
 import { getAppConfig } from '../../app.config';
 import { LanguageCode } from '../../common/generated-types';
+import { ADMIN_UI_VERSION } from '../../common/version';
 import { DataService } from '../../data/providers/data.service';
 import { AuthService } from '../../providers/auth/auth.service';
 import { BreadcrumbService } from '../../providers/breadcrumb/breadcrumb.service';
@@ -19,6 +20,7 @@ import { UiLanguageSwitcherDialogComponent } from '../ui-language-switcher-dialo
     styleUrls: ['./app-shell.component.scss'],
 })
 export class AppShellComponent implements OnInit {
+    version = ADMIN_UI_VERSION;
     userName$: Observable<string>;
     uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
     direction$: Observable<'ltr' | 'rtl'>;
@@ -26,6 +28,7 @@ export class AppShellComponent implements OnInit {
     hideVendureBranding = getAppConfig().hideVendureBranding;
     pageTitle$: Observable<string>;
     mainNavExpanded$: Observable<boolean>;
+    devMode = isDevMode();
 
     constructor(
         private authService: AuthService,
