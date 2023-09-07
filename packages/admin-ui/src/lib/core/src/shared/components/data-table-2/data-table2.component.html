@@ -111,13 +111,14 @@
                 <td *ngFor="let column of visibleSortedColumns" [class.active]="activeIndex === i">
                     <div class="cell-content" [ngClass]="column.align">
                         <ng-container
-                            *ngIf="
-                                customComponents.get(column.id) as customComponetConfig;
-                                else defaultComponent
-                            "
+                            *ngIf="customComponents.get(column.id) as componentConfig; else defaultComponent"
                         >
                             <ng-container
-                                *ngComponentOutlet="customComponetConfig.component; inputs: { rowItem: item }"
+                                *ngComponentOutlet="
+                                    componentConfig.config.component;
+                                    inputs: { rowItem: item };
+                                    injector: componentConfig.injector
+                                "
                             ></ng-container>
                         </ng-container>
                         <ng-template #defaultComponent>

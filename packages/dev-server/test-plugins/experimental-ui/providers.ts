@@ -1,7 +1,12 @@
 import { addNavMenuSection, registerDataTableComponent } from '@vendure/admin-ui/core';
-import { registerReactFormInputComponent, registerReactCustomDetailComponent } from '@vendure/admin-ui/react';
+import {
+    registerReactFormInputComponent,
+    registerReactCustomDetailComponent,
+    registerReactDataTableComponent,
+} from '@vendure/admin-ui/react';
 
 import { CustomTableComponent } from './components/custom-table.component';
+import { CustomColumnComponent } from './components/CustomColumnComponent';
 import { CustomDetailComponent } from './components/CustomDetailComponent';
 import { ReactNumberInput } from './components/ReactNumberInput';
 
@@ -39,5 +44,13 @@ export default [
         component: CustomTableComponent,
         tableId: 'product-list',
         columnId: 'slug',
+    }),
+    registerReactDataTableComponent({
+        component: CustomColumnComponent,
+        tableId: 'product-list',
+        columnId: 'id',
+        props: {
+            foo: 'bar',
+        },
     }),
 ];

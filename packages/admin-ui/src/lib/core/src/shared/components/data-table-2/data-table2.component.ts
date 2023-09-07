@@ -7,6 +7,7 @@ import {
     ContentChildren,
     EventEmitter,
     inject,
+    Injector,
     Input,
     OnChanges,
     OnDestroy,
@@ -124,10 +125,11 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
 
+    injector = inject(Injector);
     route = inject(ActivatedRoute);
     filterPresetService = inject(FilterPresetService);
     dataTableCustomComponentService = inject(DataTableCustomComponentService);
-    protected customComponents = new Map<string, DataTableComponentConfig>();
+    protected customComponents = new Map<string, { config: DataTableComponentConfig; injector: Injector }>();
 
     rowTemplate: TemplateRef<any>;
     currentStart: number;
@@ -226,12 +228,13 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
                 column.setVisibility(column.hiddenByDefault);
             }
             column.onColumnChange(updateColumnVisibility);
-            const customComponent = this.dataTableCustomComponentService.getCustomComponentsFor(
-                this.id,
-                column.id,
-            );
-            if (customComponent) {
-                this.customComponents.set(column.id, customComponent);
+            const config = this.dataTableCustomComponentService.getCustomComponentsFor(this.id, column.id);
+            if (config) {
+                const injector = Injector.create({
+                    parent: this.injector,
+                    providers: config.providers ?? [],
+                });
+                this.customComponents.set(column.id, { config, injector });
             }
         });
 
