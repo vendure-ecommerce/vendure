@@ -194,32 +194,30 @@ function generateLazyExtensionRoutes(extensions: AdminUiExtensionWithId[]): stri
 
 function generateSharedExtensionModule(extensions: AdminUiExtensionWithId[]) {
     const adminUiExtensions = extensions.filter(isAdminUiExtension);
-    return `import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-${adminUiExtensions
-    .map(e =>
-        e.ngModules
-            ?.filter(m => m.type === 'shared')
-            .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';\n`)
-            .join(''),
-    )
-    .join('')}
-${adminUiExtensions
-    .map((m, i) =>
-        (m.providers ?? [])
-            .map(
-                (f, j) =>
-                    `import SharedProviders_${i}_${j} from './extensions/${m.id}/${path.basename(
-                        f,
-                        '.ts',
-                    )}';\n`,
-            )
-            .join(''),
-    )
-    .join('')}
-
-@NgModule({
-    imports: [CommonModule, ${adminUiExtensions
+    const moduleImports = adminUiExtensions
+        .map(e =>
+            e.ngModules
+                ?.filter(m => m.type === 'shared')
+                .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';\n`)
+                .join(''),
+        )
+        .filter(val => !!val)
+        .join('');
+    const providerImports = adminUiExtensions
+        .map((m, i) =>
+            (m.providers ?? [])
+                .map(
+                    (f, j) =>
+                        `import SharedProviders_${i}_${j} from './extensions/${m.id}/${path.basename(
+                            f,
+                            '.ts',
+                        )}';\n`,
+                )
+                .join(''),
+        )
+        .filter(val => !!val)
+        .join('');
+    const modules = adminUiExtensions
         .map(e =>
             e.ngModules
                 ?.filter(m => m.type === 'shared')
@@ -227,11 +225,20 @@ ${adminUiExtensions
                 .join(', '),
         )
         .filter(val => !!val)
-        .join(', ')}],
-    providers: [${adminUiExtensions
+        .join(', ');
+    const providers = adminUiExtensions
         .filter(notNullOrUndefined)
-        .map((m, i) => (m.providers ?? []).map((f, j) => `...SharedProviders_${i}_${j}`))
-        .join(', ')}],
+        .map((m, i) => (m.providers ?? []).map((f, j) => `...SharedProviders_${i}_${j}`).join(', '))
+        .filter(val => !!val)
+        .join(', ');
+    return `import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+${moduleImports}
+${providerImports}
+
+@NgModule({
+    imports: [CommonModule, ${modules}],
+    providers: [${providers}],
 })
 export class SharedExtensionsModule {}
 `;
