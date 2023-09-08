@@ -1,3 +1,10 @@
+## 2.1.0-next.4 (2023-09-08)
+
+
+#### Fixes
+
+* **ui-devkit** Fix scaffold logic for custom providers ([2f2ddb5](https://github.com/vendure-ecommerce/vendure/commit/2f2ddb5))
+
 ## 2.1.0-next.3 (2023-09-08)
 
 
