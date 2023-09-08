@@ -13,12 +13,9 @@
 * **admin-ui** Fix styling of custom field tabs ([ef3d2f9](https://github.com/vendure-ecommerce/vendure/commit/ef3d2f9))
 * **admin-ui** Reinstate multi-deletion of Assets ([a203e50](https://github.com/vendure-ecommerce/vendure/commit/a203e50)), closes [#380](https://github.com/vendure-ecommerce/vendure/issues/380)
 * **admin-ui** Use appropriate default values for custom fields ([85a8866](https://github.com/vendure-ecommerce/vendure/commit/85a8866)), closes [#2362](https://github.com/vendure-ecommerce/vendure/issues/2362)
-* **core** Aligns items horizontally in the Chip component ([19d3e51](https://github.com/vendure-ecommerce/vendure/commit/19d3e51))
-* **core** Fix channel association on promotion update (#2376) ([47e688d](https://github.com/vendure-ecommerce/vendure/commit/47e688d)), closes [#2376](https://github.com/vendure-ecommerce/vendure/issues/2376)
-
-#### Features
-
+* **admin-ui** Aligns items horizontally in the Chip component ([19d3e51](https://github.com/vendure-ecommerce/vendure/commit/19d3e51))
 * **admin-ui** Add price field on variation dialog modal (#2378) ([5b99bae](https://github.com/vendure-ecommerce/vendure/commit/5b99bae)), closes [#2378](https://github.com/vendure-ecommerce/vendure/issues/2378)
+* **core** Fix channel association on promotion update (#2376) ([47e688d](https://github.com/vendure-ecommerce/vendure/commit/47e688d)), closes [#2376](https://github.com/vendure-ecommerce/vendure/issues/2376)
 
 ## <small>2.0.6 (2023-08-11)</small>
 
