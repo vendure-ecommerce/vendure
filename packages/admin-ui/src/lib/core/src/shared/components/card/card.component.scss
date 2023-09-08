@@ -1,4 +1,4 @@
-:host {
+:host, .vdr-card {
     display: block;
     --card-padding: calc(var(--space-unit) * 3);
     container-type: inline-size;
@@ -37,10 +37,6 @@
 ::ng-deep vdr-card + vdr-card {
     margin-top: calc(var(--space-unit) * 2);
 }
-
-/*.contents {
-    display: grid;
-    gap: calc(var(--space-unit) * 4);
-    grid-template-columns: 1fr 1fr;
-}*/
-
+.vdr-card + .vdr-card {
+    margin-top: calc(var(--space-unit) * 2);
+}

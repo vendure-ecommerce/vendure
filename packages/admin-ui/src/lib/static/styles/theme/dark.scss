@@ -24,22 +24,6 @@
     --color-text-inverse: var(--clr-global-font-color);
     --color-text-active: var(--color-primary-600);
 
-    --color-weight-100: hsl(0 0% 95%);
-    --color-weight-125: hsl(0 0% 93%);
-    --color-weight-150: hsl(0 0% 90%);
-    --color-weight-200: hsl(0 0% 85%);
-    --color-weight-300: hsl(0 0% 75%);
-    --color-weight-400: hsl(0 0% 65%);
-    --color-weight-500: hsl(0 0% 55%);
-    --color-weight-600: hsl(0 0% 45%);
-    --color-weight-700: hsl(0 0% 35%);
-    --color-weight-800: hsl(0 0% 25%);
-    --color-weight-900: hsl(0 0% 15%);
-    --color-weight-950: hsl(0 0% 10%);
-    --color-weight-975: hsl(0 0% 7%);
-    --color-weight-1000: hsl(0 0% 5%);
-
-
     --color-weight-100: hsl(201 30% 15%);
     --color-weight-125: hsl(201 30% 17%);
     --color-weight-150: hsl(201 30% 20%);
@@ -93,6 +77,7 @@
     --color-chip-error-bg: var(--color-error-700);
 
     --color-icon-button: var(--color-grey-200);
+    --color-icon-button-hover: var(--color-primary-200);
     --color-form-input-bg: var(--color-weight-150);
     --color-form-input-focus: var(--color-primary-500);
     --color-timeline-thread: var(--color-primary-700);
@@ -489,6 +474,7 @@
     --clr-table-border-color: var(--clr-datagrid-default-border-color);
     --clr-table-bordercolor: var(--clr-datagrid-default-border-color);
     --clr-table-borderstyle: 0.05rem solid var(--clr-datagrid-default-border-color);
+    --color-table-header-border: var(--color-weight-150);
     --color-table-row-hover-bg: var(--color-weight-125);
     --color-table-row-active-bg: var(--color-primary-900);
     --color-table-row-separator: var(--color-weight-150);

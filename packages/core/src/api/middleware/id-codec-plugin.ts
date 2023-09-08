@@ -1,6 +1,6 @@
+import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServerContext } from '@apollo/server';
 import { isObject } from '@vendure/common/lib/shared-utils';
-import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServiceContext } from 'apollo-server-plugin-base';
-import { DocumentNode, OperationDefinitionNode } from 'graphql';
+import { DocumentNode } from 'graphql';
 
 import { GraphqlValueTransformer } from '../common/graphql-value-transformer';
 import { IdCodecService } from '../common/id-codec.service';
@@ -15,25 +15,28 @@ export class IdCodecPlugin implements ApolloServerPlugin {
     private graphqlValueTransformer: GraphqlValueTransformer;
     constructor(private idCodecService: IdCodecService) {}
 
-    async serverWillStart(service: GraphQLServiceContext): Promise<void> {
+    async serverWillStart(service: GraphQLServerContext): Promise<void> {
         this.graphqlValueTransformer = new GraphqlValueTransformer(service.schema);
     }
 
-    async requestDidStart(): Promise<GraphQLRequestListener> {
+    async requestDidStart(): Promise<GraphQLRequestListener<any>> {
         return {
             willSendResponse: async requestContext => {
                 const { document } = requestContext;
                 if (document) {
-                    const data = requestContext.response.data;
-                    if (data) {
-                        this.encodeIdFields(document, data);
+                    const { body } = requestContext.response;
+                    if (body.kind === 'single') {
+                        this.encodeIdFields(document, body.singleResult.data);
                     }
                 }
             },
         };
     }
 
-    private encodeIdFields(document: DocumentNode, data: Record<string, any>) {
+    private encodeIdFields(document: DocumentNode, data?: Record<string, unknown> | null) {
+        if (!data) {
+            return;
+        }
         const typeTree = this.graphqlValueTransformer.getOutputTypeTree(document);
         this.graphqlValueTransformer.transformValues(typeTree, data, (value, type) => {
             const isIdType = type && type.name === 'ID';

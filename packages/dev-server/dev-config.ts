@@ -32,14 +32,14 @@ export const devConfig: VendureConfig = {
         adminApiPlayground: {
             settings: {
                 'request.credentials': 'include',
-            } as any,
+            },
         },
         adminApiDebug: true,
         shopApiPath: SHOP_API_PATH,
         shopApiPlayground: {
             settings: {
                 'request.credentials': 'include',
-            } as any,
+            },
         },
         shopApiDebug: true,
     },

@@ -40,8 +40,8 @@ export class PageTitleComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.value) {
-            this.titleChange$.next(changes.value.currentValue);
+        if (changes.title) {
+            this.titleChange$.next(changes.title.currentValue);
         }
     }
 }

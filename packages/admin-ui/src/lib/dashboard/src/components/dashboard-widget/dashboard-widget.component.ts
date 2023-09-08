@@ -2,11 +2,9 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    ComponentFactoryResolver,
     ComponentRef,
     Input,
     OnDestroy,
-    OnInit,
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
@@ -26,8 +24,6 @@ export class DashboardWidgetComponent implements AfterViewInit, OnDestroy {
 
     private componentRef: ComponentRef<any>;
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
-
     ngAfterViewInit(): void {
         this.loadWidget();
     }
@@ -36,9 +32,7 @@ export class DashboardWidgetComponent implements AfterViewInit, OnDestroy {
         const loadComponentResult = this.widgetConfig.loadComponent();
         const componentType =
             loadComponentResult instanceof Promise ? await loadComponentResult : loadComponentResult;
-        this.componentRef = this.portal.createComponent(
-            this.componentFactoryResolver.resolveComponentFactory(componentType),
-        );
+        this.componentRef = this.portal.createComponent(componentType);
         this.componentRef.changeDetectorRef.detectChanges();
     }
 

@@ -3,11 +3,11 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { ResultOf } from '@graphql-typed-document-node/core';
 import {
-    Administrator,
     ADMINISTRATOR_FRAGMENT,
     CreateAdministratorInput,
     DataService,
     GetAdministratorDetailDocument,
+    getCustomFieldsDefaults,
     LanguageCode,
     NotificationService,
     Permission,
@@ -58,9 +58,7 @@ export class AdminDetailComponent
                 ResultOf<typeof GetAdministratorDetailDocument>['administrator']
             >['user']['roles'],
         ],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     permissionDefinitions: PermissionDefinition[];
     allRoles$: Observable<RoleFragment[]>;

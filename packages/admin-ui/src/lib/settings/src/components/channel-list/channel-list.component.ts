@@ -28,6 +28,7 @@ export class ChannelListComponent
 {
     readonly customFields = this.getCustomFieldConfig('Channel');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'code',

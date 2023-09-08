@@ -15,7 +15,6 @@
     cursor: pointer;
 
     &.active {
-        font-weight: 600;
         color: var(--color-text-active);
         border-bottom-color: var(--color-text-active);
     }

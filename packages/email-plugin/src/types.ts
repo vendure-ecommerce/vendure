@@ -369,7 +369,7 @@ export interface Partial {
  *
  * @example
  * ```TypeScript
- * import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+ * import { EmailPlugin, TemplateLoader } from '\@vendure/email-plugin';
  *
  * class MyTemplateLoader implements TemplateLoader {
  *      loadTemplate(injector, ctx, { type, templateName }){

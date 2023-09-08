@@ -27,6 +27,7 @@ export class OrderListComponent
     readonly OrderType = OrderType;
     readonly customFields = this.getCustomFieldConfig('Order');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'active',

@@ -5,7 +5,6 @@ import {
     CreateAddressInput,
     CreateCustomerAddressMutation,
     CreateCustomerInput,
-    Customer,
     CUSTOMER_FRAGMENT,
     CustomerDetailQueryDocument,
     CustomerDetailQueryQuery,
@@ -14,6 +13,7 @@ import {
     EditNoteDialogComponent,
     GetAvailableCountriesQuery,
     GetCustomerHistoryQuery,
+    getCustomFieldsDefaults,
     ModalService,
     NotificationService,
     SortOrder,
@@ -90,9 +90,7 @@ export class CustomerDetailComponent
             phoneNumber: '',
             emailAddress: ['', [Validators.required, Validators.email]],
             password: '',
-            customFields: this.formBuilder.group(
-                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-            ),
+            customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
         }),
         addresses: new UntypedFormArray([]),
     });

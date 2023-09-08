@@ -33,13 +33,13 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     />
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-taxCategory="item">
             {{ taxCategory.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -48,7 +48,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -56,7 +56,7 @@
             {{ taxCategory.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
         <ng-template let-taxCategory="item">
             <a class="button-ghost" [routerLink]="['./', taxCategory.id]"
                 ><span>{{ taxCategory.name }}</span>
@@ -64,7 +64,7 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.default-tax-category' | translate">
+    <vdr-dt2-column [heading]="'common.default-tax-category' | translate" id="default-tax-category">
         <ng-template let-taxCategory="item">
             <vdr-chip *ngIf="taxCategory.isDefault">{{ 'common.default-tax-category' | translate }}</vdr-chip>
         </ng-template>

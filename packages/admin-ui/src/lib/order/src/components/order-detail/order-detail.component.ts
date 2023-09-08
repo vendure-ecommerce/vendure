@@ -5,6 +5,7 @@ import {
     DataService,
     EditNoteDialogComponent,
     FulfillmentFragment,
+    getCustomFieldsDefaults,
     GetOrderHistoryQuery,
     GetOrderQuery,
     ModalService,
@@ -54,9 +55,7 @@ export class OrderDetailComponent
     customFields = this.getCustomFieldConfig('Order');
     orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
     detailForm = new FormGroup({
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     history$: Observable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'] | undefined>;
     nextStates$: Observable<string[]>;

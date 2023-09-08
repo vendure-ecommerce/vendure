@@ -34,6 +34,7 @@ export class PromotionListComponent
 {
     readonly customFields = this.getCustomFieldConfig('Promotion');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilters([
             {

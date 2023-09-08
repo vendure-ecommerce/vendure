@@ -14,6 +14,8 @@ import {
     CurrencyCode,
     DeletionResult,
     FacetWithValuesFragment,
+    GetFacetWithValueListDocument,
+    GetFacetWithValuesDocument,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -171,6 +173,13 @@ describe('Facet resolver', () => {
         });
 
         expect(result.facet!.name).toBe('Speaker Category');
+    });
+
+    it('facet with valueList', async () => {
+        const result = await adminClient.query(GetFacetWithValueListDocument, {
+            id: speakerTypeFacet.id,
+        });
+        expect(result.facet?.valueList.totalItems).toBe(3);
     });
 
     it('product.facetValues resolver omits private facets in shop-api', async () => {
@@ -808,6 +817,25 @@ export const GET_FACET_WITH_VALUES = gql`
         }
     }
     ${FACET_WITH_VALUES_FRAGMENT}
+`;
+
+export const GET_FACET_WITH_VALUE_LIST = gql`
+    query GetFacetWithValueList($id: ID!) {
+        facet(id: $id) {
+            id
+            languageCode
+            isPrivate
+            code
+            name
+            valueList {
+                items {
+                    ...FacetValue
+                }
+                totalItems
+            }
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
 `;
 
 const DELETE_FACET_VALUES = gql`

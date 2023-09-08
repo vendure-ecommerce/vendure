@@ -28,7 +28,7 @@ import { InjectableTranslateMessageFormatCompiler } from './providers/i18n/custo
 import { I18nService } from './providers/i18n/i18n.service';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
 import { NotificationService } from './providers/notification/notification.service';
-import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/register-dynamic-input-components';
+import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/default-form-inputs';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({

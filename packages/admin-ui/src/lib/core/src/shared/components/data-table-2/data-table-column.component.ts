@@ -8,6 +8,7 @@ import { DataTableSort } from '../../../providers/data-table/data-table-sort';
     exportAs: 'row',
 })
 export class DataTable2ColumnComponent<T> implements OnInit {
+    @Input() id: string;
     /**
      * When set to true, this column will expand to use available width
      */
@@ -20,9 +21,7 @@ export class DataTable2ColumnComponent<T> implements OnInit {
     @Input() orderable = true;
     #visible = true;
     #onColumnChangeFns: Array<() => void> = [];
-    get id(): string {
-        return this.heading.toLowerCase().replace(/ /g, '-');
-    }
+
     get visible() {
         return this.#visible;
     }

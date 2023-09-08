@@ -31,6 +31,7 @@ export class TaxCategoryListComponent extends TypedBaseListComponent<
 > {
     readonly customFields = this.serverConfigService.getCustomFieldsFor('TaxCategory');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addFilter({
             name: 'name',
             type: { kind: 'text' },

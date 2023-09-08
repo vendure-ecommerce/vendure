@@ -42,6 +42,7 @@ export * from './product/product.entity';
 export * from './promotion/promotion.entity';
 export * from './refund/refund.entity';
 export * from './role/role.entity';
+export * from './seller/seller.entity';
 export * from './session/anonymous-session.entity';
 export * from './session/authenticated-session.entity';
 export * from './session/session.entity';
