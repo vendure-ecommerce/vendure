@@ -33,7 +33,7 @@ export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | ''
 })
 export class AssetPreviewComponent implements OnInit, OnDestroy {
     @Input() asset: AssetLike;
-    @Input() assets: AssetLike[];
+    @Input() assets?: AssetLike[];
     @Input() editable = false;
     @Input() customFields: CustomFieldConfig[] = [];
     @Input() customFieldsForm: UntypedFormGroup | undefined;
@@ -222,20 +222,23 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
 
     nextImage() {
         this.previewAssetIndex = this.previewAssetIndex + 1;
-        this.asset = this.assets[this.previewAssetIndex];
-        this.updateButtonAccessibility();
+        if (Array.isArray(this.assets)) {
+            this.asset = this.assets[this.previewAssetIndex];
+            this.updateButtonAccessibility();
+        }
     }
 
     previousImage() {
         this.previewAssetIndex = this.previewAssetIndex - 1;
-        this.asset = this.assets[this.previewAssetIndex];
-        this.updateButtonAccessibility();
+        if (Array.isArray(this.assets)) {
+            this.asset = this.assets[this.previewAssetIndex];
+            this.updateButtonAccessibility();
+        }
     }
 
     updateButtonAccessibility() {
         this.disableNextButton = this.assets?.[this.previewAssetIndex + 1]?.id ? false : true;
         this.disablePreviousButton = this.assets?.[this.previewAssetIndex - 1]?.id ? false : true;
     }
-
 
 }

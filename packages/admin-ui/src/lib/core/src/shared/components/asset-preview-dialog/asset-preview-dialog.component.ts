@@ -31,11 +31,11 @@ export const ASSET_PREVIEW_QUERY = gql`
 export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
     constructor(private dataService: DataService) { }
     asset: AssetLike;
-    assets: AssetLike[];
+    assets?: AssetLike[];
     assetChanges?: UpdateAssetInput;
     resolveWith: (result?: void) => void;
     assetWithTags$: Observable<GetAssetQuery['asset']>;
-    assetsWithTags$;
+    assetsWithTags$: Observable<Array<GetAssetQuery['asset']>>;
 
     ngOnInit() {
         this.assetWithTags$ = of(this.asset).pipe(
@@ -49,7 +49,7 @@ export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
             }),
         );
 
-        this.assetsWithTags$ = of(this.assets);
+        this.assetsWithTags$ = of(this.assets ?? []);
     }
 
     private hasTags(asset: AssetLike): asset is AssetLike & { tags: string[] } {
