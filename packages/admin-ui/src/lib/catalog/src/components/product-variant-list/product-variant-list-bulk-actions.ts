@@ -10,12 +10,11 @@ import {
     Permission,
     createBulkRemoveFromChannelAction,
     isMultiChannel,
+    ProductVariant,
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-
-import { ProductVariant } from 'package/core';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { ProductVariantListComponent } from './product-variant-list.component';
 
