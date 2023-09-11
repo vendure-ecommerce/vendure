@@ -6,7 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BaseDetailComponent, createBaseDetailResolveFn } from '../common/base-detail.component';
 import { BreadcrumbValue } from '../providers/breadcrumb/breadcrumb.service';
-import { ROUTE_COMPONENT_OPTIONS, RouteComponent } from './components/route.component';
+import { AngularRouteComponent } from './components/angular-route.component';
+import { ROUTE_COMPONENT_OPTIONS } from './components/route.component';
 import { RouteComponentOptions } from './types';
 
 export type RegisterRouteComponentOptions<
@@ -79,6 +80,6 @@ export function registerRouteComponent<
                 : {}),
             ...(options.routeConfig?.data ?? {}),
         },
-        component: RouteComponent,
+        component: AngularRouteComponent,
     } satisfies Route;
 }
