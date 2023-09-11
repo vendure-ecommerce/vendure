@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 
-import { registerCommand as registerPluginCommand } from './commands/plugin/index';
+import { registerNewCommand } from './commands/new/new';
 
 const program = new Command();
 
@@ -10,6 +10,6 @@ const program = new Command();
 const version = require('../package.json').version;
 
 program.version(version).description('The Vendure CLI');
-registerPluginCommand(program);
+registerNewCommand(program);
 
-program.parse(process.argv);
+void program.parseAsync(process.argv);
