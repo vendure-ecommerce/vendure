@@ -86,7 +86,7 @@ export class AssetsComponent {
             .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',
                 closable: true,
-                locals: { asset },
+                locals: { asset, assets: this.assets },
             })
             .subscribe();
     }
