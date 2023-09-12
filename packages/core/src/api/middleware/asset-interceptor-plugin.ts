@@ -1,5 +1,4 @@
-import { Asset } from '@vendure/common/lib/generated-types';
-import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServiceContext } from 'apollo-server-plugin-base';
+import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServerContext } from '@apollo/server';
 import { DocumentNode, GraphQLNamedType, isUnionType } from 'graphql';
 
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
@@ -23,29 +22,29 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
         }
     }
 
-    async serverWillStart(service: GraphQLServiceContext): Promise<void> {
+    async serverWillStart(service: GraphQLServerContext): Promise<void> {
         this.graphqlValueTransformer = new GraphqlValueTransformer(service.schema);
     }
 
-    async requestDidStart(): Promise<GraphQLRequestListener> {
+    async requestDidStart(): Promise<GraphQLRequestListener<any>> {
         return {
             willSendResponse: async requestContext => {
                 const { document } = requestContext;
                 if (document) {
-                    const data = requestContext.response.data;
-                    const req = requestContext.context.req;
-                    if (data) {
-                        this.prefixAssetUrls(req, document, data);
+                    const { body } = requestContext.response;
+                    const req = requestContext.contextValue.req;
+                    if (body.kind === 'single') {
+                        this.prefixAssetUrls(req, document, body.singleResult.data);
                     }
                 }
             },
         };
     }
 
-    private prefixAssetUrls(request: any, document: DocumentNode, data: Record<string, any>) {
+    private prefixAssetUrls(request: any, document: DocumentNode, data?: Record<string, unknown> | null) {
         const typeTree = this.graphqlValueTransformer.getOutputTypeTree(document);
         const toAbsoluteUrl = this.toAbsoluteUrl;
-        if (!toAbsoluteUrl) {
+        if (!toAbsoluteUrl || !data) {
             return;
         }
         this.graphqlValueTransformer.transformValues(typeTree, data, (value, type) => {

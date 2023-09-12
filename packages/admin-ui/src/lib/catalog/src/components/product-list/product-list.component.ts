@@ -25,14 +25,9 @@ export class ProductListComponent
     pendingSearchIndexUpdates = 0;
     readonly customFields = this.getCustomFieldConfig('Product');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilters([
-            {
-                name: 'id',
-                type: { kind: 'text' },
-                label: _('common.id'),
-                filterField: 'id',
-            },
             {
                 name: 'enabled',
                 type: { kind: 'boolean' },

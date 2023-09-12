@@ -4,6 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Administrator,
     DataService,
+    getCustomFieldsDefaults,
     GetProfileDetailDocument,
     LanguageCode,
     NotificationService,
@@ -50,9 +51,7 @@ export class ProfileComponent
         firstName: ['', Validators.required],
         lastName: ['', Validators.required],
         password: [''],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
 
     constructor(

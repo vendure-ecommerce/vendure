@@ -16,22 +16,22 @@
         [searchTermControl]="filterTermControl"
         [searchTermPlaceholder]="'customer.search-customers-by-email' | translate"
     ></vdr-dt2-search>
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-customerGroup="item">
             {{ customerGroup.id }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at" [hiddenByDefault]="true">
         <ng-template let-customer="item">
             {{ customer.createdAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.updated-at' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.updated-at' | translate" id="updated-at" [hiddenByDefault]="true">
         <ng-template let-customer="item">
             {{ customer.createdAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'customer.name' | translate" [optional]="false">
+    <vdr-dt2-column [heading]="'customer.name' | translate" id="name" [optional]="false">
         <ng-template let-customer="item">
             <a class="button-ghost" [routerLink]="['/customer/customers', customer.id]"
                 ><span> {{ customer.title }} {{ customer.firstName }} {{ customer.lastName }} </span>
@@ -39,12 +39,12 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.status' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.status' | translate" id="status" [hiddenByDefault]="true">
         <ng-template let-customer="item">
             <vdr-customer-status-label [customer]="customer" />
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'customer.email-address' | translate">
+    <vdr-dt2-column [heading]="'customer.email-address' | translate" id="email-address">
         <ng-template let-customer="item">
             {{ customer.emailAddress }}
         </ng-template>

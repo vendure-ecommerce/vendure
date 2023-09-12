@@ -4,17 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Asset,
-    BaseDetailComponent,
     CreateProductInput,
     createUpdatedTranslatable,
     DataService,
     findTranslation,
     getChannelCodeFromUserStatus,
-    getDefaultUiLanguage,
+    getCustomFieldsDefaults,
     GetProductDetailDocument,
     GetProductDetailQuery,
     GetProductWithVariantsQuery,
-    ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -84,9 +82,7 @@ export class ProductDetailComponent
         slug: ['', unicodePatternValidator(/^[\p{Letter}0-9._-]+$/)],
         description: '',
         facetValueIds: [[] as string[]],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     assetChanges: SelectedAssets = {};
     productChannels$: Observable<ProductDetailFragment['channels']>;

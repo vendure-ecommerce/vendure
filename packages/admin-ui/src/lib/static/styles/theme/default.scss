@@ -152,6 +152,7 @@
 
 
     --color-icon-button: var(--color-grey-600);
+    --color-icon-button-hover: var(--color-primary-600);
     --color-form-input-bg: white;
     --color-form-input-focus: var(--color-primary-100);
     --color-timeline-thread: var(--color-primary-100);
@@ -175,6 +176,7 @@
     --color-json-editor-key: var(--color-success-800);
     --color-json-editor-error: var(--color-error-700);
 
+    --color-table-header-border: var(--color-weight-200);
     --color-table-row-hover-bg: var(--color-weight-100);
     --color-table-row-active-bg: var(--color-primary-100);
     --color-table-row-separator: var(--color-weight-100);

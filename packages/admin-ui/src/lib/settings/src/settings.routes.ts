@@ -2,8 +2,6 @@ import { inject } from '@angular/core';
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    CanDeactivateDetailGuard,
-    createResolveData,
     DataService,
     GetGlobalSettingsDetailDocument,
     GetProfileDetailDocument,
@@ -11,8 +9,6 @@ import {
     PageService,
 } from '@vendure/admin-ui/core';
 import { of } from 'rxjs';
-import { ProfileComponent } from './components/profile/profile.component';
-import { ProfileResolver } from './providers/routing/profile-resolver';
 
 export const createRoutes = (pageService: PageService): Route[] => [
     {

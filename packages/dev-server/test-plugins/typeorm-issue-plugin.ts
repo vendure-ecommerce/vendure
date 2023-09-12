@@ -9,7 +9,7 @@ import {
     translateDeep,
     VendurePlugin,
 } from '@vendure/core';
-import { gql } from 'apollo-server-core';
+import { gql } from 'graphql-tag';
 
 // Testing this issue https://github.com/typeorm/typeorm/issues/7707
 @Resolver()

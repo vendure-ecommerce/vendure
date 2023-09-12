@@ -13,12 +13,12 @@
 }
 
 .title-label {
-    padding-right: 15px;
+    padding-inline-end: 15px;
     position: relative;
     &:after {
         content: '';
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
+        border-inline-start: 4px solid transparent;
+        border-inline-end: 4px solid transparent;
         border-top: 4px solid currentColor;
         opacity: 0.6;
         position: absolute;

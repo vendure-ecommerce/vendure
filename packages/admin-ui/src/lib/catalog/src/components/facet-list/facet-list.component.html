@@ -40,13 +40,13 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     ></vdr-dt2-search>
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true" [sort]="sorts.get('id')">
         <ng-template let-facet="item">
             {{ facet.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -55,7 +55,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -63,7 +63,7 @@
             {{ facet.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
         <ng-template let-facet="item">
             <a class="button-ghost" [routerLink]="['./', facet.id]"
                 ><span>{{ facet.name }}</span>
@@ -71,12 +71,12 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.code' | translate">
+    <vdr-dt2-column [heading]="'common.code' | translate" id="code">
         <ng-template let-facet="item">
             {{ facet.code }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.visibility' | translate">
+    <vdr-dt2-column [heading]="'common.visibility' | translate" id="visibility">
         <ng-template let-facet="item">
             <vdr-chip *ngIf="facet.isPrivate" colorType="warning">{{
                 'common.private' | translate
@@ -86,23 +86,26 @@
             }}</vdr-chip>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'catalog.values' | translate">
+    <vdr-dt2-column [heading]="'catalog.values' | translate" id="values">
         <ng-template let-facet="item">
             <div class="facet-values-list">
                 <vdr-facet-value-chip
-                    *ngFor="let value of facet.values | slice : 0 : displayLimit[facet.id] || 3"
+                    *ngFor="let value of facet.valueList.items | slice : 0 : displayLimit[facet.id] || 3"
                     [facetValue]="value"
                     [removable]="false"
                     [displayFacetName]="false"
                 ></vdr-facet-value-chip>
+                <vdr-chip *ngIf="displayLimit[facet.id] < facet.valueList.totalItems && (displayLimit[facet.id] || 0) === facet.valueList.items.length">
+                    ... + {{ facet.valueList.totalItems - facet.valueList.items.length }}
+                </vdr-chip>
                 <button
                     class="button-small"
-                    *ngIf="facet.values.length > initialLimit"
+                    *ngIf="facet.valueList.items.length > initialLimit"
                     (click)="toggleDisplayLimit(facet)"
                 >
-                    <ng-container *ngIf="(displayLimit[facet.id] || 0) < facet.values.length; else collapse">
+                    <ng-container *ngIf="(displayLimit[facet.id] || 0) < facet.valueList.items.length; else collapse">
                         <clr-icon shape="plus"></clr-icon>
-                        {{ facet.values.length - initialLimit }}
+                        {{ facet.valueList.totalItems - initialLimit }}
                     </ng-container>
                     <ng-template #collapse>
                         <clr-icon shape="minus"></clr-icon>

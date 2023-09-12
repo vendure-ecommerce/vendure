@@ -20,7 +20,7 @@ const loggerCtx = 'Populate';
  *
  * 1. Uses the {@link Populator} to populate the {@link InitialData}.
  * 2. If `productsCsvPath` is provided, uses {@link Importer} to populate Product data.
- * 3. Uses {@Populator} to populate collections specified in the {@link InitialData}.
+ * 3. Uses {@link Populator} to populate collections specified in the {@link InitialData}.
  *
  * @example
  * ```ts

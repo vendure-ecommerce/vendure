@@ -45,7 +45,7 @@ export class GraphqlValueTransformer {
      */
     transformValues(
         typeTree: TypeTree,
-        data: Record<string, any>,
+        data: Record<string, unknown>,
         visitorFn: (value: any, type: GraphQLNamedType) => any,
     ) {
         this.traverse(data, (key, value, path) => {

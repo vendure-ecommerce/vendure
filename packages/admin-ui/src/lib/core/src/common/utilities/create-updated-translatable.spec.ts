@@ -182,13 +182,52 @@ describe('createUpdatedTranslatable()', () => {
         });
     });
 
-    it('coerces empty customFields to correct type', () => {
+    it('coerces empty customFields to correct type (non-nullable)', () => {
         const customFieldConfig: CustomFieldConfig[] = [
-            { name: 'a', type: 'boolean', list: false },
-            { name: 'b', type: 'int', list: false },
-            { name: 'c', type: 'float', list: false },
-            { name: 'd', type: 'datetime', list: false },
-            { name: 'e', type: 'string', list: false },
+            { name: 'a', type: 'boolean', list: false, nullable: false },
+            { name: 'b', type: 'int', list: false, nullable: false },
+            { name: 'c', type: 'float', list: false, nullable: false },
+            { name: 'd', type: 'datetime', list: false, nullable: false },
+            { name: 'e', type: 'string', list: false, nullable: false },
+            { name: 'f', type: 'int', list: false, nullable: true },
+            { name: 'g', type: 'datetime', list: false, nullable: true },
+        ];
+
+        const formValue = {
+            customFields: {
+                a: '',
+                b: '',
+                c: '',
+                d: '',
+                e: '',
+                f: '',
+                g: '',
+            },
+        };
+
+        const result = createUpdatedTranslatable({
+            translatable: product,
+            updatedFields: formValue,
+            customFieldConfig,
+            languageCode: LanguageCode.en,
+        });
+
+        expect(result.customFields.a).toBe(false);
+        expect(result.customFields.b).toBe(0);
+        expect(result.customFields.c).toBe(0);
+        expect(result.customFields.d instanceof Date).toBe(true);
+        expect(result.customFields.e).toBe('');
+        expect(result.customFields.f).toBe(null);
+        expect(result.customFields.g).toBe(null);
+    });
+
+    it('coerces empty customFields to correct type (nullable)', () => {
+        const customFieldConfig: CustomFieldConfig[] = [
+            { name: 'a', type: 'boolean', list: false, nullable: true },
+            { name: 'b', type: 'int', list: false, nullable: true },
+            { name: 'c', type: 'float', list: false, nullable: true },
+            { name: 'd', type: 'datetime', list: false, nullable: true },
+            { name: 'e', type: 'string', list: false, nullable: true },
         ];
 
         const formValue = {
@@ -209,9 +248,9 @@ describe('createUpdatedTranslatable()', () => {
         });
 
         expect(result.customFields.a).toBe(false);
-        expect(result.customFields.b).toBe(0);
-        expect(result.customFields.c).toBe(0);
-        expect(result.customFields.d instanceof Date).toBe(true);
+        expect(result.customFields.b).toBe(null);
+        expect(result.customFields.c).toBe(null);
+        expect(result.customFields.d).toBe(null);
         expect(result.customFields.e).toBe('');
     });
 });

@@ -1,5 +1,5 @@
 import { LanguageCode, PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
-import { gql } from 'apollo-server-core';
+import { gql } from 'graphql-tag';
 
 import { braintreePaymentMethodHandler } from './braintree.handler';
 import { BraintreeResolver } from './braintree.resolver';

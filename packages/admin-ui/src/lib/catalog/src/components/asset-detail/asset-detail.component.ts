@@ -6,6 +6,7 @@ import {
     AssetDetailQueryDocument,
     AssetDetailQueryQuery,
     DataService,
+    getCustomFieldsDefaults,
     LanguageCode,
     NotificationService,
     TAG_FRAGMENT,
@@ -40,9 +41,7 @@ export class AssetDetailComponent
     detailForm = new FormGroup({
         name: new FormControl(''),
         tags: new FormControl([] as string[]),
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
 
     constructor(

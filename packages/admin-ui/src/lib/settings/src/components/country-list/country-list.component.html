@@ -39,13 +39,13 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     />
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-country="item">
             {{ country.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -54,7 +54,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -62,7 +62,7 @@
             {{ country.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
         <ng-template let-country="item">
             <a class="button-ghost" [routerLink]="['./', country.id]"
                 ><span>{{ country.name }}</span>
@@ -70,12 +70,12 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.code' | translate" [sort]="sorts.get('code')">
+    <vdr-dt2-column [heading]="'common.code' | translate" id="code" [sort]="sorts.get('code')">
         <ng-template let-country="item">
             {{ country.code }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.enabled' | translate">
+    <vdr-dt2-column [heading]="'common.enabled' | translate" id="enabled">
         <ng-template let-country="item">
             <vdr-chip *ngIf="country.enabled" colorType="success">{{
                 'common.enabled' | translate

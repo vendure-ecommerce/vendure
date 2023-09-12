@@ -117,8 +117,28 @@ export interface AdminUiExtension
     /**
      * @description
      * One or more Angular modules which extend the default Admin UI.
+     *
+     * @deprecated use `routes` instead of lazy modules, and `providers` instead of shared modules in combination
+     * with Angular standalone components.
      */
-    ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+    ngModules?: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+
+    /**
+     * @description
+     * Defines the paths to a file that exports an array of shared providers such as nav menu items, custom form inputs,
+     * custom detail components, action bar items, custom history entry components.
+     */
+    providers?: string[];
+
+    /**
+     * @description
+     * Defines routes that will be lazy-loaded at the `/extensions/` route. The filePath should point to a file
+     * relative to the `extensionPath` which exports an array of Angular route definitions.
+     */
+    routes?: Array<{
+        route: string;
+        filePath: string;
+    }>;
 
     /**
      * @description
@@ -134,8 +154,7 @@ export interface AdminUiExtension
      * well as linting.
      *
      * @example
-     * ```ts
-     * // packages/common-ui-module/src/ui/ui-shared.module.ts
+     * ```ts title="packages/common-ui-module/src/ui/ui-shared.module.ts"
      * import { NgModule } from '\@angular/core';
      * import { SharedModule } from '\@vendure/admin-ui/core';
      * import { CommonUiComponent } from './components/common-ui/common-ui.component';
@@ -150,13 +169,13 @@ export interface AdminUiExtension
      * export class CommonSharedUiModule {}
      * ```
      *
-     * ```ts
-     * // packages/common-ui-module/src/index.ts
+     * ```ts title="packages/common-ui-module/src/index.ts"
      * import path from 'path';
      *
      * import { AdminUiExtension } from '\@vendure/ui-devkit/compiler';
      *
      * export const uiExtensions: AdminUiExtension = {
+     *   // highlight-next-line
      *   pathAlias: '\@common-ui-module',     // this is the important part
      *   extensionPath: path.join(__dirname, 'ui'),
      *   ngModules: [
@@ -169,25 +188,26 @@ export interface AdminUiExtension
      * };
      * ```
      *
-     * ```json
-     * // tsconfig.json
+     * ```json title="tsconfig.json"
      * {
      *   "compilerOptions": {
      *     "baseUrl": ".",
      *     "paths": {
+     *       // highlight-next-line
      *       "\@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
      *     }
      *   }
      * }
      * ```
      *
-     * ```ts
-     * // packages/sample-plugin/src/ui/ui-extension.module.ts
+     * ```ts title="packages/sample-plugin/src/ui/ui-extension.module.ts"
      * import { NgModule } from '\@angular/core';
      * import { SharedModule } from '\@vendure/admin-ui/core';
+     * // highlight-start
      * // the import below works both in the context of the custom Admin UI app as well as the main project
      * // '\@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
      * import { CommonSharedUiModule, CommonUiComponent } from '\@common-ui-module/ui-shared.module';
+     * // highlight-end
      *
      * \@NgModule({
      *   imports: [
@@ -316,6 +336,27 @@ export interface UiExtensionCompilerOptions {
      * translations with which to extend the Admin UI.
      */
     extensions: Extension[];
+    /**
+     * @description
+     * Allows you to manually specify the path to the Angular CLI compiler script. This can be useful in scenarios
+     * where for some reason the built-in start/build scripts are unable to locate the `ng` command.
+     *
+     * This option should not usually be required.
+     *
+     * @example
+     * ```ts
+     * compileUiExtensions({
+     *     ngCompilerPath: path.join(__dirname, '../../node_modules/@angular/cli/bin/ng.js'),
+     *     outputPath: path.join(__dirname, '../admin-ui'),
+     *     extensions: [
+     *       // ...
+     *     ],
+     * })
+     * ```
+     *
+     * @since 2.1.0
+     */
+    ngCompilerPath?: string | undefined;
     /**
      * @description
      * Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI

@@ -1,4 +1,4 @@
-import { Type } from '@angular/core';
+import { Provider, Type } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 
@@ -25,4 +25,5 @@ export interface CustomDetailComponent {
 export interface CustomDetailComponentConfig {
     locationId: CustomDetailComponentLocationId;
     component: Type<CustomDetailComponent>;
+    providers?: Provider[];
 }

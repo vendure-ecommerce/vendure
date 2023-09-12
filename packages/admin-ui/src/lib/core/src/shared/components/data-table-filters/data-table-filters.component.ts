@@ -11,7 +11,7 @@ import {
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { FormInputComponent } from '../../../common/component-registry-types';
-import { DateOperators, LanguageCode } from '../../../common/generated-types';
+import { DateOperators } from '../../../common/generated-types';
 import { DataTableFilter, KindValueMap } from '../../../providers/data-table/data-table-filter';
 import {
     DataTableFilterCollection,
@@ -44,7 +44,11 @@ export class DataTableFiltersComponent implements AfterViewInit {
     @HostListener('window:keydown.f', ['$event'])
     onFKeyPress(event: KeyboardEvent) {
         if (event.target instanceof HTMLElement) {
-            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+            if (
+                event.target.tagName === 'INPUT' ||
+                event.target.tagName === 'TEXTAREA' ||
+                event.target.classList.contains('vdr-prosemirror')
+            ) {
                 return;
             }
         }
@@ -71,6 +75,20 @@ export class DataTableFiltersComponent implements AfterViewInit {
 
     selectFilter(filter: DataTableFilter, value?: any) {
         this.selectedFilter = filter;
+        if (filter.isId()) {
+            this.formControl = new FormGroup(
+                {
+                    operator: new FormControl(value?.operator ?? 'eq'),
+                    term: new FormControl(value?.term ?? ''),
+                },
+                control => {
+                    if (!control.value.term) {
+                        return { noSelection: true };
+                    }
+                    return null;
+                },
+            );
+        }
         if (filter.isText()) {
             this.formControl = new FormGroup(
                 {
@@ -92,7 +110,7 @@ export class DataTableFiltersComponent implements AfterViewInit {
                     amount: new FormControl(value?.amount ?? ''),
                 },
                 control => {
-                    if (!control.value.amount) {
+                    if (control.value.amount == null) {
                         return { noSelection: true };
                     }
                     return null;
@@ -108,15 +126,19 @@ export class DataTableFiltersComponent implements AfterViewInit {
         } else if (filter.isDateRange()) {
             this.formControl = new FormGroup(
                 {
+                    mode: new FormControl('relative'),
+                    relativeValue: new FormControl(value?.relativeValue ?? 30),
+                    relativeUnit: new FormControl(value?.relativeUnit ?? 'day'),
                     start: new FormControl(value?.start ?? null),
                     end: new FormControl(value?.end ?? null),
                 },
                 control => {
                     const val = control.value;
-                    if (val.start && val.end && val.start > val.end) {
+                    const mode = val.mode;
+                    if (mode === 'range' && val.start && val.end && val.start > val.end) {
                         return { invalidRange: true };
                     }
-                    if (!val.start && !val.end) {
+                    if (mode === 'range' && !val.start && !val.end) {
                         return { noSelection: true };
                     }
                     return null;
@@ -144,23 +166,18 @@ export class DataTableFiltersComponent implements AfterViewInit {
                 value = !!this.formControl.value as KindValueMap[typeof type.kind]['raw'];
                 break;
             case 'dateRange': {
-                let dateOperators: DateOperators;
+                const mode = this.formControl.value.mode ?? 'relative';
+                const relativeValue = this.formControl.value.relativeValue ?? 30;
+                const relativeUnit = this.formControl.value.relativeUnit ?? 'day';
                 const start = this.formControl.value.start ?? undefined;
                 const end = this.formControl.value.end ?? undefined;
-                if (start && end) {
-                    dateOperators = {
-                        between: { start, end },
-                    };
-                } else if (start) {
-                    dateOperators = {
-                        after: start,
-                    };
-                } else {
-                    dateOperators = {
-                        before: end,
-                    };
-                }
-                value = { start, end } as KindValueMap[typeof type.kind]['raw'];
+                value = {
+                    mode,
+                    relativeValue,
+                    relativeUnit,
+                    start,
+                    end,
+                } as KindValueMap[typeof type.kind]['raw'];
                 break;
             }
             case 'number':
@@ -177,6 +194,12 @@ export class DataTableFiltersComponent implements AfterViewInit {
                 value = options as KindValueMap[typeof type.kind]['raw'];
                 break;
             case 'text':
+                value = {
+                    operator: this.formControl.value.operator,
+                    term: this.formControl.value.term,
+                } as KindValueMap[typeof type.kind]['raw'];
+                break;
+            case 'id':
                 value = {
                     operator: this.formControl.value.operator,
                     term: this.formControl.value.term,

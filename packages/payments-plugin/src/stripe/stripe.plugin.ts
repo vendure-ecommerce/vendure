@@ -1,4 +1,5 @@
 import { LanguageCode, PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
+import { json } from 'body-parser';
 import { gql } from 'graphql-tag';
 
 import { STRIPE_PLUGIN_OPTIONS } from './constants';
@@ -90,7 +91,7 @@ import { StripePluginOptions } from './types';
  *    ```
  *    ```ts
  *    // CheckoutForm.tsx
- *    import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
+ *    import { useStripe, useElements, PaymentElement } from '\@stripe/react-stripe-js';
  *    import { FormEvent } from 'react';
  *
  *    export const CheckoutForm = ({ orderCode }: { orderCode: string }) => {

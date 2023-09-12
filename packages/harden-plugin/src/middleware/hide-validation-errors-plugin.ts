@@ -1,5 +1,5 @@
-import { ValidationError } from 'apollo-server-core';
-import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServiceContext } from 'apollo-server-plugin-base';
+import { ApolloServerPlugin, GraphQLRequestListener } from '@apollo/server';
+import { GraphQLError } from 'graphql/error/index';
 
 /**
  * @description
@@ -7,14 +7,14 @@ import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServiceContext } fro
  * Based on ideas discussed in https://github.com/apollographql/apollo-server/issues/3919
  */
 export class HideValidationErrorsPlugin implements ApolloServerPlugin {
-    async requestDidStart(): Promise<GraphQLRequestListener> {
+    async requestDidStart(): Promise<GraphQLRequestListener<any>> {
         return {
             willSendResponse: async requestContext => {
-                const { errors, context } = requestContext;
+                const { errors } = requestContext;
                 if (errors) {
                     (requestContext.response as any).errors = errors.map(err => {
                         if (err.message.includes('Did you mean')) {
-                            return new ValidationError('Invalid request');
+                            return new GraphQLError('Invalid request');
                         } else {
                             return err;
                         }

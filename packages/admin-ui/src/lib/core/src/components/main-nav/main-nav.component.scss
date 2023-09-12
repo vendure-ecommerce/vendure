@@ -30,7 +30,7 @@ nav.main-nav {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        padding-right: calc(var(--space-unit) * 4);
+        padding-inline-end: calc(var(--space-unit) * 4);
     }
     .nav-group-header {
         display: block;
@@ -44,7 +44,7 @@ nav.main-nav {
         display: flex;
         align-items: center;
         line-height: 100%;
-        border-right: 2px solid transparent;
+        border-inline-end: 2px solid transparent;
         font-size: var(--font-size-sm);
         padding: var(--space-unit) 0;
         transition: border 0.1s, color 0.1s;
@@ -72,7 +72,7 @@ nav.main-nav {
 
 .nav-list clr-icon {
     flex-shrink: 0;
-    margin-right: var(--space-unit);
+    margin-inline-end: var(--space-unit);
 }
 
 .nav-group {

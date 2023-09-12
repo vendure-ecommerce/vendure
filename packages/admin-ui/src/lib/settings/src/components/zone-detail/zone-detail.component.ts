@@ -4,6 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     CreateZoneInput,
     DataService,
+    getCustomFieldsDefaults,
     GetZoneDetailDocument,
     GetZoneDetailQuery,
     LanguageCode,
@@ -42,9 +43,7 @@ export class ZoneDetailComponent
     customFields = this.getCustomFieldConfig('Zone');
     detailForm = this.formBuilder.group({
         name: ['', Validators.required],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateZone];
 

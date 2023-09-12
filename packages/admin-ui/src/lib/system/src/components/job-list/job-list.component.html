@@ -56,22 +56,22 @@
         (pageChange)="setPageNumber($event)"
         (itemsPerPageChange)="setItemsPerPage($event)"
     >
-        <vdr-dt2-column [heading]="'common.id' | translate">
+        <vdr-dt2-column [heading]="'common.id' | translate" id="id">
             <ng-template let-job="item">
                 {{ job.id }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.created-at' | translate">
+        <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at">
             <ng-template let-job="item">
                 {{ job.createdAt | timeAgo }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-queue-name' | translate" [optional]="false">
+        <vdr-dt2-column [heading]="'system.job-queue-name' | translate" id="job-queue-name" [optional]="false">
             <ng-template let-job="item">
                 <vdr-chip [colorFrom]="job.queueName">{{ job.queueName }}</vdr-chip>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-data' | translate" [optional]="false">
+        <vdr-dt2-column [heading]="'system.job-data' | translate" id="job-data" [optional]="false">
             <ng-template let-job="item">
                 <vdr-dropdown *ngIf="job.data">
                     <button
@@ -89,7 +89,7 @@
                 </vdr-dropdown>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-state' | translate">
+        <vdr-dt2-column [heading]="'system.job-state' | translate" id="job-state">
             <ng-template let-job="item">
                 <vdr-job-state-label [job]="job"></vdr-job-state-label>
                 <div *ngIf="job.state === 'FAILED'" class="retry-info">after {{ job.attempts }} attempts</div>
@@ -98,12 +98,12 @@
                 </div>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-duration' | translate">
+        <vdr-dt2-column [heading]="'system.job-duration' | translate" id="job-duration">
             <ng-template let-job="item">
                 {{ job.duration | duration }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-result' | translate">
+        <vdr-dt2-column [heading]="'system.job-result' | translate" id="job-result">
             <ng-template let-job="item">
                 <vdr-dropdown *ngIf="hasResult(job)">
                     <button class="btn btn-link btn-sm details-button" vdrDropdownTrigger>

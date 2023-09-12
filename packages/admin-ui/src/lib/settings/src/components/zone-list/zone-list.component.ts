@@ -51,6 +51,7 @@ export class ZoneListComponent
     @ViewChild(ZoneMemberListComponent) zoneMemberList: ZoneMemberListComponent;
     readonly customFields = this.serverConfigService.getCustomFieldsFor('Zone');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'name',

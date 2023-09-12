@@ -45,13 +45,13 @@
                 [searchTermControl]="searchTermControl"
                 [searchTermPlaceholder]="'common.search-by-name' | translate"
             ></vdr-dt2-search>
-            <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+            <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
                 <ng-template let-collection="item">
                     {{ collection.id }}
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.created-at' | translate"
+                [heading]="'common.created-at' | translate" id="created-at"
                 [hiddenByDefault]="true"
                 [sort]="sorts.get('createdAt')"
             >
@@ -60,7 +60,7 @@
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.updated-at' | translate"
+                [heading]="'common.updated-at' | translate" id="updated-at"
                 [hiddenByDefault]="true"
                 [sort]="sorts.get('updatedAt')"
             >
@@ -69,7 +69,7 @@
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.position' | translate"
+                [heading]="'common.position' | translate" id="position"
                 [hiddenByDefault]="true"
                 [sort]="sorts.get('position')"
             >
@@ -78,7 +78,7 @@
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.name' | translate"
+                [heading]="'common.name' | translate" id="name"
                 [optional]="false"
                 [sort]="sorts.get('name')"
             >
@@ -104,7 +104,7 @@
                     </a>
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.breadcrumb' | translate">
+            <vdr-dt2-column [heading]="'common.breadcrumb' | translate" id="breadcrumb">
                 <ng-template let-collection="item">
                     <div class="breadcrumb">
                         <ng-container *ngIf="collection | collectionBreadcrumb as breadcrumbs">
@@ -118,12 +118,12 @@
                     </div>
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.slug' | translate" [sort]="sorts.get('slug')">
+            <vdr-dt2-column [heading]="'common.slug' | translate" id="slug" [sort]="sorts.get('slug')">
                 <ng-template let-collection="item">
                     {{ collection.slug }}
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.visibility' | translate">
+            <vdr-dt2-column [heading]="'common.visibility' | translate" id="visibility">
                 <ng-template let-collection="item">
                     <vdr-chip *ngIf="collection.isPrivate" colorType="warning">{{
                         'common.private' | translate
@@ -133,7 +133,7 @@
                         }}</vdr-chip>
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.view-contents' | translate" [optional]="false">
+            <vdr-dt2-column [heading]="'common.view-contents' | translate" id="view-contents" [optional]="false">
                 <ng-template let-collection="item">
                     <a
                         class="button-small bg-weight-150"

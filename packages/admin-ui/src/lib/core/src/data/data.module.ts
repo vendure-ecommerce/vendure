@@ -74,6 +74,7 @@ export function createApollo(
                         headers.authorization = `Bearer ${authToken}`;
                     }
                 }
+                headers['Apollo-Require-Preflight'] = 'true';
                 return { headers };
             }),
             createUploadLink({

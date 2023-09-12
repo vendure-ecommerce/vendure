@@ -16,12 +16,12 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'common.search-by-name' | translate"
     ></vdr-dt2-search>
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-collection="item">
             {{ collection.id }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false">
+    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false">
         <ng-template let-collection="item" let-depth="depth">
             <div [ngClass]="'indent-' + depth"></div>
             <clr-icon
@@ -46,7 +46,7 @@
             </button>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.breadcrumb' | translate">
+    <vdr-dt2-column [heading]="'common.breadcrumb' | translate" id="breadcrumb">
         <ng-template let-collection="item">
             <div class="breadcrumb">
                 <ng-container *ngIf="collection | collectionBreadcrumb as breadcrumbs">
@@ -60,7 +60,7 @@
             </div>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.slug' | translate">
+    <vdr-dt2-column [heading]="'common.slug' | translate" id="slug">
         <ng-template let-collection="item">
             {{ collection.slug }}
         </ng-template>

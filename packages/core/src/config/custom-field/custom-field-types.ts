@@ -96,7 +96,12 @@ export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', Graph
 export type RelationCustomFieldConfig = TypedCustomFieldConfig<
     'relation',
     Omit<GraphQLRelationCustomFieldConfig, 'entity' | 'scalarFields'>
-> & { entity: Type<VendureEntity>; graphQLType?: string; eager?: boolean };
+> & {
+    entity: Type<VendureEntity>;
+    graphQLType?: string;
+    eager?: boolean;
+    inverseSide?: string | ((object: VendureEntity) => any);
+};
 
 /**
  * @description

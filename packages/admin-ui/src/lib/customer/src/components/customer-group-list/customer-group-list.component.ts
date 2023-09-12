@@ -54,6 +54,7 @@ export class CustomerGroupListComponent
         filterTerm: '',
     });
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'name',

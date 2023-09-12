@@ -30,7 +30,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-left: -1px;
+    margin-inline-start: -1px;
     z-index: 10;
 
     &.hidden {
@@ -41,8 +41,8 @@
         align-items: center;
         justify-content: center;
         flex: 1;
-        border-left: 1px solid var(--separator-border);
-        border-right: 1px solid var(--separator-border);
+        border-inline-start: 1px solid var(--separator-border);
+        border-inline-end: 1px solid var(--separator-border);
         cursor: ew-resize;
         transition: background-color 0.2s;
     }
@@ -70,8 +70,8 @@
     display: flex;
     justify-content: space-between;
     padding: calc(var(--space-unit) * 1);
-    padding-left: var(--surface-margin-left);
-    padding-right: 4px;
+    padding-inline-start: var(--surface-margin-left);
+    padding-inline-end: 4px;
 }
 .right-panel {
     height: 100%;

@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MutationUpdaterFn, SingleExecutionResult, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -20,11 +19,7 @@ import { transformRelationCustomFieldInputs } from '../utils/transform-relation-
 
 @Injectable()
 export class BaseDataService {
-    constructor(
-        private apollo: Apollo,
-        private httpClient: HttpClient,
-        private serverConfigService: ServerConfigService,
-    ) {}
+    constructor(private apollo: Apollo, private serverConfigService: ServerConfigService) {}
 
     private get customFields(): CustomFields {
         return this.serverConfigService.serverConfig.customFieldConfig || {};

@@ -34,13 +34,13 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     />
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-administrator="item">
             {{ administrator.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -49,7 +49,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -57,7 +57,7 @@
             {{ administrator.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('lastName')">
+    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('lastName')">
         <ng-template let-administrator="item">
             <a class="button-ghost" [routerLink]="['./', administrator.id]"
                 ><span>{{ administrator.firstName }} {{ administrator.lastName }}</span>
@@ -65,12 +65,12 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'settings.email-address' | translate" [sort]="sorts.get('emailAddress')">
+    <vdr-dt2-column [heading]="'settings.email-address' | translate" id="email-address" [sort]="sorts.get('emailAddress')">
         <ng-template let-administrator="item">
             {{ administrator.emailAddress }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'settings.roles' | translate">
+    <vdr-dt2-column [heading]="'settings.roles' | translate" id="roles">
         <ng-template let-administrator="item">
             <vdr-chip *ngFor="let role of administrator.user.roles">{{ role.description }}</vdr-chip>
         </ng-template>

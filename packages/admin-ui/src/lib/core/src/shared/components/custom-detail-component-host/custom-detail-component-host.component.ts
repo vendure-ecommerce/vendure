@@ -31,8 +31,8 @@ export class CustomDetailComponentHostComponent implements OnInit, OnDestroy {
 
     constructor(
         private viewContainerRef: ViewContainerRef,
-        private componentFactoryResolver: ComponentFactoryResolver,
         private customDetailComponentService: CustomDetailComponentService,
+        private injector: Injector,
     ) {}
 
     ngOnInit(): void {
@@ -41,8 +41,12 @@ export class CustomDetailComponentHostComponent implements OnInit, OnDestroy {
         );
 
         for (const config of customComponents) {
-            const factory = this.componentFactoryResolver.resolveComponentFactory(config.component);
-            const componentRef = this.viewContainerRef.createComponent(factory);
+            const componentRef = this.viewContainerRef.createComponent(config.component, {
+                injector: Injector.create({
+                    parent: this.injector,
+                    providers: config.providers ?? [],
+                }),
+            });
             componentRef.instance.entity$ = this.entity$;
             componentRef.instance.detailForm = this.detailForm;
             this.componentRefs.push(componentRef);

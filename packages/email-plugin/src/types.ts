@@ -354,6 +354,7 @@ export interface EmailTemplateConfig {
 export interface LoadTemplateInput {
     type: string;
     templateName: string;
+    templateVars: any;
 }
 
 export interface Partial {
@@ -368,7 +369,7 @@ export interface Partial {
  *
  * @example
  * ```ts
- * import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+ * import { EmailPlugin, TemplateLoader } from '\@vendure/email-plugin';
  *
  * class MyTemplateLoader implements TemplateLoader {
  *      loadTemplate(injector, ctx, { type, templateName }){

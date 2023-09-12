@@ -24,6 +24,7 @@ export const GET_TAX_RATE_LIST = gql`
 export class TaxRateListComponent extends TypedBaseListComponent<typeof GetTaxRateListDocument, 'taxRates'> {
     readonly customFields = this.getCustomFieldConfig('TaxRate');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'name',

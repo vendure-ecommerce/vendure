@@ -137,6 +137,33 @@ export class FacetValueService {
             .then(values => values.map(facetValue => this.translator.translate(facetValue, ctx)));
     }
 
+    /**
+     * @description
+     * Returns all FacetValues belonging to the Facet with the given id.
+     */
+    findByFacetIdList(
+        ctx: RequestContext,
+        id: ID,
+        options?: ListQueryOptions<FacetValue>,
+        relations?: RelationPaths<FacetValue>,
+    ): Promise<PaginatedList<Translated<FacetValue>>> {
+        return this.listQueryBuilder
+            .build(FacetValue, options, {
+                ctx,
+                relations: relations ?? ['facet'],
+                channelId: ctx.channelId,
+                entityAlias: 'facetValue',
+            })
+            .andWhere('facetValue.facetId = :id', { id })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['facet'])),
+                    totalItems,
+                };
+            });
+    }
+
     async create(
         ctx: RequestContext,
         facet: Facet,

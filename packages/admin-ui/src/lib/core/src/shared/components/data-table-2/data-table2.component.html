@@ -1,11 +1,13 @@
-<div class="bulk-actions">
-    <ng-content select="vdr-bulk-action-menu"></ng-content>
-</div>
+<vdr-data-table-filter-presets
+    *ngIf="filters"
+    [filters]="filters"
+    [dataTableId]="id"
+></vdr-data-table-filter-presets>
 <div class="table-wrapper">
-    <table
-        class=""
-        [class.no-select]="disableSelect"
-    >
+    <div class="bulk-actions">
+        <ng-content select="vdr-bulk-action-menu"></ng-content>
+    </div>
+    <table class="" [class.no-select]="disableSelect">
         <thead [class.items-selected]="selectionManager?.selection.length">
             <tr class="heading-row">
                 <th *ngIf="selectionManager" class="selection-col">
@@ -21,7 +23,16 @@
                     [class.expand]="column.expand"
                 >
                     <div class="cell-content" [ngClass]="column.align">
-                        <span>{{ column.heading }}</span>
+                        <vdr-ui-extension-point
+                            [locationId]="id"
+                            [metadata]="column.id"
+                            api="dataTable"
+                            [topPx]="-6"
+                            [leftPx]="-24"
+                            display="block"
+                        >
+                            <span>{{ column.heading }}</span>
+                        </vdr-ui-extension-point>
                         <div *ngIf="column.sort as sort" class="sort-toggle">
                             <button (click)="sort.toggleSortOrder()" [class.active]="sort.sortOrder">
                                 <clr-icon *ngIf="!sort.sortOrder" shape="two-way-arrows left"></clr-icon>
@@ -73,6 +84,10 @@
                                     [filters]="filters"
                                     class="mt-1"
                                 ></vdr-data-table-filters>
+                                <vdr-add-filter-preset-button
+                                    [filters]="filters"
+                                    [dataTableId]="id"
+                                ></vdr-add-filter-preset-button>
                             </div>
                         </ng-container>
                     </div>
@@ -105,8 +120,21 @@
                 <td *ngFor="let column of visibleSortedColumns" [class.active]="activeIndex === i">
                     <div class="cell-content" [ngClass]="column.align">
                         <ng-container
-                            *ngTemplateOutlet="column.template; context: { item: item, index: i }"
-                        ></ng-container>
+                            *ngIf="customComponents.get(column.id) as componentConfig; else defaultComponent"
+                        >
+                            <ng-container
+                                *ngComponentOutlet="
+                                    componentConfig.config.component;
+                                    inputs: { rowItem: item };
+                                    injector: componentConfig.injector
+                                "
+                            ></ng-container>
+                        </ng-container>
+                        <ng-template #defaultComponent>
+                            <ng-container
+                                *ngTemplateOutlet="column.template; context: { item: item, index: i }"
+                            ></ng-container>
+                        </ng-template>
                     </div>
                 </td>
                 <td [class.active]="activeIndex === i"><!-- column select --></td>

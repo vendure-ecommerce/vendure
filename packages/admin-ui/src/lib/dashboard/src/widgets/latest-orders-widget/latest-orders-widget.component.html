@@ -1,5 +1,5 @@
 <vdr-data-table-2 [items]="latestOrders$ | async" id="latest-orders-widget-list">
-    <vdr-dt2-column [heading]="'common.code' | translate">
+    <vdr-dt2-column [heading]="'common.code' | translate" id="code">
         <ng-template let-order="item">
             <a class="button-ghost" [routerLink]="['/orders/', order.id]"
                 ><span>{{ order.code }}</span>
@@ -7,22 +7,22 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'order.state' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'order.state' | translate" id="state" [hiddenByDefault]="true">
         <ng-template let-order="item">
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'customer.customer' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'customer.customer' | translate" id="customer" [hiddenByDefault]="true">
         <ng-template let-order="item">
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'order.total' | translate">
+    <vdr-dt2-column [heading]="'order.total' | translate" id="total">
         <ng-template let-order="item">
             {{ order.totalWithTax | localeCurrency : order.currencyCode }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'order.placed-at' | translate">
+    <vdr-dt2-column [heading]="'order.placed-at' | translate" id="placed-at">
         <ng-template let-order="item">
             {{ order.orderPlacedAt | timeAgo }}
         </ng-template>

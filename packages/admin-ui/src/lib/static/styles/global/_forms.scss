@@ -65,7 +65,7 @@ input:not([type='checkbox']):not([type='radio']),
 textarea,
 select {
     border-radius: var(--border-radius-input) !important;
-    border: 1px solid var(--color-weight-300);
+    border: 1px solid var(--color-weight-200);
     padding: 5px !important;
     transition: background-color 0.2s, box-shadow 0.2s !important;
     &:focus {
@@ -132,7 +132,7 @@ clr-input-container.expand {
 }
 
 select {
-    padding-right: 24px !important;
+    padding-inline-end: 24px !important;
 }
 
 .select::after,
@@ -149,7 +149,7 @@ select {
     color: var(--color-text-100);
     line-height: initial;
     position: initial !important;
-    border: 1px solid var(--color-weight-300);
+    border: 1px solid var(--color-weight-200);
 }
 .ng-select .ng-select-container .ng-value-container {
     //padding-top: 0;
@@ -171,7 +171,7 @@ select {
 .ng-select.ng-select-single > .ng-select-container {
     //padding-top: 9px;
     input {
-        padding-left: 0 !important;
+        padding-inline-start: 0 !important;
     }
 }
 .ng-select.ng-select-focused > .ng-select-container {
