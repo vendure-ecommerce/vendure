@@ -27,7 +27,7 @@
         "@vendure/testing": "2.1.0-next.4",
         "@vendure/ui-devkit": "2.1.0-next.4",
         "commander": "^7.1.0",
-        "concurrently": "^5.0.0",
+        "concurrently": "^8.2.1",
         "csv-stringify": "^5.3.3",
         "dayjs": "^1.11.7",
         "progress": "^2.0.3"
