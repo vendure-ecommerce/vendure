@@ -1,5 +1,5 @@
+import { cancel, confirm, intro, isCancel, multiselect, outro, text } from '@clack/prompts';
 import { camelCase, constantCase, paramCase, pascalCase } from 'change-case';
-import { Command } from 'commander';
 import * as fs from 'fs-extra';
 import path from 'path';
 
@@ -16,7 +16,6 @@ import { GeneratePluginOptions, TemplateContext } from './types';
 const cancelledMessage = 'Plugin setup cancelled.';
 
 export async function newPlugin() {
-    const { cancel, confirm, intro, isCancel, multiselect, text } = await import('@clack/prompts');
     const options: GeneratePluginOptions = { name: '', customEntityName: '' } as any;
     intro('Scaffolding a new Vendure plugin!');
     if (!options.name) {
@@ -177,7 +176,6 @@ export async function generatePlugin(options: GeneratePluginOptions) {
         fs.writeFileSync(filePath, rendered);
     });
 
-    const { outro } = await import('@clack/prompts');
     outro('✅ Plugin scaffolding complete!');
 }
 

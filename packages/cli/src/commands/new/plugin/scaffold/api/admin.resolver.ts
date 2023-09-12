@@ -5,6 +5,7 @@ export function renderAdminResolverWithEntity(context: TemplateContext) {
 import { Args, Resolver, Mutation } from '@nestjs/graphql';
 import { Allow, Ctx, RequestContext, Transaction, Permission } from '@vendure/core';
 
+import { ${context.entity.instanceName}Permission } from '../constants';
 import { ${context.service.className} } from '../services/${context.service.fileName}';
 import { ${context.entity.className} } from '../entities/${context.entity.fileName}';
 
@@ -19,14 +20,14 @@ export class AdminResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.SuperAdmin)
+    @Allow(${context.entity.instanceName}Permission.Create)
     create${context.entity.className}(@Ctx() ctx: RequestContext, @Args() args: { input: Create${context.customEntityName}Input }): Promise<${context.entity.className}> {
         return this.${context.service.instanceName}.create(ctx, args.input);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.SuperAdmin)
+    @Allow(${context.entity.instanceName}Permission.Update)
     update${context.entity.className}(
         @Ctx() ctx: RequestContext,
         @Args() args: { input: Update${context.customEntityName}Input },

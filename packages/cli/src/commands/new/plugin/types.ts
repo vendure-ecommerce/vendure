@@ -2,6 +2,7 @@ export interface GeneratePluginOptions {
     name: string;
     withCustomEntity: boolean;
     withApiExtensions: boolean;
+    withAdminUi: boolean;
     customEntityName: string;
 }
 

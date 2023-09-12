@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "node",
     "declaration": true,
     "removeComments": true,
     "strictPropertyInitialization": false,
