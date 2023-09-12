@@ -9,7 +9,7 @@ import { ComponentRegistryService } from '../providers/component-registry/compon
  * a custom field.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   declarations: [MyCustomFieldControl],
@@ -23,7 +23,7 @@ import { ComponentRegistryService } from '../providers/component-registry/compon
  * This input component can then be used in a custom field:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const config = {
  *   // ...
  *   customFields: {
@@ -41,7 +41,7 @@ import { ComponentRegistryService } from '../providers/component-registry/compon
  * or with an argument of a {@link ConfigurableOperationDef}:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * args: {
  *   rrp: { type: 'int', ui: { component: 'my-custom-input' } },
  * }

@@ -11,7 +11,7 @@ import { NavBuilderService } from '../providers/nav-builder/nav-builder.service'
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   providers: [
@@ -51,7 +51,7 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [SharedModule],
  *   providers: [

@@ -98,9 +98,18 @@ export interface ActionBarItem {
     label: string;
     locationId: ActionBarLocationId;
     /**
+     * @description
+     * Deprecated since v2.1.0 - use `buttonState` instead.
      * @deprecated - use `buttonState` instead.
      */
     disabled?: Observable<boolean>;
+    /**
+     * @description
+     * A function which returns an observable of the button state, allowing you to
+     * dynamically enable/disable or show/hide the button.
+     *
+     * @since 2.1.0
+     */
     buttonState?: (context: ActionBarContext) => Observable<ActionBarButtonState>;
     onClick?: (event: MouseEvent, context: ActionBarContext) => void;
     routerLink?: RouterLinkDefinition;
