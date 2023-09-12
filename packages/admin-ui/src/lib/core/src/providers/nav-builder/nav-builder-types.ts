@@ -1,7 +1,8 @@
+import { Injector } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { ActionBarLocationId, UIExtensionLocationId } from '../../common/component-registry-types';
+import { ActionBarLocationId } from '../../common/component-registry-types';
 import { DataService } from '../../data/providers/data.service';
 import { NotificationService } from '../notification/notification.service';
 
@@ -74,10 +75,16 @@ export interface NavMenuSection {
  *
  * @docsCategory action-bar
  */
-export interface OnClickContext {
+export interface ActionBarContext {
     route: ActivatedRoute;
+    injector: Injector;
     dataService: DataService;
     notificationService: NotificationService;
+}
+
+export interface ActionBarButtonState {
+    disabled: boolean;
+    visible: boolean;
 }
 
 /**
@@ -90,8 +97,12 @@ export interface ActionBarItem {
     id: string;
     label: string;
     locationId: ActionBarLocationId;
+    /**
+     * @deprecated - use `buttonState` instead.
+     */
     disabled?: Observable<boolean>;
-    onClick?: (event: MouseEvent, context: OnClickContext) => void;
+    buttonState?: (context: ActionBarContext) => Observable<ActionBarButtonState>;
+    onClick?: (event: MouseEvent, context: ActionBarContext) => void;
     routerLink?: RouterLinkDefinition;
     buttonColor?: 'primary' | 'success' | 'warning';
     buttonStyle?: 'solid' | 'outline' | 'link';
