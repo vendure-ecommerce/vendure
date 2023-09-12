@@ -7,6 +7,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { Permission } from '../../common/generated-types';
 
 import {
+    ActionBarContext,
     ActionBarItem,
     NavMenuBadgeType,
     NavMenuItem,
@@ -85,9 +86,12 @@ export class NavBuilderService {
         }
     }
 
-    getRouterLink(config: { routerLink?: RouterLinkDefinition }, route: ActivatedRoute): string[] | null {
+    getRouterLink(
+        config: { routerLink?: RouterLinkDefinition; context: ActionBarContext },
+        route: ActivatedRoute,
+    ): string[] | null {
         if (typeof config.routerLink === 'function') {
-            return config.routerLink(route);
+            return config.routerLink(route, config.context);
         }
         if (Array.isArray(config.routerLink)) {
             return config.routerLink;

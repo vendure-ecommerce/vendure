@@ -78,7 +78,10 @@ export class ActionBarItemsComponent implements OnInit, OnChanges {
     }
 
     getRouterLink(item: ActionBarItem): any[] | null {
-        return this.navBuilderService.getRouterLink(item, this.route);
+        return this.navBuilderService.getRouterLink(
+            { routerLink: item.routerLink, context: this.createContext() },
+            this.route,
+        );
     }
 
     getButtonStyles(item: ActionBarItem): string[] {

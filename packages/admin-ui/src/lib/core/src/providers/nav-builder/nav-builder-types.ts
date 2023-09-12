@@ -71,7 +71,7 @@ export interface NavMenuSection {
 
 /**
  * @description
- * Utilities available to the onClick handler of an ActionBarItem.
+ * Providers available to the onClick handler of an {@link ActionBarItem} or {@link NavMenuItem}.
  *
  * @docsCategory action-bar
  */
@@ -119,4 +119,10 @@ export interface ActionBarItem {
     requiresPermission?: string | string[];
 }
 
-export type RouterLinkDefinition = ((route: ActivatedRoute) => any[]) | any[];
+/**
+ * @description
+ * A function which returns the router link for an {@link ActionBarItem} or {@link NavMenuItem}.
+ *
+ * @docsCategory action-bar
+ */
+export type RouterLinkDefinition = ((route: ActivatedRoute, context: ActionBarContext) => any[]) | any[];
