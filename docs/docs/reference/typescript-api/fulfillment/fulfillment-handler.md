@@ -52,9 +52,9 @@ export const shipomaticFulfillmentHandler = new FulfillmentHandler({
     shipomatic = new ShipomaticClient(API_KEY);
   },
 
-  createFulfillment: async (ctx, orders, orderItems, args) => {
+  createFulfillment: async (ctx, orders, lines, args) => {
 
-     const shipment = getShipmentFromOrders(orders, orderItems);
+     const shipment = getShipmentFromOrders(orders, lines);
 
      try {
        const transaction = await shipomatic.transaction.create({

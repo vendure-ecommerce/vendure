@@ -1,21 +1,26 @@
 ---
 title: 'Custom Form Inputs'
-weight: 5
 ---
 
-# Custom Form Inputs
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-Another way to extend the Admin UI app is to define custom form input components for manipulating any [Custom Fields](/guides/developer-guide/custom-fields/) you have defined on your entities as well as [configurable args](/reference/typescript-api/configurable-operation-def/config-args/) used by custom [Configurable Operations](/guides/developer-guide/strategies-configurable-operations/#configurable-operations).
+You can define custom Angular or React components which can be used to render [Custom Fields](/guides/developer-guide/custom-fields/) you have defined on your entities as well as [configurable args](/reference/typescript-api/configurable-operation-def/config-args/) used by custom [Configurable Operations](/guides/developer-guide/strategies-configurable-operations/#configurable-operations).
 
 ## For Custom Fields
 
 Let's say you define a custom "intensity" field on the Product entity:
 
 ```ts title="src/vendure-config.ts"
-customFields: {
-    Product: [
-        {name: 'intensity', type: 'int', min: 0, max: 100, defaultValue: 0},
-    ],
+import { VendureConfig } from '@vendure/core';
+
+export const config: VendureConfig = {
+    // ...
+    customFields: {
+        Product: [
+            { name: 'intensity', type: 'int', min: 0, max: 100, defaultValue: 0 },
+        ],
+    },
 }
 ```
 
@@ -23,12 +28,21 @@ By default, the "intensity" field will be displayed as a number input:
 
 ![./ui-extensions-custom-field-default.webp](./ui-extensions-custom-field-default.webp)
 
-But let's say we want to display a range slider instead. Here's how we can do this using our shared extension module combined with the [registerFormInputComponent function](/reference/admin-ui-api/custom-input-components/register-form-input-component/):
+But let's say we want to display a **range slider** instead.
 
-```ts title="src/ui-extensions/slider-form-input.component.ts"
-import { NgModule, Component } from '@angular/core';
+### 1. Define a component
+
+First we need to define a new Angular or React component to render the slider:
+
+<Tabs>
+<TabItem value="Angular" label="Angular" default>
+
+Angular components will have the `readonly`, `config` and `formControl` properties populated automatically.
+
+```ts title="src/plugins/common/ui/components/slider-form-input/slider-form-input.component.ts"
+import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { IntCustomFieldConfig, SharedModule, FormInputComponent, registerFormInputComponent } from '@vendure/admin-ui/core';
+import { IntCustomFieldConfig, SharedModule, FormInputComponent } from '@vendure/admin-ui/core';
 
 @Component({
     template: `
@@ -39,42 +53,113 @@ import { IntCustomFieldConfig, SharedModule, FormInputComponent, registerFormInp
           [formControl]="formControl" />
       {{ formControl.value }}
   `,
+    standalone: true,
+    imports: [SharedModule],
 })
-export class SliderControl implements FormInputComponent<IntCustomFieldConfig> {
+export class SliderControlComponent implements FormInputComponent<IntCustomFieldConfig> {
     readonly: boolean;
     config: IntCustomFieldConfig;
     formControl: FormControl;
 }
-
-@NgModule({
-    imports: [SharedModule],
-    declarations: [SliderControl],
-    providers: [
-        registerFormInputComponent('slider-form-input', SliderControl),
-    ]
-})
-export class SharedExtensionModule {
-}
 ```
 
-The `SharedExtensionModule` is then passed to the `compileUiExtensions()` function as described in the [UI Extensions With Angular guide](/guides/extending-the-admin-ui/using-angular/#4-pass-the-extension-to-the-compileuiextensions-function):
+</TabItem>
+<TabItem value="React" label="React">
+
+React components can use the [`useFormControl`](/reference/admin-ui-api/react-hooks/use-form-control) hook to access the form control and set its value. The 
+component will also receive `config` and `readonly` data as props. 
+
+```tsx title="src/plugins/common/ui/components/SliderFormInput.tsx"
+import React from 'react';
+import { useFormControl, ReactFormInputOptions, useInjector } from '@vendure/admin-ui/react';
+
+export function SliderFormInput({ readonly, config }: ReactFormInputOptions) {
+    const { value, setFormValue } = useFormControl();
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = +e.target.value;
+        setFormValue(val);
+    };
+    return (
+        <>
+            <input
+                type="range"
+                readOnly={readonly}
+                min={config.min || 0}
+                max={config.max || 100}
+                value={value}
+                onChange={handleChange}
+            />
+            {value}
+        </>
+    );
+};
+```
+
+</TabItem>
+</Tabs>
+
+### 2. Register the component
+
+Next we will register this component in our `providers.ts` file and give it a unique ID, `'slider-form-input'`:
+
+<Tabs>
+<TabItem value="Angular" label="Angular" default>
+
+```ts title="src/plugins/common/ui/providers.ts"
+import { registerFormInputComponent } from '@vendure/admin-ui/core';
+import { SliderControlComponent } from './components/slider-form-input/slider-form-input.component';
+
+export default [
+    registerFormInputComponent('slider-form-input', SliderControlComponent),
+];
+```
+
+</TabItem>
+<TabItem value="React" label="React">
+
+```ts title="src/plugins/common/ui/providers.ts"
+import { registerReactFormInputComponent } from '@vendure/admin-ui/react';
+import { SliderControl } from './components/SliderFormInput';
+
+export default [
+    registerReactFormInputComponent('slider-form-input', SliderFormInput),
+];
+```
+
+</TabItem>
+</Tabs>
+
+### 3. Register the providers
+
+The `providers.ts` is then passed to the `compileUiExtensions()` function as described in the [UI Extensions Getting Started guide](/guides/extending-the-admin-ui/getting-started/):
 
 ```ts title="src/vendure-config.ts"
-AdminUiPlugin.init({
-    port: 5001,
-    app: compileUiExtensions({
-        outputPath: path.join(__dirname, '../admin-ui'),
-        extensions: [{
-            extensionPath: path.join(__dirname, 'ui-extensions'),
-            ngModules: [{
-                type: 'shared',
-                ngModuleFileName: 'shared.module.ts',
-                ngModuleName: 'SharedExtensionModule',
-            }],
-        }],
-    }),
-})
+import * as path from 'path';
+import { VendureConfig } from '@vendure/core';
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+
+export const config: VendureConfig = {
+    // ...
+    plugins: [
+        AdminUiPlugin.init({
+            port: 3302,
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, '../admin-ui'),
+                extensions: [{
+                    id: 'common',
+                    // highlight-start
+                    extensionPath: path.join(__dirname, 'plugins/common/ui'),
+                    providers: ['providers.ts'],
+                    // highlight-end
+                }],
+            }),
+        }),
+    ],
+};
 ```
+
+### 4. Update the custom field config
 
 Once registered, this new slider input can be used in our custom field config:
 
@@ -89,6 +174,7 @@ customFields: {
     ],
 }
 ```
+
 As we can see, adding the `ui` property to the custom field config allows us to specify our custom slider component.
 The component id _'slider-form-input'_ **must match** the string passed as the first argument to `registerFormInputComponent()`.
 
@@ -101,78 +187,66 @@ Re-compiling the Admin UI will result in our SliderControl now being used for th
 
 ![./ui-extensions-custom-field-slider.webp](./ui-extensions-custom-field-slider.webp)
 
-To recap the steps involved:
-
-1. Create an Angular Component which implements the `FormInputComponent` interface.
-2. Add this component to your shared extension module's `declarations` array.
-3. Use `registerFormInputComponent()` to register your component for the given entity & custom field name.
-4. Specify this component's ID in your custom field config.
-
-### Custom Field Controls for Relations
+## Custom Field Controls for Relations
 
 If you have a custom field of the `relation` type (which allows you to relate entities with one another), you can also define custom field controls for them. The basic mechanism is exactly the same as with primitive custom field types (i.e. `string`, `int` etc.), but there are a couple of important points to know:
 
 1. The value of the `formControl` will be the _related entity object_ rather than an id. The Admin UI will internally take care of converting the entity object into an ID when performing the create/update mutation.
 2. Your control will most likely need to fetch data in order to display a list of selections for the user.
 
-Here is a simple example taken from the [real-world-vendure](https://github.com/vendure-ecommerce/real-world-vendure/blob/master/src/plugins/reviews/ui/components/featured-review-selector/featured-review-selector.component.ts) repo:
+Here's an example of a custom field control for a `relation` field which relates a Product to a custom `ProductReview` entity:
 
 ```ts title="src/plugins/reviews/ui/components/relation-review-input/relation-review-input.component.ts"
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { CustomFieldControl, DataService } from '@vendure/admin-ui/core';
+import { CustomFieldControl, DataService, SharedModule } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { GET_REVIEWS_FOR_PRODUCT } from '../product-reviews-list/product-reviews-list.graphql';
-import { GetReviewForProduct, ProductReviewFragment } from '../../generated-types';
 
 @Component({
-  selector: 'relation-review-input',
-  template: `
-    <div *ngIf="formControl.value as review">
-      <vdr-chip>{{ review.rating }} / 5</vdr-chip>
-      {{ review.summary }}
-      <a [routerLink]="['/extensions', 'product-reviews', review.id]">
-        <clr-icon shape="link"></clr-icon>
-      </a>
-    </div>
-    <select appendTo="body" [formControl]="formControl">
-      <option [ngValue]="null">Select a review...</option>
-      <option *ngFor="let item of reviews$ | async" [ngValue]="item">
-        <b>{{ item.summary }}</b>
-        {{ item.rating }} / 5
-      </option>
-    </select>
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'relation-review-input',
+    template: `
+        <div *ngIf="formControl.value as review">
+            <vdr-chip>{{ review.rating }} / 5</vdr-chip>
+            {{ review.summary }}
+            <a [routerLink]="['/extensions', 'product-reviews', review.id]">
+                <clr-icon shape="link"></clr-icon>
+            </a>
+        </div>
+        <select [formControl]="formControl">
+            <option [ngValue]="null">Select a review...</option>
+            <option *ngFor="let item of reviews$ | async" [ngValue]="item">
+                <b>{{ item.summary }}</b>
+                {{ item.rating }} / 5
+            </option>
+        </select>
+    `,
+    standalone: true,
+    imports: [SharedModule],
 })
 export class RelationReviewInputComponent implements OnInit, FormInputComponent<RelationCustomFieldConfig> {
-  readonly: boolean;
-  formControl: FormControl;
-  config: RelationCustomFieldConfig;
+    readonly: boolean;
+    formControl: FormControl;
+    config: RelationCustomFieldConfig;
 
-  reviews$: Observable<ProductReviewFragment[]>;
+    reviews$: Observable<any[]>;
 
-  constructor(private dataService: DataService, private route: ActivatedRoute) {}
+    constructor(private dataService: DataService, private route: ActivatedRoute) {}
 
-  ngOnInit() {
-    this.reviews$ = this.route.data.pipe(
-      switchMap(data => data.entity),
-      switchMap((product: any) => {
-        return this.dataService
-          .query<GetReviewForProduct.Query, GetReviewForProduct.Variables>(
-            GET_REVIEWS_FOR_PRODUCT,
-            {
-              productId: product.id,
-            },
-          )
-          .mapSingle(({ product }) => product?.reviews.items ?? []);
-      }),
-    );
-  }
+    ngOnInit() {
+        this.reviews$ = this.route.data.pipe(
+            switchMap(data => data.entity),
+            switchMap((product: any) => {
+                return this.dataService
+                    .query(GET_REVIEWS_FOR_PRODUCT, { productId: product.id })
+                    .mapSingle(({ product }) => product?.reviews.items ?? []);
+            }),
+        );
+    }
 }
 ```
 

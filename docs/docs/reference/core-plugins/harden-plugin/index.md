@@ -90,9 +90,9 @@ This evil query has a complexity score of 2,443,203 - much greater than the defa
 The complexity score is calculated by the [graphql-query-complexity library](https://www.npmjs.com/package/graphql-query-complexity),
 and by default uses the <a href='/reference/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator'>defaultVendureComplexityEstimator</a>, which is tuned specifically to the Vendure Shop API.
 
-{{% alert "warning" %}}
+:::caution
 Note: By default, if the "take" argument is omitted from a list query (e.g. the `products` or `collections` query), a default factor of 1000 is applied.
-{{% /alert %}}
+:::
 
 The optimal max complexity score will vary depending on:
 

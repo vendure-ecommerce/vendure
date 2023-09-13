@@ -23,11 +23,11 @@ Note that this class should not be directly used in code, but should be extended
 a more specific Error class.
 
 ```ts title="Signature"
-class I18nError extends ApolloError {
+class I18nError extends GraphQLError {
     constructor(message: string, variables: { [key: string]: string | number } = {}, code?: string, logLevel: LogLevel = LogLevel.Warn)
 }
 ```
-* Extends: <code>ApolloError</code>
+* Extends: <code>GraphQLError</code>
 
 
 

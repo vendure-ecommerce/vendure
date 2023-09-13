@@ -78,7 +78,7 @@ Performs a query or mutation and returns the resulting status code.
 
 <MemberInfo kind="method" type={`(username: string, password: string) => `}   />
 
-Attemps to log in with the specified credentials.
+Attempts to log in with the specified credentials.
 ### asSuperAdmin
 
 <MemberInfo kind="method" type={`() => `}   />

@@ -99,7 +99,7 @@ In addition to the built-in `NativeAuthenticationStrategy`, it is possible to de
 
 Custom authentication strategies are set via the [`VendureConfig.authOptions` object](/reference/typescript-api/auth/auth-options/#shopauthenticationstrategy):
 
-```ts title="vendure-config.ts"
+```ts title="src/vendure-config.ts"
 import { VendureConfig, NativeAuthenticationStrategy } from '@vendure/core';
 
 import { FacebookAuthenticationStrategy } from './plugins/authentication/facebook-authentication-strategy';

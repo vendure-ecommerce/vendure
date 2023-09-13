@@ -25,7 +25,7 @@ Internally the `populate()` function does the following:
 
 1. Uses the <a href='/reference/typescript-api/import-export/populator#populator'>Populator</a> to populate the <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
 2. If `productsCsvPath` is provided, uses <a href='/reference/typescript-api/import-export/importer#importer'>Importer</a> to populate Product data.
-3. Uses {@Populator} to populate collections specified in the <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
+3. Uses <a href='/reference/typescript-api/import-export/populator#populator'>Populator</a> to populate collections specified in the <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>.
 
 *Example*
 

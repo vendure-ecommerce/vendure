@@ -264,7 +264,7 @@ class CurrencyFormInputComponent implements FormInputComponent {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => CurrencyFormInputComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => CurrencyFormInputComponent`}   />
 
 
 
@@ -325,7 +325,7 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => CustomerGroupFormInputComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => CustomerGroupFormInputComponent`}   />
 
 
 ### ngOnInit
@@ -655,7 +655,7 @@ class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => ProductSelectorFormInputComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => ProductSelectorFormInputComponent`}   />
 
 
 ### ngOnInit
@@ -828,7 +828,7 @@ class SelectFormInputComponent implements FormInputComponent, OnInit {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => SelectFormInputComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => SelectFormInputComponent`}   />
 
 
 ### ngOnInit

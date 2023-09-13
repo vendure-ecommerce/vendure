@@ -25,6 +25,7 @@ class FacetValueService {
     findOne(ctx: RequestContext, id: ID) => Promise<Translated<FacetValue> | undefined>;
     findByIds(ctx: RequestContext, ids: ID[]) => Promise<Array<Translated<FacetValue>>>;
     findByFacetId(ctx: RequestContext, id: ID) => Promise<Array<Translated<FacetValue>>>;
+    findByFacetIdList(ctx: RequestContext, id: ID, options?: ListQueryOptions<FacetValue>, relations?: RelationPaths<FacetValue>) => Promise<PaginatedList<Translated<FacetValue>>>;
     create(ctx: RequestContext, facet: Facet, input: CreateFacetValueInput | CreateFacetValueWithFacetInput) => Promise<Translated<FacetValue>>;
     update(ctx: RequestContext, input: UpdateFacetValueInput) => Promise<Translated<FacetValue>>;
     delete(ctx: RequestContext, id: ID, force: boolean = false) => Promise<DeletionResponse>;
@@ -75,6 +76,11 @@ A separate method was created just to avoid a breaking change in v1.9.
 ### findByFacetId
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Array&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
+
+Returns all FacetValues belonging to the Facet with the given id.
+### findByFacetIdList
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>, options?: ListQueryOptions&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a>&#60;Translated&#60;<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>&#62;&#62;&#62;`}   />
 
 Returns all FacetValues belonging to the Facet with the given id.
 ### create

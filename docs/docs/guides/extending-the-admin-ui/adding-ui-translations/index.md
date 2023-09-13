@@ -2,8 +2,6 @@
 title: 'Adding UI Translations'
 ---
 
-# Adding Admin UI Translations
-
 The Vendure Admin UI is fully localizable, allowing you to:
 
 * create custom translations for your UI extensions
@@ -18,7 +16,7 @@ The Admin UI uses the [Messageformat](https://messageformat.github.io/messagefor
 
 Here is an excerpt from the `en.json` file that ships with the Admin UI:
 
-```JSON
+```JSON title="en.json"
 {
   "admin": {
     "create-new-administrator": "Create new administrator"
@@ -42,7 +40,7 @@ That is, the `{ ... }` represent variables that are passed from the application 
 
 ## Adding a new language
 
-The Admin UI ships with language files only for English and Spanish as of version 0.11.0, but allows you to add support for any other language without the need to modify the package internals.
+The Admin UI ships with built-in support for many languages, but allows you to add support for any other language without the need to modify the package internals.
 
 1. **Create your translation file**
 
@@ -57,38 +55,37 @@ The Admin UI ships with language files only for English and Spanish as of versio
     ```text
     /src
     ├─ vendure-config.ts
-    ├─ translations/
-        ├─ de.json
+    └─ translations/
+        └─ ms.json
     ```
     
     And the config code to register the translation file:
     
-    ```ts
-    // vendure-config.ts
+    ```ts title="src.vendure-config.ts"
     import path from 'path';
     import { VendureConfig } from '@vendure/core';
     import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
     import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
     
     export const config: VendureConfig = {
-      // ...
-      plugins: [
-        AdminUiPlugin.init({
-          port: 3002,
-          app: compileUiExtensions({
-            outputPath: path.join(__dirname, '../admin-ui'),
-            extensions: [{
-               translations: {
-                 de: path.join(__dirname, 'translations/de.json'),
-               }
-             }],
-          }),
-          adminUiConfig:{
-            defaultLanguage: LanguageCode.de,
-            availableLanguages: [LanguageCode.en, LanguageCode.de],
-          }
-        }),
-      ],
+        // ...
+        plugins: [
+            AdminUiPlugin.init({
+                port: 3002,
+                app: compileUiExtensions({
+                    outputPath: path.join(__dirname, '../admin-ui'),
+                    extensions: [{
+                        translations: {
+                            ms: path.join(__dirname, 'translations/ms.json'),
+                        }
+                    }],
+                }),
+                adminUiConfig:{
+                    defaultLanguage: LanguageCode.ms,
+                    availableLanguages: [LanguageCode.ms, LanguageCode.en],
+                }
+            }),
+        ],
     };
     ```
 

@@ -13,7 +13,7 @@ import { GET_USER_STATUS } from './definitions/client-definitions';
  * This class wraps the Apollo Angular QueryRef object and exposes some getters
  * for convenience.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage DataService
  */
 export class QueryResult<T, V extends Record<string, any> = Record<string, any>> {

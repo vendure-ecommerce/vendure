@@ -119,7 +119,7 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
 
 ### constructor
 
-<MemberInfo kind="method" type={`(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => BaseDetailComponent`}   />
+<MemberInfo kind="method" type={`(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => BaseDetailComponent`}   />
 
 
 ### init

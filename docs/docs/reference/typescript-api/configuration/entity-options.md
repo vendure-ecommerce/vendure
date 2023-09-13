@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="913" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="914" packageName="@vendure/core" since="1.3.0" />
 
 Options relating to the internal handling of entities.
 
@@ -37,12 +37,12 @@ in the database, and the encoding & decoding of those ids when exposing
 entities via the API. The default uses a simple auto-increment integer
 strategy.
 
-{{% alert "warning" %}}
+:::caution
 Note: changing from an integer-based strategy to a uuid-based strategy
 on an existing Vendure database will lead to problems with broken foreign-key
 references. To change primary key types like this, you'll need to start with
 a fresh database.
-{{% /alert %}}
+:::
 ### moneyStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>`} default="<a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>"  since="2.0.0"  />
@@ -92,11 +92,11 @@ see <a href='/reference/typescript-api/configuration/entity-options#entitymetada
 A function which allows TypeORM entity metadata to be manipulated prior to the DB schema being generated
 during bootstrap.
 
-{{% alert "warning" %}}
+:::caution
 Certain DB schema modifications will result in auto-generated migrations which will lead to data loss. For instance,
 changing the data type of a column will drop the column & data and then re-create it. To avoid loss of important data,
 always check and modify your migration scripts as needed.
-{{% /alert %}}
+:::
 
 *Example*
 

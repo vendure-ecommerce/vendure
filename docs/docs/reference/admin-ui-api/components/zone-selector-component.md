@@ -90,7 +90,7 @@ class ZoneSelectorComponent implements ControlValueAccessor {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => ZoneSelectorComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => ZoneSelectorComponent`}   />
 
 
 ### onChange

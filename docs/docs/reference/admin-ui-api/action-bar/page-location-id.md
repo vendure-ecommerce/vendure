@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageLocationId
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="51" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="52" packageName="@vendure/admin-ui" />
 
 The valid locationIds for registering action bar items or tabs.
 

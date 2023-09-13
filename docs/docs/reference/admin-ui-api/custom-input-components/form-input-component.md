@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FormInputComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="10" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="11" packageName="@vendure/admin-ui" />
 
 This interface should be implemented by any component being used as a custom input. For example,
 inputs for custom fields, or for configurable arguments.

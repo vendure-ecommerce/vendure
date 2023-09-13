@@ -5,25 +5,18 @@ import { NavBuilderService } from '../providers/nav-builder/nav-builder.service'
 /**
  * @description
  * Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
- * be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
- * `data-location-id` attribute.
- *
- * This should be used in the NgModule `providers` array of your ui extension module.
+ * be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
  *
  * @example
- * ```ts
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
+ * ```ts title="providers.ts"
+ * export default [
  *     addActionBarItem({
- *      id: 'print-invoice',
- *      label: 'Print Invoice',
- *      locationId: 'order-detail',
- *      routerLink: ['/extensions/invoicing'],
+ *         id: 'print-invoice',
+ *         label: 'Print Invoice',
+ *         locationId: 'order-detail',
+ *         routerLink: ['/extensions/invoicing'],
  *     }),
- *   ],
- * })
- * export class MyUiExtensionModule {}
+ * ];
  * ```
  * @docsCategory action-bar
  */

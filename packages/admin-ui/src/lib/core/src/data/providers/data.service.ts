@@ -26,7 +26,7 @@ import { ShippingMethodDataService } from './shipping-method-data.service';
  * advisable to always select the `id` field of any entity, which will allow the returned data
  * to be effectively cached.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage DataService
  * @docsWeight 0
  */

@@ -36,6 +36,8 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
     couponCode: string;
     @Column({ nullable: true })
     perCustomerUsageLimit: number;
+    @Column({ nullable: true })
+    usageLimit: number;
     name: LocaleString;
     description: LocaleString;
     @OneToMany(type => PromotionTranslation, translation => translation.base, { eager: true })
@@ -95,6 +97,11 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 
 
 ### perCustomerUsageLimit
+
+<MemberInfo kind="property" type={`number`}   />
+
+
+### usageLimit
 
 <MemberInfo kind="property" type={`number`}   />
 

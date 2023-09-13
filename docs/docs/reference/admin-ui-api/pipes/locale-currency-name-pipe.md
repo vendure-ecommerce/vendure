@@ -38,7 +38,7 @@ class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransform {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService?: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyNamePipe`}   />
+<MemberInfo kind="method" type={`(dataService?: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyNamePipe`}   />
 
 
 ### transform

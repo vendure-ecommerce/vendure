@@ -10,6 +10,12 @@ import { AngularRouteComponent } from './components/angular-route.component';
 import { ROUTE_COMPONENT_OPTIONS } from './components/route.component';
 import { RouteComponentOptions } from './types';
 
+/**
+ * @description
+ * Configuration for a route component.
+ *
+ * @docsCategory routes
+ */
 export type RegisterRouteComponentOptions<
     Component extends any | BaseDetailComponent<Entity>,
     Entity extends { id: string; updatedAt?: string },
@@ -28,6 +34,46 @@ export type RegisterRouteComponentOptions<
     routeConfig?: Route;
 } & (Component extends BaseDetailComponent<Entity> ? { entityKey: R } : unknown);
 
+/**
+ * @description
+ * Registers an Angular standalone component to be rendered in a route.
+ *
+ * @example
+ * ```ts title="routes.ts"
+ * import { registerRouteComponent } from '\@vendure/admin-ui/core';
+ * import { registerReactRouteComponent } from '\@vendure/admin-ui/react';
+ *
+ * import { ProductReviewDetailComponent } from './components/product-review-detail/product-review-detail.component';
+ * import { AllProductReviewsList } from './components/all-product-reviews-list/all-product-reviews-list.component';
+ * import { GetReviewDetailDocument } from './generated-types';
+ *
+ * export default [
+ *     registerRouteComponent({
+ *         path: '',
+ *         component: AllProductReviewsList,
+ *         breadcrumb: 'Product reviews',
+ *     }),
+ *     registerRouteComponent({
+ *         path: ':id',
+ *         component: ProductReviewDetailComponent,
+ *         query: GetReviewDetailDocument,
+ *         entityKey: 'productReview',
+ *         getBreadcrumbs: entity => [
+ *             {
+ *                 label: 'Product reviews',
+ *                 link: ['/extensions', 'product-reviews'],
+ *             },
+ *             {
+ *                 label: `#${entity?.id} (${entity?.product.name})`,
+ *                 link: [],
+ *             },
+ *         ],
+ *     }),
+ * ];
+ * ```
+ *
+ * @docsCategory routes
+ */
 export function registerRouteComponent<
     Component extends any | BaseDetailComponent<Entity>,
     Entity extends { id: string; updatedAt?: string },

@@ -29,9 +29,9 @@ class DataService {
 
 ### query
 
-<MemberInfo kind="method" type={`(query: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
+<MemberInfo kind="method" type={`(query: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
 
-Perform a GraphQL query. Returns a <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a> which allows further control over
+Perform a GraphQL query. Returns a <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a> which allows further control over
 they type of result returned, e.g. stream of values, single value etc.
 
 *Example*
@@ -106,7 +106,7 @@ class QueryResult<T, V extends Record<string, any> = Record<string, any>> {
 
 ### refetchOnChannelChange
 
-<MemberInfo kind="method" type={`() => <a href='/reference/admin-ui-api/providers/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
+<MemberInfo kind="method" type={`() => <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
 
 Re-fetch this query whenever the active Channel changes.
 ### single$

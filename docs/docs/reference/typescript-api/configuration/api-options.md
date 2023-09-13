@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ApiOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="63" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="64" packageName="@vendure/core" />
 
 The ApiOptions define how the Vendure GraphQL APIs are exposed, as well as allowing the API layer
 to be extended with middleware.
@@ -22,8 +22,8 @@ interface ApiOptions {
     port: number;
     adminApiPath?: string;
     shopApiPath?: string;
-    adminApiPlayground?: boolean | any;
-    shopApiPlayground?: boolean | any;
+    adminApiPlayground?: boolean | RenderPageOptions;
+    shopApiPlayground?: boolean | RenderPageOptions;
     adminApiDebug?: boolean;
     shopApiDebug?: boolean;
     shopListQueryLimit?: number;
@@ -33,7 +33,7 @@ interface ApiOptions {
     channelTokenKey?: string;
     cors?: boolean | CorsOptions;
     middleware?: Middleware[];
-    apolloServerPlugins?: PluginDefinition[];
+    apolloServerPlugins?: ApolloServerPlugin[];
     introspection?: boolean;
 }
 ```
@@ -62,13 +62,13 @@ The path to the admin GraphQL API.
 The path to the shop GraphQL API.
 ### adminApiPlayground
 
-<MemberInfo kind="property" type={`boolean | any`} default="false"   />
+<MemberInfo kind="property" type={`boolean | RenderPageOptions`} default="false"   />
 
 The playground config to the admin GraphQL API
 [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
 ### shopApiPlayground
 
-<MemberInfo kind="property" type={`boolean | any`} default="false"   />
+<MemberInfo kind="property" type={`boolean | RenderPageOptions`} default="false"   />
 
 The playground config to the shop GraphQL API
 [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
@@ -127,7 +127,7 @@ Set the CORS handling for the server. See the [express CORS docs](https://github
 Custom Express or NestJS middleware for the server. More information can be found in the <a href='/reference/typescript-api/common/middleware#middleware'>Middleware</a> docs.
 ### apolloServerPlugins
 
-<MemberInfo kind="property" type={`PluginDefinition[]`} default="[]"   />
+<MemberInfo kind="property" type={`ApolloServerPlugin[]`} default="[]"   />
 
 Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
 allow the extension of the Apollo Server, which is the underlying GraphQL server used by Vendure.

@@ -11,29 +11,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## addActionBarItem
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="120" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-action-bar-item.ts" sourceLine="23" packageName="@vendure/admin-ui" />
 
 Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
-be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
-`data-location-id` attribute.
-
-This should be used in the NgModule `providers` array of your ui extension module.
+be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
 
 *Example*
 
-```ts
-@NgModule({
-  imports: [SharedModule],
-  providers: [
+```ts title="providers.ts"
+export default [
     addActionBarItem({
-     id: 'print-invoice'
-     label: 'Print Invoice',
-     locationId: 'order-detail',
-     routerLink: ['/extensions/invoicing'],
+        id: 'print-invoice',
+        label: 'Print Invoice',
+        locationId: 'order-detail',
+        routerLink: ['/extensions/invoicing'],
     }),
-  ],
-})
-export class MyUiExtensionModule {}
+];
 ```
 
 ```ts title="Signature"

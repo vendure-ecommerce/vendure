@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ActionBarLocationId
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="103" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/component-registry-types.ts" sourceLine="104" packageName="@vendure/admin-ui" />
 
 The valid locationIds for registering action bar items.
 

@@ -69,7 +69,7 @@ Display a warning toast notification
 Display an error toast notification
 ### notify
 
-<MemberInfo kind="method" type={`(config: <a href='/reference/admin-ui-api/providers/notification-service#toastconfig'>ToastConfig</a>) => void`}   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/admin-ui-api/services/notification-service#toastconfig'>ToastConfig</a>) => void`}   />
 
 Display a toast notification.
 
@@ -117,7 +117,7 @@ interface ToastConfig {
 
 ### type
 
-<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/providers/notification-service#notificationtype'>NotificationType</a>`}   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/services/notification-service#notificationtype'>NotificationType</a>`}   />
 
 
 ### duration

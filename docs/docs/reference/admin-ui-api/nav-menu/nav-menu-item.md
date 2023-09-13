@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## NavMenuItem
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="36" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="37" packageName="@vendure/admin-ui" />
 
 A NavMenuItem is a menu item in the main (left-hand side) nav
 bar.
@@ -42,7 +42,7 @@ interface NavMenuItem {
 
 ### routerLink
 
-<MemberInfo kind="property" type={`RouterLinkDefinition`}   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/action-bar/router-link-definition#routerlinkdefinition'>RouterLinkDefinition</a>`}   />
 
 
 ### onClick

@@ -121,7 +121,7 @@ class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAcce
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => FacetValueSelectorComponent`}   />
 
 
 ### ngOnInit

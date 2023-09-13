@@ -39,7 +39,7 @@ class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>>
 
 ### constructor
 
-<MemberInfo kind="method" type={`(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => IfPermissionsDirective`}   />
+<MemberInfo kind="method" type={`(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => IfPermissionsDirective`}   />
 
 
 

@@ -113,7 +113,7 @@ class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges,
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent`}   />
 
 
 ### ngOnInit

@@ -126,7 +126,7 @@ his or her privileges.
 
 ```ts title="Signature"
 class ForbiddenError extends I18nError {
-    constructor(logLevel: LogLevel = LogLevel.Error)
+    constructor(logLevel: LogLevel = LogLevel.Warn)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/errors/i18n-error#i18nerror'>I18nError</a></code>
@@ -137,7 +137,7 @@ class ForbiddenError extends I18nError {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(logLevel: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Error) => ForbiddenError`}   />
+<MemberInfo kind="method" type={`(logLevel: <a href='/reference/typescript-api/logger/log-level#loglevel'>LogLevel</a> = LogLevel.Warn) => ForbiddenError`}   />
 
 
 

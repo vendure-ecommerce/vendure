@@ -90,7 +90,7 @@ html[data-theme='dark'] {
     font-weight: bold;
     font-size: 12px;
     opacity: 0.8;
-    color: var(--ifm-color-primary-dark);
+    color: #afafaf;
     padding: var(--ifm-menu-link-padding-vertical)
          var(--ifm-menu-link-padding-horizontal);
 }

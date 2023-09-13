@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DataTable2Component
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table-2/data-table2.component.ts" sourceLine="92" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table-2/data-table2.component.ts" sourceLine="101" packageName="@vendure/admin-ui" />
 
 A table for displaying PaginatedList results. It is designed to be used inside components which
 extend the <a href='/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> or <a href='/reference/admin-ui-api/list-detail-views/typed-base-list-component#typedbaselistcomponent'>TypedBaseListComponent</a> class.
@@ -74,7 +74,7 @@ extend the <a href='/reference/admin-ui-api/list-detail-views/base-list-componen
 
 ```ts title="Signature"
 class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
-    @Input() id: string;
+    @Input() id: DataTableLocationId;
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
@@ -91,12 +91,18 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
     @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
+    injector = inject(Injector);
+    route = inject(ActivatedRoute);
+    filterPresetService = inject(FilterPresetService);
+    dataTableCustomComponentService = inject(DataTableCustomComponentService);
+    protected customComponents = new Map<string, { config: DataTableComponentConfig; injector: Injector }>();
     rowTemplate: TemplateRef<any>;
     currentStart: number;
     currentEnd: number;
     disableSelect = false;
     showSearchFilterRow = false;
     protected uiLanguage$: Observable<LanguageCode>;
+    protected destroy$ = new Subject<void>();
     constructor(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: DataService)
     selectionManager: void
     allColumns: void
@@ -122,7 +128,7 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 
 ### id
 
-<MemberInfo kind="property" type={`string`}   />
+<MemberInfo kind="property" type={`DataTableLocationId`}   />
 
 
 ### items
@@ -200,6 +206,31 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 <MemberInfo kind="property" type={`QueryList&#60;TemplateRef&#60;any&#62;&#62;`}   />
 
 
+### injector
+
+<MemberInfo kind="property" type={``}   />
+
+
+### route
+
+<MemberInfo kind="property" type={``}   />
+
+
+### filterPresetService
+
+<MemberInfo kind="property" type={``}   />
+
+
+### dataTableCustomComponentService
+
+<MemberInfo kind="property" type={``}   />
+
+
+### customComponents
+
+<MemberInfo kind="property" type={``}   />
+
+
 ### rowTemplate
 
 <MemberInfo kind="property" type={`TemplateRef&#60;any&#62;`}   />
@@ -230,9 +261,14 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 <MemberInfo kind="property" type={`Observable&#60;<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>&#62;`}   />
 
 
+### destroy$
+
+<MemberInfo kind="property" type={``}   />
+
+
 ### constructor
 
-<MemberInfo kind="method" type={`(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>) => DataTable2Component`}   />
+<MemberInfo kind="method" type={`(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => DataTable2Component`}   />
 
 
 ### selectionManager

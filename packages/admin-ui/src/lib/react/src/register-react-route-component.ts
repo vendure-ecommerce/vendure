@@ -6,6 +6,12 @@ import { ElementType } from 'react';
 import { REACT_ROUTE_COMPONENT_OPTIONS, ReactRouteComponent } from './components/react-route.component';
 import { ReactRouteComponentOptions } from './types';
 
+/**
+ * @description
+ * Configuration for a React-based route component.
+ *
+ * @docsCategory react-extensions
+ */
 type RegisterReactRouteComponentOptions<
     Entity extends { id: string; updatedAt?: string },
     T extends DocumentNode | TypedDocumentNode<any, { id: string }>,

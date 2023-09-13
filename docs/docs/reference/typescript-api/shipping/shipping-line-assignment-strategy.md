@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingLineAssignmentStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-line-assignment-strategy.ts" sourceLine="25" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-line-assignment-strategy.ts" sourceLine="52" packageName="@vendure/core" since="2.0.0" />
 
 This strategy is used to assign a given <a href='/reference/typescript-api/entities/shipping-line#shippingline'>ShippingLine</a> to one or more <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s of the Order.
 This allows you to set multiple shipping methods for a single order, each assigned a different subset of
@@ -26,6 +26,33 @@ This is configured via the `shippingOptions.shippingLineAssignmentStrategy` prop
 your VendureConfig.
 
 :::
+
+Here's an example of a custom ShippingLineAssignmentStrategy which assigns digital products to a
+different ShippingLine to physical products:
+
+```ts
+import {
+    Order,
+    OrderLine,
+    RequestContext,
+    ShippingLine,
+    ShippingLineAssignmentStrategy,
+} from '@vendure/core';
+
+export class DigitalShippingLineAssignmentStrategy implements ShippingLineAssignmentStrategy {
+    assignShippingLineToOrderLines(
+        ctx: RequestContext,
+        shippingLine: ShippingLine,
+        order: Order,
+    ): OrderLine[] | Promise<OrderLine[]> {
+        if (shippingLine.shippingMethod.customFields.isDigital) {
+            return order.lines.filter(l => l.productVariant.customFields.isDigital);
+        } else {
+            return order.lines.filter(l => !l.productVariant.customFields.isDigital);
+        }
+    }
+}
+```
 
 ```ts title="Signature"
 interface ShippingLineAssignmentStrategy extends InjectableStrategy {

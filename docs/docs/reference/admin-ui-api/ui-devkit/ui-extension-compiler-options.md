@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## UiExtensionCompilerOptions
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="307" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="327" packageName="@vendure/ui-devkit" />
 
 Options to configure how the Admin UI should be compiled.
 
@@ -19,6 +19,7 @@ Options to configure how the Admin UI should be compiled.
 interface UiExtensionCompilerOptions {
     outputPath: string;
     extensions: Extension[];
+    ngCompilerPath?: string | undefined;
     devMode?: boolean;
     baseHref?: string;
     watchPort?: number;
@@ -40,6 +41,26 @@ The directory into which the sources for the extended Admin UI will be copied.
 
 An array of objects which configure Angular modules and/or
 translations with which to extend the Admin UI.
+### ngCompilerPath
+
+<MemberInfo kind="property" type={`string | undefined`}  since="2.1.0"  />
+
+Allows you to manually specify the path to the Angular CLI compiler script. This can be useful in scenarios
+where for some reason the built-in start/build scripts are unable to locate the `ng` command.
+
+This option should not usually be required.
+
+*Example*
+
+```ts
+compileUiExtensions({
+    ngCompilerPath: path.join(__dirname, '../../node_modules/@angular/cli/bin/ng.js'),
+    outputPath: path.join(__dirname, '../admin-ui'),
+    extensions: [
+      // ...
+    ],
+})
+```
 ### devMode
 
 <MemberInfo kind="property" type={`boolean`} default="false"   />

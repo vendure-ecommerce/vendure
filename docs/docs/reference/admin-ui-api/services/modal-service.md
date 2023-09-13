@@ -18,7 +18,7 @@ embedding the specified component within.
 
 ```ts title="Signature"
 class ModalService {
-    constructor(componentFactoryResolver: ComponentFactoryResolver, overlayHostService: OverlayHostService)
+    constructor(overlayHostService: OverlayHostService)
     fromComponent(component: Type<T> & Type<Dialog<R>>, options?: ModalOptions<T>) => Observable<R | undefined>;
     dialog(config: DialogConfig<T>) => Observable<T | undefined>;
 }
@@ -28,14 +28,14 @@ class ModalService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(componentFactoryResolver: ComponentFactoryResolver, overlayHostService: OverlayHostService) => ModalService`}   />
+<MemberInfo kind="method" type={`(overlayHostService: OverlayHostService) => ModalService`}   />
 
 
 ### fromComponent
 
-<MemberInfo kind="method" type={`(component: Type&#60;T&#62; &#38; Type&#60;<a href='/reference/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;R&#62;&#62;, options?: <a href='/reference/admin-ui-api/providers/modal-service#modaloptions'>ModalOptions</a>&#60;T&#62;) => Observable&#60;R | undefined&#62;`}   />
+<MemberInfo kind="method" type={`(component: Type&#60;T&#62; &#38; Type&#60;<a href='/reference/admin-ui-api/services/modal-service#dialog'>Dialog</a>&#60;R&#62;&#62;, options?: <a href='/reference/admin-ui-api/services/modal-service#modaloptions'>ModalOptions</a>&#60;T&#62;) => Observable&#60;R | undefined&#62;`}   />
 
-Create a modal from a component. The component must implement the <a href='/reference/admin-ui-api/providers/modal-service#dialog'>Dialog</a> interface.
+Create a modal from a component. The component must implement the <a href='/reference/admin-ui-api/services/modal-service#dialog'>Dialog</a> interface.
 Additionally, the component should include templates for the title and the buttons to be
 displayed in the modal dialog. See example:
 
@@ -77,7 +77,7 @@ class MyDialog implements Dialog {
 ```
 ### dialog
 
-<MemberInfo kind="method" type={`(config: <a href='/reference/admin-ui-api/providers/modal-service#dialogconfig'>DialogConfig</a>&#60;T&#62;) => Observable&#60;T | undefined&#62;`}   />
+<MemberInfo kind="method" type={`(config: <a href='/reference/admin-ui-api/services/modal-service#dialogconfig'>DialogConfig</a>&#60;T&#62;) => Observable&#60;T | undefined&#62;`}   />
 
 Displays a modal dialog with the provided title, body and buttons.
 

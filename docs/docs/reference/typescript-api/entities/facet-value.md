@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FacetValue
 
-<GenerationInfo sourceFile="packages/core/src/entity/facet-value/facet-value.entity.ts" sourceLine="20" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/facet-value/facet-value.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 A particular value of a <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>.
 
@@ -25,6 +25,8 @@ class FacetValue extends VendureEntity implements Translatable, HasCustomFields,
     @Index()
     @ManyToOne(type => Facet, group => group.values, { onDelete: 'CASCADE' })
     facet: Facet;
+    @EntityId()
+    facetId: ID;
     @Column(type => CustomFacetValueFields)
     customFields: CustomFacetValueFields;
     @ManyToMany(type => Channel)
@@ -64,6 +66,11 @@ class FacetValue extends VendureEntity implements Translatable, HasCustomFields,
 ### facet
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet#facet'>Facet</a>`}   />
+
+
+### facetId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### customFields

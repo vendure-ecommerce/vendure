@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ElasticsearchOptions
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="22" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="30" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration options for the <a href='/reference/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>.
 
@@ -30,10 +30,10 @@ interface ElasticsearchOptions {
     batchSize?: number;
     searchConfig?: SearchConfig;
     customProductMappings?: {
-        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode]>;
+        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector]>;
     };
     customProductVariantMappings?: {
-        [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode]>;
+        [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode, Injector]>;
     };
     bufferUpdates?: boolean;
     hydrateProductRelations?: Array<EntityRelationPaths<Product>>;
@@ -169,7 +169,7 @@ Batch size for bulk operations (e.g. when rebuilding the indices).
 Configuration of the internal Elasticsearch query.
 ### customProductMappings
 
-<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }`}   />
+<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>]&#62;;     }`}   />
 
 Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
@@ -232,7 +232,7 @@ query SearchProducts($input: SearchInput!) {
 ```
 ### customProductVariantMappings
 
-<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>]&#62;;     }`}   />
+<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>]&#62;;     }`}   />
 
 This config option defines custom mappings which are accessible when the "groupByProduct"
 input options is set to `false`. In addition, custom product mappings can be accessed by using
@@ -364,7 +364,7 @@ extend input SearchResultSortParameter {
 
 ## SearchConfig
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="377" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="385" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration options for the internal Elasticsearch query which is generated when performing a search.
 
@@ -645,7 +645,7 @@ searchConfig: {
 
 ## BoostFieldsConfig
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="662" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="670" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration for [boosting](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#field-boost)
 the scores of given fields when performing a search against a term.

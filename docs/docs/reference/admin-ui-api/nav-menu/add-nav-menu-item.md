@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## addNavMenuItem
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder.service.ts" sourceLine="84" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-nav-menu-item.ts" sourceLine="64" packageName="@vendure/admin-ui" />
 
 Add a menu item to an existing section specified by `sectionId`. The id of the section
 can be found by inspecting the DOM and finding the `data-section-id` attribute.
@@ -23,20 +23,16 @@ This should be used in the NgModule `providers` array of your ui extension modul
 
 *Example*
 
-```ts
-@NgModule({
-  imports: [SharedModule],
-  providers: [
+```ts title="providers.ts"
+export default [
     addNavMenuItem({
-      id: 'reviews',
-      label: 'Product Reviews',
-      routerLink: ['/extensions/reviews'],
-      icon: 'star',
+        id: 'reviews',
+        label: 'Product Reviews',
+        routerLink: ['/extensions/reviews'],
+        icon: 'star',
     },
     'marketing'),
-  ],
-})
-export class MyUiExtensionModule {}
+];
 ``
 
 ```ts title="Signature"

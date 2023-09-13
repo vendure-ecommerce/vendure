@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StripePlugin
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/stripe.plugin.ts" sourceLine="159" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/stripe.plugin.ts" sourceLine="160" packageName="@vendure/payments-plugin" />
 
 Plugin to enable payments through [Stripe](https://stripe.com/docs) via the Payment Intents API.
 
@@ -139,10 +139,10 @@ The high-level workflow is:
 3. Once the form is submitted and Stripe processes the payment, the webhook takes care of updating the order without additional action
 in the storefront. As in the code above, the customer will be redirected to `/checkout/confirmation/${orderCode}`.
 
-{{% alert "primary" %}}
+:::info
 A full working storefront example of the Stripe integration can be found in the
 [Remix Starter repo](https://github.com/vendure-ecommerce/storefront-remix-starter/tree/master/app/components/checkout/stripe)
-{{% /alert %}}
+:::
 
 ## Local development
 

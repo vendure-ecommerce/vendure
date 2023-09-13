@@ -210,8 +210,7 @@ Removes a coupon code from the Order.
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>[]&#62;`}   />
 
-Returns all <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>s associated with an Order. A Promotion only gets associated with
-and Order once the order has been placed (see <a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>).
+Returns all <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>s associated with an Order.
 ### getNextOrderStates
 
 <MemberInfo kind="method" type={`(order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => readonly <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>[]`}   />

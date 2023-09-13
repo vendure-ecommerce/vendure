@@ -26,7 +26,12 @@ interface AdminUiExtension extends Partial<TranslationExtension>,
         Partial<GlobalStylesExtension> {
     id?: string;
     extensionPath: string;
-    ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+    ngModules?: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+    providers?: string[];
+    routes?: Array<{
+        route: string;
+        filePath: string;
+    }>;
     pathAlias?: string;
     exclude?: string[];
 }
@@ -55,6 +60,18 @@ scss style sheets etc.
 <MemberInfo kind="property" type={`Array&#60;<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionsharedmodule'>AdminUiExtensionSharedModule</a> | <a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextensionlazymodule'>AdminUiExtensionLazyModule</a>&#62;`}   />
 
 One or more Angular modules which extend the default Admin UI.
+### providers
+
+<MemberInfo kind="property" type={`string[]`}   />
+
+Defines the paths to a file that exports an array of shared providers such as nav menu items, custom form inputs,
+custom detail components, action bar items, custom history entry components.
+### routes
+
+<MemberInfo kind="property" type={`Array&#60;{         route: string;         filePath: string;     }&#62;`}   />
+
+Defines routes that will be lazy-loaded at the `/extensions/` route. The filePath should point to a file
+relative to the `extensionPath` which exports an array of Angular route definitions.
 ### pathAlias
 
 <MemberInfo kind="property" type={`string`}   />
@@ -72,8 +89,7 @@ well as linting.
 
 *Example*
 
-```ts
-// packages/common-ui-module/src/ui/ui-shared.module.ts
+```ts title="packages/common-ui-module/src/ui/ui-shared.module.ts"
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@vendure/admin-ui/core';
 import { CommonUiComponent } from './components/common-ui/common-ui.component';
@@ -88,13 +104,13 @@ export { CommonUiComponent };
 export class CommonSharedUiModule {}
 ```
 
-```ts
-// packages/common-ui-module/src/index.ts
+```ts title="packages/common-ui-module/src/index.ts"
 import path from 'path';
 
 import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
 
 export const uiExtensions: AdminUiExtension = {
+  // highlight-next-line
   pathAlias: '@common-ui-module',     // this is the important part
   extensionPath: path.join(__dirname, 'ui'),
   ngModules: [
@@ -107,25 +123,26 @@ export const uiExtensions: AdminUiExtension = {
 };
 ```
 
-```json
-// tsconfig.json
+```json title="tsconfig.json"
 {
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      // highlight-next-line
       "@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
     }
   }
 }
 ```
 
-```ts
-// packages/sample-plugin/src/ui/ui-extension.module.ts
+```ts title="packages/sample-plugin/src/ui/ui-extension.module.ts"
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@vendure/admin-ui/core';
+// highlight-start
 // the import below works both in the context of the custom Admin UI app as well as the main project
 // '@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
 import { CommonSharedUiModule, CommonUiComponent } from '@common-ui-module/ui-shared.module';
+// highlight-end
 
 @NgModule({
   imports: [
@@ -273,7 +290,7 @@ default values defined in Clarity.
 
 ## StaticAssetDefinition
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="231" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="251" packageName="@vendure/ui-devkit" />
 
 A static asset can be provided as a path to the asset, or as an object containing a path and a new
 name, which will cause the compiler to copy and then rename the asset.
@@ -285,7 +302,7 @@ type StaticAssetDefinition = string | { path: string; rename: string }
 
 ## AdminUiExtensionSharedModule
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="240" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="260" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 
@@ -323,7 +340,7 @@ The name of the extension module class.
 
 ## AdminUiExtensionLazyModule
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="267" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="287" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 

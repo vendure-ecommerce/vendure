@@ -10,7 +10,7 @@ import { HealthCheckService } from '../../providers/health-check/health-check.se
 import { JobQueueService } from '../../providers/job-queue/job-queue.service';
 import { ActionBarContext, NavMenuBadge, NavMenuItem } from '../../providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../providers/nav-builder/nav-builder.service';
-import { NotificationService } from '../../providers/notification/notification.service';
+// import { NotificationService } from '../../providers/notification/notification.service';
 
 @Directive({
     selector: '[vdrBaseNav]',
@@ -24,7 +24,7 @@ export class BaseNavComponent implements OnInit, OnDestroy {
         protected healthCheckService: HealthCheckService,
         protected jobQueueService: JobQueueService,
         protected dataService: DataService,
-        protected notificationService: NotificationService,
+        // protected notificationService: any,
         protected injector: Injector,
     ) {}
 
@@ -318,7 +318,7 @@ export class BaseNavComponent implements OnInit, OnDestroy {
             route: this.route,
             injector: this.injector,
             dataService: this.dataService,
-            notificationService: this.notificationService,
+            notificationService: {} as any,
         };
     }
 }

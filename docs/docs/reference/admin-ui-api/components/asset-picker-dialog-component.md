@@ -58,7 +58,7 @@ class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Di
     createAssets(files: File[]) => ;
 }
 ```
-* Implements: <code>OnInit</code>, <code>AfterViewInit</code>, <code>OnDestroy</code>, <code><a href='/reference/admin-ui-api/providers/modal-service#dialog'>Dialog</a>&#60;<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]&#62;</code>
+* Implements: <code>OnInit</code>, <code>AfterViewInit</code>, <code>OnDestroy</code>, <code><a href='/reference/admin-ui-api/services/modal-service#dialog'>Dialog</a>&#60;<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>[]&#62;</code>
 
 
 
@@ -116,7 +116,7 @@ class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Di
 
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/providers/data-service#dataservice'>DataService</a>, notificationService: <a href='/reference/admin-ui-api/providers/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, notificationService: <a href='/reference/admin-ui-api/services/notification-service#notificationservice'>NotificationService</a>) => AssetPickerDialogComponent`}   />
 
 
 ### ngOnInit

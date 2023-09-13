@@ -11,25 +11,24 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerPageTab
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/page/page.service.ts" sourceLine="78" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-page-tab.ts" sourceLine="24" packageName="@vendure/admin-ui" />
 
 Add a tab to an existing list or detail page.
 
 *Example*
 
-```ts
-@NgModule({
-  imports: [SharedModule],
-  providers: [
+```ts title="providers.ts"
+import { registerPageTab } from '@vendure/admin-ui/core';
+import { DeletedProductListComponent } from './components/deleted-product-list/deleted-product-list.component';
+
+export default [
     registerPageTab({
-      location: 'product-list',
-      tab: 'Deleted Products',
-      route: 'deleted',
-      component: DeletedProductListComponent,
+        location: 'product-list',
+        tab: 'Deleted Products',
+        route: 'deleted',
+        component: DeletedProductListComponent,
     }),
-  ],
-})
-export class MyUiExtensionModule {}
+];
 ```
 
 ```ts title="Signature"

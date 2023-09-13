@@ -19,6 +19,7 @@ Configures a <a href='/reference/admin-ui-api/custom-detail-components/custom-de
 interface CustomDetailComponentConfig {
     locationId: CustomDetailComponentLocationId;
     component: Type<CustomDetailComponent>;
+    providers?: Provider[];
 }
 ```
 
@@ -32,6 +33,11 @@ interface CustomDetailComponentConfig {
 ### component
 
 <MemberInfo kind="property" type={`Type&#60;<a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a>&#62;`}   />
+
+
+### providers
+
+<MemberInfo kind="property" type={`Provider[]`}   />
 
 
 

@@ -11,21 +11,17 @@ import { NavBuilderService } from '../providers/nav-builder/nav-builder.service'
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
  * @example
- * ```ts
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
+ * ```ts title="providers.ts"
+ * export default [
  *     addNavMenuSection({
- *       id: 'reports',
- *       label: 'Reports',
- *       items: [{
- *           // ...
- *       }],
+ *         id: 'reports',
+ *         label: 'Reports',
+ *         items: [{
+ *             // ...
+ *         }],
  *     },
  *     'settings'),
- *   ],
- * })
- * export class MyUiExtensionModule {}
+ * ];
  * ```
  * @docsCategory nav-menu
  */
@@ -51,20 +47,16 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
  * @example
- * ```ts
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
+ * ```ts title="providers.ts"
+ * export default [
  *     addNavMenuItem({
- *       id: 'reviews',
- *       label: 'Product Reviews',
- *       routerLink: ['/extensions/reviews'],
- *       icon: 'star',
+ *         id: 'reviews',
+ *         label: 'Product Reviews',
+ *         routerLink: ['/extensions/reviews'],
+ *         icon: 'star',
  *     },
  *     'marketing'),
- *   ],
- * })
- * export class MyUiExtensionModule {}
+ * ];
  * ``
  *
  * @docsCategory nav-menu
