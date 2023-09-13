@@ -3962,7 +3962,7 @@ export type PaymentStateTransitionError = ErrorResult & {
  * based on the activeUserId of the current session. As a result, the resolver code looks like this:
  *
  * @example
- * ```ts
+ * ```TypeScript
  * \@Query()
  * \@Allow(Permission.Owner)
  * async activeCustomer(\@Ctx() ctx: RequestContext): Promise<Customer | undefined> {
