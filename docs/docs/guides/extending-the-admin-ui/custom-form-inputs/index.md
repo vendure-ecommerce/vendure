@@ -34,7 +34,7 @@ But let's say we want to display a **range slider** instead.
 
 First we need to define a new Angular or React component to render the slider:
 
-<Tabs>
+<Tabs groupId="framework">
 <TabItem value="Angular" label="Angular" default>
 
 Angular components will have the `readonly`, `config` and `formControl` properties populated automatically.
@@ -102,7 +102,7 @@ export function SliderFormInput({ readonly, config }: ReactFormInputOptions) {
 
 Next we will register this component in our `providers.ts` file and give it a unique ID, `'slider-form-input'`:
 
-<Tabs>
+<Tabs groupId="framework">
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/common/ui/providers.ts"

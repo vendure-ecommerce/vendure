@@ -133,6 +133,7 @@ const sidebars = {
                 'guides/extending-the-admin-ui/add-actions-to-pages/index',
                 'guides/extending-the-admin-ui/page-tabs/index',
                 'guides/extending-the-admin-ui/custom-form-inputs/index',
+                'guides/extending-the-admin-ui/custom-data-table-components/index',
                 'guides/extending-the-admin-ui/custom-detail-components/index',
                 'guides/extending-the-admin-ui/bulk-actions/index',
                 'guides/extending-the-admin-ui/dashboard-widgets/index',

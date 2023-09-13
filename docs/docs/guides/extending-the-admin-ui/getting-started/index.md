@@ -172,7 +172,7 @@ export default [
 
 Your `routes.ts` file exports an array of objects which define new routes in the Admin UI. For example, imagine you have created a plugin which implements a simple content management system. You can define a route for the list of articles, and another for the detail view of an article.
 
-<Tabs>
+<Tabs groupId="framework">
 <TabItem value="Angular" label="Angular" default>
 
 Using [`registerRouteComponent`](/reference/admin-ui-api/routes/register-route-component) you can define a new route based on an Angular component. Here's a simple example:

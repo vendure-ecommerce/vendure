@@ -1,12 +1,9 @@
 ---
 title: 'Custom Detail Components'
-weight: 6
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-
-# Custom Detail Components
 
 Detail views can be extended with custom Angular or React components using the [`registerCustomDetailComponent`](/reference/admin-ui-api/custom-detail-components/register-custom-detail-component/) and [`registerReactCustomDetailComponent`](/reference/admin-ui-api/react-extensions/register-react-custom-detail-component) functions.
 
@@ -18,7 +15,11 @@ The valid locations for embedding custom detail components can be found in the [
 
 Let's imagine that your project has an external content management system (CMS) which is used to store additional details about products. You might want to display some of this information in the product detail page. We will demonstrate the same component in both Angular and React.
 
-## Angular
+### 1. Create a component
+
+
+<Tabs groupId="framework">
+<TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/cms/ui/components/product-info/product-info.component.ts"
 import { Component, OnInit } from '@angular/core';
@@ -56,21 +57,10 @@ export class ProductInfoComponent implements CustomDetailComponent, OnInit {
 }
 ```
 
-```ts title="src/plugins/cms/ui/providers.ts"
-import { registerCustomDetailComponent } from '@vendure/admin-ui/core';
-import { ProductInfoComponent } from './components/product-info/product-info.component';
+</TabItem>
+<TabItem value="React" label="React">
 
-export default [
-    registerCustomDetailComponent({
-        locationId: 'product-detail',
-        component: ProductInfoComponent,
-    }),
-];
-```
-
-## React
-
-When using React, we can use the [`useDetailComponentData` hook](/reference/admin-ui-api/react-hooks/use-detail-component-data) to access the same data (the entity and the form) as the Angular example above.
+When using React, we can use the [`useDetailComponentData` hook](/reference/admin-ui-api/react-hooks/use-detail-component-data) to access the entity and form data.
 
 ```tsx title="src/plugins/cms/ui/components/ProductInfo.tsx"
 import React, { useEffect, useState } from 'react';
@@ -85,11 +75,14 @@ export function ProductInfo() {
     const [extraInfo, setExtraInfo] = useState<any>();
     
     useEffect(() => {
-        const subscription = cmsDataService.getDataFor(entity.id).subscribe(data => {
+        if (!entity?.id) {
+            return;
+        }
+        const subscription = cmsDataService.getDataFor(entity?.id).subscribe(data => {
             setExtraInfo(data);
         });
         return () => subscription.unsubscribe();
-    }, [entity.id]);
+    }, [entity?.id]);
     
     return (
         <Card title="CMS Info">
@@ -98,6 +91,31 @@ export function ProductInfo() {
     );
 }
 ```
+
+</TabItem>
+</Tabs>
+
+### 2. Register the component
+
+We can then register the component in our `providers.ts` file:
+
+<Tabs groupId="framework">
+<TabItem value="Angular" label="Angular" default>
+
+```ts title="src/plugins/cms/ui/providers.ts"
+import { registerCustomDetailComponent } from '@vendure/admin-ui/core';
+import { ProductInfoComponent } from './components/product-info/product-info.component';
+
+export default [
+    registerCustomDetailComponent({
+        locationId: 'product-detail',
+        component: ProductInfoComponent,
+    }),
+];
+```
+
+</TabItem>
+<TabItem value="React" label="React">
 
 ```ts title="src/plugins/cms/ui/providers.ts"
 import { registerReactCustomDetailComponent } from '@vendure/admin-ui/react';
@@ -111,11 +129,18 @@ export default [
 ];
 ```
 
+</TabItem>
+</Tabs>
+
+When running the Admin UI, the component should now appear in the product detail page:
+
+![Product detail with custom component](./detail-component.webp)
+
 ## Manipulating the detail form
 
 The `detailForm` property is an instance of the Angular [FormGroup](https://angular.io/api/forms/FormGroup) which can be used to manipulate the form fields, set the validity of the form, mark the form as dirty etc. For example, we could add a button which updates the `description` field of the product:
 
-<Tabs>
+<Tabs groupId="framework">
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/cms/ui/components/product-info/product-info.component.ts"
