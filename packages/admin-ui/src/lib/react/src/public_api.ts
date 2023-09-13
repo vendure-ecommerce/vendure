@@ -11,6 +11,7 @@ export * from './react-hooks/use-form-control';
 export * from './react-hooks/use-injector';
 export * from './react-hooks/use-page-metadata';
 export * from './react-hooks/use-query';
+export * from './react-hooks/use-route-params';
 export * from './register-react-custom-detail-component';
 export * from './register-react-data-table-component';
 export * from './register-react-form-input-component';
