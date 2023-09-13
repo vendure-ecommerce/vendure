@@ -143,8 +143,9 @@ const sidebars = {
                     value: 'Routes',
                     className: 'sidebar-section-header',
                 },
-                'guides/extending-the-admin-ui/creating-detail-views/index',
+                'guides/extending-the-admin-ui/defining-routes/index',
                 'guides/extending-the-admin-ui/creating-list-views/index',
+                'guides/extending-the-admin-ui/creating-detail-views/index',
             ],
         },
         {

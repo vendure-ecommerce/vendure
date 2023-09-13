@@ -52,7 +52,7 @@ export default [
 ];
 ```
 
-You can then use the `compileUiExtensions` function to compile your UI extensions and add them to the Admin UI app bundle.
+You can then use the [`compileUiExtensions` function](/reference/admin-ui-api/ui-devkit/compile-ui-extensions/) to compile your UI extensions and add them to the Admin UI app bundle.
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
@@ -118,7 +118,9 @@ You can exclude them in your main `tsconfig.json` by adding a line to the "exclu
 
 ## Providers
 
-Your `providers.ts` file exports an array of objects known as "providers" in Angular terminology. These providers are passed to the application on startup to configure new functionality. With providers you can:
+Your `providers.ts` file exports an array of objects known as "providers" in Angular terminology. These providers are passed to the application on startup to configure new functionality.
+
+With providers you can:
 
 -   Add new buttons to the action bar of existing pages (the top bar containing the primary actions for a page) using [`addActionBarItem`](/reference/admin-ui-api/action-bar/add-action-bar-item).
 -   Add new menu items to the left-hand navigation menu using [`addNavMenuItem`](/reference/admin-ui-api/nav-menu/add-nav-menu-item) and [`addNavMenuSection`](/reference/admin-ui-api/nav-menu/add-nav-menu-section).
@@ -128,6 +130,46 @@ Your `providers.ts` file exports an array of objects known as "providers" in Ang
 -   Define custom components for rendering data table cells using [`registerDataTableComponent`](/reference/admin-ui-api/custom-table-components/register-data-table-component) or [`registerReactDataTableComponent`](/reference/admin-ui-api/react-extensions/register-react-data-table-component)
 -   Define custom form input components for custom fields and configurable operation arguments using [`registerFormInputComponent`](/reference/admin-ui-api/custom-input-components/register-form-input-component) or [`registerReactFormInputComponent`](/reference/admin-ui-api/react-extensions/register-react-form-input-component)
 -   Define custom components to render customer/order history timeline entries using [`registerHistoryEntryComponent`](/reference/admin-ui-api/custom-history-entry-components/register-history-entry-component)
+
+### Providers format 
+
+A providers file should have a **default export** which is an array of providers:
+
+```ts title="src/plugins/my-plugin/ui/providers.ts"
+import { addActionBarItem } from '@vendure/admin-ui/core';
+
+export default [
+    addActionBarItem({
+        id: 'test-button',
+        label: 'Test Button',
+        locationId: 'order-list',
+    }),
+];
+```
+
+### Specifying providers
+
+When defining UI extensions in the `compileUiExtensions()` function, you must specify at least one providers file. This is done by passing an array of file paths, where each file path is relative to the directory specified by the `extensionPath` option.
+
+```ts title="src/vendure-config.ts"
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import * as path from 'path';
+
+// ... omitted for brevity
+
+compileUiExtensions({
+    outputPath: path.join(__dirname, '../admin-ui'),
+    extensions: [
+        {
+            id: 'test-extension',
+            extensionPath: path.join(__dirname, 'plugins/my-plugin/ui'),
+            // highlight-next-line
+            providers: ['providers.ts'],
+        },
+    ],
+    devMode: true,
+});
+```
 
 :::info
 When running the Admin UI in dev mode, you can use the `ctrl + u` keyboard shortcut to see the location of all UI extension points.
@@ -170,109 +212,14 @@ export default [
 
 ## Routes
 
+Routes allow you to define completely custom views in the Admin UI.
+
+![Custom route](../defining-routes/route-area.webp)
+
 Your `routes.ts` file exports an array of objects which define new routes in the Admin UI. For example, imagine you have created a plugin which implements a simple content management system. You can define a route for the list of articles, and another for the detail view of an article.
 
-<Tabs groupId="framework">
-<TabItem value="Angular" label="Angular" default>
+For a detailed instructions, see the [Defining Routes guide](/guides/extending-the-admin-ui/defining-routes/).
 
-Using [`registerRouteComponent`](/reference/admin-ui-api/routes/register-route-component) you can define a new route based on an Angular component. Here's a simple example:
-
-```ts title="src/plugins/greeter/ui/routes.ts"
-import { registerRouteComponent, SharedModule } from '@vendure/admin-ui/core';
-import { Component } from '@angular/core';
-
-@Component({
-    selector: 'greeter',
-    template: ` <vdr-page-block>
-        <h2>{{ greeting }}</h2>
-    </vdr-page-block>`,
-    standalone: true,
-    imports: [SharedModule],
-})
-export class GreeterComponent {
-    greeting = 'Hello!';
-}
-
-export default [
-    registerRouteComponent({
-        component: GreeterComponent,
-        path: '',
-        title: 'Greeter Page',
-        breadcrumb: 'Greeter',
-    }),
-];
-```
-
-</TabItem>
-<TabItem value="React" label="React">
-
-Here's the equivalent example using React and [`registerReactRouteComponent`](/reference/admin-ui-api/react-extensions/register-react-route-component):
-
-```ts title="src/plugins/greeter/ui/routes.ts"
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
-import React from 'react';
-
-function Greeter() {
-    const greeting = 'Hello!';
-    return (
-        <div className="page-block">
-            <h2>{greeting}</h2>
-        </div>
-    );
-}
-
-export default [
-    registerReactRouteComponent({
-        component: Greeter,
-        path: '',
-        title: 'Greeter Page',
-        breadcrumb: 'Greeter',
-    }),
-];
-```
-
-</TabItem>
-</Tabs>
-
-:::note
-The `<vdr-page-block>` (Angular) and `<div className="page-block">` (React) is a wrapper that sets the layout and max width of your component to match the rest of the Admin UI. You should usually wrap your component in this element.
-:::
-
-Now we need to add this routes file to our extension definition:
-
-```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
-import * as path from 'path';
-
-export const config: VendureConfig = {
-    // ...
-    plugins: [
-        AdminUiPlugin.init({
-            port: 3002,
-            app: compileUiExtensions({
-                outputPath: path.join(__dirname, '../admin-ui'),
-                extensions: [
-                    {
-                        id: 'greeter',
-                        extensionPath: path.join(__dirname, 'plugins/greeter/ui'),
-                        // highlight-start
-                        routes: [{ route: 'greet', filePath: 'routes.ts' }],
-                        // highlight-end
-                    },
-                ],
-            }),
-        }),
-    ],
-};
-```
-
-Note that by specifying `route: 'greet'`, we are "mounting" the routes at the `/extensions/greet` path.
-
-Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greet` and you should see the component with the "Hello!" header:
-
-![./ui-extensions-greeter.webp](./ui-extensions-greeter.webp)
 
 ## Dev vs Prod mode
 
