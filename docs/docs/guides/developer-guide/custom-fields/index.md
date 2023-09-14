@@ -870,6 +870,46 @@ const config = {
 
 In the above example, the `CmsArticle` entity is being used as a related entity. Howeer, the GraphQL type name is `BlogPost`, so we must specify this in the `graphQLType` property, otherwise Vendure will try to extend the GraphQL schema with reference to a non-existent "CmsArticle" type.
 
+### `inverseSide`
+
+<span class="badge badge--secondary">Optional</span>
+
+`string | ((object: VendureEntity) => any);`
+
+Allows you to specify the [inverse side of the relation](https://typeorm.io/#inverse-side-of-the-relationship). Let's say you are adding a relation from `Product`
+to a custom entity which refers back to the product. You can specify this inverse relation like so:
+
+```ts title="src/vendure-config.ts"
+import { Product } from '\@vendure/core';
+import { ProductReview } from './entities/product-review.entity';
+
+const config = {
+    // ...
+    customFields: {
+        Product: [
+            {
+                name: 'reviews',
+                list: true,
+                type: 'relation',
+                entity: ProductReview,
+                // highlight-start
+                inverseSide: (review: ProductReview) => review.product,
+                // highlight-end
+            },
+        ]
+    }
+};
+```
+
+This then allows you to query the `ProductReview` entity and include the `product` relation:
+
+```ts
+const { productReviews } = await this.connection.getRepository(ProductReview).findOne({
+    where: { id: 1 },
+    relations: ['product'],
+});
+```
+
 ## Custom Field UI
 
 In the Admin UI, an appropriate default form input component is used for each custom field type. The Admin UI comes with a set of ready-made form input components, but it is also possible to create custom form input components. The ready-made components are:
