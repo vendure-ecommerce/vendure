@@ -20,7 +20,7 @@
 }
 
 ::ng-deep .input-row {
-    input,
+    input:not([type='checkbox']),
     select,
     textarea,
     vdr-zone-selector,
@@ -29,6 +29,14 @@
     vdr-affixed-input,
     vdr-currency-input,
     vdr-rich-text-editor {
+        width: 100%;
+    }
+}
+
+.input-row {
+    input:not([type='checkbox']),
+    select,
+    textarea {
         width: 100%;
     }
 }

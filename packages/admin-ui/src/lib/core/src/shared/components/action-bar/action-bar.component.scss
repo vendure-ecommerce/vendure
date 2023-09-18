@@ -1,6 +1,6 @@
 @import 'variables';
 
-:host {
+:host, .vdr-action-bar {
     display: flex;
     justify-content: space-between;
     align-items: baseline;

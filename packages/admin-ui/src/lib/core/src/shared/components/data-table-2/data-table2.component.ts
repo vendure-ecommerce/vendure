@@ -42,7 +42,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
  * extend the {@link BaseListComponent} or {@link TypedBaseListComponent} class.
  *
  * @example
- * ```HTML
+ * ```html
  * <vdr-data-table-2
  *     id="product-review-list"
  *     [items]="items$ | async"
