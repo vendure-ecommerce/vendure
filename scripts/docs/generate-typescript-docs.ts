@@ -134,7 +134,8 @@ function getSourceFilePaths(sourceDirs: string[], excludePatterns: RegExp[] = []
             klawSync(path.join(__dirname, '../../', scanPath), {
                 nodir: true,
                 filter: item => {
-                    if (path.extname(item.path) === '.ts') {
+                    const ext = path.extname(item.path);
+                    if (ext === '.ts' || ext === '.tsx') {
                         for (const pattern of excludePatterns) {
                             if (pattern.test(item.path)) {
                                 return false;

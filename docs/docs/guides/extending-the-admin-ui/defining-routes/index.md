@@ -150,6 +150,40 @@ Now go to the Admin UI app in your browser and log in. You should now be able to
 
 ![./ui-extensions-greeter.webp](./ui-extensions-greeter.webp)
 
+
+## Links
+
+To link to other routes, you must use the `routerLink` directive for Angular, or the `Link` component for React:
+
+
+<Tabs groupId="framework">
+<TabItem value="Angular" label="Angular" default>
+
+```html
+<a class="button-ghost" [routerLink]="['/extensions/my-plugin/my-custom-route']">
+    John Smith
+</a>
+```
+
+</TabItem>
+<TabItem value="React" label="React">
+
+```tsx
+import React from 'react';
+import { Link } from '@vendure/admin-ui/react';
+
+export function DemoComponent() {
+    return (
+        <Link className="button-ghost" href="/extensions/my-plugin/my-custom-route">
+            John Smith
+        </Link>
+    );
+}
+```
+
+</TabItem>
+</Tabs>
+
 ## Route parameters
 
 The `path` property is used to specify the path to a specific component. This path can contain parameters, which will then be made available to the component. Parameters are defined using the `:` prefix. For example:

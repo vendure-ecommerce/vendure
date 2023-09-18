@@ -39,5 +39,5 @@ export function CustomDetailComponent(props: any) {
 ```
 
 ```ts title="Signature"
-function useDetailComponentData(): void
+function useDetailComponentData<T = any>(): void
 ```

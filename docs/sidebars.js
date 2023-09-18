@@ -121,6 +121,7 @@ const sidebars = {
             },
             items: [
                 'guides/extending-the-admin-ui/getting-started/index',
+                'guides/extending-the-admin-ui/ui-library/index',
                 'guides/extending-the-admin-ui/admin-ui-theming-branding/index',
                 'guides/extending-the-admin-ui/adding-ui-translations/index',
                 'guides/extending-the-admin-ui/using-other-frameworks/index',

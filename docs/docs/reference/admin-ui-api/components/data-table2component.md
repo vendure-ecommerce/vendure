@@ -18,7 +18,7 @@ extend the <a href='/reference/admin-ui-api/list-detail-views/base-list-componen
 
 *Example*
 
-```HTML
+```html
 <vdr-data-table-2
     id="product-review-list"
     [items]="items$ | async"
