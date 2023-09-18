@@ -241,10 +241,10 @@ fdescribe('createUpdatedTranslatable()', () => {
             languageCode: LanguageCode.en,
         });
 
-        expect(result.customFields.a).toBe(false);
+        expect(result.customFields.a).toBe(null);
         expect(result.customFields.b).toBe(null);
         expect(result.customFields.c).toBe(null);
         expect(result.customFields.d).toBe(null);
-        expect(result.customFields.e).toBe('');
+        expect(result.customFields.e).toBe(null);
     });
 });
