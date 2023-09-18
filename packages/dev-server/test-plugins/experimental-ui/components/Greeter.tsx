@@ -1,8 +1,12 @@
+import { userIcon } from '@cds/core/icon';
 import { NotificationService } from '@vendure/admin-ui/core';
-import { Card, useInjector, usePageMetadata } from '@vendure/admin-ui/react';
-import React, { useState, useEffect } from 'react';
+import { Card, registerCdsIcon, useInjector, usePageMetadata, useRouteParams } from '@vendure/admin-ui/react';
+import React, { useEffect, useState } from 'react';
+
+registerCdsIcon(userIcon);
 
 export function Greeter(props: { name: string }) {
+    const { params, queryParams } = useRouteParams();
     const notificationService = useInjector(NotificationService);
     const { setTitle, setBreadcrumb } = usePageMetadata();
     const [titleValue, setTitleValue] = useState('');
@@ -20,12 +24,18 @@ export function Greeter(props: { name: string }) {
         notificationService.success('You clicked me!');
     }
 
+    console.log(
+        `Greeter.tsx: params: ${JSON.stringify(params)}, queryParams: ${JSON.stringify(queryParams)}`,
+    );
+
     return (
         <div className="page-block">
             <Card title={`Hello ${props.name}`}>
                 <button className="button primary" onClick={handleClick}>
                     Click me
                 </button>
+
+                <cds-icon shape="user" flip={'vertical'} badge={'warning'} solid size={'xxl'}></cds-icon>
 
                 <div className="form-grid">
                     <div>
