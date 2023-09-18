@@ -202,4 +202,4 @@ If your extension does not have a build step, you can still include the UiDevkit
 
 ## Next Steps
 
-Now you have created your extension, you need a way for your admin to access it. See [Adding Navigation Items](/guides/extending-the-admin-ui/modifying-navigation-items/)
+Now you have created your extension, you need a way for your admin to access it. See [Adding Navigation Items](/guides/extending-the-admin-ui/nav-menu/)

@@ -336,7 +336,7 @@ Angular uses the concept of modules ([NgModules](https://angular.io/guide/ngmodu
 
 When creating your UI extensions, you can set your module to be either `lazy` or `shared`. Shared modules are loaded _eagerly_, i.e. their code is bundled up with the main app and loaded as soon as the app loads.
 
-As a rule, modules defining new routes should be lazily loaded (so that the code is only loaded once that route is activated), and modules defining [new navigations items](/guides/extending-the-admin-ui/modifying-navigation-items/) and [custom form input](/guides/extending-the-admin-ui/custom-form-inputs/) should be set to `shared`.
+As a rule, modules defining new routes should be lazily loaded (so that the code is only loaded once that route is activated), and modules defining [new navigations items](/guides/extending-the-admin-ui/nav-menu/) and [custom form input](/guides/extending-the-admin-ui/custom-form-inputs/) should be set to `shared`.
 
 :::info
 "lazy" modules are equivalent to the new "routes" API, and "shared" modules are equivalent to the new "providers" API. In fact, behind the scenes,

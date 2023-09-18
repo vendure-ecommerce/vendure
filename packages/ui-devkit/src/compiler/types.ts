@@ -88,7 +88,7 @@ export interface SassVariableOverridesExtension {
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
  *
- * See [Extending the Admin UI](/guides/extending-the-admin-ui/introduction) for
+ * See [Extending the Admin UI](/guides/extending-the-admin-ui/getting-started/) for
  * detailed instructions.
  *
  * @docsCategory UiDevkit

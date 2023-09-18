@@ -4,7 +4,7 @@ showtoc: true
 ---
 
 
-If you have customized the Admin UI with extensions, you should [compile your extensions ahead of time as part of the deployment process](/guides/extending-the-admin-ui/introduction#compiling-as-a-deployment-step).
+If you have customized the Admin UI with extensions, you should [compile your extensions ahead of time as part of the deployment process](/guides/extending-the-admin-ui/getting-started/#compiling-as-a-deployment-step).
 
 ### Deploying a stand-alone Admin UI
 
