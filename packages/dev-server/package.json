@@ -1,6 +1,6 @@
 {
     "name": "dev-server",
-    "version": "2.1.0-next.3",
+    "version": "2.1.0-next.5",
     "main": "index.js",
     "license": "MIT",
     "private": true,
@@ -14,20 +14,21 @@
         "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
     },
     "dependencies": {
-        "@vendure/admin-ui-plugin": "2.1.0-next.3",
-        "@vendure/asset-server-plugin": "2.1.0-next.3",
-        "@vendure/common": "2.1.0-next.3",
-        "@vendure/core": "2.1.0-next.3",
-        "@vendure/elasticsearch-plugin": "2.1.0-next.3",
-        "@vendure/email-plugin": "2.1.0-next.3",
+        "@nestjs/axios": "^3.0.0",
+        "@vendure/admin-ui-plugin": "2.1.0-next.5",
+        "@vendure/asset-server-plugin": "2.1.0-next.5",
+        "@vendure/common": "2.1.0-next.5",
+        "@vendure/core": "2.1.0-next.5",
+        "@vendure/elasticsearch-plugin": "2.1.0-next.5",
+        "@vendure/email-plugin": "2.1.0-next.5",
         "typescript": "4.9.5"
     },
     "devDependencies": {
         "@types/csv-stringify": "^3.1.0",
-        "@vendure/testing": "2.1.0-next.3",
-        "@vendure/ui-devkit": "2.1.0-next.3",
+        "@vendure/testing": "2.1.0-next.5",
+        "@vendure/ui-devkit": "2.1.0-next.5",
         "commander": "^7.1.0",
-        "concurrently": "^5.0.0",
+        "concurrently": "^8.2.1",
         "csv-stringify": "^5.3.3",
         "dayjs": "^1.11.7",
         "progress": "^2.0.3"

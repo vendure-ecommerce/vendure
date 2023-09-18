@@ -1,0 +1,102 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+@font-face {
+  font-family: "Inter";
+  src: url('/static/inter.woff') format('woff');
+}
+
+:root {
+  --ifm-font-family-base: "Inter"
+}
+
+/* You can override the default Infima variables here. */
+:root {
+    --ifm-color-primary: hsl(196 100% 35%);
+    --ifm-color-primary-dark: hsl(196 100% 25%);
+    --ifm-color-primary-darker: hsl(196 100% 15%);
+    --ifm-color-primary-darkest: hsl(196 100% 7%);
+    --ifm-color-primary-light: hsl(196 100% 65%);
+    --ifm-color-primary-lighter: hsl(196 100% 75%);
+    --ifm-color-primary-lightest: hsl(196 100% 90%);
+    --ifm-navbar-background-color: #ffffff11;
+    --navbar-background-color-mobile: #ffffffee;
+    --ifm-color-content: var(--ifm-color-emphasis-800);
+    --ifm-code-font-size: 95%;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+    --color-graphql-comment: #47954d;
+    --color-graphql-identifier: rgb(227, 17, 108);
+    --color-members-border: var(--ifm-color-secondary);
+    --docusaurus-highlighted-code-line-bg: #e0f1ff;
+    --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>');
+    --body-background: white;
+    --ifm-footer-background-color: #edf2f5;
+    --color-docsearch-border: #b7b7c3;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+    --ifm-color-primary: hsl(196 100% 45%);
+    --ifm-color-primary-dark: hsl(196 100% 35%);
+    --ifm-color-primary-darker: hsl(196 100% 25%);
+    --ifm-color-primary-darkest: hsl(196 100% 15%);
+    --ifm-color-primary-light: hsl(196 100% 65%);
+    --ifm-color-primary-lighter: hsl(196 100% 75%);
+    --ifm-color-primary-lightest: hsl(196 100% 90%);
+    --ifm-navbar-background-color: #00021211;
+    --navbar-background-color-mobile: #000212ee;
+    --ifm-card-background-color: transparent;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+    --color-graphql-comment: #6ea372;
+    --color-graphql-identifier: rgb(255, 121, 198);
+    --color-members-border: #333;
+    --docusaurus-highlighted-code-line-bg: rgba(15, 71, 117, 0.5);
+    --body-background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79, 208, 255, 0.3), transparent);
+    --ifm-footer-background-color: #1a1f27;
+    --color-docsearch-border: #232347;
+}
+
+html[data-theme='light'] {
+    --ifm-background-color: #ffffff;
+}
+
+html[data-theme='dark'] {
+    --ifm-background-color: #000212;
+}
+
+.markdown h2:not(:first-of-type) {
+    --ifm-h2-vertical-rhythm-top: 5;
+}
+
+.markdown img {
+    border-radius: 4px;
+}
+
+
+.members-wrapper {
+    border-left: 1px solid var(--color-members-border);
+    padding-left: 32px;
+}
+
+.members-wrapper > h3 {
+    margin-top: 42px;
+}
+
+.sidebar-section-header {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    opacity: 0.8;
+    color: #afafaf;
+    padding: var(--ifm-menu-link-padding-vertical)
+         var(--ifm-menu-link-padding-horizontal);
+}
+
+.sidebar-section-divider {
+    border-bottom: 1px solid var(--ifm-font-color-base);
+    opacity: 0.2;
+    margin: 6px 12px;
+}

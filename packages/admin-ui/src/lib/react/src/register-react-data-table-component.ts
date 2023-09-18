@@ -84,6 +84,8 @@ export interface ReactDataTableComponentProps {
  *     }),
  * ];
  * ```
+ *
+ * @docsCategory react-extensions
  */
 export function registerReactDataTableComponent(config: ReactDataTableComponentConfig) {
     return {

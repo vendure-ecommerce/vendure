@@ -62,3 +62,5 @@ export * from './tax-category/tax-category.entity';
 export * from './tax-rate/tax-rate.entity';
 export * from './user/user.entity';
 export * from './zone/zone.entity';
+export * from './entity-id.decorator';
+export * from './money.decorator';

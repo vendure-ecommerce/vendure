@@ -23,6 +23,7 @@ const VALID_SCOPES: string[] = [
     'admin-ui',
     'asset-server',
     'asset-server-plugin',
+    'cli',
     'common',
     'core',
     'create',

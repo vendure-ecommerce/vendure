@@ -11,7 +11,7 @@ export type GraphQLErrorResult = {
  * plus one or more ErrorResult types) and returns a union of _just_ the ErrorResult types.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError;
  *
  * type T1 = JustErrorResults<UpdateOrderItemsResult>;
@@ -33,7 +33,7 @@ export type JustErrorResults<T extends GraphQLErrorResult | U, U = any> = Exclud
  * we use this type to substitute them.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError;
  * type T1 = ErrorResultUnion<UpdateOrderItemsResult, VendureEntityOrder>;
  * // T1 = VendureEntityOrder | OrderModificationError | OrderLimitError | NegativeQuantityError;
@@ -55,8 +55,8 @@ export function isGraphQlErrorResult<T, E extends VendureEntity>(
     return (
         input &&
         !!(
-            ((input as unknown) as GraphQLErrorResult).errorCode &&
-            ((input as unknown) as GraphQLErrorResult).message != null
+            (input as unknown as GraphQLErrorResult).errorCode &&
+            (input as unknown as GraphQLErrorResult).message != null
         ) &&
         (input as any).__typename
     );

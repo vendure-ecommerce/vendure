@@ -9,7 +9,14 @@ import { User } from '../../entity/user/user.entity';
  * An AuthenticationStrategy defines how a User (which can be a Customer in the Shop API or
  * and Administrator in the Admin API) may be authenticated.
  *
- * Real-world examples can be found in the [Authentication guide](/docs/developer-guide/authentication/).
+ * Real-world examples can be found in the [Authentication guide](/guides/core-concepts/auth/).
+ *
+ * :::info
+ *
+ * This is configured via the `authOptions.shopAuthenticationStrategy` and `authOptions.adminAuthenticationStrategy`
+ * properties of your VendureConfig.
+ *
+ * :::
  *
  * @docsCategory auth
  */
@@ -30,7 +37,7 @@ export interface AuthenticationStrategy<Data = unknown> extends InjectableStrate
      * @example
      * For example, given the following:
      *
-     * ```TypeScript
+     * ```ts
      * defineInputType() {
      *   return gql`
      *      input MyAuthInput {

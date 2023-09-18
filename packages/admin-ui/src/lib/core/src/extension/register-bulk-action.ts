@@ -16,39 +16,35 @@ import { BulkAction } from '../providers/bulk-action-registry/bulk-action-types'
  * translation via a custom service which integrates with the translation service's API.
  *
  * @example
- * ```TypeScript
- * import { NgModule } from '\@angular/core';
+ * ```ts title="providers.ts"
  * import { ModalService, registerBulkAction, SharedModule } from '\@vendure/admin-ui/core';
+ * import { ProductDataTranslationService } from './product-data-translation.service';
  *
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
+ * export default [
  *     ProductDataTranslationService,
  *     registerBulkAction({
- *       location: 'product-list',
- *       label: 'Send to translation service',
- *       icon: 'language',
- *       onClick: ({ injector, selection }) => {
- *         const modalService = injector.get(ModalService);
- *         const translationService = injector.get(ProductDataTranslationService);
- *         modalService
- *           .dialog({
- *             title: `Send ${selection.length} products for translation?`,
- *             buttons: [
- *               { type: 'secondary', label: 'cancel' },
- *               { type: 'primary', label: 'send', returnValue: true },
- *             ],
- *           })
- *           .subscribe(response => {
- *             if (response) {
- *               translationService.sendForTranslation(selection.map(item => item.productId));
- *             }
- *           });
- *       },
+ *         location: 'product-list',
+ *         label: 'Send to translation service',
+ *         icon: 'language',
+ *         onClick: ({ injector, selection }) => {
+ *             const modalService = injector.get(ModalService);
+ *             const translationService = injector.get(ProductDataTranslationService);
+ *             modalService
+ *                 .dialog({
+ *                     title: `Send ${selection.length} products for translation?`,
+ *                     buttons: [
+ *                         { type: 'secondary', label: 'cancel' },
+ *                         { type: 'primary', label: 'send', returnValue: true },
+ *                     ],
+ *                 })
+ *                 .subscribe(response => {
+ *                     if (response) {
+ *                         translationService.sendForTranslation(selection.map(item => item.productId));
+ *                     }
+ *                 });
+ *         },
  *     }),
- *   ],
- * })
- * export class MyUiExtensionModule {}
+ * ];
  * ```
  * @since 1.8.0
  * @docsCategory bulk-actions

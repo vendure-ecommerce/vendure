@@ -9,7 +9,7 @@ import { EmailDetails, EmailTransportOptions } from './types';
  * {@link NodemailerEmailSender}, but it is also possible to supply a custom implementation:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const sgMail = require('\@sendgrid/mail');
  *
  * sgMail.setApiKey(process.env.SENDGRID_API_KEY);

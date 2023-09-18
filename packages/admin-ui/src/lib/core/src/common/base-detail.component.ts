@@ -20,7 +20,7 @@ import { TranslationOf } from './utilities/find-translation';
  * {@link BaseEntityResolver}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Component({
  *   selector: 'app-my-entity',
  *   templateUrl: './my-entity.component.html',
@@ -219,7 +219,7 @@ export abstract class TypedBaseDetailComponent<
  * correct resolved detail data.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [ReviewsSharedModule],
  *   declarations: [/* ... *\/],

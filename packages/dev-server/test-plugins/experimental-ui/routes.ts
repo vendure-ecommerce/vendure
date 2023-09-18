@@ -6,7 +6,7 @@ import { ProductList } from './components/ProductList';
 export default [
     registerReactRouteComponent({
         component: Greeter,
-        path: 'greet',
+        path: ':name',
         title: 'Greeter Page',
         breadcrumb: 'Greeter',
         props: {

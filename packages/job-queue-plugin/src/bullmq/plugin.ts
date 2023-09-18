@@ -43,6 +43,7 @@ import { BullMQPluginOptions } from './types';
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
+ *     // DefaultJobQueuePlugin should be removed from the plugins array
  *     BullMQJobQueuePlugin.init({
  *       connection: {
  *         port: 6379
@@ -85,7 +86,7 @@ import { BullMQPluginOptions } from './types';
  * You can change the concurrency in the `workerOptions` passed to the `init()` method:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const config: VendureConfig = {
  *   plugins: [
  *     BullMQJobQueuePlugin.init({

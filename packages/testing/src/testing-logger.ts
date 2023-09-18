@@ -10,7 +10,7 @@ import { VendureLogger } from '@vendure/core';
  * (e.g. replacing `jest.fn()` with `jasmine.createSpy()`).
  *
  * @example
- * ```TypeScript
+ * ```ts
  * // e2e test example
  * import { createTestEnvironment, TestingLogger } from '\@vendure/testing';
  *
@@ -34,7 +34,7 @@ import { VendureLogger } from '@vendure/core';
  * ```
  *
  * @example
- * ```TypeScript
+ * ```ts
  * // unit test example
  * import { Test } from '\@nestjs/testing';
  * import { Logger } from '\@vendure/core';

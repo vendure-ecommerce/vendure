@@ -7,6 +7,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { Permission } from '../../common/generated-types';
 
 import {
+    ActionBarContext,
     ActionBarItem,
     NavMenuBadgeType,
     NavMenuItem,
@@ -73,7 +74,7 @@ export class NavBuilderService {
 
     /**
      * Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
-     * be determined by inspecting the DOM and finding the <vdr-action-bar> element and its
+     * be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
      * `data-location-id` attribute.
      */
     addActionBarItem(config: ActionBarItem) {
@@ -85,9 +86,12 @@ export class NavBuilderService {
         }
     }
 
-    getRouterLink(config: { routerLink?: RouterLinkDefinition }, route: ActivatedRoute): string[] | null {
+    getRouterLink(
+        config: { routerLink?: RouterLinkDefinition; context: ActionBarContext },
+        route: ActivatedRoute,
+    ): string[] | null {
         if (typeof config.routerLink === 'function') {
-            return config.routerLink(route);
+            return config.routerLink(route, config.context);
         }
         if (Array.isArray(config.routerLink)) {
             return config.routerLink;

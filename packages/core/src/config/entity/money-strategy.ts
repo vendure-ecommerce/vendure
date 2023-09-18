@@ -8,7 +8,7 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * is defined in {@link EntityOptions}:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const config: VendureConfig = {
  *   entityOptions: {
  *     moneyStrategy: new MyCustomMoneyStrategy(),
@@ -34,6 +34,13 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * the solution would be to define a custom MoneyStrategy which uses a non-integer data type for storing
  * the value in the database, and defines a `round()` implementation which allows decimal places to be kept.
  *
+ * :::info
+ *
+ * This is configured via the `entityOptions.moneyStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory money
  * @since 2.0.0
  */
@@ -49,14 +56,14 @@ export interface MoneyStrategy extends InjectableStrategy {
      * Defines the logic used to round monetary values. For instance, the default behavior
      * in the {@link DefaultMoneyStrategy} is to round the value, then multiply.
      *
-     * ```TypeScript
+     * ```ts
      * return Math.round(value) * quantity;
      * ```
      *
      * However, it may be desirable to instead round only _after_ the unit amount has been
      * multiplied. In this case you can define a custom strategy with logic like this:
      *
-     * ```TypeScript
+     * ```ts
      * return Math.round(value * quantity);
      * ```
      */

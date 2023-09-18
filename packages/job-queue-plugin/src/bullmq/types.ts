@@ -42,7 +42,7 @@ export interface BullMQPluginOptions {
      * the job being added.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * setRetries: (queueName, job) => {
      *   if (queueName === 'send-email') {
      *     // Override the default number of retries
@@ -65,7 +65,7 @@ export interface BullMQPluginOptions {
      * value of exponential/1000ms will be used.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * setBackoff: (queueName, job) => {
      *   return {
      *     type: 'exponential', // or 'fixed'

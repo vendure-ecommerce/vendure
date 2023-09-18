@@ -9,6 +9,13 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  * The OrderItemPriceCalculationStrategy defines the listPrice of an OrderLine when adding an item to an Order. By default the
  * {@link DefaultOrderItemPriceCalculationStrategy} is used.
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.orderItemPriceCalculationStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * ### When is the strategy invoked ?
  * * addItemToOrder (only on the new order line)
  * * adjustOrderLine  (only on the adjusted order line)
@@ -44,7 +51,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  * * A gift-wrapping service, where a boolean custom field is defined on the OrderLine. If `true`,
  *   a gift-wrapping surcharge would be added to the price.
  * * A product-configurator where e.g. various finishes, colors, and materials can be selected and stored
- *   as OrderLine custom fields (see [Customizing models](/docs/developer-guide/customizing-models/#configurable-order-products).
+ *   as OrderLine custom fields (see [the Custom Fields guide](/guides/developer-guide/custom-fields/).
  * * Price lists or bulk pricing, where different price bands are stored e.g. in a customField on the ProductVariant, and this
  *   is used to calculate the price based on the current quantity.
  *

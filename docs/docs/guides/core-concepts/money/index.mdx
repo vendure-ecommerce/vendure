@@ -1,0 +1,180 @@
+---
+title: "Money & Currency"
+---
+
+In Vendure, monetary values are stored as **integers** using the **minor unit** of the selected currency.
+For example, if the currency is set to USD, then the integer value `100` would represent $1.00.
+This is a common practice in financial applications, as it avoids the rounding errors that can occur when using floating-point numbers.
+
+For example, here's the response from a query for a product's variant prices:
+
+```json
+{
+  "data": {
+    "product": {
+      "id": "42",
+      "variants": [
+        {
+          "id": "74",
+          "name": "Bonsai Tree",
+          "currencyCode": "USD",
+          // highlight-start
+          "price": 1999,
+          "priceWithTax": 2399,
+          // highlight-end
+        }
+      ]
+    }
+  }
+}
+```
+
+In this example, the tax-inclusive price of the variant is `$23.99`.
+
+:::info
+To illustrate the problem with storing money as decimals, imagine that we want to add the price of two items:
+
+- Product A: `$1.21`
+- Product B: `$1.22`
+
+We should expect the sum of these two amounts to equal `$2.43`. However, if we perform this addition in JavaScript (and the same
+holds true for most common programming languages), we will instead get `$2.4299999999999997`!
+
+For a more in-depth explanation of this issue, see [this StackOverflow answer](https://stackoverflow.com/a/3730040/772859)
+:::
+
+## Displaying monetary values
+
+When you are building your storefront, or any other client that needs to display monetary values in a human-readable form,
+you need to divide by 100 to convert to the major currency unit and then format with the correct decimal & grouping dividers.
+
+In JavaScript environments such as browsers & Node.js, we can take advantage of the excellent [`Intl.NumberFormat` API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat).
+
+Here's a function you can use in your projects:
+
+```ts title="src/utils/format-currency.ts"
+export function formatCurrency(value: number, currencyCode: string, locale?: string) {
+    const majorUnits = value / 100;
+    try {
+        // Note: if no `locale` is provided, the browser's default
+        // locale will be used.
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: currencyCode,
+        }).format(majorUnits);
+    } catch (e: any) {
+        // A fallback in case the NumberFormat fails for any reason
+        return majorUnits.toFixed(2);
+    }
+}
+```
+
+If you are building an Admin UI extension, you can use the built-in [`LocaleCurrencyPipe`](/reference/admin-ui-api/pipes/locale-currency-pipe/):
+
+```html title="src/plugins/my-plugin/ui/components/my-component/my.component.html"
+<div>
+    Variant price: {{ variant.price | localeCurrency : variant.currencyCode }}
+</div>
+```
+
+
+## The GraphQL `Money` scalar
+
+In the GraphQL APIs, we use a custom [`Money` scalar type](/reference/graphql-api/admin/object-types/#money) to represent
+all monetary values. We do this for two reasons:
+
+1. The built-in `Int` type is that the GraphQL spec imposes an upper limit of
+`2147483647`, which in some cases (especially currencies with very large amounts) is not enough.
+2. Very advanced use-cases might demand more precision than is possible with an integer type. Using our own custom
+scalar gives us the possibility of supporting more precision.
+
+Here's how the `Money` scalar is used in the `ShippingLine` type:
+
+```graphql
+type ShippingLine {
+    id: ID!
+    shippingMethod: ShippingMethod!
+    // highlight-start
+    price: Money!
+    priceWithTax: Money!
+    discountedPrice: Money!
+    discountedPriceWithTax: Money!
+    // highlight-end
+    discounts: [Discount!]!
+}
+```
+
+If you are defining custom GraphQL types, or adding fields to existing types (see the [Extending the GraphQL API doc](/guides/developer-guide/extend-graphql-api/)),
+then you should also use the `Money` scalar for any monetary values.
+
+
+## The `@Money()` decorator
+
+When [defining new database entities](/guides/developer-guide/database-entity//), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
+decorator, you should use Vendure's [`@Money()` decorator](/reference/typescript-api/money/money-decorator).
+
+Using this decorator allows Vendure to correctly store the value in the database according to the configured `MoneyStrategy` (see below).
+
+```ts title="src/plugins/quote/entities/quote.entity.ts"
+import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { VendureEntity, Order, EntityId, Money, CurrencyCode, ID } from '@vendure/core';
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+@Entity()
+class Quote extends VendureEntity {
+    constructor(input?: DeepPartial<Quote>) {
+        super(input);
+    }
+
+    @ManyToOne(type => Order)
+    order: Order;
+
+    @EntityId()
+    orderId: ID;
+
+    @Column()
+    text: string;
+
+    // highlight-start
+    @Money()
+    value: number;
+    // highlight-end
+
+    // Whenever you store a monetary value, it's a good idea to also
+    // explicitly store the currency code too. This makes it possible
+    // to support multiple currencies and correctly format the amount
+    // when displaying the value.
+    @Column('varchar')
+    currencyCode: CurrencyCode;
+
+    @Column()
+    approved: boolean;
+}
+```
+
+## Advanced configuration: MoneyStrategy
+
+For advanced use-cases, it is possible to configure aspects of how Vendure handles monetary values internally by defining
+a custom [`MoneyStrategy`](/reference/typescript-api/money/money-strategy/).
+
+The `MoneyStrategy` allows you to define:
+
+- How the value is stored and retrieved from the database
+- How rounding is applied internally
+
+For example, in addition to the [`DefaultMoneyStrategy`](/reference/typescript-api/money/default-money-strategy), Vendure
+also provides the [`BigIntMoneyStrategy`](/reference/typescript-api/money/big-int-money-strategy) which stores monetary values
+using the `bigint` data type, allowing much larger amounts to be stored.
+
+Here's how you would configure your server to use this strategy:
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig, BigIntMoneyStrategy } from '@vendure/core';
+
+export const config: VendureConfig = {
+    // ...
+    entityOptions: {
+        moneyStrategy: new BigIntMoneyStrategy(),
+    }
+}
+```

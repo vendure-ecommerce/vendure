@@ -9,7 +9,7 @@ import { fail } from 'assert';
  * type inference to work as expected:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const orderResultGuard: ErrorResultGuard<AddItemToOrderResult>
  *   = createErrorResultGuard(order => !!order.lines);
  * ```
@@ -28,7 +28,7 @@ export function createErrorResultGuard<T>(testFn: (input: T) => boolean): ErrorR
  * 2. narrow the type so that TypeScript can correctly infer the properties of the result.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const orderResultGuard: ErrorResultGuard<AddItemToOrderResult>
  *   = createErrorResultGuard(order => !!order.lines);
  *

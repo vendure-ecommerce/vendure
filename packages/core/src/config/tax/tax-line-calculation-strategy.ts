@@ -15,6 +15,13 @@ import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
  * However, custom strategies may use any suitable method for calculating TaxLines.
  * For example, a third-party tax API or a lookup of a custom tax table may be used.
  *
+ * :::info
+ *
+ * This is configured via the `taxOptions.taxLineCalculationStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory tax
  * @docsPage TaxLineCalculationStrategy
  * @docsWeight 0

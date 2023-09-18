@@ -12,6 +12,13 @@ import { OrderLine } from '../../entity/order-line/order-line.entity';
  * By default, the latest price will be used. Any price changes resulting from using a newer price
  * will be reflected in the GraphQL `OrderLine.unitPrice[WithTax]ChangeSinceAdded` field.
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.changedPriceHandlingStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory orders
  */
 export interface ChangedPriceHandlingStrategy extends InjectableStrategy {

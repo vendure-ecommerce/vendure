@@ -1,8 +1,4 @@
 import { Type } from '@vendure/common/lib/shared-types';
-import { Column } from 'typeorm';
-import { ColumnOptions } from 'typeorm/decorator/options/ColumnOptions';
-
-import { Logger } from '../config/logger/vendure-logger';
 
 interface MoneyColumnOptions {
     default?: number;
@@ -24,6 +20,7 @@ const moneyColumnRegistry = new Map<any, MoneyColumnConfig[]>();
  * This allows the column type to be defined by the configured {@link MoneyStrategy}.
  *
  * @docsCategory money
+ * @docsPage Money Decorator
  * @since 2.0.0
  */
 export function Money(options?: MoneyColumnOptions) {

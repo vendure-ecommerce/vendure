@@ -8,8 +8,15 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * A custom strategy can be defined which e.g. integrates with an
  * existing system to generate a code:
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.orderCodeStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @example
- * ```TypeScript
+ * ```ts
  * class MyOrderCodeStrategy implements OrderCodeStrategy {
  *   // Some imaginary service which calls out to an existing external
  *   // order management system.

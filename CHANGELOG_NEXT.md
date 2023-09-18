@@ -1,3 +1,29 @@
+## 2.1.0-next.5 (2023-09-18)
+
+
+#### Features
+
+* **admin-ui** Add image carousel to asset preview dialog (#2370) ([bd834d0](https://github.com/vendure-ecommerce/vendure/commit/bd834d0)), closes [#2370](https://github.com/vendure-ecommerce/vendure/issues/2370) [#2129](https://github.com/vendure-ecommerce/vendure/issues/2129)
+* **admin-ui** Add more native React UI components ([04e03f8](https://github.com/vendure-ecommerce/vendure/commit/04e03f8))
+* **admin-ui** Add useRouteParams react hook ([b63fb7f](https://github.com/vendure-ecommerce/vendure/commit/b63fb7f))
+* **admin-ui** Expose providers to nav menu routerLink function ([1bae40e](https://github.com/vendure-ecommerce/vendure/commit/1bae40e))
+* **admin-ui** Improved control over ActionBar buttons ([065a2b4](https://github.com/vendure-ecommerce/vendure/commit/065a2b4))
+* **create** Better defaults for project scaffold ([fa683e7](https://github.com/vendure-ecommerce/vendure/commit/fa683e7))
+* **cli** Introduce new `@vendure/cli` package which exposes a `vendure` binary. Currently supports `vendure new plugin` command.
+
+#### Fixes
+
+* **admin-ui** Fix component for new Angular extension route API ([6fe1bd0](https://github.com/vendure-ecommerce/vendure/commit/6fe1bd0))
+* **admin-ui** Fix creating nullable string fields ([7e2c17a](https://github.com/vendure-ecommerce/vendure/commit/7e2c17a)), closes [#2343](https://github.com/vendure-ecommerce/vendure/issues/2343)
+* **core** Export EntityId and Money decorators ([4664dee](https://github.com/vendure-ecommerce/vendure/commit/4664dee))
+
+## 2.1.0-next.4 (2023-09-08)
+
+
+#### Fixes
+
+* **ui-devkit** Fix scaffold logic for custom providers ([2f2ddb5](https://github.com/vendure-ecommerce/vendure/commit/2f2ddb5))
+
 ## 2.1.0-next.3 (2023-09-08)
 
 

@@ -31,7 +31,7 @@ import { HostedReactComponentContext } from '../types';
  *
  * @docsCategory react-hooks
  */
-export function useDetailComponentData() {
+export function useDetailComponentData<T = any>() {
     const context = useContext(
         HostedComponentContext,
     ) as HostedReactComponentContext<ReactCustomDetailComponentContext>;
@@ -40,7 +40,7 @@ export function useDetailComponentData() {
         throw new Error(`The useDetailComponentData hook can only be used within a CustomDetailComponent`);
     }
 
-    const [entity, setEntity] = useState(null);
+    const [entity, setEntity] = useState<T | null>(null);
 
     useEffect(() => {
         const subscription = context.entity$.subscribe(value => {

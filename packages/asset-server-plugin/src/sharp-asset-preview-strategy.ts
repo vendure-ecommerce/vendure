@@ -79,7 +79,7 @@ interface SharpAssetPreviewConfig {
  * The settings for the outputs will default to Sharp's defaults (https://sharp.pixelplumbing.com/api-output).
  * However, it is possible to pass your own configurations to control the output of each format:
  *
- * ```TypeScript
+ * ```ts
  * AssetServerPlugin.init({
  *   previewStrategy: new SharpAssetPreviewStrategy({
  *     jpegOptions: { quality: 95 },

@@ -16,7 +16,7 @@ import { CreateQueueOptions, JobData } from './types';
  * existing jobs.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * // A service which transcodes video files
  * class VideoTranscoderService {
  *
@@ -121,7 +121,7 @@ export class JobQueueService implements OnModuleDestroy {
      * If no argument is passed, sizes will be returned for _all_ JobBuffers.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const sizes = await this.jobQueueService.bufferSize('buffer-1', 'buffer-2');
      *
      * // sizes = { 'buffer-1': 12, 'buffer-2': 3 }

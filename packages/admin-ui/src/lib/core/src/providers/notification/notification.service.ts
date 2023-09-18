@@ -8,7 +8,7 @@ import { OverlayHostService } from '../overlay-host/overlay-host.service';
  * @description
  * The types of notification available.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage NotificationService
  */
 export type NotificationType = 'info' | 'success' | 'error' | 'warning';
@@ -17,7 +17,7 @@ export type NotificationType = 'info' | 'success' | 'error' | 'warning';
  * @description
  * Configuration for a toast notification.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage NotificationService
  */
 export interface ToastConfig {
@@ -35,7 +35,7 @@ const TOAST_DURATION = 3000;
  * Provides toast notification functionality.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * class MyComponent {
  *   constructor(private notificationService: NotificationService) {}
  *
@@ -47,7 +47,7 @@ const TOAST_DURATION = 3000;
  *   }
  * }
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage NotificationService
  * @docsWeight 0
  */

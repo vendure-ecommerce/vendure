@@ -159,7 +159,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  *
  * Your resolver function will then look like this:
  *
- * ```TypeScript
+ * ```ts
  * \@Resolver()
  * export class BlogPostResolver
  *   constructor(private blogPostService: BlogPostService) {}
@@ -176,7 +176,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  *
  * and the corresponding service will use the ListQueryBuilder:
  *
- * ```TypeScript
+ * ```ts
  * \@Injectable()
  * export class BlogPostService {
  *   constructor(private listQueryBuilder: ListQueryBuilder) {}

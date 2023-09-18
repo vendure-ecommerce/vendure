@@ -23,7 +23,7 @@ import { HealthIndicatorFunction } from '@nestjs/terminus';
  * plugin module. To use it in your plugin, you'll need to import the {@link PluginCommonModule}:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { HealthCheckRegistryService, PluginCommonModule, VendurePlugin } from '\@vendure/core';
  * import { TerminusModule } from '\@nestjs/terminus';
  *

@@ -31,7 +31,7 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  * Bootstraps the Vendure server. This is the entry point to the application.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { bootstrap } from '\@vendure/core';
  * import { config } from './vendure-config';
  *
@@ -83,10 +83,10 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
  * NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
  * methods for starting the job queue and health check server.
  *
- * Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}).
+ * Read more about the [Vendure Worker](/guides/developer-guide/worker-job-queue/).
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { bootstrapWorker } from '\@vendure/core';
  * import { config } from './vendure-config';
  *

@@ -7,14 +7,15 @@ import {
 /**
  * @description
  * Allows you to override the default component used to render the data of a particular column in a DataTable.
- * The component should implement the {@link CustomDataTableColumnComponent} interface.
+ * The component should implement the {@link CustomDataTableColumnComponent} interface. The tableId and columnId can
+ * be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
  *
  * @example
  * ```ts title="components/custom-table.component.ts"
  * import { Component, Input } from '\@angular/core';
  * import { CustomColumnComponent } from '\@vendure/admin-ui/core';
  *
- * @Component({
+ * \@Component({
  *     selector: 'custom-slug-component',
  *     template: `
  *         <a [href]="'https://example.com/products/' + rowItem.slug" target="_blank">{{ rowItem.slug }}</a>

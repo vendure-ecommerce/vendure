@@ -24,7 +24,7 @@ export interface TranslationExtension {
      * translation files in JSON format.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * translations: {
      *   en: path.join(__dirname, 'translations/*.en.json'),
      *   de: path.join(__dirname, 'translations/*.de.json'),
@@ -88,7 +88,7 @@ export interface SassVariableOverridesExtension {
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
  *
- * See [Extending the Admin UI](/docs/plugins/extending-the-admin-ui/) for
+ * See [Extending the Admin UI](/guides/extending-the-admin-ui/getting-started/) for
  * detailed instructions.
  *
  * @docsCategory UiDevkit
@@ -377,7 +377,7 @@ export interface UiExtensionCompilerOptions {
      * also set the `route` option to match this value.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * AdminUiPlugin.init({
      *   route: 'my-route',
      *   port: 5001,

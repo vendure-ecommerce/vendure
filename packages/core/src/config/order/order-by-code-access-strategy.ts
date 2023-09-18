@@ -13,7 +13,7 @@ import { Order } from '../../entity/order/order.entity';
  *
  * @example
  * This example grants access to the requested Order to anyone – unless it's Monday.
- * ```TypeScript
+ * ```ts
  * export class NotMondayOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
  *     canAccessOrder(ctx: RequestContext, order: Order): boolean {
  *         const MONDAY = 1;
@@ -23,6 +23,13 @@ import { Order } from '../../entity/order/order.entity';
  *     }
  * }
  * ```
+ *
+ * :::info
+ *
+ * This is configured via the `orderOptions.orderByCodeAccessStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
  *
  * @since 1.1.0
  * @docsCategory orders

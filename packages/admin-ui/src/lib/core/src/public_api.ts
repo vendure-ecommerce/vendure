@@ -85,6 +85,7 @@ export * from './extension/register-dashboard-widget';
 export * from './extension/register-data-table-component';
 export * from './extension/register-form-input-component';
 export * from './extension/register-history-entry-component';
+export * from './extension/register-page-tab';
 export * from './extension/register-route-component';
 export * from './extension/types';
 export * from './providers/alerts/alerts.service';

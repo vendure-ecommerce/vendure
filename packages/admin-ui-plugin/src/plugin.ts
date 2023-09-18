@@ -109,7 +109,7 @@ export interface AdminUiPluginOptions {
  * you can still use the `metricSummary` query by adding the `AdminUiPlugin` to the `plugins` array, but without calling the `init()` method:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { AdminUiPlugin } from '\@vendure/admin-ui-plugin';
  *
  * const config: VendureConfig = {

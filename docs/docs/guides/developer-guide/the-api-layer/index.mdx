@@ -1,0 +1,346 @@
+---
+title: 'The API Layer'
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Vendure is a headless platform, which means that all functionality is exposed via GraphQL APIs. The API can be thought of
+as a number of layers through which a request will pass, each of which is responsible for a different aspect of the
+request/response lifecycle.
+
+## The journey of an API call
+
+Let's take a basic API call and trace its journey from the client to the server and back again.
+
+
+<Tabs>
+<TabItem value="Request" label="Request" default>
+
+```graphql title="GraphQL Playground Shop API"
+query {
+    product(id: "1") {
+        id
+        name
+        description
+    }
+}
+```
+
+This query is asking for the `id`, `name` and `description` of a `Product` with the id of `1`.
+
+</TabItem>
+<TabItem value="Response" label="Response">
+
+```json
+{
+  "data": {
+    "product": {
+      "id": "1",
+      "name": "Laptop",
+      "description": "Now equipped with seventh-generation Intel Core processors, Laptop is snappier than ever. From daily tasks like launching apps and opening files to more advanced computing, you can power through your day thanks to faster SSDs and Turbo Boost processing up to 3.6GHz."
+    }
+  }
+}
+```
+
+GraphQL returns only the specific fields you ask for in your query.
+
+</TabItem>
+</Tabs>
+
+
+:::note
+
+If you have your local development server running, you can try this out by opening the GraphQL Playground in your browser:
+
+[http://localhost:3000/shop-api](http://localhost:3000/shop-api)
+
+:::
+
+![./Vendure_docs-api_request.webp](./Vendure_docs-api_request.webp)
+
+
+## Middleware
+
+"Middleware" is a term for a function which is executed before or after the main logic of a request. In Vendure, middleware
+is used to perform tasks such as authentication, logging, and error handling. There are several types of middleware:
+
+* **Express middleware**: At the lowest level, Vendure makes use of the popular Express server library. Express middleware
+can be added to the sever via the [`apiOptions.middleware`](/reference/typescript-api/configuration/api-options#middleware) config property. There are hundreds of tried-and-tested Express
+middleware packages available, and they can be used to add functionality such as CORS, compression, rate-limiting, etc.
+* **NestJS-specific middleware**: NestJS allows you to define specific types of middleware including [Guards](https://docs.nestjs.com/guards),
+[Interceptors](https://docs.nestjs.com/interceptors), [Pipes](https://docs.nestjs.com/pipes) and [Filters](https://docs.nestjs.com/exception-filters).
+Vendure uses a number of these mechanisms internally to handle authentication, transaction management, error handling and
+data transformation. They are defined via decorators on custom resolvers or controllers.
+* **Apollo Server plugins**: Apollo Server (the underlying GraphQL server library used by Vendure) allows you to define
+[plugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which can be used to hook into various
+stages of the GraphQL request lifecycle and perform tasks such as data transformation. These are defined via the
+[`apiOptions.apolloServerPlugins`](/reference/typescript-api/configuration/api-options#apolloserverplugins) config property.
+
+## Resolvers
+
+A "resolver" is a GraphQL concept, and refers to a function which is responsible for returning the data for a particular
+field. In Vendure, a resolver can also refer to a class which contains multiple resolver functions. For every query or
+mutation, there is a corresponding resolver function which is responsible for returning the requested data (and performing
+side-effect such as updating data in the case of mutations).
+
+Here's a simplified example of a resolver function for the `product` query:
+
+```ts
+import { Query, Resolver, Args } from '@nestjs/graphql';
+import { Ctx, RequestContext, ProductService } from '@vendure/core';
+
+@Resolver()
+export class ShopProductsResolver {
+
+     constructor(private productService: ProductService) {}
+
+     @Query()
+     product(@Ctx() ctx: RequestContext, @Args() args: { id: string }) {
+         return this.productService.findOne(ctx, args.id);
+     }
+}
+```
+
+- The `@Resolver()` decorator marks this class as a resolver.
+- The `@Query()` decorator marks the `product()` method as a resolver function.
+- The `@Ctx()` decorator injects the [`RequestContext` object](/reference/typescript-api/request/request-context/), which contains information about the
+current request, such as the current user, the active channel, the active language, etc. The `RequestContext` is a key part
+of the Vendure architecture, and is used throughout the application to provide context to the various services and plugins. In general, your
+resolver functions should always accept a `RequestContext` as the first argument, and pass it through to the services.
+- The `@Args()` decorator injects the arguments passed to the query, in this case the `id` that we provided in our query.
+
+As you can see, the resolver function is very simple, and simply delegates the work to the `ProductService` which is
+responsible for fetching the data from the database.
+
+:::tip
+In general, resolver functions should be kept as simple as possible,
+and the bulk of the business logic should be delegated to the service layer.
+:::
+
+## API Decorators
+
+Following the pattern of NestJS, Vendure makes use of decorators to control various aspects of the API. Here are the
+important decorators to be aware of:
+
+### `@Resolver()`
+
+This is exported by the `@nestjs/graphql` package. It marks a class as a resolver, meaning that its methods can be used
+to resolve the fields of a GraphQL query or mutation.
+
+```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
+import { Resolver } from '@nestjs/graphql';
+
+// highlight-next-line
+@Resolver()
+export class WishlistResolver {
+    // ...
+}
+```
+
+### `@Query()`
+
+This is exported by the `@nestjs/graphql` package. It marks a method as a resolver function for a query. The method name
+should match the name of the query in the GraphQL schema, or if the method name is different, a name can be provided as
+an argument to the decorator.
+
+```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
+import { Query, Resolver } from '@nestjs/graphql';
+
+@Resolver()
+export class WishlistResolver {
+
+    // highlight-next-line
+    @Query()
+    wishlist() {
+        // ...
+    }
+}
+```
+
+### `@Mutation()`
+
+This is exported by the `@nestjs/graphql` package. It marks a method as a resolver function for a mutation. The method name
+should match the name of the mutation in the GraphQL schema, or if the method name is different, a name can be provided as
+an argument to the decorator.
+
+```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
+import { Mutation, Resolver } from '@nestjs/graphql';
+
+@Resolver()
+export class WishlistResolver {
+
+    // highlight-next-line
+    @Mutation()
+    addItemToWishlist() {
+        // ...
+    }
+}
+```
+
+### `@Allow()`
+
+The [`Allow` decorator](/reference/typescript-api/request/allow-decorator) is exported by the `@vendure/core` package. It is used to control access to queries and mutations. It takes a list
+of [Permissions](/reference/typescript-api/common/permission/) and if the current user does not have at least one of the
+permissions, then the query or mutation will return an error.
+
+```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
+import { Mutation, Resolver } from '@nestjs/graphql';
+import { Allow, Permission } from '@vendure/core';
+
+@Resolver()
+export class WishlistResolver {
+
+    @Mutation()
+    // highlight-next-line
+    @Allow(Permission.UpdateCustomer)
+    updateCustomerWishlist() {
+        // ...
+    }
+}
+```
+
+### `@Transaction()`
+
+The [`Transaction` decorator](/reference/typescript-api/request/transaction-decorator/) is exported by the `@vendure/core` package. It is used to wrap a resolver function in a database transaction. It is
+normally used with mutations, since queries typically do not modify data.
+
+```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
+import { Mutation, Resolver } from '@nestjs/graphql';
+import { Transaction } from '@vendure/core';
+
+@Resolver()
+export class WishlistResolver {
+
+    // highlight-next-line
+    @Transaction()
+    @Mutation()
+    addItemToWishlist() {
+        // if an error is thrown here, the
+        // entire transaction will be rolled back
+    }
+}
+```
+
+:::note
+The `@Transaction()` decorator _only_ works when used with a `RequestContext` object (see the `@Ctx()` decorator below).
+
+This is because the `Transaction` decorator stores the transaction context on the `RequestContext` object, and by passing
+this object to the service layer, the services and thus database calls can access the transaction context.
+:::
+
+### `@Ctx()`
+
+The [`Ctx` decorator](/reference/typescript-api/request/ctx-decorator/) is exported by the `@vendure/core` package. It is used to inject the
+[`RequestContext` object](/reference/typescript-api/request/request-context/) into a resolver function. The `RequestContext` contains information about the
+current request, such as the current user, the active channel, the active language, etc. The `RequestContext` is a key part
+of the Vendure architecture, and is used throughout the application to provide context to the various services and plugins.
+
+```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
+import { Mutation, Resolver } from '@nestjs/graphql';
+import { Ctx, RequestContext } from '@vendure/core';
+
+@Resolver()
+export class WishlistResolver {
+
+    @Mutation()
+    // highlight-next-line
+    addItemToWishlist(@Ctx() ctx: RequestContext) {
+        // ...
+    }
+}
+```
+
+:::tip
+As a general rule, _always_ use the `@Ctx()` decorator to inject the `RequestContext` into your resolver functions.
+:::
+
+### `@Args()`
+
+This is exported by the `@nestjs/graphql` package. It is used to inject the arguments passed to a query or mutation.
+
+Given the a schema definition like this:
+
+```graphql
+extend type Mutation {
+    addItemToWishlist(variantId: ID!): Wishlist
+}
+```
+
+The resolver function would look like this:
+
+```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
+import { Mutation, Resolver, Args } from '@nestjs/graphql';
+import { Ctx, RequestContext, ID } from '@vendure/core';
+
+@Resolver()
+export class WishlistResolver {
+
+    @Mutation()
+    addItemToWishlist(
+        @Ctx() ctx: RequestContext,
+        // highlight-next-line
+        @Args() args: { variantId: ID }
+    ) {
+        // ...
+    }
+}
+```
+
+As you can see, the `@Args()` decorator injects the arguments passed to the query, in this case the `variantId` that we provided in our query.
+
+## Field resolvers
+
+So far, we've seen examples of resolvers for queries and mutations. However, there is another type of resolver which is
+used to resolve the fields of a type. For example, given the following schema definition:
+
+```graphql
+type WishlistItem {
+    id: ID!
+    // highlight-next-line
+    product: Product!
+}
+```
+
+The `product` field is a relation to the `Product` type. The `product` field resolver
+would look like this:
+
+```ts title="src/plugins/wishlist/api/wishlist-item.resolver.ts"
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Ctx, RequestContext } from '@vendure/core';
+
+import { WishlistItem } from '../entities/wishlist-item.entity';
+
+// highlight-next-line
+@Resolver('WishlistItem')
+export class WishlistItemResolver {
+
+    // highlight-next-line
+    @ResolveField()
+    product(
+        @Ctx() ctx: RequestContext,
+        // highlight-next-line
+        @Parent() wishlistItem: WishlistItem
+    ) {
+        // ...
+    }
+}
+```
+
+Note that in this example, the `@Resolver()` decorator has an argument of `'WishlistItem'`. This tells NestJS that
+this resolver is for the `WishlistItem` type, and that when we use the `@ResolveField()` decorator, we are defining
+a resolver for a field of that type.
+
+In this example we're defining a resolver for the `product` field of the `WishlistItem` type. The
+`@ResolveField()` decorator is used to mark a method as a field resolver. The method name should match the name of the
+field in the GraphQL schema, or if the method name is different, a name can be provided as an argument to the decorator.
+
+## REST endpoints
+
+Although Vendure is primarily a GraphQL-based API, it is possible to add REST endpoints to the API. This is useful if
+you need to integrate with a third-party service or client application which only supports REST, for example.
+
+Creating a REST endpoint is covered in detail in the [Add a REST endpoint
+guide](/guides/developer-guide/rest-endpoint/).

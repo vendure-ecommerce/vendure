@@ -16,6 +16,13 @@ import { Channel, Order, Zone } from '../../entity';
  * Note that this method is called very often in a typical user session, so any work it performs should be designed with as little
  * performance impact as possible.
  *
+ * :::info
+ *
+ * This is configured via the `taxOptions.taxZoneStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory tax
  */
 export interface TaxZoneStrategy extends InjectableStrategy {

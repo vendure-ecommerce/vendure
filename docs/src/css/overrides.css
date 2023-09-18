@@ -1,0 +1,59 @@
+body {
+    background: var(--body-background);
+    background-repeat: no-repeat;
+    background-position: top;
+}
+
+.menu__link--sublist-caret:after {
+    background: var(--ifm-menu-link-sublist-icon) 50% / 1.5rem 1.5rem;
+    opacity: 0.6;
+}
+
+.menu__link--sublist-caret:hover:after {
+    opacity: 1;
+}
+
+.theme-doc-sidebar-item-category-level-1 {
+    font-size: 15px;
+}
+.theme-doc-sidebar-item-category-level-2 {
+    font-size: 14px;
+}
+.theme-doc-sidebar-item-link-level-3, .theme-doc-sidebar-item-link-level-4, .theme-doc-sidebar-item-link-level-5 {
+    font-size: 13px;
+    word-break: break-all;
+}
+
+.menu__caret:before {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>');
+    opacity: 0.6;
+}
+
+.navbar-sidebar {
+    background-color: var(--ifm-background-color);
+}
+.navbar {
+    background-color: var(--navbar-background-color-mobile);
+}
+
+@media screen and (min-width: 996px) {
+    .docs-wrapper article:not(.col) {
+        margin-left: 32px;
+    }
+    .navbar {
+        backdrop-filter: blur(20px);
+        background-color: var(--ifm-navbar-background-color);
+    }
+}
+
+
+.hero--primary {
+    --ifm-hero-background-color: transparent;
+    --ifm-hero-text-color: var(--ifm-font-color-base);
+}
+
+button.DocSearch-Button {
+    border-radius: 6px;
+    width: 250px;
+    border: 1px solid var(--color-docsearch-border);
+}

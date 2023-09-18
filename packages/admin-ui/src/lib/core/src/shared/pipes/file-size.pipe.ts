@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
  * Formats a number into a human-readable file size string.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * {{ fileSizeInBytes | filesize }}
  * ```
  *

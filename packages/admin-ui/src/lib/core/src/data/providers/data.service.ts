@@ -26,7 +26,7 @@ import { ShippingMethodDataService } from './shipping-method-data.service';
  * advisable to always select the `id` field of any entity, which will allow the returned data
  * to be effectively cached.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage DataService
  * @docsWeight 0
  */
@@ -65,7 +65,7 @@ export class DataService {
      * they type of result returned, e.g. stream of values, single value etc.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const result$ = this.dataService.query(gql`
      *   query MyQuery($id: ID!) {
      *     product(id: $id) {
@@ -91,7 +91,7 @@ export class DataService {
      * Perform a GraphQL mutation.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const result$ = this.dataService.mutate(gql`
      *   mutation MyMutation($Codegen.UpdateEntityInput!) {
      *     updateEntity(input: $input) {

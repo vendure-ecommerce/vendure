@@ -33,7 +33,7 @@ import { AssetSearchInputComponent } from '../asset-search-input/asset-search-in
  * A dialog which allows the creation and selection of assets.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * selectAssets() {
  *   this.modalService
  *     .fromComponent(AssetPickerDialogComponent, {

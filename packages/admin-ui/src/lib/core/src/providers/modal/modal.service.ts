@@ -14,7 +14,7 @@ import { Dialog, DialogConfig, ModalOptions } from './modal.types';
  * This service is responsible for instantiating a ModalDialog component and
  * embedding the specified component within.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage ModalService
  * @docsWeight 0
  */

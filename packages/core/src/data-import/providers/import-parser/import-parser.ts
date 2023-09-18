@@ -156,7 +156,7 @@ export class ImportParser {
 
     /**
      * @description
-     * Parses the contents of the [product import CSV file](/docs/developer-guide/importing-product-data/#product-import-format) and
+     * Parses the contents of the [product import CSV file](/guides/developer-guide/importing-data/#product-import-format) and
      * returns a data structure which can then be used to populate Vendure using the {@link FastImporterService}.
      */
     async parseProducts(

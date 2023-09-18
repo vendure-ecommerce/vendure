@@ -18,7 +18,7 @@ import { ZoneService } from '../../services/zone.service';
  * always be `0` until you use the `applyChannelPriceAndTax()` method:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * export class MyCustomService {
  *   constructor(private connection: TransactionalConnection,
  *               private productPriceApplicator: ProductPriceApplicator) {}

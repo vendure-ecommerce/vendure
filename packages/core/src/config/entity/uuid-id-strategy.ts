@@ -8,7 +8,7 @@ import { EntityIdStrategy } from './entity-id-strategy';
  * of {@link VendureConfig}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { UuidIdStrategy, VendureConfig } from '\@vendure/core';
  *
  * export const config: VendureConfig = {

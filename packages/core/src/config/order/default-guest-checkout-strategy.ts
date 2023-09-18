@@ -42,7 +42,7 @@ export interface DefaultGuestCheckoutStrategyOptions {
  * guest checkouts by default, but can be configured to disallow them.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { DefaultGuestCheckoutStrategy, VendureConfig } from '\@vendure/core';
  *
  * export const config: VendureConfig = {

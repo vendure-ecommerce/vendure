@@ -5,32 +5,33 @@ import { ComponentRegistryService } from '../providers/component-registry/compon
 /**
  * @description
  * Registers a custom FormInputComponent which can be used to control the argument inputs
- * of a {@link ConfigurableOperationDef} (e.g. CollectionFilter, ShippingMethod etc) or for
+ * of a {@link ConfigurableOperationDef} (e.g. CollectionFilter, ShippingMethod etc.) or for
  * a custom field.
  *
  * @example
- * ```TypeScript
- * \@NgModule({
- *   imports: [SharedModule],
- *   declarations: [MyCustomFieldControl],
- *   providers: [
- *       registerFormInputComponent('my-custom-input', MyCustomFieldControl),
- *   ],
- * })
- * export class MyUiExtensionModule {}
+ * ```ts title="providers.ts"
+ * import { registerFormInputComponent } from '\@vendure/admin-ui/core';
+ *
+ * export default [
+ *     // highlight-next-line
+ *     registerFormInputComponent('my-custom-input', MyCustomFieldControl),
+ * ];
  * ```
  *
  * This input component can then be used in a custom field:
  *
  * @example
- * ```TypeScript
- * const config = {
+ * ```ts title="src/vendure-config.ts"
+ * import { VendureConfig } from '\@vendure/core';
+ *
+ * const config: VendureConfig = {
  *   // ...
  *   customFields: {
  *     ProductVariant: [
  *       {
  *         name: 'rrp',
  *         type: 'int',
+ *         // highlight-next-line
  *         ui: { component: 'my-custom-input' },
  *       },
  *     ]
@@ -41,7 +42,7 @@ import { ComponentRegistryService } from '../providers/component-registry/compon
  * or with an argument of a {@link ConfigurableOperationDef}:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * args: {
  *   rrp: { type: 'int', ui: { component: 'my-custom-input' } },
  * }

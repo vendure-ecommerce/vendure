@@ -12,7 +12,7 @@ import { getApiType } from '../common/get-api-type';
  * Returns a string of type {@link ApiType}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  *  \@Query()
  *  getAdministrators(\@Api() apiType: ApiType) {
  *    if (apiType === 'admin') {

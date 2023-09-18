@@ -44,7 +44,7 @@ export interface HardenPluginOptions {
      * its complexity like this:
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * HardenPlugin.init({
      *   maxQueryComplexity: 650,
      *   customComplexityFactors: {

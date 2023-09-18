@@ -162,7 +162,7 @@ export interface SMTPTransportOptions extends SMTPTransport.Options {
  * See [Nodemailers's SES docs](https://nodemailer.com/transports/ses/) for more details
  *
  * @example
- * ```TypeScript
+ * ```ts
  *  import { SES, SendRawEmailCommand } from '\@aws-sdk/client-ses'
  *
  *  const ses = new SES({
@@ -368,7 +368,7 @@ export interface Partial {
  * and return the template as a string.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { EmailPlugin, TemplateLoader } from '\@vendure/email-plugin';
  *
  * class MyTemplateLoader implements TemplateLoader {

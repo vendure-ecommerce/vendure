@@ -41,7 +41,7 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * not include many deep nested relations.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Query()
  * \@Allow(Permission.ReadOrder)
  * orders(
@@ -110,7 +110,7 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * use the decorator like this:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Relations({ entity: Order, depth: 2 }) relations: RelationPaths<Order>,
  * ```
  *
@@ -123,7 +123,7 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * PaginatedList query rather than a simple array.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Relations({ entity: Collection, omit: ['productVariant'] }) relations: RelationPaths<Collection>,
  * ```
  *

@@ -33,7 +33,7 @@ export type SerializedRequestContext = {
  * presence of the RequestContext object in order to correctly handle per-request database transactions.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Query()
  * myQuery(\@Ctx() ctx: RequestContext) {
  *   return this.myService.getData(ctx);

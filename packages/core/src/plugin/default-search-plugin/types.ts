@@ -10,7 +10,7 @@ import { SearchStrategy } from './search-strategy/search-strategy';
  * @description
  * Options which configure the behaviour of the DefaultSearchPlugin
  *
- * @docsCategory core plugins/DefaultSearchPlugin
+ * @docsCategory DefaultSearchPlugin
  */
 export interface DefaultSearchPluginInitOptions {
     /**
@@ -44,7 +44,7 @@ export interface DefaultSearchPluginInitOptions {
      * such as {@link MysqlSearchStrategy}, {@link PostgresSearchStrategy} or {@link SqliteSearchStrategy}.
      *
      * @example
-     * ```Typescript
+     * ```ts
      * export class MySearchStrategy implements SearchStrategy {
      *     private readonly minTermLength = 2;
      *     private connection: TransactionalConnection;

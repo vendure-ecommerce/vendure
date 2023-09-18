@@ -8,6 +8,13 @@ import { Zone } from '../../entity/zone/zone.entity';
  * @description
  * Defines how ProductVariant are calculated based on the input price, tax zone and current request context.
  *
+ * :::info
+ *
+ * This is configured via the `catalogOptions.productVariantPriceCalculationStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory  products & stock
  * @docsPage ProductVariantPriceCalculationStrategy
  */

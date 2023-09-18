@@ -1,6 +1,6 @@
 {
     "name": "@vendure/core",
-    "version": "2.1.0-next.3",
+    "version": "2.1.0-next.5",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -34,9 +34,6 @@
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "bin": {
-        "vendure": "cli/vendure-cli.js"
-    },
     "files": [
         "dist/**/*",
         "cli/**/*"
@@ -53,7 +50,7 @@
         "@nestjs/testing": "10.2.1",
         "@nestjs/typeorm": "10.0.0",
         "@types/fs-extra": "^9.0.1",
-        "@vendure/common": "2.1.0-next.3",
+        "@vendure/common": "2.1.0-next.5",
         "bcrypt": "^5.1.1",
         "body-parser": "^1.20.2",
         "chalk": "^4.1.2",

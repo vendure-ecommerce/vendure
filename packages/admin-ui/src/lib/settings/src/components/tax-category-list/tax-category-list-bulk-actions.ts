@@ -1,5 +1,4 @@
-import { createBulkDeleteAction, GetSellersQuery, ItemOf, Permission } from '@vendure/admin-ui/core';
-import { GetTaxCategoryListQuery } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
+import { createBulkDeleteAction, GetTaxCategoryListQuery, ItemOf, Permission } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 export const deleteTaxCategoriesBulkAction = createBulkDeleteAction<

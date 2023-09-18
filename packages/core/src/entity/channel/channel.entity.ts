@@ -37,9 +37,18 @@ export class Channel extends VendureEntity {
         }
     }
 
+    /**
+     * @description
+     * The name of the Channel. For example "US Webstore" or "German Webstore".
+     */
     @Column({ unique: true })
     code: string;
 
+    /**
+     * @description
+     * A unique token (string) used to identify the Channel in the `vendure-token` header of the
+     * GraphQL API requests.
+     */
     @Column({ unique: true })
     token: string;
 

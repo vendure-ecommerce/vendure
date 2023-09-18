@@ -138,7 +138,7 @@ export interface BulkAction<ItemType = any, ComponentType = any> {
      * running here.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * import { registerBulkAction, DataService } from '\@vendure/admin-ui/core';
      *
      * registerBulkAction({
@@ -159,7 +159,7 @@ export interface BulkAction<ItemType = any, ComponentType = any> {
      * Control the display of this item based on the user permissions.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * registerBulkAction({
      *   // Can be specified as a simple string
      *   requiresPermission: Permission.UpdateProduct,
