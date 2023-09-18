@@ -30,8 +30,6 @@ export class TransactionInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const { isGraphQL, req } = parseContext(context);
         const ctx: RequestContext | undefined = (req as any)[REQUEST_CONTEXT_KEY];
-        console.log(`TransactionInterceptor.intercept()`);
-
         if (ctx) {
             const transactionMode = this.reflector.get<TransactionMode>(
                 TRANSACTION_MODE_METADATA_KEY,
