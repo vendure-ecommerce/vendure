@@ -44,7 +44,11 @@ export class DataTableFiltersComponent implements AfterViewInit {
     @HostListener('window:keydown.f', ['$event'])
     onFKeyPress(event: KeyboardEvent) {
         if (event.target instanceof HTMLElement) {
-            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+            if (
+                event.target.tagName === 'INPUT' ||
+                event.target.tagName === 'TEXTAREA' ||
+                event.target.classList.contains('vdr-prosemirror')
+            ) {
                 return;
             }
         }
