@@ -1,2 +1,1 @@
-export * from './stripe.plugin';
-export * from './';
+export { StripePlugin } from './stripe.plugin';
