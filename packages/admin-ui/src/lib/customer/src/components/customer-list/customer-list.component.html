@@ -72,4 +72,5 @@
             {{ customer.emailAddress }}
         </ng-template>
     </vdr-dt2-column>
+    <vdr-dt2-custom-field-column *ngFor="let field of customFields" [customField]="field" [sorts]="sorts" />
 </vdr-data-table-2>
