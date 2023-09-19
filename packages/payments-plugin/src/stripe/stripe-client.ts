@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 export class VendureStripeClient extends Stripe {
     constructor(private apiKey: string, public webhookSecret: string) {
         super(apiKey, {
-            apiVersion: null as any, // Use accounts default version
+            apiVersion: null as unknown as Stripe.LatestApiVersion, // Use accounts default version
         });
     }
 }
