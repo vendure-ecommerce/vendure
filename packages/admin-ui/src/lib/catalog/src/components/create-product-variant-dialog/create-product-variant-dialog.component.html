@@ -4,21 +4,12 @@
 <form [formGroup]="form">
     <div formGroupName="options" class="form-grid">
         <vdr-form-field [label]="optionGroup.name" *ngFor="let optionGroup of product.optionGroups">
-            <ng-select
-                [items]="optionGroup.options"
-                [formControlName]="optionGroup.code"
-                bindLabel="name"
-                bindValue="id"
-                appendTo="body"
-            >
+            <ng-select [items]="optionGroup.options" [formControlName]="optionGroup.code" bindLabel="name"
+                bindValue="id" appendTo="body">
             </ng-select>
         </vdr-form-field>
-        <clr-alert
-            *ngIf="product.optionGroups.length === 0"
-            clrAlertType="warning"
-            [clrAlertClosable]="false"
-            class="form-grid-span"
-        >
+        <clr-alert *ngIf="product.optionGroups.length === 0" clrAlertType="warning" [clrAlertClosable]="false"
+            class="form-grid-span">
             <clr-alert-item>
                 <span class="alert-text">
                     {{ 'catalog.cannot-create-variants-without-options' | translate }}
@@ -31,7 +22,7 @@
             <clr-alert-item>
                 <span class="alert-text">
                     {{ 'catalog.product-variant-exists' | translate }}: {{ existingVariant.name }} ({{
-                        existingVariant.sku
+                    existingVariant.sku
                     }})
                 </span>
             </clr-alert-item>
@@ -44,16 +35,15 @@
         <vdr-form-field [label]="'catalog.sku' | translate">
             <input type="text" formControlName="sku" />
         </vdr-form-field>
+        <vdr-form-field [label]="'catalog.price' | translate">
+            <vdr-currency-input name="price" [currencyCode]="currencyCode" formControlName="price" />
+        </vdr-form-field>
     </div>
 </form>
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button
-        type="submit"
-        (click)="confirm()"
-        class="btn btn-primary"
-        [disabled]="form.invalid || existingVariant || product.optionGroups.length === 0"
-    >
+    <button type="submit" (click)="confirm()" class="btn btn-primary"
+        [disabled]="form.invalid || existingVariant || product.optionGroups.length === 0">
         {{ 'common.confirm' | translate }}
     </button>
 </ng-template>

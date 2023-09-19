@@ -184,7 +184,6 @@ export class PromotionService {
                         this.configArgService.parseInput('PromotionAction', a),
                     );
                 }
-                await this.channelService.assignToCurrentChannel(p, ctx);
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Promotion, input, updatedPromotion);
