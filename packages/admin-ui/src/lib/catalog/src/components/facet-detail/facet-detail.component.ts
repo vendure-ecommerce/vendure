@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import {
     FormBuilder,
-    UntypedFormArray,
+    FormControl,
+    FormGroup,
+    FormRecord,
     UntypedFormControl,
     UntypedFormGroup,
     Validators,
@@ -29,8 +31,8 @@ import {
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { gql } from 'apollo-angular';
-import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
+import { map, mergeMap, startWith, switchMap, take, tap } from 'rxjs/operators';
 
 export const FACET_DETAIL_QUERY = gql`
     query GetFacetDetail($id: ID!) {
@@ -40,6 +42,8 @@ export const FACET_DETAIL_QUERY = gql`
     }
     ${FACET_WITH_VALUES_FRAGMENT}
 `;
+
+type ValueItem = FacetWithValuesFragment['values'][number] | { id: string; name: string; code: string };
 
 @Component({
     selector: 'vdr-facet-detail',
@@ -60,14 +64,20 @@ export class FacetDetailComponent
             visible: true,
             customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
         }),
-        values: this.formBuilder.array<{
-            id: string;
-            name: string;
-            code: string;
-            customFields: any;
-        }>([]),
+        values: this.formBuilder.record<
+            FormGroup<{
+                id: FormControl<string>;
+                name: FormControl<string>;
+                code: FormControl<string>;
+                customFields: FormGroup;
+            }>
+        >({}),
     });
-    values: Array<FacetWithValuesFragment['values'][number] | { name: string; code: string }> = [];
+    currentPage = 1;
+    itemsPerPage = 10;
+    filterControl = new FormControl('');
+    values$ = new BehaviorSubject<ValueItem[]>([]);
+    filteredValues$ = new Observable<ValueItem[]>();
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateFacet];
 
     constructor(
@@ -82,6 +92,24 @@ export class FacetDetailComponent
 
     ngOnInit() {
         this.init();
+        this.filteredValues$ = combineLatest([
+            this.values$,
+            this.filterControl.valueChanges.pipe(startWith('')),
+        ]).pipe(
+            map(([values, filterTerm]) => {
+                const filterString = filterTerm?.toLowerCase().trim();
+                return filterString
+                    ? values.filter(
+                          v =>
+                              v.name.toLowerCase().includes(filterString) ||
+                              v.code.toLowerCase().includes(filterString),
+                      )
+                    : values;
+            }),
+            tap(() => {
+                this.currentPage = 1;
+            }),
+        );
     }
 
     ngOnDestroy() {
@@ -97,9 +125,9 @@ export class FacetDetailComponent
         }
     }
 
-    updateValueCode(currentCode: string, nameValue: string, index: number) {
+    updateValueCode(currentCode: string, nameValue: string, valueId: string) {
         if (!currentCode) {
-            const codeControl = this.detailForm.get(['values', index, 'code']);
+            const codeControl = this.detailForm.get(['values', valueId, 'code']);
             if (codeControl && codeControl.pristine) {
                 codeControl.setValue(normalizeString(nameValue, '-'));
             }
@@ -110,20 +138,17 @@ export class FacetDetailComponent
         return !!this.detailForm.get(['values', index, 'customFields', name]);
     }
 
-    getValuesFormArray(): UntypedFormArray {
-        return this.detailForm.get('values') as UntypedFormArray;
-    }
-
     addFacetValue() {
-        const valuesFormArray = this.detailForm.get('values') as UntypedFormArray | null;
-        if (valuesFormArray) {
+        const valuesFormRecord = this.detailForm.get('values') as FormRecord;
+        if (valuesFormRecord) {
+            const id = this.createTempId();
             const valueGroup = this.formBuilder.group({
-                id: '',
+                id,
                 name: ['', Validators.required],
                 code: '',
                 customFields: this.formBuilder.group({}),
             });
-            const newValue: any = { name: '', code: '' };
+            const newValue: any = { id, name: '', code: '' };
             if (this.customValueFields.length) {
                 const customValueFieldsGroup = new UntypedFormGroup({});
                 newValue.customFields = {};
@@ -135,8 +160,11 @@ export class FacetDetailComponent
 
                 valueGroup.addControl('customFields', customValueFieldsGroup);
             }
-            valuesFormArray.insert(valuesFormArray.length, valueGroup);
-            this.values.push(newValue);
+            valuesFormRecord.addControl(id, valueGroup);
+            const values = this.values$.value;
+            const endOfPageIndex = this.currentPage * this.itemsPerPage - 1;
+            values.splice(endOfPageIndex, 0, newValue);
+            this.values$.next(values);
         }
     }
 
@@ -176,7 +204,9 @@ export class FacetDetailComponent
     }
 
     save() {
-        const valuesArray = this.detailForm.get('values') as (typeof this.detailForm)['controls']['values'];
+        const valuesFormRecord = this.detailForm.get(
+            'values',
+        ) as (typeof this.detailForm)['controls']['values'];
         combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
@@ -196,8 +226,12 @@ export class FacetDetailComponent
                             updateOperations.push(this.dataService.facet.updateFacet(newFacet));
                         }
                     }
-                    if (valuesArray && valuesArray.dirty) {
-                        const createdValues = this.getCreatedFacetValues(facet, valuesArray, languageCode);
+                    if (valuesFormRecord && valuesFormRecord.dirty) {
+                        const createdValues = this.getCreatedFacetValues(
+                            facet,
+                            valuesFormRecord,
+                            languageCode,
+                        );
                         if (createdValues.length) {
                             updateOperations.push(
                                 this.dataService.facet.createFacetValues(createdValues).pipe(
@@ -210,7 +244,11 @@ export class FacetDetailComponent
                                 ),
                             );
                         }
-                        const updatedValues = this.getUpdatedFacetValues(facet, valuesArray, languageCode);
+                        const updatedValues = this.getUpdatedFacetValues(
+                            facet,
+                            valuesFormRecord,
+                            languageCode,
+                        );
                         if (updatedValues.length) {
                             updateOperations.push(this.dataService.facet.updateFacetValues(updatedValues));
                         }
@@ -233,14 +271,15 @@ export class FacetDetailComponent
             );
     }
 
-    deleteFacetValue(facetValueId: string | undefined, index: number) {
-        if (!facetValueId) {
+    deleteFacetValue(facetValueId: string) {
+        if (this.isTempId(facetValueId)) {
             // deleting a newly-added (not persisted) FacetValue
-            const valuesFormArray = this.detailForm.get('values') as UntypedFormArray | null;
-            if (valuesFormArray) {
-                valuesFormArray.removeAt(index);
+            const valuesFormRecord = this.detailForm.get('values') as FormRecord;
+            if (valuesFormRecord) {
+                valuesFormRecord.removeControl(facetValueId);
             }
-            this.values.splice(index, 1);
+            const values = this.values$.value;
+            this.values$.next(values.filter(v => v.id !== facetValueId));
             return;
         }
         this.showModalAndDelete(facetValueId)
@@ -264,9 +303,9 @@ export class FacetDetailComponent
             )
             .subscribe(
                 () => {
-                    const valuesFormArray = this.detailForm.get('values') as UntypedFormArray | null;
-                    if (valuesFormArray) {
-                        valuesFormArray.removeAt(index);
+                    const valuesFormRecord = this.detailForm.get('values') as FormRecord;
+                    if (valuesFormRecord) {
+                        valuesFormRecord.removeControl(facetValueId);
                     }
                     this.notificationService.success(_('common.notify-delete-success'), {
                         entity: 'FacetValue',
@@ -313,7 +352,6 @@ export class FacetDetailComponent
         });
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['facet', 'customFields']) as UntypedFormGroup;
             this.setCustomFieldFormValues(
                 this.customFields,
                 this.detailForm.get(['facet', 'customFields']),
@@ -322,8 +360,8 @@ export class FacetDetailComponent
             );
         }
 
-        const currentValuesFormArray = this.detailForm.get('values') as UntypedFormArray;
-        this.values = [...facet.values];
+        const currentValuesFormGroup = this.detailForm.get('values') as FormRecord;
+        this.values$.next([...facet.values]);
         facet.values.forEach(value => {
             const valueTranslation = findTranslation(value, languageCode);
             const group = {
@@ -331,16 +369,14 @@ export class FacetDetailComponent
                 code: value.code,
                 name: valueTranslation ? valueTranslation.name : '',
             };
-            let valueControl = currentValuesFormArray.controls.find(
-                control => control.value.id === value.id,
-            ) as UntypedFormGroup | undefined;
+            let valueControl = currentValuesFormGroup.get(value.id) as FormGroup;
             if (valueControl) {
                 valueControl.get('id')?.setValue(group.id);
                 valueControl.get('code')?.setValue(group.code);
                 valueControl.get('name')?.setValue(group.name);
             } else {
                 valueControl = this.formBuilder.group(group);
-                currentValuesFormArray.push(valueControl);
+                currentValuesFormGroup.addControl(value.id, valueControl);
             }
             if (this.customValueFields.length) {
                 let customValueFieldsGroup = valueControl.get(['customFields']) as
@@ -399,11 +435,11 @@ export class FacetDetailComponent
      */
     private getCreatedFacetValues(
         facet: FacetWithValuesFragment,
-        valuesFormArray: (typeof this.detailForm)['controls']['values'],
+        valuesFormRecord: (typeof this.detailForm)['controls']['values'],
         languageCode: LanguageCode,
     ): CreateFacetValueInput[] {
-        return valuesFormArray.controls
-            .filter(c => !c.value?.id)
+        return Object.values(valuesFormRecord.controls)
+            .filter(c => c.value.id && this.isTempId(c.value.id))
             .map(c => c.value)
             .map(value =>
                 createUpdatedTranslatable({
@@ -421,6 +457,7 @@ export class FacetDetailComponent
                 facetId: facet.id,
                 code: input.code ?? '',
                 ...input,
+                id: undefined,
             }));
     }
 
@@ -430,15 +467,15 @@ export class FacetDetailComponent
      */
     private getUpdatedFacetValues(
         facet: FacetWithValuesFragment,
-        valuesFormArray: UntypedFormArray,
+        valuesFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateFacetValueInput[] {
-        const dirtyValues = facet.values.filter((v, i) => {
-            const formRow = valuesFormArray.get(i.toString());
+        const dirtyValues = facet.values.filter(v => {
+            const formRow = valuesFormGroup.get(v.id);
             return formRow && formRow.dirty && formRow.value.id;
         });
-        const dirtyValueValues = valuesFormArray.controls
-            .filter(c => c.dirty && c.value.id)
+        const dirtyValueValues = Object.values(valuesFormGroup.controls)
+            .filter(c => c.dirty && !this.isTempId(c.value.id))
             .map(c => c.value);
 
         if (dirtyValues.length !== dirtyValueValues.length) {
@@ -458,5 +495,13 @@ export class FacetDetailComponent
                 }),
             )
             .filter(notNullOrUndefined);
+    }
+
+    private createTempId() {
+        return `temp-${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    private isTempId(id: string) {
+        return id.startsWith('temp-');
     }
 }
