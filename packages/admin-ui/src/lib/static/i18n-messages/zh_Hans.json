@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "操作",
     "add-filter": "",
     "add-item-to-list": "添加到列表",
     "add-note": "添加注释",
@@ -778,12 +777,17 @@
     "health-status": "状态",
     "health-status-down": "失败",
     "health-status-up": "正常",
-    "hide-settled-jobs": "隐藏已完成任务",
     "job-data": "任务数据",
     "job-duration": "任务耗时",
     "job-error": "任务错误",
     "job-queue-name": "队列名称",
     "job-result": "任务结果",
-    "job-state": "任务状态"
+    "job-state": "任务状态",
+    "job-state-all": "所有状态",
+    "job-state-cancelled": "已取消",
+    "job-state-completed": "已完成",
+    "job-state-failed": "失败",
+    "job-state-pending": "等待中",
+    "job-state-running": "运行中"
   }
 }

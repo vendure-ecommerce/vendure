@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Acciones",
     "add-filter": "Añadir filtro",
     "add-item-to-list": "Añadir artículo a la lista",
     "add-note": "Añadir nota",
@@ -778,12 +777,17 @@
     "health-status": "Estado",
     "health-status-down": "Inactivo",
     "health-status-up": "Activo",
-    "hide-settled-jobs": "Ocultar trabajos completados",
     "job-data": "Detalles",
     "job-duration": "Duración",
     "job-error": "Error",
     "job-queue-name": "Nombre",
     "job-result": "Resultado",
-    "job-state": "Estado"
+    "job-state": "Estado",
+    "job-state-all": "Todos los estados",
+    "job-state-cancelled": "Cancelado",
+    "job-state-completed": "Completado",
+    "job-state-failed": "Fallido",
+    "job-state-pending": "Pendiente",
+    "job-state-running": "En ejecución"
   }
 }

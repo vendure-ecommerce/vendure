@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Akcje",
     "add-filter": "",
     "add-item-to-list": "",
     "add-note": "",
@@ -778,12 +777,17 @@
     "health-status": "",
     "health-status-down": "",
     "health-status-up": "",
-    "hide-settled-jobs": "Ukryj rozliczone zlecenia",
     "job-data": "Dane zlecenia",
     "job-duration": "Czas trwania",
     "job-error": "Błąd zlecenia",
     "job-queue-name": "Nazwa kolejki",
     "job-result": "Rezultat zlecenia",
-    "job-state": "Status zlecenia"
+    "job-state": "Status zlecenia",
+    "job-state-all": "Wszystkie stany",
+    "job-state-cancelled": "Anulowane",
+    "job-state-completed": "Ukończono",
+    "job-state-failed": "Nie powiodło się",
+    "job-state-pending": "Oczekujące",
+    "job-state-running": "Uruchomione"
   }
 }

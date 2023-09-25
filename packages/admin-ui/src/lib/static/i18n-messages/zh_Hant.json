@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "操作",
     "add-filter": "",
     "add-item-to-list": "",
     "add-note": "",
@@ -778,12 +777,17 @@
     "health-status": "",
     "health-status-down": "",
     "health-status-up": "",
-    "hide-settled-jobs": "",
     "job-data": "",
     "job-duration": "",
     "job-error": "",
     "job-queue-name": "",
     "job-result": "",
-    "job-state": ""
+    "job-state": "",
+    "job-state-all": "所有狀態",
+    "job-state-cancelled": "已取消",
+    "job-state-completed": "已完成",
+    "job-state-failed": "失敗",
+    "job-state-pending": "等待中",
+    "job-state-running": "運行中"
   }
 }

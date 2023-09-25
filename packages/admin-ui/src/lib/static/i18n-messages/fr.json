@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Actions",
     "add-filter": "",
     "add-item-to-list": "Ajouter un article à la liste",
     "add-note": "Ajouter une note",
@@ -778,12 +777,17 @@
     "health-status": "Statut",
     "health-status-down": "En panne",
     "health-status-up": "En route",
-    "hide-settled-jobs": "Cacher tâches réglées",
     "job-data": "Donnée de la tâche",
     "job-duration": "Durée",
     "job-error": "Erreur de la tâche",
     "job-queue-name": "Nom de la file d'attente",
     "job-result": "Résultat de la tâche",
-    "job-state": "Etat de la tâche"
+    "job-state": "Etat de la tâche",
+    "job-state-all": "Tous les états",
+    "job-state-cancelled": "Annulé",
+    "job-state-completed": "Terminé",
+    "job-state-failed": "Échoué",
+    "job-state-pending": "En attente",
+    "job-state-running": "En cours"
   }
 }

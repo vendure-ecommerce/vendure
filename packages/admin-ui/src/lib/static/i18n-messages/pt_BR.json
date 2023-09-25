@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Ações",
     "add-filter": "Adicionar filtro",
     "add-item-to-list": "Adicionar item à lista",
     "add-note": "Adicionar nota",
@@ -778,12 +777,17 @@
     "health-status": "Status",
     "health-status-down": "Para baixo",
     "health-status-up": "Para cima",
-    "hide-settled-jobs": "Ocultar trabalhos resolvidos",
     "job-data": "Dados do trabalho",
     "job-duration": "Duração",
     "job-error": "Erro do trabalho",
     "job-queue-name": "Nome da fila",
     "job-result": "Resultado do trabalho",
-    "job-state": "Estado do trabalho"
+    "job-state": "Estado do trabalho",
+    "job-state-all": "Todos os estados",
+    "job-state-cancelled": "Cancelado",
+    "job-state-completed": "Concluído",
+    "job-state-failed": "Falhou",
+    "job-state-pending": "Pendente",
+    "job-state-running": "Em execução"
   }
 }

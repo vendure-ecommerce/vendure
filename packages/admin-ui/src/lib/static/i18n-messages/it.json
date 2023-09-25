@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Azioni",
     "add-filter": "Aggiungi filtro",
     "add-item-to-list": "Aggiungi elemento alla lista",
     "add-note": "Aggiungi nota",
@@ -778,12 +777,17 @@
     "health-status": "Stato",
     "health-status-down": "Inattivo",
     "health-status-up": "Attivo",
-    "hide-settled-jobs": "Nascondi operazioni completate",
     "job-data": "Dati operazioni",
     "job-duration": "Durata",
     "job-error": "Errore operazione",
     "job-queue-name": "Nome coda operazioni",
     "job-result": "Risultato operazione",
-    "job-state": "Stato operazione"
+    "job-state": "Stato operazione",
+    "job-state-all": "Tutti gli stati",
+    "job-state-cancelled": "Annullato",
+    "job-state-completed": "Completato",
+    "job-state-failed": "Fallito",
+    "job-state-pending": "In attesa",
+    "job-state-running": "In esecuzione"
   }
 }

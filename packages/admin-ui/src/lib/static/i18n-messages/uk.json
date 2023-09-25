@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Дії",
     "add-filter": "",
     "add-item-to-list": "Додати позицію в список",
     "add-note": "Додати замітку",
@@ -778,12 +777,17 @@
     "health-status": "Статус",
     "health-status-down": "Відключено",
     "health-status-up": "Підключено",
-    "hide-settled-jobs": "Сховати вибране завдання",
     "job-data": "Дані завдання",
     "job-duration": "Тривалість",
     "job-error": "Помилка завдання",
     "job-queue-name": "Ім'я черги",
     "job-result": "Результат завдання",
-    "job-state": "Стан завдання"
+    "job-state": "Стан завдання",
+    "job-state-all": "Усі стани",
+    "job-state-cancelled": "Скасовано",
+    "job-state-completed": "Завершено",
+    "job-state-failed": "Не вдалося",
+    "job-state-pending": "В очікуванні",
+    "job-state-running": "Виконується"
   }
 }

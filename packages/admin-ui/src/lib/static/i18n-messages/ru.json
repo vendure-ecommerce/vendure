@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Действия",
     "add-filter": "Добавить фильтр",
     "add-item-to-list": "Добавить позицию в список",
     "add-note": "Добавить заметку",
@@ -778,12 +777,17 @@
     "health-status": "Статус",
     "health-status-down": "Отключено",
     "health-status-up": "Подключено",
-    "hide-settled-jobs": "Скрыть выбранное задание",
     "job-data": "Данные задания",
     "job-duration": "Продолжительность",
     "job-error": "Ошибка задания",
     "job-queue-name": "Имя очереди",
     "job-result": "Результат задания",
-    "job-state": "Состояние задания"
+    "job-state": "Состояние задания",
+    "job-state-all": "Все состояния",
+    "job-state-cancelled": "Отменено",
+    "job-state-completed": "Завершено",
+    "job-state-failed": "Не удалось",
+    "job-state-pending": "В ожидании",
+    "job-state-running": "Выполняется"
   }
 }

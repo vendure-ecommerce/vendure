@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "بطاقة تعريف",
-    "actions": "أجراءات",
     "add-filter": "إضافة مرشح",
     "add-item-to-list": "إضافة عنصر إلى قائمة",
     "add-note": "اضف ملاحظة",
@@ -778,12 +777,17 @@
     "health-status": "حالة",
     "health-status-down": "تحت",
     "health-status-up": "أعلى",
-    "hide-settled-jobs": "إخفاء الوظائف المستقرة",
     "job-data": "بيانات الوظيفة",
     "job-duration": "مدة",
     "job-error": "خطأ في الوظيفة",
     "job-queue-name": "اسم قائمة الانتظار",
     "job-result": "نتيجة الوظيفة",
-    "job-state": "دولة الوظيفة"
+    "job-state": "دولة الوظيفة",
+    "job-state-all": "جميع الحالات",
+    "job-state-cancelled": "تم الإلغاء",
+    "job-state-completed": "تمت",
+    "job-state-failed": "فشل",
+    "job-state-pending": "قيد الانتظار",
+    "job-state-running": "قيد التشغيل"
   }
 }

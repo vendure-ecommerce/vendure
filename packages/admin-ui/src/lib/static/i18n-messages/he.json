@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "מזהה",
-    "actions": "פעולות",
     "add-filter": "הוסף מסננת",
     "add-item-to-list": "הוסף פריט לרשימה",
     "add-note": "הוסף הערה",
@@ -778,12 +777,17 @@
     "health-status": "סטטוס",
     "health-status-down": "מנוטרל",
     "health-status-up": "פועל",
-    "hide-settled-jobs": "הסתר משימות שהושלמו",
     "job-data": "מידע משימה",
     "job-duration": "משך המשימה",
     "job-error": "שגיאת משימה",
     "job-queue-name": "שם תור משימות",
     "job-result": "תוצאת משימה",
-    "job-state": "מצב משימה"
+    "job-state": "מצב משימה",
+    "job-state-all": "כל המצבים",
+    "job-state-cancelled": "בוטל",
+    "job-state-completed": "הושלם",
+    "job-state-failed": "נכשל",
+    "job-state-pending": "ממתין",
+    "job-state-running": "רץ"
   }
 }

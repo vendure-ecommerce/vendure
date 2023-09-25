@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Akce",
     "add-filter": "",
     "add-item-to-list": "Přidat položku do seznamu",
     "add-note": "Přidat poznámku",
@@ -778,12 +777,17 @@
     "health-status": "Stav",
     "health-status-down": "Neběží",
     "health-status-up": "Běží",
-    "hide-settled-jobs": "Skrýt vyřízené úlohy",
     "job-data": "Data úlohy",
     "job-duration": "Doba",
     "job-error": "Chyba úlohy",
     "job-queue-name": "Jméno fronty",
     "job-result": "Výsledek úlohy",
-    "job-state": "Stav úlohy"
+    "job-state": "Stav úlohy",
+    "job-state-all": "Všechny stavy",
+    "job-state-cancelled": "Zrušeno",
+    "job-state-completed": "Dokončeno",
+    "job-state-failed": "Selhalo",
+    "job-state-pending": "Čeká",
+    "job-state-running": "Běží"
   }
 }

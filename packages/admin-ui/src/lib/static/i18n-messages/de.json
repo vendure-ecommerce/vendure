@@ -192,7 +192,6 @@
   },
   "common": {
     "ID": "ID",
-    "actions": "Aktionen",
     "add-filter": "Filter hinzufügen",
     "add-item-to-list": "Artikel zur Wunschliste hinzufügen",
     "add-note": "Notiz hinzufügen",
@@ -778,12 +777,17 @@
     "health-status": "Status",
     "health-status-down": "Ausgefallen",
     "health-status-up": "Betriesbereit",
-    "hide-settled-jobs": "Abgeschlossene Jobs ausblenden",
     "job-data": "Job-Daten",
     "job-duration": "Job-Dauer",
     "job-error": "Job-Fehler",
     "job-queue-name": "Name der Warteschlange",
     "job-result": "Job-Ergebnis",
-    "job-state": "Job-Status"
+    "job-state": "Job-Status",
+    "job-state-all": "Alle Zustände",
+    "job-state-cancelled": "Abgebrochen",
+    "job-state-completed": "Abgeschlossen",
+    "job-state-failed": "Fehlgeschlagen",
+    "job-state-pending": "Ausstehend",
+    "job-state-running": "Wird ausgeführt"
   }
 }
