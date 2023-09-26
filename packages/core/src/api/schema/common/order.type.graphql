@@ -154,6 +154,7 @@ type OrderLine implements Node {
     proratedUnitPrice: Money!
     "The proratedUnitPrice including tax"
     proratedUnitPriceWithTax: Money!
+    "The quantity of items purchased"
     quantity: Int!
     "The quantity at the time the Order was placed"
     orderPlacedQuantity: Int!

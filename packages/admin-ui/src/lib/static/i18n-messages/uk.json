@@ -616,6 +616,7 @@
     "order-type-regular": "",
     "order-type-seller": "",
     "orders": "",
+    "original-quantity-at-checkout": "Початкова кількість при оформленні замовлення",
     "payment": "Оплата",
     "payment-amount": "Сума до оплати",
     "payment-metadata": "Метадані платежу",

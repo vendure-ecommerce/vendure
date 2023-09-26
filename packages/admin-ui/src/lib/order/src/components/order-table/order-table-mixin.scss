@@ -68,4 +68,9 @@
         font-size: var(--font-size-xs);
         margin-inline-end: 2px;
     }
+    .order-placed-quantity {
+        text-decoration: line-through;
+        color: var(--color-text-300);
+        margin-inline-end: 2px;
+    }
 }

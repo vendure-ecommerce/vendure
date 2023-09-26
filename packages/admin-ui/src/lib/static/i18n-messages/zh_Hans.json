@@ -616,6 +616,7 @@
     "order-type-regular": "",
     "order-type-seller": "",
     "orders": "",
+    "original-quantity-at-checkout": "结账时的原始数量",
     "payment": "付款信息",
     "payment-amount": "付款金额",
     "payment-metadata": "付款元数据",

@@ -616,6 +616,7 @@
     "order-type-regular": "Standard",
     "order-type-seller": "Verkäufer",
     "orders": "Bestellungen",
+    "original-quantity-at-checkout": "Ursprüngliche Menge beim Checkout",
     "payment": "Zahlung",
     "payment-amount": "Zahlungsbetrag",
     "payment-metadata": "Metadaten zur Bezahlung",

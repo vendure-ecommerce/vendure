@@ -616,6 +616,7 @@
     "order-type-regular": "Regular",
     "order-type-seller": "Seller",
     "orders": "Orders",
+    "original-quantity-at-checkout": "Original quantity at checkout",
     "payment": "Payment",
     "payment-amount": "Payment amount",
     "payment-metadata": "Payment metadata",

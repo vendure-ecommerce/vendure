@@ -616,6 +616,7 @@
     "order-type-regular": "רגיל",
     "order-type-seller": "מוכר",
     "orders": "הזמנות",
+    "original-quantity-at-checkout": "כמות המקורית בתקלוט",
     "payment": "תשלום",
     "payment-amount": "סכום תשלום",
     "payment-metadata": "מטה נתונים של התשלום",

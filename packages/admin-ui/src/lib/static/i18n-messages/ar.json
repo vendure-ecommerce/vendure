@@ -616,6 +616,7 @@
     "order-type-regular": "عادي",
     "order-type-seller": "تاجر",
     "orders": "طلبيات",
+    "original-quantity-at-checkout": "الكمية الأصلية عند الخروج",
     "payment": "قسط",
     "payment-amount": "مبلغ الدفع",
     "payment-metadata": "بيانات تعريف الدفع",

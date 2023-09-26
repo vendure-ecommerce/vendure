@@ -616,6 +616,7 @@
     "order-type-regular": "",
     "order-type-seller": "",
     "orders": "",
+    "original-quantity-at-checkout": "Původní množství při pokladně",
     "payment": "Platba",
     "payment-amount": "Částka platby",
     "payment-metadata": "Data platby",

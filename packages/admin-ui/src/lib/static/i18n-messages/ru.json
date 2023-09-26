@@ -616,6 +616,7 @@
     "order-type-regular": "Обычный",
     "order-type-seller": "Продавец",
     "orders": "Заказы",
+    "original-quantity-at-checkout": "Исходное количество при оформлении заказа",
     "payment": "Оплата",
     "payment-amount": "Сумма к оплате",
     "payment-metadata": "Метаданные платежа",
