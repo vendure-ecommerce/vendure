@@ -95,10 +95,10 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                 items: [
                     {
                         requiresPermission: allow(Permission.ReadCatalog, Permission.ReadProduct),
-                        id: 'inventory',
-                        label: _('nav.inventory'),
+                        id: 'products',
+                        label: _('nav.products'),
                         icon: 'library',
-                        routerLink: ['/catalog', 'inventory'],
+                        routerLink: ['/catalog', 'products'],
                     },
                     {
                         requiresPermission: allow(Permission.ReadCatalog, Permission.ReadFacet),
@@ -205,6 +205,13 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                         label: _('nav.channels'),
                         routerLink: ['/settings', 'channels'],
                         icon: 'layers',
+                    },
+                    {
+                        requiresPermission: allow(Permission.ReadStockLocation),
+                        id: 'stock-locations',
+                        label: _('nav.stock-locations'),
+                        icon: 'map-marker',
+                        routerLink: ['/settings', 'stock-locations'],
                     },
                     {
                         requiresPermission: allow(Permission.ReadAdministrator),
