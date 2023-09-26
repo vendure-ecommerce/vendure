@@ -59,6 +59,7 @@ export const TEST_ORDER_FRAGMENT = gql`
         }
         customer {
             id
+            emailAddress
             user {
                 id
                 identifier
