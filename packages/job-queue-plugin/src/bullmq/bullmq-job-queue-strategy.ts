@@ -116,7 +116,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
-        const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries;
+        const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries ?? 0;
         const backoff = this.options.setBackoff?.(job.queueName, job) ?? {
             delay: 1000,
             type: 'exponential',
@@ -297,7 +297,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             error: jobJson.failedReason,
             progress: +jobJson.progress,
             result: jobJson.returnvalue,
-            retries: bullJob.opts.attempts ?? 0,
+            retries: bullJob.opts.attempts ? bullJob.opts.attempts - 1 : 0,
         });
     }
 
