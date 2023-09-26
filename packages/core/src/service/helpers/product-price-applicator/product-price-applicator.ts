@@ -88,6 +88,7 @@ export class ProductPriceApplicator {
         const { price, priceIncludesTax } = await productVariantPriceCalculationStrategy.calculate({
             inputPrice: channelPrice.price,
             taxCategory: variant.taxCategory,
+            productVariant: variant,
             activeTaxZone,
             ctx,
         });

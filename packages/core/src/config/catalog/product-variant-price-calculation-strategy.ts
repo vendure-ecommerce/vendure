@@ -1,6 +1,7 @@
 import { RequestContext } from '../../api/common/request-context';
 import { PriceCalculationResult } from '../../common/types/common-types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 
@@ -26,11 +27,14 @@ export interface ProductVariantPriceCalculationStrategy extends InjectableStrate
  * @description
  * The arguments passed the `calculate` method of the configured {@link ProductVariantPriceCalculationStrategy}.
  *
+ * The `productVariant` argument was added in v2.1.0.
+ *
  * @docsCategory products & stock
  * @docsPage ProductVariantPriceCalculationStrategy
  */
 export interface ProductVariantPriceCalculationArgs {
     inputPrice: number;
+    productVariant: ProductVariant;
     taxCategory: TaxCategory;
     activeTaxZone: Zone;
     ctx: RequestContext;
