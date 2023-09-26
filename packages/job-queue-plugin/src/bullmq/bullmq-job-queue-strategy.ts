@@ -48,7 +48,19 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     async init(injector: Injector): Promise<void> {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
-        this.options = options;
+        this.options = {
+            ...options,
+            workerOptions: {
+                removeOnComplete: options.workerOptions?.removeOnComplete ?? {
+                    age: 60 * 60 * 24 * 30,
+                    count: 5000,
+                },
+                removeOnFail: options.workerOptions?.removeOnFail ?? {
+                    age: 60 * 60 * 24 * 30,
+                    count: 5000,
+                },
+            },
+        };
         this.connectionOptions =
             options.connection ??
             ({
