@@ -114,7 +114,7 @@
                 <vdr-job-state-label [job]="job"></vdr-job-state-label>
                 <div *ngIf="job.state === 'FAILED'" class="retry-info">after {{ job.attempts }} attempts</div>
                 <div *ngIf="job.state === 'RUNNING' || job.state === 'RETRYING'" class="retry-info">
-                    attempting {{ job.attempts }} of {{ job.retries }}
+                    attempting {{ job.attempts }} of {{ job.retries + 1 }}
                 </div>
             </ng-template>
         </vdr-dt2-column>
