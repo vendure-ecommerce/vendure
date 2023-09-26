@@ -46,7 +46,7 @@
                 >
             </ng-container>
             <div *ngIf="selectionManager.selection.length === 1">
-                <a [routerLink]="['./', lastSelected().id]" class="button-ghost">
+                <a [routerLink]="['/catalog/assets/', lastSelected().id]" (click)="editAssetClick.emit()" class="button-ghost">
                     <clr-icon shape="pencil"></clr-icon> {{ 'common.edit' | translate }}
                     <clr-icon shape="arrow right"></clr-icon>
                 </a>
