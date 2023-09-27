@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { ConfigArg } from '@vendure/common/lib/generated-types';
 import {
-    Ctx,
     Customer,
     Injector,
     Logger,
@@ -25,9 +24,9 @@ import { StripePluginOptions } from './types';
 @Injectable()
 export class StripeService {
     constructor(
+        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
-        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private moduleRef: ModuleRef,
     ) {}
 
@@ -40,6 +39,11 @@ export class StripeService {
         }
         const amountInMinorUnits = getAmountInStripeMinorUnits(order);
 
+        const additionalParams = await this.options.paymentIntentCreateParams?.(
+            new Injector(this.moduleRef),
+            ctx,
+            order,
+        );
         const metadata = sanitizeMetadata({
             ...(typeof this.options.metadata === 'function'
                 ? await this.options.metadata(new Injector(this.moduleRef), ctx, order)
@@ -49,6 +53,11 @@ export class StripeService {
             orderCode: order.code,
         });
 
+        const allMetadata = {
+            ...metadata,
+            ...sanitizeMetadata(additionalParams?.metadata ?? {}),
+        };
+
         const { client_secret } = await stripe.paymentIntents.create(
             {
                 amount: amountInMinorUnits,
@@ -57,7 +66,8 @@ export class StripeService {
                 automatic_payment_methods: {
                     enabled: true,
                 },
-                metadata,
+                ...(additionalParams ?? {}),
+                metadata: allMetadata,
             },
             { idempotencyKey: `${order.code}_${amountInMinorUnits}` },
         );
@@ -164,9 +174,18 @@ export class StripeService {
         if (stripeCustomers.data.length > 0) {
             stripeCustomerId = stripeCustomers.data[0].id;
         } else {
+            const additionalParams = await this.options.customerCreateParams?.(
+                new Injector(this.moduleRef),
+                ctx,
+                order,
+            );
             const newStripeCustomer = await stripe.customers.create({
                 email: customer.emailAddress,
                 name: `${customer.firstName} ${customer.lastName}`,
+                ...(additionalParams ?? {}),
+                ...(additionalParams?.metadata
+                    ? { metadata: sanitizeMetadata(additionalParams.metadata) }
+                    : {}),
             });
 
             stripeCustomerId = newStripeCustomer.id;

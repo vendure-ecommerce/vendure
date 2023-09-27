@@ -3280,7 +3280,7 @@ export type TestOrderFragmentFragment = {
         }>;
     }>;
     shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
-    customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
+    customer?: { id: string; emailAddress: string; user?: { id: string; identifier: string } | null } | null;
     history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
 };
 
@@ -3340,7 +3340,11 @@ export type AddPaymentToOrderMutation = {
                   }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
-              customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
+              customer?: {
+                  id: string;
+                  emailAddress: string;
+                  user?: { id: string; identifier: string } | null;
+              } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
         | { errorCode: ErrorCode; message: string }
@@ -3456,7 +3460,11 @@ export type SetShippingMethodMutation = {
                   }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
-              customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
+              customer?: {
+                  id: string;
+                  emailAddress: string;
+                  user?: { id: string; identifier: string } | null;
+              } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
         | { errorCode: ErrorCode; message: string };
@@ -3521,7 +3529,11 @@ export type AddItemToOrderMutation = {
                       }>;
                   }>;
                   shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
-                  customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
+                  customer?: {
+                      id: string;
+                      emailAddress: string;
+                      user?: { id: string; identifier: string } | null;
+                  } | null;
                   history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
               };
           }
@@ -3574,7 +3586,11 @@ export type AddItemToOrderMutation = {
                   }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
-              customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
+              customer?: {
+                  id: string;
+                  emailAddress: string;
+                  user?: { id: string; identifier: string } | null;
+              } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
         | { errorCode: ErrorCode; message: string }
@@ -3634,7 +3650,11 @@ export type GetOrderByCodeQuery = {
             }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
-        customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
+        customer?: {
+            id: string;
+            emailAddress: string;
+            user?: { id: string; identifier: string } | null;
+        } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
 };
@@ -3690,7 +3710,11 @@ export type GetActiveOrderQuery = {
             }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
-        customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
+        customer?: {
+            id: string;
+            emailAddress: string;
+            user?: { id: string; identifier: string } | null;
+        } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
 };
@@ -3820,6 +3844,7 @@ export const TestOrderFragmentFragmentDoc = {
                             kind: 'SelectionSet',
                             selections: [
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'user' },
@@ -4103,6 +4128,7 @@ export const AddPaymentToOrderDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'user' },
@@ -4541,6 +4567,7 @@ export const SetShippingMethodDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'user' },
@@ -4808,6 +4835,7 @@ export const AddItemToOrderDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'user' },
@@ -5013,6 +5041,7 @@ export const GetOrderByCodeDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'user' },
@@ -5201,6 +5230,7 @@ export const GetActiveOrderDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'user' },

@@ -45,6 +45,7 @@ import { StripePluginOptions } from './types';
  *       }),
  *     ]
  *     ````
+ *     For all the plugin options, see the {@link StripePluginOptions} type.
  * 2. Create a new PaymentMethod in the Admin UI, and select "Stripe payments" as the handler.
  * 3. Set the webhook secret and API key in the PaymentMethod form.
  *

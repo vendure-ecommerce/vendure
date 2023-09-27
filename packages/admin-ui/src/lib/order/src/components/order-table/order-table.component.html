@@ -37,7 +37,16 @@
     <vdr-dt2-column [heading]="'order.quantity' | translate" id="quantity" [optional]="false">
         <ng-template let-line="item">
             <ng-container *ngIf="!isDraft; else draft">
-                {{ line.quantity }}
+                <div class="flex">
+                    <div
+                        *ngIf="line.orderPlacedQuantity && line.quantity !== line.orderPlacedQuantity"
+                        class="order-placed-quantity"
+                        [title]="'order.original-quantity-at-checkout' | translate"
+                    >
+                        {{ line.orderPlacedQuantity }}
+                    </div>
+                    <div>{{ line.quantity }}</div>
+                </div>
             </ng-container>
             <ng-template #draft>
                 <div class="flex">
@@ -62,7 +71,10 @@
             ></vdr-line-fulfillment>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-custom-field-column *ngFor="let customField of orderLineCustomFields" [customField]="customField"/>
+    <vdr-dt2-custom-field-column
+        *ngFor="let customField of orderLineCustomFields"
+        [customField]="customField"
+    />
     <vdr-order-total-column [heading]="'order.total' | translate" id="total" [optional]="false">
         <ng-template let-line="item">
             <div class="unit-price">
@@ -81,7 +93,7 @@
                         <div class="line-promotion" *ngFor="let discount of discounts">
                             <a class="promotion-name" [routerLink]="getPromotionLink(discount)">{{
                                 discount.description
-                                }}</a>
+                            }}</a>
                             <div class="promotion-amount">
                                 {{ discount.amountWithTax | localeCurrency : order.currencyCode }}
                                 <div class="net-price" [title]="'order.net-price' | translate">

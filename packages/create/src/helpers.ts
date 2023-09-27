@@ -102,9 +102,21 @@ export function checkNodeVersion(requiredVersion: string) {
     }
 }
 
-export function shouldUseYarn() {
+export function yarnIsAvailable() {
     try {
         execSync('yarnpkg --version', { stdio: 'ignore' });
+        return true;
+    } catch (e: any) {
+        return false;
+    }
+}
+
+// Bun support should not be exposed yet, see
+// https://github.com/oven-sh/bun/issues/4947
+// https://github.com/lovell/sharp/issues/3511
+export function bunIsAvailable() {
+    try {
+        execSync('bun --version', { stdio: 'ignore' });
         return true;
     } catch (e: any) {
         return false;

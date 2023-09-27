@@ -51,7 +51,7 @@ export class ProductVariantQuickJumpComponent implements OnInit {
     onSelect(item?: NonNullable<GetProductVariantsQuickJumpQuery['product']>['variants'][number]) {
         if (item) {
             this.router
-                .navigate(['catalog', 'inventory', this.productId, 'variants', item.id])
+                .navigate(['catalog', 'products', this.productId, 'variants', item.id])
                 .then(() => (this.selectedVariantId = undefined));
         }
     }

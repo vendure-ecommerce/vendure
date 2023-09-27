@@ -26,6 +26,9 @@ export * from './components/shipping-method-detail/shipping-method-detail.compon
 export * from './components/shipping-method-list/shipping-method-list-bulk-actions';
 export * from './components/shipping-method-list/shipping-method-list.component';
 export * from './components/shipping-method-test-result/shipping-method-test-result.component';
+export * from './components/stock-location-detail/stock-location-detail.component';
+export * from './components/stock-location-list/stock-location-list-bulk-actions';
+export * from './components/stock-location-list/stock-location-list.component';
 export * from './components/tax-category-detail/tax-category-detail.component';
 export * from './components/tax-category-list/tax-category-list-bulk-actions';
 export * from './components/tax-category-list/tax-category-list.component';

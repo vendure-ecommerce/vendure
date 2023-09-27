@@ -210,6 +210,89 @@ describe('Stripe payments', () => {
         StripePlugin.options.metadata = undefined;
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/2412
+    it('should attach additional params to payment intent using paymentIntentCreateParams', async () => {
+        StripePlugin.options.paymentIntentCreateParams = async (injector, ctx, currentOrder) => {
+            const hydrator = injector.get(EntityHydrator);
+            await hydrator.hydrate(ctx, currentOrder, { relations: ['customer'] });
+            return {
+                description: `Order #${currentOrder.code} for ${currentOrder.customer!.emailAddress}`,
+            };
+        };
+        let createPaymentIntentPayload: any;
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        nock('https://api.stripe.com/')
+            .post('/v1/payment_intents', body => {
+                createPaymentIntentPayload = body;
+                return true;
+            })
+            .reply(200, {
+                client_secret: 'test-client-secret',
+            });
+        const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
+        expect(createPaymentIntentPayload).toEqual({
+            amount: activeOrder?.totalWithTax.toString(),
+            currency: activeOrder?.currencyCode?.toLowerCase(),
+            customer: 'new-customer-id',
+            description: `Order #${activeOrder!.code} for ${activeOrder!.customer!.emailAddress}`,
+            'automatic_payment_methods[enabled]': 'true',
+            'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
+            'metadata[orderId]': '1',
+            'metadata[orderCode]': activeOrder?.code,
+        });
+        expect(createStripePaymentIntent).toEqual('test-client-secret');
+        StripePlugin.options.paymentIntentCreateParams = undefined;
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2412
+    it('should attach additional params to customer using customerCreateParams', async () => {
+        StripePlugin.options.customerCreateParams = async (injector, ctx, currentOrder) => {
+            const hydrator = injector.get(EntityHydrator);
+            await hydrator.hydrate(ctx, currentOrder, { relations: ['customer'] });
+            return {
+                description: `Description for ${currentOrder.customer!.emailAddress}`,
+                phone: '12345',
+            };
+        };
+
+        await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_1',
+            quantity: 2,
+        });
+        order = addItemToOrder as TestOrderFragmentFragment;
+
+        let createCustomerPayload: { name: string; email: string } | undefined;
+        const emptyList = { data: [] };
+        nock('https://api.stripe.com/')
+            .get(/\/v1\/customers.*/)
+            .reply(200, emptyList);
+        nock('https://api.stripe.com/')
+            .post('/v1/customers', body => {
+                createCustomerPayload = body;
+                return true;
+            })
+            .reply(201, {
+                id: 'new-customer-id',
+            });
+        nock('https://api.stripe.com/').post('/v1/payment_intents').reply(200, {
+            client_secret: 'test-client-secret',
+        });
+
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+
+        await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
+        expect(createCustomerPayload).toEqual({
+            email: 'trevor_donnelly96@hotmail.com',
+            name: 'Trevor Donnelly',
+            description: `Description for ${activeOrder!.customer!.emailAddress}`,
+            phone: '12345',
+        });
+    });
+
     // https://github.com/vendure-ecommerce/vendure/issues/1630
     describe('currencies with no fractional units', () => {
         let japanProductId: string;

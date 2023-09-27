@@ -67,7 +67,7 @@
         <ng-template let-variant="item">
             <a
                 class="button-ghost"
-                [routerLink]="['/catalog/inventory', variant.productId, 'variants', variant.id]"
+                [routerLink]="['/catalog/products', variant.productId, 'variants', variant.id]"
                 ><span>{{ variant.name }}</span
                 ><clr-icon shape="arrow right"
             /></a>

@@ -10,13 +10,22 @@ import {
     Logger,
     PaginatedList,
 } from '@vendure/core';
-import Bull, { ConnectionOptions, JobType, Processor, Queue, Worker, WorkerOptions } from 'bullmq';
+import Bull, {
+    ConnectionOptions,
+    JobType,
+    Processor,
+    Queue,
+    Worker,
+    WorkerOptions,
+    Job as BullJob,
+} from 'bullmq';
 import { EventEmitter } from 'events';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
 
 import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { RedisHealthIndicator } from './redis-health-indicator';
-import { BullMQPluginOptions } from './types';
+import { getJobsByType } from './scripts/get-jobs-by-type';
+import { BullMQPluginOptions, CustomScriptDefinition } from './types';
 
 const QUEUE_NAME = 'vendure-job-queue';
 const DEFAULT_CONCURRENCY = 3;
@@ -39,7 +48,19 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     async init(injector: Injector): Promise<void> {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
-        this.options = options;
+        this.options = {
+            ...options,
+            workerOptions: {
+                removeOnComplete: options.workerOptions?.removeOnComplete ?? {
+                    age: 60 * 60 * 24 * 30,
+                    count: 5000,
+                },
+                removeOnFail: options.workerOptions?.removeOnFail ?? {
+                    age: 60 * 60 * 24 * 30,
+                    count: 5000,
+                },
+            },
+        };
         this.connectionOptions =
             options.connection ??
             ({
@@ -52,6 +73,8 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             this.connectionOptions instanceof EventEmitter
                 ? this.connectionOptions
                 : new Redis(this.connectionOptions);
+
+        this.defineCustomLuaScripts();
 
         const redisHealthIndicator = injector.get(RedisHealthIndicator);
         Logger.info('Checking Redis connection...', loggerCtx);
@@ -105,7 +128,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
-        const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries;
+        const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries ?? 0;
         const backoff = this.options.setBackoff?.(job.queueName, job) ?? {
             delay: 1000,
             type: 'exponential',
@@ -137,8 +160,8 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
-        const start = options?.skip ?? 0;
-        const end = start + (options?.take ?? 10);
+        const skip = options?.skip ?? 0;
+        const take = options?.take ?? 10;
         let jobTypes: JobType[] = ALL_JOB_TYPES;
         const stateFilter = options?.filter?.state;
         if (stateFilter?.eq) {
@@ -170,26 +193,31 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                     ? ['completed', 'failed']
                     : ['wait', 'waiting-children', 'active', 'repeat', 'delayed', 'paused'];
         }
+
         let items: Bull.Job[] = [];
-        let jobCounts: { [index: string]: number } = {};
+        let totalItems = 0;
+
         try {
-            items = await this.queue.getJobs(jobTypes, start, end);
+            const [total, jobIds] = await this.callCustomScript(getJobsByType, [
+                skip,
+                take,
+                options?.filter?.queueName?.eq ?? '',
+                ...jobTypes,
+            ]);
+            items = (
+                await Promise.all(
+                    jobIds.map(id => {
+                        return BullJob.fromId(this.queue, id);
+                    }),
+                )
+            ).filter(notNullOrUndefined);
+            totalItems = total;
         } catch (e: any) {
-            Logger.error(e.message, loggerCtx, e.stack);
+            throw new InternalServerError(e.message);
         }
-        try {
-            jobCounts = await this.queue.getJobCounts(...jobTypes);
-        } catch (e: any) {
-            Logger.error(e.message, loggerCtx, e.stack);
-        }
-        const totalItems = Object.values(jobCounts).reduce((sum, count) => sum + count, 0);
 
         return {
-            items: await Promise.all(
-                items
-                    .sort((a, b) => b.timestamp - a.timestamp)
-                    .map(bullJob => this.createVendureJob(bullJob)),
-            ),
+            items: await Promise.all(items.map(bullJob => this.createVendureJob(bullJob))),
             totalItems,
         };
     }
@@ -252,6 +280,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     private stopped = false;
+
     async stop<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
@@ -280,7 +309,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             error: jobJson.failedReason,
             progress: +jobJson.progress,
             result: jobJson.returnvalue,
-            retries: bullJob.opts.attempts ?? 0,
+            retries: bullJob.opts.attempts ? bullJob.opts.attempts - 1 : 0,
         });
     }
 
@@ -307,5 +336,32 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
         throw new InternalServerError('Could not determine job state');
         // TODO: how to handle "cancelled" state? Currently when we cancel a job, we simply remove all record of it.
+    }
+
+    private callCustomScript<T, Args extends any[]>(
+        scriptDef: CustomScriptDefinition<T, Args>,
+        args: Args,
+    ): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            (this.redisConnection as any)[scriptDef.name](
+                `bull:${this.queue.name}:`,
+                ...args,
+                (err: any, result: any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                },
+            );
+        });
+    }
+
+    private defineCustomLuaScripts() {
+        const redis = this.redisConnection;
+        redis.defineCommand(getJobsByType.name, {
+            numberOfKeys: getJobsByType.numberOfKeys,
+            lua: getJobsByType.script,
+        });
     }
 }

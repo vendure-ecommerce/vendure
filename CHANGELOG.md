@@ -1,3 +1,15 @@
+## <small>2.0.8 (2023-09-27)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix creating nullable string fields ([7e2c17a](https://github.com/vendure-ecommerce/vendure/commit/7e2c17a)), closes [#2343](https://github.com/vendure-ecommerce/vendure/issues/2343)
+* **admin-ui** Fix link to Asset detail from asset picker ([4539de3](https://github.com/vendure-ecommerce/vendure/commit/4539de3)), closes [#2411](https://github.com/vendure-ecommerce/vendure/issues/2411)
+* **core** Implement Refund lines fields resolver ([6b4da6c](https://github.com/vendure-ecommerce/vendure/commit/6b4da6c)), closes [#2406](https://github.com/vendure-ecommerce/vendure/issues/2406)
+* **core** Prevent negative total from compounded promotions ([0740c87](https://github.com/vendure-ecommerce/vendure/commit/0740c87)), closes [#2385](https://github.com/vendure-ecommerce/vendure/issues/2385)
+* **payments-plugin** Fix stripe payment transaction handling (#2402) ([fd8a777](https://github.com/vendure-ecommerce/vendure/commit/fd8a777)), closes [#2402](https://github.com/vendure-ecommerce/vendure/issues/2402)
+* **admin-ui** Add image carousel to asset preview dialog (#2370) ([bd834d0](https://github.com/vendure-ecommerce/vendure/commit/bd834d0)), closes [#2370](https://github.com/vendure-ecommerce/vendure/issues/2370) [#2129](https://github.com/vendure-ecommerce/vendure/issues/2129)
+
 ## <small>2.0.7 (2023-09-08)</small>
 
 

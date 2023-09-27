@@ -62,6 +62,24 @@ export const createRoutes = (pageService: PageService): Route[] => [
         children: pageService.getPageTabRoutes('channel-detail'),
     },
     {
+        path: 'stock-locations',
+        component: PageComponent,
+        data: {
+            locationId: 'stock-location-list',
+            breadcrumb: _('breadcrumb.stock-locations'),
+        },
+        children: pageService.getPageTabRoutes('stock-location-list'),
+    },
+    {
+        path: 'stock-locations/:id',
+        component: PageComponent,
+        data: {
+            locationId: 'stock-location-list',
+            breadcrumb: { label: _('breadcrumb.stock-locations'), link: ['../', 'stock-locations'] },
+        },
+        children: pageService.getPageTabRoutes('stock-location-detail'),
+    },
+    {
         path: 'sellers',
         component: PageComponent,
         data: {

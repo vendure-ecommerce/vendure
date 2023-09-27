@@ -7,11 +7,11 @@ import {
     GetAdministratorDetailDocument,
     GetChannelDetailDocument,
     GetCountryDetailDocument,
-    GetGlobalSettingsDetailDocument,
     GetPaymentMethodDetailDocument,
     GetRoleDetailDocument,
     GetSellerDetailDocument,
     GetShippingMethodDetailDocument,
+    GetStockLocationDetailDocument,
     GetTaxCategoryDetailDocument,
     GetTaxRateDetailDocument,
     GetZoneDetailDocument,
@@ -55,6 +55,13 @@ import {
 } from './components/shipping-method-list/shipping-method-list-bulk-actions';
 import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
 import { ShippingMethodTestResultComponent } from './components/shipping-method-test-result/shipping-method-test-result.component';
+import { StockLocationDetailComponent } from './components/stock-location-detail/stock-location-detail.component';
+import {
+    assignStockLocationsToChannelBulkAction,
+    deleteStockLocationsBulkAction,
+    removeStockLocationsFromChannelBulkAction,
+} from './components/stock-location-list/stock-location-list-bulk-actions';
+import { StockLocationListComponent } from './components/stock-location-list/stock-location-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
 import { deleteTaxCategoriesBulkAction } from './components/tax-category-list/tax-category-list-bulk-actions';
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
@@ -116,6 +123,8 @@ import { createRoutes } from './settings.routes';
         ProfileComponent,
         TestShippingMethodsComponent,
         ZoneDetailComponent,
+        StockLocationListComponent,
+        StockLocationDetailComponent,
     ],
 })
 export class SettingsModule {
@@ -145,6 +154,10 @@ export class SettingsModule {
         bulkActionRegistryService.registerBulkAction(deleteZonesBulkAction);
 
         bulkActionRegistryService.registerBulkAction(removeZoneMembersBulkAction);
+
+        bulkActionRegistryService.registerBulkAction(assignStockLocationsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeStockLocationsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteStockLocationsBulkAction);
 
         pageService.registerPageTab({
             priority: 0,
@@ -412,6 +425,31 @@ export class SettingsModule {
             tab: _('breadcrumb.profile'),
             route: '',
             component: ProfileComponent,
+        });
+
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'stock-location-list',
+            tab: _('catalog.stock-locations'),
+            route: '',
+            component: StockLocationListComponent,
+        });
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'stock-location-detail',
+            tab: _('catalog.stock-location'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: StockLocationDetailComponent,
+                query: GetStockLocationDetailDocument,
+                entityKey: 'stockLocation',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity ? entity.name : _('catalog.create-new-stock-location'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
         });
     }
 }

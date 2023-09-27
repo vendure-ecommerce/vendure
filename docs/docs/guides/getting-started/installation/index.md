@@ -18,33 +18,9 @@ The recommended way to get started with Vendure is by using the [@vendure/create
 
 ### 1. Run the command
 
-<Tabs>
-<TabItem value="npx" label="npx" default>
-
 ```
 npx @vendure/create my-shop
 ```
-
-</TabItem>
-<TabItem value="npm init" label="npm init">
-
-```
-npm init @vendure my-shop
-```
-
-</TabItem>
-<TabItem value="yarn create" label="yarn create">
-
-```
-yarn create @vendure my-shop
-``` 
-
-</TabItem>
-</Tabs>
-
-:::note
-By default, the `@vendure/create` tool will use [Yarn](https://yarnpkg.com/) to manage your dependencies if you have it installed. If you want to force it to use npm, use the `--use-npm` flag.
-:::
 
 ### 2. Select a database
 

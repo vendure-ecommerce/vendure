@@ -1942,6 +1942,81 @@ describe('Promotions applied to Orders', () => {
         expect(applyCouponCode.totalWithTax).toBe(96);
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/2385
+    it('prevents negative line price', async () => {
+        await shopClient.asAnonymousUser();
+        const item1000 = getVariantBySlug('item-1000')!;
+        const couponCode1 = '100%_off';
+        const couponCode2 = '100%_off';
+        await createPromotion({
+            enabled: true,
+            name: '100% discount ',
+            couponCode: couponCode1,
+            conditions: [],
+            actions: [
+                {
+                    code: productsPercentageDiscount.code,
+                    arguments: [
+                        { name: 'discount', value: '100' },
+                        {
+                            name: 'productVariantIds',
+                            value: `["${item1000.id}"]`,
+                        },
+                    ],
+                },
+            ],
+        });
+        await createPromotion({
+            enabled: true,
+            name: '20% discount ',
+            couponCode: couponCode2,
+            conditions: [],
+            actions: [
+                {
+                    code: productsPercentageDiscount.code,
+                    arguments: [
+                        { name: 'discount', value: '20' },
+                        {
+                            name: 'productVariantIds',
+                            value: `["${item1000.id}"]`,
+                        },
+                    ],
+                },
+            ],
+        });
+
+        await shopClient.query<
+            CodegenShop.ApplyCouponCodeMutation,
+            CodegenShop.ApplyCouponCodeMutationVariables
+        >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+
+        await shopClient.query<
+            CodegenShop.AddItemToOrderMutation,
+            CodegenShop.AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: item1000.id,
+            quantity: 1,
+        });
+
+        const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+            GET_ACTIVE_ORDER,
+        );
+
+        expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
+        expect(check1!.totalWithTax).toBe(0);
+
+        await shopClient.query<
+            CodegenShop.ApplyCouponCodeMutation,
+            CodegenShop.ApplyCouponCodeMutationVariables
+        >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+
+        const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+            GET_ACTIVE_ORDER,
+        );
+        expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
+        expect(check2!.totalWithTax).toBe(0);
+    });
+
     async function getProducts() {
         const result = await adminClient.query<Codegen.GetProductsWithVariantPricesQuery>(
             GET_PRODUCTS_WITH_VARIANT_PRICES,
