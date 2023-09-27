@@ -1,6 +1,6 @@
 {
     "name": "@vendure/core",
-    "version": "2.0.6",
+    "version": "2.0.8",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -52,7 +52,7 @@
         "@nestjs/testing": "9.3.9",
         "@nestjs/typeorm": "9.0.1",
         "@types/fs-extra": "^9.0.1",
-        "@vendure/common": "^2.0.6",
+        "@vendure/common": "^2.0.8",
         "apollo-server-express": "3.6.3",
         "bcrypt": "^5.1.0",
         "body-parser": "^1.19.0",

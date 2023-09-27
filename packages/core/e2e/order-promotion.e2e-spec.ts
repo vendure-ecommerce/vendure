@@ -1550,8 +1550,8 @@ describe('Promotions applied to Orders', () => {
                 >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
-                expect(applyCouponCode!.totalWithTax).toBe(0);
-                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
 
                 await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
                     SET_CUSTOMER,
@@ -1565,8 +1565,8 @@ describe('Promotions applied to Orders', () => {
                 );
 
                 const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
-                expect(activeOrder!.couponCodes).toEqual([TEST_COUPON_CODE]);
-                expect(applyCouponCode!.totalWithTax).toBe(0);
+                expect(activeOrder.couponCodes).toEqual([TEST_COUPON_CODE]);
+                expect(applyCouponCode.totalWithTax).toBe(0);
             });
         });
 
@@ -1753,6 +1753,81 @@ describe('Promotions applied to Orders', () => {
         >(APPLY_COUPON_CODE, { couponCode });
         orderResultGuard.assertSuccess(applyCouponCode);
         expect(applyCouponCode.totalWithTax).toBe(96);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2385
+    it('prevents negative line price', async () => {
+        await shopClient.asAnonymousUser();
+        const item1000 = getVariantBySlug('item-1000')!;
+        const couponCode1 = '100%_off';
+        const couponCode2 = '100%_off';
+        await createPromotion({
+            enabled: true,
+            name: '100% discount ',
+            couponCode: couponCode1,
+            conditions: [],
+            actions: [
+                {
+                    code: productsPercentageDiscount.code,
+                    arguments: [
+                        { name: 'discount', value: '100' },
+                        {
+                            name: 'productVariantIds',
+                            value: `["${item1000.id}"]`,
+                        },
+                    ],
+                },
+            ],
+        });
+        await createPromotion({
+            enabled: true,
+            name: '20% discount ',
+            couponCode: couponCode2,
+            conditions: [],
+            actions: [
+                {
+                    code: productsPercentageDiscount.code,
+                    arguments: [
+                        { name: 'discount', value: '20' },
+                        {
+                            name: 'productVariantIds',
+                            value: `["${item1000.id}"]`,
+                        },
+                    ],
+                },
+            ],
+        });
+
+        await shopClient.query<
+            CodegenShop.ApplyCouponCodeMutation,
+            CodegenShop.ApplyCouponCodeMutationVariables
+        >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+
+        await shopClient.query<
+            CodegenShop.AddItemToOrderMutation,
+            CodegenShop.AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: item1000.id,
+            quantity: 1,
+        });
+
+        const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+            GET_ACTIVE_ORDER,
+        );
+
+        expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
+        expect(check1!.totalWithTax).toBe(0);
+
+        await shopClient.query<
+            CodegenShop.ApplyCouponCodeMutation,
+            CodegenShop.ApplyCouponCodeMutationVariables
+        >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+
+        const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+            GET_ACTIVE_ORDER,
+        );
+        expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
+        expect(check2!.totalWithTax).toBe(0);
     });
 
     async function getProducts() {

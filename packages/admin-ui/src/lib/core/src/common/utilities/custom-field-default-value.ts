@@ -20,9 +20,9 @@ export function getDefaultValue(type: CustomFieldType, isNullable?: boolean) {
         case 'string':
         case 'text':
         case 'localeText':
-            return '';
+            return isNullable ? null : '';
         case 'boolean':
-            return false;
+            return isNullable ? null : false;
         case 'float':
         case 'int':
             return isNullable ? null : 0;

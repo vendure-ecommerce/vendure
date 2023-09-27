@@ -1,18 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import {
-    Ctx,
-    Customer,
-    Injector,
-    Logger,
-    Order,
-    Payment,
-    PaymentMethodService,
-    RequestContext,
-    TransactionalConnection,
-    UserInputError,
-} from '@vendure/core';
+import { Customer, Injector, Logger, Order, Payment, PaymentMethodService, RequestContext, TransactionalConnection, UserInputError } from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
@@ -25,9 +14,9 @@ import { StripePluginOptions } from './types';
 @Injectable()
 export class StripeService {
     constructor(
+        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
-        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private moduleRef: ModuleRef,
     ) {}
 
@@ -64,10 +53,7 @@ export class StripeService {
 
         if (!client_secret) {
             // This should never happen
-            Logger.warn(
-                `Payment intent creation for order ${order.code} did not return client secret`,
-                loggerCtx,
-            );
+            Logger.warn(`Payment intent creation for order ${order.code} did not return client secret`, loggerCtx);
             throw Error('Failed to create payment intent');
         }
 

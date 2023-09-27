@@ -1,3 +1,34 @@
+## <small>2.0.8 (2023-09-27)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix creating nullable string fields ([7e2c17a](https://github.com/vendure-ecommerce/vendure/commit/7e2c17a)), closes [#2343](https://github.com/vendure-ecommerce/vendure/issues/2343)
+* **admin-ui** Fix link to Asset detail from asset picker ([4539de3](https://github.com/vendure-ecommerce/vendure/commit/4539de3)), closes [#2411](https://github.com/vendure-ecommerce/vendure/issues/2411)
+* **core** Implement Refund lines fields resolver ([6b4da6c](https://github.com/vendure-ecommerce/vendure/commit/6b4da6c)), closes [#2406](https://github.com/vendure-ecommerce/vendure/issues/2406)
+* **core** Prevent negative total from compounded promotions ([0740c87](https://github.com/vendure-ecommerce/vendure/commit/0740c87)), closes [#2385](https://github.com/vendure-ecommerce/vendure/issues/2385)
+* **payments-plugin** Fix stripe payment transaction handling (#2402) ([fd8a777](https://github.com/vendure-ecommerce/vendure/commit/fd8a777)), closes [#2402](https://github.com/vendure-ecommerce/vendure/issues/2402)
+* **admin-ui** Add image carousel to asset preview dialog (#2370) ([bd834d0](https://github.com/vendure-ecommerce/vendure/commit/bd834d0)), closes [#2370](https://github.com/vendure-ecommerce/vendure/issues/2370) [#2129](https://github.com/vendure-ecommerce/vendure/issues/2129)
+
+## <small>2.0.7 (2023-09-08)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add custom field support to Customer list ([298e90c](https://github.com/vendure-ecommerce/vendure/commit/298e90c))
+* **admin-ui** Added and improved Italian translations (#2371) ([19292a8](https://github.com/vendure-ecommerce/vendure/commit/19292a8)), closes [#2371](https://github.com/vendure-ecommerce/vendure/issues/2371)
+* **admin-ui** Correct handling of ID filters in data tables ([52ddd96](https://github.com/vendure-ecommerce/vendure/commit/52ddd96))
+* **admin-ui** Data table filters react to page navigation ([2471350](https://github.com/vendure-ecommerce/vendure/commit/2471350))
+* **admin-ui** Fix alignment of facet value chip ([7eb43ef](https://github.com/vendure-ecommerce/vendure/commit/7eb43ef))
+* **admin-ui** Fix channel switcher icon style ([6e70794](https://github.com/vendure-ecommerce/vendure/commit/6e70794))
+* **admin-ui** Fix filter shortcut triggering from rich text component ([e6f95b3](https://github.com/vendure-ecommerce/vendure/commit/e6f95b3)), closes [#2384](https://github.com/vendure-ecommerce/vendure/issues/2384)
+* **admin-ui** Fix styling of custom field tabs ([ef3d2f9](https://github.com/vendure-ecommerce/vendure/commit/ef3d2f9))
+* **admin-ui** Reinstate multi-deletion of Assets ([a203e50](https://github.com/vendure-ecommerce/vendure/commit/a203e50)), closes [#380](https://github.com/vendure-ecommerce/vendure/issues/380)
+* **admin-ui** Use appropriate default values for custom fields ([85a8866](https://github.com/vendure-ecommerce/vendure/commit/85a8866)), closes [#2362](https://github.com/vendure-ecommerce/vendure/issues/2362)
+* **admin-ui** Aligns items horizontally in the Chip component ([19d3e51](https://github.com/vendure-ecommerce/vendure/commit/19d3e51))
+* **admin-ui** Add price field on variation dialog modal (#2378) ([5b99bae](https://github.com/vendure-ecommerce/vendure/commit/5b99bae)), closes [#2378](https://github.com/vendure-ecommerce/vendure/issues/2378)
+* **core** Fix channel association on promotion update (#2376) ([47e688d](https://github.com/vendure-ecommerce/vendure/commit/47e688d)), closes [#2376](https://github.com/vendure-ecommerce/vendure/issues/2376)
+
 ## <small>2.0.6 (2023-08-11)</small>
 
 

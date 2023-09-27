@@ -21,6 +21,7 @@
     [assets]="(assets$ | async)! | paginate: paginationConfig"
     [multiSelect]="multiSelect"
     (selectionChange)="selection = $event"
+    (editAssetClick)="cancel()"
     #assetGalleryComponent
 ></vdr-asset-gallery>
 
