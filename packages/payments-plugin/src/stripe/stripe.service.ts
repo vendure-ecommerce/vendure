@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { ConfigArg } from '@vendure/common/lib/generated-types';
 import {
-    Ctx,
     Customer,
     Injector,
     Logger,
@@ -25,9 +24,9 @@ import { StripePluginOptions } from './types';
 @Injectable()
 export class StripeService {
     constructor(
+        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
-        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private moduleRef: ModuleRef,
     ) {}
 
