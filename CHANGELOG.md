@@ -1,3 +1,10 @@
+## <small>2.0.9 (2023-09-29)</small>
+
+
+#### Fixes
+
+* **core** Fix discount calculation error edge-case ([7549aad](https://github.com/vendure-ecommerce/vendure/commit/7549aad)), closes [#2385](https://github.com/vendure-ecommerce/vendure/issues/2385)
+
 ## <small>2.0.8 (2023-09-27)</small>
 
 

@@ -23,7 +23,6 @@ export const productsPercentageDiscount = new PromotionItemAction({
             label: [{ languageCode: LanguageCode.en, value: 'Product variants' }],
         },
     },
-
     execute(ctx, orderLine, args) {
         if (lineContainsIds(args.productVariantIds, orderLine)) {
             const unitPrice = ctx.channel.pricesIncludeTax ? orderLine.unitPriceWithTax : orderLine.unitPrice;
