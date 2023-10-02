@@ -837,6 +837,7 @@ describe('Promotions applied to Orders', () => {
         describe('discountOnItemWithFacets', () => {
             const couponCode = '50%_off_sale_items';
             let promotion: Codegen.PromotionFragment;
+
             function getItemSale1Line<
                 T extends Array<
                     | CodegenShop.UpdatedOrderFragment['lines'][number]
@@ -1756,78 +1757,160 @@ describe('Promotions applied to Orders', () => {
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/2385
-    it('prevents negative line price', async () => {
-        await shopClient.asAnonymousUser();
-        const item1000 = getVariantBySlug('item-1000')!;
+    describe('prevents negative line price', () => {
+        const TAX_INCLUDED_CHANNEL_TOKEN_2 = 'tax_included_channel_2';
         const couponCode1 = '100%_off';
         const couponCode2 = '100%_off';
-        await createPromotion({
-            enabled: true,
-            name: '100% discount ',
-            couponCode: couponCode1,
-            conditions: [],
-            actions: [
-                {
-                    code: productsPercentageDiscount.code,
-                    arguments: [
-                        { name: 'discount', value: '100' },
-                        {
-                            name: 'productVariantIds',
-                            value: `["${item1000.id}"]`,
-                        },
-                    ],
+        let taxIncludedChannel: Codegen.ChannelFragment;
+
+        beforeAll(async () => {
+            // Create a channel where the prices include tax, so we can ensure
+            // that PromotionActions are working as expected when taxes are included
+            const { createChannel } = await adminClient.query<
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code: 'tax-included-channel-2',
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultTaxZoneId: 'T_1',
+                    defaultShippingZoneId: 'T_1',
+                    defaultLanguageCode: LanguageCode.en,
+                    token: TAX_INCLUDED_CHANNEL_TOKEN_2,
                 },
-            ],
-        });
-        await createPromotion({
-            enabled: true,
-            name: '20% discount ',
-            couponCode: couponCode2,
-            conditions: [],
-            actions: [
-                {
-                    code: productsPercentageDiscount.code,
-                    arguments: [
-                        { name: 'discount', value: '20' },
-                        {
-                            name: 'productVariantIds',
-                            value: `["${item1000.id}"]`,
-                        },
-                    ],
+            });
+            taxIncludedChannel = createChannel as Codegen.ChannelFragment;
+            await adminClient.query<
+                Codegen.AssignProductsToChannelMutation,
+                Codegen.AssignProductsToChannelMutationVariables
+            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                input: {
+                    channelId: taxIncludedChannel.id,
+                    priceFactor: 1,
+                    productIds: products.map(p => p.id),
                 },
-            ],
+            });
+            const item1000 = getVariantBySlug('item-1000')!;
+            const promo100 = await createPromotion({
+                enabled: true,
+                name: '100% discount ',
+                couponCode: couponCode1,
+                conditions: [],
+                actions: [
+                    {
+                        code: productsPercentageDiscount.code,
+                        arguments: [
+                            { name: 'discount', value: '100' },
+                            {
+                                name: 'productVariantIds',
+                                value: `["${item1000.id}"]`,
+                            },
+                        ],
+                    },
+                ],
+            });
+            const promo20 = await createPromotion({
+                enabled: true,
+                name: '20% discount ',
+                couponCode: couponCode2,
+                conditions: [],
+                actions: [
+                    {
+                        code: productsPercentageDiscount.code,
+                        arguments: [
+                            { name: 'discount', value: '20' },
+                            {
+                                name: 'productVariantIds',
+                                value: `["${item1000.id}"]`,
+                            },
+                        ],
+                    },
+                ],
+            });
+            await adminClient.query<
+                Codegen.AssignPromotionToChannelMutation,
+                Codegen.AssignPromotionToChannelMutationVariables
+            >(ASSIGN_PROMOTIONS_TO_CHANNEL, {
+                input: {
+                    promotionIds: [promo100.id, promo20.id],
+                    channelId: taxIncludedChannel.id,
+                },
+            });
         });
 
-        await shopClient.query<
-            CodegenShop.ApplyCouponCodeMutation,
-            CodegenShop.ApplyCouponCodeMutationVariables
-        >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+        it('prices exclude tax', async () => {
+            await shopClient.asAnonymousUser();
+            const item1000 = getVariantBySlug('item-1000')!;
 
-        await shopClient.query<
-            CodegenShop.AddItemToOrderMutation,
-            CodegenShop.AddItemToOrderMutationVariables
-        >(ADD_ITEM_TO_ORDER, {
-            productVariantId: item1000.id,
-            quantity: 1,
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item1000.id,
+                quantity: 1,
+            });
+
+            const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+
+            expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check1!.totalWithTax).toBe(0);
+
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+
+            const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+            expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check2!.totalWithTax).toBe(0);
         });
 
-        const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
+        it('prices include tax', async () => {
+            shopClient.setChannelToken(TAX_INCLUDED_CHANNEL_TOKEN_2);
+            await shopClient.asAnonymousUser();
+            const item1000 = getVariantBySlug('item-1000')!;
 
-        expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
-        expect(check1!.totalWithTax).toBe(0);
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
 
-        await shopClient.query<
-            CodegenShop.ApplyCouponCodeMutation,
-            CodegenShop.ApplyCouponCodeMutationVariables
-        >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item1000.id,
+                quantity: 1,
+            });
 
-        const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
-        expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
-        expect(check2!.totalWithTax).toBe(0);
+            const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+
+            expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check1!.totalWithTax).toBe(0);
+
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+
+            const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+            expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check2!.totalWithTax).toBe(0);
+        });
     });
 
     async function getProducts() {
