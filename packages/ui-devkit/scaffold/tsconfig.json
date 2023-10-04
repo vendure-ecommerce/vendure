@@ -22,6 +22,7 @@
       "dom",
       "esnext.asynciterable"
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "jsx": "react"
   }
 }
