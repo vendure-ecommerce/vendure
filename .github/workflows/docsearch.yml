@@ -13,8 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Add your desired actions here
-      - name: Your Action Name
+      - name: Index docs to Typesense
         run: |
           docker run \
             -e TYPESENSE_API_KEY=${{ vars.TYPESENSE_API_KEY }} \
