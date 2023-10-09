@@ -54,7 +54,7 @@ This plugin extends the default search query of the Shop API, allowing richer qu
 
 The [SearchResponse](/reference/graphql-api/admin/object-types/#searchresponse) type is extended with information
 about price ranges in the result set:
-```SDL
+```graphql
 extend type SearchResponse {
     prices: SearchResponsePriceData!
 }
@@ -86,7 +86,7 @@ This `SearchResponsePriceData` type allows you to query data about the range of 
 
 ## Example Request & Response
 
-```SDL
+```graphql
 {
   search (input: {
     term: "table easel"
@@ -121,7 +121,7 @@ This `SearchResponsePriceData` type allows you to query data about the range of 
 }
 ```
 
-```JSON
+```json
 {
  "data": {
    "search": {

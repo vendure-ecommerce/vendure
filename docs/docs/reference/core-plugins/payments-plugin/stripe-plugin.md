@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StripePlugin
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/stripe.plugin.ts" sourceLine="160" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/stripe.plugin.ts" sourceLine="161" packageName="@vendure/payments-plugin" />
 
 Plugin to enable payments through [Stripe](https://stripe.com/docs) via the Payment Intents API.
 
@@ -46,6 +46,7 @@ the Stripe CLI to test your webhook locally. See the _local development_ section
       }),
     ]
     ````
+    For all the plugin options, see the <a href='/reference/core-plugins/payments-plugin/stripe-plugin#stripepluginoptions'>StripePluginOptions</a> type.
 2. Create a new PaymentMethod in the Admin UI, and select "Stripe payments" as the handler.
 3. Set the webhook secret and API key in the PaymentMethod form.
 
@@ -181,7 +182,7 @@ Initialize the Stripe payment plugin
 
 ## StripePluginOptions
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="21" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="27" packageName="@vendure/payments-plugin" />
 
 Configuration options for the Stripe payments plugin.
 
@@ -193,6 +194,16 @@ interface StripePluginOptions {
         ctx: RequestContext,
         order: Order,
     ) => Stripe.MetadataParam | Promise<Stripe.MetadataParam>;
+    paymentIntentCreateParams?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => AdditionalPaymentIntentCreateParams | Promise<AdditionalPaymentIntentCreateParams>;
+    customerCreateParams?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => AdditionalCustomerCreateParams | Promise<AdditionalCustomerCreateParams>;
 }
 ```
 
@@ -210,7 +221,98 @@ the Stripe customer ID, so switching this on will require a database migration /
 
 <MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; Stripe.MetadataParam | Promise&#60;Stripe.MetadataParam&#62;`}  since="1.9.7"  />
 
-Attach extra metadata to Stripe payment intent
+Attach extra metadata to Stripe payment intent creation call.
+
+*Example*
+
+```ts
+import { EntityHydrator, VendureConfig } from '@vendure/core';
+import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
+
+export const config: VendureConfig = {
+  // ...
+  plugins: [
+    StripePlugin.init({
+      metadata: async (injector, ctx, order) => {
+        const hydrator = injector.get(EntityHydrator);
+        await hydrator.hydrate(ctx, order, { relations: ['customer'] });
+        return {
+          description: `Order #${order.code} for ${order.customer!.emailAddress}`
+        },
+      }
+    }),
+  ],
+};
+
+Note: If the `paymentIntentCreateParams` is also used and returns a `metadata` key, then the values
+returned by both functions will be merged.
+### paymentIntentCreateParams
+
+<MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; AdditionalPaymentIntentCreateParams | Promise&#60;AdditionalPaymentIntentCreateParams&#62;`}  since="2.1.0"  />
+
+Provide additional parameters to the Stripe payment intent creation. By default,
+the plugin will already pass the `amount`, `currency`, `customer` and `automatic_payment_methods: { enabled: true }` parameters.
+
+For example, if you want to provide a `description` for the payment intent, you can do so like this:
+
+*Example*
+
+```ts
+import { VendureConfig } from '@vendure/core';
+import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
+
+export const config: VendureConfig = {
+  // ...
+  plugins: [
+    StripePlugin.init({
+      paymentIntentCreateParams: (injector, ctx, order) => {
+        return {
+          description: `Order #${order.code} for ${order.customer?.emailAddress}`
+        },
+      }
+    }),
+  ],
+};
+```
+### customerCreateParams
+
+<MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; AdditionalCustomerCreateParams | Promise&#60;AdditionalCustomerCreateParams&#62;`}  since="2.1.0"  />
+
+Provide additional parameters to the Stripe customer creation. By default,
+the plugin will already pass the `email` and `name` parameters.
+
+For example, if you want to provide an address for the customer:
+
+*Example*
+
+```ts
+import { EntityHydrator, VendureConfig } from '@vendure/core';
+import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
+
+export const config: VendureConfig = {
+  // ...
+  plugins: [
+    StripePlugin.init({
+      storeCustomersInStripe: true,
+      customerCreateParams: async (injector, ctx, order) => {
+        const entityHydrator = injector.get(EntityHydrator);
+        const customer = order.customer;
+        await entityHydrator.hydrate(ctx, customer, { relations: ['addresses'] });
+        const defaultBillingAddress = customer.addresses.find(a => a.defaultBillingAddress) ?? customer.addresses[0];
+        return {
+          address: {
+              line1: defaultBillingAddress.streetLine1 || order.shippingAddress?.streetLine1,
+              postal_code: defaultBillingAddress.postalCode || order.shippingAddress?.postalCode,
+              city: defaultBillingAddress.city || order.shippingAddress?.city,
+              state: defaultBillingAddress.province || order.shippingAddress?.province,
+              country: defaultBillingAddress.country.code || order.shippingAddress?.countryCode,
+          },
+        },
+      }
+    }),
+  ],
+};
+```
 
 
 </div>

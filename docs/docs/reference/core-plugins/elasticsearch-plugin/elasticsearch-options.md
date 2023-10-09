@@ -115,7 +115,7 @@ A more complete example can be found in the discussion thread
 [How to make elastic plugin to search by substring with stemming](https://github.com/vendure-ecommerce/vendure/discussions/1066).
 ### indexMappingProperties
 
-<MemberInfo kind="property" type={`{         [indexName: string]: object;     }`} default="{}"  since="1.2.0"  />
+<MemberInfo kind="property" type={`{         [indexName: string]: object;     }`} default="{}"  since="1.2.0"  />
 
 This option allow to redefine or define new properties in mapping. More about elastic
 [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
@@ -169,7 +169,7 @@ Batch size for bulk operations (e.g. when rebuilding the indices).
 Configuration of the internal Elasticsearch query.
 ### customProductMappings
 
-<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>]&#62;;     }`}   />
+<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>]&#62;;     }`}   />
 
 Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
@@ -209,7 +209,7 @@ customProductMappings: {
 
 *Example*
 
-```SDL
+```graphql
 query SearchProducts($input: SearchInput!) {
     search(input: $input) {
         totalItems
@@ -232,7 +232,7 @@ query SearchProducts($input: SearchInput!) {
 ```
 ### customProductVariantMappings
 
-<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>]&#62;;     }`}   />
+<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>]&#62;;     }`}   />
 
 This config option defines custom mappings which are accessible when the "groupByProduct"
 input options is set to `false`. In addition, custom product mappings can be accessed by using
@@ -240,7 +240,7 @@ the `customProductMappings` field, which is always available.
 
 *Example*
 
-```SDL
+```graphql
 query SearchProducts($input: SearchInput!) {
     search(input: $input) {
         totalItems
@@ -302,7 +302,7 @@ Additional variant relations that will be fetched from DB while reindexing. See
 `hydrateProductRelations` for more explanation and a usage example.
 ### extendSearchInputType
 
-<MemberInfo kind="property" type={`{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }`} default="{}"  since="1.3.0"  />
+<MemberInfo kind="property" type={`{         [name: string]: PrimitiveTypeVariations&#60;GraphQlPrimitive&#62;;     }`} default="{}"  since="1.3.0"  />
 
 Allows the `SearchInput` type to be extended with new input fields. This allows arbitrary
 data to be passed in, which can then be used e.g. in the `mapQuery()` function or
@@ -322,7 +322,7 @@ This allows the search query to include these new fields:
 
 *Example*
 
-```GraphQl
+```graphql
 query {
   search(input: {
     longitude: 101.7117,
@@ -430,7 +430,7 @@ Set custom boost values for particular fields when matching against a search ter
 The interval used to group search results into buckets according to price range. For example, setting this to
 `2000` will group into buckets every $20.00:
 
-```JSON
+```json
 {
   "data": {
     "search": {
@@ -461,7 +461,7 @@ The interval used to group search results into buckets according to price range.
 ```
 ### mapQuery
 
-<MemberInfo kind="property" type={`(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/reference/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any`}   />
+<MemberInfo kind="property" type={`(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/reference/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any`}   />
 
 This config option allows the the modification of the whole (already built) search query. This allows
 for e.g. wildcard / fuzzy searches on the index.
@@ -571,7 +571,7 @@ If neither of those are applied it will be empty.
 
 *Example*
 
-```TS
+```ts
 mapSort: (sort, input) => {
     // Assuming `extendSearchSortType: ["priority"]`
     // Assuming priority is never undefined
@@ -594,7 +594,7 @@ A more generic example would be a sort function based on a product location like
 
 *Example*
 
-```TS
+```ts
 extendSearchInputType: {
   latitude: 'Float',
   longitude: 'Float',

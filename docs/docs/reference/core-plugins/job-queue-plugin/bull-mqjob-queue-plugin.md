@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BullMQJobQueuePlugin
 
-<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="103" packageName="@vendure/job-queue-plugin" />
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="134" packageName="@vendure/job-queue-plugin" />
 
 This plugin is a drop-in replacement of the DefaultJobQueuePlugin, which implements a push-based
 job queue strategy built on top of the popular [BullMQ](https://github.com/taskforcesh/bullmq) library.
@@ -103,6 +103,38 @@ const config: VendureConfig = {
   ],
 };
 ```
+
+## Removing old jobs
+
+By default, BullMQ will keep completed jobs in the `completed` set and failed jobs in the `failed` set. Over time,
+these sets can grow very large. Since Vendure v2.1, the default behaviour is to remove jobs from these sets after
+30 days or after a maximum of 5,000 completed or failed jobs.
+
+This can be configured using the `removeOnComplete` and `removeOnFail` options:
+
+*Example*
+
+```ts
+const config: VendureConfig = {
+  plugins: [
+    BullMQJobQueuePlugin.init({
+      workerOptions: {
+        removeOnComplete: {
+          count: 500,
+        },
+        removeOnFail: {
+          age: 60 * 60 * 24 * 7, // 7 days
+          count: 1000,
+        },
+      }
+    }),
+  ],
+};
+```
+
+The `count` option specifies the maximum number of jobs to keep in the set, while the `age` option specifies the
+maximum age of a job in seconds. If both options are specified, then the jobs kept will be the ones that satisfy
+both properties.
 
 ```ts title="Signature"
 class BullMQJobQueuePlugin {
