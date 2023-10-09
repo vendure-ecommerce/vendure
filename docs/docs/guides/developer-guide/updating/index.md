@@ -33,14 +33,20 @@ Then run `npm install` or `yarn install` depending on which package manager you 
 
 If you are using UI extensions to create your own custom Admin UI using the [`compileUiExtensions`](/reference/admin-ui-api/ui-devkit/compile-ui-extensions/) function, then you'll need to **delete and re-compile your admin-ui directory after upgrading** (this is the directory specified by the [`outputPath`](/reference/admin-ui-api/ui-devkit/ui-extension-compiler-options#outputpath) property).
 
-## Breaking changes
+## Versioning Policy & Breaking changes
 
-Vendure follows the [SemVer convention](https://semver.org/) for version numbering. This means that breaking changes will only be introduced with changes to the major version (the first of the 3 digits in the version).
+Vendure generally follows the [SemVer convention](https://semver.org/) for version numbering. This means that breaking API changes will only be introduced with changes to the major version (the first of the 3 digits in the version).
 
-However, we will occasionally upgrade underlying dependencies on minor versions, which may also require changes to your code in certain circumstances. If so, this will
-also be clearly noted in the changelog.
+However, there are some exceptions to this rule:
+
+- In minor versions, (e.g. v2.0 to v2.1) we may update underlying dependencies to new major versions, which may in turn introduce breaking changes. These will be clearly noted in the changelog.
+- In minor versions we may also occasionally introduce non-destructive changes to the database schema. For instance, we may add a new column which would then require a database migration. We will _not_ introduce database schema changes that could potentially result in data loss in a minor version.
+
+Any instances of these exceptions will be clearly indicated in the [Changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md). The reasoning for these exceptions is discussed in the [Versioning policy RFC](https://github.com/vendure-ecommerce/vendure/issues/1846).
 
 ### What kinds of breaking changes can be expected?
+
+Major version upgrades (e.g. v1.x to v2.x) can include:
 
 * Changes to the database schema
 * Changes to the GraphQL schema
