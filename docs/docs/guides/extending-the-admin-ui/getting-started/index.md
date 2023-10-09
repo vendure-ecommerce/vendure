@@ -478,7 +478,7 @@ export const config: VendureConfig = {
 
 If you have existing UI extensions written using the legacy API, you can migrate them to the new API as follows:
 
-1. Convert all components to be [standalone components](https://angular.io/guide/standalone-components). Standalone components were introduced in recent versions of Angular and allow components to be defined without the need for a module. To convert an existing component, you need to set `standalone: true` and add an `imports` array containing any components, directives or pipes you are using in that component. Typically you can import `SharedModule` to get access to all the common Angular directives and pipes, as well as the shared Admin UI components.
+1. Convert all components to be [standalone components](https://angular.io/guide/standalone-components). Standalone components were introduced in recent versions of Angular and allow components to be defined without the need for a module. To convert an existing component, you need to set `standalone: true` and add an `imports` array containing any components, directives or pipes you are using in that component. Typically, you can import `SharedModule` to get access to all the common Angular directives and pipes, as well as the shared Admin UI components.
   ```ts
   import { Component } from '@angular/core';
   // highlight-next-line
@@ -496,6 +496,18 @@ If you have existing UI extensions written using the legacy API, you can migrate
       greeting = 'Hello!';
   }
   ```
-2. Remove any `NgModule` files, and replace lazy modules with `routes.ts`, and shared modules with `providers.ts` (see above).
-
+2. In templates for page components, remove the `<vdr-page-header>` and `<vdr-page-body>` components, as they are included by default now when using
+the `registeRouteComponent()` function:
+   ```html
+   // highlight-start
+   <vdr-page-header>
+       <vdr-page-title></vdr-page-title>
+   </vdr-page-header>
+   <vdr-page-body>
+   // highlight-end
+       <vdr-page-block>This content should remain</vdr-page-block>
+   // highlight-next-line
+   </vdr-page-body>
+   ```
+3. Remove any `NgModule` files, and replace lazy modules with `routes.ts`, and shared modules with `providers.ts` (see above).
 
