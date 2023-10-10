@@ -1,6 +1,6 @@
 <ng-template vdrDialogTitle>
-    <span *ngIf="addressForm.get('streetLine1')?.value as streetLine1">{{ streetLine1 }},</span>
-    <span *ngIf="addressForm.get('countryCode')?.value as countryCode"> {{ countryCode }}</span>
+<span *ngIf="addressForm.get('streetLine1')?.value">{{ 'customer.edit-address' | translate }}</span>
+<span *ngIf="!addressForm.get('streetLine1')?.value">{{ 'customer.create-new-address' | translate }}</span>
 </ng-template>
 
 <vdr-address-form
