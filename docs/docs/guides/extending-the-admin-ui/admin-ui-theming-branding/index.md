@@ -108,7 +108,7 @@ Some customizable styles in [Clarity](https://clarity.design/), the Admin UI's u
     ```css title="my-variables.scss"
     $clr-header-height: 4rem;
     ```
-3. Set this as a sassVariableOverrides extension:
+3. Set this as a `sassVariableOverrides` extension:
     ```ts title="src/vendure-config.ts"
     import path from 'path';
     import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
@@ -130,4 +130,4 @@ Some customizable styles in [Clarity](https://clarity.design/), the Admin UI's u
     }
     ```
 
-globalStyles and sassVariableOverrides extensions can be used in conjunction or separately.
+`globalStyles` and `sassVariableOverrides` extensions can be used in conjunction or separately.
