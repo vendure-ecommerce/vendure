@@ -334,7 +334,8 @@ export class MollieService {
             throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
         }
         const client = createMollieClient({ apiKey });
-        const methods = await client.methods.list();
+        // We use the orders API, so list available methods for that API usage
+        const methods = await client.methods.list({resource: 'orders'});
         return methods.map(m => ({
             ...m,
             code: m.id,
