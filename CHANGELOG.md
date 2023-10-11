@@ -3,16 +3,11 @@
 
 #### Fixes
 
-* **admin-ui** Add custom field support to Customer list ([97ba022](https://github.com/vendure-ecommerce/vendure/commit/97ba022))
-* **admin-ui** Correct handling of ID filters in data tables ([0e05496](https://github.com/vendure-ecommerce/vendure/commit/0e05496))
 * **admin-ui** Correctly display job retries ([d3107fd](https://github.com/vendure-ecommerce/vendure/commit/d3107fd)), closes [#1467](https://github.com/vendure-ecommerce/vendure/issues/1467)
-* **admin-ui** Data table filters react to page navigation ([39832bd](https://github.com/vendure-ecommerce/vendure/commit/39832bd))
 * **admin-ui** Fix back/forward nav issues with data table filters ([58cb5a5](https://github.com/vendure-ecommerce/vendure/commit/58cb5a5))
 * **admin-ui** Fix border colour of affixed input ([e2cb74b](https://github.com/vendure-ecommerce/vendure/commit/e2cb74b))
-* **admin-ui** Fix channel switcher icon style ([7f30361](https://github.com/vendure-ecommerce/vendure/commit/7f30361))
 * **admin-ui** Fix component for new Angular extension route API ([6fe1bd0](https://github.com/vendure-ecommerce/vendure/commit/6fe1bd0))
 * **admin-ui** Fix error when data table filters not defined ([2425a33](https://github.com/vendure-ecommerce/vendure/commit/2425a33))
-* **admin-ui** Fix styling of custom field tabs ([57f47df](https://github.com/vendure-ecommerce/vendure/commit/57f47df))
 * **admin-ui** Give all data table columns immutable ids ([73a78db](https://github.com/vendure-ecommerce/vendure/commit/73a78db))
 * **admin-ui** Improve RTL styles ([056d205](https://github.com/vendure-ecommerce/vendure/commit/056d205))
 * **admin-ui** Limit FacetValues in Facet list component ([b445955](https://github.com/vendure-ecommerce/vendure/commit/b445955)), closes [#1257](https://github.com/vendure-ecommerce/vendure/issues/1257)
@@ -21,7 +16,6 @@
 * **admin-ui** Use correct defaults for nullable custom fields (#2360) ([88430e5](https://github.com/vendure-ecommerce/vendure/commit/88430e5)), closes [#2360](https://github.com/vendure-ecommerce/vendure/issues/2360)
 * **core** Downgrade ForbiddenError from Error to Warn log level ([c186392](https://github.com/vendure-ecommerce/vendure/commit/c186392)), closes [#2383](https://github.com/vendure-ecommerce/vendure/issues/2383)
 * **core** Export EntityId and Money decorators ([4664dee](https://github.com/vendure-ecommerce/vendure/commit/4664dee))
-* **core** Fix channel association on promotion update (#2376) ([e1ff2c7](https://github.com/vendure-ecommerce/vendure/commit/e1ff2c7)), closes [#2376](https://github.com/vendure-ecommerce/vendure/issues/2376)
 * **core** Fix circular dependency issue in SQLiteSearchStrategy ([f2e2e32](https://github.com/vendure-ecommerce/vendure/commit/f2e2e32))
 * **core** Fix resolution of facet valueList for postgres ([1d8fe47](https://github.com/vendure-ecommerce/vendure/commit/1d8fe47))
 * **job-queue-plugin** Correct behaviour of job list query with BullMQ ([c148a92](https://github.com/vendure-ecommerce/vendure/commit/c148a92)), closes [#2120](https://github.com/vendure-ecommerce/vendure/issues/2120) [#1327](https://github.com/vendure-ecommerce/vendure/issues/1327)
@@ -78,14 +72,16 @@
 
 * In the Admin UI, the "stock locations" list and detail views
 have been moved from the "catalog" module to the "settings" module. Also, the
-menu item & breadcrumb for "inventory" has been renamed to "products".
+menu item & breadcrumb for "inventory" has been renamed to "products". This is an end-user breaking change rather than a code breaking change. Any UI
+extensions that link to a `/catalog/inventory/...` route will still work as there is a redirect in place to `/catalog/products/...`.
 
-This is an end-user breaking change rather than a code breaking change. Any UI
-extensions that link to a `/catalog/inventory/...` route will still work as there
-is a redirect in place to `/catalog/products/...`.
 * The update of Apollo Server to v4 includes some breaking changes if you have
 defined any custom ApolloServerPlugins. See the Apollo migration guide for full details:
 https://www.apollographql.com/docs/apollo-server/migration/
+* The new Promotion.usageLimit field will require a non-destructive database migration to be performed. You should not need to do any manual migration work - it is a straightforward addition of a field to a table.
+
+* The ForbiddenError now defaults to a "warning" rather than "error" log level. Previously this was causing too much noise in logging services and the new level better reflects the severity of the error.
+
 ## <small>2.0.10 (2023-10-11)</small>
 
 
