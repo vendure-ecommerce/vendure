@@ -1,3 +1,11 @@
+## <small>2.0.10 (2023-10-11)</small>
+
+
+#### Fixes
+
+* **core** Use correct Money type on ProductVariantPrice.price field ([446f61c](https://github.com/vendure-ecommerce/vendure/commit/446f61c))
+* **payments-plugin** List missing available Mollie payment methods for orders api (#2435) ([23a0499](https://github.com/vendure-ecommerce/vendure/commit/23a0499)), closes [#2435](https://github.com/vendure-ecommerce/vendure/issues/2435)
+
 ## <small>2.0.9 (2023-09-29)</small>
 
 

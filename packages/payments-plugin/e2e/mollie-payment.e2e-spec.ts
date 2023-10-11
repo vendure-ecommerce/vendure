@@ -349,7 +349,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
 
         it('Should get available paymentMethods', async () => {
             nock('https://api.mollie.com/')
-                .get('/v2/methods')
+                .get('/v2/methods?resource=orders')
                 .reply(200, mockData.molliePaymentMethodsResponse);
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { molliePaymentMethods } = await shopClient.query(GET_MOLLIE_PAYMENT_METHODS, {
