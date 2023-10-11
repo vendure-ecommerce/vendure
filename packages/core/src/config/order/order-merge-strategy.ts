@@ -34,6 +34,13 @@ export function toMergedOrderLine(line: OrderLine): MergedOrderLine {
  * Somehow these differing OrderLines need to be reconciled into a single collection
  * of OrderLines. The OrderMergeStrategy defines the rules governing this reconciliation.
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.mergeStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory orders
  * @docsPage OrderMergeStrategy
  * @docsWeight 0

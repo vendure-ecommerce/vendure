@@ -36,9 +36,7 @@ jobs:
 #      if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install
     - name: Build
-      run: |
-        yarn bootstrap
-        yarn build
+      run: yarn build
   unit-tests:
     name: unit tests
     runs-on: ubuntu-latest
@@ -59,9 +57,7 @@ jobs:
 #        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --prefer-offline
       - name: Build
-        run: |
-          yarn bootstrap
-          yarn lerna run ci
+        run: yarn lerna run ci
       - name: Unit tests
         run: yarn test
   e2e-tests:
@@ -128,9 +124,7 @@ jobs:
 #        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --prefer-offline
       - name: Build
-        run: |
-          yarn bootstrap
-          yarn lerna run ci
+        run: yarn lerna run ci
       - name: df
         run: |
           df -h

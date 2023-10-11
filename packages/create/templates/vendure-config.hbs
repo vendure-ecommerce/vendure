@@ -22,11 +22,11 @@ export const config: VendureConfig = {
         // reasons.
         ...(IS_DEV ? {
             adminApiPlayground: {
-                settings: { 'request.credentials': 'include' } as any,
+                settings: { 'request.credentials': 'include' },
             },
             adminApiDebug: true,
             shopApiPlayground: {
-                settings: { 'request.credentials': 'include' } as any,
+                settings: { 'request.credentials': 'include' },
             },
             shopApiDebug: true,
         } : {}),
@@ -98,6 +98,9 @@ export const config: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 3002,
+            adminUiConfig: {
+                apiPort: 3000,
+            },
         }),
     ],
 };

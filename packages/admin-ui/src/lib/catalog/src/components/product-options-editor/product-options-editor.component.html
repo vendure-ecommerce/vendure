@@ -83,22 +83,22 @@
                         (pageChange)="paginationSettings[optionGroup.value.id].currentPage = $event"
                         [totalItems]="options.length"
                     >
-                        <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+                        <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
                             <ng-template let-optionControl="item">
                                 {{ optionControl.value.id }}
                             </ng-template>
                         </vdr-dt2-column>
-                        <vdr-dt2-column [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
+                        <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at" [hiddenByDefault]="true">
                             <ng-template let-optionControl="item">
                                 {{ optionControl.value.createdAt | localeDate : 'short' }}
                             </ng-template>
                         </vdr-dt2-column>
-                        <vdr-dt2-column [heading]="'common.updated-at' | translate" [hiddenByDefault]="true">
+                        <vdr-dt2-column [heading]="'common.updated-at' | translate" id="updated-at" [hiddenByDefault]="true">
                             <ng-template let-optionControl="item">
                                 {{ optionControl.value.updatedAt | localeDate : 'short' }}
                             </ng-template>
                         </vdr-dt2-column>
-                        <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false">
+                        <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false">
                             <ng-template let-optionControl="item">
                                 <input
                                     type="text"
@@ -107,13 +107,13 @@
                                 />
                             </ng-template>
                         </vdr-dt2-column>
-                        <vdr-dt2-column [heading]="'common.code' | translate" [optional]="false">
+                        <vdr-dt2-column [heading]="'common.code' | translate" id="code" [optional]="false">
                             <ng-template let-optionControl="item">
                                 <input type="text" [formControl]="optionControl.get('code')" />
                             </ng-template>
                         </vdr-dt2-column>
                         <vdr-dt2-column
-                            [heading]="'common.custom-fields' | translate"
+                            [heading]="'common.custom-fields' | translate" id="custom-fields"
                             [hiddenByDefault]="optionCustomFields.length === 0"
                         >
                             <ng-template let-optionControl="item">

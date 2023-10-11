@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';
@@ -7,6 +7,7 @@ import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomFacetValueFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
 import { Facet } from '../facet/facet.entity';
 
 import { FacetValueTranslation } from './facet-value-translation.entity';
@@ -32,6 +33,9 @@ export class FacetValue extends VendureEntity implements Translatable, HasCustom
     @Index()
     @ManyToOne(type => Facet, group => group.values, { onDelete: 'CASCADE' })
     facet: Facet;
+
+    @EntityId()
+    facetId: ID;
 
     @Column(type => CustomFacetValueFields)
     customFields: CustomFacetValueFields;

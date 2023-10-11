@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "declaration": true,
+    "removeComments": true,
+    "strictPropertyInitialization": false,
+    "sourceMap": true,
+    "allowJs": true
+  }
+}

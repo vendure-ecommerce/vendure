@@ -79,7 +79,7 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  * will be passed through to the `createFulfillment` method as the last argument.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * let shipomatic;
  *
  * export const shipomaticFulfillmentHandler = new FulfillmentHandler({
@@ -108,9 +108,9 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  *     shipomatic = new ShipomaticClient(API_KEY);
  *   },
  *
- *   createFulfillment: async (ctx, orders, orderItems, args) => {
+ *   createFulfillment: async (ctx, orders, lines, args) => {
  *
- *      const shipment = getShipmentFromOrders(orders, orderItems);
+ *      const shipment = getShipmentFromOrders(orders, lines);
  *
  *      try {
  *        const transaction = await shipomatic.transaction.create({

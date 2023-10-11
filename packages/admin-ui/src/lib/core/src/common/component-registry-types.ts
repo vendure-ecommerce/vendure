@@ -1,4 +1,5 @@
 import { FormControl } from '@angular/forms';
+import { DataTableLocationId } from '../shared/components/data-table-2/data-table-custom-component.service';
 
 /**
  * @description
@@ -131,4 +132,7 @@ export type CustomDetailComponentLocationId =
     | 'tax-rate-detail'
     | 'zone-detail';
 
-export type UIExtensionLocationId = ActionBarLocationId | CustomDetailComponentLocationId;
+export type UIExtensionLocationId =
+    | ActionBarLocationId
+    | CustomDetailComponentLocationId
+    | DataTableLocationId;

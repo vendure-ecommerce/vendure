@@ -1,0 +1,67 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+    padding: 4rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tagline {
+    font-size: 2rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.betaBadge {
+    background-color: var(--ifm-badge-background-color);
+    border-radius: var(--ifm-badge-border-radius);
+    color: var(--ifm-badge-color);
+    font-size: 75%;
+    font-weight: var(--ifm-font-weight-bold);
+    line-height: 1;
+    padding: var(--ifm-badge-padding-vertical) var(--ifm-badge-padding-horizontal);
+    color: var(--ifm-color-warning-darkest);
+    border: 1px solid var(--ifm-color-warning-darkest);
+}
+
+.betaNotice {
+    max-width: 600px;
+    margin: 0 auto 4rem;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--ifm-color-warning-darkest);
+    background-color: #d99e0022;
+}
+
+.description {
+    margin: 1rem 0;
+    font-size: 1.3rem;
+    max-width: 600px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+@media screen and (max-width: 996px) {
+    .heroBanner {
+        padding: 2rem;
+    }
+    .ctaButtons {
+        flex-direction: column;
+        gap: 24px;
+    }
+}
+
+.ctaButtons {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    max-width: 800px;
+    margin: auto;
+    padding-bottom: 4rem;
+}

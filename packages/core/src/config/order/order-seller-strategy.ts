@@ -30,6 +30,13 @@ export interface SplitOrderContents {
  * This strategy defines how an Order can be split into multiple sub-orders for the use-case of
  * a multivendor application.
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.orderSellerStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @since 2.0.0
  * @docsCategory orders
  * @docsPage OrderSellerStrategy

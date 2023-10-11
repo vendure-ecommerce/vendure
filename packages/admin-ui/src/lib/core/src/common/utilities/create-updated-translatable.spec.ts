@@ -5,7 +5,7 @@ import { CustomFieldConfig, LanguageCode, ProductDetailFragment } from '../gener
 import { createUpdatedTranslatable } from './create-updated-translatable';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-fdescribe('createUpdatedTranslatable()', () => {
+describe('createUpdatedTranslatable()', () => {
     let product: any;
 
     beforeEach(() => {

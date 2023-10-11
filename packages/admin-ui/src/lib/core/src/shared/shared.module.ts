@@ -171,6 +171,9 @@ import { ZoneSelectorComponent } from './components/zone-selector/zone-selector.
 import { ChartComponent } from './components/chart/chart.component';
 import { CurrencyCodeSelectorComponent } from './components/currency-code-selector/currency-code-selector.component';
 import { LanguageCodeSelectorComponent } from './components/language-code-selector/language-code-selector.component';
+import { DataTableFilterPresetsComponent } from './components/data-table-filter-presets/data-table-filter-presets.component';
+import { AddFilterPresetButtonComponent } from './components/data-table-filter-presets/add-filter-preset-button.component';
+import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -314,6 +317,9 @@ const DECLARATIONS = [
     AssignToChannelDialogComponent,
     CurrencyCodeSelectorComponent,
     LanguageCodeSelectorComponent,
+    DataTableFilterPresetsComponent,
+    AddFilterPresetButtonComponent,
+    RenameFilterPresetDialogComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

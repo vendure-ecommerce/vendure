@@ -14,7 +14,7 @@
     flex-direction: column;
     overflow: hidden;
     height: 100%;
-    border-right: 1px solid var(--color-weight-150);
+    border-inline-end: 1px solid var(--color-weight-150);
     z-index: 2;
     width: var(--left-nav-width);
     max-width: var(--left-nav-width);
@@ -87,7 +87,7 @@
 
 .wordmark {
     font-weight: bold;
-    margin-left: 12px;
+    margin-inline-start: 12px;
     font-size: 24px;
     color: var(--color-primary-500);
     @media screen and (max-width: $breakpoint-medium) {
@@ -115,7 +115,7 @@
     justify-content: space-between;
     min-width: 0;
     padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 4);
-    padding-right: calc(var(--space-unit) * 1.5);
+    padding-inline-end: calc(var(--space-unit) * 1.5);
     @media screen and (min-width: $breakpoint-medium) {
         padding: calc(var(--space-unit) * 4);
     }
@@ -130,7 +130,7 @@
     background-color: var(--color-page-header);
     @media screen and (min-width: $breakpoint-medium) {
         padding: calc(var(--space-unit) * 4);
-        padding-left: var(--surface-margin-left);
+        padding-inline-start: var(--surface-margin-left);
     }
 }
 
@@ -140,8 +140,13 @@
 
 .content-area {
     position: relative;
-    margin-right: auto;
+    margin-inline-end: auto;
     flex: 1;
     display: block;
     width: 100%;
+}
+
+.dev-mode-button {
+    opacity: 0.7;
+    font-size: 12px;
 }

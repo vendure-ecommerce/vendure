@@ -1,10 +1,5 @@
+import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServerContext } from '@apollo/server';
 import { mergeConfig } from '@vendure/core';
-import {
-    ApolloServerPlugin,
-    GraphQLRequestContext,
-    GraphQLRequestListener,
-    GraphQLServiceContext,
-} from 'apollo-server-plugin-base';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -24,16 +19,18 @@ class MyApolloServerPlugin implements ApolloServerPlugin {
         this.willSendResponseFn = vi.fn();
     }
 
-    serverWillStart(service: GraphQLServiceContext): Promise<void> | void {
+    async serverWillStart(service: GraphQLServerContext): Promise<void> {
         MyApolloServerPlugin.serverWillStartFn(service);
     }
 
-    requestDidStart(): GraphQLRequestListener | void {
+    async requestDidStart(): Promise<GraphQLRequestListener<any>> {
         MyApolloServerPlugin.requestDidStartFn();
         return {
-            willSendResponse(requestContext: any): Promise<void> | void {
-                const data = requestContext.response.data;
-                MyApolloServerPlugin.willSendResponseFn(data);
+            async willSendResponse(requestContext): Promise<void> {
+                const { body } = requestContext.response;
+                if (body.kind === 'single') {
+                    MyApolloServerPlugin.willSendResponseFn(body.singleResult.data);
+                }
             },
         };
     }

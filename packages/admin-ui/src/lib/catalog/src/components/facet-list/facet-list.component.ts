@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
+    FACET_WITH_VALUE_LIST_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
     GetFacetListDocument,
     GetFacetListQuery,
@@ -15,12 +16,12 @@ export const FACET_LIST_QUERY = gql`
     query GetFacetList($options: FacetListOptions) {
         facets(options: $options) {
             items {
-                ...FacetWithValues
+                ...FacetWithValueList
             }
             totalItems
         }
     }
-    ${FACET_WITH_VALUES_FRAGMENT}
+    ${FACET_WITH_VALUE_LIST_FRAGMENT}
 `;
 
 @Component({
@@ -83,10 +84,10 @@ export class FacetListComponent
     }
 
     toggleDisplayLimit(facet: ItemOf<GetFacetListQuery, 'facets'>) {
-        if (this.displayLimit[facet.id] === facet.values.length) {
+        if (this.displayLimit[facet.id] === facet.valueList.items.length) {
             this.displayLimit[facet.id] = this.initialLimit;
         } else {
-            this.displayLimit[facet.id] = facet.values.length;
+            this.displayLimit[facet.id] = facet.valueList.items.length;
         }
     }
 

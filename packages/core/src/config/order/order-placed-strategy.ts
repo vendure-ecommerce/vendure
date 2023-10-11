@@ -12,6 +12,13 @@ import { OrderState } from '../../service/helpers/order-state-machine/order-stat
  * By default, the order is set as "placed" when it transitions from
  * 'ArrangingPayment' to either 'PaymentAuthorized' or 'PaymentSettled'.
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.orderPlacedStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory orders
  */
 export interface OrderPlacedStrategy extends InjectableStrategy {

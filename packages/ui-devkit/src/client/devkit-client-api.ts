@@ -31,7 +31,7 @@ export function setTargetOrigin(value: string) {
  * to otherwise get this information from within the child iframe.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { getActivatedRoute } from '\@vendure/ui-devkit';
  *
  * const route = await getActivatedRoute();
@@ -49,7 +49,7 @@ export function getActivatedRoute(): Promise<ActiveRouteData> {
  * Perform a GraphQL query and returns either an Observable or a Promise of the result.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { graphQlQuery } from '\@vendure/ui-devkit';
  *
  * const productList = await graphQlQuery(`
@@ -91,7 +91,7 @@ export function graphQlQuery<T, V extends { [key: string]: any }>(
  * Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { graphQlMutation } from '\@vendure/ui-devkit';
  *
  * const disableProduct = (id: string) => {
@@ -132,7 +132,7 @@ export function graphQlMutation<T, V extends { [key: string]: any }>(
  * Display a toast notification.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { notify } from '\@vendure/ui-devkit';
  *
  * notify({

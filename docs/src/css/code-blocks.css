@@ -1,0 +1,22 @@
+/* Styling of GraphQL code blocks */
+.graphql-code-block {
+    background-color: var(--ifm-pre-background);
+    border-radius: var(--ifm-pre-border-radius);
+    padding: var(--ifm-pre-padding);
+    color: var(--ifm-pre-color);
+    font: var(--ifm-code-font-size) / var(--ifm-pre-line-height) var(--ifm-font-family-monospace);
+}
+
+.graphql-code-line {
+}
+
+.graphql-code-line:not(.top-level) {
+    margin-left: 24px;
+}
+.graphql-code-line.comment {
+    color: var(--color-graphql-comment);
+}
+.graphql-code-identifier {
+    color: var(--color-graphql-identifier);
+    margin-right: 6px;
+}

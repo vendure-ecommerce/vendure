@@ -33,13 +33,13 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     />
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">
         <ng-template let-role="item">
             {{ role.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -48,7 +48,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -57,7 +57,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.description' | translate"
+        [heading]="'common.description' | translate" id="description"
         [optional]="false"
         [sort]="sorts.get('description')"
     >
@@ -74,12 +74,12 @@
             </ng-template>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.code' | translate" [sort]="sorts.get('code')">
+    <vdr-dt2-column [heading]="'common.code' | translate" id="code" [sort]="sorts.get('code')">
         <ng-template let-role="item">
             <span *ngIf="!isDefaultRole(role)">{{ role.code }}</span>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'settings.channel' | translate">
+    <vdr-dt2-column [heading]="'settings.channel' | translate" id="channel">
         <ng-template let-role="item">
             <ng-container *ngIf="!isDefaultRole(role)">
                 <vdr-chip *ngFor="let channel of role.channels">
@@ -89,7 +89,7 @@
             </ng-container>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'settings.permissions' | translate">
+    <vdr-dt2-column [heading]="'settings.permissions' | translate" id="permissions">
         <ng-template let-role="item">
             <ng-container *ngIf="!isDefaultRole(role); else defaultRole">
                 <div class="permissions-list">

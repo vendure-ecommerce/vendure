@@ -1,0 +1,26 @@
+.memberInfo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.kindLabel {
+    background-color: #eaf9f5;
+    color: #38979f;
+    border-radius: 4px;
+    padding: 0 6px;
+    margin-right: 12px;
+}
+
+.type {
+    display: flex;
+    align-items: center;
+    font-size: 75%;
+}
+
+.default {
+    display: flex;
+    align-items: center;
+    font-size: 75%;
+}

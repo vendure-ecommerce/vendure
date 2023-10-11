@@ -42,7 +42,7 @@ export interface BullMQPluginOptions {
      * the job being added.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * setRetries: (queueName, job) => {
      *   if (queueName === 'send-email') {
      *     // Override the default number of retries
@@ -65,7 +65,7 @@ export interface BullMQPluginOptions {
      * value of exponential/1000ms will be used.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * setBackoff: (queueName, job) => {
      *   return {
      *     type: 'exponential', // or 'fixed'
@@ -91,4 +91,14 @@ export interface BullMQPluginOptions {
 export interface BackoffOptions {
     type: 'exponential' | 'fixed';
     delay: number;
+}
+
+/**
+ * @description
+ * A definition for a Lua script used to define custom behavior in Redis
+ */
+export interface CustomScriptDefinition<T, Args extends any[]> {
+    name: string;
+    script: string;
+    numberOfKeys: number;
 }

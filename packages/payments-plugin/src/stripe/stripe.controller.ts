@@ -1,6 +1,15 @@
 import { Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import type { PaymentMethod, RequestContext } from '@vendure/core';
-import { InternalServerError, LanguageCode, Logger, Order, OrderService, PaymentMethodService, RequestContextService, TransactionalConnection } from '@vendure/core';
+import {
+    InternalServerError,
+    LanguageCode,
+    Logger,
+    Order,
+    OrderService,
+    PaymentMethodService,
+    RequestContextService,
+    TransactionalConnection,
+} from '@vendure/core';
 import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 import type { Response } from 'express';
 import type Stripe from 'stripe';
@@ -48,11 +57,13 @@ export class StripeController {
         const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;
         const outerCtx = await this.createContext(channelToken, request);
 
-        await this.connection.withTransaction(outerCtx, async (ctx) => {
+        await this.connection.withTransaction(outerCtx, async ctx => {
             const order = await this.orderService.findOneByCode(ctx, orderCode);
 
             if (!order) {
-                throw new Error(`Unable to find order ${orderCode}, unable to settle payment ${paymentIntent.id}!`);
+                throw new Error(
+                    `Unable to find order ${orderCode}, unable to settle payment ${paymentIntent.id}!`,
+                );
             }
 
             try {
@@ -86,7 +97,10 @@ export class StripeController {
                 );
 
                 if (transitionToStateResult instanceof OrderStateTransitionError) {
-                    Logger.error(`Error transitioning order ${orderCode} to ArrangingPayment state: ${transitionToStateResult.message}`, loggerCtx);
+                    Logger.error(
+                        `Error transitioning order ${orderCode} to ArrangingPayment state: ${transitionToStateResult.message}`,
+                        loggerCtx,
+                    );
                     return;
                 }
             }
@@ -102,7 +116,10 @@ export class StripeController {
             });
 
             if (!(addPaymentToOrderResult instanceof Order)) {
-                Logger.error(`Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`, loggerCtx);
+                Logger.error(
+                    `Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`,
+                    loggerCtx,
+                );
             }
         });
 
@@ -125,7 +142,7 @@ export class StripeController {
         );
 
         if (!method) {
-          throw new InternalServerError(`[${loggerCtx}] Could not find Stripe PaymentMethod`);
+            throw new InternalServerError(`[${loggerCtx}] Could not find Stripe PaymentMethod`);
         }
 
         return method;

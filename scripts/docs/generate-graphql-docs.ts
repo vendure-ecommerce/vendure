@@ -27,9 +27,9 @@ const targetApi: TargetApi = getTargetApiFromArgs();
 // The path to the introspection schema json file
 const SCHEMA_FILE = path.join(__dirname, `../../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
-const docsUrl = `/graphql-api/${targetApi}/`;
+const docsUrl = `/reference/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
-const outputPath = path.join(__dirname, `../../docs/content/graphql-api/${targetApi}`);
+const outputPath = path.join(__dirname, `../../docs/docs/reference/graphql-api/${targetApi}`);
 
 const enum FileName {
     ENUM = 'enums',
@@ -48,11 +48,11 @@ generateGraphqlDocs(outputPath);
 
 function generateGraphqlDocs(hugoOutputPath: string) {
     const timeStart = +new Date();
-    let queriesOutput = generateFrontMatter('Queries', 1) + '\n\n# Queries\n\n';
-    let mutationsOutput = generateFrontMatter('Mutations', 2) + '\n\n# Mutations\n\n';
-    let objectTypesOutput = generateFrontMatter('Types', 3) + '\n\n# Types\n\n';
-    let inputTypesOutput = generateFrontMatter('Input Objects', 4) + '\n\n# Input Objects\n\n';
-    let enumsOutput = generateFrontMatter('Enums', 5) + '\n\n# Enums\n\n';
+    let queriesOutput = generateFrontMatter('Queries') + '\n\n';
+    let mutationsOutput = generateFrontMatter('Mutations') + '\n\n';
+    let objectTypesOutput = generateFrontMatter('Types') + '\n\n';
+    let inputTypesOutput = generateFrontMatter('Input Objects') + '\n\n';
+    let enumsOutput = generateFrontMatter('Enums') + '\n\n';
     const sortByName = (a: { name: string }, b: { name: string }) => (a.name < b.name ? -1 : 1);
     const sortedTypes = Object.values(schema.getTypeMap()).sort(sortByName);
     for (const type of sortedTypes) {
@@ -67,52 +67,73 @@ function generateGraphqlDocs(hugoOutputPath: string) {
                     if (field.name === 'temp__') {
                         continue;
                     }
-                    queriesOutput += `## ${field.name}\n`;
-                    queriesOutput += renderDescription(field);
-                    queriesOutput += renderFields([field], false) + '\n\n';
+                    queriesOutput += `\n## ${field.name}\n`;
+                    queriesOutput += `<div class="graphql-code-block">\n`;
+                    queriesOutput += renderDescription(field, 'multi', true);
+                    queriesOutput += codeLine(`type ${identifier('Query')} &#123;`, ['top-level']);
+                    queriesOutput += renderFields([field], false);
+                    queriesOutput += codeLine(`&#125;`, ['top-level']);
+                    queriesOutput += `</div>\n`;
                 }
             } else if (type.name === 'Mutation') {
                 for (const field of Object.values(type.getFields()).sort(sortByName)) {
-                    mutationsOutput += `## ${field.name}\n`;
-                    mutationsOutput += renderDescription(field);
-                    mutationsOutput += renderFields([field], false) + '\n\n';
+                    mutationsOutput += `\n## ${field.name}\n`;
+                    mutationsOutput += `<div class="graphql-code-block">\n`;
+                    mutationsOutput += renderDescription(field, 'multi', true);
+                    mutationsOutput += codeLine(`type ${identifier('Mutation')} &#123;`, ['top-level']);
+                    mutationsOutput += renderFields([field], false);
+                    mutationsOutput += codeLine(`&#125;`, ['top-level']);
+                    mutationsOutput += `</div>\n`;
                 }
             } else {
-                objectTypesOutput += `## ${type.name}\n\n`;
-                objectTypesOutput += renderDescription(type);
+                objectTypesOutput += `\n## ${type.name}\n\n`;
+                objectTypesOutput += `<div class="graphql-code-block">\n`;
+                objectTypesOutput += renderDescription(type, 'multi', true);
+                objectTypesOutput += codeLine(`type ${identifier(type.name)} &#123;`, ['top-level']);
                 objectTypesOutput += renderFields(type);
-                objectTypesOutput += '\n';
+                objectTypesOutput += codeLine(`&#125;`, ['top-level']);
+                objectTypesOutput += `</div>\n`;
             }
         }
 
         if (isEnumType(type)) {
-            enumsOutput += `## ${type.name}\n\n`;
-            enumsOutput += renderDescription(type) + '\n\n';
-            enumsOutput += '{{% gql-enum-values %}}\n';
+            enumsOutput += `\n## ${type.name}\n\n`;
+            enumsOutput += `<div class="graphql-code-block">\n`;
+            enumsOutput += renderDescription(type) + '\n';
+            enumsOutput += codeLine(`enum ${identifier(type.name)} &#123;`, ['top-level']);
             for (const value of type.getValues()) {
-                enumsOutput += value.description ? ` * *// ${value.description.trim()}*\n` : '';
-                enumsOutput += ` * ${value.name}\n`;
+                enumsOutput += value.description ? renderDescription(value.description, 'single') : '';
+                enumsOutput += codeLine(value.name);
             }
-            enumsOutput += '{{% /gql-enum-values %}}\n';
-            enumsOutput += '\n';
+            enumsOutput += codeLine(`&#125;`, ['top-level']);
+            enumsOutput += '\n</div>\n';
         }
 
         if (isScalarType(type)) {
-            objectTypesOutput += `## ${type.name}\n\n`;
-            objectTypesOutput += renderDescription(type);
+            objectTypesOutput += `\n## ${type.name}\n\n`;
+            objectTypesOutput += `<div class="graphql-code-block">\n`;
+            objectTypesOutput += renderDescription(type, 'multi', true);
+            objectTypesOutput += codeLine(`scalar ${identifier(type.name)}`, ['top-level']);
+            objectTypesOutput += '\n</div>\n';
         }
 
         if (isInputObjectType(type)) {
-            inputTypesOutput += `## ${type.name}\n\n`;
-            inputTypesOutput += renderDescription(type);
+            inputTypesOutput += `\n## ${type.name}\n\n`;
+            inputTypesOutput += `<div class="graphql-code-block">\n`;
+            inputTypesOutput += renderDescription(type, 'multi', true);
+            inputTypesOutput += codeLine(`input ${identifier(type.name)} &#123;`, ['top-level']);
             inputTypesOutput += renderFields(type);
-            inputTypesOutput += '\n';
+            inputTypesOutput += codeLine(`&#125;`, ['top-level']);
+            inputTypesOutput += '\n</div>\n';
         }
 
         if (isUnionType(type)) {
-            objectTypesOutput += `## ${type.name}\n\n`;
+            objectTypesOutput += `\n## ${type.name}\n\n`;
+            objectTypesOutput += `<div class="graphql-code-block">\n`;
             objectTypesOutput += renderDescription(type);
+            objectTypesOutput += codeLine(`union ${identifier(type.name)} =`, ['top-level']);
             objectTypesOutput += renderUnion(type);
+            objectTypesOutput += '\n</div>\n';
         }
     }
 
@@ -125,38 +146,77 @@ function generateGraphqlDocs(hugoOutputPath: string) {
     console.log(`Generated 5 GraphQL API docs in ${+new Date() - timeStart}ms`);
 }
 
+function codeLine(content: string, extraClass?: ['top-level' | 'comment'] | undefined): string {
+    return `<div class="graphql-code-line ${extraClass ? extraClass.join(' ') : ''}">${content}</div>\n`;
+}
+
+function identifier(name: string): string {
+    return `<span class="graphql-code-identifier">${name}</span>\n`;
+}
+
 /**
  * Renders the type description if it exists.
  */
-function renderDescription(type: { description?: string | null }): string {
-    if (!type.description) {
+function renderDescription(
+    typeOrDescription: { description?: string | null } | string,
+    mode: 'single' | 'multi' = 'multi',
+    topLevel = false,
+): string {
+    let description = '';
+    if (typeof typeOrDescription === 'string') {
+        description = typeOrDescription;
+    } else if (!typeOrDescription.description) {
+        return '';
+    } else {
+        description = typeOrDescription.description;
+    }
+    if (description.trim() === '') {
         return '';
     }
+    description = description
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/{/g, '&#123;')
+        .replace(/}/g, '&#125;');
     // Strip any JSDoc tags which may be used to annotate the generated
     // TS types.
     const stringsToStrip = [/@docsCategory\s+[^\n]+/g, /@description\s+/g];
-    let result = type.description;
     for (const pattern of stringsToStrip) {
-        result = result.replace(pattern, '');
+        description = description.replace(pattern, '');
     }
-    return result + '\n\n';
+
+    let result = '';
+    const extraClass = topLevel ? ['top-level', 'comment'] : (['comment'] as any);
+    if (mode === 'single') {
+        result = codeLine(`"""${description}"""`, extraClass);
+    } else {
+        result =
+            codeLine(`"""`, extraClass) +
+            description
+                .split('\n')
+                .map(line => codeLine(`${line}`, extraClass))
+                .join('\n') +
+            codeLine(`"""`, extraClass);
+    }
+    result = result.replace(/\s`([^`]+)`\s/g, ' <code>$1</code> ');
+    return result;
 }
 
 function renderFields(
     typeOrFields: (GraphQLObjectType | GraphQLInputObjectType) | Array<GraphQLField<any, any>>,
     includeDescription = true,
 ): string {
-    let output = '{{% gql-fields %}}\n';
+    let output = '';
     const fieldsArray: Array<GraphQLField<any, any>> = Array.isArray(typeOrFields)
         ? typeOrFields
         : Object.values(typeOrFields.getFields());
     for (const field of fieldsArray) {
         if (includeDescription) {
-            output += field.description ? `* *// ${field.description.trim()}*\n` : '';
+            output += field.description ? renderDescription(field.description) : '';
         }
-        output += ` * ${renderFieldSignature(field)}\n`;
+        output += `${renderFieldSignature(field)}\n`;
     }
-    output += '{{% /gql-fields %}}\n\n';
+    output += '\n';
     return output;
 }
 
@@ -165,10 +225,7 @@ function renderUnion(type: GraphQLUnionType): string {
         .getTypes()
         .map(t => renderTypeAsLink(t))
         .join(' | ');
-    let output = '{{% gql-fields %}}\n';
-    output += `union ${type.name} = ${unionTypes}\n`;
-    output += '{{% /gql-fields %}}\n\n';
-    return output;
+    return codeLine(`${unionTypes}`);
 }
 
 /**
@@ -179,11 +236,11 @@ function renderFieldSignature(field: GraphQLField<any, any>): string {
     if (field.args && field.args.length) {
         name += `(${field.args.map(arg => arg.name + ': ' + renderTypeAsLink(arg.type)).join(', ')})`;
     }
-    return `${name}: ${renderTypeAsLink(field.type)}`;
+    return codeLine(`${name}: ${renderTypeAsLink(field.type)}`);
 }
 
 /**
- * Renders a type as a markdown link.
+ * Renders a type as an anchor link.
  */
 function renderTypeAsLink(type: GraphQLType): string {
     const innerType = unwrapType(type);
@@ -193,7 +250,7 @@ function renderTypeAsLink(type: GraphQLType): string {
         ? FileName.INPUT
         : FileName.OBJECT;
     const url = `${docsUrl}${fileName}#${innerType.name.toLowerCase()}`;
-    return type.toString().replace(innerType.name, `[${innerType.name}](${url})`);
+    return type.toString().replace(innerType.name, `<a href="${url}">${innerType.name}</a>`);
 }
 
 /**

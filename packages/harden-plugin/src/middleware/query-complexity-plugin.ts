@@ -1,6 +1,5 @@
+import { ApolloServerPlugin, GraphQLRequestListener, GraphQLRequestContext } from '@apollo/server';
 import { InternalServerError, Logger } from '@vendure/core';
-import { ApolloServerPlugin, GraphQLRequestListener } from 'apollo-server-plugin-base';
-import { GraphQLRequestContext } from 'apollo-server-types';
 import {
     getNamedType,
     getNullableType,
@@ -21,7 +20,7 @@ import { HardenPluginOptions } from '../types';
 export class QueryComplexityPlugin implements ApolloServerPlugin {
     constructor(private options: HardenPluginOptions) {}
 
-    async requestDidStart({ schema }: GraphQLRequestContext): Promise<GraphQLRequestListener> {
+    async requestDidStart({ schema }: GraphQLRequestContext<any>): Promise<GraphQLRequestListener<any>> {
         const maxQueryComplexity = this.options.maxQueryComplexity ?? 1000;
         return {
             didResolveOperation: async ({ request, document }) => {

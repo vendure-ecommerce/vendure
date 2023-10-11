@@ -5,7 +5,9 @@
             <clr-icon shape="times" size="12"></clr-icon>
         </button>
         <button vdrDropdownTrigger class="">
-            <span *ngIf="state === 'new'">{{ 'common.add-filter' | translate }} <span class="filter-hotkey">f</span></span>
+            <span *ngIf="state === 'new'"
+                >{{ 'common.add-filter' | translate }} <span class="filter-hotkey">f</span></span
+            >
             <span *ngIf="state === 'active'">
                 <vdr-data-table-filter-label
                     [filterWithValue]="filterWithValue"
@@ -97,20 +99,46 @@
                     </div>
                     <div *ngSwitchCase="'dateRange'">
                         <div [formGroup]="formControl">
-                            <label>
-                                <div>{{ 'common.start-date' | translate }}</div>
-                            </label>
-                            <vdr-datetime-picker formControlName="start"></vdr-datetime-picker>
-                            <label>
-                                <div>{{ 'common.end-date' | translate }}</div>
-                            </label>
-                            <vdr-datetime-picker formControlName="end"></vdr-datetime-picker>
+                            <vdr-form-field [label]="'common.data-table-filter-date-mode' | translate">
+                                <select name="mode" formControlName="mode" class="mb-1">
+                                    <option value="relative">
+                                        {{ 'common.data-table-filter-date-relative' | translate }}
+                                    </option>
+                                    <option value="range">
+                                        {{ 'common.data-table-filter-date-range' | translate }}
+                                    </option>
+                                </select>
+                            </vdr-form-field>
+                            <ng-container *ngIf="formControl.get('mode')?.value === 'relative'">
+                                <div class="flex mt-2">
+                                    <vdr-form-field class="mr-1">
+                                        <input type="number" min="1" formControlName="relativeValue" />
+                                    </vdr-form-field>
+                                    <vdr-form-field>
+                                        <select name="mode" formControlName="relativeUnit">
+                                            <option value="day">{{ 'datetime.day' | translate }}</option>
+                                            <option value="month">{{ 'datetime.month' | translate }}</option>
+                                            <option value="year">{{ 'datetime.year' | translate }}</option>
+                                        </select>
+                                    </vdr-form-field>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="formControl.get('mode')?.value === 'range'">
+                                <label>
+                                    <div>{{ 'common.start-date' | translate }}</div>
+                                </label>
+                                <vdr-datetime-picker formControlName="start"></vdr-datetime-picker>
+                                <label>
+                                    <div>{{ 'common.end-date' | translate }}</div>
+                                </label>
+                                <vdr-datetime-picker formControlName="end"></vdr-datetime-picker>
+                            </ng-container>
                         </div>
                     </div>
                 </div>
             </ng-container>
             <div class="apply-wrapper mt-2">
-                <button class="button" (click)="activate()" [disabled]="!formControl?.valid">
+                <button class="button" (click)="activate($event)" [disabled]="!formControl?.valid">
                     <span>{{ 'common.apply' | translate }}</span>
                     <clr-icon shape="check"></clr-icon>
                 </button>

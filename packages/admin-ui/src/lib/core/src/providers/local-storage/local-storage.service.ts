@@ -1,8 +1,7 @@
 import { Location } from '@angular/common';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { LanguageCode } from '../../common/generated-types';
-import { DataService } from '../../data/providers/data.service';
 import { WidgetLayoutDefinition } from '../dashboard-widget/dashboard-widget-types';
 
 export type DataTableConfig = {
@@ -10,6 +9,7 @@ export type DataTableConfig = {
         visibility: string[];
         order: { [id: string]: number };
         showSearchFilterRow: boolean;
+        filterPresets: Array<{ name: string; value: string }>;
     };
 };
 

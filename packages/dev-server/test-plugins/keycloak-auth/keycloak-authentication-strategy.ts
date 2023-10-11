@@ -1,4 +1,4 @@
-import { HttpService } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import {
     AuthenticationStrategy,
     ExternalAuthenticationService,

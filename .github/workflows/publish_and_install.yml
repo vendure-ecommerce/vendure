@@ -63,10 +63,6 @@ jobs:
         yarn install --network-timeout 1000000 --prefer-offline
       env:
         CI: true
-    - name: Bootstrap
-      run: yarn bootstrap
-      env:
-        CI: true
     - name: Publish to Verdaccio
       run: |
         yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://0.0.0.0:4873

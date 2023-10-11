@@ -61,6 +61,7 @@ export class EmailProcessor {
                 {
                     templateName: data.templateFile,
                     type: data.type,
+                    templateVars: data.templateVars,
                 },
             );
             const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);

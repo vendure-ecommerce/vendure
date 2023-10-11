@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "jsx": "react",
     "typeRoots": [
       "node_modules/@types",
       "./typings"
@@ -49,6 +50,9 @@
       ],
       "@vendure/admin-ui/order": [
         "./src/lib/order/src/public_api"
+      ],
+      "@vendure/admin-ui/react": [
+        "./src/lib/react/src/public_api"
       ],
       "@vendure/admin-ui/settings": [
         "./src/lib/settings/src/public_api"

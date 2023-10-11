@@ -4,7 +4,7 @@ import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import extend from 'just-extend';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, takeUntil } from 'rxjs/operators';
 import {
     CustomFieldConfig,
     DateOperators,
@@ -28,6 +28,7 @@ import {
 
 export class FilterWithValue<Type extends DataTableFilterType = DataTableFilterType> {
     private onUpdateFns = new Set<(value: DataTableFilterValue<Type>) => void>();
+
     constructor(
         public readonly filter: DataTableFilter<any, Type>,
         public value: DataTableFilterValue<Type>,
@@ -85,6 +86,7 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     #connectedToRouter = false;
     valueChanges = this.#valueChanges$.asObservable().pipe(debounceTime(10));
     readonly #filtersQueryParamName = 'filters';
+    private readonly destroy$ = new Subject<void>();
 
     constructor(private router: Router) {}
 
@@ -94,6 +96,11 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
 
     get activeFilters(): FilterWithValue[] {
         return this.#activeFilters;
+    }
+
+    destroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     addFilter<FilterType extends DataTableFilterType>(
@@ -218,23 +225,27 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     }
 
     connectToRoute(route: ActivatedRoute) {
-        this.valueChanges.subscribe(() => {
+        this.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(val => {
+            const currentFilters = route.snapshot.queryParamMap.get(this.#filtersQueryParamName);
+            if (val.length === 0 && !currentFilters) {
+                return;
+            }
             this.router.navigate(['./'], {
                 queryParams: { [this.#filtersQueryParamName]: this.serialize(), page: 1 },
                 relativeTo: route,
                 queryParamsHandling: 'merge',
             });
         });
-
         route.queryParamMap
             .pipe(
                 map(params => params.get(this.#filtersQueryParamName)),
                 distinctUntilChanged(),
                 startWith(route.snapshot.queryParamMap.get(this.#filtersQueryParamName) ?? ''),
+                takeUntil(this.destroy$),
             )
             .subscribe(value => {
                 this.#activeFilters = [];
-                if (value === '') {
+                if (value === '' || value === null) {
                     this.#valueChanges$.next(this.#activeFilters);
                     return;
                 }
@@ -286,9 +297,13 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             return val ? '1' : '0';
         } else if (filterWithValue.isDateRange()) {
             const val = filterWithValue.value;
-            const start = val.start ? new Date(val.start).getTime() : '';
-            const end = val.end ? new Date(val.end).getTime() : '';
-            return `${start},${end}`;
+            if (val.mode === 'relative') {
+                return `${val.mode},${val.relativeValue},${val.relativeUnit}`;
+            } else {
+                const start = val.start ? new Date(val.start).getTime() : '';
+                const end = val.end ? new Date(val.end).getTime() : '';
+                return `${start},${end}`;
+            }
         } else if (filterWithValue.isCustom()) {
             return filterWithValue.filter.type.serializeValue(filterWithValue.value);
         }
@@ -316,10 +331,23 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             case 'boolean':
                 return value === '1';
             case 'dateRange':
-                const [startTimestamp, endTimestamp] = value.split(',');
-                const start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
-                const end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
-                return { start, end };
+                let mode = 'relative';
+                let relativeValue: number | undefined;
+                let relativeUnit: 'day' | 'month' | 'year' | undefined;
+                let start: string | undefined;
+                let end: string | undefined;
+                if (value.startsWith('relative')) {
+                    mode = 'relative';
+                    const [_, relativeValueStr, relativeUnitStr] = value.split(',');
+                    relativeValue = Number(relativeValueStr);
+                    relativeUnit = relativeUnitStr as 'day' | 'month' | 'year';
+                } else {
+                    mode = 'range';
+                    const [startTimestamp, endTimestamp] = value.split(',');
+                    start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
+                    end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
+                }
+                return { mode, relativeValue, relativeUnit, start, end };
             case 'custom':
                 return filter.type.deserializeValue(value);
             default:

@@ -34,7 +34,7 @@ export interface TestEnvironment {
  * for use in end-to-end tests. Returns a {@link TestEnvironment} object.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { createTestEnvironment, testConfig } from '\@vendure/testing';
  *
  * describe('some feature to test', () => {

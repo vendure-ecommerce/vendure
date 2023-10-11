@@ -55,11 +55,18 @@ export type CachedSession = {
  * you will need to define a custom strategy that stores the session cache in a shared data store, such as in the
  * DB or in Redis.
  *
+ * :::info
+ *
+ * This is configured via the `authOptions.sessionCacheStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * Here's an example implementation using Redis. To use this, you need to add the
  * [ioredis package](https://www.npmjs.com/package/ioredis) as a dependency.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { CachedSession, Logger, SessionCacheStrategy, VendurePlugin } from '\@vendure/core';
  * import { Redis, RedisOptions } from 'ioredis';
  *

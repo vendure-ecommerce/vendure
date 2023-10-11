@@ -751,8 +751,7 @@ export class OrderService {
 
     /**
      * @description
-     * Returns all {@link Promotion}s associated with an Order. A Promotion only gets associated with
-     * and Order once the order has been placed (see {@link OrderPlacedStrategy}).
+     * Returns all {@link Promotion}s associated with an Order.
      */
     async getOrderPromotions(ctx: RequestContext, orderId: ID): Promise<Promotion[]> {
         const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {

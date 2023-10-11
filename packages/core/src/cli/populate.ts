@@ -10,7 +10,7 @@ const loggerCtx = 'Populate';
  * @description
  * Populates the Vendure server with some initial data and (optionally) product data from
  * a supplied CSV file. The format of the CSV file is described in the section
- * [Importing Product Data](/docs/developer-guide/importing-product-data).
+ * [Importing Product Data](/guides/developer-guide/importing-data/).
  *
  * If the `channelOrToken` argument is provided, all ChannelAware entities (Products, ProductVariants,
  * Assets, ShippingMethods, PaymentMethods etc.) will be assigned to the specified Channel.
@@ -20,10 +20,10 @@ const loggerCtx = 'Populate';
  *
  * 1. Uses the {@link Populator} to populate the {@link InitialData}.
  * 2. If `productsCsvPath` is provided, uses {@link Importer} to populate Product data.
- * 3. Uses {@Populator} to populate collections specified in the {@link InitialData}.
+ * 3. Uses {@link Populator} to populate collections specified in the {@link InitialData}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { bootstrap } from '\@vendure/core';
  * import { populate } from '\@vendure/core/cli';
  * import { config } from './vendure-config.ts'

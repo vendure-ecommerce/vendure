@@ -13,7 +13,7 @@
     align-items: center;
     background-color: var(--color-component-bg-200);
     color: var(--color-text-200);
-    border: 1px solid var(--color-component-border-300);
+    border: 1px solid var(--color-weight-200);
     top: 1px;
     padding: 3px;
     line-height: .58333rem;
@@ -31,7 +31,7 @@
 .prefix {
     order: -1;
     border-radius: 3px 0 0 3px;
-    border-right: none;
+    border-inline-end: none;
 }
 
 ::ng-deep .has-suffix > {
@@ -44,5 +44,5 @@
 
 .suffix {
     border-radius: 0 3px 3px 0;
-    border-left: none;
+    border-inline-start: none;
 }

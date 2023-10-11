@@ -120,7 +120,12 @@ export class ProductService {
             effectiveRelations.push('facetValues.facet');
         }
         const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
-            relations: unique(effectiveRelations),
+            // relations: unique(effectiveRelations),
+            relations: {
+                facetValues: {
+                    facet: true,
+                },
+            },
             where: {
                 deletedAt: IsNull(),
             },

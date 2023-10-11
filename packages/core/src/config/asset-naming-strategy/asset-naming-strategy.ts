@@ -6,6 +6,13 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * The AssetNamingStrategy determines how file names are generated based on the uploaded source file name,
  * as well as how to handle naming conflicts.
  *
+ * :::info
+ *
+ * This is configured via the `assetOptions.assetNamingStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory assets
  */
 export interface AssetNamingStrategy extends InjectableStrategy {

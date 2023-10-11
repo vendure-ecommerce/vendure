@@ -16,7 +16,7 @@ export interface InjectableStrategy {
      * main server and the worker processes.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * async init(injector: Injector) {
      *   const myService = injector.get(MyService);
      *   await myService.doSomething();

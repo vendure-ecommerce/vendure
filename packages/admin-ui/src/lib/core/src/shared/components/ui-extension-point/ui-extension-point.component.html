@@ -1,33 +1,13 @@
 <div [class.highlight]="isDevMode && (display$ | async)" class="wrapper" [style.display]="display">
-    <vdr-dropdown *ngIf="isDevMode && (display$ | async)">
-        <button class="btn btn-icon btn-link extension-point-info-trigger"
+    <vdr-dropdown *ngIf="isDevMode && (display$ | async)" #dropdownComponent>
+        <button class="extension-point-info-trigger"
                 [style.top.px]="topPx ?? 0"
                 [style.left.px]="leftPx ?? 0"
                 vdrDropdownTrigger>
-            <clr-icon shape="plugin" class="" size="16"></clr-icon>
+            <clr-icon shape="plugin" class="" size="12"></clr-icon>
         </button>
         <vdr-dropdown-menu>
-            <div class="extension-info">
-                <pre *ngIf="api === 'actionBar'">
-addActionBarItem({{ '{' }}
-  id: 'my-button',
-  label: 'My Action',
-  locationId: '{{ locationId }}',
-{{ '}' }})</pre>
-                <pre *ngIf="api === 'navMenu'">
-addNavMenuItem({{ '{' }}
-  id: 'my-menu-item',
-  label: 'My Menu Item',
-  routerLink: ['/extensions/my-plugin'],
-  {{ '}' }},
-  '{{ locationId }}'
-)</pre>
-                <pre *ngIf="api === 'detailComponent'">
-registerCustomDetailComponent({{ '{' }}
-  locationId: '{{ locationId }}',
-  component: MyCustomComponent,
-{{ '}' }})</pre>
-            </div>
+            <div #editor contenteditable="false" class="highlighted"></div>
         </vdr-dropdown-menu>
     </vdr-dropdown>
     <ng-content></ng-content>

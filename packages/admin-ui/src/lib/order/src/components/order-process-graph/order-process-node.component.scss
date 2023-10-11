@@ -37,10 +37,10 @@
     transition: background-color 0.2s;
 }
 clr-icon {
-    margin-left: -1px;
+    margin-inline-start: -1px;
 }
 .cancelled-node {
-    margin-left: 6px;
+    margin-inline-start: 6px;
 }
 .active {
     .cancelled-wrapper {

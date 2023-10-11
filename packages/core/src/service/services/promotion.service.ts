@@ -269,6 +269,12 @@ export class PromotionService {
                 return new CouponCodeLimitError({ couponCode, limit: promotion.perCustomerUsageLimit });
             }
         }
+        if (promotion.usageLimit !== null) {
+            const usageCount = await this.countPromotionUsages(ctx, promotion.id);
+            if (promotion.usageLimit <= usageCount) {
+                return new CouponCodeLimitError({ couponCode, limit: promotion.usageLimit });
+            }
+        }
         return promotion;
     }
 
@@ -341,6 +347,18 @@ export class PromotionService {
             .leftJoin('order.promotions', 'promotion')
             .where('promotion.id = :promotionId', { promotionId })
             .andWhere('order.customer = :customerId', { customerId })
+            .andWhere('order.state != :state', { state: 'Cancelled' as OrderState })
+            .andWhere('order.active = :active', { active: false });
+
+        return qb.getCount();
+    }
+
+    private async countPromotionUsages(ctx: RequestContext, promotionId: ID): Promise<number> {
+        const qb = this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .leftJoin('order.promotions', 'promotion')
+            .where('promotion.id = :promotionId', { promotionId })
             .andWhere('order.state != :state', { state: 'Cancelled' as OrderState })
             .andWhere('order.active = :active', { active: false });
 

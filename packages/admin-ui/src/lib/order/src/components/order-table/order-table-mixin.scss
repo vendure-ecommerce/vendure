@@ -32,7 +32,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             margin-bottom: 6px;
-            margin-right: 18px;
+            margin-inline-end: 18px;
         }
     }
 
@@ -66,6 +66,11 @@
     }
     .shipping-method-name {
         font-size: var(--font-size-xs);
-        margin-right: 2px;
+        margin-inline-end: 2px;
+    }
+    .order-placed-quantity {
+        text-decoration: line-through;
+        color: var(--color-text-300);
+        margin-inline-end: 2px;
     }
 }

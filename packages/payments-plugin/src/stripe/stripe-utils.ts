@@ -12,7 +12,9 @@ import { CurrencyCode, Order } from '@vendure/core';
  * stores money amounts multiplied by 100). See https://github.com/vendure-ecommerce/vendure/issues/1630
  */
 export function getAmountInStripeMinorUnits(order: Order): number {
-    return currencyHasFractionPart(order.currencyCode) ? order.totalWithTax : Math.round(order.totalWithTax / 100);
+    return currencyHasFractionPart(order.currencyCode)
+        ? order.totalWithTax
+        : Math.round(order.totalWithTax / 100);
 }
 
 /**

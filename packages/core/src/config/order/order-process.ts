@@ -21,6 +21,13 @@ import {
  *
  * For detailed description of the interface members, see the {@link StateMachineConfig} docs.
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.process` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory orders
  * @docsPage OrderProcess
  * @docsWeight 0

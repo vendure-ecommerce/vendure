@@ -8,6 +8,13 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * The AssetPersistenceStrategy determines how Asset files are physically stored
  * and retrieved.
  *
+ * :::info
+ *
+ * This is configured via the `assetOptions.assetStorageStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory assets
  */
 export interface AssetStorageStrategy extends InjectableStrategy {

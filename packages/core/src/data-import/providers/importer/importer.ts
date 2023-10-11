@@ -60,7 +60,7 @@ export class Importer {
 
     /**
      * @description
-     * Parses the contents of the [product import CSV file](/docs/developer-guide/importing-product-data/#product-import-format) and imports
+     * Parses the contents of the [product import CSV file](/guides/developer-guide/importing-data/#product-import-format) and imports
      * the resulting Product & ProductVariants, as well as any associated Assets, Facets & FacetValues.
      *
      * The `ctxOrLanguageCode` argument is used to specify the languageCode to be used when creating the Products.

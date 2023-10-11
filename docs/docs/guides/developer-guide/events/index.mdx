@@ -1,0 +1,291 @@
+---
+title: "Events"
+---
+
+Vendure emits events which can be subscribed to by plugins. These events are published by the [EventBus](/reference/typescript-api/events/event-bus/) and
+likewise the `EventBus` is used to subscribe to events.
+
+An event exists for virtually all significant actions which occur in the system, such as:
+
+- When entities (e.g. `Product`, `Order`, `Customer`) are created, updated or deleted
+- When a user registers an account
+- When a user logs in or out
+- When the state of an `Order`, `Payment`, `Fulfillment` or `Refund` changes
+
+A full list of the available events follows.
+
+## Event types
+
+<div class="row">
+<div class="col col--6">
+
+ - [`AccountRegistrationEvent`](/reference/typescript-api/events/event-types#accountregistrationevent)
+ - [`AccountVerifiedEvent`](/reference/typescript-api/events/event-types#accountverifiedevent)
+ - [`AdministratorEvent`](/reference/typescript-api/events/event-types#administratorevent)
+ - [`AssetChannelEvent`](/reference/typescript-api/events/event-types#assetchannelevent)
+ - [`AssetEvent`](/reference/typescript-api/events/event-types#assetevent)
+ - [`AttemptedLoginEvent`](/reference/typescript-api/events/event-types#attemptedloginevent)
+ - [`ChangeChannelEvent`](/reference/typescript-api/events/event-types#changechannelevent)
+ - [`ChannelEvent`](/reference/typescript-api/events/event-types#channelevent)
+ - [`CollectionEvent`](/reference/typescript-api/events/event-types#collectionevent)
+ - [`CollectionModificationEvent`](/reference/typescript-api/events/event-types#collectionmodificationevent)
+ - [`CountryEvent`](/reference/typescript-api/events/event-types#countryevent)
+ - [`CouponCodeEvent`](/reference/typescript-api/events/event-types#couponcodeevent)
+ - [`CustomerAddressEvent`](/reference/typescript-api/events/event-types#customeraddressevent)
+ - [`CustomerEvent`](/reference/typescript-api/events/event-types#customerevent)
+ - [`CustomerGroupChangeEvent`](/reference/typescript-api/events/event-types#customergroupchangeevent)
+ - [`CustomerGroupEvent`](/reference/typescript-api/events/event-types#customergroupevent)
+ - [`FacetEvent`](/reference/typescript-api/events/event-types#facetevent)
+ - [`FacetValueEvent`](/reference/typescript-api/events/event-types#facetvalueevent)
+ - [`FulfillmentEvent`](/reference/typescript-api/events/event-types#fulfillmentevent)
+ - [`FulfillmentStateTransitionEvent`](/reference/typescript-api/events/event-types#fulfillmentstatetransitionevent)
+ - [`GlobalSettingsEvent`](/reference/typescript-api/events/event-types#globalsettingsevent)
+ - [`HistoryEntryEvent`](/reference/typescript-api/events/event-types#historyentryevent)
+ - [`IdentifierChangeEvent`](/reference/typescript-api/events/event-types#identifierchangeevent)
+ - [`IdentifierChangeRequestEvent`](/reference/typescript-api/events/event-types#identifierchangerequestevent)
+ - [`InitializerEvent`](/reference/typescript-api/events/event-types#initializerevent)
+ - [`LoginEvent`](/reference/typescript-api/events/event-types#loginevent)
+ - [`LogoutEvent`](/reference/typescript-api/events/event-types#logoutevent)
+ - [`OrderEvent`](/reference/typescript-api/events/event-types#orderevent)
+
+</div>
+<div class="col col--6">
+
+ - [`OrderLineEvent`](/reference/typescript-api/events/event-types#orderlineevent)
+ - [`OrderPlacedEvent`](/reference/typescript-api/events/event-types#orderplacedevent)
+ - [`OrderStateTransitionEvent`](/reference/typescript-api/events/event-types#orderstatetransitionevent)
+ - [`PasswordResetEvent`](/reference/typescript-api/events/event-types#passwordresetevent)
+ - [`PasswordResetVerifiedEvent`](/reference/typescript-api/events/event-types#passwordresetverifiedevent)
+ - [`PaymentMethodEvent`](/reference/typescript-api/events/event-types#paymentmethodevent)
+ - [`PaymentStateTransitionEvent`](/reference/typescript-api/events/event-types#paymentstatetransitionevent)
+ - [`ProductChannelEvent`](/reference/typescript-api/events/event-types#productchannelevent)
+ - [`ProductEvent`](/reference/typescript-api/events/event-types#productevent)
+ - [`ProductOptionEvent`](/reference/typescript-api/events/event-types#productoptionevent)
+ - [`ProductOptionGroupChangeEvent`](/reference/typescript-api/events/event-types#productoptiongroupchangeevent)
+ - [`ProductOptionGroupEvent`](/reference/typescript-api/events/event-types#productoptiongroupevent)
+ - [`ProductVariantChannelEvent`](/reference/typescript-api/events/event-types#productvariantchannelevent)
+ - [`ProductVariantEvent`](/reference/typescript-api/events/event-types#productvariantevent)
+ - [`PromotionEvent`](/reference/typescript-api/events/event-types#promotionevent)
+ - [`ProvinceEvent`](/reference/typescript-api/events/event-types#provinceevent)
+ - [`RefundStateTransitionEvent`](/reference/typescript-api/events/event-types#refundstatetransitionevent)
+ - [`RoleChangeEvent`](/reference/typescript-api/events/event-types#rolechangeevent)
+ - [`RoleEvent`](/reference/typescript-api/events/event-types#roleevent)
+ - [`SearchEvent`](/reference/typescript-api/events/event-types#searchevent)
+ - [`SellerEvent`](/reference/typescript-api/events/event-types#sellerevent)
+ - [`ShippingMethodEvent`](/reference/typescript-api/events/event-types#shippingmethodevent)
+ - [`StockMovementEvent`](/reference/typescript-api/events/event-types#stockmovementevent)
+ - [`TaxCategoryEvent`](/reference/typescript-api/events/event-types#taxcategoryevent)
+ - [`TaxRateEvent`](/reference/typescript-api/events/event-types#taxrateevent)
+ - [`TaxRateModificationEvent`](/reference/typescript-api/events/event-types#taxratemodificationevent)
+ - [`ZoneEvent`](/reference/typescript-api/events/event-types#zoneevent)
+ - [`ZoneMembersEvent`](/reference/typescript-api/events/event-types#zonemembersevent)
+
+</div>
+</div>
+
+## Subscribing to events
+
+To subscribe to an event, use the `EventBus`'s `.ofType()` method. It is typical to set up subscriptions in the `onModuleInit()` or `onApplicationBootstrap()`
+lifecycle hooks of a plugin or service (see [NestJS Lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events).
+
+Here's an example where we subscribe to the `ProductEvent` and use it to trigger a rebuild of a static storefront:
+
+```ts title="src/plugins/storefront-build/storefront-build.plugin.ts"
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { EventBus, ProductEvent, PluginCommonModule, VendurePlugin } from '@vendure/core';
+
+import { StorefrontBuildService } from './services/storefront-build.service';
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+})
+export class StorefrontBuildPlugin implements OnModuleInit {
+    constructor(
+        // highlight-next-line
+        private eventBus: EventBus,
+        private storefrontBuildService: StorefrontBuildService) {}
+
+    onModuleInit() {
+        // highlight-start
+        this.eventBus
+            .ofType(ProductEvent)
+            .subscribe(event => {
+                this.storefrontBuildService.triggerBuild();
+            });
+        // highlight-end
+    }
+}
+```
+
+:::info
+The `EventBus.ofType()` and related `EventBus.filter()` methods return an RxJS `Observable`.
+This means that you can use any of the [RxJS operators](https://rxjs-dev.firebaseapp.com/guide/operators) to transform the stream of events.
+
+For example, to debounce the stream of events, you could do this:
+
+```ts
+// highlight-next-line
+import { debounceTime } from 'rxjs/operators';
+
+// ...
+
+this.eventBus
+    .ofType(ProductEvent)
+     // highlight-next-line
+    .pipe(debounceTime(1000))
+    .subscribe(event => {
+        this.storefrontBuildService.triggerBuild();
+    });
+```
+:::
+
+### Subscribing to multiple event types
+
+Using the `.ofType()` method allows us to subscribe to a single event type. If we want to subscribe to multiple event types, we can use the `.filter()` method instead:
+
+```ts title="src/plugins/my-plugin/my-plugin.plugin.ts"
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { EventBus, PluginCommonModule, VendurePlugin, ProductEvent, ProductVariantEvent } from '@vendure/core';
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+})
+export class MyPluginPlugin implements OnModuleInit {
+    constructor(private eventBus: EventBus) {}
+
+    onModuleInit() {
+        this.eventBus
+            // highlight-start
+            .filter(event =>
+                event instanceof ProductEvent || event instanceof ProductVariantEvent)
+            // highlight-end
+            .subscribe(event => {
+                // the event will be a ProductEvent or ProductVariantEvent
+            });
+    }
+}
+```
+
+## Publishing events
+
+You can publish events using the `EventBus.publish()` method. This is useful if you want to trigger an event from within a plugin or service.
+
+For example, to publish a `ProductEvent`:
+
+```ts title="src/plugins/my-plugin/services/my-plugin.service.ts"
+import { Injectable } from '@nestjs/common';
+import { EventBus, ProductEvent, RequestContext, Product } from '@vendure/core';
+
+@Injectable()
+export class MyPluginService {
+    constructor(private eventBus: EventBus) {}
+
+    async doSomethingWithProduct(ctx: RequestContext, product: Product) {
+        // ... do something
+        // highlight-next-line
+        this.eventBus.publish(new ProductEvent(ctx, product, 'updated'));
+    }
+}
+```
+
+## Creating custom events
+
+You can create your own custom events by extending the [`VendureEvent`](/reference/typescript-api/events/vendure-event) class. For example, to create a custom event which is triggered when a customer submits a review, you could do this:
+
+```ts title="src/plugins/reviews/events/review-submitted.event.ts"
+import { ID, RequestContext, VendureEvent } from '@vendure/core';
+import { ProductReviewInput } from '../types';
+
+/**
+ * @description
+ * This event is fired whenever a ProductReview is submitted.
+ */
+export class ReviewSubmittedEvent extends VendureEvent {
+    constructor(
+        public ctx: RequestContext,
+        public input: ProductReviewInput,
+    ) {
+        super();
+    }
+}
+```
+
+The event would then be published from your plugin's `ProductReviewService`:
+
+```ts title="src/plugins/reviews/services/product-review.service.ts"
+import { Injectable } from '@nestjs/common';
+import { EventBus, ProductReviewService, RequestContext } from '@vendure/core';
+
+import { ReviewSubmittedEvent } from '../events/review-submitted.event';
+import { ProductReviewInput } from '../types';
+
+@Injectable()
+export class ProductReviewService {
+    constructor(private eventBus: EventBus, private productReviewService: ProductReviewService) {}
+
+    async submitReview(ctx: RequestContext, input: ProductReviewInput) {
+        // highlight-next-line
+        this.eventBus.publish(new ReviewSubmittedEvent(ctx, input));
+        // handle creation of the new review
+        // ...
+    }
+}
+```
+
+### Entity events
+
+There is a special event class [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event) for events relating to the creation, update or deletion of entities. Let's say you have a custom entity (see [defining a database entity](/guides/developer-guide/database-entity//)) `BlogPost` and you want to trigger an event whenever a new `BlogPost` is created, updated or deleted:
+
+```ts title="src/plugins/blog/events/blog-post-event.ts"
+import { ID, RequestContext, VendureEntityEvent } from '@vendure/core';
+import { BlogPost } from '../entities/blog-post.entity';
+import { CreateBlogPostInput, UpdateBlogPostInput } from '../types';
+
+type BlogPostInputTypes = CreateBlogPostInput | UpdateBlogPostInput | ID | ID[];
+
+/**
+ * This event is fired whenever a BlogPost is added, updated
+ * or deleted.
+ */
+export class BlogPostEvent extends VendureEntityEvent<BlogPost[], BlogPostInputTypes> {
+    constructor(
+        ctx: RequestContext,
+        entity: BlogPost,
+        type: 'created' | 'updated' | 'deleted',
+        input?: BlogPostInputTypes,
+    ) {
+        super(entity, type, ctx, input);
+    }
+}
+```
+
+Using this event, you can subscribe to all `BlogPost` events, and for instance filter for only the `created` events:
+
+```ts title="src/plugins/blog/blog-plugin.ts"
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { EventBus, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { filter } from 'rxjs/operators';
+
+import { BlogPostEvent } from './events/blog-post-event';
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    // ...
+})
+export class BlogPlugin implements OnModuleInit {
+    constructor(private eventBus: EventBus) {}
+
+    onModuleInit() {
+        this.eventBus
+            // highlight-start
+            .ofType(BlogPostEvent).pipe(
+                filter(event => event.type === 'created'),
+            )
+            .subscribe(event => {
+                const blogPost = event.entity;
+                // do something with the newly created BlogPost
+            });
+            // highlight-end
+    }
+}
+```

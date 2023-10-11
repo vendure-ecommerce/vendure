@@ -1663,6 +1663,193 @@ describe('Promotions applied to Orders', () => {
         });
     });
 
+    describe.only('usage limit', () => {
+        const TEST_COUPON_CODE = 'TESTCOUPON';
+        const orderGuard: ErrorResultGuard<CodegenShop.TestOrderWithPaymentsFragment> =
+            createErrorResultGuard(input => !!input.lines);
+        let promoWithUsageLimit: Codegen.PromotionFragment;
+
+        async function createNewActiveOrder() {
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-5000').id,
+                quantity: 1,
+            });
+            return addItemToOrder;
+        }
+
+        describe('guest customer', () => {
+            const GUEST_EMAIL_ADDRESS = 'guest@test.com';
+            let orderCode: string;
+
+            beforeAll(async () => {
+                promoWithUsageLimit = await createPromotion({
+                    enabled: true,
+                    name: 'Free with test coupon',
+                    couponCode: TEST_COUPON_CODE,
+                    usageLimit: 1,
+                    conditions: [],
+                    actions: [freeOrderAction],
+                });
+            });
+
+            afterAll(async () => {
+                await deletePromotion(promoWithUsageLimit.id);
+            });
+
+            function addGuestCustomerToOrder() {
+                return shopClient.query<
+                    CodegenShop.SetCustomerForOrderMutation,
+                    CodegenShop.SetCustomerForOrderMutationVariables
+                >(SET_CUSTOMER, {
+                    input: {
+                        emailAddress: GUEST_EMAIL_ADDRESS,
+                        firstName: 'Guest',
+                        lastName: 'Customer',
+                    },
+                });
+            }
+
+            it('allows initial usage', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+                await addGuestCustomerToOrder();
+
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await proceedToArrangingPayment(shopClient);
+                const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+
+                expect(order.state).toBe('PaymentSettled');
+                expect(order.active).toBe(false);
+                orderCode = order.code;
+            });
+
+            it('adds Promotions to Order once payment arranged', async () => {
+                const { orderByCode } = await shopClient.query<
+                    CodegenShop.GetOrderPromotionsByCodeQuery,
+                    CodegenShop.GetOrderPromotionsByCodeQueryVariables
+                >(GET_ORDER_PROMOTIONS_BY_CODE, {
+                    code: orderCode,
+                });
+                expect(orderByCode!.promotions.map(pick(['name']))).toEqual([
+                    { name: 'Free with test coupon' },
+                ]);
+            });
+
+            it('returns error result when usage exceeds limit', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+                await addGuestCustomerToOrder();
+
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertErrorResult(applyCouponCode);
+
+                expect(applyCouponCode.message).toEqual(
+                    'Coupon code cannot be used more than once per customer',
+                );
+            });
+        });
+
+        describe('signed-in customer', () => {
+            beforeAll(async () => {
+                promoWithUsageLimit = await createPromotion({
+                    enabled: true,
+                    name: 'Free with test coupon',
+                    couponCode: TEST_COUPON_CODE,
+                    usageLimit: 1,
+                    conditions: [],
+                    actions: [freeOrderAction],
+                });
+            });
+
+            afterAll(async () => {
+                await deletePromotion(promoWithUsageLimit.id);
+            });
+
+            function logInAsRegisteredCustomer() {
+                return shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            }
+
+            let orderId: string;
+
+            it('allows initial usage', async () => {
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await proceedToArrangingPayment(shopClient);
+                const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+                orderId = order.id;
+
+                expect(order.state).toBe('PaymentSettled');
+                expect(order.active).toBe(false);
+            });
+
+            it('returns error result when usage exceeds limit', async () => {
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertErrorResult(applyCouponCode);
+                expect(applyCouponCode.message).toEqual(
+                    'Coupon code cannot be used more than once per customer',
+                );
+                expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_LIMIT_ERROR);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1466
+            it('cancelled orders do not count against usage limit', async () => {
+                const { cancelOrder } = await adminClient.query<
+                    Codegen.CancelOrderMutation,
+                    Codegen.CancelOrderMutationVariables
+                >(CANCEL_ORDER, {
+                    input: {
+                        orderId,
+                        cancelShipping: true,
+                        reason: 'request',
+                    },
+                });
+                orderResultGuard.assertSuccess(cancelOrder);
+                expect(cancelOrder.state).toBe('Cancelled');
+
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
+            });
+        });
+    });
+
     // https://github.com/vendure-ecommerce/vendure/issues/710
     it('removes order-level discount made invalid by removing OrderLine', async () => {
         const promotion = await createPromotion({

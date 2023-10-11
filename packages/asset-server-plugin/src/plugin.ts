@@ -52,7 +52,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * };
  * ```
  *
- * The full configuration is documented at [AssetServerOptions]({{< relref "asset-server-options" >}})
+ * The full configuration is documented at [AssetServerOptions](/reference/core-plugins/asset-server-plugin/asset-server-options)
  *
  * ## Image transformation
  *
@@ -64,7 +64,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  *
  * ### Preview mode
  *
- * The `mode` parameter can be either `crop` or `resize`. See the [ImageTransformMode]({{< relref "image-transform-mode" >}}) docs for details.
+ * The `mode` parameter can be either `crop` or `resize`. See the [ImageTransformMode](/reference/core-plugins/asset-server-plugin/image-transform-mode) docs for details.
  *
  * ### Focal point
  *
@@ -99,7 +99,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * ### Transform presets
  *
  * Presets can be defined which allow a single preset name to be used instead of specifying the width, height and mode. Presets are
- * configured via the AssetServerOptions [presets property]({{< relref "asset-server-options" >}}#presets).
+ * configured via the AssetServerOptions [presets property](/reference/core-plugins/asset-server-plugin/asset-server-options/#presets).
  *
  * For example, defining the following preset:
  *

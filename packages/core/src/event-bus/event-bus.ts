@@ -26,7 +26,7 @@ import { VendureEvent } from './vendure-event';
  * stream of events:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { OnApplicationBootstrap } from '\@nestjs/common';
  * import { EventBus, PluginCommonModule, VendurePlugin } from '\@vendure/core';
  * import { filter } from 'rxjs/operators';

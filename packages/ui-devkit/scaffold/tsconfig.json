@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "jsx": "react",
     "typeRoots": [],
     "lib": [
       "es2019",

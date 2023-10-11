@@ -27,7 +27,7 @@ import { JobData } from './types';
  * started from the main server process:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * bootstrap(config)
  *   .then(app => app.get(JobQueueService).start());
  * ```

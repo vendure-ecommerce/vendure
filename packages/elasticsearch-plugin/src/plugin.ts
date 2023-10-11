@@ -95,9 +95,9 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * ## Search API Extensions
  * This plugin extends the default search query of the Shop API, allowing richer querying of your product data.
  *
- * The [SearchResponse](/docs/graphql-api/admin/object-types/#searchresponse) type is extended with information
+ * The [SearchResponse](/reference/graphql-api/admin/object-types/#searchresponse) type is extended with information
  * about price ranges in the result set:
- * ```SDL
+ * ```graphql
  * extend type SearchResponse {
  *     prices: SearchResponsePriceData!
  * }
@@ -129,7 +129,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *
  * ## Example Request & Response
  *
- * ```SDL
+ * ```graphql
  * {
  *   search (input: {
  *     term: "table easel"
@@ -164,7 +164,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * }
  * ```
  *
- * ```JSON
+ * ```json
  *{
  *  "data": {
  *    "search": {

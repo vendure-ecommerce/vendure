@@ -2,6 +2,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { CustomFieldConfig } from '../../common/generated-types';
 import { DataTableSort, DataTableSortOptions, DataTableSortOrder } from './data-table-sort';
 
@@ -15,11 +16,17 @@ export class DataTableSortCollection<
     valueChanges = this.#valueChanges$.asObservable();
     readonly #sortQueryParamName = 'sort';
     #defaultSort: { name: keyof SortInput; sortOrder: DataTableSortOrder } | undefined;
+    private readonly destroy$ = new Subject<void>();
 
     constructor(private router: Router) {}
 
     get length(): number {
         return this.#sorts.length;
+    }
+
+    destroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     addSort<Name extends keyof SortInput>(
@@ -80,7 +87,7 @@ export class DataTableSortCollection<
     }
 
     connectToRoute(route: ActivatedRoute) {
-        this.valueChanges.subscribe(value => {
+        this.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
             this.router.navigate(['./'], {
                 queryParams: { [this.#sortQueryParamName]: this.serialize() },
                 relativeTo: route,

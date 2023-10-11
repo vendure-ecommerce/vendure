@@ -4,14 +4,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactory,
-    ComponentFactoryResolver,
     ComponentRef,
     Injector,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
+    Provider,
     QueryList,
     SimpleChanges,
     Type,
@@ -75,6 +74,7 @@ export class DynamicFormInputComponent
     private listId = 1;
     private listFormArray = new FormArray([] as Array<FormControl<any>>);
     private componentType: Type<FormInputComponent>;
+    private componentProviders: Provider[] = [];
     private onChange: (val: any) => void;
     private onTouch: () => void;
     private renderList$ = new Subject<void>();
@@ -82,16 +82,16 @@ export class DynamicFormInputComponent
 
     constructor(
         private componentRegistryService: ComponentRegistryService,
-        private componentFactoryResolver: ComponentFactoryResolver,
         private changeDetectorRef: ChangeDetectorRef,
         private injector: Injector,
     ) {}
 
     ngOnInit() {
         const componentId = this.getInputComponentConfig(this.def).component;
-        const componentType = this.componentRegistryService.getInputComponent(componentId);
-        if (componentType) {
-            this.componentType = componentType;
+        const component = this.componentRegistryService.getInputComponent(componentId);
+        if (component) {
+            this.componentType = component.type;
+            this.componentProviders = component.providers;
         } else {
             // eslint-disable-next-line no-console
             console.error(
@@ -101,17 +101,20 @@ export class DynamicFormInputComponent
                 this.getInputComponentConfig({ ...this.def, ui: undefined } as any).component,
             );
             if (defaultComponentType) {
-                this.componentType = defaultComponentType;
+                this.componentType = defaultComponentType.type;
             }
         }
     }
 
     ngAfterViewInit() {
         if (this.componentType) {
-            const factory = this.componentFactoryResolver.resolveComponentFactory(this.componentType);
+            const injector = Injector.create({
+                providers: this.componentProviders,
+                parent: this.injector,
+            });
 
             // create a temp instance to check the value of `isListInput`
-            const cmpRef = factory.create(this.injector);
+            const cmpRef = this.singleViewContainer.createComponent(this.componentType, { injector });
             const isListInputComponent = cmpRef.instance.isListInput ?? false;
             cmpRef.destroy();
 
@@ -123,7 +126,7 @@ export class DynamicFormInputComponent
             this.renderAsList = this.def.list && !isListInputComponent;
             if (!this.renderAsList) {
                 this.singleComponentRef = this.renderInputComponent(
-                    factory,
+                    injector,
                     this.singleViewContainer,
                     this.control,
                 );
@@ -141,7 +144,7 @@ export class DynamicFormInputComponent
                             if (listItem) {
                                 this.listFormArray.push(listItem.control);
                                 listItem.componentRef = this.renderInputComponent(
-                                    factory,
+                                    injector,
                                     ref,
                                     listItem.control,
                                 );
@@ -243,11 +246,11 @@ export class DynamicFormInputComponent
     }
 
     private renderInputComponent(
-        factory: ComponentFactory<FormInputComponent>,
+        injector: Injector,
         viewContainerRef: ViewContainerRef,
         formControl: UntypedFormControl,
     ) {
-        const componentRef = viewContainerRef.createComponent(factory);
+        const componentRef = viewContainerRef.createComponent(this.componentType, { injector });
         const { instance } = componentRef;
         instance.config = simpleDeepClone(this.def);
         instance.formControl = formControl;

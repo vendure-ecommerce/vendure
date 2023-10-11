@@ -188,7 +188,7 @@ export type MiddlewareHandler = Type<any> | Function;
  * `PayloadTooLargeError`. To increase this limit, we can manually configure the body-parser middleware:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { VendureConfig } from '\@vendure/core';
  * import { json } from 'body-parser';
  *
@@ -202,6 +202,7 @@ export type MiddlewareHandler = Type<any> | Function;
  *     }],
  *   },
  * };
+ * ```
  *
  * @docsCategory Common
  */

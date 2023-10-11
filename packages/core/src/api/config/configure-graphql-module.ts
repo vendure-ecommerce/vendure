@@ -1,8 +1,7 @@
-import { ApolloDriver } from '@nestjs/apollo';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { DynamicModule } from '@nestjs/common';
 import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import { buildSchema, extendSchema, GraphQLSchema, printSchema, ValidationContext } from 'graphql';
 import path from 'path';
 
@@ -10,10 +9,9 @@ import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
 import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
-import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-api.module';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { ServiceModule } from '../../service/service.module';
-import { ApiSharedModule, ShopApiModule } from '../api-internal-modules';
+import { ApiSharedModule } from '../api-internal-modules';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { IdCodecService } from '../common/id-codec.service';
 import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
@@ -54,7 +52,7 @@ export interface GraphQLApiOptions {
 export function configureGraphQLModule(
     getOptions: (configService: ConfigService) => GraphQLApiOptions,
 ): DynamicModule {
-    return GraphQLModule.forRootAsync({
+    return GraphQLModule.forRootAsync<ApolloDriverConfig>({
         driver: ApolloDriver,
         useFactory: (
             configService: ConfigService,
@@ -90,7 +88,7 @@ async function createGraphQLOptions(
     typesLoader: GraphQLTypesLoader,
     customFieldRelationResolverService: CustomFieldRelationResolverService,
     options: GraphQLApiOptions,
-): Promise<GqlModuleOptions> {
+): Promise<ApolloDriverConfig> {
     const builtSchema = await buildSchemaForApi(options.apiType);
     const resolvers = await generateResolvers(
         configService,
@@ -107,7 +105,8 @@ async function createGraphQLOptions(
         // We no longer rely on the upload facility bundled with Apollo Server, and instead
         // manually configure the graphql-upload package. See https://github.com/vendure-ecommerce/vendure/issues/396
         uploads: false,
-        playground: false,
+        playground: options.playground,
+        csrfPrevention: false,
         debug: options.debug || false,
         context: (req: any) => req,
         // This is handled by the Express cors plugin
@@ -116,12 +115,11 @@ async function createGraphQLOptions(
             new IdCodecPlugin(idCodecService),
             new TranslateErrorsPlugin(i18nService),
             new AssetInterceptorPlugin(configService),
-            ...(options.playground ? [ApolloServerPluginLandingPageGraphQLPlayground()] : []),
             ...configService.apiOptions.apolloServerPlugins,
         ],
         validationRules: options.validationRules,
         introspection: configService.apiOptions.introspection ?? true,
-    } as GqlModuleOptions;
+    } as ApolloDriverConfig;
 
     /**
      * Generates the server's GraphQL schema by combining:

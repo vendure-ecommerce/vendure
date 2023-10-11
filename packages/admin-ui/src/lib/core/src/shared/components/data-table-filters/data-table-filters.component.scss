@@ -56,7 +56,7 @@ label {
 .apply-wrapper {
     display: flex;
     justify-content: flex-end;
-    padding-right: calc(var(--space-unit) * 2);
+    padding-inline-end: calc(var(--space-unit) * 2);
 }
 
 .filter-hotkey {

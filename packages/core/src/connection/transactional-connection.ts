@@ -113,7 +113,7 @@ export class TransactionalConnection {
      * all inner method calls.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amount: number) {
      *   await this.connection.withTransaction(outerCtx, async ctx => {
      *     // Note you must not use `outerCtx` here, instead use `ctx`. Otherwise, this query

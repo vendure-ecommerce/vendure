@@ -20,6 +20,13 @@ import {
  *
  * For detailed description of the interface members, see the {@link StateMachineConfig} docs.
  *
+ * :::info
+ *
+ * This is configured via the `paymentOptions.process` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory payment
  * @since 2.0.0
  */

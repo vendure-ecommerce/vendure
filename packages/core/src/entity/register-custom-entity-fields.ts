@@ -80,10 +80,14 @@ function registerCustomFieldsForEntity(
             const registerColumn = () => {
                 if (customField.type === 'relation') {
                     if (customField.list) {
-                        ManyToMany(type => customField.entity, { eager: customField.eager })(instance, name);
+                        ManyToMany(type => customField.entity, customField.inverseSide, {
+                            eager: customField.eager,
+                        })(instance, name);
                         JoinTable()(instance, name);
                     } else {
-                        ManyToOne(type => customField.entity, { eager: customField.eager })(instance, name);
+                        ManyToOne(type => customField.entity, customField.inverseSide, {
+                            eager: customField.eager,
+                        })(instance, name);
                         JoinColumn()(instance, name);
                     }
                 } else {

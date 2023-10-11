@@ -1,3 +1,95 @@
+## 2.1.0 (2023-10-11)
+
+
+#### Fixes
+
+* **admin-ui** Correctly display job retries ([d3107fd](https://github.com/vendure-ecommerce/vendure/commit/d3107fd)), closes [#1467](https://github.com/vendure-ecommerce/vendure/issues/1467)
+* **admin-ui** Fix back/forward nav issues with data table filters ([58cb5a5](https://github.com/vendure-ecommerce/vendure/commit/58cb5a5))
+* **admin-ui** Fix border colour of affixed input ([e2cb74b](https://github.com/vendure-ecommerce/vendure/commit/e2cb74b))
+* **admin-ui** Fix component for new Angular extension route API ([6fe1bd0](https://github.com/vendure-ecommerce/vendure/commit/6fe1bd0))
+* **admin-ui** Fix error when data table filters not defined ([2425a33](https://github.com/vendure-ecommerce/vendure/commit/2425a33))
+* **admin-ui** Give all data table columns immutable ids ([73a78db](https://github.com/vendure-ecommerce/vendure/commit/73a78db))
+* **admin-ui** Improve RTL styles ([056d205](https://github.com/vendure-ecommerce/vendure/commit/056d205))
+* **admin-ui** Limit FacetValues in Facet list component ([b445955](https://github.com/vendure-ecommerce/vendure/commit/b445955)), closes [#1257](https://github.com/vendure-ecommerce/vendure/issues/1257)
+* **admin-ui** Reinstate serialized filter state in url ([a5bc0c1](https://github.com/vendure-ecommerce/vendure/commit/a5bc0c1))
+* **admin-ui** Update active filter preset on back/forward navigation ([844876e](https://github.com/vendure-ecommerce/vendure/commit/844876e))
+* **admin-ui** Use correct defaults for nullable custom fields (#2360) ([88430e5](https://github.com/vendure-ecommerce/vendure/commit/88430e5)), closes [#2360](https://github.com/vendure-ecommerce/vendure/issues/2360)
+* **core** Downgrade ForbiddenError from Error to Warn log level ([c186392](https://github.com/vendure-ecommerce/vendure/commit/c186392)), closes [#2383](https://github.com/vendure-ecommerce/vendure/issues/2383)
+* **core** Export EntityId and Money decorators ([4664dee](https://github.com/vendure-ecommerce/vendure/commit/4664dee))
+* **core** Fix circular dependency issue in SQLiteSearchStrategy ([f2e2e32](https://github.com/vendure-ecommerce/vendure/commit/f2e2e32))
+* **core** Fix resolution of facet valueList for postgres ([1d8fe47](https://github.com/vendure-ecommerce/vendure/commit/1d8fe47))
+* **job-queue-plugin** Correct behaviour of job list query with BullMQ ([c148a92](https://github.com/vendure-ecommerce/vendure/commit/c148a92)), closes [#2120](https://github.com/vendure-ecommerce/vendure/issues/2120) [#1327](https://github.com/vendure-ecommerce/vendure/issues/1327)
+* **job-queue-plugin** Correct retry setting for BullMQ jobs ([972ba0e](https://github.com/vendure-ecommerce/vendure/commit/972ba0e)), closes [#1467](https://github.com/vendure-ecommerce/vendure/issues/1467)
+* **ui-devkit** Fix scaffold logic for custom providers ([2f2ddb5](https://github.com/vendure-ecommerce/vendure/commit/2f2ddb5))
+
+#### Features
+
+* **admin-ui** Add data table filter presets functionality ([a656ef2](https://github.com/vendure-ecommerce/vendure/commit/a656ef2))
+* **admin-ui** Add filter preset support to Collection list ([cbfb402](https://github.com/vendure-ecommerce/vendure/commit/cbfb402))
+* **admin-ui** Add image carousel to asset preview dialog (#2370) ([cd7b2bf](https://github.com/vendure-ecommerce/vendure/commit/cd7b2bf)), closes [#2370](https://github.com/vendure-ecommerce/vendure/issues/2370) [#2129](https://github.com/vendure-ecommerce/vendure/issues/2129)
+* **admin-ui** Add initial React support for UI extensions ([1075dd7](https://github.com/vendure-ecommerce/vendure/commit/1075dd7))
+* **admin-ui** Add more native React UI components ([04e03f8](https://github.com/vendure-ecommerce/vendure/commit/04e03f8))
+* **admin-ui** Add Persian/Farsi i18n messages (#2418) ([1193863](https://github.com/vendure-ecommerce/vendure/commit/1193863)), closes [#2418](https://github.com/vendure-ecommerce/vendure/issues/2418)
+* **admin-ui** Add useRouteParams react hook ([b63fb7f](https://github.com/vendure-ecommerce/vendure/commit/b63fb7f))
+* **admin-ui** Admin UI rtl with Arabic translation improvements (#2322) ([44ea12b](https://github.com/vendure-ecommerce/vendure/commit/44ea12b)), closes [#2322](https://github.com/vendure-ecommerce/vendure/issues/2322)
+* **admin-ui** Allow custom components in data table columns ([d3474dd](https://github.com/vendure-ecommerce/vendure/commit/d3474dd)), closes [#2347](https://github.com/vendure-ecommerce/vendure/issues/2347) [#2353](https://github.com/vendure-ecommerce/vendure/issues/2353)
+* **admin-ui** Allow custom React components in data table columns ([5cde775](https://github.com/vendure-ecommerce/vendure/commit/5cde775)), closes [#2347](https://github.com/vendure-ecommerce/vendure/issues/2347) [#2353](https://github.com/vendure-ecommerce/vendure/issues/2353)
+* **admin-ui** Display original quantity after order has been modified ([a36c6e0](https://github.com/vendure-ecommerce/vendure/commit/a36c6e0))
+* **admin-ui** Enable Nepali translations ([342fafa](https://github.com/vendure-ecommerce/vendure/commit/342fafa))
+* **admin-ui** Expose providers to nav menu routerLink function ([1bae40e](https://github.com/vendure-ecommerce/vendure/commit/1bae40e))
+* **admin-ui** Implement custom components in Collection data table ([4ab7c1e](https://github.com/vendure-ecommerce/vendure/commit/4ab7c1e))
+* **admin-ui** Implement custom components in order detail data table (#2420) ([e92e820](https://github.com/vendure-ecommerce/vendure/commit/e92e820)), closes [#2420](https://github.com/vendure-ecommerce/vendure/issues/2420)
+* **admin-ui** Implement drag-and-drop reorder of filter presets ([8e06705](https://github.com/vendure-ecommerce/vendure/commit/8e06705))
+* **admin-ui** Implement filter preset renaming ([8b52e6f](https://github.com/vendure-ecommerce/vendure/commit/8b52e6f))
+* **admin-ui** Implement job queue filtering by status ([baeb036](https://github.com/vendure-ecommerce/vendure/commit/baeb036))
+* **admin-ui** Implement react Card component ([c588a1f](https://github.com/vendure-ecommerce/vendure/commit/c588a1f))
+* **admin-ui** Implement relative date filtering ([d07a5f3](https://github.com/vendure-ecommerce/vendure/commit/d07a5f3))
+* **admin-ui** Implement simplified API for UI route extensions ([b9ca367](https://github.com/vendure-ecommerce/vendure/commit/b9ca367))
+* **admin-ui** Implement values pagination for Facet detail view ([4cf1826](https://github.com/vendure-ecommerce/vendure/commit/4cf1826)), closes [#1257](https://github.com/vendure-ecommerce/vendure/issues/1257)
+* **admin-ui** Improve dev mode extension point display ([4678930](https://github.com/vendure-ecommerce/vendure/commit/4678930))
+* **admin-ui** Improve naming & layout of catalog & stock locations ([8452300](https://github.com/vendure-ecommerce/vendure/commit/8452300))
+* **admin-ui** Improved control over ActionBar buttons ([065a2b4](https://github.com/vendure-ecommerce/vendure/commit/065a2b4))
+* **admin-ui** Initial support for React UI extensions ([83d5756](https://github.com/vendure-ecommerce/vendure/commit/83d5756))
+* **admin-ui** Style improvements to table and form input borders ([5287287](https://github.com/vendure-ecommerce/vendure/commit/5287287))
+* **admin-ui** Support for React-based custom detail components ([55d9ffc](https://github.com/vendure-ecommerce/vendure/commit/55d9ffc))
+* **admin-ui** Update to Angular v16.2 ([608d5d3](https://github.com/vendure-ecommerce/vendure/commit/608d5d3))
+* **cli** Implement plugin scaffold command ([a6df4c1](https://github.com/vendure-ecommerce/vendure/commit/a6df4c1))
+* **cli** Include custom CRUD permissions with plugin scaffold ([0c62b6f](https://github.com/vendure-ecommerce/vendure/commit/0c62b6f))
+* **core** Add `Facet.valueList` resolver for paginated values ([09c7175](https://github.com/vendure-ecommerce/vendure/commit/09c7175)), closes [#1257](https://github.com/vendure-ecommerce/vendure/issues/1257)
+* **core** Add maximum coupon usage (#2331) ([bdd2720](https://github.com/vendure-ecommerce/vendure/commit/bdd2720)), closes [#2331](https://github.com/vendure-ecommerce/vendure/issues/2331) [#2330](https://github.com/vendure-ecommerce/vendure/issues/2330)
+* **core** Pass variant to ProductVariantPriceCalculationStrategy ([fee995c](https://github.com/vendure-ecommerce/vendure/commit/fee995c)), closes [#2398](https://github.com/vendure-ecommerce/vendure/issues/2398)
+* **core** Support bi-directional relations in customFields (#2365) ([0313ce5](https://github.com/vendure-ecommerce/vendure/commit/0313ce5)), closes [#2365](https://github.com/vendure-ecommerce/vendure/issues/2365)
+* **core** Update NestJS to v10, Apollo Server v4 ([b675fda](https://github.com/vendure-ecommerce/vendure/commit/b675fda))
+* **create** Allow selection of package manager ([6561bb7](https://github.com/vendure-ecommerce/vendure/commit/6561bb7))
+* **create** Better defaults for project scaffold ([fa683e7](https://github.com/vendure-ecommerce/vendure/commit/fa683e7))
+* **email-plugin** Expose template vars to template loader (#2243) ([78ea016](https://github.com/vendure-ecommerce/vendure/commit/78ea016)), closes [#2243](https://github.com/vendure-ecommerce/vendure/issues/2243) [#2242](https://github.com/vendure-ecommerce/vendure/issues/2242)
+* **job-queue-plugin** Implement default cleanup of old BullMQ jobs ([6c1d7bb](https://github.com/vendure-ecommerce/vendure/commit/6c1d7bb)), closes [#1425](https://github.com/vendure-ecommerce/vendure/issues/1425)
+* **payments-plugin** Allow custom params to be passed to Stripe API ([1b29097](https://github.com/vendure-ecommerce/vendure/commit/1b29097)), closes [#2412](https://github.com/vendure-ecommerce/vendure/issues/2412)
+* **ui-devkit** Add experimental wrapper for shared ui providers ([daf6f8c](https://github.com/vendure-ecommerce/vendure/commit/daf6f8c))
+
+
+### BREAKING CHANGE
+
+* In the Admin UI, the "stock locations" list and detail views
+have been moved from the "catalog" module to the "settings" module. Also, the
+menu item & breadcrumb for "inventory" has been renamed to "products". This is an end-user breaking change rather than a code breaking change. Any UI
+extensions that link to a `/catalog/inventory/...` route will still work as there is a redirect in place to `/catalog/products/...`.
+
+* The update of Apollo Server to v4 includes some breaking changes if you have
+defined any custom ApolloServerPlugins. See the Apollo migration guide for full details:
+https://www.apollographql.com/docs/apollo-server/migration/
+* The new Promotion.usageLimit field will require a non-destructive database migration to be performed. You should not need to do any manual migration work - it is a straightforward addition of a field to a table.
+
+* The ForbiddenError now defaults to a "warning" rather than "error" log level. Previously this was causing too much noise in logging services and the new level better reflects the severity of the error.
+
+## <small>2.0.10 (2023-10-11)</small>
+
+
+#### Fixes
+
+* **core** Use correct Money type on ProductVariantPrice.price field ([446f61c](https://github.com/vendure-ecommerce/vendure/commit/446f61c))
+* **payments-plugin** List missing available Mollie payment methods for orders api (#2435) ([23a0499](https://github.com/vendure-ecommerce/vendure/commit/23a0499)), closes [#2435](https://github.com/vendure-ecommerce/vendure/issues/2435)
+
 ## <small>2.0.9 (2023-09-29)</small>
 
 

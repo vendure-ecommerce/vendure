@@ -1,0 +1,46 @@
+{
+    "name": "@vendure/cli",
+    "version": "2.1.0",
+    "description": "A modern, headless ecommerce framework",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure/"
+    },
+    "keywords": [
+        "vendure",
+        "ecommerce",
+        "headless",
+        "graphql",
+        "typescript"
+    ],
+    "homepage": "https://www.vendure.io/",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "private": false,
+    "license": "MIT",
+    "type": "commonjs",
+    "scripts": {
+        "build": "rimraf dist && tsc -p ./tsconfig.cli.json",
+        "watch": "tsc -p ./tsconfig.cli.json --watch",
+        "ci": "yarn build"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "bin": {
+        "vendure": "dist/cli.js"
+    },
+    "files": [
+        "dist/**/*"
+    ],
+    "dependencies": {
+        "@clack/prompts": "^0.7.0",
+        "@vendure/common": "^2.1.0",
+        "change-case": "^4.1.2",
+        "commander": "^11.0.0",
+        "fs-extra": "^11.1.1",
+        "picocolors": "^1.0.0"
+    },
+    "devDependencies": {
+        "typescript": "4.9.5"
+    }
+}
