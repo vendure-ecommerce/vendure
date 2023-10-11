@@ -20,13 +20,22 @@ UI extensions fall into two categories:
 
 To extend the Admin UI, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
 
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
 ```bash
-yarn add --save-dev @vendure/ui-devkit
-
-# or
-
 npm install --save-dev @vendure/ui-devkit
 ```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn add --save-dev @vendure/ui-devkit
+```
+
+</TabItem>
+</Tabs>
 
 You can then create the following folder structure to hold your UI extensions:
 
@@ -274,9 +283,22 @@ compileUiExtensions({
 
 This can then be run from the command line:
 
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash
+npm run ts-node compile-admin-ui.ts
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
 ```bash
 yarn ts-node compile-admin-ui.ts
 ```
+
+</TabItem>
+</Tabs>
 
 Once complete, the production-ready app bundle will be output to `admin-ui/dist`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
 
@@ -314,9 +336,22 @@ To compile the angular app ahead of time (for production) and copy the dist fold
 "build:admin" will remove the admin-ui folder and run the compileUiExtensions function to generate the admin-ui Angular app.
 Make sure to install copyfiles before running the "copy" command:
 
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
 ```bash
-yarn install copyfiles
+npm install copyfiles
 ```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn add copyfiles
+```
+
+</TabItem>
+</Tabs>
 
 :::
 

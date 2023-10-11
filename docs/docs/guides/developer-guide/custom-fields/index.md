@@ -868,7 +868,7 @@ const config = {
 };
 ```
 
-In the above example, the `CmsArticle` entity is being used as a related entity. Howeer, the GraphQL type name is `BlogPost`, so we must specify this in the `graphQLType` property, otherwise Vendure will try to extend the GraphQL schema with reference to a non-existent "CmsArticle" type.
+In the above example, the `CmsArticle` entity is being used as a related entity. However, the GraphQL type name is `BlogPost`, so we must specify this in the `graphQLType` property, otherwise Vendure will try to extend the GraphQL schema with reference to a non-existent "CmsArticle" type.
 
 ### `inverseSide`
 
