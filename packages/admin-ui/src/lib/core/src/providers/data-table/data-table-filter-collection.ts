@@ -4,7 +4,7 @@ import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import extend from 'just-extend';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, takeUntil } from 'rxjs/operators';
 import {
     CustomFieldConfig,
     DateOperators,
@@ -28,6 +28,7 @@ import {
 
 export class FilterWithValue<Type extends DataTableFilterType = DataTableFilterType> {
     private onUpdateFns = new Set<(value: DataTableFilterValue<Type>) => void>();
+
     constructor(
         public readonly filter: DataTableFilter<any, Type>,
         public value: DataTableFilterValue<Type>,
@@ -85,6 +86,7 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     #connectedToRouter = false;
     valueChanges = this.#valueChanges$.asObservable().pipe(debounceTime(10));
     readonly #filtersQueryParamName = 'filters';
+    private readonly destroy$ = new Subject<void>();
 
     constructor(private router: Router) {}
 
@@ -94,6 +96,11 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
 
     get activeFilters(): FilterWithValue[] {
         return this.#activeFilters;
+    }
+
+    destroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     addFilter<FilterType extends DataTableFilterType>(
@@ -218,7 +225,11 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     }
 
     connectToRoute(route: ActivatedRoute) {
-        this.valueChanges.subscribe(() => {
+        this.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(val => {
+            const currentFilters = route.snapshot.queryParamMap.get(this.#filtersQueryParamName);
+            if (val.length === 0 && !currentFilters) {
+                return;
+            }
             this.router.navigate(['./'], {
                 queryParams: { [this.#filtersQueryParamName]: this.serialize(), page: 1 },
                 relativeTo: route,
@@ -230,6 +241,7 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
                 map(params => params.get(this.#filtersQueryParamName)),
                 distinctUntilChanged(),
                 startWith(route.snapshot.queryParamMap.get(this.#filtersQueryParamName) ?? ''),
+                takeUntil(this.destroy$),
             )
             .subscribe(value => {
                 this.#activeFilters = [];
