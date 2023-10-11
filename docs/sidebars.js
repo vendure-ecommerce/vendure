@@ -65,6 +65,7 @@ const sidebars = {
                     value: 'Fundamentals',
                     className: 'sidebar-section-header',
                 },
+                'guides/developer-guide/cli/index',
                 'guides/developer-guide/configuration/index',
                 'guides/developer-guide/custom-fields/index',
                 'guides/developer-guide/error-handling/index',

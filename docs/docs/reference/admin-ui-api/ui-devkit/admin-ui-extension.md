@@ -68,7 +68,7 @@ Defines the paths to a file that exports an array of shared providers such as na
 custom detail components, action bar items, custom history entry components.
 ### routes
 
-<MemberInfo kind="property" type={`Array&#60;{         route: string;         filePath: string;     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{         route: string;         filePath: string;     }&#62;`}   />
 
 Defines routes that will be lazy-loaded at the `/extensions/` route. The filePath should point to a file
 relative to the `extensionPath` which exports an array of Angular route definitions.

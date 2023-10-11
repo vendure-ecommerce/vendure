@@ -97,7 +97,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *
  * The [SearchResponse](/reference/graphql-api/admin/object-types/#searchresponse) type is extended with information
  * about price ranges in the result set:
- * ```SDL
+ * ```graphql
  * extend type SearchResponse {
  *     prices: SearchResponsePriceData!
  * }
@@ -129,7 +129,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *
  * ## Example Request & Response
  *
- * ```SDL
+ * ```graphql
  * {
  *   search (input: {
  *     term: "table easel"
@@ -164,7 +164,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * }
  * ```
  *
- * ```JSON
+ * ```json
  *{
  *  "data": {
  *    "search": {

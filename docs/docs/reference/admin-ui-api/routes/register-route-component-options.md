@@ -23,8 +23,8 @@ type RegisterRouteComponentOptions<Component extends any | BaseDetailComponent<E
     path?: string;
     query?: T;
     getBreadcrumbs?: (entity: Exclude<ResultOf<T>[R], 'Query'>) => BreadcrumbValue;
-    entityKey?: Component extends BaseDetailComponent<Entity> ? R : undefined;
+    entityKey?: Component extends BaseDetailComponent<any> ? R : undefined;
     variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
     routeConfig?: Route;
-} & (Component extends BaseDetailComponent<Entity> ? { entityKey: R } : unknown)
+} & (Component extends BaseDetailComponent<any> ? { entityKey: R } : unknown)
 ```

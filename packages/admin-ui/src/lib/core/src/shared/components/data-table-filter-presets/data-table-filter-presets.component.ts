@@ -1,5 +1,12 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    OnDestroy,
+    OnInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, startWith, takeUntil } from 'rxjs/operators';
@@ -26,6 +33,7 @@ export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private filterPresetService: FilterPresetService,
         private modalService: ModalService,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {}
     ngOnInit() {
         this.route.queryParamMap
@@ -36,6 +44,7 @@ export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
             )
             .subscribe(() => {
                 this.serializedActiveFilters = this.filters.serialize();
+                this.changeDetectorRef.markForCheck();
             });
         this.serializedActiveFilters = this.filters.serialize();
 

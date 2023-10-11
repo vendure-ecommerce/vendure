@@ -20,13 +20,22 @@ UI extensions fall into two categories:
 
 To extend the Admin UI, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
 
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
 ```bash
-yarn add --save-dev @vendure/ui-devkit
-
-# or
-
 npm install --save-dev @vendure/ui-devkit
 ```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn add --save-dev @vendure/ui-devkit
+```
+
+</TabItem>
+</Tabs>
 
 You can then create the following folder structure to hold your UI extensions:
 
@@ -274,9 +283,22 @@ compileUiExtensions({
 
 This can then be run from the command line:
 
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash
+npm run ts-node compile-admin-ui.ts
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
 ```bash
 yarn ts-node compile-admin-ui.ts
 ```
+
+</TabItem>
+</Tabs>
 
 Once complete, the production-ready app bundle will be output to `admin-ui/dist`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
 
@@ -314,9 +336,22 @@ To compile the angular app ahead of time (for production) and copy the dist fold
 "build:admin" will remove the admin-ui folder and run the compileUiExtensions function to generate the admin-ui Angular app.
 Make sure to install copyfiles before running the "copy" command:
 
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
 ```bash
-yarn install copyfiles
+npm install copyfiles
 ```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn add copyfiles
+```
+
+</TabItem>
+</Tabs>
 
 :::
 
@@ -478,7 +513,7 @@ export const config: VendureConfig = {
 
 If you have existing UI extensions written using the legacy API, you can migrate them to the new API as follows:
 
-1. Convert all components to be [standalone components](https://angular.io/guide/standalone-components). Standalone components were introduced in recent versions of Angular and allow components to be defined without the need for a module. To convert an existing component, you need to set `standalone: true` and add an `imports` array containing any components, directives or pipes you are using in that component. Typically you can import `SharedModule` to get access to all the common Angular directives and pipes, as well as the shared Admin UI components.
+1. Convert all components to be [standalone components](https://angular.io/guide/standalone-components). Standalone components were introduced in recent versions of Angular and allow components to be defined without the need for a module. To convert an existing component, you need to set `standalone: true` and add an `imports` array containing any components, directives or pipes you are using in that component. Typically, you can import `SharedModule` to get access to all the common Angular directives and pipes, as well as the shared Admin UI components.
   ```ts
   import { Component } from '@angular/core';
   // highlight-next-line
@@ -496,6 +531,18 @@ If you have existing UI extensions written using the legacy API, you can migrate
       greeting = 'Hello!';
   }
   ```
-2. Remove any `NgModule` files, and replace lazy modules with `routes.ts`, and shared modules with `providers.ts` (see above).
-
+2. In templates for page components, remove the `<vdr-page-header>` and `<vdr-page-body>` components, as they are included by default now when using
+the `registeRouteComponent()` function:
+   ```html
+   // highlight-start
+   <vdr-page-header>
+       <vdr-page-title></vdr-page-title>
+   </vdr-page-header>
+   <vdr-page-body>
+   // highlight-end
+       <vdr-page-block>This content should remain</vdr-page-block>
+   // highlight-next-line
+   </vdr-page-body>
+   ```
+3. Remove any `NgModule` files, and replace lazy modules with `routes.ts`, and shared modules with `providers.ts` (see above).
 
