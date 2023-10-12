@@ -308,6 +308,7 @@ export class MollieService {
      * Settle an existing payment based on the given mollieOrder
      */
     async settleExistingPayment(ctx: RequestContext, order: Order, mollieOrderId: string): Promise<void> {
+        order = await this.entityHydrator.hydrate(ctx, order, { relations: ['payments'] });
         const payment = order.payments.find(p => p.transactionId === mollieOrderId);
         if (!payment) {
             throw Error(
@@ -335,7 +336,7 @@ export class MollieService {
         }
         const client = createMollieClient({ apiKey });
         // We use the orders API, so list available methods for that API usage
-        const methods = await client.methods.list({resource: 'orders'});
+        const methods = await client.methods.list({ resource: 'orders' });
         return methods.map(m => ({
             ...m,
             code: m.id,
