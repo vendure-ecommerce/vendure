@@ -2,14 +2,18 @@ import {
     Component,
     ContentChild,
     ContentChildren,
+    OnInit,
     QueryList,
     TemplateRef,
     Type,
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, map } from 'rxjs';
 
+import { DataService } from '../../../data/providers/data.service';
+import { I18nService } from '../../../providers/i18n/i18n.service';
+import { LanguageCode } from '../../../common/generated-types';
 import { Dialog, ModalOptions } from '../../../providers/modal/modal.types';
 
 import { DialogButtonsDirective } from './dialog-buttons.directive';
@@ -23,12 +27,32 @@ import { DialogButtonsDirective } from './dialog-buttons.directive';
     templateUrl: './modal-dialog.component.html',
     styleUrls: ['./modal-dialog.component.scss'],
 })
-export class ModalDialogComponent<T extends Dialog<any>> {
+export class ModalDialogComponent<T extends Dialog<any>> implements OnInit {
+    uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
+    direction$: Observable<'ltr' | 'rtl'>;
+
     childComponentType: Type<T>;
     closeModal: (result?: any) => void;
     titleTemplateRef$ = new Subject<TemplateRef<any>>();
     buttonsTemplateRef$ = new Subject<TemplateRef<any>>();
     options?: ModalOptions<T>;
+
+    /**
+     *
+     */
+    constructor(private i18nService: I18nService, private dataService: DataService) {}
+
+    ngOnInit(): void {
+        this.uiLanguageAndLocale$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
+
+        this.direction$ = this.uiLanguageAndLocale$.pipe(
+            map(([languageCode]) => {
+                return this.i18nService.isRTL(languageCode) ? 'rtl' : 'ltr';
+            }),
+        );
+    }
 
     /**
      * This callback is invoked when the childComponentType is instantiated in the
