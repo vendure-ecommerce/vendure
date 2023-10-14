@@ -21,8 +21,11 @@ import {
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, map } from 'rxjs';
 
+import { DataService } from '../../../data/providers/data.service';
+import { I18nService } from '../../../providers/i18n/i18n.service';
+import { LanguageCode } from '../../../common/generated-types';
 import { DropdownTriggerDirective } from './dropdown-trigger.directive';
 import { DropdownComponent } from './dropdown.component';
 
@@ -41,14 +44,16 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
     selector: 'vdr-dropdown-menu',
     template: `
         <ng-template #menu>
-            <div class="dropdown open">
-                <div class="dropdown-menu" [ngClass]="customClasses">
-                    <div
-                        class="dropdown-content-wrapper"
-                        [cdkTrapFocus]="true"
-                        [cdkTrapFocusAutoCapture]="true"
-                    >
-                        <ng-content></ng-content>
+            <div [dir]="direction$ | async">
+                <div class="dropdown open">
+                    <div class="dropdown-menu" [ngClass]="customClasses">
+                        <div
+                            class="dropdown-content-wrapper"
+                            [cdkTrapFocus]="true"
+                            [cdkTrapFocusAutoCapture]="true"
+                        >
+                            <ng-content></ng-content>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -58,6 +63,9 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
+    uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
+    direction$: Observable<'ltr' | 'rtl'>;
+
     @Input('vdrPosition') private position: DropdownPosition = 'bottom-left';
     @Input() customClasses: string;
     @ViewChild('menu', { static: true }) private menuTemplate: TemplateRef<any>;
@@ -104,9 +112,21 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
         private overlay: Overlay,
         private viewContainerRef: ViewContainerRef,
         private dropdown: DropdownComponent,
+        private i18nService: I18nService,
+        private dataService: DataService,
     ) {}
 
     ngOnInit(): void {
+        this.uiLanguageAndLocale$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
+
+        this.direction$ = this.uiLanguageAndLocale$.pipe(
+            map(([languageCode]) => {
+                return this.i18nService.isRTL(languageCode) ? 'rtl' : 'ltr';
+            }),
+        );
+
         this.dropdown.onOpenChange(isOpen => {
             if (isOpen) {
                 this.overlayRef.attach(this.menuPortal);
