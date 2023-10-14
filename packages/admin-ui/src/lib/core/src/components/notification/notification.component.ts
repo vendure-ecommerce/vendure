@@ -33,10 +33,10 @@ export class NotificationComponent implements OnInit {
 
     ngOnInit(): void {
         this.uiLanguageAndLocale$ = this.dataService.client
-            .uiState()
-            .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
+            ?.uiState()
+            ?.stream$?.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
 
-        this.direction$ = this.uiLanguageAndLocale$.pipe(
+        this.direction$ = this.uiLanguageAndLocale$?.pipe(
             map(([languageCode]) => {
                 return this.i18nService.isRTL(languageCode) ? 'rtl' : 'ltr';
             }),
