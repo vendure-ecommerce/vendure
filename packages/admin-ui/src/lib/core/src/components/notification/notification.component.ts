@@ -1,11 +1,11 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 
-import { Observable, map } from 'rxjs';
 import { NotificationType } from '../../providers/notification/notification.service';
 
-import { DataService } from '../../data/providers/data.service';
-import { I18nService } from '../../providers/i18n/i18n.service';
-import { LanguageCode } from '../../common/generated-types';
+import {
+    LocalizationDirectionType,
+    LocalizationService,
+} from '../../providers/localization/localization.service';
 
 @Component({
     selector: 'vdr-notification',
@@ -13,8 +13,7 @@ import { LanguageCode } from '../../common/generated-types';
     styleUrls: ['./notification.component.scss'],
 })
 export class NotificationComponent implements OnInit {
-    uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
-    direction$: Observable<'ltr' | 'rtl'>;
+    direction$: LocalizationDirectionType;
 
     @ViewChild('wrapper', { static: true }) wrapper: ElementRef;
     offsetTop = 0;
@@ -29,18 +28,10 @@ export class NotificationComponent implements OnInit {
     /**
      *
      */
-    constructor(private i18nService: I18nService, private dataService: DataService) {}
+    constructor(private localizationService: LocalizationService) {}
 
     ngOnInit(): void {
-        this.uiLanguageAndLocale$ = this.dataService.client
-            ?.uiState()
-            ?.stream$?.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
-
-        this.direction$ = this.uiLanguageAndLocale$?.pipe(
-            map(([languageCode]) => {
-                return this.i18nService.isRTL(languageCode) ? 'rtl' : 'ltr';
-            }),
-        );
+        this.direction$ = this.localizationService.direction$;
     }
 
     registerOnClickFn(fn: () => void): void {

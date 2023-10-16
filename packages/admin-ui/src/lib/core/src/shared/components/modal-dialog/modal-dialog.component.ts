@@ -1,19 +1,10 @@
-import {
-    Component,
-    ContentChild,
-    ContentChildren,
-    OnInit,
-    QueryList,
-    TemplateRef,
-    Type,
-    ViewChild,
-    ViewChildren,
-} from '@angular/core';
-import { Observable, Subject, map } from 'rxjs';
+import { Component, OnInit, TemplateRef, Type } from '@angular/core';
+import { Subject } from 'rxjs';
 
-import { DataService } from '../../../data/providers/data.service';
-import { I18nService } from '../../../providers/i18n/i18n.service';
-import { LanguageCode } from '../../../common/generated-types';
+import {
+    LocalizationDirectionType,
+    LocalizationService,
+} from '../../../providers/localization/localization.service';
 import { Dialog, ModalOptions } from '../../../providers/modal/modal.types';
 
 import { DialogButtonsDirective } from './dialog-buttons.directive';
@@ -28,8 +19,7 @@ import { DialogButtonsDirective } from './dialog-buttons.directive';
     styleUrls: ['./modal-dialog.component.scss'],
 })
 export class ModalDialogComponent<T extends Dialog<any>> implements OnInit {
-    uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
-    direction$: Observable<'ltr' | 'rtl'>;
+    direction$: LocalizationDirectionType;
 
     childComponentType: Type<T>;
     closeModal: (result?: any) => void;
@@ -40,18 +30,10 @@ export class ModalDialogComponent<T extends Dialog<any>> implements OnInit {
     /**
      *
      */
-    constructor(private i18nService: I18nService, private dataService: DataService) {}
+    constructor(private localizationService: LocalizationService) {}
 
     ngOnInit(): void {
-        this.uiLanguageAndLocale$ = this.dataService.client
-            .uiState()
-            .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
-
-        this.direction$ = this.uiLanguageAndLocale$.pipe(
-            map(([languageCode]) => {
-                return this.i18nService.isRTL(languageCode) ? 'rtl' : 'ltr';
-            }),
-        );
+        this.direction$ = this.localizationService.direction$;
     }
 
     /**
