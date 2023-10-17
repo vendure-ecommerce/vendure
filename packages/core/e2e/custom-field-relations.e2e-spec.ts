@@ -34,6 +34,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { TestPlugin1636_1664 } from './fixtures/test-plugins/issue-1636-1664/issue-1636-1664-plugin';
+import { PluginIssue2453 } from './fixtures/test-plugins/issue-2453/plugin-issue2453';
 import { TestCustomEntity, WithCustomEntity } from './fixtures/test-plugins/with-custom-entity';
 import { AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
@@ -115,7 +116,7 @@ const customConfig = mergeConfig(testConfig(), {
         timezone: 'Z',
     },
     customFields: customFieldConfig,
-    plugins: [TestPlugin1636_1664, WithCustomEntity],
+    plugins: [TestPlugin1636_1664, WithCustomEntity, PluginIssue2453],
 });
 
 describe('Custom field relations', () => {
@@ -284,6 +285,53 @@ describe('Custom field relations', () => {
             `);
 
             assertTranslatableCustomFieldValues(product);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2453
+        it('translatable eager-loaded relation works (issue 2453)', async () => {
+            const { collections } = await adminClient.query(gql`
+                query {
+                    collections(options: { sort: { name: DESC } }) {
+                        items {
+                            id
+                            name
+                            customFields {
+                                campaign {
+                                    name
+                                    languageCode
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+
+            expect(collections.items).toEqual([
+                {
+                    customFields: {
+                        campaign: null,
+                    },
+                    id: 'T_2',
+                    name: 'parent collection',
+                },
+                {
+                    customFields: {
+                        campaign: {
+                            languageCode: 'en',
+                            name: 'Clearance Up to 70% Off frames',
+                        },
+                    },
+                    id: 'T_3',
+                    name: 'children collection',
+                },
+                {
+                    customFields: {
+                        campaign: null,
+                    },
+                    id: 'T_4',
+                    name: 'Plants',
+                },
+            ]);
         });
 
         it('ProductVariant prices get resolved', async () => {
