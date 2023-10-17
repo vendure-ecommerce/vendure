@@ -103,13 +103,12 @@ export class AlertsService {
 
     configureAlert<T>(config: AlertConfig<T>) {
         this.hasSufficientPermissions(config.requiredPermissions)
-            .pipe(
-                filter(canReadPendingSearchIndexUpdates => canReadPendingSearchIndexUpdates),
-                first(),
-            )
-            .subscribe(() => {
-                this.alertsMap.set(config.id, new Alert(config));
-                this.configUpdated.next();
+            .pipe(first())
+            .subscribe(hasSufficientPermissions => {
+                if (hasSufficientPermissions) {
+                    this.alertsMap.set(config.id, new Alert(config));
+                    this.configUpdated.next();
+                }
             });
     }
 
@@ -117,11 +116,12 @@ export class AlertsService {
         if (!permissions || permissions.length === 0) {
             return of(true);
         }
-        return this.dataService.client
-            .userStatus()
-            .mapStream(({ userStatus }) =>
+        return this.dataService.client.userStatus().stream$.pipe(
+            filter(({ userStatus }) => userStatus.isLoggedIn),
+            map(({ userStatus }) =>
                 permissions.some(permission => userStatus.permissions.includes(permission)),
-            );
+            ),
+        );
     }
 
     refresh(id?: string) {
