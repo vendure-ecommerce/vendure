@@ -1,0 +1,22 @@
+# Add redirects for popular pages from old docs
+/getting-started                            /guides/getting-started/installation
+/developer-guide/customizing-models         /guides/developer-guide/custom-fields
+/developer-guide/authentication             /guides/core-concepts/auth
+/developer-guide/payment-integrations       /reference/core-plugins/payments-plugin
+/plugins                                    /guides/developer-guide/plugins
+/plugins/extending-the-admin-ui             /guides/extending-the-admin-ui/getting-started
+/storefront/building-a-storefront           /guides/storefront/storefront-starters
+/developer-guide/multi-vendor-marketplaces  /guides/how-to/multi-vendor-marketplaces
+/developer-guide/configuration              /guides/developer-guide/configuration
+/plugins/plugin-examples/extending-graphql-api  /guides/developer-guide/extend-graphql-api
+/storefront/order-workflow                  /guides/storefront/active-order
+/typescript-api/custom-fields               /reference/typescript-api/custom-fields
+/developer-guide/migrations                 /guides/developer-guide/migrations
+/typescript-api/core-plugins/payments-plugin/stripe-plugin  /reference/core-plugins/payments-plugin/stripe-plugin
+/developer-guide/channels                   /guides/core-concepts/channels
+/graphql-api/shop                           /reference/graphql-api/shop/queries
+/developer-guide/customizing-the-order-process  /guides/core-concepts/orders
+/developer-guide/importing-product-data     /guides/developer-guide/importing-data
+/plugins/plugin-examples                    /guides/developer-guide/plugins
+/plugins/writing-a-vendure-plugin           /guides/developer-guide/plugins
+/deployment/using-docker                    /guides/deployment/using-docker

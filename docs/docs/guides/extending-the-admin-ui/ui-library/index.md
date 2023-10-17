@@ -121,22 +121,22 @@ import { CdsIcon } from '@vendure/admin-ui/react';
 export function DemoComponent() {
     return (
         <>
-            <CdsIcon icon={starIcon} size={'xs'}></CdsIcon>
-            <CdsIcon icon={starIcon} size={'sm'}></CdsIcon>
-            <CdsIcon icon={starIcon} size={'md'}></CdsIcon>
-            <CdsIcon icon={starIcon} size={'lg'}></CdsIcon>
-            <CdsIcon icon={starIcon} size={'xl'}></CdsIcon>
-            <CdsIcon icon={starIcon} size={'xxl'}></CdsIcon>
+            <CdsIcon icon={starIcon} size="xs" />
+            <CdsIcon icon={starIcon} size="sm" />
+            <CdsIcon icon={starIcon} size="md" />
+            <CdsIcon icon={starIcon} size="lg" />
+            <CdsIcon icon={starIcon} size="xl" />
+            <CdsIcon icon={starIcon} size="xxl" />
             
-            <CdsIcon icon={userIcon} badge={'success'}></CdsIcon>
-            <CdsIcon icon={userIcon} badge={'info'}></CdsIcon>
-            <CdsIcon icon={userIcon} badge={'warning'}></CdsIcon>
-            <CdsIcon icon={userIcon} badge={'danger'}></CdsIcon>
+            <CdsIcon icon={userIcon} badge="success" />
+            <CdsIcon icon={userIcon} badge="info" />
+            <CdsIcon icon={userIcon} badge="warning" />
+            <CdsIcon icon={userIcon} badge="danger" />
             
-            <CdsIcon icon={userIcon} status={'success'}></CdsIcon>
-            <CdsIcon icon={userIcon} status={'info'}></CdsIcon>
-            <CdsIcon icon={userIcon} status={'warning'}></CdsIcon>
-            <CdsIcon icon={userIcon} status={'danger'}></CdsIcon>
+            <CdsIcon icon={userIcon} status="success" />
+            <CdsIcon icon={userIcon} status="info" />
+            <CdsIcon icon={userIcon} status="warning" />
+            <CdsIcon icon={userIcon} status="danger" />
         </>
     );
 }
@@ -207,12 +207,12 @@ export function DemoComponent() {
                 <input type="checkbox" />
             </FormField>
             <FormField label="Textarea input">
-                <textarea></textarea>
+                <textarea />
             </FormField>
             <FormField label="With tooltip" tooltip="This is a tooltip for the form input">
                 <input type="text" />
             </FormField>
-            <FormField label="Invalid with error" invalid={true}>
+            <FormField label="Invalid with error" invalid>
                 <input type="text" />
             </FormField>
         </div>

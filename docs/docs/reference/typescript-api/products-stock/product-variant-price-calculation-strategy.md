@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantPriceCalculationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="22" packageName="@vendure/core" />
 
 Defines how ProductVariant are calculated based on the input price, tax zone and current request context.
 
@@ -45,13 +45,16 @@ interface ProductVariantPriceCalculationStrategy extends InjectableStrategy {
 
 ## ProductVariantPriceCalculationArgs
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="32" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="35" packageName="@vendure/core" />
 
 The arguments passed the `calculate` method of the configured <a href='/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a>.
+
+The `productVariant` argument was added in v2.1.0.
 
 ```ts title="Signature"
 interface ProductVariantPriceCalculationArgs {
     inputPrice: number;
+    productVariant: ProductVariant;
     taxCategory: TaxCategory;
     activeTaxZone: Zone;
     ctx: RequestContext;
@@ -63,6 +66,11 @@ interface ProductVariantPriceCalculationArgs {
 ### inputPrice
 
 <MemberInfo kind="property" type={`number`}   />
+
+
+### productVariant
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>`}   />
 
 
 ### taxCategory

@@ -55,6 +55,14 @@ export class CustomFieldRelationResolverService {
 
         const result = fieldDef.list ? await qb.getMany() : await qb.getOne();
 
+        return await this.translateEntity(ctx, result, fieldDef);
+    }
+
+    async translateEntity(
+        ctx: RequestContext,
+        result: VendureEntity | VendureEntity[] | null,
+        fieldDef: RelationCustomFieldConfig,
+    ) {
         if (fieldDef.entity === ProductVariant) {
             if (Array.isArray(result)) {
                 await Promise.all(result.map(r => this.applyVariantPrices(ctx, r as any)));

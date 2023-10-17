@@ -13,6 +13,11 @@ import { I18nService } from '../../providers/i18n/i18n.service';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 import { ModalService } from '../../providers/modal/modal.service';
 import { UiLanguageSwitcherDialogComponent } from '../ui-language-switcher-dialog/ui-language-switcher-dialog.component';
+import {
+    LocalizationDirectionType,
+    LocalizationLanguageCodeType,
+    LocalizationService,
+} from '../../providers/localization/localization.service';
 
 @Component({
     selector: 'vdr-app-shell',
@@ -22,8 +27,8 @@ import { UiLanguageSwitcherDialogComponent } from '../ui-language-switcher-dialo
 export class AppShellComponent implements OnInit {
     version = ADMIN_UI_VERSION;
     userName$: Observable<string>;
-    uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
-    direction$: Observable<'ltr' | 'rtl'>;
+    uiLanguageAndLocale$: LocalizationLanguageCodeType;
+    direction$: LocalizationDirectionType;
     availableLanguages: LanguageCode[] = [];
     hideVendureBranding = getAppConfig().hideVendureBranding;
     pageTitle$: Observable<string>;
@@ -38,25 +43,27 @@ export class AppShellComponent implements OnInit {
         private modalService: ModalService,
         private localStorageService: LocalStorageService,
         private breadcrumbService: BreadcrumbService,
+        private localizationService: LocalizationService,
     ) {}
 
     ngOnInit() {
+        this.direction$ = this.localizationService.direction$;
+
+        this.uiLanguageAndLocale$ = this.localizationService.uiLanguageAndLocale$;
+
         this.userName$ = this.dataService.client
             .userStatus()
             .single$.pipe(map(data => data.userStatus.username));
-        this.uiLanguageAndLocale$ = this.dataService.client
-            .uiState()
-            .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
+
         this.availableLanguages = this.i18nService.availableLanguages;
+
         this.pageTitle$ = this.breadcrumbService.breadcrumbs$.pipe(
             map(breadcrumbs => breadcrumbs[breadcrumbs.length - 1].label),
         );
+
         this.mainNavExpanded$ = this.dataService.client
             .uiState()
             .stream$.pipe(map(({ uiState }) => uiState.mainNavExpanded));
-        this.direction$ = this.uiLanguageAndLocale$.pipe(
-            map(([languageCode]) => (this.i18nService.isRTL(languageCode) ? 'rtl' : 'ltr')),
-        );
     }
 
     selectUiLanguage() {

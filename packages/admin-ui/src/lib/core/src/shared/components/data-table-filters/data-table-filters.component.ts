@@ -155,7 +155,8 @@ export class DataTableFiltersComponent implements AfterViewInit {
         }
     }
 
-    activate() {
+    activate(event: Event) {
+        event.preventDefault();
         if (!this.selectedFilter) {
             return;
         }

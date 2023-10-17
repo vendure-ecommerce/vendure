@@ -36,7 +36,6 @@ export default function Home(): JSX.Element {
                 </svg>
                 <div className={styles.tagline}>
                     <div>Developer Documentation</div>
-                    <span className={styles.betaBadge}>beta</span>
                 </div>
                 <div className={styles.description}>
                     Vendure is an open-source headless commerce platform built on Node.js, TypeScript and
@@ -44,16 +43,6 @@ export default function Home(): JSX.Element {
                 </div>
             </div>
             <main>
-                <div>
-                    <p className={styles.betaNotice}>
-                        This is a developer preview of our new documentation site. If you have any feedback,
-                        please comment on{' '}
-                        <a href="https://github.com/vendure-ecommerce/vendure/issues/2299" target="_blank">
-                            this GitHub issue
-                        </a>{' '}
-                        or let us know via our <a href="https://vendure.io/community">Discord community</a>.
-                    </p>
-                </div>
                 <div className={styles.ctaButtons}>
                     <Link className="button button--secondary" to="/guides/getting-started/installation/">
                         Get Started
@@ -65,7 +54,7 @@ export default function Home(): JSX.Element {
                         API Reference
                     </Link>
                 </div>
-                <div style={{ margin: '20px 0 6rem 0' }}>
+                <div style={{ margin: '20px 50px 7rem 50px' }}>
                     <Playground
                         api={'shop'}
                         minHeight="800px"

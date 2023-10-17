@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { SharedModule } from '../../shared.module';
 
 import { ExtensionHostConfig } from './extension-host-config';
 import { ExtensionHostService } from './extension-host.service';
@@ -22,6 +23,8 @@ import { ExtensionHostService } from './extension-host.service';
     templateUrl: './extension-host.component.html',
     styleUrls: ['./extension-host.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
+    standalone: true,
+    imports: [SharedModule],
     providers: [ExtensionHostService],
 })
 export class ExtensionHostComponent implements OnInit, AfterViewInit, OnDestroy {

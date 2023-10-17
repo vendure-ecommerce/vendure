@@ -207,7 +207,7 @@ export interface ElasticsearchOptions {
      * ```
      *
      * @example
-     * ```SDL
+     * ```graphql
      * query SearchProducts($input: SearchInput!) {
      *     search(input: $input) {
      *         totalItems
@@ -239,7 +239,7 @@ export interface ElasticsearchOptions {
      * the `customProductMappings` field, which is always available.
      *
      * @example
-     * ```SDL
+     * ```graphql
      * query SearchProducts($input: SearchInput!) {
      *     search(input: $input) {
      *         totalItems
@@ -329,7 +329,7 @@ export interface ElasticsearchOptions {
      * This allows the search query to include these new fields:
      *
      * @example
-     * ```GraphQl
+     * ```graphql
      * query {
      *   search(input: {
      *     longitude: 101.7117,
@@ -439,7 +439,7 @@ export interface SearchConfig {
      * The interval used to group search results into buckets according to price range. For example, setting this to
      * `2000` will group into buckets every $20.00:
      *
-     * ```JSON
+     * ```json
      * {
      *   "data": {
      *     "search": {
@@ -585,7 +585,7 @@ export interface SearchConfig {
      * If neither of those are applied it will be empty.
      *
      * @example
-     * ```TS
+     * ```ts
      * mapSort: (sort, input) => {
      *     // Assuming `extendSearchSortType: ["priority"]`
      *     // Assuming priority is never undefined
@@ -606,7 +606,7 @@ export interface SearchConfig {
      *
      * A more generic example would be a sort function based on a product location like this:
      * @example
-     * ```TS
+     * ```ts
      * extendSearchInputType: {
      *   latitude: 'Float',
      *   longitude: 'Float',

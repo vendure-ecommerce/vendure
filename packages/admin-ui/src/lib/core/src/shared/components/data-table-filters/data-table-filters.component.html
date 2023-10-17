@@ -138,7 +138,7 @@
                 </div>
             </ng-container>
             <div class="apply-wrapper mt-2">
-                <button class="button" (click)="activate()" [disabled]="!formControl?.valid">
+                <button class="button" (click)="activate($event)" [disabled]="!formControl?.valid">
                     <span>{{ 'common.apply' | translate }}</span>
                     <clr-icon shape="check"></clr-icon>
                 </button>
