@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    LogicalOperator,
+    DataTableLocationId,
     ProductVariantListQueryDocument,
     TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
@@ -17,6 +17,7 @@ export class ProductVariantListComponent
 {
     @Input() productId?: string;
     @Input() hideLanguageSelect = false;
+    @Input() dataTableId: DataTableLocationId | undefined;
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
     readonly filters = this.createFilterCollection()
         .addIdFilter()
