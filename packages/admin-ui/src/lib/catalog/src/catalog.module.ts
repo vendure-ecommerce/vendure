@@ -9,7 +9,6 @@ import {
     GetFacetDetailDocument,
     GetProductDetailDocument,
     GetProductVariantDetailDocument,
-    GetStockLocationDetailDocument,
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
@@ -57,12 +56,12 @@ import {
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
-import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import {
     assignProductVariantsToChannelBulkAction,
-    removeProductVariantsFromChannelBulkAction,
     deleteProductVariantsBulkAction,
+    removeProductVariantsFromChannelBulkAction,
 } from './components/product-variant-list/product-variant-list-bulk-actions';
+import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
@@ -118,10 +117,7 @@ const CATALOG_COMPONENTS = [
     ],
 })
 export class CatalogModule {
-    constructor(
-        private bulkActionRegistryService: BulkActionRegistryService,
-        private pageService: PageService,
-    ) {
+    constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
@@ -170,30 +166,6 @@ export class CatalogModule {
             route: 'variants',
             component: ProductVariantListComponent,
         });
-        // pageService.registerPageTab({
-        //     priority: 0,
-        //     location: 'stock-location-detail',
-        //     tab: _('catalog.stock-location'),
-        //     route: '',
-        //     component: detailComponentWithResolver({
-        //         component: StockLocationDetailComponent,
-        //         query: GetStockLocationDetailDocument,
-        //         entityKey: 'stockLocation',
-        //         getBreadcrumbs: entity => [
-        //             {
-        //                 label: entity ? entity.name : _('catalog.create-new-stock-location'),
-        //                 link: [entity?.id],
-        //             },
-        //         ],
-        //     }),
-        // });
-        // pageService.registerPageTab({
-        //     priority: 0,
-        //     location: 'product-list',
-        //     tab: _('catalog.stock-locations'),
-        //     route: 'stock-locations',
-        //     component: StockLocationListComponent,
-        // });
         pageService.registerPageTab({
             priority: 0,
             location: 'product-variant-detail',
