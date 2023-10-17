@@ -45,7 +45,7 @@ export class StripeController {
             return;
         }
 
-        const event = request.body as Stripe.Event;
+        const event = JSON.parse(request.body.toString()) as Stripe.Event;
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
         if (!paymentIntent) {
@@ -120,14 +120,20 @@ export class StripeController {
                     `Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`,
                     loggerCtx,
                 );
+                return;
             }
 
+            // The payment intent ID is added to the order only if we can reach this point.
             Logger.info(
                 `Stripe payment intent id ${paymentIntent.id} added to order ${orderCode}`,
                 loggerCtx,
             );
-            response.status(HttpStatus.OK).send('Ok');
         });
+
+        // Send the response status only if we didn't sent anything yet.
+        if (!response.headersSent) {
+            response.status(HttpStatus.OK).send('Ok');
+        }
     }
 
     private async createContext(channelToken: string, req: RequestWithRawBody): Promise<RequestContext> {
