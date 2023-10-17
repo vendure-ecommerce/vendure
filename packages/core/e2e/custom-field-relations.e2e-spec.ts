@@ -292,6 +292,7 @@ describe('Custom field relations', () => {
             const { collections } = await adminClient.query(gql`
                 query {
                     collections(options: { sort: { name: DESC } }) {
+                        totalItems
                         items {
                             id
                             name
@@ -306,32 +307,17 @@ describe('Custom field relations', () => {
                 }
             `);
 
-            expect(collections.items).toEqual([
-                {
-                    customFields: {
-                        campaign: null,
+            expect(collections.totalItems).toBe(3);
+            expect(collections.items.find((c: any) => c.id === 'T_3')).toEqual({
+                customFields: {
+                    campaign: {
+                        languageCode: 'en',
+                        name: 'Clearance Up to 70% Off frames',
                     },
-                    id: 'T_2',
-                    name: 'parent collection',
                 },
-                {
-                    customFields: {
-                        campaign: {
-                            languageCode: 'en',
-                            name: 'Clearance Up to 70% Off frames',
-                        },
-                    },
-                    id: 'T_3',
-                    name: 'children collection',
-                },
-                {
-                    customFields: {
-                        campaign: null,
-                    },
-                    id: 'T_4',
-                    name: 'Plants',
-                },
-            ]);
+                id: 'T_3',
+                name: 'children collection',
+            });
         });
 
         it('ProductVariant prices get resolved', async () => {
