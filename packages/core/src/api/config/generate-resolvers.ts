@@ -208,10 +208,10 @@ function generateCustomFieldRelationResolvers(
                 context: any,
             ) => {
                 const ctx: RequestContext = context.req[REQUEST_CONTEXT_KEY];
-                const eagerntity = source[fieldDef.name];
+                const eagerEntity = source[fieldDef.name];
                 // If the relation is eager-loaded, we can simply try to translate this relation entity if they have translations
-                if (eagerntity != null) {
-                    return customFieldRelationResolverService.translateEntity(ctx, eagerntity, fieldDef);
+                if (eagerEntity != null) {
+                    return customFieldRelationResolverService.translateEntity(ctx, eagerEntity, fieldDef);
                 }
                 const entityId = source[ENTITY_ID_KEY];
                 return customFieldRelationResolverService.resolveRelation({
