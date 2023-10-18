@@ -11,20 +11,42 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityHydrator
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="53" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="75" packageName="@vendure/core" since="1.3.0" />
 
 This is a helper class which is used to "hydrate" entity instances, which means to populate them
-with the specified relations. This is useful when writing plugin code which receives an entity
+with the specified relations. This is useful when writing plugin code which receives an entity,
 and you need to ensure that one or more relations are present.
 
 *Example*
 
 ```ts
-const product = await this.productVariantService
-  .getProductForVariant(ctx, variantId);
+import { Injectable } from '@nestjs/common';
+import { ID, RequestContext, EntityHydrator, ProductVariantService } from '@vendure/core';
 
-await this.entityHydrator
-  .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+@Injectable()
+export class MyService {
+
+  constructor(
+     // highlight-next-line
+     private entityHydrator: EntityHydrator,
+     private productVariantService: ProductVariantService,
+  ) {}
+
+  myMethod(ctx: RequestContext, variantId: ID) {
+    const product = await this.productVariantService
+      .getProductForVariant(ctx, variantId);
+
+    // at this stage, we don't know which of the Product relations
+    // will be joined at runtime.
+
+    // highlight-start
+    await this.entityHydrator
+      .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+
+    // You can be sure now that the `facetValues` & `facetValues.facet` relations are populated
+    // highlight-end
+  }
+}
 ```
 
 In this above example, the `product` instance will now have the `facetValues` relation
