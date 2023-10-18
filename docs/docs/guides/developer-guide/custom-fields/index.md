@@ -193,6 +193,68 @@ mutation {
 }
 ```
 
+## Accessing custom fields in TypeScript
+
+As well as exposing custom fields via the GraphQL APIs, you can also access them directly in your TypeScript code. This is useful for plugins which need to access custom field data.
+
+Given the following custom field configuration:
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+
+const config: VendureConfig = {
+    // ...
+    customFields: {
+        Customer: [
+            { name: 'externalId', type: 'string' },
+            { name: 'avatar', type: 'relation', entity: Asset },
+        ],
+    },
+};
+```
+
+the `externalId` will be available whenever you access a `Customer` entity:
+
+```ts
+const customer = await this.connection.getRepository(ctx, Customer).findOne({
+    where: { id: 1 },
+});
+console.log(customer.externalId);
+```
+
+The `avatar` relation will require an explicit join to be performed in order to access the data, since it is not
+eagerly loaded by default:
+
+```ts
+const customer = await this.connection.getRepository(ctx, Customer).findOne({
+    where: { id: 1 },
+    relations: {
+        customFields: {
+            avatar: true,
+        }
+    }
+});
+console.log(customer.avatar);
+```
+
+or if using the QueryBuilder API:
+
+```ts
+const customer = await this.connection.getRepository(ctx, Customer).createQueryBuilder('customer')
+    .leftJoinAndSelect('customer.customFields.avatar', 'avatar')
+    .where('customer.id = :id', { id: 1 })
+    .getOne();
+console.log(customer.avatar);
+```
+
+or using the EntityHydrator:
+
+```ts
+const customer = await this.customerService.findOne(ctx, 1);
+await this.entityHydrator.hydrate(ctx, customer, { relations: ['customFields.avatar'] });
+console.log(customer.avatar);
+```
+
 ## Custom field config properties
 
 ### Common properties
