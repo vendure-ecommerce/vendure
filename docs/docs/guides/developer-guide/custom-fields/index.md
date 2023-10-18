@@ -5,6 +5,7 @@ sidebar_position: 3
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import CustomFieldProperty from '@site/src/components/CustomFieldProperty';
 
 Custom fields allow you to add your own custom data properties almost every Vendure entity. The entities which may have custom fields defined are listed in the [CustomFields interface documentation](/reference/typescript-api/custom-fields/).
 
@@ -200,9 +201,7 @@ All custom fields share some common properties:
 
 #### name
 
-<span class="badge badge--primary">Required</span>
-
-`string`
+<CustomFieldProperty required={true} type="string"/>
 
 The name of the field. This is used as the column name in the database, and as the GraphQL field name. The name should not contain spaces and by convention should be camelCased.
 
@@ -223,17 +222,13 @@ const config = {
 
 #### type
 
-<span class="badge badge--primary">Required</span>
-
-[`CustomFieldType`](/reference/typescript-api/custom-fields/custom-field-type)
+<CustomFieldProperty required={true} type="CustomFieldType" typeLink="/reference/typescript-api/custom-fields/custom-field-type"/>
 
 The type of data that will be stored in the field.
 
 #### list
 
-<span class="badge badge--secondary">Optional</span>
-
-`boolean`
+<CustomFieldProperty required={false} type="boolean" />
 
 If set to `true`, then the field will be an array of the specified type. Defaults to `false`.
 
@@ -261,9 +256,7 @@ Setting a custom field to be a list has the following effects:
 
 #### label
 
-<span class="badge badge--secondary">Optional</span>
-
-[`LocalizedStringArray`](/reference/typescript-api/configurable-operation-def/localized-string-array)
+<CustomFieldProperty required={false} type="LocalizedStringArray" typeLink="/reference/typescript-api/configurable-operation-def/localized-string-array"/>
 
 An array of localized labels for the field. These are used in the Admin UI to label the field.
 
@@ -292,9 +285,7 @@ const config = {
 
 #### description
 
-<span class="badge badge--secondary">Optional</span>
-
-[`LocalizedStringArray`](/reference/typescript-api/configurable-operation-def/localized-string-array)
+<CustomFieldProperty required={false} type="LocalizedStringArray" typeLink="/reference/typescript-api/configurable-operation-def/localized-string-array"/>
 
 An array of localized descriptions for the field. These are used in the Admin UI to describe the field.
 
@@ -323,9 +314,7 @@ const config = {
 
 #### public
 
-<span class="badge badge--secondary">Optional</span>
-
-`boolean`
+<CustomFieldProperty required={false} type="boolean" />
 
 Whether the custom field is available via the Shop API. Defaults to `true`.
 
@@ -347,9 +336,7 @@ const config = {
 
 #### readonly
 
-<span class="badge badge--secondary">Optional</span>
-
-`boolean`
+<CustomFieldProperty required={false} type="boolean" />
 
 Whether the custom field can be updated via the GraphQL APIs. Defaults to `false`. If set to `true`, then the field
 can only be updated via direct manipulation via TypeScript code in a plugin.
@@ -372,9 +359,7 @@ const config = {
 
 #### internal
 
-<span class="badge badge--secondary">Optional</span>
-
-`boolean`
+<CustomFieldProperty required={false} type="boolean" />
 
 Whether the custom field is exposed at all via the GraphQL APIs. Defaults to `false`. If set to `true`, then the field will not be available
 via the GraphQL API, but can still be used in TypeScript code in a plugin. Internal fields are useful for storing data which is not intended
@@ -398,9 +383,7 @@ const config = {
 
 #### defaultValue
 
-<span class="badge badge--secondary">Optional</span>
-
-`any`
+<CustomFieldProperty required={false} type="any" />
 
 The default value when an Entity is created with this field. If not provided, then the default value will be `null`. Note that if you set `nullable: false`, then
 you should also provide a `defaultValue` to avoid database errors when creating new entities.
@@ -423,9 +406,7 @@ const config = {
 
 #### nullable
 
-<span class="badge badge--secondary">Optional</span>
-
-`boolean`
+<CustomFieldProperty required={false} type="boolean" />
 
 Whether the field is nullable in the database. If set to `false`, then a `defaultValue` should be provided.
 
@@ -449,9 +430,7 @@ const config = {
 
 #### unique
 
-<span class="badge badge--secondary">Optional</span>
-
-`boolean`
+<CustomFieldProperty required={false} type="boolean" />
 
 Whether the value of the field should be unique. When set to `true`, a UNIQUE constraint is added to the column. Defaults
 to `false`.
@@ -474,9 +453,7 @@ const config = {
 
 #### validate
 
-<span class="badge badge--secondary">Optional</span>
-
-`(value: any) => string | LocalizedString[] | void`
+<CustomFieldProperty required={false} type="(value: any) => string | LocalizedString[] | void" />
 
 A custom validation function. If the value is valid, then the function should not return a value. If a string or LocalizedString array is returned, this is interpreted as an error message.
 
@@ -544,9 +521,7 @@ In addition to the common properties, the `string` custom fields have some type-
 
 #### pattern
 
-<span class="badge badge--secondary">Optional</span>
-
-`string`
+<CustomFieldProperty required={false} type="string" />
 
 A regex pattern which the field value must match. If the value does not match the pattern, then the validation will fail.
 
@@ -568,9 +543,7 @@ const config = {
 
 #### options
 
-<span class="badge badge--secondary">Optional</span>
-
-`{ value: string; label?: LocalizedString[]; }[]`
+<CustomFieldProperty required={false} type="{ value: string; label?: LocalizedString[]; }[]" />
 
 An array of pre-defined options for the field. This is useful for fields which should only have a limited set of values. The `value` property is the value which will be stored in the database, and the `label` property is an optional array of localized strings which will be displayed in the admin UI.
 
@@ -600,9 +573,7 @@ Attempting to set the value of the field to a value which is not in the `options
 
 #### length
 
-<span class="badge badge--secondary">Optional</span>
-
-`number`
+<CustomFieldProperty required={false} type="number" />
 
 The max length of the varchar created in the database. Defaults to 255. Maximum is 65,535.
 
@@ -628,17 +599,13 @@ In addition to the common properties, the `localeString` custom fields have some
 
 #### pattern
 
-<span class="badge badge--secondary">Optional</span>
-
-`string`
+<CustomFieldProperty required={false} type="string" />
 
 Same as the `pattern` property for `string` fields.
 
 #### length
 
-<span class="badge badge--secondary">Optional</span>
-
-`number`
+<CustomFieldProperty required={false} type="number" />
 
 Same as the `length` property for `string` fields.
 
@@ -648,9 +615,7 @@ In addition to the common properties, the `int` & `float` custom fields have som
 
 #### min
 
-<span class="badge badge--secondary">Optional</span>
-
-`number`
+<CustomFieldProperty required={false} type="number" />
 
 The minimum permitted value. If the value is less than this, then the validation will fail.
 
@@ -672,9 +637,7 @@ const config = {
 
 #### max
 
-<span class="badge badge--secondary">Optional</span>
-
-`number`
+<CustomFieldProperty required={false} type="number" />
 
 The maximum permitted value. If the value is greater than this, then the validation will fail.
 
@@ -696,9 +659,7 @@ const config = {
 
 #### step
 
-<span class="badge badge--secondary">Optional</span>
-
-`number`
+<CustomFieldProperty required={false} type="number" />
 
 The step value. This is used in the Admin UI to determine the increment/decrement value of the input field.
 
@@ -726,9 +687,7 @@ The min, max & step properties for datetime fields are intended to be used as de
 
 #### min
 
-<span class="badge badge--secondary">Optional</span>
-
-`string`
+<CustomFieldProperty required={false} type="string" />
 
 The earliest permitted date. If the value is earlier than this, then the validation will fail.
 
@@ -750,9 +709,7 @@ const config = {
 
 #### max
 
-<span class="badge badge--secondary">Optional</span>
-
-`string`
+<CustomFieldProperty required={false} type="string" />
 
 The latest permitted date. If the value is later than this, then the validation will fail.
 
@@ -774,9 +731,7 @@ const config = {
 
 #### step
 
-<span class="badge badge--secondary">Optional</span>
-
-`string`
+<CustomFieldProperty required={false} type="string" />
 
 The step value. See [the MDN datetime-local docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#step) to understand how this is used.
 
@@ -786,9 +741,8 @@ In addition to the common properties, the `relation` custom fields have some typ
 
 #### entity
 
-<span class="badge badge--primary">Required</span>
+<CustomFieldProperty required={true} type="VendureEntity" typeLink="/reference/typescript-api/entities/vendure-entity" />
 
-`VendureEntity`
 
 The entity which this custom field is referencing. This can be one of the built-in entities, or a custom entity. If the entity is a custom entity, it must extend the `VendureEntity` class.
 
@@ -814,9 +768,7 @@ const config = {
 
 #### eager
 
-<span class="badge badge--secondary">Optional</span>
-
-`boolean`
+<CustomFieldProperty required={false} type="boolean" />
 
 Whether to [eagerly load](https://typeorm.io/#/eager-and-lazy-relations) the relation. Defaults to false. Note that eager loading has performance implications, so should only be used when necessary.
 
@@ -842,9 +794,7 @@ const config = {
 
 #### graphQLType
 
-<span class="badge badge--secondary">Optional</span>
-
-`string`
+<CustomFieldProperty required={false} type="string" />
 
 The name of the GraphQL type that corresponds to the entity. Can be omitted if the GraphQL type name is the same as the entity name, which is the case for all of the built-in entities.
 
@@ -870,11 +820,9 @@ const config = {
 
 In the above example, the `CmsArticle` entity is being used as a related entity. However, the GraphQL type name is `BlogPost`, so we must specify this in the `graphQLType` property, otherwise Vendure will try to extend the GraphQL schema with reference to a non-existent "CmsArticle" type.
 
-### `inverseSide`
+#### inverseSide
 
-<span class="badge badge--secondary">Optional</span>
-
-`string | ((object: VendureEntity) => any);`
+<CustomFieldProperty required={false} type="string | ((object: VendureEntity) => any)" />
 
 Allows you to specify the [inverse side of the relation](https://typeorm.io/#inverse-side-of-the-relationship). Let's say you are adding a relation from `Product`
 to a custom entity which refers back to the product. You can specify this inverse relation like so:
