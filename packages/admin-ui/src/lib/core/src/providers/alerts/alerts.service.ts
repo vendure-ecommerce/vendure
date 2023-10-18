@@ -11,7 +11,8 @@ import {
     switchMap,
 } from 'rxjs';
 import { filter, first, map, mapTo, startWith, take } from 'rxjs/operators';
-import { DataService, Permission } from '../../public_api';
+import { Permission } from '../../common/generated-types';
+import { DataService } from '../../data/providers/data.service';
 
 export interface AlertConfig<T = any> {
     id: string;
