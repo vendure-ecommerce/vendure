@@ -308,7 +308,7 @@ while the payment is being arranged. The [`transitionOrderToState`](/reference/g
 <TabItem value="Query" label="Query" default>
 
 ```graphql
-mutation TransitionToState($state: String!)
+mutation TransitionToState($state: String!) {
   transitionOrderToState(state: $state) {
     ...ActiveOrder
     ...on OrderStateTransitionError {
