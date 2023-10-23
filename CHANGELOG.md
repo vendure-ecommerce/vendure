@@ -110,6 +110,8 @@ https://www.apollographql.com/docs/apollo-server/migration/
 
 * The ForbiddenError now defaults to a "warning" rather than "error" log level. Previously this was causing too much noise in logging services and the new level better reflects the severity of the error.
 
+* If after update you are running into the error `[GraphQL error]: Message: POST body missing, invalid Content-Type, or JSON object has no keys.`, this may be due to having the [body-parser](https://www.npmjs.com/package/body-parser) `json` middleware configured in your app. You should be able to safely remove this middleware in order to resolve the issue.
+
 ## <small>2.0.10 (2023-10-11)</small>
 
 
