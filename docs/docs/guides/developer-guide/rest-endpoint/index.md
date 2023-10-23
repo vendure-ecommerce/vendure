@@ -9,7 +9,7 @@ REST-style endpoints can be defined as part of a [plugin](/guides/developer-guid
 REST endpoints are implemented as NestJS Controllers. For comprehensive documentation, see the [NestJS controllers documentation](https://docs.nestjs.com/controllers).
 :::
 
-In this guide we will define a plugin adds a single REST endpoint at `http://localhost:3000/products` which returns a list of all products.
+In this guide we will define a plugin that adds a single REST endpoint at `http://localhost:3000/products` which returns a list of all products.
 
 ## Create a controller
 
