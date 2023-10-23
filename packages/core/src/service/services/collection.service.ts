@@ -228,11 +228,26 @@ export class CollectionService implements OnModuleInit {
         if (!translations?.length) {
             return;
         }
-        const bestMatch =
-            translations.find(t => t.languageCode === ctx.languageCode) ??
-            translations.find(t => t.languageCode === ctx.channel.defaultLanguageCode) ??
-            translations[0];
-        return this.findOne(ctx, bestMatch.base.id, relations);
+
+        let bestMatches = translations.filter(t => t.languageCode === ctx.channel.defaultLanguageCode);
+
+        if (!(bestMatches.length > 0)) {
+            bestMatches = translations.filter(t => t.languageCode === ctx.channel.defaultLanguageCode);
+        }
+
+        // In case there is best matches return the first found in the channel.
+        let collection: Translated<Collection> | undefined;
+        if (bestMatches.length > 0) {
+            for (const bestMatch of bestMatches) {
+                collection = await this.findOne(ctx, bestMatch.base.id, relations);
+                if (collection) {
+                    return collection;
+                }
+            }
+            return collection;
+        }
+
+        return this.findOne(ctx, translations[0].base.id, relations);
     }
 
     /**
