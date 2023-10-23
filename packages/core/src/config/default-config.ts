@@ -4,6 +4,7 @@ import {
     SUPER_ADMIN_USER_IDENTIFIER,
     SUPER_ADMIN_USER_PASSWORD,
     DEFAULT_CHANNEL_TOKEN_KEY,
+    DEFAULT_ADMIN_COOKIE_NAME,
 } from '@vendure/common/lib/shared-constants';
 
 import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
@@ -89,6 +90,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             httpOnly: true,
             sameSite: 'lax',
         },
+        adminCookieName: DEFAULT_ADMIN_COOKIE_NAME,
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
         sessionCacheStrategy: new InMemorySessionCacheStrategy(),

@@ -341,6 +341,13 @@ export interface AuthOptions {
     cookieOptions?: CookieOptions;
     /**
      * @description
+     * The name of the cookie to set for the Admin API.
+     *
+     * @default undefined
+     */
+    adminCookieName?: string;
+    /**
+     * @description
      * Sets the header property which will be used to send the auth token when using the 'bearer' method.
      *
      * @default 'vendure-auth-token'

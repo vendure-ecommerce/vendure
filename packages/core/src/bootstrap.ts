@@ -1,6 +1,7 @@
 import { INestApplication, INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
+import { DEFAULT_ADMIN_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
 import { satisfies } from 'semver';
@@ -64,8 +65,20 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     const usingCookie =
         tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
     if (usingCookie) {
-        const { cookieOptions } = config.authOptions;
+        const { cookieOptions, adminCookieName } = config.authOptions;
         app.use(cookieSession(cookieOptions));
+
+        // If the admin cookie name must have different name than the default one
+        if (adminCookieName && adminCookieName !== DEFAULT_ADMIN_COOKIE_NAME) {
+            const shopApiCookieName = cookieOptions.name;
+            const adminApiCookieName = adminCookieName;
+            const { shopApiPath, adminApiPath } = config.apiOptions;
+            app.use(
+                `/${shopApiPath}`,
+                cookieSession({ ...cookieOptions, ...(shopApiCookieName && { name: shopApiCookieName }) }),
+            );
+            app.use(`/${adminApiPath}`, cookieSession({ ...cookieOptions, name: adminApiCookieName }));
+        }
     }
     const earlyMiddlewares = middleware.filter(mid => mid.beforeListen);
     earlyMiddlewares.forEach(mid => {
