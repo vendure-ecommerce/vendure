@@ -229,7 +229,7 @@ export class CollectionService implements OnModuleInit {
             return;
         }
 
-        let bestMatches = translations.filter(t => t.languageCode === ctx.channel.defaultLanguageCode);
+        let bestMatches = translations.filter(t => t.languageCode === ctx.languageCode);
 
         if (!(bestMatches.length > 0)) {
             bestMatches = translations.filter(t => t.languageCode === ctx.channel.defaultLanguageCode);
