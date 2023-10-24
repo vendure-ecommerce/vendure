@@ -235,7 +235,7 @@ export class CollectionService implements OnModuleInit {
             bestMatches = translations.filter(t => t.languageCode === ctx.channel.defaultLanguageCode);
         }
 
-        // In case there is best matches return the first found in the channel.
+        // In case there are better matches, we return the first found in the channel.
         let collection: Translated<Collection> | undefined;
         if (bestMatches.length > 0) {
             for (const bestMatch of bestMatches) {
