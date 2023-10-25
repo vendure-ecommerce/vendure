@@ -1,8 +1,8 @@
 import { INestApplication, INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
+import { DEFAULT_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
 import { Type } from '@vendure/common/lib/shared-types';
-import { DEFAULT_COOKIE_NAME } from '@vendure/common/src/shared-constants';
 import cookieSession = require('cookie-session');
 import { satisfies } from 'semver';
 import { Connection, DataSourceOptions, EntitySubscriberInterface } from 'typeorm';
