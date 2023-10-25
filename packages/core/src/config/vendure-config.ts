@@ -221,11 +221,13 @@ export interface ApiOptions {
 export interface CookieOptions {
     /**
      * @description
-     * The name of the cookie to set.
+     * The name of the cookies to set.
+     * If set to a string, both cookies for the Admin API and Shop API will have the same name.
+     * If set as an object, it makes it possible to give different names to the Admin API and the Shop API cookies
      *
      * @default 'session'
      */
-    name?: string;
+    name?: string | { shop: string; admin: string };
 
     /**
      * @description
@@ -339,13 +341,6 @@ export interface AuthOptions {
      * Options related to the handling of cookies when using the 'cookie' tokenMethod.
      */
     cookieOptions?: CookieOptions;
-    /**
-     * @description
-     * The name of the cookie to set for the Admin API.
-     *
-     * @default undefined
-     */
-    adminCookieName?: string;
     /**
      * @description
      * Sets the header property which will be used to send the auth token when using the 'bearer' method.

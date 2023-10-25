@@ -1,8 +1,8 @@
 import { INestApplication, INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
-import { DEFAULT_ADMIN_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
 import { Type } from '@vendure/common/lib/shared-types';
+import { DEFAULT_COOKIE_NAME } from '@vendure/common/src/shared-constants';
 import cookieSession = require('cookie-session');
 import { satisfies } from 'semver';
 import { Connection, DataSourceOptions, EntitySubscriberInterface } from 'typeorm';
@@ -65,18 +65,20 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     const usingCookie =
         tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
     if (usingCookie) {
-        const { cookieOptions, adminCookieName } = config.authOptions;
-        app.use(cookieSession(cookieOptions));
+        const { cookieOptions } = config.authOptions;
+        app.use(
+            cookieSession({
+                ...cookieOptions,
+                name: typeof cookieOptions?.name === 'string' ? cookieOptions.name : DEFAULT_COOKIE_NAME,
+            }),
+        );
 
-        // If the admin cookie name must have different name than the default one
-        if (adminCookieName && adminCookieName !== DEFAULT_ADMIN_COOKIE_NAME) {
-            const shopApiCookieName = cookieOptions.name;
-            const adminApiCookieName = adminCookieName;
+        // If the Admin API and Shop API should have specific cookies names
+        if (typeof cookieOptions?.name === 'object') {
+            const shopApiCookieName = cookieOptions.name.shop;
+            const adminApiCookieName = cookieOptions.name.admin;
             const { shopApiPath, adminApiPath } = config.apiOptions;
-            app.use(
-                `/${shopApiPath}`,
-                cookieSession({ ...cookieOptions, ...(shopApiCookieName && { name: shopApiCookieName }) }),
-            );
+            app.use(`/${shopApiPath}`, cookieSession({ ...cookieOptions, name: shopApiCookieName }));
             app.use(`/${adminApiPath}`, cookieSession({ ...cookieOptions, name: adminApiCookieName }));
         }
     }
