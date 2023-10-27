@@ -1,6 +1,7 @@
 import { INestApplication, INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
+import { DEFAULT_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
 import { satisfies } from 'semver';
@@ -64,8 +65,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     const usingCookie =
         tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
     if (usingCookie) {
-        const { cookieOptions } = config.authOptions;
-        app.use(cookieSession(cookieOptions));
+        configureSessionCookies(app, config);
     }
     const earlyMiddlewares = middleware.filter(mid => mid.beforeListen);
     earlyMiddlewares.forEach(mid => {
@@ -328,4 +328,26 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
         }
         reject('Could not validate DB table structure. Aborting bootstrap.');
     });
+}
+
+export function configureSessionCookies(
+    app: INestApplication,
+    userConfig: Readonly<RuntimeVendureConfig>,
+): void {
+    const { cookieOptions } = userConfig.authOptions;
+    app.use(
+        cookieSession({
+            ...cookieOptions,
+            name: typeof cookieOptions?.name === 'string' ? cookieOptions.name : DEFAULT_COOKIE_NAME,
+        }),
+    );
+
+    // If the Admin API and Shop API should have specific cookies names
+    if (typeof cookieOptions?.name === 'object') {
+        const shopApiCookieName = cookieOptions.name.shop;
+        const adminApiCookieName = cookieOptions.name.admin;
+        const { shopApiPath, adminApiPath } = userConfig.apiOptions;
+        app.use(`/${shopApiPath}`, cookieSession({ ...cookieOptions, name: shopApiCookieName }));
+        app.use(`/${adminApiPath}`, cookieSession({ ...cookieOptions, name: adminApiCookieName }));
+    }
 }
