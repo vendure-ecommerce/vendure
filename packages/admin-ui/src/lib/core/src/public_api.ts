@@ -113,6 +113,7 @@ export * from './providers/i18n/custom-message-format-compiler';
 export * from './providers/i18n/i18n.service';
 export * from './providers/job-queue/job-queue.service';
 export * from './providers/local-storage/local-storage.service';
+export * from './providers/localization/localization.service';
 export * from './providers/modal/modal.service';
 export * from './providers/modal/modal.types';
 export * from './providers/nav-builder/nav-builder-types';
