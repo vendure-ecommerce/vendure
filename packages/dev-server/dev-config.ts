@@ -105,45 +105,16 @@ export const devConfig: VendureConfig = {
             //     outputPath: path.join(__dirname, './custom-admin-ui'),
             //     extensions: [
             //         {
-            //             id: 'test-ui-extension',
-            //             extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
-            //             ngModules: [
-            //                 {
-            //                     type: 'lazy',
-            //                     route: 'greetz',
-            //                     ngModuleFileName: 'greeter.module.ts',
-            //                     ngModuleName: 'GreeterModule',
-            //                 },
-            //                 {
-            //                     type: 'shared',
-            //                     ngModuleFileName: 'greeter-shared.module.ts',
-            //                     ngModuleName: 'GreeterSharedModule',
-            //                 },
-            //             ],
+            //             id: 'ui-extensions-library',
+            //             extensionPath: path.join(__dirname, 'example-plugins/ui-extensions-library/ui'),
+            //             routes: [{ route: 'ui-library', filePath: 'routes.ts' }],
+            //             providers: ['providers.ts'],
             //         },
             //         {
             //             globalStyles: path.join(
             //                 __dirname,
             //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
             //             ),
-            //         },
-            //         {
-            //             id: 'external-ui-extension',
-            //             extensionPath: path.join(__dirname, 'test-plugins/with-external-ui-extension'),
-            //             ngModules: [
-            //                 {
-            //                     type: 'lazy',
-            //                     route: 'greet',
-            //                     ngModuleFileName: 'external-ui-extension.ts',
-            //                     ngModuleName: 'ExternalUiExtensionModule',
-            //                 },
-            //             ],
-            //             staticAssets: [
-            //                 {
-            //                     path: path.join(__dirname, 'test-plugins/with-external-ui-extension/app'),
-            //                     rename: 'external-app',
-            //                 },
-            //             ],
             //         },
             //     ],
             //     devMode: true,
