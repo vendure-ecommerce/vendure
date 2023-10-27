@@ -86,6 +86,19 @@ export function registerRouteComponent<
     const breadcrumbSubject$ = new BehaviorSubject<BreadcrumbValue>(options.breadcrumb ?? '');
     const titleSubject$ = new BehaviorSubject<string | undefined>(options.title);
 
+    if (getBreadcrumbs != null && (query == null || entityKey == null)) {
+        console.error(
+            [
+                `[${
+                    options.path ?? 'custom'
+                } route] When using the "getBreadcrumbs" option, the "query" and "entityKey" options must also be provided.`,
+                ``,
+                `Alternatively, use the "breadcrumb" option instead, or use the "PageMetadataService" inside your Angular component`,
+                `or the "usePageMetadata" React hook to set the breadcrumb.`,
+            ].join('\n'),
+        );
+    }
+
     const resolveFn:
         | ResolveFn<{
               entity: Observable<ResultOf<T>[Field] | null>;
@@ -118,7 +131,7 @@ export function registerRouteComponent<
         data: {
             breadcrumb: breadcrumbSubject$,
             ...(options.routeConfig?.data ?? {}),
-            ...(getBreadcrumbs
+            ...(getBreadcrumbs && query && entityKey
                 ? {
                       breadcrumb: data =>
                           data.detail.entity.pipe(map((entity: any) => getBreadcrumbs(entity))),
