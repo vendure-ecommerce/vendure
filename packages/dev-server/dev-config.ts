@@ -192,7 +192,7 @@ function getDbConfig(): DataSourceOptions {
                 port: 3306,
                 username: 'root',
                 password: '',
-                database: 'vendure2-dev',
+                database: 'vendure-dev',
             };
     }
 }
