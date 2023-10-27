@@ -9,6 +9,7 @@ export type DataTableLocationId =
     | 'edit-options-list'
     | 'manage-product-variant-list'
     | 'customer-order-list'
+    | 'product-detail-variants-list'
     | string;
 
 export type DataTableColumnId =

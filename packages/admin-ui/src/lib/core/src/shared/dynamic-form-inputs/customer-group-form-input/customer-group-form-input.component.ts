@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormControl, UntypedFormControl } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { startWith } from 'rxjs/operators';
@@ -42,13 +42,12 @@ export class CustomerGroupFormInputComponent implements FormInputComponent, OnIn
     }
 
     selectGroup(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) {
-        this.formControl.setValue(group ?? undefined);
+        this.formControl.setValue(group?.id ?? undefined);
     }
 
-    compareWith(
-        o1: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>,
-        o2: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>,
-    ) {
-        return o1.id === o2.id;
+    compareWith<T extends ItemOf<GetCustomerGroupsQuery, 'customerGroups'> | string>(o1: T, o2: T) {
+        const id1 = typeof o1 === 'string' ? o1 : o1.id;
+        const id2 = typeof o2 === 'string' ? o2 : o2.id;
+        return id1 === id2;
     }
 }

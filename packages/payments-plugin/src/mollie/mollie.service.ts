@@ -227,6 +227,13 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
+        if (order.state === 'PaymentSettled') {
+            Logger.info(
+                `Order ${order.code} is already 'PaymentSettled', no need for handling Mollie status '${mollieOrder.status}'`,
+                loggerCtx,
+            );
+            return;
+        }
         if (mollieOrder.status === OrderStatus.expired) {
             // Expired is fine, a customer can retry the payment later
             return;
@@ -247,13 +254,6 @@ export class MollieService {
         }
         if (order.state === 'PaymentAuthorized' && mollieOrder.status === OrderStatus.completed) {
             return this.settleExistingPayment(ctx, order, mollieOrder.id);
-        }
-        if (order.state === 'PaymentAuthorized' || order.state === 'PaymentSettled') {
-            Logger.info(
-                `Order ${order.code} is '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`,
-                loggerCtx,
-            );
-            return;
         }
         // Any other combination of Mollie status and Vendure status indicates something is wrong.
         throw Error(
@@ -308,6 +308,7 @@ export class MollieService {
      * Settle an existing payment based on the given mollieOrder
      */
     async settleExistingPayment(ctx: RequestContext, order: Order, mollieOrderId: string): Promise<void> {
+        order = await this.entityHydrator.hydrate(ctx, order, { relations: ['payments'] });
         const payment = order.payments.find(p => p.transactionId === mollieOrderId);
         if (!payment) {
             throw Error(
@@ -335,7 +336,7 @@ export class MollieService {
         }
         const client = createMollieClient({ apiKey });
         // We use the orders API, so list available methods for that API usage
-        const methods = await client.methods.list({resource: 'orders'});
+        const methods = await client.methods.list({ resource: 'orders' });
         return methods.map(m => ({
             ...m,
             code: m.id,

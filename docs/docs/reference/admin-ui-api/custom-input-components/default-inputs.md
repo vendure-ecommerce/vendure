@@ -289,7 +289,7 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
     constructor(dataService: DataService)
     ngOnInit() => ;
     selectGroup(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
-    compareWith(o1: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>, o2: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) => ;
+    compareWith(o1: T, o2: T) => ;
 }
 ```
 * Implements: <code><a href='/reference/admin-ui-api/custom-input-components/form-input-component#forminputcomponent'>FormInputComponent</a></code>, <code>OnInit</code>
@@ -340,7 +340,7 @@ class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
 
 ### compareWith
 
-<MemberInfo kind="method" type={`(o1: ItemOf&#60;GetCustomerGroupsQuery, 'customerGroups'&#62;, o2: ItemOf&#60;GetCustomerGroupsQuery, 'customerGroups'&#62;) => `}   />
+<MemberInfo kind="method" type={`(o1: T, o2: T) => `}   />
 
 
 

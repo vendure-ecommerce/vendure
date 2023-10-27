@@ -52,17 +52,17 @@ $spacings: (1, 2, 3, 4, 5, auto);
 $sides: (
     't': 'top',
     'b': 'bottom',
-    'l': 'left',
-    'r': 'right',
+    'l': 'inline-start',
+    'r': 'inline-end',
     '': (
         'top',
-        'left',
+        'inline-start',
         'bottom',
-        'right',
+        'inline-end',
     ),
     'x': (
-        'left',
-        'right',
+        'inline-start',
+        'inline-end',
     ),
     'y': (
         'top',

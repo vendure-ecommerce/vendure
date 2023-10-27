@@ -1,3 +1,31 @@
+## <small>2.1.1 (2023-10-18)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add missing RTL compatibility to some admin-ui components (#2451) ([ec61b58](https://github.com/vendure-ecommerce/vendure/commit/ec61b58)), closes [#2451](https://github.com/vendure-ecommerce/vendure/issues/2451)
+* **admin-ui** Add unique location id for prod detail variants table ([ce2b251](https://github.com/vendure-ecommerce/vendure/commit/ce2b251))
+* **admin-ui** Do not load pending search index updates if permissions are insufficient (#2460) ([08ad982](https://github.com/vendure-ecommerce/vendure/commit/08ad982)), closes [#2460](https://github.com/vendure-ecommerce/vendure/issues/2460) [#2456](https://github.com/vendure-ecommerce/vendure/issues/2456)
+* **admin-ui** Fix customer group select input ([02fe6ae](https://github.com/vendure-ecommerce/vendure/commit/02fe6ae)), closes [#2441](https://github.com/vendure-ecommerce/vendure/issues/2441)
+* **admin-ui** Fix initial render of code editor input marking dirty ([9dda349](https://github.com/vendure-ecommerce/vendure/commit/9dda349))
+* **admin-ui** Fix setting facet values on new product ([9d88db2](https://github.com/vendure-ecommerce/vendure/commit/9d88db2)), closes [#2355](https://github.com/vendure-ecommerce/vendure/issues/2355)
+* **admin-ui** Improve Italian translations (#2445) ([3fd93c7](https://github.com/vendure-ecommerce/vendure/commit/3fd93c7)), closes [#2445](https://github.com/vendure-ecommerce/vendure/issues/2445)
+* **admin-ui** Improvements to Nepali translation (#2463) ([4035fda](https://github.com/vendure-ecommerce/vendure/commit/4035fda)), closes [#2463](https://github.com/vendure-ecommerce/vendure/issues/2463)
+* **admin-ui** Make ExtensionHostComponent work with new extension APIs ([b917e62](https://github.com/vendure-ecommerce/vendure/commit/b917e62))
+* **admin-ui** Make utility margin/padding classes RTL-compatible ([74c6634](https://github.com/vendure-ecommerce/vendure/commit/74c6634))
+* **common** Remove trademark symbols from normalized strings (#2447) ([9aac191](https://github.com/vendure-ecommerce/vendure/commit/9aac191)), closes [#2447](https://github.com/vendure-ecommerce/vendure/issues/2447)
+* **core** Fix custom field resolver for eager translatable relation (#2457) ([09dd7df](https://github.com/vendure-ecommerce/vendure/commit/09dd7df)), closes [#2453](https://github.com/vendure-ecommerce/vendure/issues/2453)
+* **core** Fix regression in ProductService.findOne not using relations ([92cad43](https://github.com/vendure-ecommerce/vendure/commit/92cad43)), closes [#2443](https://github.com/vendure-ecommerce/vendure/issues/2443)
+* **core** Normalize email address on updating Customer ([957d0ad](https://github.com/vendure-ecommerce/vendure/commit/957d0ad)), closes [#2449](https://github.com/vendure-ecommerce/vendure/issues/2449)
+* **payments-plugin** Fix Mollie klarna AutoCapture (#2446) ([8db459a](https://github.com/vendure-ecommerce/vendure/commit/8db459a)), closes [#2446](https://github.com/vendure-ecommerce/vendure/issues/2446)
+* **payments-plugin** Fix Stripe controller crashing server instance (#2454) ([b0ece21](https://github.com/vendure-ecommerce/vendure/commit/b0ece21)), closes [#2454](https://github.com/vendure-ecommerce/vendure/issues/2454) [#2450](https://github.com/vendure-ecommerce/vendure/issues/2450)
+* **payments-plugin** Idempotent 'paid' Mollie webhooks (#2462) ([2f7a8d5](https://github.com/vendure-ecommerce/vendure/commit/2f7a8d5)), closes [#2462](https://github.com/vendure-ecommerce/vendure/issues/2462)
+
+#### Features
+
+* **admin-ui** Add Croatian translation (#2442) ([b594c55](https://github.com/vendure-ecommerce/vendure/commit/b594c55)), closes [#2442](https://github.com/vendure-ecommerce/vendure/issues/2442)
+* **admin-ui** Add product slug in product multi selector dialog component (#2461) ([b7f3452](https://github.com/vendure-ecommerce/vendure/commit/b7f3452)), closes [#2461](https://github.com/vendure-ecommerce/vendure/issues/2461)
+
 ## 2.1.0 (2023-10-11)
 
 
@@ -81,6 +109,8 @@ https://www.apollographql.com/docs/apollo-server/migration/
 * The new Promotion.usageLimit field will require a non-destructive database migration to be performed. You should not need to do any manual migration work - it is a straightforward addition of a field to a table.
 
 * The ForbiddenError now defaults to a "warning" rather than "error" log level. Previously this was causing too much noise in logging services and the new level better reflects the severity of the error.
+
+* If after update you are running into the error `[GraphQL error]: Message: POST body missing, invalid Content-Type, or JSON object has no keys.`, this may be due to having the [body-parser](https://www.npmjs.com/package/body-parser) `json` middleware configured in your app. You should be able to safely remove this middleware in order to resolve the issue.
 
 ## <small>2.0.10 (2023-10-11)</small>
 

@@ -1,7 +1,18 @@
 import { Injectable } from '@angular/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { BehaviorSubject, combineLatest, interval, isObservable, Observable, Subject, switchMap } from 'rxjs';
-import { map, mapTo, startWith, take } from 'rxjs/operators';
+import {
+    BehaviorSubject,
+    combineLatest,
+    interval,
+    isObservable,
+    Observable,
+    of,
+    Subject,
+    switchMap,
+} from 'rxjs';
+import { filter, first, map, mapTo, startWith, take } from 'rxjs/operators';
+import { Permission } from '../../common/generated-types';
+import { DataService } from '../../data/providers/data.service';
 
 export interface AlertConfig<T = any> {
     id: string;
@@ -10,6 +21,7 @@ export interface AlertConfig<T = any> {
     isAlert: (value: T) => boolean;
     action: (data: T) => void;
     label: (data: T) => { text: string; translationVars?: { [key: string]: string | number } };
+    requiredPermissions?: Permission[];
 }
 
 export interface ActiveAlert {
@@ -74,7 +86,7 @@ export class AlertsService {
     private alertsMap = new Map<string, Alert<any>>();
     private configUpdated = new Subject<void>();
 
-    constructor() {
+    constructor(private dataService: DataService) {
         const alerts$ = this.configUpdated.pipe(
             mapTo([...this.alertsMap.values()]),
             startWith([...this.alertsMap.values()]),
@@ -91,8 +103,26 @@ export class AlertsService {
     }
 
     configureAlert<T>(config: AlertConfig<T>) {
-        this.alertsMap.set(config.id, new Alert(config));
-        this.configUpdated.next();
+        this.hasSufficientPermissions(config.requiredPermissions)
+            .pipe(first())
+            .subscribe(hasSufficientPermissions => {
+                if (hasSufficientPermissions) {
+                    this.alertsMap.set(config.id, new Alert(config));
+                    this.configUpdated.next();
+                }
+            });
+    }
+
+    hasSufficientPermissions(permissions?: Permission[]) {
+        if (!permissions || permissions.length === 0) {
+            return of(true);
+        }
+        return this.dataService.client.userStatus().stream$.pipe(
+            filter(({ userStatus }) => userStatus.isLoggedIn),
+            map(({ userStatus }) =>
+                permissions.some(permission => userStatus.permissions.includes(permission)),
+            ),
+        );
     }
 
     refresh(id?: string) {

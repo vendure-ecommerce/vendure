@@ -30,6 +30,7 @@ import { LocalStorageService } from './providers/local-storage/local-storage.ser
 import { NotificationService } from './providers/notification/notification.service';
 import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/default-form-inputs';
 import { SharedModule } from './shared/shared.module';
+import { Permission } from './public_api';
 
 @NgModule({
     imports: [
@@ -107,6 +108,7 @@ export class CoreModule {
     private initAlerts() {
         this.alertsService.configureAlert({
             id: 'pending-search-index-updates',
+            requiredPermissions: [Permission.ReadCatalog, Permission.ReadProduct],
             check: () =>
                 this.dataService.product
                     .getPendingSearchIndexUpdates()

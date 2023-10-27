@@ -117,6 +117,20 @@ const myCustomOrderProcess = configureDefaultOrderProcess({
   // Orders to have a shipping method assigned
   // before payment.
   arrangingPaymentRequiresShipping: false,
+    
+  // Other constraints which can be disabled. See the
+  // DefaultOrderProcessOptions interface docs for full
+  // explanations.
+  //  
+  // checkModificationPayments: false,
+  // checkAdditionalPaymentsAmount: false,
+  // checkAllVariantsExist: false,
+  // arrangingPaymentRequiresContents: false,
+  // arrangingPaymentRequiresCustomer: false,
+  // arrangingPaymentRequiresStock: false,
+  // checkPaymentsCoverTotal: false,
+  // checkAllItemsBeforeCancel: false,
+  // checkFulfillmentStates: false,
 });
 
 export const config: VendureConfig = {
@@ -239,6 +253,81 @@ const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
 
 :::info
 For an explanation of the `init()` method and `injector` argument, see the guide on [injecting dependencies in configurable operations](/guides/developer-guide/strategies-configurable-operations/#injecting-dependencies).
+:::
+
+### Responding to a state transition
+
+Once an order has successfully transitioned to a new state, the [`onTransitionEnd` state transition hook](/reference/typescript-api/state-machine/state-machine-config#ontransitionend) is called. This can be used to perform some action
+upon successful state transition.
+
+In this example, we have a referral service which creates a new referral for a customer when they complete an order. We want to create the referral only if the customer has a referral code associated with their account.
+
+```ts
+import { OrderProcess, OrderState } from '@vendure/core';
+
+import { ReferralService } from '../service/referral.service';
+
+let referralService: ReferralService;
+
+export const referralOrderProcess: OrderProcess<OrderState> = {
+    init: (injector) => {
+        referralService = injector.get(ReferralService);
+    },
+    onTransitionEnd: async (fromState, toState, data) => {
+        const { order, ctx } = data;
+        if (toState === 'PaymentSettled') {
+            if (order.customFields.referralCode) {
+                await referralService.createReferralForOrder(ctx, order);
+            }
+        }
+    },
+};
+```
+
+:::caution
+Use caution when modifying an order inside the `onTransitionEnd` function. The `order` object that gets passed in to this function
+will later be persisted to the database. Therefore any changes must be made to that `order` object, otherwise the changes might be lost.
+
+As an example, let's say we want to add a Surcharge to the order. The following code **will not work as expected**:
+
+```ts
+export const myOrderProcess: OrderProcess<OrderState> = {
+    async onTransitionEnd(fromState, toState, data) {
+        if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
+            // highlight-start
+            // WARNING: This will not work!  
+            await orderService.addSurchargeToOrder(ctx, order.id, {
+                description: 'Test',
+                listPrice: 42,
+                listPriceIncludesTax: false,
+            });
+            // highlight-end
+        }
+    }
+};
+```
+
+Instead, you need to ensure you **mutate the `order` object**:
+
+```ts
+export const myOrderProcess: OrderProcess<OrderState> = {
+    async onTransitionEnd(fromState, toState, data) {
+        if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
+            // highlight-start
+            const {surcharges} = await orderService.addSurchargeToOrder(ctx, order.id, {
+                description: 'Test',
+                listPrice: 42,
+                listPriceIncludesTax: false,
+            });
+            // Important: mutate the order object
+            order.surcharges = surcharges;
+            // highlight-end
+        }
+    },
+}
+```
+
+
 :::
 
 ## TypeScript Typings

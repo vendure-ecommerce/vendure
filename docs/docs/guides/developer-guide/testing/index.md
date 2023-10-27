@@ -210,3 +210,38 @@ describe('my plugin', () => {
 });
 ```
 :::
+
+## Accessing internal services
+
+It is possible to access any internal service of the Vendure server via the `server.app` object, which is an instance of the NestJS `INestApplication`.
+
+For example, to access the `ProductService`:
+
+```ts title="src/plugins/my-plugin/e2e/my-plugin.e2e-spec.ts"
+import { createTestEnvironment, testConfig } from '@vendure/testing';
+import { describe, beforeAll } from 'vitest';
+import { MyPlugin } from '../my-plugin.ts';
+
+describe('my plugin', () => {
+    
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig,
+        plugins: [MyPlugin],
+    });
+    
+    // highlight-next-line
+    let productService: ProductService;
+    
+    beforeAll(async () => {
+        await server.init({
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products.csv'),
+            initialData: myInitialData,
+            customerCount: 2,
+        });
+        await adminClient.asSuperAdmin();
+        // highlight-next-line
+        productService = server.app.get(ProductService);
+    }, 60000);
+
+});
+```

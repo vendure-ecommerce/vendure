@@ -525,6 +525,22 @@ describe('Customer resolver', () => {
             expect(createCustomer.message).toBe('The email address is not available.');
             expect(createCustomer.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
         });
+
+        it('normalizes email address on creation', async () => {
+            const { createCustomer } = await adminClient.query<
+                Codegen.CreateCustomerMutation,
+                Codegen.CreateCustomerMutationVariables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    emailAddress: ' JoeSmith@test.com ',
+                    firstName: 'Joe',
+                    lastName: 'Smith',
+                },
+                password: 'test',
+            });
+            customerErrorGuard.assertSuccess(createCustomer);
+            expect(createCustomer.emailAddress).toBe('joesmith@test.com');
+        });
     });
 
     describe('update', () => {
@@ -565,6 +581,27 @@ describe('Customer resolver', () => {
             const { me } = await shopClient.query<Codegen.MeQuery>(ME);
 
             expect(me?.identifier).toBe('unique-email@test.com');
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2449
+        it('normalizes email address on update', async () => {
+            const { updateCustomer } = await adminClient.query<
+                Codegen.UpdateCustomerMutation,
+                Codegen.UpdateCustomerMutationVariables
+            >(UPDATE_CUSTOMER, {
+                input: {
+                    id: thirdCustomer.id,
+                    emailAddress: ' Another-Address@test.com ',
+                },
+            });
+            customerErrorGuard.assertSuccess(updateCustomer);
+
+            expect(updateCustomer.emailAddress).toBe('another-address@test.com');
+
+            await shopClient.asUserWithCredentials('another-address@test.com', 'test');
+            const { me } = await shopClient.query<Codegen.MeQuery>(ME);
+
+            expect(me?.identifier).toBe('another-address@test.com');
         });
     });
 

@@ -61,14 +61,16 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
         vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
     })));
     // Deduct amount already paid
-    lines.push({
-        name: 'Already paid',
-        quantity: 1,
-        unitPrice: toAmount(-alreadyPaid, order.currencyCode),
-        totalAmount: toAmount(-alreadyPaid, order.currencyCode),
-        vatRate: String(0),
-        vatAmount: toAmount(0, order.currencyCode),
-    });
+    if (alreadyPaid) {
+        lines.push({
+            name: 'Already paid',
+            quantity: 1,
+            unitPrice: toAmount(-alreadyPaid, order.currencyCode),
+            totalAmount: toAmount(-alreadyPaid, order.currencyCode),
+            vatRate: String(0),
+            vatAmount: toAmount(0, order.currencyCode),
+        });
+    }
     return lines;
 }
 

@@ -229,3 +229,83 @@ export class ItemService {
 Further examples can be found in the [TypeORM QueryBuilder documentation](https://typeorm.io/select-query-builder).
 
 :::
+
+### Working with relations
+
+One limitation of TypeORM's typings is that we have no way of knowing at build-time whether a particular relation will be
+joined at runtime. For instance, the following code will build without issues, but will result in a runtime error:
+
+```ts
+const product = await this.connection.getRepository(ctx, Product).findOne({
+    where: { id: productId },
+});
+if (product) {
+    // highlight-start
+    console.log(product.featuredAsset.preview);
+    // ^ Error: Cannot read property 'preview' of undefined
+    // highlight-end
+}
+```
+
+This is because the `featuredAsset` relation is not joined by default. The simple fix for the above example is to use
+the `relations` option:
+
+```ts
+const product = await this.connection.getRepository(ctx, Product).findOne({
+    where: { id: productId },
+    // highlight-next-line
+    relations: { featuredAsset: true },
+});
+```
+or in the case of the QueryBuilder API, we can use the `leftJoinAndSelect()` method:
+
+```ts
+const product = await this.connection.getRepository(ctx, Product).createQueryBuilder('product')
+    // highlight-next-line
+    .leftJoinAndSelect('product.featuredAsset', 'featuredAsset')
+    .where('product.id = :id', { id: productId })
+    .getOne();
+```
+
+### Using the EntityHydrator
+
+But what about when we do not control the code which fetches the entity from the database? For instance, we might be implementing
+a function which gets an entity passed to it by Vendure. In this case, we can use the [`EntityHydrator`](/reference/typescript-api/data-access/entity-hydrator/)
+to ensure that a given relation is "hydrated" (i.e. joined) before we use it:
+
+```ts
+import { EntityHydrator, ShippingCalculator } from '@vendure/core';
+
+let entityHydrator: EntityHydrator;
+
+const myShippingCalculator = new ShippingCalculator({
+    // ... rest of config omitted for brevity
+    init(injector) {
+        entityHydrator = injector.get(EntityHydrator);
+    },
+    calculate: (ctx, order, args) => {
+      // highlight-start
+      // ensure that the customer and customer.groups relations are joined
+      await entityHydrator.hydrate(ctx, order, { relations: ['customer.groups' ]});
+      // highlight-end
+
+      if (order.customer?.groups?.some(g => g.name === 'VIP')) {
+        // ... do something special for VIP customers
+      } else {
+        // ... do something else
+      }
+    },
+});
+```
+
+### Joining relations in built-in service methods
+
+Many of the core services allow an optional `relations` argument in their `findOne()` and `findMany()` and related methods.
+This allows you to specify which relations should be joined when the query is executed. For instance, in the [`ProductService`](/reference/typescript-api/services/product-service)
+there is a `findOne()` method which allows you to specify which relations should be joined:
+
+```ts
+const productWithAssets = await this.productService
+    .findOne(ctx, productId, ['featuredAsset', 'assets']);
+```
+

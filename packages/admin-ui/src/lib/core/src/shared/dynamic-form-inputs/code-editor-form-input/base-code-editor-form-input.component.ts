@@ -48,7 +48,12 @@ export abstract class BaseCodeEditorFormInputComponent implements FormInputCompo
             editor.innerHTML = this.highlight(code, this.getErrorPos(this.errorMessage));
         };
         this.jar = CodeJar(this.editorElementRef.nativeElement, highlight);
+        let isFirstUpdate = true;
         this.jar.onUpdate(value => {
+            if (isFirstUpdate) {
+                isFirstUpdate = false;
+                return;
+            }
             this.formControl.setValue(value);
             this.formControl.markAsDirty();
             this.isValid = this.formControl.valid;

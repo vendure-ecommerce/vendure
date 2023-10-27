@@ -31,7 +31,7 @@ npm install --save-dev @vendure/ui-devkit
 <TabItem value="yarn" label="yarn">
 
 ```bash
-yarn add --save-dev @vendure/ui-devkit
+yarn add --dev @vendure/ui-devkit
 ```
 
 </TabItem>
