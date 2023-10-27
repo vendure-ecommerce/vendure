@@ -120,7 +120,7 @@ export class TestServer {
             const usingCookie =
                 tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
             if (usingCookie) {
-                configureSessionCookies(config);
+                configureSessionCookies(app, config);
             }
             const earlyMiddlewares = config.apiOptions.middleware.filter(mid => mid.beforeListen);
             earlyMiddlewares.forEach(mid => {
