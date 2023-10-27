@@ -1,9 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DEFAULT_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
 import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
-import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
-import cookieSession from 'cookie-session';
+import { preBootstrapConfig, configureSessionCookies } from '@vendure/core/dist/bootstrap';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -122,28 +120,7 @@ export class TestServer {
             const usingCookie =
                 tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
             if (usingCookie) {
-                const { cookieOptions } = config.authOptions;
-                app.use(
-                    cookieSession({
-                        ...cookieOptions,
-                        name:
-                            typeof cookieOptions?.name === 'string'
-                                ? cookieOptions.name
-                                : DEFAULT_COOKIE_NAME,
-                    }),
-                );
-
-                // If the Admin API and Shop API should have specific cookies names
-                if (typeof cookieOptions?.name === 'object') {
-                    const shopApiCookieName = cookieOptions.name.shop;
-                    const adminApiCookieName = cookieOptions.name.admin;
-                    const { shopApiPath, adminApiPath } = config.apiOptions;
-                    app.use(`/${shopApiPath}`, cookieSession({ ...cookieOptions, name: shopApiCookieName }));
-                    app.use(
-                        `/${adminApiPath}`,
-                        cookieSession({ ...cookieOptions, name: adminApiCookieName }),
-                    );
-                }
+                configureSessionCookies(config);
             }
             const earlyMiddlewares = config.apiOptions.middleware.filter(mid => mid.beforeListen);
             earlyMiddlewares.forEach(mid => {
