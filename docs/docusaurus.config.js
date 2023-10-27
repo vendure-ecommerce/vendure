@@ -39,9 +39,7 @@ const config = {
                 docs: {
                     routeBasePath: '/',
                     sidebarPath: require.resolve('./sidebars.js'),
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
-                    editUrl: 'https://github.com/vendure-ecommerce/vendure/tree/new-docs/docs/',
+                    editUrl: 'https://github.com/vendure-ecommerce/vendure/blob/master/docs/',
                     showLastUpdateTime: true,
                 },
                 blog: false,
