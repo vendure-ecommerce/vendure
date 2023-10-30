@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useLazyQuery
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="109" packageName="@vendure/admin-ui" since="2.1.2" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="113" packageName="@vendure/admin-ui" since="2.1.2" />
 
 A React hook which allows you to execute a GraphQL query.
 
@@ -29,15 +29,19 @@ const GET_PRODUCT = gql`
        description
      }
    }`;
+type ProductResponse = {
+    product: {
+        name: string
+        description: string
+    }
+}
 
 export const MyComponent = () => {
-    const [getProduct, { data, loading, error }] = useLazyQuery(GET_PRODUCT);
+    const [getProduct, { data, loading, error }] = useLazyQuery<ProductResponse>(GET_PRODUCT);
 
    const handleClick = () => {
         getProduct({
-            input: {
-                id: '1',
-            },
+             id: '1',
         }).then(result => {
             // do something with the result
         });

@@ -73,15 +73,19 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
  *        description
  *      }
  *    }`;
+ * type ProductResponse = {
+ *     product: {
+ *         name: string
+ *         description: string
+ *     }
+ * }
  *
  * export const MyComponent = () => {
- *     const [getProduct, { data, loading, error }] = useLazyQuery(GET_PRODUCT);
+ *     const [getProduct, { data, loading, error }] = useLazyQuery<ProductResponse>(GET_PRODUCT);
  *
  *    const handleClick = () => {
  *         getProduct({
- *             input: {
- *                 id: '1',
- *             },
+ *              id: '1',
  *         }).then(result => {
  *             // do something with the result
  *         });
