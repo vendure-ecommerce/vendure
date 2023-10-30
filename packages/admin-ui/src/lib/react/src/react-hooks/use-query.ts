@@ -58,6 +58,67 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
 
 /**
  * @description
+ * A React hook which allows you to execute a GraphQL query.
+ *
+ * @example
+ * ```ts
+ * import { useLazyQuery } from '\@vendure/admin-ui/react';
+ * import { gql } from 'graphql-tag';
+ *
+ * const GET_PRODUCT = gql`
+ *    query GetProduct($id: ID!) {
+ *      product(id: $id) {
+ *        id
+ *        name
+ *        description
+ *      }
+ *    }`;
+ *
+ * export const MyComponent = () => {
+ *     const [getProduct, { data, loading, error }] = useLazyQuery(GET_PRODUCT);
+ *
+ *    const handleClick = () => {
+ *         getProduct({
+ *             input: {
+ *                 id: '1',
+ *             },
+ *         }).then(result => {
+ *             // do something with the result
+ *         });
+ *     };
+ *
+ *     if (loading) return <div>Loading...</div>;
+ *     if (error) return <div>Error! { error }</div>;
+ *
+ *     return (
+ *     <div>
+ *         <button onClick={handleClick}>Get product</button>
+ *         {data && (
+ *              <div>
+ *                  <h1>{data.product.name}</h1>
+ *                  <p>{data.product.description}</p>
+ *              </div>)}
+ *     </div>
+ *     );
+ * };
+ * ```
+ *
+ * @since 2.1.2
+ * @docsCategory react-hooks
+ */
+export function useLazyQuery<T, V extends Record<string, any> = Record<string, any>>(
+    query: DocumentNode | TypedDocumentNode<T, V>,
+) {
+    const { data, loading, error, runQuery } = useDataService<T, V>(
+        (dataService, vars) => dataService.query(query, vars).stream$,
+    );
+    const rest = { data, loading, error };
+    const execute = (variables?: V) => firstValueFrom(runQuery(variables));
+    return [execute, rest] as [typeof execute, typeof rest];
+}
+
+/**
+ * @description
  * A React hook which allows you to execute a GraphQL mutation.
  *
  * @example
