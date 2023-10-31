@@ -37,16 +37,16 @@ export interface ReactDataTableComponentConfig {
      * @description
      * Optional props to pass to the React component.
      */
-    props?: Record<string, any>;
+    props?: Record<string, unknown>;
 }
 
 /**
  * @description
  * The props that will be passed to the React component registered via {@link registerReactDataTableComponent}.
  */
-export interface ReactDataTableComponentProps {
-    rowItem: any;
-    [prop: string]: any;
+export interface ReactDataTableComponentProps<T> {
+    rowItem: T;
+    [prop: string]: unknown;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface ReactDataTableComponentProps {
  * import { ReactDataTableComponentProps } from '\@vendure/admin-ui/react';
  * import React from 'react';
  *
- * export function SlugWithLink({ rowItem }: ReactDataTableComponentProps) {
+ * export function SlugWithLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {
  *     return (
  *         <a href={`https://example.com/products/${rowItem.slug}`} target="_blank">
  *             {rowItem.slug}
@@ -79,7 +79,7 @@ export interface ReactDataTableComponentProps {
  *         tableId: 'product-list',
  *         columnId: 'slug',
  *         props: {
- *         foo: 'bar',
+ *           foo: 'bar',
  *         },
  *     }),
  * ];
