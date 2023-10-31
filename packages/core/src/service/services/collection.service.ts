@@ -222,32 +222,24 @@ export class CollectionService implements OnModuleInit {
     ): Promise<Translated<Collection> | undefined> {
         const translations = await this.connection.getRepository(ctx, CollectionTranslation).find({
             relations: ['base'],
-            where: { slug },
+            where: {
+                slug,
+                base: {
+                    channels: {
+                        id: ctx.channelId,
+                    },
+                },
+            },
         });
 
         if (!translations?.length) {
             return;
         }
-
-        let bestMatches = translations.filter(t => t.languageCode === ctx.languageCode);
-
-        if (!(bestMatches.length > 0)) {
-            bestMatches = translations.filter(t => t.languageCode === ctx.channel.defaultLanguageCode);
-        }
-
-        // In case there are better matches, we return the first found in the channel.
-        let collection: Translated<Collection> | undefined;
-        if (bestMatches.length > 0) {
-            for (const bestMatch of bestMatches) {
-                collection = await this.findOne(ctx, bestMatch.base.id, relations);
-                if (collection) {
-                    return collection;
-                }
-            }
-            return collection;
-        }
-
-        return this.findOne(ctx, translations[0].base.id, relations);
+        const bestMatch =
+            translations.find(t => t.languageCode === ctx.languageCode) ??
+            translations.find(t => t.languageCode === ctx.channel.defaultLanguageCode) ??
+            translations[0];
+        return this.findOne(ctx, bestMatch.base.id, relations);
     }
 
     /**
