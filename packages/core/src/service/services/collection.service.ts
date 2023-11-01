@@ -223,7 +223,14 @@ export class CollectionService implements OnModuleInit {
     ): Promise<Translated<Collection> | undefined> {
         const translations = await this.connection.getRepository(ctx, CollectionTranslation).find({
             relations: ['base'],
-            where: { slug },
+            where: {
+                slug,
+                base: {
+                    channels: {
+                        id: ctx.channelId,
+                    },
+                },
+            },
         });
 
         if (!translations?.length) {
