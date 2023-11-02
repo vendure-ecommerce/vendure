@@ -37,16 +37,16 @@ export interface ReactDataTableComponentConfig {
      * @description
      * Optional props to pass to the React component.
      */
-    props?: Record<string, unknown>;
+    props?: Record<string, any>;
 }
 
 /**
  * @description
  * The props that will be passed to the React component registered via {@link registerReactDataTableComponent}.
  */
-export interface ReactDataTableComponentProps<T> {
+export interface ReactDataTableComponentProps<T = any> {
     rowItem: T;
-    [prop: string]: unknown;
+    [prop: string]: any;
 }
 
 /**
