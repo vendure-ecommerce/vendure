@@ -107,7 +107,7 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
  * };
  * ```
  *
- * @since 2.1.2
+ * @since 2.2.0
  * @docsCategory react-hooks
  */
 export function useLazyQuery<T, V extends Record<string, any> = Record<string, any>>(

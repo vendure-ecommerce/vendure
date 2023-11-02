@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useLazyQuery
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="113" packageName="@vendure/admin-ui" since="2.1.2" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="113" packageName="@vendure/admin-ui" since="2.2.0" />
 
 A React hook which allows you to execute a GraphQL query.
 
