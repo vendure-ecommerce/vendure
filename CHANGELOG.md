@@ -12,6 +12,7 @@
 * **core** Assign assets when assigning Collection to channel ([a8481bf](https://github.com/vendure-ecommerce/vendure/commit/a8481bf)), closes [#2122](https://github.com/vendure-ecommerce/vendure/issues/2122) [#2478](https://github.com/vendure-ecommerce/vendure/issues/2478)
 * **core** Fix collection findBySlug issue (#2480) ([894ace7](https://github.com/vendure-ecommerce/vendure/commit/894ace7)), closes [#2480](https://github.com/vendure-ecommerce/vendure/issues/2480) [#2395](https://github.com/vendure-ecommerce/vendure/issues/2395)
 * **core** Fix configurable operation id decoding when using uuids (#2483) ([47f606c](https://github.com/vendure-ecommerce/vendure/commit/47f606c)), closes [#2483](https://github.com/vendure-ecommerce/vendure/issues/2483)
+* **payments-plugin** Expose `status` of Mollie payment methods (#2499) ([071aa9db](https://github.com/vendure-ecommerce/vendure/commit/071aa9db))
 
 ## <small>2.1.1 (2023-10-18)</small>
 
