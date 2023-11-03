@@ -1671,6 +1671,7 @@ export type MolliePaymentMethod = {
   image?: Maybe<MolliePaymentMethodImages>;
   maximumAmount?: Maybe<MollieAmount>;
   minimumAmount?: Maybe<MollieAmount>;
+  status?: Maybe<Scalars['String']['output']>;
 };
 
 export type MolliePaymentMethodImages = {
