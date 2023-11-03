@@ -23,7 +23,7 @@ e.g. the `Product` object if used in the `product-list` table.
 import { ReactDataTableComponentProps } from '@vendure/admin-ui/react';
 import React from 'react';
 
-export function SlugWithLink({ rowItem }: ReactDataTableComponentProps) {
+export function SlugWithLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {
     return (
         <a href={`https://example.com/products/${rowItem.slug}`} target="_blank">
             {rowItem.slug}

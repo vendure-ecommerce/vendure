@@ -20,15 +20,13 @@ import { Component } from '@angular/core';
 import {
     CustomerFragment,
     CustomerHistoryEntryComponent,
-    registerHistoryEntryComponent,
     SharedModule,
     TimelineDisplayType,
     TimelineHistoryEntry,
-    SharedModule,
 } from '@vendure/admin-ui/core';
 
 @Component({
-    selector: 'tax-id-verification-component',
+    selector: 'tax-id-verification-entry',
     template: `
         <div *ngIf="entry.data.valid">
             Tax ID <strong>{{ entry.data.taxId }}</strong> was verified
@@ -41,7 +39,7 @@ import {
     standalone: true,
     imports: [SharedModule],
 })
-class TaxIdHistoryEntryComponent implements CustomerHistoryEntryComponent {
+export class TaxIdHistoryEntryComponent implements CustomerHistoryEntryComponent {
     entry: TimelineHistoryEntry;
     customer: CustomerFragment;
 

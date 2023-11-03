@@ -46,8 +46,8 @@ React components will receive the value of the current column as the `rowItem` p
 import { ReactDataTableComponentProps } from '@vendure/admin-ui/react';
 import React from 'react';
 
-export function SlugLink({ rowItem }: ReactDataTableComponentProps) {
-    const slug: string = rowItem.slug;
+export function SlugLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {
+    const slug = rowItem.slug;
     return (
         <a href={`https://example.com/category/${slug}`} target="_blank">
             {slug}

@@ -1,3 +1,19 @@
+## <small>2.1.2 (2023-11-03)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add descriptive error when using getBreadcrumbs wrong ([b8c4a77](https://github.com/vendure-ecommerce/vendure/commit/b8c4a77))
+* **admin-ui** Add horizontal scrollbar support to address select dialog ([60d991b](https://github.com/vendure-ecommerce/vendure/commit/60d991b))
+* **admin-ui** Add some new ltr/rtl compatibility (#2466) ([e4d1545](https://github.com/vendure-ecommerce/vendure/commit/e4d1545)), closes [#2466](https://github.com/vendure-ecommerce/vendure/issues/2466)
+* **admin-ui** Fix layout of multiple addresses on custom detail page ([7a3e378](https://github.com/vendure-ecommerce/vendure/commit/7a3e378))
+* **admin-ui** Fix styling of some dialogs with tabs ([f601acc](https://github.com/vendure-ecommerce/vendure/commit/f601acc))
+* **admin-ui** Use generics in ReactDataTableComponentProps (#2500) ([730a103](https://github.com/vendure-ecommerce/vendure/commit/730a103)), closes [#2500](https://github.com/vendure-ecommerce/vendure/issues/2500)
+* **core** Assign assets when assigning Collection to channel ([a8481bf](https://github.com/vendure-ecommerce/vendure/commit/a8481bf)), closes [#2122](https://github.com/vendure-ecommerce/vendure/issues/2122) [#2478](https://github.com/vendure-ecommerce/vendure/issues/2478)
+* **core** Fix collection findBySlug issue (#2480) ([894ace7](https://github.com/vendure-ecommerce/vendure/commit/894ace7)), closes [#2480](https://github.com/vendure-ecommerce/vendure/issues/2480) [#2395](https://github.com/vendure-ecommerce/vendure/issues/2395)
+* **core** Fix configurable operation id decoding when using uuids (#2483) ([47f606c](https://github.com/vendure-ecommerce/vendure/commit/47f606c)), closes [#2483](https://github.com/vendure-ecommerce/vendure/issues/2483)
+* **payments-plugin** Expose `status` of Mollie payment methods (#2499) ([071aa9db](https://github.com/vendure-ecommerce/vendure/commit/071aa9db))
+
 ## <small>2.1.1 (2023-10-18)</small>
 
 

@@ -1029,3 +1029,12 @@ export const UPDATE_ADMINISTRATOR = gql`
     }
     ${ADMINISTRATOR_FRAGMENT}
 `;
+
+export const ASSIGN_COLLECTIONS_TO_CHANNEL = gql`
+    mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
+        assignCollectionsToChannel(input: $input) {
+            ...Collection
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;
