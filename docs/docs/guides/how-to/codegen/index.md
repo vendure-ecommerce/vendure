@@ -167,6 +167,12 @@ const config: CodegenConfig = {
         'apps/marketplace/src/plugins/marketplace/ui/gql/': {
             preset: 'client',
             documents: 'apps/marketplace/src/plugins/marketplace/ui/**/*.ts',
+            // This disables the "fragment masking" feature. Fragment masking
+            // can improve component isolation but introduces some additional
+            // complexity that we will avoid for now.
+            presetConfig: {
+                fragmentMasking: false,
+            },
         },
         // highlight-end
         'apps/marketplace/src/plugins/marketplace/gql/generated.ts': {
