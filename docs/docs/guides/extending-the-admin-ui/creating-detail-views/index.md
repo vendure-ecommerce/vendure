@@ -22,7 +22,10 @@ now you need a detail view which can be used to view and edit individual reviews
 
 The detail component itself is an Angular component which extends the [BaseDetailComponent](/reference/admin-ui-api/list-detail-views/base-detail-component/) or [TypedBaseDetailComponent](/reference/admin-ui-api/list-detail-views/typed-base-detail-component) class.
 
+This example assumes you have set up your project to use code generation as described in the [GraphQL code generation guide](/guides/how-to/codegen/#codegen-for-admin-ui-extensions).
+
 ```ts title="src/plugins/reviews/ui/components/review-detail/review-detail.component.ts"
+import { ResultOf } from '@graphql-typed-document-node/core';
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { TypedBaseDetailComponent, LanguageCode, SharedModule } from '@vendure/admin-ui/core';
@@ -80,7 +83,7 @@ export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof getRe
         // Logic to update a Review
     }
 
-    protected setFormValues(entity: NonNullable<(typeof getReviewDetailDocument)['review']>, languageCode: LanguageCode): void {
+    protected setFormValues(entity: NonNullable<ResultOf<typeof getReviewDetailDocument>['review']>, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             title: entity.name,
             rating: entity.rating,

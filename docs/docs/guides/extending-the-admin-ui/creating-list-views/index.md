@@ -46,7 +46,7 @@ See the [Paginated Lists guide](/guides/how-to/paginated-list/) for details on h
 
 The list component itself is an Angular component which extends the [BaseListComponent](/reference/admin-ui-api/list-detail-views/base-list-component/) or [TypedBaseListComponent](/reference/admin-ui-api/list-detail-views/typed-base-list-component) class.
 
-This example assumes you have set up your project to use [GraphQL Code Generator](https://the-guild.dev/graphql/codegen) with the [TypedDocumentNode plugin](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
+This example assumes you have set up your project to use code generation as described in the [GraphQL code generation guide](/guides/how-to/codegen/#codegen-for-admin-ui-extensions).
 
 ```ts title="src/plugins/reviews/ui/components/review-list/review-list.component.ts"
 import { ChangeDetectionStrategy, Component } from '@angular/core';
