@@ -54,7 +54,11 @@ const config: CodegenConfig = {
         scalars: {
             // This tells codegen that the `Money` scalar is a number
             Money: 'number',
-        }
+        },
+        namingConvention: {
+            // This ensures generated enums do not conflict with the built-in types.
+            enumValues: 'keep',
+        },
       }
       // highlight-end
     },
