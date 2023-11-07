@@ -1682,6 +1682,121 @@ describe('Default search plugin', () => {
             });
         });
 
+        describe('multiple language handling grouped by product', () => {
+            function searchInLanguage(languageCode: LanguageCode) {
+                return adminClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
+                    SEARCH_PRODUCTS,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            take: 100,
+                        },
+                    },
+                    {
+                        languageCode,
+                    },
+                );
+            }
+
+            beforeAll(async () => {
+                const { updateProduct } = await adminClient.query<
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
+                >(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_1',
+                        translations: [
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'laptop name de',
+                                slug: 'laptop-slug-de',
+                                description: 'laptop description de',
+                            },
+                            {
+                                languageCode: LanguageCode.zh,
+                                name: 'laptop name zh',
+                                slug: 'laptop-slug-zh',
+                                description: 'laptop description zh',
+                            },
+                        ],
+                    },
+                });
+
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: updateProduct.variants[0].id,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.de,
+                                    name: 'laptop variant de',
+                                },
+                                {
+                                    languageCode: LanguageCode.fr,
+                                    name: 'laptop variant fr',
+                                },
+                                {
+                                    languageCode: LanguageCode.zh,
+                                    name: 'laptop variant zh',
+                                },
+                            ],
+                        },
+                    ],
+                });
+
+                await awaitRunningJobs(adminClient);
+            });
+
+            it('fallbacks to default language grouped by product', async () => {
+                const { search } = await searchInLanguage(LanguageCode.af);
+                // No records for AF language, but we expect > 0
+                // because of fallback to default language (EN)
+                expect(search.totalItems).toBeGreaterThan(0);
+            });
+
+            it('indexes product-level languages grouped by product', async () => {
+                const { search: search1 } = await searchInLanguage(LanguageCode.de);
+
+                expect(search1.items.map(i => i.productName)).toContain('laptop name de');
+                expect(search1.items.map(i => i.productName)).not.toContain('laptop name zh');
+                expect(search1.items.map(i => i.slug)).toContain('laptop-slug-de');
+                expect(search1.items.map(i => i.description)).toContain('laptop description de');
+
+                const { search: search2 } = await searchInLanguage(LanguageCode.zh);
+
+                expect(search2.items.map(i => i.productName)).toContain('laptop name zh');
+                expect(search2.items.map(i => i.productName)).not.toContain('laptop name de');
+                expect(search2.items.map(i => i.slug)).toContain('laptop-slug-zh');
+                expect(search2.items.map(i => i.description)).toContain('laptop description zh');
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1752
+            // https://github.com/vendure-ecommerce/vendure/issues/1746
+            it('sort by name with non-default languageCode grouped by product', async () => {
+                const result = await adminClient.query<
+                    SearchProductsShopQuery,
+                    SearchProductShopQueryVariables
+                >(
+                    SEARCH_PRODUCTS,
+                    {
+                        input: {
+                            take: 2,
+                            sort: {
+                                name: SortOrder.ASC,
+                            },
+                        },
+                    },
+                    {
+                        languageCode: LanguageCode.de,
+                    },
+                );
+                expect(result.search.items.length).toEqual(2);
+            });
+        });
+
         // https://github.com/vendure-ecommerce/vendure/issues/1789
         describe('input escaping', () => {
             function search(term: string) {
