@@ -341,6 +341,7 @@ export class MollieService {
         const methods = await client.methods.list({
             locale: (input.locale as Locale | null) ?? undefined,
             billingCountry: input.billingCountry ?? undefined,
+            amount: input.amount ? toAmount(input.amount.value, input.amount.currency) : undefined,
             resource: 'orders',
         });
         return methods.map(m => ({
