@@ -9,7 +9,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { QueryBuilder, SelectQueryBuilder } from 'typeorm';
+import { Brackets, QueryBuilder, SelectQueryBuilder } from 'typeorm';
 
 import { SearchIndexItem } from '../entities/search-index-item.entity';
 
@@ -131,31 +131,38 @@ export function applyLanguageConstraints(
     defaultLanguageCode: LanguageCode,
 ) {
     const lcEscaped = qb.escape('languageCode');
+    const ciEscaped = qb.escape('channelId');
+    const pviEscaped = qb.escape('productVariantId');
+
     if (languageCode === defaultLanguageCode) {
-        qb.andWhere(`si.${lcEscaped} = :languageCode`, { languageCode });
-    } else {
-        qb.andWhere(`si.${lcEscaped} IN (:...languageCodes)`, {
-            languageCodes: [languageCode, defaultLanguageCode],
+        qb.andWhere(`si.${lcEscaped} = :languageCode`, {
+            languageCode,
         });
+    } else {
+        const count = qb
+            .subQuery()
+            .select('COUNT(*) as countLanguageCode')
+            .from(SearchIndexItem, 'sil')
+            .where(`sil.${ciEscaped} = si.${ciEscaped}`)
+            .andWhere(`sil.${pviEscaped} = si.${pviEscaped}`)
+            .andWhere(`sil.${lcEscaped} = :countLanguageCode`)
+            .getQuery();
 
-        const joinFieldConditions = identifierFields
-            .map(field => `si.${qb.escape(field)} = sil.${qb.escape(field)}`)
-            .join(' AND ');
-
-        qb.leftJoin(
-            SearchIndexItem,
-            'sil',
-            `
-            ${joinFieldConditions}
-            AND si.${lcEscaped} != sil.${lcEscaped}
-            AND sil.${lcEscaped} = :languageCode
-        `,
-            {
-                languageCode,
-            },
+        qb.andWhere(
+            new Brackets(qb1 => {
+                qb1.where(`si.${lcEscaped} = :languageCode`, {
+                    languageCode,
+                }).orWhere(
+                    new Brackets(qb2 => {
+                        qb2.where(`si.${lcEscaped} = :defaultLanguageCode`, {
+                            defaultLanguageCode,
+                        }).andWhere(`NOT(1 IN (${count}))`, {
+                            countLanguageCode: languageCode,
+                        });
+                    }),
+                );
+            }),
         );
-
-        qb.andWhere(`sil.${lcEscaped} IS NULL`);
     }
 
     return qb;
