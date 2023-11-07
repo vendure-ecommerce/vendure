@@ -1645,9 +1645,8 @@ export type MollieAmount = {
 };
 
 export type MollieAmountInput = {
-  __typename?: 'MollieAmountInput';
-  currency: Scalars['String']['output'];
-  value: Scalars['Int']['output'];
+  currency: Scalars['String']['input'];
+  value: Scalars['Int']['input'];
 };
 
 export type MolliePaymentIntent = {

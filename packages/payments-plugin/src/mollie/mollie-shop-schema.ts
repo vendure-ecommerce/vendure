@@ -32,7 +32,7 @@ export const shopSchema = gql`
         paymentMethodCode: String!
         molliePaymentMethodCode: String
     }
-    type MollieAmountInput {
+    input MollieAmountInput {
         value: Int!
         currency: String!
     }
