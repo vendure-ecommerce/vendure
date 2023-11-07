@@ -1682,6 +1682,8 @@ export type MolliePaymentMethodImages = {
 };
 
 export type MolliePaymentMethodsInput = {
+  billingCountry?: InputMaybe<Scalars['String']['input']>;
+  locale?: InputMaybe<Scalars['String']['input']>;
   paymentMethodCode: Scalars['String']['input'];
 };
 

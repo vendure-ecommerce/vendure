@@ -34,6 +34,8 @@ export const shopSchema = gql`
     }
     input MolliePaymentMethodsInput {
         paymentMethodCode: String!
+        billingCountry: String
+        locale: String
     }
     extend type Mutation {
         createMolliePaymentIntent(input: MolliePaymentIntentInput!): MolliePaymentIntentResult!
