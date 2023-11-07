@@ -923,8 +923,8 @@ export class OrderService {
             });
         }
         const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
-        await this.applyPriceAdjustments(ctx, order);
-        return this.connection.getRepository(ctx, Order).save(order);
+        await this.applyPriceAdjustments(ctx, updatedOrder);
+        return this.connection.getRepository(ctx, Order).save(updatedOrder);
     }
 
     /**
