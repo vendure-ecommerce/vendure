@@ -337,11 +337,19 @@ export class MollieService {
             throw Error(`No apiKey configured for payment method ${input.paymentMethodCode}`);
         }
         const client = createMollieClient({ apiKey });
+        const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
+
+        // Only pass the extra options if we have an active order
+        const alreadyPaid = activeOrder ? totalCoveredByPayments(activeOrder) : 0;
+        const orderAmount = activeOrder
+            ? toAmount(activeOrder.totalWithTax - alreadyPaid, activeOrder.currencyCode)
+            : undefined;
+
         // We use the orders API, so list available methods for that API usage
         const methods = await client.methods.list({
             locale: (input.locale as Locale | null) ?? undefined,
-            billingCountry: input.billingCountry ?? undefined,
-            amount: input.amount ? toAmount(input.amount.value, input.amount.currency) : undefined,
+            billingCountry: activeOrder?.billingAddress.countryCode,
+            amount: orderAmount,
             resource: 'orders',
         });
         return methods.map(m => ({

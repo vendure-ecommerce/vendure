@@ -1644,11 +1644,6 @@ export type MollieAmount = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
-export type MollieAmountInput = {
-  currency: Scalars['String']['input'];
-  value: Scalars['Int']['input'];
-};
-
 export type MolliePaymentIntent = {
   __typename?: 'MolliePaymentIntent';
   url: Scalars['String']['output'];
@@ -1687,8 +1682,6 @@ export type MolliePaymentMethodImages = {
 };
 
 export type MolliePaymentMethodsInput = {
-  amount?: InputMaybe<MollieAmountInput>;
-  billingCountry?: InputMaybe<Scalars['String']['input']>;
   locale?: InputMaybe<Scalars['String']['input']>;
   paymentMethodCode: Scalars['String']['input'];
 };
