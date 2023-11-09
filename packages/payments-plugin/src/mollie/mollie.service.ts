@@ -339,6 +339,10 @@ export class MollieService {
         const client = createMollieClient({ apiKey });
         const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
 
+        if (activeOrder) {
+            await this.entityHydrator.hydrate(ctx, activeOrder, { relations: ['payments'] });
+        }
+
         // Only pass the extra options if we have an active order
         const alreadyPaid = activeOrder ? totalCoveredByPayments(activeOrder) : 0;
         const orderAmount = activeOrder
