@@ -1656,6 +1656,7 @@ export type MolliePaymentIntentError = ErrorResult & {
 };
 
 export type MolliePaymentIntentInput = {
+  locale?: InputMaybe<Scalars['String']['input']>;
   molliePaymentMethodCode?: InputMaybe<Scalars['String']['input']>;
   paymentMethodCode: Scalars['String']['input'];
   redirectUrl?: InputMaybe<Scalars['String']['input']>;

@@ -179,7 +179,7 @@ export class MollieService {
                 this.options.useDynamicRedirectUrl === true ? redirectUrl : `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
-            locale: getLocale(billingAddress.country, ctx.languageCode),
+            locale: input.locale ?? getLocale(billingAddress.country, ctx.languageCode),
             lines: toMollieOrderLines(order, alreadyPaid),
         };
         if (molliePaymentMethodCode) {
