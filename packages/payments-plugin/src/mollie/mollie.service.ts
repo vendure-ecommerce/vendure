@@ -349,9 +349,13 @@ export class MollieService {
             ? toAmount(activeOrder.totalWithTax - alreadyPaid, activeOrder.currencyCode)
             : undefined;
 
+        const orderLocale = activeOrder?.billingAddress.country
+            ? (getLocale(activeOrder.billingAddress.country, ctx.languageCode) as Locale)
+            : undefined;
+
         // We use the orders API, so list available methods for that API usage
         const methods = await client.methods.list({
-            locale: (input.locale as Locale | null) ?? undefined,
+            locale: (input.locale as Locale | null) ?? orderLocale ?? undefined,
             billingCountry: activeOrder?.billingAddress.countryCode,
             amount: orderAmount,
             resource: 'orders',
