@@ -30,7 +30,7 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit() {
-        this.currencyCode = this.product.variants[0].currencyCode;
+        this.currencyCode = this.product.variants[0]?.currencyCode;
         for (const optionGroup of this.product.optionGroups) {
             (this.form.get('options') as FormRecord).addControl(
                 optionGroup.code,
