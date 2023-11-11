@@ -332,12 +332,12 @@ export class MollieService {
 
     async getEnabledPaymentMethods(
         ctx: RequestContext,
-        input: MolliePaymentMethodsInput,
+        paymentMethodCode: string,
     ): Promise<MolliePaymentMethod[]> {
-        const paymentMethod = await this.getPaymentMethod(ctx, input.paymentMethodCode);
+        const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
         const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
         if (!apiKey) {
-            throw Error(`No apiKey configured for payment method ${input.paymentMethodCode}`);
+            throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
         }
 
         const client = createMollieClient({ apiKey });

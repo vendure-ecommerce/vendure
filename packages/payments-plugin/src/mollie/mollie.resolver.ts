@@ -38,8 +38,8 @@ export class MollieResolver {
     @Allow(Permission.Public)
     async molliePaymentMethods(
         @Ctx() ctx: RequestContext,
-        @Args('input') input: MolliePaymentMethodsInput,
+        @Args('input') { paymentMethodCode }: MolliePaymentMethodsInput,
     ): Promise<MolliePaymentMethod[]> {
-        return this.mollieService.getEnabledPaymentMethods(ctx, input);
+        return this.mollieService.getEnabledPaymentMethods(ctx, paymentMethodCode);
     }
 }
