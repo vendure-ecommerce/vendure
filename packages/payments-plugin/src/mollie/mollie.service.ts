@@ -6,10 +6,12 @@ import createMollieClient, {
 } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Inject, Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import {
     ActiveOrderService,
     EntityHydrator,
     ErrorResult,
+    Injector,
     Logger,
     Order,
     OrderService,
@@ -61,6 +63,7 @@ export class MollieService {
         private orderService: OrderService,
         private entityHydrator: EntityHydrator,
         private variantService: ProductVariantService,
+        private moduleRef: ModuleRef,
     ) {}
 
     /**
@@ -179,7 +182,7 @@ export class MollieService {
                 this.options.useDynamicRedirectUrl === true ? redirectUrl : `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
-            locale: input.locale ?? getLocale(billingAddress.country, ctx.languageCode),
+            locale: getLocale(billingAddress.country, ctx.languageCode),
             lines: toMollieOrderLines(order, alreadyPaid),
         };
         if (molliePaymentMethodCode) {
@@ -336,28 +339,18 @@ export class MollieService {
         if (!apiKey) {
             throw Error(`No apiKey configured for payment method ${input.paymentMethodCode}`);
         }
+
         const client = createMollieClient({ apiKey });
         const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
-
-        if (activeOrder) {
-            await this.entityHydrator.hydrate(ctx, activeOrder, { relations: ['payments'] });
-        }
-
-        // Only pass the extra options if we have an active order
-        const alreadyPaid = activeOrder ? totalCoveredByPayments(activeOrder) : 0;
-        const orderAmount = activeOrder
-            ? toAmount(activeOrder.totalWithTax - alreadyPaid, activeOrder.currencyCode)
-            : undefined;
-
-        const orderLocale = activeOrder?.billingAddress.country
-            ? (getLocale(activeOrder.billingAddress.country, ctx.languageCode) as Locale)
-            : undefined;
+        const additionalParams = await this.options.enabledPaymentMethodsParams?.(
+            new Injector(this.moduleRef),
+            ctx,
+            activeOrder ?? null,
+        );
 
         // We use the orders API, so list available methods for that API usage
         const methods = await client.methods.list({
-            locale: (input.locale as Locale | null) ?? orderLocale ?? undefined,
-            billingCountry: activeOrder?.billingAddress.countryCode,
-            amount: orderAmount,
+            ...additionalParams,
             resource: 'orders',
         });
         return methods.map(m => ({

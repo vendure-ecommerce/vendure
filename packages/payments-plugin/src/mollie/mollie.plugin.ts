@@ -1,4 +1,12 @@
-import { PluginCommonModule, RuntimeVendureConfig, VendurePlugin } from '@vendure/core';
+import type { ListParameters } from '@mollie/api-client/dist/types/src/binders/methods/parameters';
+import {
+    Injector,
+    Order,
+    PluginCommonModule,
+    RequestContext,
+    RuntimeVendureConfig,
+    VendurePlugin,
+} from '@vendure/core';
 
 import { PLUGIN_INIT_OPTIONS } from './constants';
 import { shopSchema } from './mollie-shop-schema';
@@ -6,6 +14,8 @@ import { MollieController } from './mollie.controller';
 import { molliePaymentHandler } from './mollie.handler';
 import { MollieResolver } from './mollie.resolver';
 import { MollieService } from './mollie.service';
+
+export type AdditionalEnabledPaymentMethodsParams = Partial<Omit<ListParameters, 'resource'>>;
 
 /**
  * @description
@@ -33,6 +43,44 @@ export interface MolliePluginOptions {
      * @since 2.0.0
      */
     useDynamicRedirectUrl?: boolean;
+
+    /**
+     * @description
+     * Provide additional parameters to the Mollie enabled payment methods API call. By default,
+     * the plugin will already pass the `resource` parameter.
+     *
+     * For example, if you want to provide a `locale` and `billingCountry` for the API call, you can do so like this:
+     *
+     * **Note:** The `order` argument is possibly `null`, this could happen when you fetch the available payment methods
+     * before the order is created.
+     *
+     * @example
+     * ```ts
+     * import { VendureConfig } from '\@vendure/core';
+     * import { MolliePlugin } from '\@vendure/payments-plugin/package/mollie';
+     *
+     * export const config: VendureConfig = {
+     *   // ...
+     *   plugins: [
+     *     MolliePlugin.init({
+     *       enabledPaymentMethodsParams: (injector, ctx, order) => {
+     *         return {
+     *           locale: ctx.languageCode,
+     *           billingCountry: order?.billingAddress?.countryCode,
+     *         },
+     *       }
+     *     }),
+     *   ],
+     * };
+     * ```
+     *
+     * @since 2.2.0
+     */
+    enabledPaymentMethodsParams?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order | null,
+    ) => AdditionalEnabledPaymentMethodsParams | Promise<AdditionalEnabledPaymentMethodsParams>;
 }
 
 /**

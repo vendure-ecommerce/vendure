@@ -31,11 +31,9 @@ export const shopSchema = gql`
         redirectUrl: String
         paymentMethodCode: String!
         molliePaymentMethodCode: String
-        locale: String
     }
     input MolliePaymentMethodsInput {
         paymentMethodCode: String!
-        locale: String
     }
     extend type Mutation {
         createMolliePaymentIntent(input: MolliePaymentIntentInput!): MolliePaymentIntentResult!
