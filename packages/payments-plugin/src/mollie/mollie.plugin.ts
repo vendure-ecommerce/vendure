@@ -57,15 +57,19 @@ export interface MolliePluginOptions {
      * @example
      * ```ts
      * import { VendureConfig } from '\@vendure/core';
-     * import { MolliePlugin } from '\@vendure/payments-plugin/package/mollie';
+     * import { MolliePlugin, getLocale } from '\@vendure/payments-plugin/package/mollie';
      *
      * export const config: VendureConfig = {
      *   // ...
      *   plugins: [
      *     MolliePlugin.init({
      *       enabledPaymentMethodsParams: (injector, ctx, order) => {
+     *         const locale = order?.billingAddress?.countryCode
+     *             ? getLocale(order.billingAddress.countryCode, ctx.languageCode)
+     *             : undefined;
+     *
      *         return {
-     *           locale: ctx.languageCode,
+     *           locale,
      *           billingCountry: order?.billingAddress?.countryCode,
      *         },
      *       }
