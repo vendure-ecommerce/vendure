@@ -32,6 +32,7 @@ import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Seller } from '../../entity/seller/seller.entity';
 import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
@@ -177,6 +178,7 @@ export class ChannelService {
         this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
         return entity;
     }
+
     /**
      * @description
      * Given a channel token, returns the corresponding Channel if it exists, else will throw
@@ -329,16 +331,29 @@ export class ChannelService {
             if (originalDefaultCurrencyCode !== newCurrencyCode) {
                 // When updating the default currency code for a Channel, we also need to update
                 // and ProductVariantPrices in that channel which use the old currency code.
+                const [selectQbQuery, selectQbParams] = this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .createQueryBuilder('variant')
+                    .select('variant.id')
+                    .innerJoin(ProductVariantPrice, 'pvp', 'pvp.variantId = variant.id')
+                    .andWhere('pvp.channelId = :channelId')
+                    .andWhere('pvp.currencyCode = :newCurrencyCode')
+                    .groupBy('variant.id')
+                    .getQueryAndParameters();
+
                 const qb = this.connection
                     .getRepository(ctx, ProductVariantPrice)
                     .createQueryBuilder('pvp')
                     .update()
-                    .where('channelId = :channelId', { channelId: channel.id })
-                    .andWhere('currencyCode = :currencyCode', {
-                        currencyCode: originalDefaultCurrencyCode,
-                    })
-                    .set({ currencyCode: newCurrencyCode });
-
+                    .where('channelId = :channelId')
+                    .andWhere('currencyCode = :oldCurrencyCode')
+                    .andWhere(`variantId NOT IN (${selectQbQuery})`, selectQbParams)
+                    .set({ currencyCode: newCurrencyCode })
+                    .setParameters({
+                        channelId: channel.id,
+                        oldCurrencyCode: originalDefaultCurrencyCode,
+                        newCurrencyCode,
+                    });
                 await qb.execute();
             }
         }

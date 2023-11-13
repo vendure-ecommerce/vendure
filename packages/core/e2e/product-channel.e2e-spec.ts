@@ -506,5 +506,24 @@ describe('ChannelAware Products and ProductVariants', () => {
                 { currencyCode: 'EUR', price: 300 },
             ]);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2391
+        it('does not duplicate an existing price', async () => {
+            await adminClient.query(UpdateChannelDocument, {
+                input: {
+                    id: secondChannelId,
+                    defaultCurrencyCode: CurrencyCode.GBP,
+                },
+            });
+
+            const { productVariants: after } = await adminClient.query(GetProductVariantListDocument, {});
+
+            expect(after.items.map(i => i.currencyCode)).toEqual(['GBP']);
+            expect(after.items[0]?.prices.sort((a, b) => a.price - b.price)).toEqual([
+                { currencyCode: 'GBP', price: 100 },
+                { currencyCode: 'AUD', price: 200 },
+                { currencyCode: 'EUR', price: 300 },
+            ]);
+        });
     });
 });
