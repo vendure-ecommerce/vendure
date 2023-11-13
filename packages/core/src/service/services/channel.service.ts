@@ -322,6 +322,10 @@ export class ChannelService {
         }
         if (input.currencyCode || input.defaultCurrencyCode) {
             const newCurrencyCode = input.defaultCurrencyCode || input.currencyCode;
+            updatedChannel.availableCurrencyCodes = unique([
+                ...updatedChannel.availableCurrencyCodes,
+                updatedChannel.defaultCurrencyCode,
+            ]);
             if (originalDefaultCurrencyCode !== newCurrencyCode) {
                 // When updating the default currency code for a Channel, we also need to update
                 // and ProductVariantPrices in that channel which use the old currency code.
@@ -337,6 +341,14 @@ export class ChannelService {
 
                 await qb.execute();
             }
+        }
+        if (
+            input.availableCurrencyCodes &&
+            !updatedChannel.availableCurrencyCodes.includes(updatedChannel.defaultCurrencyCode)
+        ) {
+            throw new UserInputError(`error.available-currency-codes-must-include-default`, {
+                defaultCurrencyCode: updatedChannel.defaultCurrencyCode,
+            });
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
