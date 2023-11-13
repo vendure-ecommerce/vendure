@@ -12,6 +12,8 @@ import { NavBuilderService } from '../providers/nav-builder/nav-builder.service'
  *
  * @example
  * ```ts title="providers.ts"
+ * import { addNavMenuSection } from '\@vendure/admin-ui/core';
+ *
  * export default [
  *     addNavMenuSection({
  *         id: 'reports',
@@ -48,6 +50,8 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  *
  * @example
  * ```ts title="providers.ts"
+ * import { addNavMenuItem } from '\@vendure/admin-ui/core';
+ *
  * export default [
  *     addNavMenuItem({
  *         id: 'reviews',
@@ -57,7 +61,7 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  *     },
  *     'marketing'),
  * ];
- * ``
+ * ```
  *
  * @docsCategory nav-menu
  */

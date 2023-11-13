@@ -115,6 +115,7 @@ export class TestServer {
             const app = await NestFactory.create(appModule.AppModule, {
                 cors: config.apiOptions.cors,
                 logger: new Logger(),
+                abortOnError: false,
             });
             const { tokenMethod } = config.authOptions;
             const usingCookie =

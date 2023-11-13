@@ -36,7 +36,6 @@ import {
     SettlePaymentResult,
     SettlePaymentErrorResult
 } from '@vendure/core';
-import { CancelPaymentErrorResult } from '@vendure/core/src/index';
 import { sdk } from 'payment-provider-sdk';
 
 /**

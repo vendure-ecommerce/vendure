@@ -109,6 +109,11 @@ export async function request(query: string, variables: any) {
 
 There are some concrete examples of this approach in the examples later on in this guide.
 
+### Session duration
+
+The duration of a session is determined by the [AuthOptions.sessionDuration](/reference/typescript-api/auth/auth-options#sessionduration) config
+property. Sessions will automatically extend (or "refresh") when a user interacts with the API, so in effect the `sessionDuration` signifies the
+length of time that a session will stay valid since the last API call.
 
 ## Specifying a channel
 
