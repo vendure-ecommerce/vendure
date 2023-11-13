@@ -1668,6 +1668,14 @@ export class OrderService {
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
 
+        // When changing the Order's currencyCode (on account of passing
+        // a different currencyCode into the RequestContext), we need to make sure
+        // to update all existing OrderLines to use prices in this new currency.
+        if (ctx.currencyCode !== order.currencyCode) {
+            updatedOrderLines = order.lines;
+            order.currencyCode = ctx.currencyCode;
+        }
+
         if (updatedOrderLines?.length) {
             const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =
                 this.configService.orderOptions;
