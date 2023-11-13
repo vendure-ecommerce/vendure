@@ -28,6 +28,7 @@ import {
     CREATE_ROLE,
     GET_CHANNELS,
     GET_CUSTOMER_LIST,
+    GET_PRODUCT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     ME,
     UPDATE_CHANNEL,
@@ -435,6 +436,21 @@ describe('Channels', () => {
                     },
                 });
             }, 'availableCurrencyCodes must include the defaultCurrencyCode (AUD)'),
+        );
+
+        it(
+            'specifying an unsupported currencyCode throws',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<Codegen.GetProductListQuery, Codegen.GetProductListQueryVariables>(
+                    GET_PRODUCT_LIST,
+                    {
+                        options: {
+                            take: 1,
+                        },
+                    },
+                    { currencyCode: 'JPY' },
+                );
+            }, 'The currency "JPY" is not available in the current Channel'),
         );
     });
 });

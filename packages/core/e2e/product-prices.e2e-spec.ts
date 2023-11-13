@@ -164,17 +164,17 @@ describe('Product prices', () => {
             expect(product?.variants[0]?.currencyCode).toEqual(CurrencyCode.GBP);
         });
 
-        it('uses default if unrecognised currency code passed in query string', async () => {
-            const { product } = await adminClient.query(
-                GetProductWithVariantsDocument,
-                {
-                    id: multiPriceProduct.id,
-                },
-                { currencyCode: 'JPY' },
-            );
-
-            expect(product?.variants[0]?.price).toEqual(1200);
-            expect(product?.variants[0]?.currencyCode).toEqual(CurrencyCode.USD);
-        });
+        it(
+            'throws if unrecognised currency code passed in query string',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(
+                    GetProductWithVariantsDocument,
+                    {
+                        id: multiPriceProduct.id,
+                    },
+                    { currencyCode: 'JPY' },
+                );
+            }, 'The currency "JPY" is not available in the current Channel'),
+        );
     });
 });
