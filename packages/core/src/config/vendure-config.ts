@@ -299,6 +299,22 @@ export interface CookieOptions {
      * the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
      */
     overwrite?: boolean;
+
+    /**
+     * @description
+     * A number representing the milliseconds from Date.now() for expiry
+     *
+     * @since 2.2.0
+     */
+    maxAge?: number;
+
+    /**
+     * @description
+     * a Date object indicating the cookie's expiration date (expires at the end of session by default).
+     *
+     * @since 2.2.0
+     */
+    expires?: Date;
 }
 
 /**
