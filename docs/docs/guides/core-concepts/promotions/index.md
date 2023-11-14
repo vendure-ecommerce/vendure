@@ -164,88 +164,95 @@ A primary use-case of this API is to add a free gift to the Order. Here's an exa
 
 ```ts title="src/plugins/free-gift/free-gift.plugin.ts"
 import {
-    ID, idsAreEqual, isGraphQlErrorResult, LanguageCode,
-    Logger, OrderLine, OrderService, PromotionItemAction, VendurePlugin,
-} from '@vendure/core';
-import { createHash } from 'crypto';
+	ID, idsAreEqual, isGraphQlErrorResult, LanguageCode, Logger,
+	OrderLine, OrderService, PromotionItemAction, VendurePlugin,
+} from "@vendure/core";
+import { createHash } from "crypto";
 
 let orderService: OrderService;
 export const freeGiftAction = new PromotionItemAction({
-    code: 'free_gift',
-    description: [{languageCode: LanguageCode.en, value: 'Add free gifts to the order'}],
-    args: {
-        productVariantIds: {
-            type: 'ID',
-            list: true,
-            ui: {component: 'product-selector-form-input'},
-            label: [{languageCode: LanguageCode.en, value: 'Gift product variants'}],
-        },
-    },
-    init(injector) {
-        orderService = injector.get(OrderService);
-    },
-    execute(ctx, orderItem, orderLine, args) {
-        // This part is responsible for ensuring the variants marked as 
-        // "free gifts" have their price reduced to zero.  
-        if (lineContainsIds(args.productVariantIds, orderLine)) {
-            const unitPrice = orderLine.productVariant.listPriceIncludesTax
-                ? orderLine.unitPriceWithTax
-                : orderLine.unitPrice;
-            return -unitPrice;
-        }
-        return 0;
-    },
-    // The onActivate function is part of the side effect API, and
-    // allows us to perform some action whenever a Promotion becomes active
-    // due to it's conditions & constraints being satisfied.  
-    async onActivate(ctx, order, args, promotion) {
-        for (const id of args.productVariantIds) {
-            if (
-                !order.lines.find(
-                    (line) =>
-                        idsAreEqual(line.productVariant.id, id) &&
-                        line.customFields.freeGiftDescription == null,
-                )
-            ) {
-                // The order does not yet contain this free gift, so add it
-                const result = await orderService.addItemToOrder(ctx, order.id, id, 1, {
-                    freeGiftPromotionId: promotion.id.toString(),
-                });
-                if (isGraphQlErrorResult(result)) {
-                    Logger.error(`Free gift action error for variantId "${id}": ${result.message}`);
-                }
-            }
-        }
-    },
-    // The onDeactivate function is the other part of the side effect API and is called 
-    // when an active Promotion becomes no longer active. It should reverse any 
-    // side effect performed by the onActivate function.
-    async onDeactivate(ctx, order, args, promotion) {
-        const linesWithFreeGift = order.lines.filter(
-            (line) => line.customFields.freeGiftPromotionId === promotion.id.toString(),
-        );
-        for (const line of linesWithFreeGift) {
-            await orderService.removeItemFromOrder(ctx, order.id, line.id);
-        }
-    },
+	code: "free_gift",
+	description: [{ languageCode: LanguageCode.en, value: "Add free gifts to the order" }],
+	args: {
+		productVariantIds: {
+			type: "ID",
+			list: true,
+			ui: { component: "product-selector-form-input" },
+			label: [{ languageCode: LanguageCode.en, value: "Gift product variants" }],
+		},
+	},
+	init(injector) {
+		orderService = injector.get(OrderService);
+	},
+	execute(ctx, orderLine, args) {
+		// This part is responsible for ensuring the variants marked as
+		// "free gifts" have their price reduced to zero
+		if (lineContainsIds(args.productVariantIds, orderLine)) {
+			const unitPrice = orderLine.productVariant.listPriceIncludesTax
+				? orderLine.unitPriceWithTax
+				: orderLine.unitPrice;
+			return -unitPrice;
+		}
+		return 0;
+	},
+	// The onActivate function is part of the side effect API, and
+	// allows us to perform some action whenever a Promotion becomes active
+	// due to it's conditions & constraints being satisfied.
+	async onActivate(ctx, order, args, promotion) {
+		for (const id of args.productVariantIds) {
+			if (
+				!order.lines.find(
+					(line) =>
+						idsAreEqual(line.productVariant.id, id) &&
+						line.customFields.freeGiftPromotionId == null
+				)
+			) {
+				// The order does not yet contain this free gift, so add it
+				const result = await orderService.addItemToOrder(ctx, order.id, id, 1, {
+					freeGiftPromotionId: promotion.id.toString(),
+				});
+				if (isGraphQlErrorResult(result)) {
+					Logger.error(`Free gift action error for variantId "${id}": ${result.message}`);
+				}
+			}
+		}
+	},
+	// The onDeactivate function is the other part of the side effect API and is called
+	// when an active Promotion becomes no longer active. It should reverse any
+	// side effect performed by the onActivate function.
+	async onDeactivate(ctx, order, args, promotion) {
+		const linesWithFreeGift = order.lines.filter(
+			(line) => line.customFields.freeGiftPromotionId === promotion.id.toString()
+		);
+		for (const line of linesWithFreeGift) {
+			await orderService.removeItemFromOrder(ctx, order.id, line.id);
+		}
+	},
 });
 
 function lineContainsIds(ids: ID[], line: OrderLine): boolean {
-    return !!ids.find((id) => idsAreEqual(id, line.productVariant.id));
+	return !!ids.find((id) => idsAreEqual(id, line.productVariant.id));
 }
 
 @VendurePlugin({
-    configuration: config => {
-        config.promotionOptions.promotionActions.push(freeGiftAction);
-        config.customFields.OrderItem.push(
-            {
-                name: 'freeGiftPromotionId',
-                type: 'string',
-                public: true,
-                readonly: true,
-                nullable: true,
-            })
-    }
+	configuration: (config) => {
+		config.customFields.OrderLine.push({
+			name: "freeGiftPromotionId",
+			type: "string",
+			public: true,
+			readonly: true,
+			nullable: true,
+		});
+		config.customFields.OrderLine.push({
+			name: "freeGiftDescription",
+			type: "string",
+			public: true,
+			readonly: true,
+			nullable: true,
+		});
+		config.promotionOptions.promotionActions.push(freeGiftAction);
+		return config;
+	},
 })
 export class FreeGiftPromotionPlugin {}
 ```
