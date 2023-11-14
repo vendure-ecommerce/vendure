@@ -102,7 +102,12 @@ import { OrderDataTableComponent } from './components/order-data-table/order-dat
     exports: [OrderCustomFieldsCardComponent],
 })
 export class OrderModule {
-    constructor(private pageService: PageService) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(pageService: PageService) {
+        if (OrderModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         pageService.registerPageTab({
             priority: 0,
             location: 'order-list',
@@ -160,5 +165,6 @@ export class OrderModule {
                 ],
             }),
         });
+        OrderModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

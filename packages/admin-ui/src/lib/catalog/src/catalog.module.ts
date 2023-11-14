@@ -117,7 +117,12 @@ const CATALOG_COMPONENTS = [
     ],
 })
 export class CatalogModule {
+    private static hasRegisteredTabsAndBulkActions = false;
+
     constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        if (CatalogModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
@@ -259,5 +264,6 @@ export class CatalogModule {
                 ],
             }),
         });
+        CatalogModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

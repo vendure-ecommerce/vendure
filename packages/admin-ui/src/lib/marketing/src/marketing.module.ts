@@ -32,7 +32,12 @@ import { createRoutes } from './marketing.routes';
     declarations: [PromotionListComponent, PromotionDetailComponent],
 })
 export class MarketingModule {
-    constructor(private bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        if (MarketingModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         bulkActionRegistryService.registerBulkAction(assignPromotionsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removePromotionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deletePromotionsBulkAction);
@@ -61,5 +66,6 @@ export class MarketingModule {
                 ],
             }),
         });
+        MarketingModule.hasRegisteredTabsAndBulkActions = true;
     }
 }
