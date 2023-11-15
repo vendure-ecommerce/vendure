@@ -40,7 +40,7 @@ import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    configure: config => {
+    configuration: config => {
         config.customFields.Customer.push({
             type: 'string',
             name: 'avatarUrl',

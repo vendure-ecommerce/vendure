@@ -2143,6 +2143,7 @@ export type OrderLine = Node & {
   proratedUnitPrice: Scalars['Money']['output'];
   /** The proratedUnitPrice including tax */
   proratedUnitPriceWithTax: Scalars['Money']['output'];
+  /** The quantity of items purchased */
   quantity: Scalars['Int']['output'];
   taxLines: Array<TaxLine>;
   taxRate: Scalars['Float']['output'];

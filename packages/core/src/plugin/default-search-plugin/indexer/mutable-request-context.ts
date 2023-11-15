@@ -1,3 +1,4 @@
+import { CurrencyCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext, SerializedRequestContext } from '../../../api/common/request-context';
@@ -26,6 +27,10 @@ export class MutableRequestContext extends RequestContext {
 
     get channelId(): ID {
         return this.mutatedChannel?.id ?? super.channelId;
+    }
+
+    get currencyCode(): CurrencyCode {
+        return this.mutatedChannel?.defaultCurrencyCode ?? super.currencyCode;
     }
 
     static deserialize(ctxObject: SerializedRequestContext): MutableRequestContext {

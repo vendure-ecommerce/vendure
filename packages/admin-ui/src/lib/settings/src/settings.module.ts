@@ -128,7 +128,12 @@ import { createRoutes } from './settings.routes';
     ],
 })
 export class SettingsModule {
-    constructor(private bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        if (SettingsModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         bulkActionRegistryService.registerBulkAction(deleteSellersBulkAction);
 
         bulkActionRegistryService.registerBulkAction(deleteChannelsBulkAction);
@@ -451,5 +456,6 @@ export class SettingsModule {
                 ],
             }),
         });
+        SettingsModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

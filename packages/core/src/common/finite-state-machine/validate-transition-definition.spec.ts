@@ -77,4 +77,30 @@ describe('FSM validateTransitionDefinition()', () => {
         expect(result.valid).toBe(false);
         expect(result.error).toBe('The following states are unreachable: Unreachable');
     });
+
+    it('invalid - non-existent transition', () => {
+        const valid: Transitions<'Start' | 'End' | 'Unreachable'> = {
+            Start: { to: ['End'] },
+            End: { to: ['Bad' as any] },
+            Unreachable: { to: [] },
+        };
+
+        const result = validateTransitionDefinition(valid, 'Start');
+
+        expect(result.valid).toBe(false);
+        expect(result.error).toBe('The state "End" has a transition to an unknown state "Bad"');
+    });
+
+    it('invalid - missing initial state', () => {
+        const valid: Transitions<'Start' | 'End' | 'Unreachable'> = {
+            Start: { to: ['End'] },
+            End: { to: ['Start'] },
+            Unreachable: { to: [] },
+        };
+
+        const result = validateTransitionDefinition(valid, 'Created' as any);
+
+        expect(result.valid).toBe(false);
+        expect(result.error).toBe('The initial state "Created" is not defined');
+    });
 });

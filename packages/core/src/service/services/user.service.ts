@@ -18,7 +18,7 @@ import {
     VerificationTokenExpiredError,
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
-import { normalizeEmailAddress } from '../../common/index';
+import { isEmailAddressLike, normalizeEmailAddress } from '../../common/index';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
@@ -68,19 +68,25 @@ export class UserService {
         const entity = userType ?? (ctx.apiType === 'admin' ? 'administrator' : 'customer');
         const table = `${this.configService.dbConnectionOptions.entityPrefix ?? ''}${entity}`;
 
-        return this.connection
+        const qb = this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
             .innerJoin(table, table, `${table}.userId = user.id`)
             .leftJoinAndSelect('user.roles', 'roles')
             .leftJoinAndSelect('roles.channels', 'channels')
             .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethods')
-            .where('LOWER(user.identifier) = :identifier', {
+            .where('user.deletedAt IS NULL');
+
+        if (isEmailAddressLike(emailAddress)) {
+            qb.andWhere('LOWER(user.identifier) = :identifier', {
                 identifier: normalizeEmailAddress(emailAddress),
-            })
-            .andWhere('user.deletedAt IS NULL')
-            .getOne()
-            .then(result => result ?? undefined);
+            });
+        } else {
+            qb.andWhere('user.identifier = :identifier', {
+                identifier: emailAddress,
+            });
+        }
+        return qb.getOne().then(result => result ?? undefined);
     }
 
     /**

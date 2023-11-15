@@ -443,9 +443,9 @@ export class ProductVariantService {
             );
         }
 
-        const defaultChannelId = (await this.channelService.getDefaultChannel(ctx)).id;
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         await this.createOrUpdateProductVariantPrice(ctx, createdVariant.id, input.price, ctx.channelId);
-        if (!idsAreEqual(ctx.channelId, defaultChannelId)) {
+        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
             // When creating a ProductVariant _not_ in the default Channel, we still need to
             // create a ProductVariantPrice for it in the default Channel, otherwise errors will
             // result when trying to query it there.
@@ -453,7 +453,8 @@ export class ProductVariantService {
                 ctx,
                 createdVariant.id,
                 input.price,
-                defaultChannelId,
+                defaultChannel.id,
+                defaultChannel.defaultCurrencyCode,
             );
         }
         return createdVariant.id;
