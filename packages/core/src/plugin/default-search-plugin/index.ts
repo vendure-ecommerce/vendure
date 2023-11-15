@@ -9,3 +9,4 @@ export * from './search-strategy/postgres-search-strategy';
 export * from './search-strategy/sqlite-search-strategy';
 export * from './search-strategy/search-strategy';
 export * from './search-strategy/search-strategy-common';
+export * from './indexer/mutable-request-context';
