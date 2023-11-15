@@ -77,6 +77,16 @@ If you are building an Admin UI extension, you can use the built-in [`LocaleCurr
 </div>
 ```
 
+## Support for multiple currencies
+
+Vendure supports multiple currencies out-of-the-box. The available currencies must first be set at the Channel level
+(see the [Channels, Currencies & Prices section](/guides/core-concepts/channels/#channels-currencies--prices)), and then
+a price may be set on a `ProductVariant` in each of the available currencies.
+
+When using multiple currencies, the [ProductVariantPriceSelectionStrategy](/reference/typescript-api/configuration/product-variant-price-selection-strategy/)
+is used to determine which of the available prices to return when fetching the details of a `ProductVariant`. The default strategy
+is to return the price in the currency of the current session request context, which is determined firstly by any `?currencyCode=XXX` query parameter
+on the request, and secondly by the `defaultCurrencyCode` of the Channel.
 
 ## The GraphQL `Money` scalar
 
