@@ -2,13 +2,16 @@ import createMollieClient, {
     Order as MollieOrder,
     OrderStatus,
     PaymentMethod as MollieClientMethod,
+    Locale,
 } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Inject, Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import {
     ActiveOrderService,
     EntityHydrator,
     ErrorResult,
+    Injector,
     Logger,
     Order,
     OrderService,
@@ -28,6 +31,7 @@ import {
     MolliePaymentIntentInput,
     MolliePaymentIntentResult,
     MolliePaymentMethod,
+    MolliePaymentMethodsInput,
 } from './graphql/generated-shop-types';
 import { amountToCents, getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
@@ -59,6 +63,7 @@ export class MollieService {
         private orderService: OrderService,
         private entityHydrator: EntityHydrator,
         private variantService: ProductVariantService,
+        private moduleRef: ModuleRef,
     ) {}
 
     /**
@@ -334,9 +339,20 @@ export class MollieService {
         if (!apiKey) {
             throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
         }
+
         const client = createMollieClient({ apiKey });
+        const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
+        const additionalParams = await this.options.enabledPaymentMethodsParams?.(
+            new Injector(this.moduleRef),
+            ctx,
+            activeOrder ?? null,
+        );
+
         // We use the orders API, so list available methods for that API usage
-        const methods = await client.methods.list({ resource: 'orders' });
+        const methods = await client.methods.list({
+            ...additionalParams,
+            resource: 'orders',
+        });
         return methods.map(m => ({
             ...m,
             code: m.id,
