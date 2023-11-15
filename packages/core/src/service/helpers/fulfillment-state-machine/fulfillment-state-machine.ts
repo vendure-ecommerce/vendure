@@ -58,7 +58,7 @@ export class FulfillmentStateMachine {
             {} as Transitions<FulfillmentState>,
         );
 
-        const validationResult = validateTransitionDefinition(allTransitions, 'Pending');
+        const validationResult = validateTransitionDefinition(allTransitions, this.initialState);
         if (!validationResult.valid && validationResult.error) {
             Logger.error(`The fulfillment process has an invalid configuration:`);
             throw new Error(validationResult.error);
