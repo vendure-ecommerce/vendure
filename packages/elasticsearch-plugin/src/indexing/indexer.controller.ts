@@ -16,6 +16,7 @@ import {
     InternalServerError,
     LanguageCode,
     Logger,
+    MutableRequestContext,
     Product,
     ProductPriceApplicator,
     ProductVariant,
@@ -47,7 +48,6 @@ import {
 } from '../types';
 
 import { createIndices, getClient, getIndexNameByAlias } from './indexing-utils';
-import { MutableRequestContext } from './mutable-request-context';
 
 const REINDEX_CHUNK_SIZE = 2500;
 const REINDEX_OPERATION_CHUNK_SIZE = 3000;
