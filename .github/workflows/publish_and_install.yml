@@ -30,14 +30,17 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install Verdaccio
       run: |
+        apt-get update
+        apt-get install jq
         npm install -g verdaccio
         npm install -g wait-on
         nohup verdaccio &
         wait-on http://localhost:4873
-        TOKEN=$(curl -XPUT \
+        TOKEN_RES=$(curl -XPUT \
           -H "Content-type: application/json" \
           -d '{ "name": "test", "password": "test" }' \
           'http://localhost:4873/-/user/org.couchdb.user:test')
+        TOKEN=$(echo "$TOKEN_RES" | jq -r '.token')
         npm set registry "http://localhost:4873"
         npm set //localhost:4873/:_authToken $TOKEN
     - name: Windows dependencies
