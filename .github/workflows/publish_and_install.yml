@@ -33,12 +33,16 @@ jobs:
         npm install -g verdaccio
         npm install -g verdaccio-auth-memory
         npm install -g verdaccio-memory
-        npm install -g npm-auth-to-token@1.0.0
         tmp_registry_log=`mktemp`
         mkdir -p $HOME/.config/verdaccio
         cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_registry_log &
-        npm-auth-to-token -u test -p test -e test@test.com -r http://0.0.0.0:4873
+        TOKEN=$(curl -XPUT \
+          -H "Content-type: application/json" \
+          -d '{ "name": "test", "password": "test" }' \
+          'http://localhost:4873/-/user/org.couchdb.user:test')
+        npm set registry "http://localhost:4873"
+        npm set //localhost:4873/:_authToken $TOKEN
     - name: Windows dependencies
       if: matrix.os == 'windows-latest'
       run: npm install -g @angular/cli
