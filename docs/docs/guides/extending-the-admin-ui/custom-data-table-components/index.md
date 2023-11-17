@@ -33,7 +33,7 @@ import { CustomColumnComponent } from '@vendure/admin-ui/core';
     standalone: true,
 })
 export class SlugLinkComponent implements CustomColumnComponent {
-    @Input() rowItem: any;
+    @Input() rowItem: { slug: string };
 }
 ```
 
@@ -93,7 +93,7 @@ import { SlugLink } from './components/SlugLink';
 export default [
     registerReactDataTableComponent({
         component: SlugWithLink,
-        tableId: 'collection-list',
+        tableId: 'product-list',
         columnId: 'slug',
         props: {
             // Additional props may be passed to the component
