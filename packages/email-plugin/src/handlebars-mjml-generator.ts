@@ -56,11 +56,20 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
             return dateFormat(date, format);
         });
 
-        Handlebars.registerHelper('formatMoney', (amount?: number) => {
-            if (amount == null) {
-                return amount;
-            }
-            return (amount / 100).toFixed(2);
-        });
+        Handlebars.registerHelper(
+            'formatMoney',
+            (amount?: number, currencyCode?: string, locale?: string) => {
+                if (amount == null) {
+                    return amount;
+                }
+                if (!currencyCode) {
+                    return (amount / 100).toFixed(2);
+                }
+                return new Intl.NumberFormat(locale, {
+                    style: 'currency',
+                    currency: currencyCode,
+                }).format(amount / 100);
+            },
+        );
     }
 }
