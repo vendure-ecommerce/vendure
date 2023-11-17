@@ -31,13 +31,13 @@ jobs:
     - name: Install Verdaccio
       run: |
         npm install -g verdaccio
-        npm install -g verdaccio-auth-memory
-        npm install -g verdaccio-memory
+#        npm install -g verdaccio-auth-memory
+#        npm install -g verdaccio-memory
         npm install -g wait-on
-        tmp_registry_log=`mktemp`
-        mkdir -p $HOME/.config/verdaccio
-        cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
-        nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_registry_log &
+#        tmp_registry_log=`mktemp`
+#        mkdir -p $HOME/.config/verdaccio
+#        cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+        nohup verdaccio &
         wait-on http://localhost:4873
         TOKEN=$(curl -XPUT \
           -H "Content-type: application/json" \
