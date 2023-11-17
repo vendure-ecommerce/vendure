@@ -1,3 +1,26 @@
+## <small>2.1.3 (2023-11-17)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix getting currencyCode in create product variant dialog (#2508) ([c4595e7](https://github.com/vendure-ecommerce/vendure/commit/c4595e7)), closes [#2508](https://github.com/vendure-ecommerce/vendure/issues/2508)
+* **admin-ui** Fix handling of Country custom fields ([3538bee](https://github.com/vendure-ecommerce/vendure/commit/3538bee))
+* **admin-ui** Fix promotion list actionbar location id ([18a0b2c](https://github.com/vendure-ecommerce/vendure/commit/18a0b2c))
+* **admin-ui** Prevent module constructor side effects from repeating ([a684b59](https://github.com/vendure-ecommerce/vendure/commit/a684b59)), closes [#2455](https://github.com/vendure-ecommerce/vendure/issues/2455)
+* **admin-ui** Update channel switcher after deleting channel ([32f592d](https://github.com/vendure-ecommerce/vendure/commit/32f592d)), closes [#2511](https://github.com/vendure-ecommerce/vendure/issues/2511)
+* **core** Add constraints to Channel currencyCode settings ([0ebf0fb](https://github.com/vendure-ecommerce/vendure/commit/0ebf0fb)), closes [#GHSA-wm63-7627-ch33](https://github.com/vendure-ecommerce/vendure/issues/GHSA-wm63-7627-ch33)
+* **core** Allow case-sensitive Administrator identifiers ([6527e23](https://github.com/vendure-ecommerce/vendure/commit/6527e23)), closes [#2485](https://github.com/vendure-ecommerce/vendure/issues/2485)
+* **core** Apply pricing adjustments against updated order (#2512) ([272be66](https://github.com/vendure-ecommerce/vendure/commit/272be66)), closes [#2512](https://github.com/vendure-ecommerce/vendure/issues/2512)
+* **core** Correctly handle changing Order currencyCode ([f544cf3](https://github.com/vendure-ecommerce/vendure/commit/f544cf3)), closes [#2469](https://github.com/vendure-ecommerce/vendure/issues/2469) [#GHSA-wm63-7627-ch33](https://github.com/vendure-ecommerce/vendure/issues/GHSA-wm63-7627-ch33)
+* **core** Fix default currencyCode change error in MySQL ([38e739a](https://github.com/vendure-ecommerce/vendure/commit/38e739a))
+* **core** Fix validation of fulfillment state config ([cb13de4](https://github.com/vendure-ecommerce/vendure/commit/cb13de4))
+* **core** Improved validation of state machine configs ([b44cc88](https://github.com/vendure-ecommerce/vendure/commit/b44cc88)), closes [#2521](https://github.com/vendure-ecommerce/vendure/issues/2521)
+* **core** Prevent duplicate variant price when updating currencyCode ([feecfae](https://github.com/vendure-ecommerce/vendure/commit/feecfae)), closes [#2391](https://github.com/vendure-ecommerce/vendure/issues/2391)
+* **core** Prevent use of unrecognized currency codes in RequestContext ([fee503f](https://github.com/vendure-ecommerce/vendure/commit/fee503f)), closes [#GHSA-wm63-7627-ch33](https://github.com/vendure-ecommerce/vendure/issues/GHSA-wm63-7627-ch33)
+* **core** Remove insecure fallback from default price selection strat ([6f34d06](https://github.com/vendure-ecommerce/vendure/commit/6f34d06)), closes [#GHSA-wm63-7627-ch33](https://github.com/vendure-ecommerce/vendure/issues/GHSA-wm63-7627-ch33)
+* **payments-plugin** Update Stripe peerDependency version ([6926638](https://github.com/vendure-ecommerce/vendure/commit/6926638))
+* **testing** Allow NestJs to rethrow errors on e2e tests (#2514) ([1348ce0](https://github.com/vendure-ecommerce/vendure/commit/1348ce0)), closes [#2514](https://github.com/vendure-ecommerce/vendure/issues/2514)
+
 ## <small>2.1.2 (2023-11-03)</small>
 
 
