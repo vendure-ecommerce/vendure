@@ -334,7 +334,7 @@ export class ChannelService {
                 const [selectQbQuery, selectQbParams] = this.connection
                     .getRepository(ctx, ProductVariant)
                     .createQueryBuilder('variant')
-                    .select('variant.id')
+                    .select('variant.id', 'id')
                     .innerJoin(ProductVariantPrice, 'pvp', 'pvp.variantId = variant.id')
                     .andWhere('pvp.channelId = :channelId')
                     .andWhere('pvp.currencyCode = :newCurrencyCode')
@@ -347,13 +347,24 @@ export class ChannelService {
                     .update()
                     .where('channelId = :channelId')
                     .andWhere('currencyCode = :oldCurrencyCode')
-                    .andWhere(`variantId NOT IN (${selectQbQuery})`, selectQbParams)
                     .set({ currencyCode: newCurrencyCode })
                     .setParameters({
                         channelId: channel.id,
                         oldCurrencyCode: originalDefaultCurrencyCode,
                         newCurrencyCode,
                     });
+
+                if (this.connection.rawConnection.options.type === 'mysql') {
+                    // MySQL does not support sub-queries joining the table that is being updated,
+                    // it will cause a "You can't specify target table 'product_variant_price' for update in FROM clause" error.
+                    // This is a work-around from https://stackoverflow.com/a/9843719/772859
+                    qb.andWhere(
+                        `variantId NOT IN (SELECT id FROM (${selectQbQuery}) as temp)`,
+                        selectQbParams,
+                    );
+                } else {
+                    qb.andWhere(`variantId NOT IN (${selectQbQuery})`, selectQbParams);
+                }
                 await qb.execute();
             }
         }
