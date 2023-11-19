@@ -1,0 +1,25 @@
+<vdr-relation-card
+    (select)="selectPaymentMethod()"
+    (remove)="remove()"
+    placeholderIcon="library"
+    [entity]="paymentMethod$ | async"
+    [selectLabel]="'catalog.select-payment-method' | translate"
+    [removable]="!config.list"
+    [readonly]="readonly"
+>
+    <ng-template vdrRelationCardPreview let-paymentMethod="entity">
+        <clr-icon shape="credit-card" size="50" />
+    </ng-template>
+    <ng-template vdrRelationCardDetail let-paymentMethod="entity">
+        <a [routerLink]="['/settings/payment-methods', paymentMethod.id]">{{ paymentMethod.name }}</a>
+    </ng-template>
+</vdr-relation-card>
+
+<ng-template #selector let-select="select">
+    <ng-select [items]="results$ | async" [typeahead]="searchTerm$" appendTo="body" (change)="select($event)">
+        <ng-template ng-option-tmp let-item="item">
+            <img [src]="item.featuredAsset | assetPreview : 32" />
+            {{ item.name }}
+        </ng-template>
+    </ng-select>
+</ng-template>

@@ -167,6 +167,7 @@
     "search-product-name-or-code": "Pretraži po nazivu proizvoda ili kodu",
     "select-product": "Odaberi proizvod",
     "select-product-variant": "Odaberi varijantu proizvoda",
+    "select-payment-method": "",
     "sku": "SKU",
     "slug": "Slug",
     "slug-pattern-error": "Slug nije valjan",

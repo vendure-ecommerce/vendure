@@ -167,6 +167,7 @@
     "search-product-name-or-code": "समानको नाम वा कोडका लागि खोज्नुहोस्",
     "select-product": "समान छनोट गर्नुहोस्",
     "select-product-variant": "समान वेरिएन्ट छनोट गर्नुहोस्",
+    "select-payment-method": "",
     "sku": "SKU",
     "slug": "स्लग",
     "slug-pattern-error": "स्लग अमान्य छ",

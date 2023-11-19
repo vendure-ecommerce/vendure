@@ -273,6 +273,7 @@ export * from './shared/dynamic-form-inputs/relation-form-input/asset/relation-a
 export * from './shared/dynamic-form-inputs/relation-form-input/customer/relation-customer-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/generic/relation-generic-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/product/relation-product-input.component';
+export * from './shared/dynamic-form-inputs/relation-form-input/payment-method/relation-payment-method-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/product-variant/relation-product-variant-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/relation-card/relation-card.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/relation-form-input.component';

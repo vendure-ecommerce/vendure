@@ -167,6 +167,7 @@
     "search-product-name-or-code": "输入要搜索的商品名称或商品编码",
     "select-product": "选择商品",
     "select-product-variant": "选择商品变体",
+    "select-payment-method": "",
     "sku": "商品库存编码",
     "slug": "名称缩写",
     "slug-pattern-error": "名称缩写无效",

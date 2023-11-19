@@ -167,6 +167,7 @@
     "search-product-name-or-code": "Поиск по названию товара или коду",
     "select-product": "Выбрать товар",
     "select-product-variant": "Выбрать вариант товара",
+    "select-payment-method": "",
     "sku": "Артикул",
     "slug": "Слаг",
     "slug-pattern-error": "Слаг задан некорректно",

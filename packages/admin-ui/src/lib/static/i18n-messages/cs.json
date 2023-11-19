@@ -167,6 +167,7 @@
     "search-product-name-or-code": "Hledat produkt dle jména, nebo kódu",
     "select-product": "",
     "select-product-variant": "",
+    "select-payment-method": "",
     "sku": "SKU",
     "slug": "Odkaz",
     "slug-pattern-error": "Špatný formát odkazu",

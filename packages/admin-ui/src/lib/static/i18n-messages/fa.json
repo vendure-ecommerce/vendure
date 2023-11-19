@@ -167,6 +167,7 @@
     "search-product-name-or-code": "جستجو براساس نام یا کد محصول",
     "select-product": "انتخاب محصول",
     "select-product-variant": "انتخاب نوع محصول",
+    "select-payment-method": "",
     "sku": "شناسه انحصاری محصول",
     "slug": "اسلاگ",
     "slug-pattern-error": "اسلاگ نامعتبر است",

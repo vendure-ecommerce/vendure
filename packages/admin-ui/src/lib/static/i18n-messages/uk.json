@@ -167,6 +167,7 @@
     "search-product-name-or-code": "Пошук за назвою товару або кодом",
     "select-product": "Вибрати товар",
     "select-product-variant": "Виберіть варіант товару",
+    "select-payment-method": "Виберіть спосіб оплати",
     "sku": "Артикул",
     "slug": "Код",
     "slug-pattern-error": "Код заданий некоректно",

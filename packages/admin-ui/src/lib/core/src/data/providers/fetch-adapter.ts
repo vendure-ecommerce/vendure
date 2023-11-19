@@ -23,9 +23,12 @@ export class FetchAdapter {
                 responseType: 'json',
                 withCredentials: true,
             }),
-        ).then(result => new Response(JSON.stringify(result.body), {
-                status: result.status,
-                statusText: result.statusText,
-            }));
+        ).then(
+            result =>
+                new Response(JSON.stringify(result.body), {
+                    status: result.status,
+                    statusText: result.statusText,
+                }),
+        );
     };
 }

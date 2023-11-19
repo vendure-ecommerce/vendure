@@ -14,7 +14,6 @@ import {
     CANCEL_JOB,
     CREATE_CHANNEL,
     CREATE_COUNTRY,
-    CREATE_PAYMENT_METHOD,
     CREATE_SELLER,
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
@@ -23,8 +22,6 @@ import {
     DELETE_CHANNELS,
     DELETE_COUNTRIES,
     DELETE_COUNTRY,
-    DELETE_PAYMENT_METHOD,
-    DELETE_PAYMENT_METHODS,
     DELETE_SELLER,
     DELETE_SELLERS,
     DELETE_TAX_CATEGORIES,
@@ -41,7 +38,6 @@ import {
     GET_JOB_QUEUE_LIST,
     GET_JOBS_BY_ID,
     GET_JOBS_LIST,
-    GET_PAYMENT_METHOD_OPERATIONS,
     GET_SELLERS,
     GET_TAX_CATEGORIES,
     GET_TAX_RATE_LIST_SIMPLE,
@@ -50,7 +46,6 @@ import {
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
     UPDATE_GLOBAL_SETTINGS,
-    UPDATE_PAYMENT_METHOD,
     UPDATE_SELLER,
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
@@ -353,59 +348,6 @@ export class SettingsDataService {
             ids,
         });
     }
-
-    createPaymentMethod(input: Codegen.CreatePaymentMethodInput) {
-        return this.baseDataService.mutate<
-            Codegen.CreatePaymentMethodMutation,
-            Codegen.CreatePaymentMethodMutationVariables
-        >(CREATE_PAYMENT_METHOD, {
-            input: pick(input, ['code', 'checker', 'handler', 'enabled', 'translations', 'customFields']),
-        });
-    }
-
-    updatePaymentMethod(input: Codegen.UpdatePaymentMethodInput) {
-        return this.baseDataService.mutate<
-            Codegen.UpdatePaymentMethodMutation,
-            Codegen.UpdatePaymentMethodMutationVariables
-        >(UPDATE_PAYMENT_METHOD, {
-            input: pick(input, [
-                'id',
-                'code',
-                'checker',
-                'handler',
-                'enabled',
-                'translations',
-                'customFields',
-            ]),
-        });
-    }
-
-    deletePaymentMethod(id: string, force: boolean) {
-        return this.baseDataService.mutate<
-            Codegen.DeletePaymentMethodMutation,
-            Codegen.DeletePaymentMethodMutationVariables
-        >(DELETE_PAYMENT_METHOD, {
-            id,
-            force,
-        });
-    }
-
-    deletePaymentMethods(ids: string[], force: boolean) {
-        return this.baseDataService.mutate<
-            Codegen.DeletePaymentMethodsMutation,
-            Codegen.DeletePaymentMethodsMutationVariables
-        >(DELETE_PAYMENT_METHODS, {
-            ids,
-            force,
-        });
-    }
-
-    getPaymentMethodOperations() {
-        return this.baseDataService.query<Codegen.GetPaymentMethodOperationsQuery>(
-            GET_PAYMENT_METHOD_OPERATIONS,
-        );
-    }
-
     getGlobalSettings(fetchPolicy?: WatchQueryFetchPolicy) {
         return this.baseDataService.query<Codegen.GetGlobalSettingsQuery>(
             GET_GLOBAL_SETTINGS,

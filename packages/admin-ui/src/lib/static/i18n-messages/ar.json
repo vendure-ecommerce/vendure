@@ -167,6 +167,7 @@
     "search-product-name-or-code": "البحث حسب اسم المنتج أو الرمز",
     "select-product": "حدد المنتج",
     "select-product-variant": "حدد متغير المنتج",
+    "select-payment-method": "",
     "sku": "SKU",
     "slug": "لقب",
     "slug-pattern-error": "لقب غير صالح",

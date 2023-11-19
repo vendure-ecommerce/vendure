@@ -136,6 +136,7 @@ import { RelationCustomerInputComponent } from './dynamic-form-inputs/relation-f
 import { RelationGenericInputComponent } from './dynamic-form-inputs/relation-form-input/generic/relation-generic-input.component';
 import { RelationProductVariantInputComponent } from './dynamic-form-inputs/relation-form-input/product-variant/relation-product-variant-input.component';
 import { RelationProductInputComponent } from './dynamic-form-inputs/relation-form-input/product/relation-product-input.component';
+import { RelationPaymentMethodInputComponent } from './dynamic-form-inputs/relation-form-input/payment-method/relation-payment-method-input.component';
 import {
     RelationCardComponent,
     RelationCardDetailDirective,
@@ -334,6 +335,7 @@ const DYNAMIC_FORM_INPUTS = [
     RelationAssetInputComponent,
     RelationProductInputComponent,
     RelationProductVariantInputComponent,
+    RelationPaymentMethodInputComponent,
     RelationCustomerInputComponent,
     RelationCardPreviewDirective,
     RelationCardDetailDirective,

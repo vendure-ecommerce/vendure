@@ -167,6 +167,7 @@
     "search-product-name-or-code": "חפש לפי שם המוצר או קוד",
     "select-product": "בחר מוצר",
     "select-product-variant": "בחר וריאנט מוצר",
+    "select-payment-method": "",
     "sku": "SKU",
     "slug": "שם ייחודי",
     "slug-pattern-error": "השם הייחודי אינו תקני",

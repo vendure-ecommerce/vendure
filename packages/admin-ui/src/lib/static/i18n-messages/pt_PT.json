@@ -167,6 +167,7 @@
     "search-product-name-or-code": "Pesquisar por nome ou código do produto",
     "select-product": "Seleccione o produto",
     "select-product-variant": "Seleccione a variante do produto",
+    "select-payment-method": "",
     "sku": "SKU",
     "slug": "Slug",
     "slug-pattern-error": "Slug inválido",
