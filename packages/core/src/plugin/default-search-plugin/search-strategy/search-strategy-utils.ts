@@ -139,28 +139,24 @@ export function applyLanguageConstraints(
             languageCode,
         });
     } else {
-        const count = qb
-            .subQuery()
-            .select('COUNT(*) as countLanguageCode')
-            .from(SearchIndexItem, 'sil')
-            .where(`sil.${ciEscaped} = si.${ciEscaped}`)
-            .andWhere(`sil.${pviEscaped} = si.${pviEscaped}`)
-            .andWhere(`sil.${lcEscaped} = :countLanguageCode`)
-            .getQuery();
+        qb.andWhere(`si.${lcEscaped} IN (:...languageCodes)`, {
+            languageCodes: [languageCode, defaultLanguageCode],
+        });
+
+        qb.leftJoin(
+            SearchIndexItem,
+            'sil',
+            `sil.${lcEscaped} = :languageCode AND sil.${ciEscaped} = si.${ciEscaped} AND sil.${pviEscaped} = si.${pviEscaped}`,
+            {
+                languageCode,
+            },
+        );
 
         qb.andWhere(
             new Brackets(qb1 => {
-                qb1.where(`si.${lcEscaped} = :languageCode`, {
-                    languageCode,
-                }).orWhere(
-                    new Brackets(qb2 => {
-                        qb2.where(`si.${lcEscaped} = :defaultLanguageCode`, {
-                            defaultLanguageCode,
-                        }).andWhere(`NOT(1 IN (${count}))`, {
-                            countLanguageCode: languageCode,
-                        });
-                    }),
-                );
+                qb1.where(`si.${lcEscaped} = :languageCode1`, {
+                    languageCode1: languageCode,
+                }).orWhere(`sil.${lcEscaped} IS NULL`);
             }),
         );
     }
