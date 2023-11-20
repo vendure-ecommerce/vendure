@@ -27,6 +27,7 @@ export interface CollectionDefinition {
     slug?: string;
     private?: boolean;
     filters?: CollectionFilterDefinition[];
+    inheritFilters?: boolean;
     parentName?: string;
     assetPaths?: string[];
 }
