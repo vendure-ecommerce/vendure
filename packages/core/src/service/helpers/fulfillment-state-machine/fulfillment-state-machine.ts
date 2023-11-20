@@ -63,6 +63,9 @@ export class FulfillmentStateMachine {
             Logger.error(`The fulfillment process has an invalid configuration:`);
             throw new Error(validationResult.error);
         }
+        if (validationResult.valid && validationResult.error) {
+            Logger.warn(`Fulfillment process: ${validationResult.error}`);
+        }
         return {
             transitions: allTransitions,
             onTransitionStart: async (fromState, toState, data) => {

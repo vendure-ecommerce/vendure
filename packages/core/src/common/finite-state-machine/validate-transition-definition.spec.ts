@@ -74,7 +74,7 @@ describe('FSM validateTransitionDefinition()', () => {
 
         const result = validateTransitionDefinition(valid, 'Start');
 
-        expect(result.valid).toBe(false);
+        expect(result.valid).toBe(true);
         expect(result.error).toBe('The following states are unreachable: Unreachable');
     });
 

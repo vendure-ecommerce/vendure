@@ -56,6 +56,9 @@ export class OrderStateMachine {
             Logger.error(`The order process has an invalid configuration:`);
             throw new Error(validationResult.error);
         }
+        if (validationResult.valid && validationResult.error) {
+            Logger.warn(`Order process: ${validationResult.error}`);
+        }
         return {
             transitions: allTransitions,
             onTransitionStart: async (fromState, toState, data) => {
