@@ -13,8 +13,6 @@ import { Brackets, QueryBuilder, SelectQueryBuilder } from 'typeorm';
 
 import { SearchIndexItem } from '../entities/search-index-item.entity';
 
-import { identifierFields } from './search-strategy-common';
-
 /**
  * Maps a raw database result to a SearchResult.
  */
