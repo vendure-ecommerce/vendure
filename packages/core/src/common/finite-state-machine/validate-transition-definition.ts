@@ -53,17 +53,15 @@ export function validateTransitionDefinition<T extends string>(
         };
     }
 
-    if (!allStatesReached()) {
-        return {
-            valid: false,
-            error: `The following states are unreachable: ${Object.entries(result)
-                .filter(([s, v]) => !(v as ValidationResult).reachable)
-                .map(([s]) => s)
-                .join(', ')}`,
-        };
-    } else {
-        return {
-            valid: true,
-        };
-    }
+    const error = !allStatesReached()
+        ? `The following states are unreachable: ${Object.entries(result)
+              .filter(([s, v]) => !(v as ValidationResult).reachable)
+              .map(([s]) => s)
+              .join(', ')}`
+        : undefined;
+
+    return {
+        valid: true,
+        error,
+    };
 }
