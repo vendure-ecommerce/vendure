@@ -16,9 +16,6 @@ defaults:
     shell: bash
 jobs:
   publish_install:
-    services:
-      verdaccio:
-        image: ./verdaccio/Dockerfile
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
