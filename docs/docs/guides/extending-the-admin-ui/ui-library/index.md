@@ -223,6 +223,19 @@ export function DemoComponent() {
 </TabItem>
 </Tabs>
 
+The `form-grid` class is used to lay out the form fields into a 2-column grid on larger screens, and a single column on smaller screens.
+If you want to force a particular field to always take up the full width (i.e. to span 2 columns at all screen sizes), you can add the
+`form-grid-span` class to that form field.
+
+```html
+<div class="form-grid">
+    // highlight-next-line
+    <vdr-form-field label="Page title" class="form-grid-span">
+        <input type="text" />
+    </vdr-form-field>
+</div>
+```
+
 ## Cards
 
 Cards are used as a general-purpose container for page content, as a way to visually group related sets of components.
