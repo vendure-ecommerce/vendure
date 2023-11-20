@@ -117,7 +117,7 @@ export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof getRe
     update() {
         const { title, rating, authorName } = this.detailForm.value;
         this.dataService
-            .mutate(updateOrganizationDocument, {
+            .mutate(updateReviewDocument, {
                 input: { id: this.id, title, rating, authorName },
             })
             .subscribe(() => {
