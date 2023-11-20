@@ -81,7 +81,7 @@ For example, let's imagine we are creating a plugin which adds a new entity call
 ```ts title="src/plugins/product-review/constants.ts"
 import { CrudPermissionDefinition } from '@vendure/core';
 
-export const productReview = new CrudPermissionDefinition(ProductReview);
+export const productReview = new CrudPermissionDefinition('ProductReview');
 ```
 
 These permissions can then be used in our resolver:
