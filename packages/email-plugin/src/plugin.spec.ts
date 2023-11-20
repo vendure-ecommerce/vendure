@@ -21,6 +21,7 @@ import { createReadStream, readFileSync } from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+
 import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailProcessor } from './email-processor';
 import { EmailSender } from './email-sender';
@@ -338,6 +339,8 @@ describe('EmailPlugin', () => {
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].body).toContain('Price: 1.23');
+            expect(onSend.mock.calls[0][0].body).toContain('Price: €1.23');
+            expect(onSend.mock.calls[0][0].body).toContain('Price: £1.23');
         });
     });
 
@@ -658,7 +661,7 @@ describe('EmailPlugin', () => {
             await pause();
 
             expect(testingLogger.warnSpy.mock.calls[0][0]).toContain(
-                'Email has a large \'content\' attachment (64k). Consider using the \'path\' instead for improved performance.',
+                "Email has a large 'content' attachment (64k). Consider using the 'path' instead for improved performance.",
             );
         });
     });
@@ -881,8 +884,8 @@ describe('EmailPlugin', () => {
                     return {
                         type: 'testing',
                         onSend: () => {},
-                    }
-                }
+                    };
+                },
             });
             const ctx = RequestContext.deserialize({
                 _channel: { code: DEFAULT_CHANNEL_CODE },
@@ -891,7 +894,7 @@ describe('EmailPlugin', () => {
             module!.get(EventBus).publish(new MockEvent(ctx, true));
             await pause();
             expect(module).toBeDefined();
-            expect(typeof (module.get(EmailPlugin) as any).options.transport).toBe('function');
+            expect(typeof module.get(EmailPlugin).options.transport).toBe('function');
         });
 
         it('Passes injector and context to transport function', async () => {

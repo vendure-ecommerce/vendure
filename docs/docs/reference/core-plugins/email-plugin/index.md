@@ -108,7 +108,10 @@ Dynamic data such as the recipient's name or order items are specified using [Ha
 
 The following helper functions are available for use in email templates:
 
-* `formatMoney`: Formats an amount of money (which are always stored as integers in Vendure) as a decimal, e.g. `123` => `1.23`
+* `formatMoney`: Formats an amount of money (which are always stored as integers in Vendure) as a decimal, e.g. `123` => `1.23`.
+  * Also accepts two additional parameters (`currency` and `locale`), which will format according to the given currency and locale. For example:
+    * `{{ formatMoney 123 'USD' 'en-US' }}` => `$1.23`
+    * `{{ formatMoney 123 'EUR' 'de-DE' }}` => `1,23 €`
 * `formatDate`: Formats a Date value with the [dateformat](https://www.npmjs.com/package/dateformat) package.
 
 ## Extending the default email handlers
