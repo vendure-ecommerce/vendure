@@ -266,7 +266,12 @@ export class PromotionDetailComponent
         });
         entity.actions.forEach(o => this.addOperation('actions', o));
         if (this.customFields.length) {
-            this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get('customFields'),
+                entity,
+                currentTranslation,
+            );
         }
     }
 

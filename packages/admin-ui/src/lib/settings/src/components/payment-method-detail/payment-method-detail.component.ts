@@ -273,6 +273,7 @@ export class PaymentMethodDetailComponent
                 this.customFields,
                 this.detailForm.get('customFields'),
                 paymentMethod,
+                currentTranslation,
             );
         }
     }
