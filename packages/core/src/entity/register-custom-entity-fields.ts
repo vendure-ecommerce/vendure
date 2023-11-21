@@ -35,6 +35,7 @@ import {
     CustomOrderFields,
     CustomOrderLineFields,
     CustomPaymentMethodFields,
+    CustomPaymentMethodFieldsTranslation,
     CustomProductFields,
     CustomProductFieldsTranslation,
     CustomProductOptionFields,
@@ -44,6 +45,7 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomPromotionFields,
+    CustomPromotionFieldsTranslation,
     CustomRegionFields,
     CustomRegionFieldsTranslation,
     CustomSellerFields,
@@ -274,6 +276,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Order', CustomOrderFields);
     registerCustomFieldsForEntity(config, 'OrderLine', CustomOrderLineFields);
     registerCustomFieldsForEntity(config, 'PaymentMethod', CustomPaymentMethodFields);
+    registerCustomFieldsForEntity(config, 'PaymentMethod', CustomPaymentMethodFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFields);
@@ -288,6 +291,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFields);
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Promotion', CustomPromotionFields);
+    registerCustomFieldsForEntity(config, 'Promotion', CustomPromotionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'TaxCategory', CustomTaxCategoryFields);
     registerCustomFieldsForEntity(config, 'TaxRate', CustomTaxRateFields);
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
