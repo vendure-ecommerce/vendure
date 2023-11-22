@@ -99,7 +99,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
         }
         if (sort) {
             if (sort.name) {
-                qb.addOrderBy('si.productName', sort.name);
+                // TODO: v3 - set the collation on the SearchIndexItem entity
+                qb.addOrderBy('si.productName COLLATE NOCASE', sort.name);
             }
             if (sort.price) {
                 qb.addOrderBy('si.price', sort.price);
@@ -230,8 +231,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
             });
         }
 
-        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
+        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
 
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');

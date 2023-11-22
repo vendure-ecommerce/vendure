@@ -72,7 +72,7 @@ export function getLoadTestConfig(
                 assetUploadDir: path.join(__dirname, 'static/assets'),
                 route: 'assets',
             }),
-            DefaultSearchPlugin,
+            DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
             DefaultJobQueuePlugin.init({
                 pollInterval: 1000,
             }),
