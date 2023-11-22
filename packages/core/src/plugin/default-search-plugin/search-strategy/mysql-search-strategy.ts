@@ -251,6 +251,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
 
         applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
+
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');
             qb.addSelect('BIT_OR(si.enabled)', 'productEnabled');

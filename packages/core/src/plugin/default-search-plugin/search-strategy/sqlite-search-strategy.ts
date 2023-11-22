@@ -99,7 +99,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
         }
         if (sort) {
             if (sort.name) {
-                qb.addOrderBy('si.productName', sort.name);
+                // TODO: v3 - set the collation on the SearchIndexItem entity
+                qb.addOrderBy('si.productName COLLATE NOCASE', sort.name);
             }
             if (sort.price) {
                 qb.addOrderBy('si.price', sort.price);

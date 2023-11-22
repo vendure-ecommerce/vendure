@@ -1849,6 +1849,7 @@ describe('Default search plugin', () => {
                         'Instant Camera',
                         'Laptop en', // fallback language en
                         'Orchid',
+                        'product en', // fallback language en
                         'Road Bike',
                         'Running Shoe',
                         'Skipping Rope',
@@ -1858,7 +1859,6 @@ describe('Default search plugin', () => {
                         'Tent',
                         'Tripod',
                         'USB Cable',
-                        'product en', // fallback language en
                     ];
 
                     expect(search.items.map(i => i.productName)).toEqual(productNames);
@@ -1878,6 +1878,7 @@ describe('Default search plugin', () => {
                         'Instant Camera',
                         'Laptop de', // language de
                         'Orchid',
+                        'product de', // language de
                         'Road Bike',
                         'Running Shoe',
                         'Skipping Rope',
@@ -1887,7 +1888,6 @@ describe('Default search plugin', () => {
                         'Tent',
                         'Tripod',
                         'USB Cable',
-                        'product de', // language de
                     ];
 
                     expect(search.items.map(i => i.productName)).toEqual(productNames);
@@ -1907,6 +1907,7 @@ describe('Default search plugin', () => {
                         'Instant Camera',
                         'Laptop zh', // language zh
                         'Orchid',
+                        'product en', // fallback language en
                         'Road Bike',
                         'Running Shoe',
                         'Skipping Rope',
@@ -1916,7 +1917,6 @@ describe('Default search plugin', () => {
                         'Tent',
                         'Tripod',
                         'USB Cable',
-                        'product en', // fallback language en
                     ];
 
                     expect(search.items.map(i => i.productName)).toEqual(productNames);
