@@ -182,9 +182,10 @@ The `@vendure/core` package exposes a [`populate()` function](/reference/typescr
 ```ts title="src/my-populate-script.ts"
 import { bootstrap, DefaultJobQueuePlugin } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
+import path from "path";
 
-import { config } from './vendure-config.ts';
-import { initialData } from './my-initial-data.ts';
+import { config } from './vendure-config';
+import { initialData } from './my-initial-data';
 
 const productsCsvFile = path.join(__dirname, 'path/to/products.csv')
 
@@ -198,7 +199,7 @@ const populateConfig = {
 }
 
 populate(
-    () => bootstrap(config),
+    () => bootstrap(populateConfig),
     initialData,
     productsCsvFile,
     'my-channel-token' // optional - used to assign imported 
