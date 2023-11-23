@@ -15,14 +15,21 @@ import {
  */
 export function getConfigArgValue(value: any) {
     try {
-        return value != null ? JSON.parse(value) : undefined;
+        const result = value != null ? JSON.parse(value) : undefined;
+        if (result && typeof result === 'object' && !Array.isArray(result)) {
+            // There is an edge-case where the value is a valid JSON-encoded string and
+            // will get parsed as an object, but we actually want it to be a string.
+            return JSON.stringify(result);
+        } else {
+            return result;
+        }
     } catch (e: any) {
         return value;
     }
 }
 
 export function encodeConfigArgValue(value: any): string {
-    return JSON.stringify(value ?? '');
+    return Array.isArray(value) ? JSON.stringify(value) : (value ?? '').toString();
 }
 
 /**
