@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import dayjs from 'dayjs';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { dayOfWeekIndex } from './constants';
 import { CalendarView, DayCell, DayOfWeek } from './types';
@@ -19,7 +19,10 @@ export class DatetimePickerService {
     private jumping = false;
 
     constructor() {
-        this.selected$ = this.selectedDatetime$.pipe(map(value => value && value.toDate()));
+        this.selected$ = this.selectedDatetime$.pipe(
+            map(value => value && value.toDate()),
+            distinctUntilChanged((a, b) => a?.getTime() === b?.getTime()),
+        );
         this.viewing$ = this.viewingDatetime$.pipe(map(value => value.toDate()));
         this.weekStartDayIndex = dayOfWeekIndex['mon'];
         this.calendarView$ = combineLatest(this.viewingDatetime$, this.selectedDatetime$).pipe(
