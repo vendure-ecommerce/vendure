@@ -1,4 +1,4 @@
-import { ConfigArgType, CustomFieldType } from '@vendure/common/lib/shared-types';
+import { ConfigArgType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import {
@@ -22,7 +22,7 @@ export function getConfigArgValue(value: any) {
 }
 
 export function encodeConfigArgValue(value: any): string {
-    return Array.isArray(value) ? JSON.stringify(value) : (value ?? '').toString();
+    return JSON.stringify(value ?? '');
 }
 
 /**
@@ -34,9 +34,9 @@ export function configurableDefinitionToInstance(
     return {
         ...def,
         args: def.args.map(arg => ({
-                ...arg,
-                value: getDefaultConfigArgValue(arg),
-            })),
+            ...arg,
+            value: getDefaultConfigArgValue(arg),
+        })),
     } as ConfigurableOperation;
 }
 
