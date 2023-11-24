@@ -201,7 +201,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { CustomFieldControl, DataService, SharedModule } from '@vendure/admin-ui/core';
+import { FormInputComponent, DataService, SharedModule } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 

@@ -1,8 +1,8 @@
-import { DefaultMoneyStrategy, Logger, mergeConfig, MoneyStrategy } from '@vendure/core';
+import { DefaultMoneyStrategy, Logger, mergeConfig, MoneyStrategy, VendurePlugin } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { ColumnOptions } from 'typeorm';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -21,6 +21,7 @@ const orderGuard: ErrorResultGuard<CodegenShop.UpdatedOrderFragment> = createErr
 );
 
 class CustomMoneyStrategy implements MoneyStrategy {
+    static transformerFromSpy = vi.fn();
     readonly moneyColumnOptions: ColumnOptions = {
         type: 'bigint',
         transformer: {
@@ -28,6 +29,7 @@ class CustomMoneyStrategy implements MoneyStrategy {
                 return entityValue;
             },
             from: (databaseValue: string): number => {
+                CustomMoneyStrategy.transformerFromSpy(databaseValue);
                 if (databaseValue == null) {
                     return databaseValue;
                 }
@@ -48,12 +50,18 @@ class CustomMoneyStrategy implements MoneyStrategy {
     }
 }
 
+@VendurePlugin({
+    configuration: config => {
+        config.entityOptions.moneyStrategy = new CustomMoneyStrategy();
+        return config;
+    },
+})
+class MyPlugin {}
+
 describe('Custom MoneyStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            entityOptions: {
-                moneyStrategy: new CustomMoneyStrategy(),
-            },
+            plugins: [MyPlugin],
         }),
     );
 
@@ -74,6 +82,8 @@ describe('Custom MoneyStrategy', () => {
     });
 
     it('check initial prices', async () => {
+        expect(CustomMoneyStrategy.transformerFromSpy).toHaveBeenCalledTimes(0);
+
         const { productVariants } = await adminClient.query<
             Codegen.GetProductVariantListQuery,
             Codegen.GetProductVariantListQueryVariables
@@ -91,6 +101,8 @@ describe('Custom MoneyStrategy', () => {
 
         cheapVariantId = productVariants.items[0].id;
         expensiveVariantId = productVariants.items[1].id;
+
+        expect(CustomMoneyStrategy.transformerFromSpy).toHaveBeenCalledTimes(6);
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/838
@@ -127,9 +139,3 @@ describe('Custom MoneyStrategy', () => {
         expect(addItemToOrder.lines[0].linePriceWithTax).toBe(372);
     });
 });
-
-class CustomRoundingStrategy extends DefaultMoneyStrategy {
-    round(value: number): number {
-        return value;
-    }
-}

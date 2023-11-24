@@ -249,8 +249,9 @@ export class MysqlSearchStrategy implements SearchStrategy {
             qb.andWhere('FIND_IN_SET (:collectionSlug, si.collectionSlugs)', { collectionSlug });
         }
 
-        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
+        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
+
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');
             qb.addSelect('BIT_OR(si.enabled)', 'productEnabled');

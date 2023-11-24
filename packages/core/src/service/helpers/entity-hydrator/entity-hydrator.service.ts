@@ -302,6 +302,27 @@ export class EntityHydrator {
         if (!a) {
             return b;
         }
+        if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length > 1) {
+            if (a[0].hasOwnProperty('id')) {
+                // If the array contains entities, we can use the id to match them up
+                // so that we ensure that we don't merge properties from different entities
+                // with the same index.
+                const aIds = a.map(e => e.id);
+                const bIds = b.map(e => e.id);
+                if (JSON.stringify(aIds) !== JSON.stringify(bIds)) {
+                    // The entities in the arrays are not in the same order, so we can't
+                    // safely merge them. We need to sort the `b` array so that the entities
+                    // are in the same order as the `a` array.
+                    const idToIndexMap = new Map();
+                    a.forEach((item, index) => {
+                        idToIndexMap.set(item.id, index);
+                    });
+                    b.sort((_a, _b) => {
+                        return idToIndexMap.get(_a.id) - idToIndexMap.get(_b.id);
+                    });
+                }
+            }
+        }
         for (const [key, value] of Object.entries(b)) {
             if (Object.getOwnPropertyDescriptor(b, key)?.writable) {
                 if (Array.isArray(value)) {

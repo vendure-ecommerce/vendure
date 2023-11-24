@@ -58,6 +58,9 @@ export class PaymentStateMachine {
             Logger.error(`The payment process has an invalid configuration:`);
             throw new Error(validationResult.error);
         }
+        if (validationResult.valid && validationResult.error) {
+            Logger.warn(`Payment process: ${validationResult.error}`);
+        }
         return {
             transitions: allTransitions,
             onTransitionStart: async (fromState, toState, data) => {

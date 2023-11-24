@@ -250,8 +250,9 @@
     /**********
     * Card
     */
+    --clr-card-header-title-color: var(--color-text-200);
     --clr-card-bg-color: hsl(198, 28%, 18%);
-    --clr-card-border-color: hsl(203, 30%, 8%);
+    --clr-card-border-color: hsl(203, 30%, 13%);
     --clr-card-title-color: hsl(210, 16%, 93%);
     --clr-card-box-shadow-color: var(--clr-card-border-color);
     --clr-card-box-shadow: 0 0.15rem 0 0 var(--clr-card-border-color);

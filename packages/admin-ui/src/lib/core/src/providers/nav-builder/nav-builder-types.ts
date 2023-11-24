@@ -62,7 +62,18 @@ export interface NavMenuSection {
     displayMode?: 'regular' | 'settings';
     /**
      * @description
-     * Control the display of this item based on the user permissions.
+     * Control the display of this item based on the user permissions. Note: if you attempt to pass a
+     * {@link PermissionDefinition} object, you will get a compilation error. Instead, pass the plain
+     * string version. For example, if the permission is defined as:
+     * ```ts
+     * export const MyPermission = new PermissionDefinition('ProductReview');
+     * ```
+     * then the generated permission strings will be:
+     *
+     * - `CreateProductReview`
+     * - `ReadProductReview`
+     * - `UpdateProductReview`
+     * - `DeleteProductReview`
      */
     requiresPermission?: string | ((userPermissions: string[]) => boolean);
     collapsible?: boolean;
@@ -116,6 +127,21 @@ export interface ActionBarItem {
     buttonColor?: 'primary' | 'success' | 'warning';
     buttonStyle?: 'solid' | 'outline' | 'link';
     icon?: string;
+    /**
+     * @description
+     * Control the display of this item based on the user permissions. Note: if you attempt to pass a
+     * {@link PermissionDefinition} object, you will get a compilation error. Instead, pass the plain
+     * string version. For example, if the permission is defined as:
+     * ```ts
+     * export const MyPermission = new PermissionDefinition('ProductReview');
+     * ```
+     * then the generated permission strings will be:
+     *
+     * - `CreateProductReview`
+     * - `ReadProductReview`
+     * - `UpdateProductReview`
+     * - `DeleteProductReview`
+     */
     requiresPermission?: string | string[];
 }
 
