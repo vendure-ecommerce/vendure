@@ -1,5 +1,8 @@
 ## <small>2.1.3 (2023-11-17)</small>
 
+#### Security
+
+This patch addresses the following security advisory: https://github.com/vendure-ecommerce/vendure/security/advisories/GHSA-wm63-7627-ch33
 
 #### Fixes
 

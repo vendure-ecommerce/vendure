@@ -148,6 +148,7 @@ export class Populator {
                 assetIds: assets.map(a => a.id.toString()),
                 featuredAssetId: assets.length ? assets[0].id.toString() : undefined,
                 filters,
+                inheritFilters: collectionDef.inheritFilters ?? true,
             });
             collectionMap.set(collectionDef.name, collection);
         }
