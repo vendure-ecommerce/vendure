@@ -1,3 +1,22 @@
+## <small>2.1.4 (2023-11-24)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix admin ui code templates (#2545) ([a9e67fe](https://github.com/vendure-ecommerce/vendure/commit/a9e67fe)), closes [#2545](https://github.com/vendure-ecommerce/vendure/issues/2545)
+* **admin-ui** Fix card component colors in dark theme ([c077e15](https://github.com/vendure-ecommerce/vendure/commit/c077e15))
+* **admin-ui** Fix code editor border color for dark mode ([9eb9d9d](https://github.com/vendure-ecommerce/vendure/commit/9eb9d9d))
+* **admin-ui** Fix encoding of configurable arg values ([84764b1](https://github.com/vendure-ecommerce/vendure/commit/84764b1)), closes [#2539](https://github.com/vendure-ecommerce/vendure/issues/2539)
+* **admin-ui** Fix localized custom fields in Promotion & PaymentMethod ([d665ec6](https://github.com/vendure-ecommerce/vendure/commit/d665ec6))
+* **admin-ui** Fix responsive layout of modal dialog for assets ([5176017](https://github.com/vendure-ecommerce/vendure/commit/5176017)), closes [#2537](https://github.com/vendure-ecommerce/vendure/issues/2537)
+* **admin-ui** Fix stack overflow when datetime picker inside a list ([f7b4f46](https://github.com/vendure-ecommerce/vendure/commit/f7b4f46))
+* **core** Fix custom MoneyStrategy handling from plugins ([a09c2b2](https://github.com/vendure-ecommerce/vendure/commit/a09c2b2)), closes [#2527](https://github.com/vendure-ecommerce/vendure/issues/2527)
+* **core** Fix DefaultSearchPlugin for non-default languages (#2515) ([fb0ea13](https://github.com/vendure-ecommerce/vendure/commit/fb0ea13)), closes [#2515](https://github.com/vendure-ecommerce/vendure/issues/2515) [#2197](https://github.com/vendure-ecommerce/vendure/issues/2197)
+* **core** Fix entity hydration postgres edge-case ([9546d1b](https://github.com/vendure-ecommerce/vendure/commit/9546d1b)), closes [#2546](https://github.com/vendure-ecommerce/vendure/issues/2546)
+* **core** Fix i18n custom fields in Promotion & PaymentMethod ([3d6edb5](https://github.com/vendure-ecommerce/vendure/commit/3d6edb5))
+* **core** Log error on misconfigured localized custom fields ([5775447](https://github.com/vendure-ecommerce/vendure/commit/5775447))
+* **core** Relax validation of custom process states ([cf301eb](https://github.com/vendure-ecommerce/vendure/commit/cf301eb))
+
 ## <small>2.1.3 (2023-11-17)</small>
 
 #### Security
