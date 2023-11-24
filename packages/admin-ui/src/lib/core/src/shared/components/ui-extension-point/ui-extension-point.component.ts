@@ -107,8 +107,8 @@ export default [
     id: 'my-button',
     label: 'My Action',
     locationId: '${locationId}',
-  });
-]`,
+  }),
+];`,
     navMenu: locationId => `
 import { addNavMenuSection } from '@vendure/admin-ui/core';
 
@@ -117,10 +117,10 @@ export default [
       id: 'my-menu-item',
       label: 'My Menu Item',
       routerLink: ['/extensions/my-plugin'],
-    }
-    '${locationId}'
-  );
-]`,
+    },
+    '${locationId}',
+  ),
+];`,
     detailComponent: locationId => `
 import { registerCustomDetailComponent } from '@vendure/admin-ui/core';
 
@@ -128,8 +128,8 @@ export default [
   registerCustomDetailComponent({
     locationId: '${locationId}',
     component: MyCustomComponent,
-  });
-]`,
+  }),
+];`,
     dataTable: (locationId, metadata) => `
 import { registerDataTableComponent } from '@vendure/admin-ui/core';
 
@@ -138,6 +138,6 @@ export default [
     tableId: '${locationId}',
     columnId: '${metadata}',
     component: MyCustomComponent,
-  });
-]`,
+  }),
+];`,
 };
