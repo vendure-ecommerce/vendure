@@ -876,6 +876,7 @@ export class OrderService {
             let shippingLine: ShippingLine | undefined = order.shippingLines[i];
             if (shippingLine) {
                 shippingLine.shippingMethod = shippingMethod;
+                shippingLine.shippingMethodId = shippingMethod.id;
             } else {
                 shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
                     new ShippingLine({
