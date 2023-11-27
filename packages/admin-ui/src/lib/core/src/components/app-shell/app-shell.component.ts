@@ -70,17 +70,23 @@ export class AppShellComponent implements OnInit {
         this.uiLanguageAndLocale$
             .pipe(
                 take(1),
-                switchMap(([currentLanguage, currentLocale]) =>
-                    this.modalService.fromComponent(UiLanguageSwitcherDialogComponent, {
+                switchMap(([currentLanguage, currentLocale]) => {
+                    const defaultLocale = getAppConfig().defaultLocale;
+                    const modalCurrentLocale = currentLocale ?? defaultLocale;
+
+                    const defaultLanguage = getAppConfig().defaultLanguage;
+                    const modalCurrentLanguage = currentLanguage ?? defaultLanguage;
+
+                    return this.modalService.fromComponent(UiLanguageSwitcherDialogComponent, {
                         closable: true,
                         size: 'lg',
                         locals: {
                             availableLanguages: this.availableLanguages,
-                            currentLanguage,
-                            currentLocale,
+                            currentLanguage: modalCurrentLanguage,
+                            currentLocale: modalCurrentLocale,
                         },
-                    }),
-                ),
+                    });
+                }),
                 switchMap(result =>
                     result ? this.dataService.client.setUiLanguage(result[0], result[1]) : EMPTY,
                 ),

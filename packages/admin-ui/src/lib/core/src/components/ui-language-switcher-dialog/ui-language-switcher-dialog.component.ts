@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
+import { Subject, finalize, take, takeUntil } from 'rxjs';
 import { CurrencyCode, LanguageCode } from '../../common/generated-types';
 import { Dialog } from '../../providers/modal/modal.types';
+import { DataService } from '../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-ui-language-switcher',
@@ -9,7 +11,11 @@ import { Dialog } from '../../providers/modal/modal.types';
     styleUrls: ['./ui-language-switcher-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UiLanguageSwitcherDialogComponent implements Dialog<[LanguageCode, string | undefined]>, OnInit {
+export class UiLanguageSwitcherDialogComponent
+    implements Dialog<[LanguageCode, string | undefined]>, OnInit, OnDestroy
+{
+    isLoading = true;
+    private destroy$ = new Subject<void>();
     resolveWith: (result?: [LanguageCode, string | undefined]) => void;
     currentLanguage: LanguageCode;
     availableLanguages: LanguageCode[] = [];
@@ -266,18 +272,38 @@ export class UiLanguageSwitcherDialogComponent implements Dialog<[LanguageCode, 
         'AX',
     ];
     availableCurrencyCodes = Object.values(CurrencyCode);
-    selectedCurrencyCode = 'USD';
+    selectedCurrencyCode;
     previewLocale: string;
     readonly browserDefaultLocale: string | undefined;
     readonly now = new Date().toISOString();
 
-    constructor() {
+    constructor(private dataService: DataService, private changeDetector: ChangeDetectorRef) {
         const browserLanguage = navigator.language.split('-');
         this.browserDefaultLocale = browserLanguage.length === 1 ? undefined : browserLanguage[1];
     }
 
     ngOnInit() {
         this.updatePreviewLocale();
+
+        this.dataService.settings
+            .getActiveChannel()
+            .mapStream(data => data.activeChannel.defaultCurrencyCode)
+            .pipe(
+                take(1),
+                takeUntil(this.destroy$),
+                finalize(() => {
+                    this.isLoading = false;
+                    this.changeDetector.markForCheck();
+                }),
+            )
+            .subscribe(x => {
+                this.selectedCurrencyCode = x;
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     updatePreviewLocale() {
@@ -294,7 +320,7 @@ export class UiLanguageSwitcherDialogComponent implements Dialog<[LanguageCode, 
         this.resolveWith();
     }
 
-    private createLocaleString(languageCode: LanguageCode, region?: string): string {
+    private createLocaleString(languageCode: LanguageCode, region?: string | null): string {
         if (!region) {
             return languageCode;
         }
