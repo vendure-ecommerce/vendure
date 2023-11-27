@@ -1,5 +1,8 @@
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { DEFAULT_AUTH_TOKEN_HEADER_KEY, DEFAULT_CHANNEL_TOKEN_KEY } from '@vendure/common/lib/shared-constants';
+import {
+    DEFAULT_AUTH_TOKEN_HEADER_KEY,
+    DEFAULT_CHANNEL_TOKEN_KEY,
+} from '@vendure/common/lib/shared-constants';
 import {
     AdminUiAppConfig,
     AdminUiAppDevModeConfig,
@@ -27,6 +30,7 @@ import {
     defaultLocale,
     DEFAULT_APP_PATH,
     loggerCtx,
+    defaultAvailableLocales,
 } from './constants';
 import { MetricsService } from './service/metrics.service';
 
@@ -257,8 +261,19 @@ export class AdminUiPlugin implements NestModule {
         const propOrDefault = <Prop extends keyof AdminUiConfig>(
             prop: Prop,
             defaultVal: AdminUiConfig[Prop],
+            isArray: boolean = false,
         ): AdminUiConfig[Prop] => {
-            return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
+            if (isArray) {
+                const isValidArray = !!((partialConfig as AdminUiConfig)[prop] as any[])?.length;
+
+                return partialConfig
+                    ? isValidArray
+                        ? (partialConfig as AdminUiConfig)[prop]
+                        : defaultVal
+                    : defaultVal;
+            } else {
+                return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
+            }
         };
         return {
             adminApiPath: propOrDefault('adminApiPath', apiOptions.adminApiPath),
@@ -274,11 +289,12 @@ export class AdminUiPlugin implements NestModule {
             ),
             channelTokenKey: propOrDefault(
                 'channelTokenKey',
-                apiOptions.channelTokenKey || DEFAULT_CHANNEL_TOKEN_KEY
+                apiOptions.channelTokenKey || DEFAULT_CHANNEL_TOKEN_KEY,
             ),
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
             defaultLocale: propOrDefault('defaultLocale', defaultLocale),
-            availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
+            availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages, true),
+            availableLocales: propOrDefault('availableLocales', defaultAvailableLocales, true),
             loginUrl: options.adminUiConfig?.loginUrl,
             brand: options.adminUiConfig?.brand,
             hideVendureBranding: propOrDefault(

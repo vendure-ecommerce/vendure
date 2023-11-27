@@ -21,9 +21,11 @@ export class LocalizationService {
     direction$: LocalizationDirectionType;
 
     constructor(private i18nService: I18nService, private dataService: DataService) {
-        this.uiLanguageAndLocale$ = this.dataService.client
-            ?.uiState()
-            ?.stream$?.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
+        this.uiLanguageAndLocale$ = this.dataService.client?.uiState()?.stream$?.pipe(
+            map(({ uiState }) => {
+                return [uiState.language, uiState.locale ?? undefined];
+            }),
+        );
 
         this.direction$ = this.uiLanguageAndLocale$?.pipe(
             map(([languageCode]) => {

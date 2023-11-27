@@ -34,6 +34,7 @@ export type DeepRequired<T, U extends object | undefined = undefined> = T extend
 /**
  * A type representing the type rather than instance of a class.
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface Type<T> extends Function {
     // eslint-disable-next-line @typescript-eslint/prefer-function-type
     new (...args: any[]): T;
@@ -283,6 +284,11 @@ export interface AdminUiConfig {
      * An array of languages for which translations exist for the Admin UI.
      */
     availableLanguages: LanguageCode[];
+    /**
+     * @description
+     * An array of locales to be used on Admin UI.
+     */
+    availableLocales: string[];
     /**
      * @description
      * If you are using an external {@link AuthenticationStrategy} for the Admin API, you can configure
