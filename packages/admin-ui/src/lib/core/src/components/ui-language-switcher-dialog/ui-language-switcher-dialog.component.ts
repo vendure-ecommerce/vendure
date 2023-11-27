@@ -34,8 +34,6 @@ export class UiLanguageSwitcherDialogComponent
     }
 
     ngOnInit() {
-        console.log({ availableLocales: getAppConfig().availableLocales });
-
         this.updatePreviewLocale();
 
         this.dataService.settings
