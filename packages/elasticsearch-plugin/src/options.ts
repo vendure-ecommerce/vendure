@@ -7,6 +7,7 @@ import {
     LanguageCode,
     Product,
     ProductVariant,
+    RequestContext
 } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
@@ -230,7 +231,7 @@ export interface ElasticsearchOptions {
      * ```
      */
     customProductMappings?: {
-        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector]>;
+        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector, RequestContext]>;
     };
     /**
      * @description
@@ -260,7 +261,7 @@ export interface ElasticsearchOptions {
      * ```
      */
     customProductVariantMappings?: {
-        [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode, Injector]>;
+        [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode, Injector, RequestContext]>;
     };
     /**
      * @description

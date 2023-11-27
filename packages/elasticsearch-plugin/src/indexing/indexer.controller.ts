@@ -892,12 +892,12 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             };
             const variantCustomMappings = Object.entries(this.options.customProductVariantMappings);
             for (const [name, def] of variantCustomMappings) {
-                item[`variant-${name}`] = await def.valueFn(v, languageCode, this.injector);
+                item[`variant-${name}`] = await def.valueFn(v, languageCode, this.injector, ctx);
             }
 
             const productCustomMappings = Object.entries(this.options.customProductMappings);
             for (const [name, def] of productCustomMappings) {
-                item[`product-${name}`] = await def.valueFn(v.product, variants, languageCode, this.injector);
+                item[`product-${name}`] = await def.valueFn(v.product, variants, languageCode, this.injector, ctx);
             }
             return item;
         } catch (err: any) {
@@ -971,7 +971,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         };
         const productCustomMappings = Object.entries(this.options.customProductMappings);
         for (const [name, def] of productCustomMappings) {
-            item[`product-${name}`] = await def.valueFn(product, [], languageCode, this.injector);
+            item[`product-${name}`] = await def.valueFn(product, [], languageCode, this.injector, ctx);
         }
         return item;
     }
