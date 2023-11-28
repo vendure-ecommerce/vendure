@@ -32,13 +32,13 @@ in processing jobs.
 
 ## Installation
 
-`yarn add @vendure/job-queue-plugin bullmq@1`
+`yarn add @vendure/job-queue-plugin bullmq`
 
 or
 
-`npm install @vendure/job-queue-plugin bullmq@1`
+`npm install @vendure/job-queue-plugin bullmq`
 
-**Note:** The v1.x version of this plugin is designed to work with bullmq v1.x.
+**Note:** The v1.x version of this plugin is designed to work with bullmq v1.x, etc.
 
 *Example*
 
