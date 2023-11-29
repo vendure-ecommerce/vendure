@@ -20,10 +20,13 @@ export class MockI18nService implements MockOf<I18nService> {
 
     isRTL(): boolean {
         return false;
-      }
+    }
 
     availableLanguages: LanguageCode[];
+    availableLocales: string[] = [];
+    setAvailableLocales: (locales: string[]) => void;
     setAvailableLanguages: (languages: LanguageCode[]) => void;
     _availableLanguages: LanguageCode[];
+    _availableLocales: string[] = [];
     ngxTranslate: TranslateService;
 }
