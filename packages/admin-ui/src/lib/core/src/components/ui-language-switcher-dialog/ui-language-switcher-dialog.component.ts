@@ -21,7 +21,7 @@ export class UiLanguageSwitcherDialogComponent
     currentLanguage: LanguageCode;
     availableLanguages: LanguageCode[] = [];
     currentLocale: string | undefined;
-    availableLocales: string[] = getAppConfig().availableLocales;
+    availableLocales: string[] = [];
     availableCurrencyCodes = Object.values(CurrencyCode);
     selectedCurrencyCode: string;
     previewLocale: string;
