@@ -264,13 +264,11 @@ export class AdminUiPlugin implements NestModule {
             isArray: boolean = false,
         ): AdminUiConfig[Prop] => {
             if (isArray) {
-                const isValidArray = !!((partialConfig as AdminUiConfig)[prop] as any[])?.length;
+                const isValidArray = !!partialConfig
+                    ? !!((partialConfig as AdminUiConfig)[prop] as any[])?.length
+                    : false;
 
-                return partialConfig
-                    ? isValidArray
-                        ? (partialConfig as AdminUiConfig)[prop]
-                        : defaultVal
-                    : defaultVal;
+                return !!partialConfig && isValidArray ? (partialConfig as AdminUiConfig)[prop] : defaultVal;
             } else {
                 return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
             }
