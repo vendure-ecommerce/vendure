@@ -30,6 +30,7 @@ export class AppShellComponent implements OnInit {
     uiLanguageAndLocale$: LocalizationLanguageCodeType;
     direction$: LocalizationDirectionType;
     availableLanguages: LanguageCode[] = [];
+    availableLocales: string[] = [];
     hideVendureBranding = getAppConfig().hideVendureBranding;
     pageTitle$: Observable<string>;
     mainNavExpanded$: Observable<boolean>;
@@ -57,6 +58,8 @@ export class AppShellComponent implements OnInit {
 
         this.availableLanguages = this.i18nService.availableLanguages;
 
+        this.availableLocales = this.i18nService.availableLocales;
+
         this.pageTitle$ = this.breadcrumbService.breadcrumbs$.pipe(
             map(breadcrumbs => breadcrumbs[breadcrumbs.length - 1].label),
         );
@@ -71,19 +74,14 @@ export class AppShellComponent implements OnInit {
             .pipe(
                 take(1),
                 switchMap(([currentLanguage, currentLocale]) => {
-                    const defaultLocale = getAppConfig().defaultLocale;
-                    const modalCurrentLocale = currentLocale ?? defaultLocale;
-
-                    const defaultLanguage = getAppConfig().defaultLanguage;
-                    const modalCurrentLanguage = currentLanguage ?? defaultLanguage;
-
                     return this.modalService.fromComponent(UiLanguageSwitcherDialogComponent, {
                         closable: true,
                         size: 'lg',
                         locals: {
+                            availableLocales: this.availableLocales,
                             availableLanguages: this.availableLanguages,
-                            currentLanguage: modalCurrentLanguage,
-                            currentLocale: modalCurrentLocale,
+                            currentLanguage: currentLanguage,
+                            currentLocale: currentLocale,
                         },
                     });
                 }),
