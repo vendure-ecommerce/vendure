@@ -23,7 +23,7 @@ export class UiLanguageSwitcherDialogComponent
     currentLocale: string | undefined;
     availableLocales: string[] = getAppConfig().availableLocales;
     availableCurrencyCodes = Object.values(CurrencyCode);
-    selectedCurrencyCode;
+    selectedCurrencyCode: string;
     previewLocale: string;
     readonly browserDefaultLocale: string | undefined;
     readonly now = new Date().toISOString();
