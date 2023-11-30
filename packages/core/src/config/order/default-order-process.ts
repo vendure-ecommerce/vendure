@@ -412,13 +412,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                 if (shouldSetAsPlaced) {
                     order.active = false;
                     order.orderPlacedAt = new Date();
-                    await Promise.all(
-                        order.lines.map(line =>
-                            connection
-                                .getRepository(ctx, OrderLine)
-                                .update(line.id, { orderPlacedQuantity: line.quantity }),
-                        ),
-                    );
+                    order.lines.map(line => line.orderPlacedQuantity = line.quantity)
                     eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
                     await orderSplitter.createSellerOrders(ctx, order);
                 }
