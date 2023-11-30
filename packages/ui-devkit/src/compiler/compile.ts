@@ -267,6 +267,7 @@ function runWatchMode({
         if (buildProcess) {
             buildProcess.kill();
         }
+        process.exit();
     };
 
     process.on('SIGINT', close);
