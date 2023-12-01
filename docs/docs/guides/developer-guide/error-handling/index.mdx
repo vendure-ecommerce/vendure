@@ -231,6 +231,33 @@ Here's how a response would look in both the success and error result cases:
 </TabItem>
 </Tabs>
 
+### Handling ErrorResults in plugin code
+
+If you are writing a plugin which deals with internal Vendure service methods that may return ErrorResults,
+then you can use the `isGraphQlErrorResult()` function to check whether the result is an ErrorResult:
+
+```ts
+import { Injectable} from '@nestjs/common';
+import { isGraphQlErrorResult, Order, OrderService, OrderState, RequestContext } from '@vendure/core';
+
+@Injectable()
+export class MyService {
+
+    constructor(private orderService: OrderService) {}
+
+    async myMethod(ctx: RequestContext, order: Order, newState: OrderState) {
+        const transitionResult = await this.orderService.transitionToState(ctx, order.id, newState);
+        if (isGraphQlErrorResult(transitionResult)) {
+            // The transition failed with an ErrorResult
+            throw transitionResult;
+        } else {
+            // TypeScript will correctly infer the type of `transitionResult` to be `Order`
+            return transitionResult;
+        }
+    }
+}
+```
+
 ### Handling ErrorResults in client code
 
 Because we know all possible ErrorResult that may occur for a given mutation, we can handle them in an exhaustive manner. In other
