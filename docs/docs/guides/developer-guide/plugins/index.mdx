@@ -281,10 +281,9 @@ In order to make use of this custom field in a type-safe way, we can tell TypeSc
 ```
 
 ```ts title="src/plugins/wishlist-plugin/types.ts"
-import { CustomCustomerFields } from '@vendure/core/dist/entity/custom-entity-fields';
 import { WishlistItem } from './entities/wishlist-item.entity';
 
-declare module '@vendure/core' {
+declare module '@vendure/core/dist/entity/custom-entity-fields' {
   interface CustomCustomerFields {
     wishlistItems: WishlistItem[];
   }
