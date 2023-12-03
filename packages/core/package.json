@@ -27,6 +27,7 @@
         "test": "vitest --config ./vitest.config.ts --run",
         "e2e": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts --run",
         "e2e:watch": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts",
+        "bench": "cross-env PACKAGE=core vitest bench --config ../../e2e-common/vitest.config.ts --run",
         "ci": "yarn build"
     },
     "publishConfig": {
