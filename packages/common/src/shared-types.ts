@@ -290,6 +290,8 @@ export interface AdminUiConfig {
     /**
      * @description
      * An array of locales to be used on Admin UI.
+     *
+     * @since 2.2.0
      */
     availableLocales: string[];
     /**
