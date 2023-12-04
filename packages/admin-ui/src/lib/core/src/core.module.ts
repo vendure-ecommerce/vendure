@@ -7,7 +7,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
 import { getAppConfig } from './app.config';
-import { getDefaultUiLanguage } from './common/utilities/get-default-ui-language';
+import { getDefaultUiLanguage, getDefaultUiLocale } from './common/utilities/get-default-ui-language';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { BaseNavComponent } from './components/base-nav/base-nav.component';
@@ -74,29 +74,44 @@ export class CoreModule {
         private dataService: DataService,
         private notificationService: NotificationService,
     ) {
-        this.initUiLanguages();
+        this.initUiLanguagesAndLocales();
         this.initUiTitle();
         this.initAlerts();
     }
 
-    private initUiLanguages() {
+    private initUiLanguagesAndLocales() {
         const defaultLanguage = getDefaultUiLanguage();
+        const defaultLocale = getDefaultUiLocale();
+
         const lastLanguage = this.localStorageService.get('uiLanguageCode');
         const availableLanguages = getAppConfig().availableLanguages;
+        const availableLocales = getAppConfig().availableLocales;
 
-        if (!availableLanguages.includes(defaultLanguage)) {
+        if (!!defaultLanguage && !availableLanguages.includes(defaultLanguage)) {
             throw new Error(
                 `The defaultLanguage "${defaultLanguage}" must be one of the availableLanguages [${availableLanguages
                     .map(l => `"${l}"`)
                     .join(', ')}]`,
             );
         }
+
+        if (!!defaultLocale && !availableLocales.includes(defaultLocale)) {
+            throw new Error(
+                `The defaultLocale "${defaultLocale}" must be one of the availableLocales [${availableLocales
+                    .map(l => `"${l}"`)
+                    .join(', ')}]`,
+            );
+        }
+
         const uiLanguage =
             lastLanguage && availableLanguages.includes(lastLanguage) ? lastLanguage : defaultLanguage;
+
         this.localStorageService.set('uiLanguageCode', uiLanguage);
+
         this.i18nService.setLanguage(uiLanguage);
         this.i18nService.setDefaultLanguage(defaultLanguage);
         this.i18nService.setAvailableLanguages(availableLanguages || [defaultLanguage]);
+        this.i18nService.setAvailableLocales(availableLocales || [defaultLocale]);
     }
 
     private initUiTitle() {
