@@ -107,42 +107,44 @@
         </vdr-card>
     </vdr-page-detail-sidebar>
     <div class="carousel-container">
-    <button *ngIf="showSlideButtons" (click)="previousImage()" [class.disabled]="disablePreviousButton"><clr-icon shape="caret left" class="color-weight-800"></clr-icon
-        ></button>
-    <div class="preview-image" #previewDiv [class.centered]="centered">
-        <div class="image-wrapper">
-            <vdr-focal-point-control
-                [width]="width"
-                [height]="height"
-                [fpx]="fpx"
-                [fpy]="fpy"
-                [editable]="settingFocalPoint"
-                (focalPointChange)="onFocalPointChange($event)"
-            >
-                <img
-                    class="asset-image"
-                    [src]="asset | assetPreview : size"
-                    [ngClass]="size"
-                    #imageElement
-                    (load)="onImageLoad()"
-                />
-            </vdr-focal-point-control>
-            <div class="focal-point-info" *ngIf="settingFocalPoint">
-                <button class="icon-button" (click)="setFocalPointCancel()">
-                    <clr-icon shape="times"></clr-icon>
-                </button>
-                <button
-                    class="btn btn-primary btn-sm"
-                    (click)="setFocalPointEnd()"
-                    [disabled]="!lastFocalPoint"
+        <button *ngIf="showSlideButtons" (click)="previousImage()" class="carousel-button" [class.disabled]="disablePreviousButton">
+            <clr-icon shape="caret left" class="color-weight-800"></clr-icon>
+        </button>
+        <div class="preview-image" #previewDiv [class.centered]="centered">
+            <div class="image-wrapper">
+                <vdr-focal-point-control
+                    [width]="width"
+                    [height]="height"
+                    [fpx]="fpx"
+                    [fpy]="fpy"
+                    [editable]="settingFocalPoint"
+                    (focalPointChange)="onFocalPointChange($event)"
                 >
-                    <clr-icon shape="crosshairs"></clr-icon>
-                    {{ 'asset.set-focal-point' | translate }}
-                </button>
+                    <img
+                        class="asset-image"
+                        [src]="asset | assetPreview : size"
+                        [ngClass]="size"
+                        #imageElement
+                        (load)="onImageLoad()"
+                    />
+                </vdr-focal-point-control>
+                <div class="focal-point-info" *ngIf="settingFocalPoint">
+                    <button class="icon-button" (click)="setFocalPointCancel()">
+                        <clr-icon shape="times"></clr-icon>
+                    </button>
+                    <button
+                        class="btn btn-primary btn-sm"
+                        (click)="setFocalPointEnd()"
+                        [disabled]="!lastFocalPoint"
+                    >
+                        <clr-icon shape="crosshairs"></clr-icon>
+                        {{ 'asset.set-focal-point' | translate }}
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-    <button  *ngIf="showSlideButtons" (click)="nextImage()" [class.disabled]="disableNextButton"><clr-icon shape="caret right" class="color-weight-800"></clr-icon
-        ></button>
+        <button *ngIf="showSlideButtons" (click)="nextImage()" class="carousel-button" [class.disabled]="disableNextButton">
+            <clr-icon shape="caret right" class="color-weight-800"></clr-icon>
+        </button>
     </div>
 </vdr-page-detail-layout>
