@@ -1,8 +1,6 @@
 ---
 title: "Queries"
-weight: 1
-date: 2023-07-21T15:33:44.314Z
-showtoc: true
+isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->

@@ -35,6 +35,7 @@ const VALID_SCOPES: string[] = [
     'testing',
     'ui-devkit',
     'harden-plugin',
+    'stellate-plugin',
 ];
 
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');

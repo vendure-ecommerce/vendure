@@ -11,10 +11,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureEntityEvent
 
-<GenerationInfo sourceFile="packages/core/src/event-bus/vendure-entity-event.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/event-bus/vendure-entity-event.ts" sourceLine="12" packageName="@vendure/core" />
 
 The base class for all entity events used by the EventBus system.
-* For event type `'updated'` the entity is the one before applying the patch (if not documented otherwise).
 * For event type `'deleted'` the input will most likely be an `id: ID`
 
 ```ts title="Signature"

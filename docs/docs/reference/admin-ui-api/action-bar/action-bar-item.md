@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ActionBarItem
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="96" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="107" packageName="@vendure/admin-ui" />
 
 A button in the ActionBar area at the top of one of the list or detail views.
 
@@ -88,7 +88,18 @@ dynamically enable/disable or show/hide the button.
 
 <MemberInfo kind="property" type={`string | string[]`}   />
 
+Control the display of this item based on the user permissions. Note: if you attempt to pass a
+<a href='/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a> object, you will get a compilation error. Instead, pass the plain
+string version. For example, if the permission is defined as:
+```ts
+export const MyPermission = new PermissionDefinition('ProductReview');
+```
+then the generated permission strings will be:
 
+- `CreateProductReview`
+- `ReadProductReview`
+- `UpdateProductReview`
+- `DeleteProductReview`
 
 
 </div>
