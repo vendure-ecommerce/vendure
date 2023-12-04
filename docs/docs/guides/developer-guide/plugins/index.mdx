@@ -138,7 +138,7 @@ export class MyPlugin implements NestModule {
 
 In Vendure **plugins** are used to extend the core functionality of the server. Plugins can be pre-made functionality that you can install via npm, or they can be custom plugins that you write yourself.
 
-For any unit of functionality that you need to add to your project, you'll be writing creating a Vendure plugin. By convention, plugins are stored in the `plugins` directory of your project. However, this is not a requirement, and you are free to arrange your plugin files in any way you like.
+For any unit of functionality that you need to add to your project, you'll be creating a Vendure plugin. By convention, plugins are stored in the `plugins` directory of your project. However, this is not a requirement, and you are free to arrange your plugin files in any way you like.
 
 ```txt
 ├──src
@@ -281,7 +281,6 @@ In order to make use of this custom field in a type-safe way, we can tell TypeSc
 ```
 
 ```ts title="src/plugins/wishlist-plugin/types.ts"
-import { CustomCustomerFields } from '@vendure/core/dist/entity/custom-entity-fields';
 import { WishlistItem } from './entities/wishlist-item.entity';
 
 declare module '@vendure/core/dist/entity/custom-entity-fields' {
@@ -312,7 +311,7 @@ Let's create a service to handle the wishlist functionality:
         ├── wishlist.service.ts
 ```
 
-```ts title="src/plugins/wishlist-plugin/wishlist.service.ts"
+```ts title="src/plugins/wishlist-plugin/services/wishlist.service.ts"
 import { Injectable } from '@nestjs/common';
 import {
     Customer,
