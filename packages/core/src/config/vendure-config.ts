@@ -208,6 +208,17 @@ export interface ApiOptions {
      * @since 1.5.0
      */
     introspection?: boolean;
+    /**
+     * @description
+     * Whether to generate a serialized graph snapshot.
+     * Additionally, you can activate the nestjs devtools https://docs.nestjs.com/devtools/overview
+     * by defining the env variable ENABLE_DEVTOOLS='true'
+     * The default devtools port (8000) can be overridden with the env var DEVTOOLS_PORT='REPLACE_ME'
+     *
+     * @default false
+     * @since 2.2.0
+     */
+    snapshot?: boolean;
 }
 
 /**

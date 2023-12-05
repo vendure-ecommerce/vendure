@@ -53,11 +53,12 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // eslint-disable-next-line
     const appModule = await import('./app.module.js');
     setProcessContext('server');
-    const { hostname, port, cors, middleware } = config.apiOptions;
+    const { hostname, port, cors, middleware, snapshot } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
     const app = await NestFactory.create(appModule.AppModule, {
         cors,
         logger: new Logger(),
+        snapshot,
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
