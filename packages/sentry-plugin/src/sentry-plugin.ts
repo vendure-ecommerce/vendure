@@ -39,7 +39,7 @@ const SentryOptionsProvider = {
  * Install this plugin as well as the `@sentry/node` package:
  *
  * ```sh
- * npm install --save @vendure/sentry-plugin @sentry/node
+ * npm install --save \@vendure/sentry-plugin \@sentry/node
  * ```
  *
  * ## Configuration
@@ -60,7 +60,9 @@ const SentryOptionsProvider = {
  *             // Optional configuration
  *             includeErrorTestMutation: true,
  *             enableTracing: true,
- *             // you can also pass in any of the options from @sentry/node
+ *             // you can also pass in any of the options from \@sentry/node
+ *             // for instance:
+ *             tracesSampleRate: 1.0,
  *         }),
  *         // highlight-end
  *     ],
@@ -94,7 +96,7 @@ const SentryOptionsProvider = {
  * To test whether your Sentry configuration is working correctly, you can set the `includeErrorTestMutation` option to `true`. This will add a mutation to the Admin API
  * which will throw an error of the type specified in the `errorType` argument. For example:
  *
- * ```gql
+ * ```graphql
  * mutation CreateTestError {
  *     createTestError(errorType: DATABASE_ERROR)
  * }
