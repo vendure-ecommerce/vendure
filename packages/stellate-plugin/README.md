@@ -4,4 +4,4 @@ Integrates your Vendure server with the [Stellate](TaxRateEvent) GraphQL API cac
 
 `npm install @vendure/stellate-plugin`
 
-For documentation, see [docs.vendure.io/typescript-api/core-plugins/stellate-plugin/](https://docs.vendure.io/typescript-api/core-plugins/stellate-plugin/)
+For documentation, see [docs.vendure.io/reference/core-plugins/stellate-plugin/](https://docs.vendure.io/reference/core-plugins/stellate-plugin/)

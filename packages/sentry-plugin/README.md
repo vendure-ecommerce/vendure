@@ -4,4 +4,4 @@ Integrates your Vendure server with the [Sentry](https://sentry.io/) application
 
 `npm install @vendure/sentry-plugin`
 
-For documentation, see [docs.vendure.io/typescript-api/core-plugins/sentry-plugin/](https://docs.vendure.io/typescript-api/core-plugins/sentry-plugin/)
+For documentation, see [docs.vendure.io/reference/core-plugins/sentry-plugin/](https://docs.vendure.io/reference/core-plugins/sentry-plugin/)
