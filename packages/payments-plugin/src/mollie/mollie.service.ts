@@ -184,7 +184,7 @@ export class MollieService {
             orderInput.method = molliePaymentMethodCode as MollieClientMethod;
         }
         const mollieOrder = await mollieClient.orders.create(orderInput);
-        Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`);
+        Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`, loggerCtx);
         const url = mollieOrder.getCheckoutUrl();
         if (!url) {
             throw Error('Unable to getCheckoutUrl() from Mollie order');
