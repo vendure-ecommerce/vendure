@@ -48,9 +48,6 @@ The root directory has a `package.json` which contains build-related dependencie
 * Generating TypeScript types from the GraphQL schema
 * Linting, formatting & testing tasks to run on git commit & push
 
-> Note:
-> When you do `yarn` for the first time, you will need to manually create the `package` folder under [/packages/admin-ui](/packages/admin-ui).
-
 ### 2. Build all packages
 
 `yarn build`
