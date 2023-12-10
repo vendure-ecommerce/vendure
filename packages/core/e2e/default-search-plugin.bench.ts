@@ -2,7 +2,8 @@
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer } from '@vendure/testing';
 import path from 'path';
-import { afterAll, beforeAll, bench, describe, expect } from 'vitest';
+import { Bench } from 'tinybench';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -31,6 +32,13 @@ const { server, adminClient, shopClient } = createTestEnvironment(
     }),
 );
 
+let marginFactor = 1; // Defaults to 1, will be adjusted during test
+let cpuFactor = 1; // Defaults to 1, will be adjusted during test
+const fibonacci = (i: number): number => {
+    if (i <= 1) return i;
+    return fibonacci(i - 1) + fibonacci(i - 2);
+};
+
 beforeAll(async () => {
     await server.init({
         initialData,
@@ -47,9 +55,41 @@ afterAll(async () => {
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
-    bench(
-        'group by product',
-        async () => {
+    it('defines benchmark cpu and margin factor', async () => {
+        const bench = new Bench({
+            warmupTime: 0,
+            warmupIterations: 1,
+            time: 0,
+            iterations: 10,
+        });
+
+        bench.add('measure time to calcualate fibonacci', () => {
+            fibonacci(41); // If this task would take 1000 ms the cpuFactor would be 1.
+        });
+
+        const tasks = await bench.run();
+
+        // console.table(bench.table());
+
+        tasks.forEach(task => {
+            expect(task.result?.rme).toBeDefined();
+            expect(task.result?.mean).toBeDefined();
+            if (task.result?.rme && task.result?.mean) {
+                marginFactor = 1 + task.result.rme / 100;
+                cpuFactor = 1000 / task.result.mean;
+            }
+        });
+    });
+
+    it('performs when grouped by product', async () => {
+        const bench = new Bench({
+            warmupTime: 0,
+            warmupIterations: 3,
+            time: 0,
+            iterations: 1000,
+        });
+
+        bench.add('group by product', async () => {
             await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariablesExt>(
                 SEARCH_PRODUCTS_SHOP,
                 {
@@ -58,20 +98,17 @@ describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
                     },
                 },
             );
-        },
-        {
-            warmupTime: 0,
-            warmupIterations: 1,
-            time: 0,
-            iterations: 1000,
-            setup: (task, mode) => {
-                if (mode === 'run') {
-                    task.addEventListener('complete', e => {
-                        const taskResult = e.task.result;
-                        expect(taskResult?.mean).toBeLessThan(15);
-                    });
-                }
-            },
-        },
-    );
+        });
+
+        const tasks = await bench.run();
+
+        // console.table(bench.table());
+
+        tasks.forEach(task => {
+            expect(task.result?.mean).toBeDefined();
+            if (task.result?.mean) {
+                expect(task.result.mean * cpuFactor).toBeLessThan(6.835 * marginFactor);
+            }
+        });
+    });
 });
