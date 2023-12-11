@@ -141,7 +141,7 @@ The following types are available for custom fields:
 | `string`       | Short string data            | url, label                                               |
 | `localeString` | Localized short strings      | localized url                                            |
 | `text`         | Long text data               | extended product info, json config object                |
-| `localText`    | Localized long text          | localized extended product info                          |
+| `localeText`   | Localized long text          | localized extended product info                          |
 | `int`          | Integer                      | product weight, customer loyalty points, monetary values |
 | `float`        | Floating point number        | product review rating                                    |
 | `boolean`      | Boolean                      | isDownloadable flag on product                           |
