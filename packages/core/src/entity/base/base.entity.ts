@@ -13,8 +13,14 @@ import { PrimaryGeneratedId } from '../entity-id.decorator';
 export abstract class VendureEntity {
     protected constructor(input?: DeepPartial<VendureEntity>) {
         if (input) {
-            for (const [key, value] of Object.entries(input)) {
-                (this as any)[key] = value;
+            for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(input))) {
+                if (descriptor.get && !descriptor.set) {
+                    // A getter has been moved to the entity instance
+                    // by the CalculatedPropertySubscriber
+                    // and cannot be copied over to the new instance.
+                    continue;
+                }
+                (this as any)[key] = descriptor.value;
             }
         }
     }
