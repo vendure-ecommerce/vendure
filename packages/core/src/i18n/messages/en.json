@@ -6,7 +6,6 @@
     "cannot-delete-sole-superadmin": "The sole SuperAdmin cannot be deleted",
     "cannot-locate-customer-for-user": "Cannot locate a Customer for the user",
     "cannot-modify-role": "The role \"{ roleCode }\" cannot be modified",
-    "cannot-create-sales-for-active-order": "Cannot create a Sale for an Order which is still active",
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",
     "cannot-transition-payment-from-to": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-refund-from-to": "Cannot transition Refund from \"{ fromState }\" to \"{ toState }\"",
