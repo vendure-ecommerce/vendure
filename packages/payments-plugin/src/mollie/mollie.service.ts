@@ -184,7 +184,7 @@ export class MollieService {
             orderInput.method = molliePaymentMethodCode as MollieClientMethod;
         }
         const mollieOrder = await mollieClient.orders.create(orderInput);
-        Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`);
+        Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`, loggerCtx);
         const url = mollieOrder.getCheckoutUrl();
         if (!url) {
             throw Error('Unable to getCheckoutUrl() from Mollie order');
@@ -254,6 +254,11 @@ export class MollieService {
         }
         if (order.state === 'PaymentAuthorized' && mollieOrder.status === OrderStatus.completed) {
             return this.settleExistingPayment(ctx, order, mollieOrder.id);
+        }
+        if (autoCapture && mollieOrder.status === OrderStatus.completed) {
+            // When autocapture is enabled, we should not handle the completed status from Mollie,
+            // because the order will be transitioned to PaymentSettled during auto capture
+            return;
         }
         // Any other combination of Mollie status and Vendure status indicates something is wrong.
         throw Error(
