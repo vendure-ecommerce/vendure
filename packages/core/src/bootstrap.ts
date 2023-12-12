@@ -24,8 +24,8 @@ import { getPluginStartupMessages } from './plugin/plugin-utils';
 import { setProcessContext } from './process-context/process-context';
 import { VENDURE_VERSION } from './version';
 import { VendureWorker } from './worker/vendure-worker';
-import {NestApplicationOptions} from "@nestjs/common/interfaces/nest-application-options.interface";
-import {NestApplicationContextOptions} from "@nestjs/common/interfaces/nest-application-context-options.interface";
+import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
+import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-application-context-options.interface';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
