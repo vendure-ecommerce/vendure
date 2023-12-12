@@ -23,7 +23,6 @@ export class MollieController {
             // because this is an incoming webhook, not a graphql request with a valid Ctx
             const ctx = await this.createContext(channelToken);
             await this.mollieService.handleMollieStatusUpdate(ctx, {
-                channelToken,
                 paymentMethodId,
                 orderId: body.id,
             });
