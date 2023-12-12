@@ -24,6 +24,8 @@ import { getPluginStartupMessages } from './plugin/plugin-utils';
 import { setProcessContext } from './process-context/process-context';
 import { VENDURE_VERSION } from './version';
 import { VendureWorker } from './worker/vendure-worker';
+import {NestApplicationOptions} from "@nestjs/common/interfaces/nest-application-options.interface";
+import {NestApplicationContextOptions} from "@nestjs/common/interfaces/nest-application-context-options.interface";
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -42,7 +44,7 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  * ```
  * @docsCategory common
  * */
-export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
+export async function bootstrap(userConfig: Partial<VendureConfig>, options?: NestApplicationOptions): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
@@ -53,12 +55,12 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // eslint-disable-next-line
     const appModule = await import('./app.module.js');
     setProcessContext('server');
-    const { hostname, port, cors, middleware, snapshot } = config.apiOptions;
+    const { hostname, port, cors, middleware } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
     const app = await NestFactory.create(appModule.AppModule, {
         cors,
         logger: new Logger(),
-        snapshot,
+        ...options
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
@@ -100,7 +102,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
  * ```
  * @docsCategory worker
  * */
-export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<VendureWorker> {
+export async function bootstrapWorker(userConfig: Partial<VendureConfig>, options?: NestApplicationContextOptions): Promise<VendureWorker> {
     const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
     config.logger.setDefaultContext?.('Vendure Worker');
@@ -114,6 +116,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
     const WorkerModule = await import('./worker/worker.module.js').then(m => m.WorkerModule);
     const workerApp = await NestFactory.createApplicationContext(WorkerModule, {
         logger: new Logger(),
+        ...options
     });
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());

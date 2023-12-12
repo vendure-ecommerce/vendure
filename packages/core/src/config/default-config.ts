@@ -80,7 +80,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],
-        snapshot: false,
     },
     authOptions: {
         disableAuth: false,
