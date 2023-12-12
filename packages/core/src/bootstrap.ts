@@ -29,6 +29,14 @@ import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-ap
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
+export interface BootstrapOptions {
+    nestApplicationOptions: NestApplicationOptions;
+}
+
+export interface BootstrapWorkerOptions {
+    nestApplicationContextOptions: NestApplicationContextOptions
+}
+
 /**
  * @description
  * Bootstraps the Vendure server. This is the entry point to the application.
@@ -44,7 +52,7 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  * ```
  * @docsCategory common
  * */
-export async function bootstrap(userConfig: Partial<VendureConfig>, options?: NestApplicationOptions): Promise<INestApplication> {
+export async function bootstrap(userConfig: Partial<VendureConfig>, options?: BootstrapOptions): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
@@ -60,7 +68,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>, options?: Ne
     const app = await NestFactory.create(appModule.AppModule, {
         cors,
         logger: new Logger(),
-        ...options
+        ...options?.nestApplicationOptions
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
@@ -102,7 +110,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>, options?: Ne
  * ```
  * @docsCategory worker
  * */
-export async function bootstrapWorker(userConfig: Partial<VendureConfig>, options?: NestApplicationContextOptions): Promise<VendureWorker> {
+export async function bootstrapWorker(userConfig: Partial<VendureConfig>, options?: BootstrapWorkerOptions): Promise<VendureWorker> {
     const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
     config.logger.setDefaultContext?.('Vendure Worker');
@@ -116,7 +124,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>, option
     const WorkerModule = await import('./worker/worker.module.js').then(m => m.WorkerModule);
     const workerApp = await NestFactory.createApplicationContext(WorkerModule, {
         logger: new Logger(),
-        ...options
+        ...options?.nestApplicationContextOptions
     });
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
