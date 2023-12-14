@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ChannelService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/channel.service.ts" sourceLine="53" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/channel.service.ts" sourceLine="54" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> entities.
 
@@ -90,12 +90,12 @@ Returns the default Channel.
 
 ### create
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateChannelInput) => Promise&#60;ErrorResultUnion&#60;CreateChannelResult, <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateChannelInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;CreateChannelResult, <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>&#62;&#62;`}   />
 
 
 ### update
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateChannelInput) => Promise&#60;ErrorResultUnion&#60;UpdateChannelResult, <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateChannelInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateChannelResult, <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>&#62;&#62;`}   />
 
 
 ### delete

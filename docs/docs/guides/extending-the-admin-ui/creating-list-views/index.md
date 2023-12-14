@@ -185,12 +185,13 @@ This is the standard layout for any list view. The main functionality is provide
     />
     
     <!-- Here we define all the available columns -->
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true">
+    <vdr-dt2-column id="id" [heading]="'common.id' | translate" [hiddenByDefault]="true">
         <ng-template let-review="item">
             {{ review.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
+            id="created-at"
             [heading]="'common.created-at' | translate"
             [hiddenByDefault]="true"
             [sort]="sorts.get('createdAt')"
@@ -200,6 +201,7 @@ This is the standard layout for any list view. The main functionality is provide
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
+            id="updated-at"
             [heading]="'common.updated-at' | translate"
             [hiddenByDefault]="true"
             [sort]="sorts.get('updatedAt')"
@@ -208,7 +210,7 @@ This is the standard layout for any list view. The main functionality is provide
             {{ review.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column heading="Title" [optional]="false" [sort]="sorts.get('title')">
+    <vdr-dt2-column id="title" heading="Title" [optional]="false" [sort]="sorts.get('title')">
         <ng-template let-review="item">
             <a class="button-ghost" [routerLink]="['./', review.id]"
             ><span>{{ review.title }}</span>
@@ -216,10 +218,10 @@ This is the standard layout for any list view. The main functionality is provide
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column heading="Rating" [sort]="sorts.get('rating')">
+    <vdr-dt2-column id="rating" heading="Rating" [sort]="sorts.get('rating')">
         <ng-template let-review="item"><my-star-rating-component [rating]="review.rating"    /></ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column heading="Author" [sort]="sorts.get('authorName')">
+    <vdr-dt2-column id="author" heading="Author" [sort]="sorts.get('authorName')">
         <ng-template let-review="item">{{ review.authorName }}</ng-template>
     </vdr-dt2-column>
 </vdr-data-table-2>

@@ -1,3 +1,20 @@
+## <small>2.1.5 (2023-12-14)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix display of asset detail focal point buttons ([1b58aa7](https://github.com/vendure-ecommerce/vendure/commit/1b58aa7))
+* **core** Export VendureEntityEvent abstract class from index (#2556) ([c46cf74](https://github.com/vendure-ecommerce/vendure/commit/c46cf74)), closes [#2556](https://github.com/vendure-ecommerce/vendure/issues/2556)
+* **core** Fix bug when instantiating entity from object with getter ([d09452e](https://github.com/vendure-ecommerce/vendure/commit/d09452e)), closes [#2574](https://github.com/vendure-ecommerce/vendure/issues/2574)
+* **core** Fix loading multiple customField relations (#2566) ([99e04d1](https://github.com/vendure-ecommerce/vendure/commit/99e04d1)), closes [#2566](https://github.com/vendure-ecommerce/vendure/issues/2566) [#2555](https://github.com/vendure-ecommerce/vendure/issues/2555)
+* **core** OrderLineEvent includes ID of deleted OrderLine ([ee04032](https://github.com/vendure-ecommerce/vendure/commit/ee04032)), closes [#2574](https://github.com/vendure-ecommerce/vendure/issues/2574)
+* **core** Remove redundant constraint when creating allocations ([52c0841](https://github.com/vendure-ecommerce/vendure/commit/52c0841)), closes [#2563](https://github.com/vendure-ecommerce/vendure/issues/2563)
+* **core** Send the correct amount to `refundOrder` (#2559) ([b5a265f](https://github.com/vendure-ecommerce/vendure/commit/b5a265f)), closes [#2559](https://github.com/vendure-ecommerce/vendure/issues/2559)
+* **elasticsearch-plugin** Fix type to allow the promise on custom mapping definition (#2562) ([8e9ee07](https://github.com/vendure-ecommerce/vendure/commit/8e9ee07)), closes [#2562](https://github.com/vendure-ecommerce/vendure/issues/2562)
+* **payments-plugin** Fix Mollie channel awareness (#2575) ([cc4826d](https://github.com/vendure-ecommerce/vendure/commit/cc4826d)), closes [#2575](https://github.com/vendure-ecommerce/vendure/issues/2575)
+* **payments-plugin** Mollie - ignore completed state to prevent unneccesary error throwing (#2569) ([ed80c68](https://github.com/vendure-ecommerce/vendure/commit/ed80c68)), closes [#2569](https://github.com/vendure-ecommerce/vendure/issues/2569)
+* **stellate-plugin** Add stellate plugin ([2254576](https://github.com/vendure-ecommerce/vendure/commit/2254576))
+
 ## <small>2.1.4 (2023-11-24)</small>
 
 

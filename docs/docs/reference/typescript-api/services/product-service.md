@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/product.service.ts" sourceLine="57" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/product.service.ts" sourceLine="53" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/product#product'>Product</a> entities.
 
 ```ts title="Signature"
 class ProductService {
-    constructor(connection: TransactionalConnection, channelService: ChannelService, roleService: RoleService, assetService: AssetService, productVariantService: ProductVariantService, facetValueService: FacetValueService, taxRateService: TaxRateService, collectionService: CollectionService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, slugValidator: SlugValidator, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, productOptionGroupService: ProductOptionGroupService)
+    constructor(connection: TransactionalConnection, channelService: ChannelService, assetService: AssetService, productVariantService: ProductVariantService, facetValueService: FacetValueService, listQueryBuilder: ListQueryBuilder, translatableSaver: TranslatableSaver, eventBus: EventBus, slugValidator: SlugValidator, customFieldRelationService: CustomFieldRelationService, translator: TranslatorService, productOptionGroupService: ProductOptionGroupService)
     findAll(ctx: RequestContext, options?: ListQueryOptions<Product>, relations?: RelationPaths<Product>) => Promise<PaginatedList<Translated<Product>>>;
     findOne(ctx: RequestContext, productId: ID, relations?: RelationPaths<Product>) => Promise<Translated<Product> | undefined>;
     findByIds(ctx: RequestContext, productIds: ID[], relations?: RelationPaths<Product>) => Promise<Array<Translated<Product>>>;
@@ -38,7 +38,7 @@ class ProductService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, roleService: <a href='/reference/typescript-api/services/role-service#roleservice'>RoleService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, facetValueService: <a href='/reference/typescript-api/services/facet-value-service#facetvalueservice'>FacetValueService</a>, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, collectionService: <a href='/reference/typescript-api/services/collection-service#collectionservice'>CollectionService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, slugValidator: <a href='/reference/typescript-api/service-helpers/slug-validator#slugvalidator'>SlugValidator</a>, customFieldRelationService: CustomFieldRelationService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, productOptionGroupService: <a href='/reference/typescript-api/services/product-option-group-service#productoptiongroupservice'>ProductOptionGroupService</a>) => ProductService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, facetValueService: <a href='/reference/typescript-api/services/facet-value-service#facetvalueservice'>FacetValueService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, slugValidator: <a href='/reference/typescript-api/service-helpers/slug-validator#slugvalidator'>SlugValidator</a>, customFieldRelationService: CustomFieldRelationService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, productOptionGroupService: <a href='/reference/typescript-api/services/product-option-group-service#productoptiongroupservice'>ProductOptionGroupService</a>) => ProductService`}   />
 
 
 ### findAll
@@ -107,7 +107,7 @@ each of the Product's variants, and will assign the Product's Assets to the Chan
 
 ### removeOptionGroupFromProduct
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productId: <a href='/reference/typescript-api/common/id#id'>ID</a>, optionGroupId: <a href='/reference/typescript-api/common/id#id'>ID</a>, force?: boolean) => Promise&#60;ErrorResultUnion&#60;RemoveOptionGroupFromProductResult, Translated&#60;<a href='/reference/typescript-api/entities/product#product'>Product</a>&#62;&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productId: <a href='/reference/typescript-api/common/id#id'>ID</a>, optionGroupId: <a href='/reference/typescript-api/common/id#id'>ID</a>, force?: boolean) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;RemoveOptionGroupFromProductResult, Translated&#60;<a href='/reference/typescript-api/entities/product#product'>Product</a>&#62;&#62;&#62;`}   />
 
 
 

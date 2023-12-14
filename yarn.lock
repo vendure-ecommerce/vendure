@@ -4335,6 +4335,46 @@
     "@angular-devkit/schematics" "16.2.0"
     jsonc-parser "3.2.0"
 
+"@sentry-internal/tracing@7.85.0":
+  version "7.85.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.85.0.tgz#1b4781a61e1e43badeff826cf40abe33dd760f1d"
+  integrity sha512-p3YMUwkPCy2su9cm/3+7QYR4RiMI0+07DU1BZtht9NLTzY2O87/yvUbn1v2yHR3vJQTy/+7N0ud9/mPBFznRQQ==
+  dependencies:
+    "@sentry/core" "7.85.0"
+    "@sentry/types" "7.85.0"
+    "@sentry/utils" "7.85.0"
+
+"@sentry/core@7.85.0":
+  version "7.85.0"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.85.0.tgz#dd90d772a5f75ff674f931f59b22a3fc286d0983"
+  integrity sha512-DFDAc4tWmHN5IWhr7XbHCiyF1Xgb95jz8Uj/JTX9atlgodId1UIbER77qpEmH3eQGid/QBdqrlR98zCixgSbwg==
+  dependencies:
+    "@sentry/types" "7.85.0"
+    "@sentry/utils" "7.85.0"
+
+"@sentry/node@^7.85.0":
+  version "7.85.0"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.85.0.tgz#cf4e6022b5cd1f3fb007186c5e04427b108ebe1d"
+  integrity sha512-uiBtRW9G017NHoCXBlK3ttkTwHXLFyI8ndHpaObtyajKTv3ptGIThVEn7DuK7Pwor//RjwjSEEOa7WDK+FdMVQ==
+  dependencies:
+    "@sentry-internal/tracing" "7.85.0"
+    "@sentry/core" "7.85.0"
+    "@sentry/types" "7.85.0"
+    "@sentry/utils" "7.85.0"
+    https-proxy-agent "^5.0.0"
+
+"@sentry/types@7.85.0":
+  version "7.85.0"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.85.0.tgz#648488b90f958ca6a86922cc5d26004853410ba6"
+  integrity sha512-R5jR4XkK5tBU2jDiPdSVqzkmjYRr666bcGaFGUHB/xDQCjPsjk+pEmCCL+vpuWoaZmQJUE1hVU7rgnVX81w8zg==
+
+"@sentry/utils@7.85.0":
+  version "7.85.0"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.85.0.tgz#b84467fd07bc2ef09fdf382ddcdcdc3f5b0d78b0"
+  integrity sha512-JZ7seNOLvhjAQ8GeB3GYknPQJkuhF88xAYOaESZP3xPOWBMFUN+IO4RqjMqMLFDniOwsVQS7GB/MfP+hxufieg==
+  dependencies:
+    "@sentry/types" "7.85.0"
+
 "@sigstore/bundle@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@sigstore/bundle/-/bundle-1.1.0.tgz#17f8d813b09348b16eeed66a8cf1c3d6bd3d04f1"

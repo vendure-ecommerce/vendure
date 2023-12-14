@@ -84,7 +84,7 @@ Returns all <a href='/reference/typescript-api/entities/address#address'>Address
 Returns a list of all <a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a> entities.
 ### create
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateCustomerInput, password?: string) => Promise&#60;ErrorResultUnion&#60;CreateCustomerResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateCustomerInput, password?: string) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;CreateCustomerResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
 
 Creates a new Customer, including creation of a new User with the special `customer` Role.
 
@@ -101,12 +101,12 @@ This method is intended to be used in admin-created Customer flows.
 
 ### update
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateCustomerInput) => Promise&#60;ErrorResultUnion&#60;UpdateCustomerResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateCustomerInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateCustomerResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
 
 
 ### update
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateCustomerInput | (UpdateCustomerShopInput &#38; { id: <a href='/reference/typescript-api/common/id#id'>ID</a> })) => Promise&#60;ErrorResultUnion&#60;UpdateCustomerResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateCustomerInput | (UpdateCustomerShopInput &#38; { id: <a href='/reference/typescript-api/common/id#id'>ID</a> })) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateCustomerResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
 
 
 ### registerCustomerAccount
@@ -126,7 +126,7 @@ Refreshes a stale email address verification token by generating a new one and
 publishing a <a href='/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a>.
 ### verifyCustomerEmailAddress
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, verificationToken: string, password?: string) => Promise&#60;ErrorResultUnion&#60;VerifyCustomerAccountResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, verificationToken: string, password?: string) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;VerifyCustomerAccountResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
 
 Given a valid verification token which has been published in an <a href='/reference/typescript-api/events/event-types#accountregistrationevent'>AccountRegistrationEvent</a>, this
 method is used to set the Customer as `verified` as part of the account registration flow.
@@ -138,7 +138,7 @@ Publishes a new <a href='/reference/typescript-api/events/event-types#passwordre
 a token which can be used in the `resetPassword()` method.
 ### resetPassword
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/reference/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/reference/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;`}   />
 
 Given a valid password reset token created by a call to the `requestPasswordReset()` method,
 this method will change the Customer's password to that given as the `password` argument.

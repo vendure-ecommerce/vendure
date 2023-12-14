@@ -88,7 +88,7 @@ Sets the <a href='/reference/typescript-api/entities/authentication-method#nativ
 flow.
 ### verifyUserByToken
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, verificationToken: string, password?: string) => Promise&#60;ErrorResultUnion&#60;VerifyCustomerAccountResult, <a href='/reference/typescript-api/entities/user#user'>User</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, verificationToken: string, password?: string) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;VerifyCustomerAccountResult, <a href='/reference/typescript-api/entities/user#user'>User</a>&#62;&#62;`}   />
 
 Verifies a verificationToken by looking for a User which has previously had it set using the
 `setVerificationToken()` method, and checks that the token is valid and has not expired.

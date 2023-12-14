@@ -1,8 +1,6 @@
 ---
 title: "Mutations"
-weight: 2
-date: 2023-07-21T15:33:42.677Z
-showtoc: true
+isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->

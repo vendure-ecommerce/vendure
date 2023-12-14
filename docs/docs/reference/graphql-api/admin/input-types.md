@@ -1,8 +1,6 @@
 ---
 title: "Input Objects"
-weight: 4
-date: 2023-07-21T15:33:44.314Z
-showtoc: true
+isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
@@ -1258,6 +1256,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">perCustomerUsageLimit: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
 
+<div class="graphql-code-line ">usageLimit: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
+
 <div class="graphql-code-line ">conditions: [<a href="/reference/graphql-api/admin/input-types#configurableoperationinput">ConfigurableOperationInput</a>!]!</div>
 
 <div class="graphql-code-line ">actions: [<a href="/reference/graphql-api/admin/input-types#configurableoperationinput">ConfigurableOperationInput</a>!]!</div>
@@ -1822,6 +1822,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
 
+<div class="graphql-code-line ">facetId: <a href="/reference/graphql-api/admin/input-types#idoperators">IDOperators</a></div>
+
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
 
 <div class="graphql-code-line ">code: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
@@ -1876,6 +1878,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
 <div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">facetId: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
@@ -2860,6 +2864,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">perCustomerUsageLimit: <a href="/reference/graphql-api/admin/input-types#numberoperators">NumberOperators</a></div>
 
+<div class="graphql-code-line ">usageLimit: <a href="/reference/graphql-api/admin/input-types#numberoperators">NumberOperators</a></div>
+
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
 
 <div class="graphql-code-line ">description: <a href="/reference/graphql-api/admin/input-types#stringoperators">StringOperators</a></div>
@@ -2924,6 +2930,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">couponCode: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
 <div class="graphql-code-line ">perCustomerUsageLimit: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">usageLimit: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
@@ -4468,6 +4476,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">couponCode: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">perCustomerUsageLimit: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">usageLimit: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
 
 <div class="graphql-code-line ">conditions: [<a href="/reference/graphql-api/admin/input-types#configurableoperationinput">ConfigurableOperationInput</a>!]</div>
 

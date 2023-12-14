@@ -21,7 +21,7 @@ Type         | DB type                               | GraphQL type
 string       | varchar                               | String
 localeString | varchar                               | String
 text         | longtext(m), text(p,s)                | String
-localText    | longtext(m), text(p,s)                | String
+localeText    | longtext(m), text(p,s)                | String
 int          | int                                   | Int
 float        | double precision                      | Float
 boolean      | tinyint (m), bool (p), boolean (s)    | Boolean

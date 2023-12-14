@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RequestContextService
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/request-context/request-context.service.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/request-context/request-context.service.ts" sourceLine="25" packageName="@vendure/core" />
 
 Creates new <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> instances.
 

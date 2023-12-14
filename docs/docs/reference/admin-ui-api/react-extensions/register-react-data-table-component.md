@@ -42,7 +42,7 @@ export default [
         tableId: 'product-list',
         columnId: 'slug',
         props: {
-        foo: 'bar',
+          foo: 'bar',
         },
     }),
 ];
