@@ -3,8 +3,6 @@
 
 #### Fixes
 
-* **admin-ui** Add missing RTL compatibility to some admin-ui components (#2451) ([96eb96e](https://github.com/vendure-ecommerce/vendure/commit/96eb96e)), closes [#2451](https://github.com/vendure-ecommerce/vendure/issues/2451)
-* **core** Loosen typing of custom field relation inverseSide function ([a9696c9](https://github.com/vendure-ecommerce/vendure/commit/a9696c9))
 * **email-plugin** Remove unwanted currency symbols in template (#2536) ([639fa0f](https://github.com/vendure-ecommerce/vendure/commit/639fa0f)), closes [#2536](https://github.com/vendure-ecommerce/vendure/issues/2536)
 * **ui-devkit** Add call to exit in sigint handler (#2558) ([bfd9281](https://github.com/vendure-ecommerce/vendure/commit/bfd9281)), closes [#2558](https://github.com/vendure-ecommerce/vendure/issues/2558)
 
