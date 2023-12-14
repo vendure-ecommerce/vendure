@@ -1255,7 +1255,10 @@ describe('Custom field relations', () => {
             customEntity = await assertFound(
                 customEntityRepository.findOne({
                     where: { id: customEntityId },
-                    relations: ['customEntityListInverse', 'customEntityInverse'],
+                    relations: {
+                        customEntityInverse: true,
+                        customEntityListInverse: true,
+                    },
                 }),
             );
         });
