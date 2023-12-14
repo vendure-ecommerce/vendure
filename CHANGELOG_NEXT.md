@@ -1,3 +1,25 @@
+## 2.2.0-next.0 (2023-12-14)
+
+
+#### Fixes
+
+* **admin-ui** Add missing RTL compatibility to some admin-ui components (#2451) ([96eb96e](https://github.com/vendure-ecommerce/vendure/commit/96eb96e)), closes [#2451](https://github.com/vendure-ecommerce/vendure/issues/2451)
+* **core** Loosen typing of custom field relation inverseSide function ([a9696c9](https://github.com/vendure-ecommerce/vendure/commit/a9696c9))
+* **email-plugin** Remove unwanted currency symbols in template (#2536) ([639fa0f](https://github.com/vendure-ecommerce/vendure/commit/639fa0f)), closes [#2536](https://github.com/vendure-ecommerce/vendure/issues/2536)
+* **ui-devkit** Add call to exit in sigint handler (#2558) ([bfd9281](https://github.com/vendure-ecommerce/vendure/commit/bfd9281)), closes [#2558](https://github.com/vendure-ecommerce/vendure/issues/2558)
+
+#### Features
+
+* **admin-ui** Add React useLazyQuery hook (#2498) ([757635b](https://github.com/vendure-ecommerce/vendure/commit/757635b)), closes [#2498](https://github.com/vendure-ecommerce/vendure/issues/2498)
+* **admin-ui** Allow configuration of available locales (#2550) ([dfddf0f](https://github.com/vendure-ecommerce/vendure/commit/dfddf0f)), closes [#2550](https://github.com/vendure-ecommerce/vendure/issues/2550)
+* **core** Accept `maxAge` and `expires` options in cookie config ([c903388](https://github.com/vendure-ecommerce/vendure/commit/c903388)), closes [#2518](https://github.com/vendure-ecommerce/vendure/issues/2518)
+* **core** Add Missing inherit filters field in collection import (#2534) ([ef64db7](https://github.com/vendure-ecommerce/vendure/commit/ef64db7)), closes [#2534](https://github.com/vendure-ecommerce/vendure/issues/2534) [#2484](https://github.com/vendure-ecommerce/vendure/issues/2484)
+* **core** Enable setting different cookie name for Shop & Admin API (#2482) ([ae91650](https://github.com/vendure-ecommerce/vendure/commit/ae91650)), closes [#2482](https://github.com/vendure-ecommerce/vendure/issues/2482)
+* **elasticsearch-plugin** Provide the ctx for custom mappings (#2547) ([c5d0ea2](https://github.com/vendure-ecommerce/vendure/commit/c5d0ea2)), closes [#2547](https://github.com/vendure-ecommerce/vendure/issues/2547)
+* **email-plugin** Multiple currency support in formatMoney helper (#2531) ([ccf17fb](https://github.com/vendure-ecommerce/vendure/commit/ccf17fb)), closes [#2531](https://github.com/vendure-ecommerce/vendure/issues/2531)
+* **job-queue-plugin** Improve pub/sub message handling (#2561) ([3645819](https://github.com/vendure-ecommerce/vendure/commit/3645819)), closes [#2561](https://github.com/vendure-ecommerce/vendure/issues/2561)
+* **payments-plugin** Mollie: support extra parameters for listing methods (#2516) ([cb9846b](https://github.com/vendure-ecommerce/vendure/commit/cb9846b)), closes [#2516](https://github.com/vendure-ecommerce/vendure/issues/2516) [#2510](https://github.com/vendure-ecommerce/vendure/issues/2510)
+
 ## 2.1.0-next.7 (2023-09-29)
 
 #### Features
