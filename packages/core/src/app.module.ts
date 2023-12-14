@@ -12,6 +12,7 @@ import { I18nService } from './i18n/i18n.service';
 import { PluginModule } from './plugin/plugin.module';
 import { ProcessContextModule } from './process-context/process-context.module';
 import { ServiceModule } from './service/service.module';
+import { DevtoolsModule } from "@nestjs/devtools-integration";
 
 @Module({
     imports: [
@@ -23,6 +24,10 @@ import { ServiceModule } from './service/service.module';
         HealthCheckModule,
         ServiceModule,
         ConnectionModule,
+        DevtoolsModule.register({
+            port: process.env.DEVTOOLS_PORT ? +process.env.DEVTOOLS_PORT : 8000,
+            http: process.env.NODE_ENV !== 'production' && process.env.ENABLE_DEVTOOLS === 'true',
+        }),
     ],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {
