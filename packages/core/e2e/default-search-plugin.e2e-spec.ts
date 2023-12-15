@@ -102,7 +102,7 @@ import { awaitRunningJobs } from './utils/await-running-jobs';
 
 registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
-interface SearchProductShopQueryVariables extends SearchProductsShopQueryVariables {
+interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {
         // This input field is dynamically added only when the `indexStockStatus` init option
         // is set to `true`, and therefore not included in the generated type. Therefore
@@ -125,10 +125,7 @@ describe('Default search plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-
-        // A precaution against a race condition in which the index
-        // rebuild is not completed in time for the first test.
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -136,98 +133,87 @@ describe('Default search plugin', () => {
         await server.destroy();
     });
 
-    function doAdminSearchQuery(input: SearchInput) {
-        return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-            SEARCH_PRODUCTS,
-            {
-                input,
-            },
+    function testProductsShop(input: SearchProductsShopQueryVariablesExt['input']) {
+        return shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariablesExt>(
+            SEARCH_PRODUCTS_SHOP,
+            { input },
         );
     }
 
-    async function testGroupByProduct(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                },
-            },
+    function testProductsAdmin(input: SearchInput) {
+        return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
+            SEARCH_PRODUCTS_ADMIN,
+            { input },
         );
+    }
+
+    type TestProducts = (input: SearchInput) => Promise<SearchProductsShopQuery | SearchProductsAdminQuery>;
+
+    async function testGroupByProduct(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+        });
+
         expect(result.search.totalItems).toBe(20);
     }
 
-    async function testNoGrouping(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: false,
-                },
-            },
-        );
+    async function testNoGrouping(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: false,
+        });
+
         expect(result.search.totalItems).toBe(34);
     }
 
     async function testSortingWithGrouping(
-        client: SimpleGraphQLClient,
+        testProducts: TestProducts,
         sortBy: keyof SearchResultSortParameter,
     ) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    sort: {
-                        [sortBy]: SortOrder.ASC,
-                    },
-                    take: 3,
-                },
+        const result = await testProducts({
+            groupByProduct: true,
+            sort: {
+                [sortBy]: SortOrder.ASC,
             },
-        );
+            take: 3,
+        });
+
         const expected =
             sortBy === 'name'
                 ? ['Bonsai Tree', 'Boxing Gloves', 'Camera Lens']
                 : ['Skipping Rope', 'Tripod', 'Spiky Cactus'];
+
         expect(result.search.items.map(i => i.productName)).toEqual(expected);
     }
 
     async function testSortingNoGrouping(
-        client: SimpleGraphQLClient,
+        testProducts: TestProducts,
         sortBy: keyof SearchResultSortParameter,
     ) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: false,
-                    sort: {
-                        [sortBy]: SortOrder.DESC,
-                    },
-                    take: 3,
-                },
+        const result = await testProducts({
+            groupByProduct: false,
+            sort: {
+                [sortBy]: SortOrder.DESC,
             },
-        );
+            take: 3,
+        });
+
         const expected =
             sortBy === 'name'
                 ? ['USB Cable', 'Tripod', 'Tent']
                 : ['Road Bike', 'Laptop 15 inch 16GB', 'Laptop 13 inch 16GB'];
+
         expect(result.search.items.map(i => i.productVariantName)).toEqual(expected);
     }
 
-    async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    term: 'camera',
-                    groupByProduct: true,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
-                },
+    async function testMatchSearchTerm(testProducts: TestProducts) {
+        const result = await testProducts({
+            term: 'camera',
+            groupByProduct: true,
+            sort: {
+                name: SortOrder.ASC,
             },
-        );
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Camera Lens',
             'Instant Camera',
@@ -235,33 +221,25 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchPartialSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    term: 'lap',
-                    groupByProduct: true,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
-                },
+    async function testMatchPartialSearchTerm(testProducts: TestProducts) {
+        const result = await testProducts({
+            term: 'lap',
+            groupByProduct: true,
+            sort: {
+                name: SortOrder.ASC,
             },
-        );
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual(['Laptop']);
     }
 
-    async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_1', 'T_2'],
-                    facetValueOperator: LogicalOperator.AND,
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetIdsAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_1', 'T_2'],
+            facetValueOperator: LogicalOperator.AND,
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -272,17 +250,13 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_1', 'T_5'],
-                    facetValueOperator: LogicalOperator.OR,
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetIdsOr(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_1', 'T_5'],
+            facetValueOperator: LogicalOperator.OR,
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -300,16 +274,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+            facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -320,16 +290,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    facetValueFilters: [{ or: ['T_1', 'T_5'] }],
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersOr(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+            facetValueFilters: [{ or: ['T_1', 'T_5'] }],
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -347,16 +313,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersOrWithAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+            facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -371,18 +333,14 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_2', 'T_3'],
-                    facetValueOperator: LogicalOperator.OR,
-                    facetValueFilters: [{ and: 'T_1' }],
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersWithFacetIdsOr(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_2', 'T_3'],
+            facetValueOperator: LogicalOperator.OR,
+            facetValueFilters: [{ and: 'T_1' }],
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -397,18 +355,14 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_1'],
-                    facetValueFilters: [{ and: 'T_3' }],
-                    facetValueOperator: LogicalOperator.AND,
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersWithFacetIdsAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_1'],
+            facetValueFilters: [{ and: 'T_3' }],
+            facetValueOperator: LogicalOperator.AND,
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Instant Camera',
             'Camera Lens',
@@ -417,16 +371,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchCollectionId(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    collectionId: 'T_2',
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchCollectionId(testProducts: TestProducts) {
+        const result = await testProducts({
+            collectionId: 'T_2',
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Spiky Cactus',
             'Orchid',
@@ -434,16 +384,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    collectionSlug: 'plants',
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchCollectionSlug(testProducts: TestProducts) {
+        const result = await testProducts({
+            collectionSlug: 'plants',
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Spiky Cactus',
             'Orchid',
@@ -458,9 +404,10 @@ describe('Default search plugin', () => {
                 input: {
                     groupByProduct: false,
                     take: 3,
-                } as SearchInput,
+                },
             },
         );
+
         expect(result.search.items).toEqual([
             {
                 price: { value: 129900 },
@@ -484,9 +431,10 @@ describe('Default search plugin', () => {
                 input: {
                     groupByProduct: true,
                     take: 3,
-                } as SearchInput,
+                },
             },
         );
+
         expect(result.search.items).toEqual([
             {
                 price: { min: 129900, max: 229900 },
@@ -504,33 +452,34 @@ describe('Default search plugin', () => {
     }
 
     describe('shop api', () => {
-        it('group by product', () => testGroupByProduct(shopClient));
+        it('group by product', () => testGroupByProduct(testProductsShop));
 
-        it('no grouping', () => testNoGrouping(shopClient));
+        it('no grouping', () => testNoGrouping(testProductsShop));
 
-        it('matches search term', () => testMatchSearchTerm(shopClient));
+        it('matches search term', () => testMatchSearchTerm(testProductsShop));
 
-        it('matches partial search term', () => testMatchPartialSearchTerm(shopClient));
+        it('matches partial search term', () => testMatchPartialSearchTerm(testProductsShop));
 
-        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(shopClient));
+        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(testProductsShop));
 
-        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(shopClient));
+        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(testProductsShop));
 
-        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(testProductsShop));
 
-        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(testProductsShop));
 
-        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+        it('matches by FacetValueFilters OR and AND', () =>
+            testMatchFacetValueFiltersOrWithAnd(testProductsShop));
 
         it('matches by FacetValueFilters with facetId OR operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsOr(testProductsShop));
 
         it('matches by FacetValueFilters with facetId AND operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsAnd(testProductsShop));
 
-        it('matches by collectionId', () => testMatchCollectionId(shopClient));
+        it('matches by collectionId', () => testMatchCollectionId(testProductsShop));
 
-        it('matches by collectionSlug', () => testMatchCollectionSlug(shopClient));
+        it('matches by collectionSlug', () => testMatchCollectionSlug(testProductsShop));
 
         it('single prices', () => testSinglePrices(shopClient));
 
@@ -665,28 +614,28 @@ describe('Default search plugin', () => {
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        take: 1,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    take: 1,
                 },
-            );
+            });
             expect(pick(result.search.items[0], ['productId', 'productVariantId'])).toEqual({
                 productId: 'T_1',
                 productVariantId: 'T_1',
             });
         });
 
-        it('sort name with grouping', () => testSortingWithGrouping(shopClient, 'name'));
+        it('sort name with grouping', () => testSortingWithGrouping(testProductsShop, 'name'));
 
-        it('sort price with grouping', () => testSortingWithGrouping(shopClient, 'price'));
+        it('sort price with grouping', () => testSortingWithGrouping(testProductsShop, 'price'));
 
-        it('sort name without grouping', () => testSortingNoGrouping(shopClient, 'name'));
+        it('sort name without grouping', () => testSortingNoGrouping(testProductsShop, 'name'));
 
-        it('sort price without grouping', () => testSortingNoGrouping(shopClient, 'price'));
+        it('sort price without grouping', () => testSortingNoGrouping(testProductsShop, 'price'));
 
         it('omits results for disabled ProductVariants', async () => {
             await adminClient.query<UpdateProductVariantsMutation, UpdateProductVariantsMutationVariables>(
@@ -696,157 +645,158 @@ describe('Default search plugin', () => {
                 },
             );
             await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        take: 3,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    take: 3,
                 },
-            );
+            });
             expect(result.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        term: 'cactus',
-                        take: 1,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    term: 'cactus',
+                    take: 1,
                 },
-            );
+            });
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
         });
 
         it('inStock is false and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        inStock: false,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    inStock: false,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(2);
         });
 
         it('inStock is false and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: true,
-                        inStock: false,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: true,
+                    inStock: false,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(1);
         });
 
         it('inStock is true and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        inStock: true,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    inStock: true,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(31);
         });
 
         it('inStock is true and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: true,
-                        inStock: true,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: true,
+                    inStock: true,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(19);
         });
 
         it('inStock is undefined and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        inStock: undefined,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    inStock: undefined,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(33);
         });
 
         it('inStock is undefined and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: true,
-                        inStock: undefined,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: true,
+                    inStock: undefined,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(20);
         });
     });
 
     describe('admin api', () => {
-        it('group by product', () => testGroupByProduct(adminClient));
+        it('group by product', () => testGroupByProduct(testProductsAdmin));
 
-        it('no grouping', () => testNoGrouping(adminClient));
+        it('no grouping', () => testNoGrouping(testProductsAdmin));
 
-        it('matches search term', () => testMatchSearchTerm(adminClient));
+        it('matches search term', () => testMatchSearchTerm(testProductsAdmin));
 
-        it('matches partial search term', () => testMatchPartialSearchTerm(adminClient));
+        it('matches partial search term', () => testMatchPartialSearchTerm(testProductsAdmin));
 
-        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(adminClient));
+        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(testProductsAdmin));
 
-        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(adminClient));
+        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(testProductsAdmin));
 
-        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(testProductsAdmin));
 
-        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(testProductsAdmin));
 
-        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+        it('matches by FacetValueFilters OR and AND', () =>
+            testMatchFacetValueFiltersOrWithAnd(testProductsAdmin));
 
         it('matches by FacetValueFilters with facetId OR operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsOr(testProductsAdmin));
 
         it('matches by FacetValueFilters with facetId AND operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsAnd(testProductsAdmin));
 
-        it('matches by collectionId', () => testMatchCollectionId(adminClient));
+        it('matches by collectionId', () => testMatchCollectionId(testProductsAdmin));
 
-        it('matches by collectionSlug', () => testMatchCollectionSlug(adminClient));
+        it('matches by collectionSlug', () => testMatchCollectionSlug(testProductsAdmin));
 
         it('single prices', () => testSinglePrices(adminClient));
 
         it('price ranges', () => testPriceRanges(adminClient));
 
-        it('sort name with grouping', () => testSortingWithGrouping(adminClient, 'name'));
+        it('sort name with grouping', () => testSortingWithGrouping(testProductsAdmin, 'name'));
 
-        it('sort price with grouping', () => testSortingWithGrouping(adminClient, 'price'));
+        it('sort price with grouping', () => testSortingWithGrouping(testProductsAdmin, 'price'));
 
-        it('sort name without grouping', () => testSortingNoGrouping(adminClient, 'name'));
+        it('sort name without grouping', () => testSortingNoGrouping(testProductsAdmin, 'name'));
 
-        it('sort price without grouping', () => testSortingNoGrouping(adminClient, 'price'));
+        it('sort price without grouping', () => testSortingNoGrouping(testProductsAdmin, 'price'));
 
         describe('updating the index', () => {
             it('updates index when ProductVariants are changed', async () => {
                 await awaitRunningJobs(adminClient);
-                const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
+                const { search } = await testProductsAdmin({ term: 'drive', groupByProduct: false });
                 expect(search.items.map(i => i.sku)).toEqual([
                     'IHD455T1',
                     'IHD455T2',
@@ -866,7 +816,7 @@ describe('Default search plugin', () => {
                 });
 
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const { search: search2 } = await testProductsAdmin({
                     term: 'drive',
                     groupByProduct: false,
                 });
@@ -882,7 +832,7 @@ describe('Default search plugin', () => {
 
             it('updates index when ProductVariants are deleted', async () => {
                 await awaitRunningJobs(adminClient);
-                const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
+                const { search } = await testProductsAdmin({ term: 'drive', groupByProduct: false });
 
                 const variantToDelete = search.items[0];
                 expect(variantToDelete.sku).toBe('IHD455T1_updated');
@@ -895,7 +845,7 @@ describe('Default search plugin', () => {
                 );
 
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const { search: search2 } = await testProductsAdmin({
                     term: 'drive',
                     groupByProduct: false,
                 });
@@ -919,7 +869,7 @@ describe('Default search plugin', () => {
                     },
                 );
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
+                const result = await testProductsAdmin({ facetValueIds: ['T_2'], groupByProduct: true });
                 expect(result.search.items.map(i => i.productName)).toEqual([
                     'Curvy Monitor',
                     'Gaming PC',
@@ -930,7 +880,7 @@ describe('Default search plugin', () => {
             });
 
             it('updates index when a Product is deleted', async () => {
-                const { search } = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
+                const { search } = await testProductsAdmin({ facetValueIds: ['T_2'], groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_2', 'T_3', 'T_4', 'T_5', 'T_6']);
                 await adminClient.query<DeleteProductMutation, DeleteProductMutationVariables>(
                     DELETE_PRODUCT,
@@ -939,7 +889,7 @@ describe('Default search plugin', () => {
                     },
                 );
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const { search: search2 } = await testProductsAdmin({
                     facetValueIds: ['T_2'],
                     groupByProduct: true,
                 });
@@ -973,7 +923,7 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
-                const result1 = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
+                const result1 = await testProductsAdmin({ collectionId: 'T_2', groupByProduct: true });
 
                 expect(result1.search.items.map(i => i.productName)).toEqual([
                     'Road Bike',
@@ -985,7 +935,7 @@ describe('Default search plugin', () => {
                     'Running Shoe',
                 ]);
 
-                const result2 = await doAdminSearchQuery({ collectionSlug: 'plants', groupByProduct: true });
+                const result2 = await testProductsAdmin({ collectionSlug: 'plants', groupByProduct: true });
 
                 expect(result2.search.items.map(i => i.productName)).toEqual([
                     'Road Bike',
@@ -1032,7 +982,7 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({
+                const result = await testProductsAdmin({
                     collectionId: createCollection.id,
                     groupByProduct: true,
                 });
@@ -1133,7 +1083,7 @@ describe('Default search plugin', () => {
             });
 
             it('does not include deleted ProductVariants in index', async () => {
-                const { search: s1 } = await doAdminSearchQuery({
+                const { search: s1 } = await testProductsAdmin({
                     term: 'hard drive',
                     groupByProduct: false,
                 });
@@ -1156,7 +1106,7 @@ describe('Default search plugin', () => {
             });
 
             it('returns enabled field when not grouped', async () => {
-                const result = await doAdminSearchQuery({ groupByProduct: false, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: false, take: 3 });
                 expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([
                     { productVariantId: 'T_1', enabled: true },
                     { productVariantId: 'T_2', enabled: true },
@@ -1175,7 +1125,7 @@ describe('Default search plugin', () => {
                     ],
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: true },
                     { productId: 'T_2', enabled: true },
@@ -1191,7 +1141,7 @@ describe('Default search plugin', () => {
                     input: [{ id: 'T_4', enabled: false }],
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: false },
                     { productId: 'T_2', enabled: true },
@@ -1210,7 +1160,7 @@ describe('Default search plugin', () => {
                     },
                 );
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: false },
                     { productId: 'T_2', enabled: true },
@@ -1223,7 +1173,7 @@ describe('Default search plugin', () => {
                 await adminClient.query<ReindexMutation>(REINDEX);
 
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: false },
                     { productId: 'T_2', enabled: true },
@@ -1315,7 +1265,7 @@ describe('Default search plugin', () => {
                     ],
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ term: 'aabbccdd' });
+                const result = await testProductsAdmin({ term: 'aabbccdd' });
                 expect(result.search.items.map(i => i.productName)).toEqual([
                     'Very long description aabbccdd',
                 ]);
@@ -1351,7 +1301,7 @@ describe('Default search plugin', () => {
                 });
 
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, term: 'strawberry' });
+                const result = await testProductsAdmin({ groupByProduct: true, term: 'strawberry' });
                 expect(
                     result.search.items.map(
                         pick([
@@ -1394,7 +1344,7 @@ describe('Default search plugin', () => {
                 });
                 await awaitRunningJobs(adminClient);
 
-                const result = await doAdminSearchQuery({ groupByProduct: false, term: 'strawberry' });
+                const result = await testProductsAdmin({ groupByProduct: false, term: 'strawberry' });
                 expect(result.search.items.map(pick(['productVariantName']))).toEqual([
                     { productVariantName: 'Strawberry Cheesecake Pie' },
                 ]);
@@ -1434,7 +1384,7 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search } = await testProductsAdmin({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1', 'T_2']);
             }, 10000);
 
@@ -1452,7 +1402,7 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search } = await testProductsAdmin({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
             }, 10000);
 
@@ -1468,10 +1418,10 @@ describe('Default search plugin', () => {
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search: searchGrouped } = await testProductsAdmin({ groupByProduct: true });
                 expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3', 'T_4']);
 
-                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                const { search: searchUngrouped } = await testProductsAdmin({ groupByProduct: false });
                 expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
                     'T_1',
                     'T_2',
@@ -1494,10 +1444,10 @@ describe('Default search plugin', () => {
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search: searchGrouped } = await testProductsAdmin({ groupByProduct: true });
                 expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3']);
 
-                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                const { search: searchUngrouped } = await testProductsAdmin({ groupByProduct: false });
                 expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
                     'T_2',
                     'T_3',
@@ -1521,7 +1471,7 @@ describe('Default search plugin', () => {
 
                 await awaitRunningJobs(adminClient);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({
+                const { search: searchGrouped } = await testProductsAdmin({
                     groupByProduct: true,
                     term: 'xyz',
                 });
@@ -1530,7 +1480,7 @@ describe('Default search plugin', () => {
 
             it('updating product affects other channels', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                const { search: searchGrouped } = await doAdminSearchQuery({
+                const { search: searchGrouped } = await testProductsAdmin({
                     groupByProduct: true,
                     term: 'xyz',
                 });
@@ -1578,7 +1528,7 @@ describe('Default search plugin', () => {
                         SearchProductsAdminQuery,
                         SearchProductsAdminQueryVariables
                     >(
-                        SEARCH_PRODUCTS,
+                        SEARCH_PRODUCTS_ADMIN,
                         {
                             input: { term: 'product', groupByProduct: true },
                         },
@@ -1708,7 +1658,7 @@ describe('Default search plugin', () => {
             describe('search products', () => {
                 function searchInLanguage(languageCode: LanguageCode) {
                     return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-                        SEARCH_PRODUCTS,
+                        SEARCH_PRODUCTS_ADMIN,
                         {
                             input: {
                                 take: 100,
@@ -1817,7 +1767,7 @@ describe('Default search plugin', () => {
             describe('search products grouped by product and sorted by name ASC', () => {
                 function searchInLanguage(languageCode: LanguageCode) {
                     return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-                        SEARCH_PRODUCTS,
+                        SEARCH_PRODUCTS_ADMIN,
                         {
                             input: {
                                 groupByProduct: true,
@@ -1928,7 +1878,7 @@ describe('Default search plugin', () => {
         describe('input escaping', () => {
             function search(term: string) {
                 return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
-                    SEARCH_PRODUCTS,
+                    SEARCH_PRODUCTS_ADMIN,
                     {
                         input: { take: 10, term },
                     },
@@ -1970,7 +1920,7 @@ export const REINDEX = gql`
     }
 `;
 
-export const SEARCH_PRODUCTS = gql`
+export const SEARCH_PRODUCTS_ADMIN = gql`
     query SearchProductsAdmin($input: SearchInput!) {
         search(input: $input) {
             totalItems
