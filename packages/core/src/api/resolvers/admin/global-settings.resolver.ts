@@ -2,7 +2,6 @@ import { Args, Info, Mutation, Query, ResolveField, Resolver } from '@nestjs/gra
 import {
     CustomFields as GraphQLCustomFields,
     MutationUpdateGlobalSettingsArgs,
-    OrderProcessState,
     Permission,
     ServerConfig,
     UpdateGlobalSettingsResult,
@@ -16,20 +15,13 @@ import {
     isNonNullType,
     isObjectType,
     isScalarType,
-    NamedTypeNode,
-    TypeNode,
 } from 'graphql';
 
 import { getAllPermissionsMetadata } from '../../../common/constants';
 import { ErrorResultUnion } from '../../../common/error/error-result';
-import { UserInputError } from '../../../common/error/errors';
 import { ChannelDefaultLanguageError } from '../../../common/error/generated-graphql-admin-errors';
 import { ConfigService } from '../../../config/config.service';
-import {
-    CustomFieldConfig,
-    CustomFields,
-    RelationCustomFieldConfig,
-} from '../../../config/custom-field/custom-field-types';
+import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
@@ -67,6 +59,7 @@ export class GlobalSettingsResolver {
             orderProcess: this.orderService.getOrderProcessStates(),
             permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
             permissions,
+            moneyStrategyPrecision: this.configService.entityOptions.moneyStrategy.precision ?? 2,
         };
     }
 

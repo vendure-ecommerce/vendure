@@ -685,6 +685,7 @@ export const GET_SERVER_CONFIG = gql`
         globalSettings {
             id
             serverConfig {
+                moneyStrategyPrecision
                 orderProcess {
                     name
                     to

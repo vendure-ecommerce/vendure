@@ -10,6 +10,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { easings, LineChart, LineChartData, LineChartOptions } from 'chartist';
+import { CurrencyService } from '../../../providers/currency/currency.service';
 import { tooltipPlugin } from './tooltip-plugin';
 
 export interface ChartFormatOptions {
@@ -36,6 +37,8 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('chartDiv', { static: true }) private chartDivRef: ElementRef<HTMLDivElement>;
     private chart: LineChart;
 
+    constructor(private currencyService: CurrencyService) {}
+
     ngOnInit() {
         this.chart = new LineChart(
             this.chartDivRef.nativeElement,
@@ -55,7 +58,12 @@ export class ChartComponent implements OnInit, OnChanges, OnDestroy {
                     showLabel: false,
                     offset: 1,
                 },
-                plugins: [tooltipPlugin()],
+                plugins: [
+                    tooltipPlugin({
+                        currencyPrecision: this.currencyService.precision,
+                        currencyPrecisionFactor: this.currencyService.precisionFactor,
+                    }),
+                ],
                 ...this.options,
             },
         );

@@ -24,4 +24,5 @@ type ServerConfig {
     orderProcess: [OrderProcessState!]!
     permittedAssetTypes: [String!]!
     permissions: [PermissionDefinition!]!
+    moneyStrategyPrecision: Int!
 }

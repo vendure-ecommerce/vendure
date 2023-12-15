@@ -30,6 +30,7 @@ import {
 } from '../../../common/generated-types';
 import { getDefaultConfigArgValue } from '../../../common/utilities/configurable-operation-utils';
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
+import { CurrencyService } from '../../../providers/currency/currency.service';
 
 /**
  * A form input which renders a card with the internal form fields of the given ConfigurableOperation.
@@ -69,9 +70,15 @@ export class ConfigurableInputComponent
     private positionChangeSubject = new BehaviorSubject<number>(0);
     private subscription: Subscription;
 
+    constructor(private currencyService: CurrencyService) {}
+
     interpolateDescription(): string {
         if (this.operationDefinition) {
-            return interpolateDescription(this.operationDefinition, this.form.value);
+            return interpolateDescription(
+                this.operationDefinition,
+                this.form.value,
+                this.currencyService.precisionFactor,
+            );
         } else {
             return '';
         }

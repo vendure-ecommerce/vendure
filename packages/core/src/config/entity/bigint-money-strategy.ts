@@ -37,6 +37,7 @@ export class BigIntMoneyStrategy implements MoneyStrategy {
             },
         },
     };
+    precision = 2;
 
     round(value: number, quantity = 1): number {
         return Math.round(value * quantity);

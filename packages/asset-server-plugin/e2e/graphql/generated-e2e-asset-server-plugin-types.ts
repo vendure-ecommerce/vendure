@@ -5421,6 +5421,7 @@ export type SellerSortParameter = {
 
 export type ServerConfig = {
   customFieldConfig: CustomFields;
+  moneyStrategyPrecision: Scalars['Int']['output'];
   orderProcess: Array<OrderProcessState>;
   permissions: Array<PermissionDefinition>;
   permittedAssetTypes: Array<Scalars['String']['output']>;

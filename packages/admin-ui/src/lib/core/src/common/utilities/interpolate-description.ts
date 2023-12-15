@@ -6,6 +6,7 @@ import { ConfigurableOperationDefinition } from '../generated-types';
 export function interpolateDescription(
     operation: ConfigurableOperationDefinition,
     values: { [name: string]: any },
+    precisionFactor = 100,
 ): string {
     if (!operation) {
         return '';
@@ -20,7 +21,7 @@ export function interpolateDescription(
         let formatted = value;
         const argDef = operation.args.find(arg => arg.name === normalizedArgName);
         if (argDef && argDef.type === 'int' && argDef.ui && argDef.ui.component === 'currency-form-input') {
-            formatted = value / 100;
+            formatted = value / precisionFactor;
         }
         if (argDef && argDef.type === 'datetime' && value instanceof Date) {
             formatted = value.toLocaleDateString();

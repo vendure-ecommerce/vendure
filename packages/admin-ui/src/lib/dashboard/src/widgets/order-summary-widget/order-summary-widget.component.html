@@ -5,7 +5,7 @@
     </div>
     <div class="stat">
         <div class="stat-figure">
-            {{ totalOrderValue$ | async | currency: (currencyCode$ | async) || undefined }}
+            {{ totalOrderValue$ | async | localeCurrency: (currencyCode$ | async) || undefined }}
         </div>
         <div class="stat-label">{{ 'dashboard.total-order-value' | translate }}</div>
     </div>
