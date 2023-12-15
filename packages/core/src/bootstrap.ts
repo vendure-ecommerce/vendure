@@ -1,4 +1,6 @@
 import { INestApplication, INestApplicationContext } from '@nestjs/common';
+import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-application-context-options.interface';
+import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { DEFAULT_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
@@ -24,17 +26,41 @@ import { getPluginStartupMessages } from './plugin/plugin-utils';
 import { setProcessContext } from './process-context/process-context';
 import { VENDURE_VERSION } from './version';
 import { VendureWorker } from './worker/vendure-worker';
-import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
-import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-application-context-options.interface';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
+/**
+ * @description
+ * Additional options that can be used to configure the bootstrap process of the
+ * Vendure server.
+ *
+ * @since 2.2.0
+ * @docsCategory common
+ * @docsPage bootstrap
+ */
 export interface BootstrapOptions {
+    /**
+     * @description
+     * These options get passed directly to the `NestFactory.create()` method.
+     */
     nestApplicationOptions: NestApplicationOptions;
 }
 
+/**
+ * @description
+ * Additional options that can be used to configure the bootstrap process of the
+ * Vendure worker.
+ *
+ * @since 2.2.0
+ * @docsCategory worker
+ * @docsPage bootstrapWorker
+ */
 export interface BootstrapWorkerOptions {
-    nestApplicationContextOptions: NestApplicationContextOptions
+    /**
+     * @description
+     * These options get passed directly to the `NestFactory.createApplicationContext` method.
+     */
+    nestApplicationContextOptions: NestApplicationContextOptions;
 }
 
 /**
@@ -47,12 +73,40 @@ export interface BootstrapWorkerOptions {
  * import { config } from './vendure-config';
  *
  * bootstrap(config).catch(err => {
- *     console.log(err);
+ *   console.log(err);
+ *   process.exit(1);
+ * });
+ * ```
+ *
+ * ### Passing additional options
+ *
+ * Since v2.2.0, you can pass additional options to the NestJs application via the `options` parameter.
+ * For example, to integrate with the [Nest Devtools](https://docs.nestjs.com/devtools/overview), you need to
+ * pass the `snapshot` option:
+ *
+ * ```ts
+ * import { bootstrap } from '\@vendure/core';
+ * import { config } from './vendure-config';
+ *
+ * bootstrap(config, {
+ *   // highlight-start
+ *   nestApplicationOptions: {
+ *     snapshot: true,
+ *   }
+ *   // highlight-end
+ * }).catch(err => {
+ *   console.log(err);
+ *   process.exit(1);
  * });
  * ```
  * @docsCategory common
+ * @docsPage bootstrap
+ * @docsWeight 0
  * */
-export async function bootstrap(userConfig: Partial<VendureConfig>, options?: BootstrapOptions): Promise<INestApplication> {
+export async function bootstrap(
+    userConfig: Partial<VendureConfig>,
+    options?: BootstrapOptions,
+): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
@@ -68,7 +122,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>, options?: Bo
     const app = await NestFactory.create(appModule.AppModule, {
         cors,
         logger: new Logger(),
-        ...options?.nestApplicationOptions
+        ...options?.nestApplicationOptions,
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
@@ -106,11 +160,17 @@ export async function bootstrap(userConfig: Partial<VendureConfig>, options?: Bo
  *   .then(worker => worker.startHealthCheckServer({ port: 3020 }))
  *   .catch(err => {
  *     console.log(err);
+ *     process.exit(1);
  *   });
  * ```
  * @docsCategory worker
+ * @docsPage bootstrapWorker
+ * @docsWeight 0
  * */
-export async function bootstrapWorker(userConfig: Partial<VendureConfig>, options?: BootstrapWorkerOptions): Promise<VendureWorker> {
+export async function bootstrapWorker(
+    userConfig: Partial<VendureConfig>,
+    options?: BootstrapWorkerOptions,
+): Promise<VendureWorker> {
     const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
     config.logger.setDefaultContext?.('Vendure Worker');
@@ -124,7 +184,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>, option
     const WorkerModule = await import('./worker/worker.module.js').then(m => m.WorkerModule);
     const workerApp = await NestFactory.createApplicationContext(WorkerModule, {
         logger: new Logger(),
-        ...options?.nestApplicationContextOptions
+        ...options?.nestApplicationContextOptions,
     });
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
