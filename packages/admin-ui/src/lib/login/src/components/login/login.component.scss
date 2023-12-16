@@ -1,7 +1,7 @@
 @import 'variables';
 
 .login-wrapper {
-    background: var(--color-login-page-bg);
+    background: var(--color-weight-100);
     background-image: none;
     height: 100vh;
     display: flex;
@@ -12,7 +12,7 @@
     .login-wrapper-inner {
 
 
-        background: #fff;
+        background: var(--login-wrapper-inner-bg);
         width: 1120px;
         height: 590px;
         display: flex;
@@ -101,7 +101,6 @@
             justify-content: center;
             box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            border-radius: 5px;
             flex-shrink: 0;
 
             @media (max-width: $breakpoint-medium) {
