@@ -30,6 +30,10 @@
     }
 }
 
+.version {
+    color: var(--color-grey-300);
+}
+
 // fade in animation
 @keyframes fade-in {
     0% {

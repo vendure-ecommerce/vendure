@@ -20,6 +20,11 @@
             <hr />
             <vdr-main-nav displayMode="settings" (itemClick)="collapseNav()"></vdr-main-nav>
         </div>
+        <div class="mx-4 py-2">
+            <div class="version">
+                <span *ngIf="!hideVersion">v{{ version }}</span>
+            </div>
+        </div>
         <div class="mx-2">
             <div *ngIf="devMode" class="flex center mb-2">
                 <vdr-dropdown>
@@ -28,7 +33,6 @@
                     </button>
                     <vdr-dropdown-menu>
                         <div class="px-2 py-1">
-                            <div>Version: {{ version }}</div>
                             <div>View UI extension points: <kbd>CTRL + U</kbd></div>
                         </div>
                     </vdr-dropdown-menu>
