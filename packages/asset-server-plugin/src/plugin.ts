@@ -107,7 +107,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * AssetServerPlugin.init({
  *   // ...
  *   presets: [
- *     { name: 'my-preset', width: 85, height: 85, mode: 'crop' },
+ *     { name: 'my-preset', width: 85, height: 85, mode: 'crop', format: 'avif' },
  *   ],
  * }),
  * ```
@@ -118,17 +118,17 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  *
  * is equivalent to:
  *
- * `http://localhost:3000/assets/some-asset.jpg?w=85&h=85&mode=crop`
+ * `http://localhost:3000/assets/some-asset.jpg?w=85&h=85&mode=crop&format=avif`
  *
  * The AssetServerPlugin comes pre-configured with the following presets:
  *
- * name | width | height | mode
- * -----|-------|--------|-----
- * tiny | 50px | 50px | crop
- * thumb | 150px | 150px | crop
- * small | 300px | 300px | resize
- * medium | 500px | 500px | resize
- * large | 800px | 800px | resize
+ * name | width | height | mode | format
+ * -----|-------|--------|-----|-----
+ * tiny | 50px | 50px | crop | avif
+ * thumb | 150px | 150px | crop | avif
+ * small | 300px | 300px | resize | avif
+ * medium | 500px | 500px | resize | avif
+ * large | 800px | 800px | resize | avif
  *
  * ### Caching
  * By default, the AssetServerPlugin will cache every transformed image, so that the transformation only needs to be performed a single time for
@@ -145,11 +145,11 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     private static assetStorage: AssetStorageStrategy;
     private readonly cacheDir = 'cache';
     private presets: ImageTransformPreset[] = [
-        { name: 'tiny', width: 50, height: 50, mode: 'crop' },
-        { name: 'thumb', width: 150, height: 150, mode: 'crop' },
-        { name: 'small', width: 300, height: 300, mode: 'resize' },
-        { name: 'medium', width: 500, height: 500, mode: 'resize' },
-        { name: 'large', width: 800, height: 800, mode: 'resize' },
+        { name: 'tiny', width: 50, height: 50, mode: 'crop', format: 'avif' },
+        { name: 'thumb', width: 150, height: 150, mode: 'crop', format: 'avif' },
+        { name: 'small', width: 300, height: 300, mode: 'resize', format: 'avif' },
+        { name: 'medium', width: 500, height: 500, mode: 'resize', format: 'avif' },
+        { name: 'large', width: 800, height: 800, mode: 'resize', format: 'avif' },
     ];
     private static options: AssetServerOptions;
     private cacheHeader: string;

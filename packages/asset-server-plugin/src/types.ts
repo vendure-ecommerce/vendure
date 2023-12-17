@@ -37,10 +37,11 @@ export type ImageTransformMode = 'crop' | 'resize';
  * @docsCategory core plugins/AssetServerPlugin
  */
 export interface ImageTransformPreset {
-    name: string;
-    width: number;
-    height: number;
+    name?: string;
+    width?: number;
+    height?: number;
     mode: ImageTransformMode;
+    format?: ImageTransformFormat;
 }
 
 /**
