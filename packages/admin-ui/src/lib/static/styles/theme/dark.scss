@@ -110,7 +110,7 @@
     --clr-link-active-color: hsl(198, 65%, 57%);
     --clr-link-color: hsl(198, 65%, 57%);
     --clr-link-hover-color: hsl(198, 65%, 57%);
-    --clr-link-visited-color: hsl(228, 55%, 75%);
+    --clr-link-visited-color: var(--clr-list-item-color);
 
     --clr-theme-alert-font-color: hsl(210, 16%, 93%);
     --clr-theme-app-alert-font-color: hsl(0, 0%, 0%);
