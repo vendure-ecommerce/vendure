@@ -77,9 +77,14 @@ export class ProductService {
         const effectiveRelations = relations || this.relations;
         const customPropertyMap: { [name: string]: string } = {};
         const hasFacetValueIdFilter = !!(options as ProductListOptions)?.filter?.facetValueId;
+        const hasSkuFilter = !!(options as ProductListOptions)?.filter?.sku;
         if (hasFacetValueIdFilter) {
             effectiveRelations.push('facetValues');
             customPropertyMap.facetValueId = 'facetValues.id';
+        }
+        if (hasSkuFilter) {
+            effectiveRelations.push('variants');
+            customPropertyMap.sku = 'variants.sku';
         }
         return this.listQueryBuilder
             .build(Product, options, {
