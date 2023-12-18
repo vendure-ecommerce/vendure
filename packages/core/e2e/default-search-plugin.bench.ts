@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer } from '@vendure/testing';
 import path from 'path';
@@ -26,91 +26,93 @@ interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVar
     };
 }
 
-const { server, adminClient, shopClient } = createTestEnvironment(
-    mergeConfig(testConfig(), {
-        plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
-    }),
-);
+describe('Default search plugin', () => {
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig(), {
+            plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
+        }),
+    );
 
-let cpuFactor = 1; // Defaults to 1, will be adjusted during test
-let marginFactor = 1; // Defaults to 1, will be adjusted during test
-const fibonacci = (i: number): number => {
-    if (i <= 1) return i;
-    return fibonacci(i - 1) + fibonacci(i - 2);
-};
+    let cpuFactor = 1; // Defaults to 1, will be adjusted during test
+    let marginFactor = 1; // Defaults to 1, will be adjusted during test
+    const fibonacci = (i: number): number => {
+        if (i <= 1) return i;
+        return fibonacci(i - 1) + fibonacci(i - 2);
+    };
 
-beforeAll(async () => {
-    await server.init({
-        initialData,
-        productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
-        customerCount: 1,
-    });
-    await adminClient.asSuperAdmin();
-    await awaitRunningJobs(adminClient);
-}, TEST_SETUP_TIMEOUT_MS);
-
-afterAll(async () => {
-    await server.destroy();
-});
-
-const isDevelopment = process.env.NODE_ENV === 'development';
-describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
-    it('defines benchmark cpu and margin factor', async () => {
-        const bench = new Bench({
-            warmupTime: 0,
-            warmupIterations: 1,
-            time: 0,
-            iterations: 10,
+    beforeAll(async () => {
+        await server.init({
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
+            customerCount: 1,
         });
+        await adminClient.asSuperAdmin();
+        await awaitRunningJobs(adminClient);
+    }, TEST_SETUP_TIMEOUT_MS);
 
-        bench.add('measure time to calcualate fibonacci', () => {
-            fibonacci(41); // If this task would take 1000 ms the cpuFactor would be 1.
-        });
-
-        const tasks = await bench.run();
-
-        // console.table(bench.table());
-
-        tasks.forEach(task => {
-            expect(task.result?.mean).toBeDefined();
-            expect(task.result?.rme).toBeDefined();
-            if (task.result?.mean && task.result?.rme) {
-                cpuFactor = 1000 / task.result.mean;
-                marginFactor = 1 + task.result.rme / 100;
-            }
-        });
+    afterAll(async () => {
+        await server.destroy();
     });
 
-    it('performs when grouped by product', async () => {
-        const bench = new Bench({
-            warmupTime: 0,
-            warmupIterations: 3,
-            time: 0,
-            iterations: 1000,
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
+        it('defines benchmark cpu and margin factor', async () => {
+            const bench = new Bench({
+                warmupTime: 0,
+                warmupIterations: 1,
+                time: 0,
+                iterations: 10,
+            });
+
+            bench.add('measure time to calcualate fibonacci', () => {
+                fibonacci(41); // If this task would take 1000 ms the cpuFactor would be 1.
+            });
+
+            const tasks = await bench.run();
+
+            console.table(bench.table());
+
+            tasks.forEach(task => {
+                expect(task.result?.mean).toBeDefined();
+                expect(task.result?.rme).toBeDefined();
+                if (task.result?.mean && task.result?.rme) {
+                    cpuFactor = 1000 / task.result.mean;
+                    marginFactor = 1 + task.result.rme / 100;
+                }
+            });
         });
 
-        bench.add('group by product', async () => {
-            await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariablesExt>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: true,
+        it('performs when grouped by product', async () => {
+            const bench = new Bench({
+                warmupTime: 0,
+                warmupIterations: 3,
+                time: 0,
+                iterations: 1000,
+            });
+
+            bench.add('group by product', async () => {
+                await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariablesExt>(
+                    SEARCH_PRODUCTS_SHOP,
+                    {
+                        input: {
+                            groupByProduct: true,
+                        },
                     },
-                },
-            );
-        });
+                );
+            });
 
-        const tasks = await bench.run();
+            const tasks = await bench.run();
 
-        // console.table(bench.table());
-        // console.log({ cpuFactor, marginFactor });
+            console.table(bench.table());
+            console.log({ cpuFactor, marginFactor });
 
-        tasks.forEach(task => {
-            expect(task.result?.mean).toBeDefined();
-            if (task.result?.mean) {
-                // console.log({ actual: task.result.mean * cpuFactor, expected: 6.835 });
-                expect(task.result.mean * cpuFactor).toBeLessThan(6.835 * marginFactor);
-            }
+            tasks.forEach(task => {
+                expect(task.result?.mean).toBeDefined();
+                if (task.result?.mean) {
+                    console.log({ actual: task.result.mean * cpuFactor, expected: 6.835 });
+                    expect(task.result.mean * cpuFactor).toBeLessThan(6.835 * marginFactor);
+                }
+            });
         });
     });
 });
