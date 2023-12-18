@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer } from '@vendure/testing';
 import path from 'path';
@@ -69,7 +69,7 @@ describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
 
         const tasks = await bench.run();
 
-        console.table(bench.table());
+        // console.table(bench.table());
 
         tasks.forEach(task => {
             expect(task.result?.mean).toBeDefined();
@@ -102,13 +102,13 @@ describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
 
         const tasks = await bench.run();
 
-        console.table(bench.table());
-        console.log({ cpuFactor, marginFactor });
+        // console.table(bench.table());
+        // console.log({ cpuFactor, marginFactor });
 
         tasks.forEach(task => {
             expect(task.result?.mean).toBeDefined();
             if (task.result?.mean) {
-                console.log({ actual: task.result.mean * cpuFactor, expected: 6.835 });
+                // console.log({ actual: task.result.mean * cpuFactor, expected: 6.835 });
                 expect(task.result.mean * cpuFactor).toBeLessThan(6.835 * marginFactor);
             }
         });
