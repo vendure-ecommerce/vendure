@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer } from '@vendure/testing';
 import path from 'path';
@@ -32,8 +32,8 @@ const { server, adminClient, shopClient } = createTestEnvironment(
     }),
 );
 
-let marginFactor = 1; // Defaults to 1, will be adjusted during test
 let cpuFactor = 1; // Defaults to 1, will be adjusted during test
+let marginFactor = 1; // Defaults to 1, will be adjusted during test
 const fibonacci = (i: number): number => {
     if (i <= 1) return i;
     return fibonacci(i - 1) + fibonacci(i - 2);
@@ -69,14 +69,14 @@ describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
 
         const tasks = await bench.run();
 
-        // console.table(bench.table());
+        console.table(bench.table());
 
         tasks.forEach(task => {
-            expect(task.result?.rme).toBeDefined();
             expect(task.result?.mean).toBeDefined();
-            if (task.result?.rme && task.result?.mean) {
-                marginFactor = 1 + task.result.rme / 100;
+            expect(task.result?.rme).toBeDefined();
+            if (task.result?.mean && task.result?.rme) {
                 cpuFactor = 1000 / task.result.mean;
+                marginFactor = 1 + task.result.rme / 100;
             }
         });
     });
@@ -102,11 +102,13 @@ describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
 
         const tasks = await bench.run();
 
-        // console.table(bench.table());
+        console.table(bench.table());
+        console.log({ cpuFactor, marginFactor });
 
         tasks.forEach(task => {
             expect(task.result?.mean).toBeDefined();
             if (task.result?.mean) {
+                console.log({ actual: task.result.mean * cpuFactor, expected: 6.835 });
                 expect(task.result.mean * cpuFactor).toBeLessThan(6.835 * marginFactor);
             }
         });
