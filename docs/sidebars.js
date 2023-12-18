@@ -101,6 +101,7 @@ const sidebars = {
                 'guides/developer-guide/stand-alone-scripts/index',
                 'guides/developer-guide/translations/index',
                 'guides/developer-guide/uploading-files/index',
+                'guides/developer-guide/nest-devtools/index',
             ],
             customProps: {
                 icon: icon.angleBrackets,
