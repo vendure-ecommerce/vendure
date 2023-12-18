@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "Las siguientes variantes de producto han quedado obsoletas debido a la incorporación de nuevas opciones. Se eliminarán durante la creación de las nuevas variantes de producto.",
     "confirm-deletion-of-unused-variants-title": "¿Eliminar variantes de producto obsoletas?",
     "create-draft-order": "Crear borrador de una orden",
+    "create-facet-value": "Crear nuevo valor de faceta",
     "create-new-collection": "Crear nueva colección",
     "create-new-facet": "Crear nueva faceta",
     "create-new-product": "Crear nuevo producto",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "Actualmente no está autorizado para acceder a \"{ path }\". O bien carece de permisos, o su sesión ha expirado.",
     "could-not-connect-to-server": "No se ha podido conectar con el servidor de vendure en { url }",
-    "facet-value-form-values-do-not-match": "El número de valores en el formulario de la faceta no coincide con el número real de valores",
     "health-check-failed": "El sistema de control de integridad falló",
     "no-default-shipping-zone-set": "Este canal no tiene una zona de envío por defecto. Esto puede causar errores al calcular los gastos de envío del pedido.",
     "no-default-tax-zone-set": "Este canal no tiene una zona fiscal por defecto, lo que provocará errores al calcular los precios. Por favor, cree o seleccione una zona."

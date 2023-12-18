@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "",
     "confirm-deletion-of-unused-variants-title": "",
     "create-draft-order": "",
+    "create-facet-value": "建立新特徵值",
     "create-new-collection": "新增系列",
     "create-new-facet": "新增特徵",
     "create-new-product": "新增商品",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "無權限存取路徑 \"{ path }\"。無權限或會話已經逾期，請重新登入",
     "could-not-connect-to-server": "無法連接伺服器 { url }",
-    "facet-value-form-values-do-not-match": "表單中商品特徵值數量與實際不符",
     "health-check-failed": "",
     "no-default-shipping-zone-set": "",
     "no-default-tax-zone-set": ""

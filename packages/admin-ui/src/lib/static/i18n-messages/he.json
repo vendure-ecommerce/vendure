@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "הווריאנטים של המוצר הבא הפכו ללא רלוונטיים בשל הוספת אפשרויות חדשות. הם ימחקו במהלך יצירת וריאנטים חדשים של המוצר.",
     "confirm-deletion-of-unused-variants-title": "למחוק וריאנטים מיותרים של מוצר?",
     "create-draft-order": "יצירת הזמנה טיוטה",
+    "create-facet-value": "צור ערך גבעול חדש",
     "create-new-collection": "צור אוסף חדש",
     "create-new-facet": "צור גבעול חדש",
     "create-new-product": "מוצר חדש",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "אין לך הרשאות לגשת כרגע ל \"{path}\". יתכן כי אין לך הרשאות מתאימות או שהפעלת ההפעלה שלך פגה.",
     "could-not-connect-to-server": "לא ניתן להתחבר לשרת Vendure בכתובת {url}",
-    "facet-value-form-values-do-not-match": "מספר הערכים בטופס התכונה לא תואם למספר הערכים הפיזיים",
     "health-check-failed": "בדיקת הבריאות של המערכת נכשלה",
     "no-default-shipping-zone-set": "לערוץ זה אין אזור משלוח ברירת מחדל. יתכן כי זה יגרום לשגיאות בחישוב דמי המשלוח של ההזמנה.",
     "no-default-tax-zone-set": "לערוץ זה אין אזור מס ברירת מחדל, וזה יגרום לשגיאות בחישוב המחירים. עליך ליצור אזור או לבחור אחד."

@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "",
     "confirm-deletion-of-unused-variants-title": "",
     "create-draft-order": "",
+    "create-facet-value": "Vytvořit novou hodnotu atributu",
     "create-new-collection": "Vytvořit kolekci",
     "create-new-facet": "Vytvořit nový atribut",
     "create-new-product": "Nový produkt",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "Neautorizovaný přístup k \"{ path }\". Buďto nemáte oprávnění, nebo Vaše relace vypršela.",
     "could-not-connect-to-server": "Nelze se připojit k Vendure serveru na { url }",
-    "facet-value-form-values-do-not-match": "Počet hodnot ve formuláři atributu nesouhlasí k aktuálním počtem hodnot",
     "health-check-failed": "Kontrala stavu systému selhala",
     "no-default-shipping-zone-set": "Tento kanál nemá výchozí dodací zónu. To může způsobovat chyby při výpočtu poštovného.",
     "no-default-tax-zone-set": "Tento kanál nemá výchozí daňovou zónu, to může způsobovat chyby při výpočtu cen. Prosím vytvořte, nebo vyberte zónu."

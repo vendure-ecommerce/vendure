@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "تم إجراء متغيرات المنتج التالية قديمة بسبب إضافة خيارات جديدة. سيتم حذفها أثناء إنشاء متغيرات المنتج الجديدة.",
     "confirm-deletion-of-unused-variants-title": "حذف متغيرات المنتجات القديمة؟",
     "create-draft-order": "إنشاء ترتيب مسودة",
+    "create-facet-value": "إنشاء قيمة جديدة للفئة",
     "create-new-collection": "إنشاء مجموعة جديدة",
     "create-new-facet": "إنشاء فئة جديد",
     "create-new-product": "منتج جديد",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "أنت غير مخول حاليًا للوصول إلى \" {path} \". إما أنك تفتقر إلى الأذونات , أو انتهت جلستك.",
     "could-not-connect-to-server": "لا يمكن الاتصال بخادم Vendure في {url}",
-    "facet-value-form-values-do-not-match": "عدد القيم في نموذج الفئة لا يتطابق مع العدد الفعلي للقيم",
     "health-check-failed": "فشل فحص صحة النظام",
     "no-default-shipping-zone-set": "هذه القناة لا تحتوي على منطقة شحن افتراضية. قد يتسبب هذا في حدوث أخطاء عند حساب رسوم الشحن.",
     "no-default-tax-zone-set": "لا تحتوي هذه القناة على منطقة ضريبية افتراضية , والتي ستسبب أخطاء عند حساب الأسعار. يرجى إنشاء أو تحديد منطقة."

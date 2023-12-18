@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "",
     "confirm-deletion-of-unused-variants-title": "",
     "create-draft-order": "",
+    "create-facet-value": "Utwórz nową wartość fasety",
     "create-new-collection": "Utwórz nową kolekcje",
     "create-new-facet": "Utwórz faset",
     "create-new-product": "Nowy produkt",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "Brak autoryzacji dla \"{ path }\". Brak uprawnień lub wygasła sesja.",
     "could-not-connect-to-server": "Nie można połączyć z serverem Vendure na { url }",
-    "facet-value-form-values-do-not-match": "Ilość wartości fasetów nie zgadza się z realną liczbą wartości.",
     "health-check-failed": "",
     "no-default-shipping-zone-set": "",
     "no-default-tax-zone-set": ""

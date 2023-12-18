@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "As variantes listadas abaixo estão obsoletas e serão eliminadas devido à adição de novas opções.",
     "confirm-deletion-of-unused-variants-title": "Eliminar as variantes obsoletas?",
     "create-draft-order": "",
+    "create-facet-value": "",
     "create-new-collection": "Criar nova categoria",
     "create-new-facet": "Criar nova etiqueta",
     "create-new-product": "Novo produto",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "No momento, você não está autorizado a aceder \"{ path }\". Você não tem permissão ou a sua sessão expirou.",
     "could-not-connect-to-server": "Não foi possível conectar-se ao servidor Vendure",
-    "facet-value-form-values-do-not-match": "O número de valores no formulário de etiqueta não corresponde ao número real de valores",
     "health-check-failed": "Falha na verificação de integridade do sistema",
     "no-default-shipping-zone-set": "O canal não possui regiões de entrega padrão. Poderá ocorrer erros ao calcular as despesas de envio da encomenda.",
     "no-default-tax-zone-set": "O canal não possui regiões de imposto padrão, o que causará erros no cálculo dos preços. Por favor, crie ou seleccione uma região."

@@ -108,7 +108,7 @@
                         [placeholder]="'catalog.filter-by-name' | translate"
                     />
                 </ng-template>
-                <ng-container *ngIf="filteredValues$ | async as filteredValues">
+                <ng-container *ngIf="values$ | async as filteredValues">
                     <table class="facet-values-list table" formArrayName="values">
                         <thead>
                             <tr>
@@ -130,7 +130,7 @@
                                             : {
                                                   currentPage: currentPage,
                                                   itemsPerPage: itemsPerPage,
-                                                  totalItems: filteredValues.length
+                                                  totalItems: totalItems,
                                               };
                                     let i = index
                                 "
@@ -186,13 +186,13 @@
                     <div class="pagination-wrapper">
                         <vdr-items-per-page-controls
                             [itemsPerPage]="itemsPerPage"
-                            (itemsPerPageChange)="itemsPerPage = $event"
+                            (itemsPerPageChange)="setItemsPerPage($event)"
                         ></vdr-items-per-page-controls>
                         <vdr-pagination-controls
                             [currentPage]="currentPage"
                             [itemsPerPage]="itemsPerPage"
-                            [totalItems]="filteredValues.length"
-                            (pageChange)="currentPage = $event"
+                            [totalItems]="totalItems"
+                            (pageChange)="setCurrentPage($event)"
                         ></vdr-pagination-controls>
                     </div>
                 </ng-container>

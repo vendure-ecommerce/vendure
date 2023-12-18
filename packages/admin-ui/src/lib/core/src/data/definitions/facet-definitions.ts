@@ -57,7 +57,7 @@ export const FACET_WITH_VALUE_LIST_FRAGMENT = gql`
             languageCode
             name
         }
-        valueList(options: { take: 100 }) {
+        valueList(options: $facetValueListOptions) {
             totalItems
             items {
                 ...FacetValue

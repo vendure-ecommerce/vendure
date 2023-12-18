@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "Les variantes de produit suivantes sont devenues obsolètes en raison de l'ajout de nouvelles options. Elles seront supprimées lors de la création des nouvelles variantes de produit.",
     "confirm-deletion-of-unused-variants-title": "Supprimer les variantes de produits obsolètes ?",
     "create-draft-order": "Créer une commande en brouillon",
+    "create-facet-value": "Créer une nouvelle valeur du composant",
     "create-new-collection": "Créer nouvelle collection",
     "create-new-facet": "Créer nouveau composant",
     "create-new-product": "Nouveau produit",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "Vous n'êtes pas autorisés à accéder à \"{ path }\". Vous n'avez pas la permission ou votre session a expiré.",
     "could-not-connect-to-server": "Connexion échoué au serveur Vendure à { url }",
-    "facet-value-form-values-do-not-match": "Le nombre de valeur dans le formulaire du composant ne correspond pas au nombre actuel de valeurs",
     "health-check-failed": "Vérification de santé du système a échoué",
     "no-default-shipping-zone-set": "Ce canal n'a pas de zone de livraison par défaut. Cela peut causer des erreur de calcul du cout de frais d'expédition.",
     "no-default-tax-zone-set": "Ce canal n'a pas de zone de taxe par défaut, ce qui peut causer des erreur lors du calcul du prix. Créez ou choisissez une zone."

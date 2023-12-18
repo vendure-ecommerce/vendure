@@ -12,6 +12,7 @@ import {
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
+import { SortOrder } from '@vendure/common/lib/generated-types';
 
 import { createRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
@@ -34,6 +35,7 @@ import { CollectionListComponent } from './components/collection-list/collection
 import { CollectionTreeNodeComponent } from './components/collection-tree/collection-tree-node.component';
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
 import { ConfirmVariantDeletionDialogComponent } from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
+import { CreateFacetValueDialogComponent } from './components/create-facet-value-dialog/create-facet-value-dialog.component';
 import { CreateProductOptionGroupDialogComponent } from './components/create-product-option-group-dialog/create-product-option-group-dialog.component';
 import { CreateProductVariantDialogComponent } from './components/create-product-variant-dialog/create-product-variant-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
@@ -101,6 +103,7 @@ const CATALOG_COMPONENTS = [
     CreateProductVariantDialogComponent,
     CreateProductOptionGroupDialogComponent,
     ProductVariantQuickJumpComponent,
+    CreateFacetValueDialogComponent,
 ];
 
 @NgModule({
@@ -207,6 +210,15 @@ export class CatalogModule {
             component: detailComponentWithResolver({
                 component: FacetDetailComponent,
                 query: GetFacetDetailDocument,
+                variables: {
+                    facetValueListOptions: {
+                        take: 10,
+                        skip: 0,
+                        sort: {
+                            createdAt: SortOrder.DESC,
+                        },
+                    },
+                },
                 entityKey: 'facet',
                 getBreadcrumbs: entity => [
                     {

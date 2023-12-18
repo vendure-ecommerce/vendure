@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "Le seguenti varianti sono diventate obsolete a seguito dell'aggiunta di nuove opzioni. Queste verranno cancellate durante la creazione delle nuove varianti.",
     "confirm-deletion-of-unused-variants-title": "Cancellare le varianti obsolete?",
     "create-draft-order": "Crea bozza ordine",
+    "create-facet-value": "Crea nuovo valore attributo",
     "create-new-collection": "Crea nuova Collezione",
     "create-new-facet": "Crea nuovo attributo",
     "create-new-product": "Crea nuovo prodotto",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "Non sei autorizzato ad accedere a \"{ path }\". Potresti non avere sufficienti permessi, oppure la tua sessione è scaduta.",
     "could-not-connect-to-server": "Non è stato possibile collegarsi al server Vendure a { url }",
-    "facet-value-form-values-do-not-match": "Il numero di valori nel modulo degli attributi non corrisponde al numero di valori",
     "health-check-failed": "La verifica del sistema ha dato esito negativo",
     "no-default-shipping-zone-set": "Questo canale non ha una zona di spedizione di default. Questo potrebbe causare errori nel calcolo dei prezzi di spedizione.",
     "no-default-tax-zone-set": "Questo canale non ha una zona di tassazione di default. Questo sarà causa di errori nel calcolo dei prezzi. Per favore seleziona una zona."

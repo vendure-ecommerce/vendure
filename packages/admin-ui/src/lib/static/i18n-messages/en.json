@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "The following product variants have been made obsolete due to the addition of new options. They will be deleted during the creation of the new product variants.",
     "confirm-deletion-of-unused-variants-title": "Delete obsolete product variants?",
     "create-draft-order": "Create draft order",
+    "create-facet-value": "Create new facet value",
     "create-new-collection": "Create new collection",
     "create-new-facet": "Create new facet",
     "create-new-product": "New product",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "You are not currently authorized to access \"{ path }\". Either you lack permissions, or your session has expired.",
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
-    "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
     "health-check-failed": "System health check failed",
     "no-default-shipping-zone-set": "This channel has no default shipping zone. This may cause errors when calculating order shipping charges.",
     "no-default-tax-zone-set": "This channel has no default tax zone, which will cause errors when calculating prices. Please create or select a zone."

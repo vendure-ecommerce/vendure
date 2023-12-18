@@ -89,6 +89,7 @@
     "confirm-deletion-of-unused-variants-body": "",
     "confirm-deletion-of-unused-variants-title": "",
     "create-draft-order": "",
+    "create-facet-value": "创建新特征值",
     "create-new-collection": "添加系列",
     "create-new-facet": "添加特征",
     "create-new-product": "添加商品",
@@ -478,7 +479,6 @@
   "error": {
     "403-forbidden": "无权限访问路径 \"{ path }\"。无权限或会话已过期，请重新登陆",
     "could-not-connect-to-server": "无法链接服务器 { url }",
-    "facet-value-form-values-do-not-match": "表单中商品特征值数量与实际不符",
     "health-check-failed": "系统健康状态检查失败",
     "no-default-shipping-zone-set": "当前销售渠道没有默认配送区域设置，这会导致计算邮费失败。",
     "no-default-tax-zone-set": "当前销售渠道没有没人税表区域设置，这会导致计算价格失败。请创建或选择税区。"
