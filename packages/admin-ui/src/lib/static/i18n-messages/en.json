@@ -523,9 +523,9 @@
     "shipping-methods": "Shipping methods",
     "stock-locations": "Stock locations",
     "system": "System",
-    "system-status": "System Status",
+    "system-status": "System status",
     "tax-categories": "Tax categories",
-    "tax-rates": "Tax Rates",
+    "tax-rates": "Tax rates",
     "zones": "Zones"
   },
   "order": {
@@ -737,7 +737,7 @@
     "seller": "Seller",
     "shipping-calculator": "Shipping calculator",
     "shipping-eligibility-checker": "Shipping eligibility checker",
-    "shipping-method": "Shipping Method",
+    "shipping-method": "Shipping method",
     "tax-category": "Tax category",
     "tax-rate": "Tax rate",
     "test-address": "Test address",
