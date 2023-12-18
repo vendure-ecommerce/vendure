@@ -235,4 +235,10 @@
 
     // spacing
     --space-unit: 8px;
+
+    // clarity styles
+    --clr-link-visited-color: var(--color-weight-700);
+    --clr-link-hover-color: var(--color-weight-700);
+    --clr-link-active-color: var(--color-weight-700);
+    --clr-link-color: var(--color-weight-700);
 }

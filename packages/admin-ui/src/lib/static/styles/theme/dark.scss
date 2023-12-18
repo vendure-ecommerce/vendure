@@ -107,10 +107,10 @@
 
     --clr-popover-box-shadow-color: hsla(0, 0%, 0%, 0.5);
 
-    --clr-link-active-color: hsl(198, 65%, 57%);
-    --clr-link-color: hsl(198, 65%, 57%);
-    --clr-link-hover-color: hsl(198, 65%, 57%);
-    --clr-link-visited-color: hsl(228, 55%, 75%);
+    --clr-link-visited-color: var(--color-weight-700);
+    --clr-link-hover-color: var(--color-weight-700);
+    --clr-link-active-color: var(--color-weight-700);
+    --clr-link-color: var(--color-weight-700);
 
     --clr-theme-alert-font-color: hsl(210, 16%, 93%);
     --clr-theme-app-alert-font-color: hsl(0, 0%, 0%);
