@@ -36,6 +36,11 @@ export interface TestServerOptions {
      * @default false
      */
     logging?: boolean;
+    /**
+     * @description
+     * Sync function
+     */
+    syncFn?: () => Promise<void>;
 }
 
 export type QueryParams = { [key: string]: string | number };

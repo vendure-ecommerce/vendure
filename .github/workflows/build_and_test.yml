@@ -115,6 +115,7 @@ jobs:
       #   run: yarn e2e
       - name: benchmark tests
         env:
+          LOG: 1
           E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
           E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}

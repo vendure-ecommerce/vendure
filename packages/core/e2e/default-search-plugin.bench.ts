@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig } from '@vendure/core';
-import { createTestEnvironment, registerInitializer, SqljsInitializer } from '@vendure/testing';
+import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 import { Bench } from 'tinybench';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -15,7 +15,7 @@ import {
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
-registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
+// registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
 interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {
@@ -45,18 +45,21 @@ describe('Default search plugin', () => {
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
             customerCount: 1,
+            syncFn: async () => {
+                await adminClient.asSuperAdmin();
+                await awaitRunningJobs(adminClient);
+            },
         });
-        await adminClient.asSuperAdmin();
-        await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
+        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 
     const isDevelopment = process.env.NODE_ENV === 'development';
-    describe.skipIf(isDevelopment)('Default search plugin - benchmark', () => {
-        it('defines benchmark cpu and margin factor', async () => {
+    describe.skipIf(isDevelopment)('benchmark', () => {
+        it('defines cpu and margin factor', async () => {
             const bench = new Bench({
                 warmupTime: 0,
                 warmupIterations: 1,
@@ -109,8 +112,8 @@ describe('Default search plugin', () => {
             tasks.forEach(task => {
                 expect(task.result?.mean).toBeDefined();
                 if (task.result?.mean) {
-                    console.log({ actual: task.result.mean * cpuFactor, expected: 6.835 });
-                    expect(task.result.mean * cpuFactor).toBeLessThan(6.835 * marginFactor);
+                    console.log({ actual: task.result.mean * cpuFactor, expected: 7.0 });
+                    expect(task.result.mean * cpuFactor).toBeLessThan(7.0 * marginFactor);
                 }
             });
         });

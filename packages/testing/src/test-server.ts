@@ -87,9 +87,6 @@ export class TestServer {
         return file;
     }
 
-    /**
-     * Populates an .sqlite database file based on the PopulateOptions.
-     */
     private async populateInitialData(
         testingConfig: Required<VendureConfig>,
         options: TestServerOptions,
@@ -98,7 +95,13 @@ export class TestServer {
             logging: false,
             ...options,
         });
+
+        if (options.syncFn) {
+            await options.syncFn();
+            Logger.info('populated initial data');
+        }
         await app.close();
+        Logger.info('app closed');
     }
 
     /**

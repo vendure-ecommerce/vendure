@@ -6,13 +6,7 @@ import {
     facetValueCollectionFilter,
     mergeConfig,
 } from '@vendure/core';
-import {
-    createTestEnvironment,
-    E2E_DEFAULT_CHANNEL_TOKEN,
-    registerInitializer,
-    SimpleGraphQLClient,
-    SqljsInitializer,
-} from '@vendure/testing';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -100,7 +94,7 @@ import {
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
-registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
+// registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
 interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {
@@ -123,9 +117,11 @@ describe('Default search plugin', () => {
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
             customerCount: 1,
+            syncFn: async () => {
+                await adminClient.asSuperAdmin();
+                await awaitRunningJobs(adminClient);
+            },
         });
-        await adminClient.asSuperAdmin();
-        await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
