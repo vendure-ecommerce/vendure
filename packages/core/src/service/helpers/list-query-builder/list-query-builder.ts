@@ -412,12 +412,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     // to join the associated relations.
                     continue;
                 }
-
-                // TODO: Delete for v2
-                // This is a work-around to allow the use of the legacy table-name-based
-                // customPropertyMap syntax
-                let relationPathYieldedMatch = false;
-
                 const relationPath = path.split('.').slice(0, -1);
                 let targetMetadata = metadata;
                 const recontructedPath = [];
@@ -427,26 +421,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                         recontructedPath.push(relationMetadata.propertyName);
                         requiredRelations.push(recontructedPath.join('.'));
                         targetMetadata = relationMetadata.inverseEntityMetadata;
-                        relationPathYieldedMatch = true;
-                    }
-                }
-
-                if (!relationPathYieldedMatch) {
-                    // TODO: Delete this in v2.
-                    // Legacy behaviour that uses the table name to reference relations.
-                    // This causes a bunch of issues and is also a bad, unintuitive way to
-                    // reference relations. See https://github.com/vendure-ecommerce/vendure/issues/1774
-                    const tableNameLower = path.split('.')[0];
-                    const entityMetadata = repository.manager.connection.entityMetadatas.find(
-                        em => em.tableNameWithoutPrefix === tableNameLower,
-                    );
-                    if (entityMetadata) {
-                        const relationMetadata = metadata.relations.find(
-                            r => r.type === entityMetadata.target,
-                        );
-                        if (relationMetadata) {
-                            requiredRelations.push(relationMetadata.propertyName);
-                        }
                     }
                 }
             }
