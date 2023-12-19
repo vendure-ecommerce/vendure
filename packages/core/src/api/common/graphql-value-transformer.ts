@@ -190,6 +190,10 @@ export class GraphqlValueTransformer {
     ): { [name: string]: TypeTreeNode } {
         return Object.entries(inputType.getFields()).reduce((result, [key, field]) => {
             const namedType = getNamedType(field.type);
+            if (namedType === parent.type) {
+                // prevent recursion-induced stack overflow
+                return result;
+            }
             const child: TypeTreeNode = {
                 type: namedType,
                 isList: this.isList(field.type),

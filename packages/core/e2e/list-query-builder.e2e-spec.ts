@@ -887,6 +887,86 @@ describe('ListQueryBuilder', () => {
         });
     });
 
+    describe('complex boolean logic with _and & _or', () => {
+        it('single _and', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                description: {
+                                    contains: 'Lorem',
+                                },
+                                active: {
+                                    eq: false,
+                                },
+                            },
+                        ],
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual([]);
+        });
+
+        it('single _or', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _or: [
+                            {
+                                description: {
+                                    contains: 'Lorem',
+                                },
+                                active: {
+                                    eq: false,
+                                },
+                            },
+                        ],
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E', 'F']);
+        });
+
+        it('_or with nested _and', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _or: [
+                            {
+                                description: { contains: 'Lorem' },
+                            },
+                            {
+                                _and: [{ order: { gt: 3 } }, { order: { lt: 5 } }],
+                            },
+                        ],
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'E']);
+        });
+
+        it('_and with nested _or', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                description: { contains: 'e' },
+                            },
+                            {
+                                _or: [{ active: { eq: false } }, { ownerId: { eq: '10' } }],
+                            },
+                        ],
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'F']);
+        });
+    });
+
     describe('sorting', () => {
         it('sort by string', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {

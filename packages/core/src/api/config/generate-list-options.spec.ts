@@ -101,6 +101,8 @@ describe('generateListOptions()', () => {
                    input PersonFilterParameter {
                      name: StringOperators
                      age: NumberOperators
+                     _and: [PersonFilterParameter!]
+                     _or: [PersonFilterParameter!]
                    }`),
         );
     });
@@ -159,6 +161,8 @@ describe('generateListOptions()', () => {
                      admin: BooleanOperators
                      score: NumberOperators
                      personType: StringOperators
+                     _and: [PersonFilterParameter!]
+                     _or: [PersonFilterParameter!]
                    }`),
         );
     });
@@ -278,6 +282,8 @@ describe('generateListOptions()', () => {
                    input PersonFilterParameter {
                      id: IDOperators
                      name: StringOperators
+                     _and: [PersonFilterParameter!]
+                     _or: [PersonFilterParameter!]
                    }`),
         );
     });
@@ -339,6 +345,8 @@ describe('generateListOptions()', () => {
                    input OrderFilterParameter {
                      id: IDOperators
                      code: StringOperators
+                     _and: [OrderFilterParameter!]
+                     _or: [OrderFilterParameter!]
                    }`),
         );
     });

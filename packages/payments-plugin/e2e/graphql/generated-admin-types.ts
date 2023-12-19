@@ -95,6 +95,8 @@ export type Administrator = Node & {
 };
 
 export type AdministratorFilterParameter = {
+  _and?: InputMaybe<Array<AdministratorFilterParameter>>;
+  _or?: InputMaybe<Array<AdministratorFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   emailAddress?: InputMaybe<StringOperators>;
   firstName?: InputMaybe<StringOperators>;
@@ -177,6 +179,8 @@ export type Asset = Node & {
 };
 
 export type AssetFilterParameter = {
+  _and?: InputMaybe<Array<AssetFilterParameter>>;
+  _or?: InputMaybe<Array<AssetFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   fileSize?: InputMaybe<NumberOperators>;
   height?: InputMaybe<NumberOperators>;
@@ -385,6 +389,8 @@ export type ChannelDefaultLanguageError = ErrorResult & {
 };
 
 export type ChannelFilterParameter = {
+  _and?: InputMaybe<Array<ChannelFilterParameter>>;
+  _or?: InputMaybe<Array<ChannelFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   currencyCode?: InputMaybe<StringOperators>;
@@ -460,6 +466,8 @@ export type CollectionBreadcrumb = {
 };
 
 export type CollectionFilterParameter = {
+  _and?: InputMaybe<Array<CollectionFilterParameter>>;
+  _or?: InputMaybe<Array<CollectionFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   id?: InputMaybe<IdOperators>;
@@ -586,6 +594,8 @@ export type Country = Node & Region & {
 };
 
 export type CountryFilterParameter = {
+  _and?: InputMaybe<Array<CountryFilterParameter>>;
+  _or?: InputMaybe<Array<CountryFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   enabled?: InputMaybe<BooleanOperators>;
@@ -1320,6 +1330,8 @@ export type CustomerOrdersArgs = {
 };
 
 export type CustomerFilterParameter = {
+  _and?: InputMaybe<Array<CustomerFilterParameter>>;
+  _or?: InputMaybe<Array<CustomerFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   emailAddress?: InputMaybe<StringOperators>;
   firstName?: InputMaybe<StringOperators>;
@@ -1346,6 +1358,8 @@ export type CustomerGroupCustomersArgs = {
 };
 
 export type CustomerGroupFilterParameter = {
+  _and?: InputMaybe<Array<CustomerGroupFilterParameter>>;
+  _or?: InputMaybe<Array<CustomerGroupFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   name?: InputMaybe<StringOperators>;
@@ -1565,6 +1579,8 @@ export type FacetValueListArgs = {
 };
 
 export type FacetFilterParameter = {
+  _and?: InputMaybe<Array<FacetFilterParameter>>;
+  _or?: InputMaybe<Array<FacetFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
@@ -1650,6 +1666,8 @@ export type FacetValueFilterInput = {
 };
 
 export type FacetValueFilterParameter = {
+  _and?: InputMaybe<Array<FacetValueFilterParameter>>;
+  _or?: InputMaybe<Array<FacetValueFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   facetId?: InputMaybe<IdOperators>;
@@ -1796,6 +1814,8 @@ export type HistoryEntry = Node & {
 };
 
 export type HistoryEntryFilterParameter = {
+  _and?: InputMaybe<Array<HistoryEntryFilterParameter>>;
+  _or?: InputMaybe<Array<HistoryEntryFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   isPublic?: InputMaybe<BooleanOperators>;
@@ -1957,6 +1977,8 @@ export type JobBufferSize = {
 };
 
 export type JobFilterParameter = {
+  _and?: InputMaybe<Array<JobFilterParameter>>;
+  _or?: InputMaybe<Array<JobFilterParameter>>;
   attempts?: InputMaybe<NumberOperators>;
   createdAt?: InputMaybe<DateOperators>;
   duration?: InputMaybe<NumberOperators>;
@@ -3747,6 +3769,8 @@ export type OrderAddress = {
 };
 
 export type OrderFilterParameter = {
+  _and?: InputMaybe<Array<OrderFilterParameter>>;
+  _or?: InputMaybe<Array<OrderFilterParameter>>;
   active?: InputMaybe<BooleanOperators>;
   aggregateOrderId?: InputMaybe<IdOperators>;
   code?: InputMaybe<StringOperators>;
@@ -3982,6 +4006,8 @@ export type PaymentMethod = Node & {
 };
 
 export type PaymentMethodFilterParameter = {
+  _and?: InputMaybe<Array<PaymentMethodFilterParameter>>;
+  _or?: InputMaybe<Array<PaymentMethodFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
@@ -4337,6 +4363,8 @@ export type ProductVariantListArgs = {
 };
 
 export type ProductFilterParameter = {
+  _and?: InputMaybe<Array<ProductFilterParameter>>;
+  _or?: InputMaybe<Array<ProductFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
@@ -4498,6 +4526,8 @@ export type ProductVariantStockMovementsArgs = {
 };
 
 export type ProductVariantFilterParameter = {
+  _and?: InputMaybe<Array<ProductVariantFilterParameter>>;
+  _or?: InputMaybe<Array<ProductVariantFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   currencyCode?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
@@ -4600,6 +4630,8 @@ export type Promotion = Node & {
 };
 
 export type PromotionFilterParameter = {
+  _and?: InputMaybe<Array<PromotionFilterParameter>>;
+  _or?: InputMaybe<Array<PromotionFilterParameter>>;
   couponCode?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
@@ -4677,6 +4709,8 @@ export type Province = Node & Region & {
 };
 
 export type ProvinceFilterParameter = {
+  _and?: InputMaybe<Array<ProvinceFilterParameter>>;
+  _or?: InputMaybe<Array<ProvinceFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   enabled?: InputMaybe<BooleanOperators>;
@@ -5274,6 +5308,8 @@ export type Role = Node & {
 };
 
 export type RoleFilterParameter = {
+  _and?: InputMaybe<Array<RoleFilterParameter>>;
+  _or?: InputMaybe<Array<RoleFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
@@ -5389,6 +5425,8 @@ export type Seller = Node & {
 };
 
 export type SellerFilterParameter = {
+  _and?: InputMaybe<Array<SellerFilterParameter>>;
+  _or?: InputMaybe<Array<SellerFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   name?: InputMaybe<StringOperators>;
@@ -5474,6 +5512,8 @@ export type ShippingMethod = Node & {
 };
 
 export type ShippingMethodFilterParameter = {
+  _and?: InputMaybe<Array<ShippingMethodFilterParameter>>;
+  _or?: InputMaybe<Array<ShippingMethodFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
@@ -5585,6 +5625,8 @@ export type StockLocation = Node & {
 };
 
 export type StockLocationFilterParameter = {
+  _and?: InputMaybe<Array<StockLocationFilterParameter>>;
+  _or?: InputMaybe<Array<StockLocationFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   id?: InputMaybe<IdOperators>;
@@ -5720,6 +5762,8 @@ export type Tag = Node & {
 };
 
 export type TagFilterParameter = {
+  _and?: InputMaybe<Array<TagFilterParameter>>;
+  _or?: InputMaybe<Array<TagFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   updatedAt?: InputMaybe<DateOperators>;
@@ -5761,6 +5805,8 @@ export type TaxCategory = Node & {
 };
 
 export type TaxCategoryFilterParameter = {
+  _and?: InputMaybe<Array<TaxCategoryFilterParameter>>;
+  _or?: InputMaybe<Array<TaxCategoryFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   isDefault?: InputMaybe<BooleanOperators>;
@@ -5812,6 +5858,8 @@ export type TaxRate = Node & {
 };
 
 export type TaxRateFilterParameter = {
+  _and?: InputMaybe<Array<TaxRateFilterParameter>>;
+  _or?: InputMaybe<Array<TaxRateFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   enabled?: InputMaybe<BooleanOperators>;
   id?: InputMaybe<IdOperators>;
@@ -6218,6 +6266,8 @@ export type Zone = Node & {
 };
 
 export type ZoneFilterParameter = {
+  _and?: InputMaybe<Array<ZoneFilterParameter>>;
+  _or?: InputMaybe<Array<ZoneFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   name?: InputMaybe<StringOperators>;

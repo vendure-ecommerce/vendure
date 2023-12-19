@@ -13,6 +13,7 @@ import {
     GraphQLInt,
     GraphQLList,
     GraphQLNamedType,
+    GraphQLNonNull,
     GraphQLObjectType,
     GraphQLOutputType,
     GraphQLSchema,
@@ -161,24 +162,6 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
         fields.push(...Object.values(existingInput.getFields()));
     }
 
-    return new GraphQLInputObjectType({
-        name: inputName,
-        fields: fields.reduce((result, field) => {
-            const fieldType = field.type;
-            const filterType = isInputObjectType(fieldType) ? fieldType : getFilterType(field);
-            if (!filterType) {
-                return result;
-            }
-            const fieldConfig: GraphQLInputFieldConfig = {
-                type: filterType,
-            };
-            return {
-                ...result,
-                [field.name]: fieldConfig,
-            };
-        }, {} as GraphQLInputFieldConfigMap),
-    });
-
     function getFilterType(field: GraphQLField<any, any> | GraphQLInputField): GraphQLInputType | undefined {
         const innerType = unwrapNonNullType(field.type);
         if (isListType(innerType)) {
@@ -204,6 +187,33 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
                 return;
         }
     }
+
+    const FilterInputType: GraphQLInputObjectType = new GraphQLInputObjectType({
+        name: inputName,
+        fields: () => {
+            const namedFields = fields.reduce((result, field) => {
+                const fieldType = field.type;
+                const filterType = isInputObjectType(fieldType) ? fieldType : getFilterType(field);
+                if (!filterType) {
+                    return result;
+                }
+                const fieldConfig: GraphQLInputFieldConfig = {
+                    type: filterType,
+                };
+                return {
+                    ...result,
+                    [field.name]: fieldConfig,
+                };
+            }, {} as GraphQLInputFieldConfigMap);
+            return {
+                ...namedFields,
+                _and: { type: new GraphQLList(new GraphQLNonNull(FilterInputType)) },
+                _or: { type: new GraphQLList(new GraphQLNonNull(FilterInputType)) },
+            };
+        },
+    });
+
+    return FilterInputType;
 }
 
 function getCommonTypes(schema: GraphQLSchema) {

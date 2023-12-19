@@ -1,3 +1,4 @@
+import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { describe, expect, it } from 'vitest';
 
 import { FilterParameter } from '../../../common/types/common-types';
@@ -254,6 +255,90 @@ describe('parseFilterParams()', () => {
             const result = parseFilterParams(connection as any, Product, filterParams);
             expect(result[0].clause).toBe('product.available = :arg1');
             expect(result[0].parameters).toEqual({ arg1: true });
+        });
+    });
+
+    describe('nested boolean expressions', () => {
+        it('simple _and', () => {
+            const connection = new MockConnection();
+            connection.setColumns(Product, [
+                { propertyName: 'name', type: String },
+                { propertyName: 'slug', type: String },
+            ]);
+            const filterParams = {
+                _and: [
+                    {
+                        name: { eq: 'foo' },
+                    },
+                    {
+                        slug: { eq: 'bar' },
+                    },
+                ],
+            };
+            const result = parseFilterParams(connection as any, Product, filterParams);
+            expect(result[0].operator).toBe(LogicalOperator.AND);
+            expect(result[0].conditions).toEqual([
+                { clause: 'product.name = :arg1', parameters: { arg1: 'foo' } },
+                { clause: 'product.slug = :arg2', parameters: { arg2: 'bar' } },
+            ]);
+        });
+
+        it('simple _or', () => {
+            const connection = new MockConnection();
+            connection.setColumns(Product, [
+                { propertyName: 'name', type: String },
+                { propertyName: 'slug', type: String },
+            ]);
+            const filterParams = {
+                _or: [
+                    {
+                        name: { eq: 'foo' },
+                    },
+                    {
+                        slug: { eq: 'bar' },
+                    },
+                ],
+            };
+            const result = parseFilterParams(connection as any, Product, filterParams);
+            expect(result[0].operator).toBe(LogicalOperator.OR);
+            expect(result[0].conditions).toEqual([
+                { clause: 'product.name = :arg1', parameters: { arg1: 'foo' } },
+                { clause: 'product.slug = :arg2', parameters: { arg2: 'bar' } },
+            ]);
+        });
+
+        it('nested _or and _and', () => {
+            const connection = new MockConnection();
+            connection.setColumns(Product, [
+                { propertyName: 'name', type: String },
+                { propertyName: 'slug', type: String },
+            ]);
+            const filterParams = {
+                _and: [
+                    {
+                        name: { eq: 'foo' },
+                    },
+                    {
+                        _or: [{ slug: { eq: 'bar' } }, { slug: { eq: 'baz' } }],
+                    },
+                ],
+            };
+            const result = parseFilterParams(connection as any, Product, filterParams);
+            expect(result).toEqual([
+                {
+                    operator: LogicalOperator.AND,
+                    conditions: [
+                        { clause: 'product.name = :arg1', parameters: { arg1: 'foo' } },
+                        {
+                            operator: LogicalOperator.OR,
+                            conditions: [
+                                { clause: 'product.slug = :arg2', parameters: { arg2: 'bar' } },
+                                { clause: 'product.slug = :arg3', parameters: { arg3: 'baz' } },
+                            ],
+                        },
+                    ],
+                },
+            ]);
         });
     });
 });

@@ -10,6 +10,7 @@ import {
     In,
     Repository,
     SelectQueryBuilder,
+    WhereExpressionBuilder,
 } from 'typeorm';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
@@ -18,7 +19,12 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { ApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
-import { ListQueryOptions, NullOptionals, SortParameter } from '../../../common/types/common-types';
+import {
+    FilterParameter,
+    ListQueryOptions,
+    NullOptionals,
+    SortParameter,
+} from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { Logger } from '../../../config/logger/vendure-logger';
@@ -27,7 +33,7 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
-import { parseFilterParams } from './parse-filter-params';
+import { parseFilterParams, WhereGroup } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
 
 /**
@@ -207,6 +213,43 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
     /**
      * @description
+     * Used to determine whether a list query `filter` object contains the
+     * given property, either at the top level or nested inside a boolean
+     * `_and` or `_or` expression.
+     *
+     * This is useful when a custom property map is used to map a filter
+     * field to a related entity, and we need to determine whether the
+     * filter object contains that property, which then means we would need
+     * to join that relation.
+     */
+    filterObjectHasProperty<FP extends FilterParameter<VendureEntity>>(
+        filterObject: FP | NullOptionals<FP> | null | undefined,
+        property: keyof FP,
+    ): boolean {
+        if (!filterObject) {
+            return false;
+        }
+        for (const key in filterObject) {
+            if (!filterObject[key]) {
+                continue;
+            }
+            if (key === property) {
+                return true;
+            }
+            if (key === '_and' || key === '_or') {
+                const value = filterObject[key] as FP[];
+                for (const condition of value) {
+                    if (this.filterObjectHasProperty(condition, property)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @description
      * Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
      */
     build<T extends VendureEntity>(
@@ -265,19 +308,21 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         if (filter.length) {
             const filterOperator = options.filterOperator ?? LogicalOperator.AND;
-            if (filterOperator === LogicalOperator.AND) {
-                filter.forEach(({ clause, parameters }) => {
-                    qb.andWhere(clause, parameters);
-                });
-            } else {
-                qb.andWhere(
-                    new Brackets(qb1 => {
-                        filter.forEach(({ clause, parameters }) => {
-                            qb1.orWhere(clause, parameters);
-                        });
-                    }),
-                );
-            }
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const condition of filter) {
+                        if ('conditions' in condition) {
+                            this.addNestedWhereClause(qb1, condition, filterOperator);
+                        } else {
+                            if (filterOperator === LogicalOperator.AND) {
+                                qb1.andWhere(condition.clause, condition.parameters);
+                            } else {
+                                qb1.orWhere(condition.clause, condition.parameters);
+                            }
+                        }
+                    }
+                }),
+            );
         }
 
         if (extendedOptions.channelId) {
@@ -290,6 +335,33 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         this.optimizeGetManyAndCountMethod(qb, repo, extendedOptions, minimumRequiredRelations);
         this.optimizeGetManyMethod(qb, repo, extendedOptions, minimumRequiredRelations);
         return qb;
+    }
+
+    private addNestedWhereClause(
+        qb: WhereExpressionBuilder,
+        whereGroup: WhereGroup,
+        parentOperator: LogicalOperator,
+    ) {
+        if (whereGroup.conditions.length) {
+            const subQb = new Brackets(qb1 => {
+                whereGroup.conditions.forEach(condition => {
+                    if ('conditions' in condition) {
+                        this.addNestedWhereClause(qb1, condition, whereGroup.operator);
+                    } else {
+                        if (whereGroup.operator === LogicalOperator.AND) {
+                            qb1.andWhere(condition.clause, condition.parameters);
+                        } else {
+                            qb1.orWhere(condition.clause, condition.parameters);
+                        }
+                    }
+                });
+            });
+            if (parentOperator === LogicalOperator.AND) {
+                qb.andWhere(subQb);
+            } else {
+                qb.orWhere(subQb);
+            }
+        }
     }
 
     private parseTakeSkipParams(

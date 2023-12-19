@@ -8,6 +8,7 @@ import {
     GlobalFlag,
     Permission,
     ProductListOptions,
+    ProductVariantFilterParameter,
     ProductVariantListOptions,
     RemoveProductVariantsFromChannelInput,
     UpdateProductVariantInput,
@@ -92,7 +93,11 @@ export class ProductVariantService {
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         const relations = ['featuredAsset', 'taxCategory', 'channels'];
         const customPropertyMap: { [name: string]: string } = {};
-        const hasFacetValueIdFilter = !!(options as ProductVariantListOptions)?.filter?.facetValueId;
+        const hasFacetValueIdFilter =
+            this.listQueryBuilder.filterObjectHasProperty<ProductVariantFilterParameter>(
+                options?.filter,
+                'facetValueId',
+            );
         if (hasFacetValueIdFilter) {
             relations.push('facetValues');
             customPropertyMap.facetValueId = 'facetValues.id';

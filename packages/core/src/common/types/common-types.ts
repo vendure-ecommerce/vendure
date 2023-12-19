@@ -105,6 +105,9 @@ export type FilterParameter<T extends VendureEntity> = {
         : T[K] extends number ? NumberOperators
             : T[K] extends boolean ? BooleanOperators
                 : T[K] extends Date ? DateOperators : StringOperators;
+} & {
+    _and?: Array<FilterParameter<T>>;
+    _or?: Array<FilterParameter<T>>;
 };
 
 export interface StringOperators {

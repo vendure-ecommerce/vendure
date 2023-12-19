@@ -10,6 +10,7 @@ import {
     CreateAddressInput,
     CreateCustomerInput,
     CreateCustomerResult,
+    CustomerFilterParameter,
     CustomerListOptions,
     DeletionResponse,
     DeletionResult,
@@ -97,7 +98,10 @@ export class CustomerService {
         relations: RelationPaths<Customer> = [],
     ): Promise<PaginatedList<Customer>> {
         const customPropertyMap: { [name: string]: string } = {};
-        const hasPostalCodeFilter = !!(options as CustomerListOptions)?.filter?.postalCode;
+        const hasPostalCodeFilter = this.listQueryBuilder.filterObjectHasProperty<CustomerFilterParameter>(
+            options?.filter,
+            'postalCode',
+        );
         if (hasPostalCodeFilter) {
             relations.push('addresses');
             customPropertyMap.postalCode = 'addresses.postalCode';

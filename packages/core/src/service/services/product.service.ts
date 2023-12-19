@@ -4,6 +4,7 @@ import {
     CreateProductInput,
     DeletionResponse,
     DeletionResult,
+    ProductFilterParameter,
     ProductListOptions,
     RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
@@ -76,8 +77,14 @@ export class ProductService {
     ): Promise<PaginatedList<Translated<Product>>> {
         const effectiveRelations = relations || this.relations;
         const customPropertyMap: { [name: string]: string } = {};
-        const hasFacetValueIdFilter = !!(options as ProductListOptions)?.filter?.facetValueId;
-        const hasSkuFilter = !!(options as ProductListOptions)?.filter?.sku;
+        const hasFacetValueIdFilter = this.listQueryBuilder.filterObjectHasProperty<ProductFilterParameter>(
+            options?.filter,
+            'facetValueId',
+        );
+        const hasSkuFilter = this.listQueryBuilder.filterObjectHasProperty<ProductFilterParameter>(
+            options?.filter,
+            'sku',
+        );
         if (hasFacetValueIdFilter) {
             effectiveRelations.push('facetValues');
             customPropertyMap.facetValueId = 'facetValues.id';

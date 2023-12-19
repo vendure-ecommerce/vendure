@@ -197,6 +197,8 @@ export type CollectionBreadcrumb = {
 };
 
 export type CollectionFilterParameter = {
+  _and?: InputMaybe<Array<CollectionFilterParameter>>;
+  _or?: InputMaybe<Array<CollectionFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   id?: InputMaybe<IdOperators>;
@@ -753,6 +755,8 @@ export type CustomerOrdersArgs = {
 };
 
 export type CustomerFilterParameter = {
+  _and?: InputMaybe<Array<CustomerFilterParameter>>;
+  _or?: InputMaybe<Array<CustomerFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   emailAddress?: InputMaybe<StringOperators>;
   firstName?: InputMaybe<StringOperators>;
@@ -935,6 +939,8 @@ export type FacetValueListArgs = {
 };
 
 export type FacetFilterParameter = {
+  _and?: InputMaybe<Array<FacetFilterParameter>>;
+  _or?: InputMaybe<Array<FacetFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
@@ -1007,6 +1013,8 @@ export type FacetValueFilterInput = {
 };
 
 export type FacetValueFilterParameter = {
+  _and?: InputMaybe<Array<FacetValueFilterParameter>>;
+  _or?: InputMaybe<Array<FacetValueFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   facetId?: InputMaybe<IdOperators>;
@@ -1126,6 +1134,8 @@ export type HistoryEntry = Node & {
 };
 
 export type HistoryEntryFilterParameter = {
+  _and?: InputMaybe<Array<HistoryEntryFilterParameter>>;
+  _or?: InputMaybe<Array<HistoryEntryFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   type?: InputMaybe<StringOperators>;
@@ -2068,6 +2078,8 @@ export type OrderAddress = {
 };
 
 export type OrderFilterParameter = {
+  _and?: InputMaybe<Array<OrderFilterParameter>>;
+  _or?: InputMaybe<Array<OrderFilterParameter>>;
   active?: InputMaybe<BooleanOperators>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
@@ -2614,6 +2626,8 @@ export type ProductVariantListArgs = {
 };
 
 export type ProductFilterParameter = {
+  _and?: InputMaybe<Array<ProductFilterParameter>>;
+  _or?: InputMaybe<Array<ProductFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
@@ -2733,6 +2747,8 @@ export type ProductVariant = Node & {
 };
 
 export type ProductVariantFilterParameter = {
+  _and?: InputMaybe<Array<ProductVariantFilterParameter>>;
+  _or?: InputMaybe<Array<ProductVariantFilterParameter>>;
   createdAt?: InputMaybe<DateOperators>;
   currencyCode?: InputMaybe<StringOperators>;
   id?: InputMaybe<IdOperators>;

@@ -1,6 +1,7 @@
+import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Connection, DataSourceOptions } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { DateUtils } from 'typeorm/util/DateUtils';
 
 import { InternalServerError, UserInputError } from '../../../common/error/errors';
@@ -18,6 +19,11 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 import { escapeCalculatedColumnExpression, getColumnMetadata } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
 
+export interface WhereGroup {
+    operator: LogicalOperator;
+    conditions: Array<WhereCondition | WhereGroup>;
+}
+
 export interface WhereCondition {
     clause: string;
     parameters: { [param: string]: string | number | string[] };
@@ -26,58 +32,78 @@ export interface WhereCondition {
 type AllOperators = StringOperators & BooleanOperators & NumberOperators & DateOperators & ListOperators;
 type Operator = { [K in keyof AllOperators]-?: K }[keyof AllOperators];
 
-export function parseFilterParams<T extends VendureEntity>(
-    connection: Connection,
+export function parseFilterParams<
+    T extends VendureEntity,
+    FP extends NullOptionals<FilterParameter<T>>,
+    R extends FP extends { _and: Array<FilterParameter<T>> }
+        ? WhereGroup[]
+        : FP extends { _or: Array<FilterParameter<T>> }
+        ? WhereGroup[]
+        : WhereCondition[],
+>(
+    connection: DataSource,
     entity: Type<T>,
-    filterParams?: NullOptionals<FilterParameter<T>> | null,
+    filterParams?: FP | null,
     customPropertyMap?: { [name: string]: string },
     entityAlias?: string,
-): WhereCondition[] {
+): R {
     if (!filterParams) {
-        return [];
+        return [] as unknown as R;
     }
     const { columns, translationColumns, alias: defaultAlias } = getColumnMetadata(connection, entity);
     const alias = entityAlias ?? defaultAlias;
     const calculatedColumns = getCalculatedColumns(entity);
-    const output: WhereCondition[] = [];
+
     const dbType = connection.options.type;
     let argIndex = 1;
-    for (const [key, operation] of Object.entries(filterParams)) {
-        if (operation) {
-            const calculatedColumnDef = calculatedColumns.find(c => c.name === key);
-            const instruction = calculatedColumnDef?.listQuery;
-            const calculatedColumnExpression = instruction?.expression;
-            for (const [operator, operand] of Object.entries(operation as object)) {
-                let fieldName: string;
-                if (columns.find(c => c.propertyName === key)) {
-                    fieldName = `${alias}.${key}`;
-                } else if (translationColumns.find(c => c.propertyName === key)) {
-                    const translationsAlias = connection.namingStrategy.eagerJoinRelationAlias(
-                        alias,
-                        'translations',
-                    );
-                    fieldName = `${translationsAlias}.${key}`;
-                } else if (calculatedColumnExpression) {
-                    fieldName = escapeCalculatedColumnExpression(connection, calculatedColumnExpression);
-                } else if (customPropertyMap?.[key]) {
-                    fieldName = customPropertyMap[key];
-                } else {
-                    throw new UserInputError('error.invalid-filter-field');
-                }
-                const condition = buildWhereCondition(
-                    fieldName,
-                    operator as Operator,
-                    operand,
-                    argIndex,
-                    dbType,
+
+    function buildConditionsForField(key: string, operation: FilterParameter<T>): WhereCondition[] {
+        const output: WhereCondition[] = [];
+        const calculatedColumnDef = calculatedColumns.find(c => c.name === key);
+        const instruction = calculatedColumnDef?.listQuery;
+        const calculatedColumnExpression = instruction?.expression;
+        for (const [operator, operand] of Object.entries(operation as object)) {
+            let fieldName: string;
+            if (columns.find(c => c.propertyName === key)) {
+                fieldName = `${alias}.${key}`;
+            } else if (translationColumns.find(c => c.propertyName === key)) {
+                const translationsAlias = connection.namingStrategy.eagerJoinRelationAlias(
+                    alias,
+                    'translations',
                 );
-                output.push(condition);
-                argIndex++;
+                fieldName = `${translationsAlias}.${key}`;
+            } else if (calculatedColumnExpression) {
+                fieldName = escapeCalculatedColumnExpression(connection, calculatedColumnExpression);
+            } else if (customPropertyMap?.[key]) {
+                fieldName = customPropertyMap[key];
+            } else {
+                throw new UserInputError('error.invalid-filter-field');
             }
+            const condition = buildWhereCondition(fieldName, operator as Operator, operand, argIndex, dbType);
+            output.push(condition);
+            argIndex++;
         }
+        return output;
     }
 
-    return output;
+    function processFilterParameter(param: FilterParameter<T>) {
+        const result: Array<WhereCondition | WhereGroup> = [];
+        for (const [key, operation] of Object.entries(param)) {
+            if (key === '_and' || key === '_or') {
+                result.push({
+                    operator: key === '_and' ? LogicalOperator.AND : LogicalOperator.OR,
+                    conditions: operation.map(o => processFilterParameter(o)).flat(),
+                });
+            } else if (operation && !Array.isArray(operation)) {
+                result.push(...buildConditionsForField(key, operation));
+            }
+        }
+        return result;
+    }
+
+    const conditions = processFilterParameter(filterParams as FilterParameter<T>);
+
+    return conditions as R;
 }
 
 function buildWhereCondition(
