@@ -5,6 +5,7 @@ import {
     FacetValueFormInputComponent,
     JobQueueService,
     JobState,
+    LogicalOperator,
     ModalService,
     NotificationService,
     ProductListQueryDocument,
@@ -97,19 +98,31 @@ export class ProductListComponent
         this.configure({
             document: ProductListQueryDocument,
             getItems: data => data.products,
-            setVariables: (skip, take) => ({
-                options: {
-                    skip,
-                    take,
-                    filter: {
+            setVariables: (skip, take) => {
+                const searchTerm = this.searchTermControl.value;
+                let filterInput = this.filters.createFilterInput();
+                if (searchTerm) {
+                    filterInput = {
                         name: {
-                            contains: this.searchTermControl.value,
+                            contains: searchTerm,
                         },
-                        ...this.filters.createFilterInput(),
+                        sku: {
+                            contains: searchTerm,
+                        },
+                    };
+                }
+                return {
+                    options: {
+                        skip,
+                        take,
+                        filter: {
+                            ...(filterInput ?? {}),
+                        },
+                        filterOperator: searchTerm ? LogicalOperator.OR : LogicalOperator.AND,
+                        sort: this.sorts.createSortInput(),
                     },
-                    sort: this.sorts.createSortInput(),
-                },
-            }),
+                };
+            },
             refreshListOnChanges: [this.sorts.valueChanges, this.filters.valueChanges],
         });
     }

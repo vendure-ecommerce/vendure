@@ -106,7 +106,6 @@
     "facet-values": "Значения тега",
     "facets": "Теги",
     "filter-by-name": "Фильтр по имени",
-    "filter-by-sku": "Фильтровать по SKU",
     "filter-inheritance": "Наследование фильтра",
     "filters": "Фильтры",
     "inherit-filters-from-parent": "Наследовать фильтры от родительского",
