@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomerService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/customer.service.ts" sourceLine="79" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/customer.service.ts" sourceLine="80" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/customer#customer'>Customer</a> entities.
 

@@ -19,7 +19,7 @@ to the Express [cookie-session middleware](https://github.com/expressjs/cookie-s
 
 ```ts title="Signature"
 interface CookieOptions {
-    name?: string;
+    name?: string | { shop: string; admin: string };
     secret?: string;
     path?: string;
     domain?: string;
@@ -29,6 +29,8 @@ interface CookieOptions {
     httpOnly?: boolean;
     signed?: boolean;
     overwrite?: boolean;
+    maxAge?: number;
+    expires?: Date;
 }
 ```
 
@@ -36,9 +38,11 @@ interface CookieOptions {
 
 ### name
 
-<MemberInfo kind="property" type={`string`} default="'session'"   />
+<MemberInfo kind="property" type={`string | { shop: string; admin: string }`} default="'session'"   />
 
-The name of the cookie to set.
+The name of the cookies to set.
+If set to a string, both cookies for the Admin API and Shop API will have the same name.
+If set as an object, it makes it possible to give different names to the Admin API and the Shop API cookies
 ### secret
 
 <MemberInfo kind="property" type={`string`} default="(random character string)"   />
@@ -93,6 +97,16 @@ first Keygrip key. This signature key is used to detect tampering the next time 
 
 a boolean indicating whether to overwrite previously set cookies of the same name (true by default). If this is true, all cookies set during
 the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
+### maxAge
+
+<MemberInfo kind="property" type={`number`}  since="2.2.0"  />
+
+A number representing the milliseconds from Date.now() for expiry
+### expires
+
+<MemberInfo kind="property" type={`Date`}  since="2.2.0"  />
+
+a Date object indicating the cookie's expiration date (expires at the end of session by default).
 
 
 </div>

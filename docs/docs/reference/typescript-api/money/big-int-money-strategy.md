@@ -42,6 +42,7 @@ class BigIntMoneyStrategy implements MoneyStrategy {
             },
         },
     };
+    precision = 2;
     round(value: number, quantity:  = 1) => number;
 }
 ```
@@ -54,6 +55,11 @@ class BigIntMoneyStrategy implements MoneyStrategy {
 ### moneyColumnOptions
 
 <MemberInfo kind="property" type={`ColumnOptions`}   />
+
+
+### precision
+
+<MemberInfo kind="property" type={``}   />
 
 
 ### round

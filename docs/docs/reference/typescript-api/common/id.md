@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ID
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="78" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="79" packageName="@vendure/common" />
 
 An entity ID. Depending on the configured <a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>, it will be either
 a `string` or a `number`;

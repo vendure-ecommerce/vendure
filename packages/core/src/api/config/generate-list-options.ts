@@ -70,7 +70,7 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
                               filterOperator: {
                                   type: logicalOperatorEnum as GraphQLEnumType,
                                   description:
-                                      'Specifies whether multiple "filter" arguments should be combines ' +
+                                      'Specifies whether multiple top-level "filter" fields should be combined ' +
                                       'with a logical AND or OR operation. Defaults to AND.',
                               },
                           }

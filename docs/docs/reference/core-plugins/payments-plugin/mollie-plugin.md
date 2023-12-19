@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## MolliePlugin
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="151" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="203" packageName="@vendure/payments-plugin" />
 
 Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
 This plugin uses the Order API from Mollie, not the Payments API.
@@ -146,7 +146,7 @@ Initialize the mollie payment plugin
 
 ## MolliePluginOptions
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="17" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="27" packageName="@vendure/payments-plugin" />
 
 Configuration options for the Mollie payments plugin.
 
@@ -154,6 +154,11 @@ Configuration options for the Mollie payments plugin.
 interface MolliePluginOptions {
     vendureHost: string;
     useDynamicRedirectUrl?: boolean;
+    enabledPaymentMethodsParams?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order | null,
+    ) => AdditionalEnabledPaymentMethodsParams | Promise<AdditionalEnabledPaymentMethodsParams>;
 }
 ```
 
@@ -173,6 +178,42 @@ For backwards compatibility, by default set to false.
 This option will be deprecated in a future version.
 When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation
 instead of being configured in the Payment Method.
+### enabledPaymentMethodsParams
+
+<MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a> | null,     ) =&#62; AdditionalEnabledPaymentMethodsParams | Promise&#60;AdditionalEnabledPaymentMethodsParams&#62;`}  since="2.2.0"  />
+
+Provide additional parameters to the Mollie enabled payment methods API call. By default,
+the plugin will already pass the `resource` parameter.
+
+For example, if you want to provide a `locale` and `billingCountry` for the API call, you can do so like this:
+
+**Note:** The `order` argument is possibly `null`, this could happen when you fetch the available payment methods
+before the order is created.
+
+*Example*
+
+```ts
+import { VendureConfig } from '@vendure/core';
+import { MolliePlugin, getLocale } from '@vendure/payments-plugin/package/mollie';
+
+export const config: VendureConfig = {
+  // ...
+  plugins: [
+    MolliePlugin.init({
+      enabledPaymentMethodsParams: (injector, ctx, order) => {
+        const locale = order?.billingAddress?.countryCode
+            ? getLocale(order.billingAddress.countryCode, ctx.languageCode)
+            : undefined;
+
+        return {
+          locale,
+          billingCountry: order?.billingAddress?.countryCode,
+        },
+      }
+    }),
+  ],
+};
+```
 
 
 </div>

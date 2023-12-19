@@ -77,6 +77,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">parentId: <a href="/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
 
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#collectionfilterparameter">CollectionFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#collectionfilterparameter">CollectionFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -110,7 +114,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#collectionfilterparameter">CollectionFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 
@@ -253,6 +257,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">emailAddress: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
 
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#customerfilterparameter">CustomerFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#customerfilterparameter">CustomerFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -284,7 +292,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#customerfilterparameter">CustomerFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 
@@ -388,6 +396,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
 
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#facetfilterparameter">FacetFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#facetfilterparameter">FacetFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -419,7 +431,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#facetfilterparameter">FacetFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 
@@ -494,6 +506,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
 
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#facetvaluefilterparameter">FacetValueFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#facetvaluefilterparameter">FacetValueFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -525,7 +541,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#facetvaluefilterparameter">FacetValueFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 
@@ -569,6 +585,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
 
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#historyentryfilterparameter">HistoryEntryFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#historyentryfilterparameter">HistoryEntryFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -600,7 +620,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#historyentryfilterparameter">HistoryEntryFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 
@@ -770,6 +790,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">totalWithTax: <a href="/reference/graphql-api/shop/input-types#numberoperators">NumberOperators</a></div>
 
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#orderfilterparameter">OrderFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#orderfilterparameter">OrderFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -801,7 +825,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#orderfilterparameter">OrderFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 
@@ -892,6 +916,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
 
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/shop/input-types#booleanoperators">BooleanOperators</a></div>
+
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#productfilterparameter">ProductFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#productfilterparameter">ProductFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -923,7 +953,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#productfilterparameter">ProductFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 
@@ -981,6 +1011,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">stockLevel: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
 
+<div class="graphql-code-line ">_and: [<a href="/reference/graphql-api/shop/input-types#productvariantfilterparameter">ProductVariantFilterParameter</a>!]</div>
+
+<div class="graphql-code-line ">_or: [<a href="/reference/graphql-api/shop/input-types#productvariantfilterparameter">ProductVariantFilterParameter</a>!]</div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -1012,7 +1046,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#productvariantfilterparameter">ProductVariantFilterParameter</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
 

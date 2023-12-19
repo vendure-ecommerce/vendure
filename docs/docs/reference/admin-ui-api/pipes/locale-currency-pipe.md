@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LocaleCurrencyPipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-currency.pipe.ts" sourceLine="19" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-currency.pipe.ts" sourceLine="20" packageName="@vendure/admin-ui" />
 
 Formats a Vendure monetary value (in cents) into the correct format for the configured currency and display
 locale.
@@ -24,7 +24,8 @@ locale.
 
 ```ts title="Signature"
 class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform {
-    constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
+    readonly precisionFactor: number;
+    constructor(currencyService: CurrencyService, dataService?: DataService, changeDetectorRef?: ChangeDetectorRef)
     transform(value: unknown, args: unknown[]) => string | unknown;
 }
 ```
@@ -37,9 +38,14 @@ class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform {
 
 <div className="members-wrapper">
 
+### precisionFactor
+
+<MemberInfo kind="property" type={`number`}   />
+
+
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService?: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyPipe`}   />
+<MemberInfo kind="method" type={`(currencyService: CurrencyService, dataService?: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef?: ChangeDetectorRef) => LocaleCurrencyPipe`}   />
 
 
 ### transform

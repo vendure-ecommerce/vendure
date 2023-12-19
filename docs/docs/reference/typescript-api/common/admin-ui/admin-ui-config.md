@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiConfig
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="214" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="215" packageName="@vendure/common" />
 
 This interface describes JSON config file (vendure-ui-config.json) used by the Admin UI.
 The values are loaded at run-time by the Admin UI app, and allow core configuration to be
@@ -28,6 +28,7 @@ interface AdminUiConfig {
     defaultLanguage: LanguageCode;
     defaultLocale?: string;
     availableLanguages: LanguageCode[];
+    availableLocales: string[];
     loginUrl?: string;
     brand?: string;
     hideVendureBranding?: boolean;
@@ -85,10 +86,11 @@ The default language for the Admin UI. Must be one of the
 items specified in the `availableLanguages` property.
 ### defaultLocale
 
-<MemberInfo kind="property" type={`string`}   />
+<MemberInfo kind="property" type={`string`}  since="2.2.0"  />
 
 The default locale for the Admin UI. The locale affects the formatting of
-currencies & dates.
+currencies & dates. Must be one of the items specified
+in the `availableLocales` property.
 
 If not set, the browser default locale will be used.
 ### availableLanguages
@@ -96,6 +98,11 @@ If not set, the browser default locale will be used.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>[]`}   />
 
 An array of languages for which translations exist for the Admin UI.
+### availableLocales
+
+<MemberInfo kind="property" type={`string[]`}  since="2.2.0"  />
+
+An array of locales to be used on Admin UI.
 ### loginUrl
 
 <MemberInfo kind="property" type={`string`}   />

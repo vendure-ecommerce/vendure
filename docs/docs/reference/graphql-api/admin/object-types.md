@@ -2708,8 +2708,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Product</span>
  &#123;</div>
-<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a>!</div>
-
 <div class="graphql-code-line ">channels: [<a href="/reference/graphql-api/admin/object-types#channel">Channel</a>!]!</div>
 
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
@@ -2725,6 +2723,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">slug: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
 
 <div class="graphql-code-line ">description: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a>!</div>
 
 <div class="graphql-code-line ">featuredAsset: <a href="/reference/graphql-api/admin/object-types#asset">Asset</a></div>
 
@@ -3600,6 +3600,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">permittedAssetTypes: [<a href="/reference/graphql-api/admin/object-types#string">String</a>!]!</div>
 
 <div class="graphql-code-line ">permissions: [<a href="/reference/graphql-api/admin/object-types#permissiondefinition">PermissionDefinition</a>!]!</div>
+
+<div class="graphql-code-line ">moneyStrategyPrecision: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
 <div class="graphql-code-line ">customFieldConfig: <a href="/reference/graphql-api/admin/object-types#customfields">CustomFields</a>!</div>
 

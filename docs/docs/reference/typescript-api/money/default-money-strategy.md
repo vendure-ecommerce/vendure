@@ -21,6 +21,7 @@ class DefaultMoneyStrategy implements MoneyStrategy {
     readonly moneyColumnOptions: ColumnOptions = {
         type: 'int',
     };
+    readonly precision: number = 2;
     round(value: number, quantity:  = 1) => number;
 }
 ```
@@ -33,6 +34,11 @@ class DefaultMoneyStrategy implements MoneyStrategy {
 ### moneyColumnOptions
 
 <MemberInfo kind="property" type={`ColumnOptions`}   />
+
+
+### precision
+
+<MemberInfo kind="property" type={`number`}   />
 
 
 ### round

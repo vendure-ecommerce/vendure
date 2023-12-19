@@ -2051,6 +2051,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
 
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
 <div class="graphql-code-line ">featuredAsset: <a href="/reference/graphql-api/shop/object-types#asset">Asset</a></div>
 
 <div class="graphql-code-line ">assets: [<a href="/reference/graphql-api/shop/object-types#asset">Asset</a>!]!</div>
