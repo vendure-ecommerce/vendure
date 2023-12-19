@@ -128,7 +128,7 @@ query {
         }
       }
       // highlight-end
-  ) {
+    }) {
     totalItems
     items {
       id
@@ -190,3 +190,171 @@ query {
 
 In the above example, we are querying the first 10 reviews, sorted by `createdAt` in descending order, and filtered to only
 include reviews with a rating between 3 and 5.
+
+## Advanced filtering
+
+Vendure v2.2.0 introduced the ability to construct complex nested filters on any PaginatedList query. For example, we could
+filter the above query to only include reviews for products with a name starting with "Smartphone":
+
+<Tabs>
+<TabItem value="Query" label="Query" default>
+
+```graphql
+query {
+  productReviews(
+    options: {
+    skip: 0
+    take: 10
+    // highlight-start
+    filter: {
+      _and: [
+        { text: { startsWith: "phone" } },
+        {
+          _or: [
+            { rating: { gte: 4 } },
+            { rating: { eq: 0 } }
+          ]
+        }
+      ]
+    }
+    // highlight-end
+    }) {
+    totalItems
+    items {
+      id
+      createdAt
+      product {
+        name
+      }
+      text
+      rating
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem value="Response" label="Response" >
+
+```json
+{
+  "data": {
+    "productReviews": {
+      "totalItems": 3,
+      "items": [
+        {
+          "id": "12",
+          "createdAt": "2023-08-23T12:00:00Z",
+          "product": {
+            "name": "Smartphone X"
+          },
+          "text": "The best phone I've ever had!",
+          "rating": 5
+        },
+        {
+          "id": "42",
+          "createdAt": "2023-08-22T15:30:00Z",
+          "product": {
+            "name": "Smartphone Y"
+          },
+          "text": "Not a very good phone at all.",
+          "rating": 0
+        }
+      ]
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+In the example above, we are filtering for reviews of products with the word "phone" and a rating of 4 or more,
+or a rating of 0. The `_and` and `_or` operators can be nested to any depth, allowing for arbitrarily complex filters.
+
+## Filtering by custom properties
+
+By default, the `ListQueryBuilder` will only allow filtering by properties which are defined on the entity itself.
+So in the case of the `ProductReview`, we can filter by `rating` and `text` etc., but not by `product.name`.
+
+However, it is possible to extend your GraphQL type to allow filtering by custom properties. Let's implement filtering
+but the `product.name` property. First, we need to manually add the `productName` field to
+the `ProductReviewFilterParameter` type:
+
+```ts title="src/plugins/reviews/api/api-extensions.ts"
+import gql from 'graphql-tag';
+
+export const adminApiExtensions = gql`
+# ... existing definitions from earlier example omitted
+
+// highlight-start
+input ProductReviewFilterParameter {
+  productName: StringOperators
+}
+// highlight-end
+`;
+```
+
+Next we need to update our `ProductReviewService` to be able to handle filtering on this new field using the
+[customPropertyMap](/reference/typescript-api/data-access/list-query-builder/#custompropertymap) option:
+
+```ts title="src/plugins/reviews/services/product-review.service.ts"
+import { Injectable } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/typeorm';
+import { ListQueryBuilder, ListQueryOptions, PaginatedList, RequestContext } from '@vendure/core';
+
+import { ProductReview } from '../entities/product-review.entity';
+
+@Injectable()
+export class ProductReviewService {
+    constructor(
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
+
+    findAll(ctx: RequestContext, options?: ListQueryOptions<ProductReview>): Promise<PaginatedList<ProductReview>> {
+        return this.listQueryBuilder
+            .build(ProductReview, options, {
+                // highlight-next-line
+                relations: ['product'],
+                ctx,
+                // highlight-start
+                customPropertyMap: {
+                    productName: 'product.name',
+                }
+                // highlight-end
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({ items, totalItems }));
+    }
+}
+```
+
+Upon restarting your server, you should now be able to filter by `productName`:
+
+```graphql
+query {
+  productReviews(
+    options: {
+      skip: 0
+      take: 10
+      // highlight-start
+      filter: {
+        productName: {
+          contains: "phone"
+        }
+      }
+      // highlight-end
+  }) {
+    totalItems
+    items {
+      id
+      createdAt
+      product {
+        name
+      }
+      text
+      rating
+    }
+  }
+}
+```
