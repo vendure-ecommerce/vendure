@@ -1,7 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ADMIN_UI_VERSION, AuthService, AUTH_REDIRECT_PARAM, getAppConfig, LocalizationDirectionType, LocalizationService } from '@vendure/admin-ui/core';
+import {
+    ADMIN_UI_VERSION,
+    AuthService,
+    AUTH_REDIRECT_PARAM,
+    getAppConfig,
+    LocalizationDirectionType,
+    LocalizationService,
+} from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-login',
@@ -18,7 +25,6 @@ export class LoginComponent implements OnInit {
     errorMessage: string | undefined;
     brand = getAppConfig().brand;
     hideVendureBranding = getAppConfig().hideVendureBranding;
-    hideVersion = getAppConfig().hideVersion;
     customImageUrl = getAppConfig().loginImageUrl;
     imageUrl = '';
     imageUnsplashUrl = '';
@@ -26,7 +32,12 @@ export class LoginComponent implements OnInit {
     imageCreator = '';
     imageCreatorUrl = '';
 
-    constructor(private authService: AuthService, private router: Router, private httpClient: HttpClient, private localizationService: LocalizationService) {
+    constructor(
+        private authService: AuthService,
+        private router: Router,
+        private httpClient: HttpClient,
+        private localizationService: LocalizationService,
+    ) {
         if (this.customImageUrl) {
             this.imageUrl = this.customImageUrl;
         } else {

@@ -8,6 +8,8 @@ The parts of the plugin are documented with explanations, and the overall guide 
 
 Add this plugin to your VendureConfig:
 ```ts
+import { MultivendorPlugin } from './plugins/multivendor-plugin/multivendor.plugin';
+
  plugins: [
    MultivendorPlugin.init({
        platformFeePercent: 10,

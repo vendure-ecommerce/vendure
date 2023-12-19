@@ -1,6 +1,6 @@
 # Payments plugin
 
-For documentation, see [docs.vendure.io/typescript-api/core-plugins/payments-plugin/](https://docs.vendure.io/typescript-api/core-plugins/payments-plugin/)
+For documentation, see [docs.vendure.io/reference/core-plugins/payments-plugin/](https://docs.vendure.io/reference/core-plugins/payments-plugin/)
 
 ## Development
 
