@@ -70,13 +70,6 @@
                         </button>
                     </div>
                 </div>
-                <div class="version">
-                    <span *ngIf="brand"
-                        >{{ brand }} <span *ngIf="!hideVendureBranding || !hideVersion">-</span></span
-                    >
-                    <span *ngIf="!hideVendureBranding">vendure</span>
-                    <span *ngIf="!hideVersion">v{{ version }}</span>
-                </div>
             </form>
         </div>
         <img class="login-wrapper-logo" src="assets/logo-login.webp" *ngIf="!hideVendureBranding" />

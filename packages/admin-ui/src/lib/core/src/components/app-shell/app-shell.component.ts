@@ -31,6 +31,7 @@ export class AppShellComponent implements OnInit {
     direction$: LocalizationDirectionType;
     availableLanguages: LanguageCode[] = [];
     hideVendureBranding = getAppConfig().hideVendureBranding;
+    hideVersion = getAppConfig().hideVersion;
     pageTitle$: Observable<string>;
     mainNavExpanded$: Observable<boolean>;
     devMode = isDevMode();
