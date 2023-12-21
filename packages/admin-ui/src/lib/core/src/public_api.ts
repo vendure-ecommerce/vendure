@@ -95,6 +95,7 @@ export * from './providers/bulk-action-registry/bulk-action-registry.service';
 export * from './providers/bulk-action-registry/bulk-action-types';
 export * from './providers/channel/channel.service';
 export * from './providers/component-registry/component-registry.service';
+export * from './providers/currency/currency.service';
 export * from './providers/custom-detail-component/custom-detail-component-types';
 export * from './providers/custom-detail-component/custom-detail-component.service';
 export * from './providers/custom-field-component/custom-field-component.service';

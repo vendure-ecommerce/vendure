@@ -104,6 +104,13 @@ input RefundOrderInput {
     lines: [OrderLineInput!]!
     shipping: Money!
     adjustment: Money!
+    """
+    If an amount is specified, this value will be used to create a Refund rather than calculating the
+    amount automatically. This was added in v2.2 and will be the preferred way to specify the refund
+    amount in the future. The `lines`, `shipping` and `adjustment` fields will likely be removed in a future
+    version.
+    """
+    amount: Money
     paymentId: ID!
     reason: String
 }
@@ -303,6 +310,13 @@ type QuantityTooGreatError implements ErrorResult {
     message: String!
 }
 
+"Returned if `amount` is greater than the maximum un-refunded amount of the Payment"
+type RefundAmountError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    maximumRefundable: Int!
+}
+
 "Returned when there is an error in transitioning the Refund state"
 type RefundStateTransitionError implements ErrorResult {
     errorCode: ErrorCode!
@@ -401,6 +415,7 @@ union RefundOrderResult =
     | RefundOrderStateError
     | AlreadyRefundedError
     | RefundStateTransitionError
+    | RefundAmountError
 union SettleRefundResult = Refund | RefundStateTransitionError
 union TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError
 union TransitionPaymentToStateResult = Payment | PaymentStateTransitionError

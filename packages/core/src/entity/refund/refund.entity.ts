@@ -15,10 +15,22 @@ export class Refund extends VendureEntity {
         super(input);
     }
 
+    /**
+     * @deprecated Since v2.2, the `items` field will not be used by default. Instead, the `total` field
+     * alone will be used to determine the refund amount.
+     */
     @Money() items: number;
 
+    /**
+     * @deprecated Since v2.2, the `shipping` field will not be used by default. Instead, the `total` field
+     * alone will be used to determine the refund amount.
+     */
     @Money() shipping: number;
 
+    /**
+     * @deprecated Since v2.2, the `adjustment` field will not be used by default. Instead, the `total` field
+     * alone will be used to determine the refund amount.
+     */
     @Money() adjustment: number;
 
     @Money() total: number;

@@ -20,6 +20,7 @@ export * from './components/collection-tree/collection-tree.component';
 export * from './components/collection-tree/collection-tree.service';
 export * from './components/collection-tree/collection-tree.types';
 export * from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
+export * from './components/create-facet-value-dialog/create-facet-value-dialog.component';
 export * from './components/create-product-option-group-dialog/create-product-option-group-dialog.component';
 export * from './components/create-product-variant-dialog/create-product-variant-dialog.component';
 export * from './components/facet-detail/facet-detail.component';

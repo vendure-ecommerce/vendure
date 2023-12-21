@@ -1589,6 +1589,7 @@ export enum ErrorCode {
   PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
   PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
   QUANTITY_TOO_GREAT_ERROR = 'QUANTITY_TOO_GREAT_ERROR',
+  REFUND_AMOUNT_ERROR = 'REFUND_AMOUNT_ERROR',
   REFUND_ORDER_STATE_ERROR = 'REFUND_ORDER_STATE_ERROR',
   REFUND_PAYMENT_ID_MISSING_ERROR = 'REFUND_PAYMENT_ID_MISSING_ERROR',
   REFUND_STATE_TRANSITION_ERROR = 'REFUND_STATE_TRANSITION_ERROR',
@@ -5282,6 +5283,14 @@ export type Refund = Node & {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+/** Returned if `amount` is greater than the maximum un-refunded amount of the Payment */
+export type RefundAmountError = ErrorResult & {
+  __typename?: 'RefundAmountError';
+  errorCode: ErrorCode;
+  maximumRefundable: Scalars['Int']['output'];
+  message: Scalars['String']['output'];
+};
+
 export type RefundLine = {
   __typename?: 'RefundLine';
   orderLine: OrderLine;
@@ -5293,13 +5302,20 @@ export type RefundLine = {
 
 export type RefundOrderInput = {
   adjustment: Scalars['Money']['input'];
+  /**
+   * If an amount is specified, this value will be used to create a Refund rather than calculating the
+   * amount automatically. This was added in v2.2 and will be the preferred way to specify the refund
+   * amount in the future. The `lines`, `shipping` and `adjustment` fields will likely be removed in a future
+   * version.
+   */
+  amount?: InputMaybe<Scalars['Money']['input']>;
   lines: Array<OrderLineInput>;
   paymentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
   shipping: Scalars['Money']['input'];
 };
 
-export type RefundOrderResult = AlreadyRefundedError | MultipleOrderError | NothingToRefundError | OrderStateTransitionError | PaymentOrderMismatchError | QuantityTooGreatError | Refund | RefundOrderStateError | RefundStateTransitionError;
+export type RefundOrderResult = AlreadyRefundedError | MultipleOrderError | NothingToRefundError | OrderStateTransitionError | PaymentOrderMismatchError | QuantityTooGreatError | Refund | RefundAmountError | RefundOrderStateError | RefundStateTransitionError;
 
 /** Returned if an attempting to refund an Order which is not in the expected state */
 export type RefundOrderStateError = ErrorResult & {

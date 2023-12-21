@@ -1387,7 +1387,8 @@ export class OrderService {
     ): Promise<ErrorResultUnion<RefundOrderResult, Refund>> {
         if (
             (!input.lines || input.lines.length === 0 || summate(input.lines, 'quantity') === 0) &&
-            input.shipping === 0
+            input.shipping === 0 &&
+            !input.amount
         ) {
             return new NothingToRefundError();
         }

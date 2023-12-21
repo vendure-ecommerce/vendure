@@ -8,6 +8,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import {
     PaymentStateTransitionError,
+    RefundAmountError,
     RefundStateTransitionError,
 } from '../../common/error/generated-graphql-admin-errors';
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
@@ -283,38 +284,36 @@ export class PaymentService {
         input: RefundOrderInput,
         order: Order,
         selectedPayment: Payment,
-    ): Promise<Refund | RefundStateTransitionError> {
+    ): Promise<Refund | RefundStateTransitionError | RefundAmountError> {
         const orderWithRefunds = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
             relations: ['payments', 'payments.refunds'],
         });
 
-        function paymentRefundTotal(payment: Payment): number {
-            const nonFailedRefunds = payment.refunds?.filter(refund => refund.state !== 'Failed') ?? [];
-            return summate(nonFailedRefunds, 'total');
+        if (input.amount) {
+            const paymentToRefund = orderWithRefunds.payments.find(p =>
+                idsAreEqual(p.id, selectedPayment.id),
+            );
+            if (!paymentToRefund) {
+                throw new InternalServerError('Could not find a Payment to refund');
+            }
+            const refundableAmount = paymentToRefund.amount - this.getPaymentRefundTotal(paymentToRefund);
+            if (refundableAmount < input.amount) {
+                return new RefundAmountError({ maximumRefundable: refundableAmount });
+            }
         }
 
         const refundsCreated: Refund[] = [];
         const refundablePayments = orderWithRefunds.payments.filter(p => {
-            return paymentRefundTotal(p) < p.amount;
+            return this.getPaymentRefundTotal(p) < p.amount;
         });
-        let refundOrderLinesTotal = 0;
-        const orderLines = await this.connection
-            .getRepository(ctx, OrderLine)
-            .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
-        for (const line of input.lines) {
-            const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
-            if (orderLine && 0 < orderLine.orderPlacedQuantity) {
-                refundOrderLinesTotal += line.quantity * orderLine.proratedUnitPriceWithTax;
-            }
-        }
         let primaryRefund: Refund | undefined;
         const refundedPaymentIds: ID[] = [];
-        const refundTotal = refundOrderLinesTotal + input.shipping + input.adjustment;
+        const { total, orderLinesTotal } = await this.getRefundAmount(ctx, input);
         const refundMax =
             orderWithRefunds.payments
-                ?.map(p => p.amount - paymentRefundTotal(p))
+                ?.map(p => p.amount - this.getPaymentRefundTotal(p))
                 .reduce((sum, amount) => sum + amount, 0) ?? 0;
-        let refundOutstanding = Math.min(refundTotal, refundMax);
+        let refundOutstanding = Math.min(total, refundMax);
         do {
             const paymentToRefund =
                 (refundedPaymentIds.length === 0 &&
@@ -323,18 +322,18 @@ export class PaymentService {
             if (!paymentToRefund) {
                 throw new InternalServerError('Could not find a Payment to refund');
             }
-            const amountNotRefunded = paymentToRefund.amount - paymentRefundTotal(paymentToRefund);
-            const total = Math.min(amountNotRefunded, refundOutstanding);
+            const amountNotRefunded = paymentToRefund.amount - this.getPaymentRefundTotal(paymentToRefund);
+            const constrainedTotal = Math.min(amountNotRefunded, refundOutstanding);
             let refund = new Refund({
                 payment: paymentToRefund,
-                total,
-                items: refundOrderLinesTotal,
+                total: constrainedTotal,
                 reason: input.reason,
-                adjustment: input.adjustment,
-                shipping: input.shipping,
                 method: selectedPayment.method,
                 state: 'Pending',
                 metadata: {},
+                items: orderLinesTotal, // deprecated
+                adjustment: input.adjustment, // deprecated
+                shipping: input.shipping, // deprecated
             });
             let paymentMethod: PaymentMethod | undefined;
             let handler: PaymentMethodHandler | undefined;
@@ -414,10 +413,40 @@ export class PaymentService {
             }
             refundsCreated.push(refund);
             refundedPaymentIds.push(paymentToRefund.id);
-            refundOutstanding = refundTotal - summate(refundsCreated, 'total');
+            refundOutstanding = total - summate(refundsCreated, 'total');
         } while (0 < refundOutstanding);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return primaryRefund;
+    }
+
+    /**
+     * @description
+     * Returns the total amount of all Refunds against the given Payment.
+     */
+    private getPaymentRefundTotal(payment: Payment): number {
+        const nonFailedRefunds = payment.refunds?.filter(refund => refund.state !== 'Failed') ?? [];
+        return summate(nonFailedRefunds, 'total');
+    }
+
+    private async getRefundAmount(
+        ctx: RequestContext,
+        input: RefundOrderInput,
+    ): Promise<{ orderLinesTotal: number; total: number }> {
+        if (input.amount) {
+            return { orderLinesTotal: 0, total: input.amount };
+        }
+        let refundOrderLinesTotal = 0;
+        const orderLines = await this.connection
+            .getRepository(ctx, OrderLine)
+            .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
+        for (const line of input.lines) {
+            const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
+            if (orderLine && 0 < orderLine.orderPlacedQuantity) {
+                refundOrderLinesTotal += line.quantity * orderLine.proratedUnitPriceWithTax;
+            }
+        }
+        const total = refundOrderLinesTotal + input.shipping + input.adjustment;
+        return { orderLinesTotal: refundOrderLinesTotal, total };
     }
 
     private mergePaymentMetadata(m1: PaymentMetadata, m2?: PaymentMetadata): PaymentMetadata {

@@ -120,6 +120,7 @@
       "PaymentStateTransitionError",
       "ProductOptionInUseError",
       "QuantityTooGreatError",
+      "RefundAmountError",
       "RefundOrderStateError",
       "RefundPaymentIdMissingError",
       "RefundStateTransitionError",
@@ -223,6 +224,7 @@
       "PaymentOrderMismatchError",
       "QuantityTooGreatError",
       "Refund",
+      "RefundAmountError",
       "RefundOrderStateError",
       "RefundStateTransitionError"
     ],

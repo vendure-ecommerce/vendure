@@ -94,6 +94,7 @@
     "PAYMENT_STATE_TRANSITION_ERROR": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "PRODUCT_OPTION_IN_USE_ERROR": "Cannot remove ProductOptionGroup \"{ optionGroupCode }\" as it is used by {productVariantCount, plural, one {1 ProductVariant} other {# ProductVariants}}. Use the `force` argument to remove it anyway",
     "QUANTITY_TOO_GREAT_ERROR": "The specified quantity is greater than the available OrderItems",
+    "REFUND_AMOUNT_ERROR": "The amount specified exceeds the refundable amount for this payment",
     "REFUND_ORDER_STATE_ERROR": "Cannot refund an Order in the \"{ orderState }\" state",
     "SETTLE_PAYMENT_ERROR": "Settling the payment failed",
     "VERIFICATION_TOKEN_EXPIRED_ERROR": "Verification token has expired. Use refreshCustomerVerification to send a new token.",
