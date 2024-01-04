@@ -60,9 +60,8 @@ export class TestServer {
      * Should be called after all tests have run, e.g. in an `afterAll` function.
      */
     async destroy() {
-        // allow a grace period of any outstanding async tasks to complete
-        await new Promise(resolve => global.setTimeout(resolve, 500));
-        await this.app?.close();
+        await this.app.get(JobQueueService).syncOnAllJobsSettled();
+        await this.app.close();
     }
 
     private getCallerFilename(depth: number): string {
@@ -95,13 +94,8 @@ export class TestServer {
             logging: false,
             ...options,
         });
-
-        if (options.syncFn) {
-            await options.syncFn();
-            Logger.info('populated initial data');
-        }
+        await app.get(JobQueueService).syncOnAllJobsSettled();
         await app.close();
-        Logger.info('app closed');
     }
 
     /**

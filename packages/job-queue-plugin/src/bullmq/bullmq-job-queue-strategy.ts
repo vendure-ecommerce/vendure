@@ -364,4 +364,26 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             lua: getJobsByType.script,
         });
     }
+
+    async syncOnAllJobsSettled(): Promise<void> {
+        let timeout: ReturnType<typeof setTimeout>;
+        return new Promise(resolve => {
+            const sync = async () => {
+                const jobs = await this.findMany({
+                    filter: {
+                        isSettled: {
+                            eq: false,
+                        },
+                    },
+                });
+                if (jobs.totalItems === 0) {
+                    clearTimeout(timeout);
+                    resolve();
+                } else {
+                    timeout = setTimeout(sync, 50);
+                }
+            };
+            void sync();
+        });
+    }
 }

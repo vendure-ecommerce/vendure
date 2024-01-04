@@ -44,6 +44,7 @@ if (require.main === module) {
         .then(async app => {
             console.log('populating customers...');
             await populateCustomers(app, 10, message => Logger.error(message));
+            await app.get(JobQueueService).syncOnAllJobsSettled();
             return app.close();
         })
         .then(

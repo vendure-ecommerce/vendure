@@ -41,6 +41,8 @@ export interface InspectableJobQueueStrategy extends JobQueueStrategy {
     removeSettledJobs(queueNames?: string[], olderThan?: Date): Promise<number>;
 
     cancelJob(jobId: ID): Promise<Job | undefined>;
+
+    syncOnAllJobsSettled(): Promise<void>;
 }
 
 export function isInspectableJobQueueStrategy(

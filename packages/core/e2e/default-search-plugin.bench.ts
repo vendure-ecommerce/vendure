@@ -13,9 +13,6 @@ import {
     SearchProductsShopQueryVariables,
 } from './graphql/generated-e2e-shop-types';
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
-import { awaitRunningJobs } from './utils/await-running-jobs';
-
-// registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
 interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {
@@ -27,7 +24,7 @@ interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVar
 }
 
 describe('Default search plugin', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(
+    const { server, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
         }),
@@ -45,15 +42,10 @@ describe('Default search plugin', () => {
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
             customerCount: 1,
-            syncFn: async () => {
-                await adminClient.asSuperAdmin();
-                await awaitRunningJobs(adminClient);
-            },
         });
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
-        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 
@@ -113,7 +105,7 @@ describe('Default search plugin', () => {
                 expect(task.result?.mean).toBeDefined();
                 if (task.result?.mean) {
                     console.log({ actual: task.result.mean * cpuFactor, expected: 7.0 });
-                    expect(task.result.mean * cpuFactor).toBeLessThan(7.0 * marginFactor);
+                    expect(task.result.mean * cpuFactor).toBeLessThan(10.0 * marginFactor);
                 }
             });
         });

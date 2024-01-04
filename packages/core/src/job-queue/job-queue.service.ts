@@ -1,7 +1,13 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
 
-import { ConfigService, JobQueueStrategy, Logger } from '../config';
+import {
+    ConfigService,
+    InspectableJobQueueStrategy,
+    JobQueueStrategy,
+    Logger,
+    isInspectableJobQueueStrategy,
+} from '../config';
 
 import { loggerCtx } from './constants';
 import { Job } from './job';
@@ -51,6 +57,14 @@ export class JobQueueService implements OnModuleDestroy {
     private hasStarted = false;
 
     private get jobQueueStrategy(): JobQueueStrategy {
+        return this.configService.jobQueueOptions.jobQueueStrategy;
+    }
+
+    private requireInspectableJobQueueStrategy(): InspectableJobQueueStrategy | undefined {
+        if (!isInspectableJobQueueStrategy(this.configService.jobQueueOptions.jobQueueStrategy)) {
+            return;
+        }
+
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
@@ -172,5 +186,13 @@ export class JobQueueService implements OnModuleDestroy {
         }
 
         return true;
+    }
+
+    async syncOnAllJobsSettled(): Promise<void> {
+        const strategy = this.requireInspectableJobQueueStrategy();
+        if (!strategy) {
+            return;
+        }
+        return await strategy.syncOnAllJobsSettled();
     }
 }

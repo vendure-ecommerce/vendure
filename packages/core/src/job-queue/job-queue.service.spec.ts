@@ -25,6 +25,7 @@ const testJobQueueStrategy = new TestingJobQueueStrategy({
     concurrency: 1,
     pollInterval: queuePollInterval,
     backoffStrategy: backoffStrategySpy.mockReturnValue(0),
+    stopActiveQueueTimeout: 2000,
 });
 const testJobBufferStorageStrategy = new TestingJobBufferStorageStrategy();
 

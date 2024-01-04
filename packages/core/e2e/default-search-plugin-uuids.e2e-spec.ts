@@ -19,9 +19,6 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import { GET_FACET_LIST } from './graphql/shared-definitions';
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
-import { awaitRunningJobs } from './utils/await-running-jobs';
-
-// registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
 describe('Default search plugin with UUIDs', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -43,11 +40,8 @@ describe('Default search plugin with UUIDs', () => {
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
             customerCount: 1,
-            syncFn: async () => {
-                await adminClient.asSuperAdmin();
-                await awaitRunningJobs(adminClient);
-            },
         });
+        await adminClient.asSuperAdmin();
 
         const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
             GET_FACET_LIST,
@@ -66,7 +60,6 @@ describe('Default search plugin with UUIDs', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
-        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 

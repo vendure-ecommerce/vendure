@@ -1,5 +1,5 @@
-import { JobState } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { from, interval, race, Subject, Subscription } from 'rxjs';
 import { filter, switchMap, take, throttleTime } from 'rxjs/operators';
@@ -24,26 +24,28 @@ export type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job
 export interface PollingJobQueueStrategyConfig {
     /**
      * @description
+     * The interval in ms between polling the database for new jobs. If many job queues
+     * are active, the polling may cause undue load on the database, in which case this value
+     * should be increased to e.g. 1000.
+     *
+     * @default 200
+     */
+    pollInterval?: number | ((queueName: string) => number);
+
+    /**
+     * @description
+     * The stop active queue timeout in ms. If undefined, no timeout is applied.
+     */
+    stopActiveQueueTimeout?: number | ((queueName: string) => number);
+
+    /**
+     * @description
      * How many jobs from a given queue to process concurrently.
      *
      * @default 1
      */
     concurrency?: number;
-    /**
-     * @description
-     * The interval in ms between polling the database for new jobs.
-     *
-     * @description 200
-     */
-    pollInterval?: number | ((queueName: string) => number);
-    /**
-     * @description
-     * When a job is added to the JobQueue using `JobQueue.add()`, the calling
-     * code may specify the number of retries in case of failure. This option allows
-     * you to override that number and specify your own number of retries based on
-     * the job being added.
-     */
-    setRetries?: (queueName: string, job: Job) => number;
+
     /**
      * @description
      * The strategy used to decide how long to wait before retrying a failed job.
@@ -51,6 +53,30 @@ export interface PollingJobQueueStrategyConfig {
      * @default () => 1000
      */
     backoffStrategy?: BackoffStrategy;
+
+    /**
+     * @description
+     * When a job is added to the JobQueue using `JobQueue.add()`, the calling
+     * code may specify the number of retries in case of failure. This option allows
+     * you to override that number and specify your own number of retries based on
+     * the job being added.
+     *
+     * @example
+     * ```ts
+     * setRetries: (queueName, job) => {
+     *   if (queueName === 'send-email') {
+     *     // Override the default number of retries
+     *     // for the 'send-email' job because we have
+     *     // a very unreliable email service.
+     *     return 10;
+     *   }
+     *   return job.retries;
+     * }
+     *  ```
+     * @param queueName
+     * @param job
+     */
+    setRetries?: (queueName: string, job: Job) => number;
 }
 
 const STOP_SIGNAL = Symbol('STOP_SIGNAL');
@@ -64,6 +90,7 @@ class ActiveQueue<Data extends JobData<Data> = object> {
     private queueStopped$ = new Subject<typeof STOP_SIGNAL>();
     private subscription: Subscription;
     private readonly pollInterval: number;
+    private readonly stopActiveQueueTimeout?: number;
 
     constructor(
         private readonly queueName: string,
@@ -78,6 +105,10 @@ class ActiveQueue<Data extends JobData<Data> = object> {
             typeof this.jobQueueStrategy.pollInterval === 'function'
                 ? this.jobQueueStrategy.pollInterval(queueName)
                 : this.jobQueueStrategy.pollInterval;
+        this.stopActiveQueueTimeout =
+            typeof this.jobQueueStrategy.stopActiveQueueTimeout === 'function'
+                ? this.jobQueueStrategy.stopActiveQueueTimeout(queueName)
+                : this.jobQueueStrategy.stopActiveQueueTimeout;
     }
 
     start() {
@@ -149,22 +180,26 @@ class ActiveQueue<Data extends JobData<Data> = object> {
         this.running = false;
         this.queueStopped$.next(STOP_SIGNAL);
         clearTimeout(this.timer);
+        return this.syncOnActiveQueueStopped();
+    }
 
+    private syncOnActiveQueueStopped(): Promise<void> {
         const start = +new Date();
-        // Wait for 2 seconds to allow running jobs to complete
-        const maxTimeout = 2000;
-        let pollTimer: any;
+        let timeout: ReturnType<typeof setTimeout>;
         return new Promise(resolve => {
-            const pollActiveJobs = async () => {
-                const timedOut = +new Date() - start > maxTimeout;
+            const sync = async () => {
+                const timedOut =
+                    this.stopActiveQueueTimeout === undefined
+                        ? false
+                        : +new Date() - start > this.stopActiveQueueTimeout;
                 if (this.activeJobs.length === 0 || timedOut) {
-                    clearTimeout(pollTimer);
+                    clearTimeout(timeout);
                     resolve();
                 } else {
-                    pollTimer = setTimeout(pollActiveJobs, 50);
+                    timeout = setTimeout(sync, 50);
                 }
             };
-            void pollActiveJobs();
+            void sync();
         });
     }
 
@@ -192,6 +227,7 @@ class ActiveQueue<Data extends JobData<Data> = object> {
 export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
     public concurrency: number;
     public pollInterval: number | ((queueName: string) => number);
+    public stopActiveQueueTimeout?: number | ((queueName: string) => number);
     public setRetries: (queueName: string, job: Job) => number;
     public backOffStrategy?: BackoffStrategy;
 
@@ -199,17 +235,25 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
 
     constructor(config?: PollingJobQueueStrategyConfig);
     constructor(concurrency?: number, pollInterval?: number);
-    constructor(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number) {
+    constructor(
+        concurrencyOrConfig?: number | PollingJobQueueStrategyConfig,
+        maybePollInterval?: number,
+        maybeStopActiveQueueTimeout?: number,
+        backoffStrategy?: BackoffStrategy,
+    ) {
         super();
 
         if (concurrencyOrConfig && isObject(concurrencyOrConfig)) {
             this.concurrency = concurrencyOrConfig.concurrency ?? 1;
             this.pollInterval = concurrencyOrConfig.pollInterval ?? 200;
+            this.stopActiveQueueTimeout = concurrencyOrConfig.stopActiveQueueTimeout;
             this.backOffStrategy = concurrencyOrConfig.backoffStrategy ?? (() => 1000);
             this.setRetries = concurrencyOrConfig.setRetries ?? ((_, job) => job.retries);
         } else {
             this.concurrency = concurrencyOrConfig ?? 1;
             this.pollInterval = maybePollInterval ?? 200;
+            this.stopActiveQueueTimeout = maybeStopActiveQueueTimeout;
+            this.backOffStrategy = backoffStrategy ?? (() => 1000);
             this.setRetries = (_, job) => job.retries;
         }
     }
@@ -269,4 +313,32 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
      * Returns a job by its id.
      */
     abstract findOne(id: ID): Promise<Job | undefined>;
+
+    /**
+     * @description
+     * Returns a list of jobs according to the specified options.
+     */
+    abstract findMany(options?: JobListOptions): Promise<PaginatedList<Job>>;
+
+    async syncOnAllJobsSettled(): Promise<void> {
+        let timeout: ReturnType<typeof setTimeout>;
+        return new Promise(resolve => {
+            const sync = async () => {
+                const jobs = await this.findMany({
+                    filter: {
+                        isSettled: {
+                            eq: false,
+                        },
+                    },
+                });
+                if (jobs.totalItems === 0) {
+                    clearTimeout(timeout);
+                    resolve();
+                } else {
+                    timeout = setTimeout(sync, 50);
+                }
+            };
+            void sync();
+        });
+    }
 }

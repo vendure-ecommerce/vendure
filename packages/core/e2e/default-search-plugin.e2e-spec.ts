@@ -94,8 +94,6 @@ import {
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
-// registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
-
 interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {
         // This input field is dynamically added only when the `indexStockStatus` init option
@@ -117,15 +115,11 @@ describe('Default search plugin', () => {
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
             customerCount: 1,
-            syncFn: async () => {
-                await adminClient.asSuperAdmin();
-                await awaitRunningJobs(adminClient);
-            },
         });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
-        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 

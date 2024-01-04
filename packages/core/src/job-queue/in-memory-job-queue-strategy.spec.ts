@@ -8,7 +8,9 @@ import { Job } from './job';
 describe('InMemoryJobQueueStrategy', () => {
     let strategy: InMemoryJobQueueStrategy;
     beforeEach(() => {
-        strategy = new InMemoryJobQueueStrategy();
+        strategy = new InMemoryJobQueueStrategy({
+            stopActiveQueueTimeout: 2000,
+        });
         // init with mock injector & ProcessContext
         strategy.init({
             get() {
