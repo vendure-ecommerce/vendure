@@ -217,7 +217,7 @@ export const plugins: VendureConfig['plugins'] = [
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
-import { plugins } from 'vendure-config-plugins';
+import { plugins } from './vendure-config-plugins';
 
 export const config: VendureConfig = {
   plugins,
