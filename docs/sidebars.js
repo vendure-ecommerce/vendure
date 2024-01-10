@@ -194,6 +194,7 @@ const sidebars = {
                 'guides/deployment/deploy-to-northflank/index',
                 'guides/deployment/deploy-to-digital-ocean-app-platform/index',
                 'guides/deployment/deploy-to-railway/index',
+                'guides/deployment/deploy-to-render/index',
                 'guides/deployment/deploy-to-google-cloud-run/index',
             ],
         },
