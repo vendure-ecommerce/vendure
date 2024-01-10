@@ -1,6 +1,5 @@
 ---
 title: "Deploying to Google Cloud Run"
-showtoc: true
 images: 
     - "/docs/deployment/deploy-to-google-cloud-run/deploy-to-gcr.webp"
 ---
