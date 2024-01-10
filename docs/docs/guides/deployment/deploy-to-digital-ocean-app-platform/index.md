@@ -1,5 +1,5 @@
 ---
-title: "Deploying to Digital Ocean App Platform"
+title: "Deploying to Digital Ocean"
 ---
 
 ![Deploy to Digital Ocean App Platform](./deploy-to-do-app-platform.webp)
@@ -41,7 +41,6 @@ export const config: VendureConfig = {
     dbConnectionOptions: {
         // ...
         type: 'postgres',
-        logging: false,
         database: process.env.DB_NAME,
         host: process.env.DB_HOST,
         port: +process.env.DB_PORT,
