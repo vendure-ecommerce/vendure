@@ -47,14 +47,14 @@ If you want to use the free plan, use the "Lite Template".
 
 ```json
 {
+  "apiVersion": "v1",
   "name": "Vendure Template",
   "description": "Vendure is a modern, open-source composable commerce platform",
-  "apiVersion": "v1",
   "project": {
     "spec": {
       "name": "Vendure",
-      "description": "Vendure is a modern, open-source composable commerce platform",
       "region": "europe-west",
+      "description": "Vendure is a modern, open-source composable commerce platform",
       "color": "#57637A"
     }
   },
@@ -64,87 +64,107 @@ If you want to use the free plan, use the "Lite Template".
       "type": "sequential",
       "steps": [
         {
-          "kind": "Addon",
+          "kind": "Workflow",
           "spec": {
-            "name": "database",
-            "type": "postgres",
-            "version": "latest",
-            "billing": {
-              "deploymentPlan": "nf-compute-20",
-              "storageClass": "ssd",
-              "storage": 4096,
-              "replicas": 1
-            },
-            "tlsEnabled": false,
-            "externalAccessEnabled": false
-          }
-        },
-        {
-          "kind": "Addon",
-          "spec": {
-            "name": "minio",
-            "description": "",
-            "type": "minio",
-            "tags": [],
-            "version": "latest",
-            "billing": {
-              "deploymentPlan": "nf-compute-20",
-              "storageClass": "ssd",
-              "storage": 4096,
-              "replicas": 1
-            },
-            "tlsEnabled": true,
-            "externalAccessEnabled": false,
-            "ipPolicies": [],
-            "pitrEnabled": false,
-            "typeSpecificSettings": {},
-            "backupSchedules": []
+            "type": "parallel",
+            "steps": [
+              {
+                "kind": "Addon",
+                "ref": "database",
+                "spec": {
+                  "name": "database",
+                  "type": "postgres",
+                  "version": "14-latest",
+                  "billing": {
+                    "deploymentPlan": "nf-compute-20",
+                    "storageClass": "ssd",
+                    "storage": 4096,
+                    "replicas": 1
+                  },
+                  "tlsEnabled": false,
+                  "externalAccessEnabled": false,
+                  "ipPolicies": [],
+                  "pitrEnabled": false
+                }
+              },
+              {
+                "kind": "Addon",
+                "ref": "storage",
+                "spec": {
+                  "name": "minio",
+                  "type": "minio",
+                  "version": "latest",
+                  "billing": {
+                    "deploymentPlan": "nf-compute-20",
+                    "storageClass": "ssd",
+                    "storage": 4096,
+                    "replicas": 1
+                  },
+                  "tlsEnabled": true,
+                  "externalAccessEnabled": false,
+                  "ipPolicies": [],
+                  "pitrEnabled": false,
+                  "typeSpecificSettings": {},
+                  "backupSchedules": []
+                }
+              }
+            ]
           }
         },
         {
           "kind": "SecretGroup",
           "spec": {
-            "name": "secrets",
             "secretType": "environment-arguments",
             "priority": 10,
+            "name": "secrets",
             "secrets": {
               "variables": {
                 "APP_ENV": "production",
                 "COOKIE_SECRET": "${fn.randomSecret(32)}",
                 "SUPERADMIN_USERNAME": "superadmin",
-                "SUPERADMIN_PASSWORD": "superadmin",
-                "DB_SCHEMA": "public",
-                "ASSET_UPLOAD_DIR": "/data"
-              }
+                "SUPERADMIN_PASSWORD": "${fn.randomSecret(16)}",
+                "DB_SCHEMA": "public"
+              },
+              "files": {}
             },
             "addonDependencies": [
               {
-                "addonId": "database",
+                "addonId": "${refs.database.id}",
                 "keys": [
                   {
                     "keyName": "HOST",
-                    "aliases": ["DB_HOST"]
+                    "aliases": [
+                      "DB_HOST"
+                    ]
                   },
                   {
                     "keyName": "PORT",
-                    "aliases": ["DB_PORT"]
+                    "aliases": [
+                      "DB_PORT"
+                    ]
                   },
                   {
                     "keyName": "DATABASE",
-                    "aliases": ["DB_NAME"]
+                    "aliases": [
+                      "DB_NAME"
+                    ]
                   },
                   {
                     "keyName": "USERNAME",
-                    "aliases": ["DB_USERNAME"]
+                    "aliases": [
+                      "DB_USERNAME"
+                    ]
                   },
                   {
                     "keyName": "PASSWORD",
-                    "aliases": ["DB_PASSWORD"]
+                    "aliases": [
+                      "DB_PASSWORD"
+                    ]
                   }
                 ]
               },
               {
-                "addonId": "minio",
+                "addonId": "${refs.storage.id}",
                 "keys": [
                   {
                     "keyName": "MINIO_ENDPOINT",
@@ -166,15 +186,21 @@ If you want to use the free plan, use the "Lite Template".
                   }
                 ]
               }
-            ]
+            ],
+            "restrictions": {
+              "restricted": false,
+              "nfObjects": [],
+              "tags": []
+            }
           }
         },
         {
           "kind": "BuildService",
+          "ref": "builder",
           "spec": {
-            "name": "build",
+            "name": "builder",
             "billing": {
-              "deploymentPlan": "nf-compute-10"
+              "deploymentPlan": "nf-compute-20"
             },
             "vcsData": {
               "projectUrl": "https://github.com/vendure-ecommerce/one-click-deploy",
@@ -187,8 +213,24 @@ If you want to use the free plan, use the "Lite Template".
                 "dockerWorkDir": "/",
                 "useCache": false
               }
-            }
+            },
+            "disabledCI": false,
+            "buildArguments": {}
           }
+        },
+        {
+          "kind": "Build",
+          "spec": {
+            "id": "${refs.builder.id}",
+            "type": "service",
+            "branch": "master",
+            "buildOverrides": {
+              "buildArguments": {}
+            },
+            "reuseExistingBuilds": true
+          },
+          "condition": "success",
+          "ref": "build"
         },
         {
           "kind": "Workflow",
@@ -198,10 +240,6 @@ If you want to use the free plan, use the "Lite Template".
               {
                 "kind": "DeploymentService",
                 "spec": {
-                  "name": "server",
-                  "billing": {
-                    "deploymentPlan": "nf-compute-20"
-                  },
                   "deployment": {
                     "instances": 1,
                     "docker": {
@@ -209,19 +247,30 @@ If you want to use the free plan, use the "Lite Template".
                       "customCommand": "yarn start:server"
                     },
                     "internal": {
-                      "id": "build",
-                      "branch": "master",
+                      "buildId": "${refs.build.id}",
                       "buildSHA": "latest"
                     }
                   },
+                  "name": "server",
+                  "billing": {
+                    "deploymentPlan": "nf-compute-20"
+                  },
                   "ports": [
                     {
-                      "name": "p01",
+                      "name": "app",
                       "internalPort": 3000,
                       "public": true,
-                      "protocol": "HTTP"
+                      "protocol": "HTTP",
+                      "security": {
+                        "credentials": [],
+                        "policies": []
+                      },
+                      "domains": [],
+                      "disableNfDomain": false
                     }
-                  ]
+                  ],
+                  "runtimeEnvironment": {},
+                  "runtimeFiles": {}
                 }
               },
               {
@@ -238,45 +287,15 @@ If you want to use the free plan, use the "Lite Template".
                       "customCommand": "yarn start:worker"
                     },
                     "internal": {
-                      "id": "build",
-                      "branch": "master",
+                      "buildId": "${refs.build.id}",
                       "buildSHA": "latest"
                     }
-                  }
+                  },
+                  "ports": [],
+                  "runtimeEnvironment": {}
                 }
               }
             ]
-          }
-        },
-        {
-          "kind": "Volume",
-          "spec": {
-            "name": "storage",
-            "mounts": [
-              {
-                "volumeMountPath": "",
-                "containerMountPath": "/data"
-              }
-            ],
-            "spec": {
-              "storageSize": 5120,
-              "storageClassName": "ssd",
-              "accessMode": "ReadWriteOnce"
-            },
-            "attachedObjects": [
-              {
-                "id": "server",
-                "type": "service"
-              }
-            ]
-          }
-        },
-        {
-          "kind": "Build",
-          "spec": {
-            "id": "build",
-            "type": "service",
-            "branch": "master"
           }
         }
       ]
@@ -305,15 +324,15 @@ This setup is suitable for testing purposes, but is not recommended for producti
 
 ```json
 {
-  "name": "Vendure Template Lite",
-  "description": "Vendure is a modern, open-source composable commerce platform",
   "apiVersion": "v1",
+  "name": "Vendure Lite Template",
+  "description": "Vendure is a modern, open-source composable commerce platform",
   "project": {
     "spec": {
-      "name": "Vendure",
-      "description": "Vendure is a modern, open-source composable commerce platform",
+      "name": "Vendure Lite",
       "region": "europe-west",
-      "color": "#57637A"
+      "description": "Vendure is a modern, open-source composable commerce platform",
+      "color": "#17b9ff"
     }
   },
   "spec": {
@@ -326,7 +345,7 @@ This setup is suitable for testing purposes, but is not recommended for producti
           "spec": {
             "name": "database",
             "type": "postgres",
-            "version": "latest",
+            "version": "14-latest",
             "billing": {
               "deploymentPlan": "nf-compute-20",
               "storageClass": "ssd",
@@ -334,7 +353,9 @@ This setup is suitable for testing purposes, but is not recommended for producti
               "replicas": 1
             },
             "tlsEnabled": false,
-            "externalAccessEnabled": false
+            "externalAccessEnabled": false,
+            "ipPolicies": [],
+            "pitrEnabled": false
           }
         },
         {
@@ -348,7 +369,7 @@ This setup is suitable for testing purposes, but is not recommended for producti
                 "APP_ENV": "production",
                 "COOKIE_SECRET": "${fn.randomSecret(32)}",
                 "SUPERADMIN_USERNAME": "superadmin",
-                "SUPERADMIN_PASSWORD": "superadmin",
+                "SUPERADMIN_PASSWORD": "${fn.randomSecret(16)}",
                 "DB_SCHEMA": "public",
                 "ASSET_UPLOAD_DIR": "/data",
                 "RUN_JOB_QUEUE_FROM_SERVER": "true"
@@ -360,33 +381,48 @@ This setup is suitable for testing purposes, but is not recommended for producti
                 "keys": [
                   {
                     "keyName": "HOST",
-                    "aliases": ["DB_HOST"]
+                    "aliases": [
+                      "DB_HOST"
+                    ]
                   },
                   {
                     "keyName": "PORT",
-                    "aliases": ["DB_PORT"]
+                    "aliases": [
+                      "DB_PORT"
+                    ]
                   },
                   {
                     "keyName": "DATABASE",
-                    "aliases": ["DB_NAME"]
+                    "aliases": [
+                      "DB_NAME"
+                    ]
                   },
                   {
                     "keyName": "USERNAME",
-                    "aliases": ["DB_USERNAME"]
+                    "aliases": [
+                      "DB_USERNAME"
+                    ]
                   },
                   {
                     "keyName": "PASSWORD",
-                    "aliases": ["DB_PASSWORD"]
+                    "aliases": [
+                      "DB_PASSWORD"
+                    ]
                   }
                 ]
               }
-            ]
+            ],
+            "restrictions": {
+              "restricted": false,
+              "nfObjects": [],
+              "tags": []
+            }
           }
         },
         {
           "kind": "BuildService",
           "spec": {
-            "name": "build",
+            "name": "builder",
             "billing": {
               "deploymentPlan": "nf-compute-10"
             },
@@ -401,8 +437,21 @@ This setup is suitable for testing purposes, but is not recommended for producti
                 "dockerWorkDir": "/",
                 "useCache": false
               }
-            }
+            },
+            "disabledCI": false,
+            "buildArguments": {}
           }
+        },
+        {
+          "kind": "Build",
+          "ref": "build",
+          "spec": {
+            "id": "builder",
+            "type": "service",
+            "branch": "master",
+            "reuseExistingBuilds": true
+          },
+          "condition": "success"
         },
         {
           "kind": "DeploymentService",
@@ -418,27 +467,47 @@ This setup is suitable for testing purposes, but is not recommended for producti
                 "customCommand": "yarn start:server"
               },
               "internal": {
-                "id": "build",
-                "branch": "master",
+                "buildId": "${refs.build.id}",
                 "buildSHA": "latest"
               }
             },
             "ports": [
               {
-                "name": "p01",
+                "name": "app",
                 "internalPort": 3000,
                 "public": true,
-                "protocol": "HTTP"
+                "protocol": "HTTP",
+                "security": {
+                  "credentials": [],
+                  "policies": []
+                },
+                "domains": []
               }
-            ]
+            ],
+            "runtimeEnvironment": {}
           }
         },
         {
-          "kind": "Build",
+          "kind": "Volume",
           "spec": {
-            "id": "build",
-            "type": "service",
-            "branch": "master"
+            "spec": {
+              "storageSize": 5120,
+              "accessMode": "ReadWriteOnce",
+              "storageClassName": "ssd"
+            },
+            "name": "storage",
+            "mounts": [
+              {
+                "containerMountPath": "/data",
+                "volumeMountPath": ""
+              }
+            ],
+            "attachedObjects": [
+              {
+                "id": "${refs.server.id}",
+                "type": "service"
+              }
+            ]
           }
         }
       ]
@@ -474,10 +543,15 @@ In the top right corner you'll see the public URL of your new Vendure server!
 
 Note that it may take a few minutes for the server to start up and populate all the test data because the free tier has limited CPU and memory resources.
 
-Once it is ready, you can navigate to the public URL and append `/admin` to the end of the URL to access the admin panel.
+Once it is ready, you can navigate to the public URL and append `/admin` to the end of the URL to access the admin panel. 
+
 
 ![./06-find-url.webp](./06-find-url.webp)
 
+:::note
+The superadmin password was generated for you by the template, and can be found in the "Secrets" section from the project nav bar
+as `SUPERADMIN_PASSWORD`.
+:::
 
 Congratulations on deploying your Vendure server!
 
