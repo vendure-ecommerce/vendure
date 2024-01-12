@@ -8,11 +8,12 @@ import { JobQueueModule } from '../job-queue/job-queue.module';
 
 import { HealthCheckRegistryService } from './health-check-registry.service';
 import { HealthController } from './health-check.controller';
+import { CustomHttpHealthIndicator } from './http-health-check-strategy';
 
 @Module({
     imports: [TerminusModule, ConfigModule, JobQueueModule],
     controllers: [HealthController],
-    providers: [HealthCheckRegistryService],
+    providers: [HealthCheckRegistryService, CustomHttpHealthIndicator],
     exports: [HealthCheckRegistryService],
 })
 export class HealthCheckModule {
