@@ -510,6 +510,24 @@ describe('Role resolver', () => {
             await adminClient.asUserWithCredentials(limitedAdmin.emailAddress, 'test');
         });
 
+        it('limited admin cannot view Roles which require permissions they do not have', async () => {
+            const result = await adminClient.query<Codegen.GetRolesQuery, Codegen.GetRolesQueryVariables>(
+                GET_ROLES,
+            );
+
+            const roleCodes = result.roles.items.map(r => r.code);
+            expect(roleCodes).toEqual(['second-channel-admin-manager']);
+        });
+
+        it('limited admin cannot view Role which requires permissions they do not have', async () => {
+            const result = await adminClient.query<Codegen.GetRoleQuery, Codegen.GetRoleQueryVariables>(
+                GET_ROLE,
+                { id: orderReaderRole.id },
+            );
+
+            expect(result.role).toBeNull();
+        });
+
         it(
             'limited admin cannot create Role with SuperAdmin permission',
             assertThrowsWithMessage(async () => {
