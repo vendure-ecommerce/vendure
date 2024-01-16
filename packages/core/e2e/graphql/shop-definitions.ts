@@ -44,6 +44,7 @@ export const TEST_ORDER_FRAGMENT = gql`
             }
         }
         shippingLines {
+            priceWithTax
             shippingMethod {
                 id
                 code

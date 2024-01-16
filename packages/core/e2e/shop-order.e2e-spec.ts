@@ -2315,7 +2315,7 @@ describe('Shop orders', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/2548
         it('hydrating Order in the ShippingEligibilityChecker does not break order modification', async () => {
             // First we'll create a ShippingMethod that uses the hydrating checker
-            const { createShippingMethod } = await adminClient.query(CreateShippingMethodDocument, {
+            await adminClient.query(CreateShippingMethodDocument, {
                 input: {
                     code: 'hydrating-checker',
                     translations: [
