@@ -67,17 +67,140 @@ If you have your local development server running, you can try this out by openi
 "Middleware" is a term for a function which is executed before or after the main logic of a request. In Vendure, middleware
 is used to perform tasks such as authentication, logging, and error handling. There are several types of middleware:
 
-* **Express middleware**: At the lowest level, Vendure makes use of the popular Express server library. Express middleware
+### Express middleware
+
+At the lowest level, Vendure makes use of the popular Express server library. [Express middleware](https://expressjs.com/en/guide/using-middleware.html)
 can be added to the sever via the [`apiOptions.middleware`](/reference/typescript-api/configuration/api-options#middleware) config property. There are hundreds of tried-and-tested Express
 middleware packages available, and they can be used to add functionality such as CORS, compression, rate-limiting, etc.
-* **NestJS-specific middleware**: NestJS allows you to define specific types of middleware including [Guards](https://docs.nestjs.com/guards),
+
+Here's a simple example demonstrating Express middleware which will log a message whenever a request is received to the
+Admin API:
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+import { RequestHandler } from 'express';
+
+/**
+* This is a custom middleware function that logs a message whenever a request is received.
+*/
+const myMiddleware: RequestHandler = (req, res, next) => {
+    console.log('Request received!');
+    next();
+};
+
+export const config: VendureConfig = {
+    // ...
+    apiOptions: {
+        middleware: [
+            {
+                // We will execute our custom handler only for requests to the Admin API
+                route: 'admin-api',
+                handler: myMiddleware,
+            }
+        ],
+    },
+};
+```
+
+### NestJS middleware
+
+You can also define [NestJS middleware](https://docs.nestjs.com/middleware) which works like Express middleware but also
+has access to the NestJS dependency injection system.
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig, ConfigService } from '@vendure/core';
+import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+
+
+@Injectable()
+class MyNestMiddleware implements NestMiddleware {
+    // Dependencies can be injected via the constructor
+    constructor(private configService: ConfigService) {}
+
+    use(req: Request, res: Response, next: NextFunction) {
+        console.log(`NestJS middleware: current port is ${this.configService.apiOptions.port}`);
+        next();
+    }
+}
+
+export const config: VendureConfig = {
+    // ...
+    apiOptions: {
+        middleware: [
+            {
+                route: 'admin-api',
+                handler: MyNestMiddleware,
+            }
+        ],
+    },
+};
+```
+
+NestJS allows you to define specific types of middleware including [Guards](https://docs.nestjs.com/guards),
 [Interceptors](https://docs.nestjs.com/interceptors), [Pipes](https://docs.nestjs.com/pipes) and [Filters](https://docs.nestjs.com/exception-filters).
+
 Vendure uses a number of these mechanisms internally to handle authentication, transaction management, error handling and
-data transformation. They are defined via decorators on custom resolvers or controllers.
-* **Apollo Server plugins**: Apollo Server (the underlying GraphQL server library used by Vendure) allows you to define
+data transformation.
+
+### Global NestJS middleware
+
+Guards, interceptors, pipes and filters can be added to your own custom resolvers and controllers
+using the NestJS decorators as given in the NestJS docs. However, a common pattern is to register them globally via a
+[Vendure plugin](/guides/developer-guide/plugins/):
+
+```ts title="src/plugins/my-plugin/my-plugin.ts"
+import { VendurePlugin } from '@vendure/core';
+import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR  } from '@nestjs/core';
+
+// Some custom NestJS middleware classes which we want to apply globally
+import { MyCustomGuard, MyCustomInterceptor, MyCustomExceptionFilter } from './my-custom-middleware';
+
+@VendurePlugin({
+    // ...
+    providers: [
+        // This is the syntax needed to apply your guards,
+        // interceptors and filters globally
+        {
+            provide: APP_GUARD,
+            useClass: MyCustomGuard,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: MyCustomInterceptor,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: MyCustomExceptionFilter,
+        },
+    ],
+})
+export class MyPlugin {}
+```
+
+Adding this plugin to your Vendure config `plugins` array will now apply these middleware classes to all requests.
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+import { MyPlugin } from './plugins/my-plugin/my-plugin';
+
+export const config: VendureConfig = {
+    // ...
+    plugins: [
+        MyPlugin,
+    ],
+};
+```
+
+
+
+### Apollo Server plugins
+Apollo Server (the underlying GraphQL server library used by Vendure) allows you to define
 [plugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which can be used to hook into various
 stages of the GraphQL request lifecycle and perform tasks such as data transformation. These are defined via the
 [`apiOptions.apolloServerPlugins`](/reference/typescript-api/configuration/api-options#apolloserverplugins) config property.
+
+
 
 ## Resolvers
 

@@ -91,7 +91,7 @@ lifecycle hooks of a plugin or service (see [NestJS Lifecycle events](https://do
 Here's an example where we subscribe to the `ProductEvent` and use it to trigger a rebuild of a static storefront:
 
 ```ts title="src/plugins/storefront-build/storefront-build.plugin.ts"
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { OnModuleInit } from '@nestjs/common';
 import { EventBus, ProductEvent, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 import { StorefrontBuildService } from './services/storefront-build.service';

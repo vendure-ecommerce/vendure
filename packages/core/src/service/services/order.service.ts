@@ -620,6 +620,11 @@ export class OrderService {
         }
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
+        // Persist the orderLine removal before applying price adjustments
+        // so that any hydration of the Order entity during the course of the
+        // `applyPriceAdjustments()` (e.g. in a ShippingEligibilityChecker etc)
+        // will not re-add the OrderLine.
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         const deletedOrderLine = new OrderLine(orderLine);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);

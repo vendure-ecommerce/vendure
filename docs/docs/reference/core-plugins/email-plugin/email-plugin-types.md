@@ -130,7 +130,7 @@ type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string }
 
 ## SetTemplateVarsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="411" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="414" packageName="@vendure/email-plugin" />
 
 A function used to define template variables available to email templates.
 See <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.setTemplateVars().
@@ -145,7 +145,7 @@ type SetTemplateVarsFn<Event> = (
 
 ## SetAttachmentsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="425" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="428" packageName="@vendure/email-plugin" />
 
 A function used to define attachments to be sent with the email.
 See https://nodemailer.com/message/attachments/ for more information about
@@ -158,7 +158,7 @@ type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<Ema
 
 ## OptionalAddressFields
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="435" packageName="@vendure/email-plugin" since="1.1.0" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="438" packageName="@vendure/email-plugin" since="1.1.0" />
 
 Optional address-related fields for sending the email.
 
@@ -194,7 +194,7 @@ An email address that will appear on the _Reply-To:_ field
 
 ## SetOptionalAddressFieldsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="461" packageName="@vendure/email-plugin" since="1.1.0" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="464" packageName="@vendure/email-plugin" since="1.1.0" />
 
 A function used to set the <a href='/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a>.
 

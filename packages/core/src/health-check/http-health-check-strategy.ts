@@ -1,9 +1,10 @@
-import { HealthIndicatorFunction, HttpHealthIndicator } from '@nestjs/terminus';
+import { Injectable, Scope } from '@nestjs/common';
+import { HealthCheckError, HealthIndicatorFunction, HealthIndicatorResult } from '@nestjs/terminus';
+import { HealthIndicator } from '@nestjs/terminus/dist/health-indicator/index';
+import fetch from 'node-fetch';
 
 import { Injector } from '../common/index';
 import { HealthCheckStrategy } from '../config/system/health-check-strategy';
-
-let indicator: HttpHealthIndicator;
 
 export interface HttpHealthCheckOptions {
     key: string;
@@ -35,13 +36,55 @@ export interface HttpHealthCheckOptions {
  */
 export class HttpHealthCheckStrategy implements HealthCheckStrategy {
     constructor(private options: HttpHealthCheckOptions) {}
+    private injector: Injector;
 
-    async init(injector: Injector) {
-        indicator = await injector.get(HttpHealthIndicator);
+    init(injector: Injector) {
+        this.injector = injector;
     }
 
     getHealthIndicator(): HealthIndicatorFunction {
         const { key, url, timeout } = this.options;
-        return () => indicator.pingCheck(key, url, { timeout });
+        return async () => {
+            const indicator = await this.injector.resolve(CustomHttpHealthIndicator);
+            return indicator.pingCheck(key, url, timeout);
+        };
+    }
+}
+
+/**
+ * A much simplified version of the Terminus Modules' `HttpHealthIndicator` which has no
+ * dependency on the @nestjs/axios package.
+ */
+@Injectable({
+    scope: Scope.TRANSIENT,
+})
+export class CustomHttpHealthIndicator extends HealthIndicator {
+    /**
+     * Prepares and throw a HealthCheckError
+     *
+     * @throws {HealthCheckError}
+     */
+    private generateHttpError(key: string, error: any) {
+        const response: { [key: string]: any } = {
+            message: error.message,
+        };
+        if (error.response) {
+            response.statusCode = error.response.status;
+            response.statusText = error.response.statusText;
+        }
+        throw new HealthCheckError(error.message, this.getStatus(key, false, response));
+    }
+
+    async pingCheck(key: string, url: string, timeout?: number): Promise<HealthIndicatorResult> {
+        let isHealthy = false;
+
+        try {
+            await fetch(url, { timeout });
+            isHealthy = true;
+        } catch (err) {
+            this.generateHttpError(key, err);
+        }
+
+        return this.getStatus(key, isHealthy);
     }
 }

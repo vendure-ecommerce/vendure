@@ -94,6 +94,9 @@ export const defaultEmailHandlers: Array<EmailEventHandler<any, any>> = [
  * applicable in this context. So we need to do it manually.
  *
  * **Note: Mutates the Order object**
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email utils
  */
 export function transformOrderLineAssetUrls(ctx: RequestContext, order: Order, injector: Injector): Order {
     const { assetStorageStrategy } = injector.get(ConfigService).assetOptions;
@@ -112,6 +115,9 @@ export function transformOrderLineAssetUrls(ctx: RequestContext, order: Order, i
  * @description
  * Ensures that the ShippingLines are hydrated so that we can use the
  * `shippingMethod.name` property in the email template.
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email utils
  */
 export async function hydrateShippingLines(
     ctx: RequestContext,

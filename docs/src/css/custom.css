@@ -100,3 +100,7 @@ html[data-theme='dark'] {
     opacity: 0.2;
     margin: 6px 12px;
 }
+
+.limited-height-code-block pre.prism-code {
+    max-height: 800px;
+}

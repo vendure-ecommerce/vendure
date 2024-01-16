@@ -6,7 +6,32 @@ showtoc: true
 
 If you have customized the Admin UI with extensions, you should [compile your extensions ahead of time as part of the deployment process](/guides/extending-the-admin-ui/getting-started/#compiling-as-a-deployment-step).
 
-### Deploying a stand-alone Admin UI
+## Setting the API host & port
+
+When running in development mode, the Admin UI app will "guess" the API host and port based on the current URL in the browser. Typically, this will
+be `http://localhost:3000`. For production deployments where the Admin UI app is served from a different host or port than the Vendure server, you'll need to
+configure the Admin UI app to point to the correct API host and port.
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+
+const config: VendureConfig = {
+    // ...
+    plugins: [
+        AdminUiPlugin.init({
+            port: 3001,
+            route: 'admin',
+            adminUiConfig: {
+                apiHost: 'https://api.example.com',
+                apiPort: 443,
+            },
+        }),
+    ],
+};
+```
+
+## Deploying a stand-alone Admin UI
 
 Usually, the Admin UI is served from the Vendure server via the AdminUiPlugin. However, you may wish to deploy the Admin UI app elsewhere. Since it is just a static Angular app, it can be deployed to any static hosting service such as Vercel or Netlify.
 

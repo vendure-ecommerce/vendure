@@ -363,8 +363,7 @@ export class ProductDetailComponent
                     return this.productDetailService.updateProduct({
                         product,
                         languageCode,
-                        autoUpdate:
-                            this.detailForm.get(['product', 'autoUpdateVariantNames'])?.value ?? false,
+                        autoUpdate: this.detailForm.get(['autoUpdateVariantNames'])?.value ?? false,
                         productInput,
                         variantsInput,
                     });
