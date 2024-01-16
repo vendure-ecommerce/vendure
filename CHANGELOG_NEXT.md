@@ -1,3 +1,32 @@
+## 2.2.0-next.1 (2024-01-16)
+
+
+#### Fixes
+
+* **admin-ui** Fix auto-rename of variants when product is renamed ([65aced6](https://github.com/vendure-ecommerce/vendure/commit/65aced6)), closes [#2579](https://github.com/vendure-ecommerce/vendure/issues/2579)
+* **admin-ui** Fix bug in cancelling order lines ([913e6d8](https://github.com/vendure-ecommerce/vendure/commit/913e6d8)), closes [#2608](https://github.com/vendure-ecommerce/vendure/issues/2608)
+* **admin-ui** Fix long transactionId layout issue (#2595) ([7603ea4](https://github.com/vendure-ecommerce/vendure/commit/7603ea4)), closes [#2595](https://github.com/vendure-ecommerce/vendure/issues/2595)
+* **admin-ui** Fix route config for settings tabs ([4e7bbb1](https://github.com/vendure-ecommerce/vendure/commit/4e7bbb1)), closes [#2623](https://github.com/vendure-ecommerce/vendure/issues/2623)
+* **admin-ui** Improve collection breadcrumb styling (#2589) ([f5acf0f](https://github.com/vendure-ecommerce/vendure/commit/f5acf0f)), closes [#2589](https://github.com/vendure-ecommerce/vendure/issues/2589)
+* **admin-ui** Improve tabs hover style (#2584) ([fa7152c](https://github.com/vendure-ecommerce/vendure/commit/fa7152c)), closes [#2584](https://github.com/vendure-ecommerce/vendure/issues/2584)
+* **admin-ui** Login page dark mode color fix (#2582) ([c680486](https://github.com/vendure-ecommerce/vendure/commit/c680486)), closes [#2582](https://github.com/vendure-ecommerce/vendure/issues/2582)
+* **core** Admin can only read Roles at or below their permission level ([fc5d981](https://github.com/vendure-ecommerce/vendure/commit/fc5d981)), closes [#2492](https://github.com/vendure-ecommerce/vendure/issues/2492)
+* **core** Fix error when using HttpHealthCheckStrategy ([9ab2e4d](https://github.com/vendure-ecommerce/vendure/commit/9ab2e4d)), closes [#2617](https://github.com/vendure-ecommerce/vendure/issues/2617)
+* **core** Fix hydration error edge-case when removing order line ([6fca656](https://github.com/vendure-ecommerce/vendure/commit/6fca656)), closes [#2548](https://github.com/vendure-ecommerce/vendure/issues/2548)
+* **core** Fix permissions error on creation of superadmin ([3e4e31c](https://github.com/vendure-ecommerce/vendure/commit/3e4e31c)), closes [#2492](https://github.com/vendure-ecommerce/vendure/issues/2492) [#2478](https://github.com/vendure-ecommerce/vendure/issues/2478)
+* **core** Remove inapplicable shipping methods when updating an order ([f04b033](https://github.com/vendure-ecommerce/vendure/commit/f04b033)), closes [#2548](https://github.com/vendure-ecommerce/vendure/issues/2548) [#2540](https://github.com/vendure-ecommerce/vendure/issues/2540)
+* **create** Add a slash at the end of assetUrl to avoid being ignored (#2605) ([b99dfbc](https://github.com/vendure-ecommerce/vendure/commit/b99dfbc)), closes [#2605](https://github.com/vendure-ecommerce/vendure/issues/2605)
+
+#### Features
+
+* **admin-ui** Add support for Norwegian Bokmål (#2611) ([00d5315](https://github.com/vendure-ecommerce/vendure/commit/00d5315)), closes [#2611](https://github.com/vendure-ecommerce/vendure/issues/2611)
+* **admin-ui** Product & variant lists can be filtered by name & sku ([74293cb](https://github.com/vendure-ecommerce/vendure/commit/74293cb)), closes [#2519](https://github.com/vendure-ecommerce/vendure/issues/2519)
+* **core** Add `precision` property to MoneyStrategy ([c33ba63](https://github.com/vendure-ecommerce/vendure/commit/c33ba63))
+* **core** Add SKU filtering to `products` list in Admin API ([876d1ec](https://github.com/vendure-ecommerce/vendure/commit/876d1ec)), closes [#2519](https://github.com/vendure-ecommerce/vendure/issues/2519)
+* **core** Expose `enabled` field for Product in shop api (#2541) ([f6f2975](https://github.com/vendure-ecommerce/vendure/commit/f6f2975)), closes [#2541](https://github.com/vendure-ecommerce/vendure/issues/2541)
+* **core** Expose additional bootstrap options (#2568) ([3b6d6ab](https://github.com/vendure-ecommerce/vendure/commit/3b6d6ab)), closes [#2568](https://github.com/vendure-ecommerce/vendure/issues/2568)
+* **core** Implement complex boolean list filtering for PaginatedLists ([c4bd484](https://github.com/vendure-ecommerce/vendure/commit/c4bd484)), closes [#2594](https://github.com/vendure-ecommerce/vendure/issues/2594)
+
 ## 2.2.0-next.0 (2023-12-14)
 
 
