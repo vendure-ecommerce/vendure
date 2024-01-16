@@ -244,7 +244,7 @@ If you want to use the free plan, use the "Lite Template".
                     "instances": 1,
                     "docker": {
                       "configType": "customCommand",
-                      "customCommand": "yarn start:server"
+                      "customCommand": "node ./dist/index.js"
                     },
                     "internal": {
                       "buildId": "${refs.build.id}",
@@ -284,7 +284,7 @@ If you want to use the free plan, use the "Lite Template".
                     "instances": 1,
                     "docker": {
                       "configType": "customCommand",
-                      "customCommand": "yarn start:worker"
+                      "customCommand": "node ./dist/index-worker.js"
                     },
                     "internal": {
                       "buildId": "${refs.build.id}",
