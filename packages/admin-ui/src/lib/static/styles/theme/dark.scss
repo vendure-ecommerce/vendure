@@ -408,6 +408,7 @@
     --clr-modal-bg-color: hsl(198, 28%, 18%);
     --clr-modal-title-color: var(--clr-global-font-color);
     --clr-modal-backdrop-color: hsla(0, 0%, 0%, 0.85);
+    --clr-modal-text-color: var(--color-text-100);
     // END Modal
 
     /***************
@@ -530,7 +531,7 @@
     * Typography
     */
     --clr-global-font-color: var(--color-text-100);
-    --clr-global-font-color-secondary: var(--color-text-200);
+    --clr-global-font-color-secondary: var(--color-text-100);
 
     --clr-h1-color: var(--clr-global-font-color);
     --clr-h2-color: var(--clr-global-font-color);
@@ -557,6 +558,8 @@
     --clr-accordion-border-left-color: hsl(202, 30%, 24%);
     --clr-accordion-border-color: hsl(208, 16%, 34%);
     // END: ACCORDION
+
+    --clr-list-item-color: var(--color-text-100);
 
 
     clr-icon {

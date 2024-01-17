@@ -1,4 +1,6 @@
-
+:host {
+    display: block;
+}
 .payment-header {
     display: flex;
     justify-content: space-between;
@@ -15,4 +17,9 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+}
+
+.refund-wrapper {
+    //margin-left: calc(var(--space-unit) * 2);
+    //border-left: 2px solid var(--color-grey-300);
 }

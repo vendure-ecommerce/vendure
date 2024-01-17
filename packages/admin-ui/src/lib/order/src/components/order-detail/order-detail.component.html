@@ -94,16 +94,13 @@
 
 <vdr-page-detail-layout *ngIf="entity$ | async as order">
     <vdr-page-detail-sidebar>
-        <vdr-card>
-            <vdr-order-state-label [state]="order.state">
-                <button
-                    class="icon-button"
-                    (click)="openStateDiagram()"
-                    [title]="'order.order-state-diagram' | translate"
-                >
+        <vdr-card [title]="'order.state' | translate">
+            <ng-template vdrCardControls>
+                <button class="button-small" (click)="openStateDiagram()" [title]="'order.order-state-diagram' | translate">
                     <clr-icon shape="list"></clr-icon>
                 </button>
-            </vdr-order-state-label>
+            </ng-template>
+            <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
         </vdr-card>
         <vdr-card [title]="'order.customer' | translate">
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
@@ -169,7 +166,7 @@
                 <tbody>
                     <tr *ngFor="let row of order.taxSummary">
                         <td>{{ row.description }}</td>
-                        <td>{{ row.taxRate / 100 | percent:'0.0-2' }}</td>
+                        <td>{{ row.taxRate / 100 | percent : '0.0-2' }}</td>
                         <td>{{ row.taxBase | localeCurrency : order.currencyCode }}</td>
                         <td>{{ row.taxTotal | localeCurrency : order.currencyCode }}</td>
                     </tr>
