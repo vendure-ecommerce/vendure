@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     CancelOrderInput,
@@ -12,8 +13,13 @@ import {
 } from '@vendure/admin-ui/core';
 import { summate } from '@vendure/common/lib/shared-utils';
 
-type SelectionLine = { quantity: number; refund: boolean; cancel: boolean };
+type SelectionLine = { quantity: number; cancel: boolean };
 type Payment = NonNullable<OrderDetailFragment['payments']>[number];
+type RefundablePayment = Payment & {
+    refundableAmount: number;
+    amountToRefundControl: FormControl<number>;
+    selected: boolean;
+};
 
 @Component({
     selector: 'vdr-refund-order-dialog',
@@ -22,47 +28,34 @@ type Payment = NonNullable<OrderDetailFragment['payments']>[number];
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RefundOrderDialogComponent
-    implements OnInit, Dialog<{ cancel: CancelOrderInput; refund: RefundOrderInput }>
+    implements OnInit, Dialog<{ cancel: CancelOrderInput; refunds: RefundOrderInput[] }>
 {
     order: OrderDetailFragment;
-    resolveWith: (result?: { cancel: CancelOrderInput; refund: RefundOrderInput }) => void;
+    resolveWith: (result?: { cancel: CancelOrderInput; refunds: RefundOrderInput[] }) => void;
     reason: string;
-    settledPayments: Payment[];
-    selectedPayment: Payment;
     lineQuantities: { [lineId: string]: SelectionLine } = {};
-    refundShipping = false;
-    adjustment = 0;
+    refundablePayments: RefundablePayment[] = [];
+    refundShippingLineIds: string[] = [];
     reasons = getAppConfig().cancellationReasons ?? [
         _('order.refund-reason-customer-request'),
         _('order.refund-reason-not-available'),
     ];
+    manuallySetRefundTotal = false;
+    refundTotal = 0;
 
     constructor(private i18nService: I18nService) {
         this.reasons = this.reasons.map(r => this.i18nService.translate(r));
     }
 
-    get refundTotal(): number {
-        const itemTotal = this.order.lines.reduce((total, line) => {
-            const lineRef = this.lineQuantities[line.id];
-            const refundCount = (lineRef.refund && lineRef.quantity) || 0;
-            return total + line.proratedUnitPriceWithTax * refundCount;
-        }, 0);
-        return itemTotal + (this.refundShipping ? this.order.shippingWithTax : 0) + this.adjustment;
+    get totalRefundableAmount(): number {
+        return summate(this.refundablePayments, 'refundableAmount');
     }
 
-    get settledPaymentsTotal(): number {
-        return this.settledPayments
-            .map(payment => {
-                const paymentTotal = payment.amount;
-                const alreadyRefundedTotal = summate(
-                    payment.refunds.filter(r => r.state !== 'Failed') as Array<
-                        Required<Payment['refunds'][number]>
-                    >,
-                    'total',
-                );
-                return paymentTotal - alreadyRefundedTotal;
-            })
-            .reduce((sum, amount) => sum + amount, 0);
+    get amountToRefundTotal(): number {
+        return this.refundablePayments.reduce(
+            (total, payment) => total + payment.amountToRefundControl.value,
+            0,
+        );
     }
 
     lineCanBeRefundedOrCancelled(line: OrderDetailFragment['lines'][number]): boolean {
@@ -89,28 +82,104 @@ export class RefundOrderDialogComponent
                 ...result,
                 [line.id]: {
                     quantity: 0,
-                    refund: false,
+                    refund: true,
                     cancel: false,
                 },
             }),
             {},
         );
-        this.settledPayments = (this.order.payments || []).filter(p => p.state === 'Settled');
-        if (this.settledPayments.length) {
-            this.selectedPayment = this.settledPayments[0];
+        const settledPayments = (this.order.payments || []).filter(p => p.state === 'Settled');
+        this.refundablePayments = settledPayments.map((payment, index) => {
+            const refundableAmount =
+                payment.amount -
+                summate(
+                    payment.refunds.filter(r => r.state !== 'Failed'),
+                    'total',
+                );
+            return {
+                ...payment,
+                refundableAmount,
+                amountToRefundControl: new FormControl(0, {
+                    nonNullable: true,
+                    validators: [Validators.min(0), Validators.max(refundableAmount)],
+                }),
+                selected: index === 0,
+            };
+        });
+    }
+
+    updateRefundTotal() {
+        if (!this.manuallySetRefundTotal) {
+            const itemTotal = this.order.lines.reduce((total, line) => {
+                const lineRef = this.lineQuantities[line.id];
+                const refundCount = lineRef.quantity || 0;
+                return total + line.proratedUnitPriceWithTax * refundCount;
+            }, 0);
+            const shippingTotal = this.order.shippingLines.reduce((total, line) => {
+                if (this.refundShippingLineIds.includes(line.id)) {
+                    return total + line.discountedPriceWithTax;
+                } else {
+                    return total;
+                }
+            }, 0);
+            this.refundTotal = itemTotal + shippingTotal;
+        }
+
+        // allocate the refund total across the refundable payments
+        const refundablePayments = this.refundablePayments.filter(p => p.selected);
+        let refundsAllocated = 0;
+        for (const payment of refundablePayments) {
+            const amountToRefund = Math.min(payment.refundableAmount, this.refundTotal - refundsAllocated);
+            payment.amountToRefundControl.setValue(amountToRefund);
+            refundsAllocated += amountToRefund;
         }
     }
 
-    handleZeroQuantity(line?: SelectionLine) {
-        if (line?.quantity === 0) {
-            line.cancel = false;
-            line.refund = false;
+    toggleShippingRefund(lineId: string) {
+        const index = this.refundShippingLineIds.indexOf(lineId);
+        if (index === -1) {
+            this.refundShippingLineIds.push(lineId);
+        } else {
+            this.refundShippingLineIds.splice(index, 1);
+        }
+        this.updateRefundTotal();
+    }
+
+    onRefundQuantityChange(orderLineId: string, quantity: number) {
+        this.manuallySetRefundTotal = false;
+        const selectionLine = this.lineQuantities[orderLineId];
+        if (selectionLine) {
+            const previousQuantity = selectionLine.quantity;
+            if (quantity === 0) {
+                selectionLine.cancel = false;
+            } else if (previousQuantity === 0 && quantity > 0) {
+                selectionLine.cancel = true;
+            }
+            selectionLine.quantity = quantity;
+            this.updateRefundTotal();
+        }
+    }
+
+    onPaymentSelected(payment: RefundablePayment, selected: boolean) {
+        if (selected) {
+            const outstandingRefundAmount =
+                this.refundTotal -
+                this.refundablePayments
+                    .filter(p => p.id !== payment.id)
+                    .reduce((total, p) => total + p.amountToRefundControl.value, 0);
+            if (0 < outstandingRefundAmount) {
+                payment.amountToRefundControl.setValue(
+                    Math.min(outstandingRefundAmount, payment.refundableAmount),
+                );
+            }
+        } else {
+            payment.amountToRefundControl.setValue(0);
         }
     }
 
     isRefunding(): boolean {
         const result = Object.values(this.lineQuantities).reduce(
-            (isRefunding, line) => isRefunding || (0 < line.quantity && line.refund),
+            (isRefunding, line) => isRefunding || 0 < line.quantity,
             false,
         );
         return result;
@@ -125,41 +194,33 @@ export class RefundOrderDialogComponent
     }
 
     canSubmit(): boolean {
-        if (this.isRefunding()) {
-            return !!(
-                this.selectedPayment &&
-                this.reason &&
-                0 < this.refundTotal &&
-                this.refundTotal <= this.settledPaymentsTotal
-            );
-        } else if (this.isCancelling()) {
-            return !!this.reason;
-        }
-        return false;
+        return 0 < this.refundTotal && this.amountToRefundTotal === this.refundTotal && !!this.reason;
     }
 
     select() {
-        const payment = this.selectedPayment;
-        if (payment) {
-            const refundLines = this.getOrderLineInput(line => line.refund);
-            const cancelLines = this.getOrderLineInput(line => line.cancel);
+        const refundLines = this.getOrderLineInput(() => true);
+        const cancelLines = this.getOrderLineInput(line => line.cancel);
 
-            this.resolveWith({
-                refund: {
-                    lines: refundLines,
-                    reason: this.reason,
-                    shipping: this.refundShipping ? this.order.shippingWithTax : 0,
-                    adjustment: this.adjustment,
-                    paymentId: payment.id,
-                },
-                cancel: {
-                    lines: cancelLines,
-                    orderId: this.order.id,
-                    reason: this.reason,
-                    cancelShipping: this.refundShipping,
-                },
-            });
-        }
+        this.resolveWith({
+            refunds: this.refundablePayments
+                .filter(rp => rp.selected && 0 < rp.amountToRefundControl.value)
+                .map(payment => {
+                    return {
+                        lines: refundLines,
+                        reason: this.reason,
+                        paymentId: payment.id,
+                        amount: payment.amountToRefundControl.value,
+                        shipping: 0,
+                        adjustment: 0,
+                    };
+                }),
+            cancel: {
+                lines: cancelLines,
+                orderId: this.order.id,
+                reason: this.reason,
+                cancelShipping: this.refundShippingLineIds.length > 0,
+            },
+        });
     }
 
     cancel() {

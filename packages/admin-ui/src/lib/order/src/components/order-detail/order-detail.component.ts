@@ -20,7 +20,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
 import { gql } from 'apollo-angular';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { EMPTY, forkJoin, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
@@ -567,7 +567,12 @@ export class OrderDetailComponent
                                 switch (result.__typename) {
                                     case 'Order':
                                         this.refetchOrder(result).subscribe();
-                                        this.notificationService.success(_('order.cancelled-order-success'));
+                                        this.notificationService.success(
+                                            _('order.cancelled-order-items-success'),
+                                            {
+                                                count: summate(input.cancel.lines, 'quantity'),
+                                            },
+                                        );
                                         return input;
                                     case 'CancelActiveOrderError':
                                     case 'QuantityTooGreatError':
@@ -587,35 +592,39 @@ export class OrderDetailComponent
                     if (!input) {
                         return of(undefined);
                     }
-                    if (input.refund.lines.length) {
-                        return this.dataService.order
-                            .refundOrder(input.refund)
-                            .pipe(map(res => res.refundOrder));
+                    if (input.refunds.length) {
+                        return forkJoin(
+                            input.refunds.map(refund =>
+                                this.dataService.order.refundOrder(refund).pipe(map(res => res.refundOrder)),
+                            ),
+                        );
                     } else {
                         return [undefined];
                     }
                 }),
             )
-            .subscribe(result => {
-                if (result) {
-                    switch (result.__typename) {
-                        case 'Refund':
-                            this.refetchOrder(result).subscribe();
-                            if (result.state === 'Failed') {
-                                this.notificationService.error(_('order.refund-order-failed'));
-                            } else {
-                                this.notificationService.success(_('order.refund-order-success'));
-                            }
-                            break;
-                        case 'AlreadyRefundedError':
-                        case 'NothingToRefundError':
-                        case 'PaymentOrderMismatchError':
-                        case 'RefundOrderStateError':
-                        case 'RefundStateTransitionError':
-                            this.notificationService.error(result.message);
-                            break;
+            .subscribe(results => {
+                for (const result of results ?? []) {
+                    if (result) {
+                        switch (result.__typename) {
+                            case 'Refund':
+                                if (result.state === 'Failed') {
+                                    this.notificationService.error(_('order.refund-order-failed'));
+                                } else {
+                                    this.notificationService.success(_('order.refund-order-success'));
+                                }
+                                break;
+                            case 'AlreadyRefundedError':
+                            case 'NothingToRefundError':
+                            case 'PaymentOrderMismatchError':
+                            case 'RefundOrderStateError':
+                            case 'RefundStateTransitionError':
+                                this.notificationService.error(result.message);
+                                break;
+                        }
                     }
                 }
+                this.refetchOrder(results?.[0]).subscribe();
             });
     }
 
