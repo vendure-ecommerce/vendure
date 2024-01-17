@@ -4,7 +4,7 @@ import { NgControl } from '@angular/forms';
 type InputElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
 /* eslint-disable @angular-eslint/directive-selector */
-@Directive({ selector: 'input, textarea, select' })
+@Directive({ selector: 'input, textarea, select, vdr-currency-input' })
 export class FormFieldControlDirective {
     constructor(
         private elementRef: ElementRef<InputElement>,
