@@ -1,20 +1,22 @@
-import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
-import { Catch, ExecutionContext } from '@nestjs/common';
+import { ArgumentsHost, ExecutionContext } from '@nestjs/common';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { setContext } from '@sentry/node';
-import { ExceptionLoggerFilter, ForbiddenError, I18nError, LogLevel } from '@vendure/core';
+import { ErrorHandlerStrategy, I18nError, Injector, Job, LogLevel } from '@vendure/core';
 
 import { SentryService } from './sentry.service';
 
-export class SentryExceptionsFilter extends ExceptionLoggerFilter {
-    constructor(private readonly sentryService: SentryService) {
-        super();
+export class SentryErrorHandlerStrategy implements ErrorHandlerStrategy {
+    private sentryService: SentryService;
+
+    init(injector: Injector) {
+        this.sentryService = injector.get(SentryService);
     }
 
-    catch(exception: Error, host: ArgumentsHost) {
+    handleServerError(exception: Error, { host }: { host: ArgumentsHost }) {
+        // We only care about errors which have at least a Warn log level
         const shouldLogError = exception instanceof I18nError ? exception.logLevel <= LogLevel.Warn : true;
         if (shouldLogError) {
-            if (host.getType<GqlContextType>() === 'graphql') {
+            if (host?.getType<GqlContextType>() === 'graphql') {
                 const gqlContext = GqlExecutionContext.create(host as ExecutionContext);
                 const info = gqlContext.getInfo();
                 setContext('GraphQL Error Context', {
@@ -28,6 +30,13 @@ export class SentryExceptionsFilter extends ExceptionLoggerFilter {
             }
             this.sentryService.captureException(exception);
         }
-        return super.catch(exception, host);
+    }
+
+    handleWorkerError(exception: Error, { job }: { job: Job }) {
+        setContext('Worker Context', {
+            queueName: job.queueName,
+            jobId: job.id,
+        });
+        this.sentryService.captureException(exception);
     }
 }

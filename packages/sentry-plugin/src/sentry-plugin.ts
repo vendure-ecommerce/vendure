@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 import { SentryAdminTestResolver } from './api/admin-test.resolver';
@@ -8,7 +7,7 @@ import { ErrorTestService } from './api/error-test.service';
 import { SENTRY_PLUGIN_OPTIONS } from './constants';
 import { SentryApolloPlugin } from './sentry-apollo-plugin';
 import { SentryContextMiddleware } from './sentry-context.middleware';
-import { SentryExceptionsFilter } from './sentry.filter';
+import { SentryErrorHandlerStrategy } from './sentry-error-handler-strategy';
 import { SentryService } from './sentry.service';
 import { SentryPluginOptions } from './types';
 
@@ -108,21 +107,14 @@ const SentryOptionsProvider = {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [
-        SentryOptionsProvider,
-        SentryService,
-        ErrorTestService,
-        {
-            provide: APP_FILTER,
-            useClass: SentryExceptionsFilter,
-        },
-    ],
+    providers: [SentryOptionsProvider, SentryService, ErrorTestService],
     configuration: config => {
         config.apiOptions.apolloServerPlugins.push(
             new SentryApolloPlugin({
                 enableTracing: !!SentryPlugin.options.enableTracing,
             }),
         );
+        config.systemOptions.errorHandlers.push(new SentryErrorHandlerStrategy());
         return config;
     },
     adminApiExtensions: {
@@ -130,7 +122,7 @@ const SentryOptionsProvider = {
         resolvers: () => (SentryPlugin.options.includeErrorTestMutation ? [SentryAdminTestResolver] : []),
     },
     exports: [SentryService],
-    compatibility: '^2.0.0',
+    compatibility: '^2.2.0',
 })
 export class SentryPlugin implements NestModule {
     static options: SentryPluginOptions = {} as any;
