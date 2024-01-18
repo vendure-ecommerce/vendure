@@ -1,7 +1,7 @@
 import { ArgumentsHost } from '@nestjs/common';
 
 import { InjectableStrategy } from '../../common/index';
-import { Job } from '../../job-queue/index';
+import { Job } from '../../job-queue/job';
 
 /**
  * @description
