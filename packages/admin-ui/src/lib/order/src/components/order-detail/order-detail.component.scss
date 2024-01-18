@@ -14,5 +14,5 @@
 }
 
 vdr-order-payment-card + vdr-order-payment-card {
-    margin-top: var(--space-unit);
+    margin-top: calc(var(--space-unit) * 2);
 }

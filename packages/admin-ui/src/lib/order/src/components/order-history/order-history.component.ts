@@ -51,7 +51,7 @@ export class OrderHistoryComponent {
             }
         }
         if (entry.type === HistoryEntryType.ORDER_CANCELLATION) {
-            return 'error';
+            return 'warning';
         }
         if (entry.type === HistoryEntryType.ORDER_REFUND_TRANSITION) {
             return 'warning';
@@ -69,6 +69,11 @@ export class OrderHistoryComponent {
             }
         }
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION) {
+            if (entry.data.to === 'Settled') {
+                return 'credit-card';
+            }
+        }
+        if (entry.type === HistoryEntryType.ORDER_REFUND_TRANSITION) {
             if (entry.data.to === 'Settled') {
                 return 'credit-card';
             }
@@ -98,6 +103,8 @@ export class OrderHistoryComponent {
                     entry.data.to === 'Settled'
                 );
             }
+            case HistoryEntryType.ORDER_REFUND_TRANSITION:
+                return entry.data.to === 'Settled';
             case HistoryEntryType.ORDER_PAYMENT_TRANSITION:
                 return entry.data.to === 'Settled' || entry.data.to === 'Cancelled';
             case HistoryEntryType.ORDER_FULFILLMENT_TRANSITION:
@@ -130,13 +137,26 @@ export class OrderHistoryComponent {
         }
     }
 
+    getRefund(
+        entry: TimelineHistoryEntry,
+    ): NonNullable<OrderDetailFragment['payments']>[number]['refunds'][number] | undefined {
+        if (entry.type === HistoryEntryType.ORDER_REFUND_TRANSITION && this.order.payments) {
+            const allRefunds = this.order.payments.reduce(
+                (refunds, payment) => refunds.concat(payment.refunds),
+                [] as NonNullable<OrderDetailFragment['payments']>[number]['refunds'],
+            );
+            return allRefunds.find(r => r.id === entry.data.refundId);
+        }
+    }
+
     getCancelledQuantity(entry: TimelineHistoryEntry): number {
         return entry.data.lines.reduce((total, line) => total + line.quantity, 0);
     }
 
-    getCancelledItems(entry: TimelineHistoryEntry): Array<{ name: string; quantity: number }> {
+    getCancelledItems(
+        cancellationLines: Array<{ orderLineId: string; quantity: number }>,
+    ): Array<{ name: string; quantity: number }> {
         const itemMap = new Map<string, number>();
-        const cancellationLines: Array<{ orderLineId: string; quantity: number }> = entry.data.lines;
         for (const line of this.order.lines) {
             const cancellationLine = cancellationLines.find(l => l.orderLineId === line.id);
             if (cancellationLine) {
