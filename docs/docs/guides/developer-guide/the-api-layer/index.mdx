@@ -170,6 +170,11 @@ import { MyCustomGuard, MyCustomInterceptor, MyCustomExceptionFilter } from './m
             useClass: MyCustomInterceptor,
         },
         {
+            // Note: registering a global "catch all" exception filter
+            // must be used with caution as it will override the built-in
+            // Vendure exception filter. See https://github.com/nestjs/nest/issues/3252
+            // To implement custom error handling, it is recommended to use
+            // a custom ErrorHandlerStrategy instead.
             provide: APP_FILTER,
             useClass: MyCustomExceptionFilter,
         },

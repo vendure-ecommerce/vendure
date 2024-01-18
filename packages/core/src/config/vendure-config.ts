@@ -50,6 +50,7 @@ import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
+import { ErrorHandlerStrategy } from './system/error-handler-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
@@ -1019,6 +1020,15 @@ export interface SystemOptions {
      * @since 1.6.0
      */
     healthChecks?: HealthCheckStrategy[];
+    /**
+     * @description
+     * Defines an array of {@link ErrorHandlerStrategy} instances which are used to define logic to be executed
+     * when an error occurs, either on the server or the worker.
+     *
+     * @default []
+     * @since 2.2.0
+     */
+    errorHandlers?: ErrorHandlerStrategy[];
 }
 
 /**

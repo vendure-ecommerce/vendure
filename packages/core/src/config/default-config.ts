@@ -211,5 +211,6 @@ export const defaultConfig: RuntimeVendureConfig = {
     plugins: [],
     systemOptions: {
         healthChecks: [new TypeORMHealthCheckStrategy()],
+        errorHandlers: [],
     },
 };

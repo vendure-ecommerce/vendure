@@ -103,7 +103,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const { customPaymentProcess, process: paymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
         const { entityIdStrategy } = this.configService.entityOptions;
-        const { healthChecks } = this.configService.systemOptions;
+        const { healthChecks, errorHandlers } = this.configService.systemOptions;
         const { assetImportStrategy } = this.configService.importExportOptions;
         return [
             ...adminAuthenticationStrategy,
@@ -134,6 +134,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockAllocationStrategy,
             stockDisplayStrategy,
             ...healthChecks,
+            ...errorHandlers,
             assetImportStrategy,
             changedPriceHandlingStrategy,
             ...(Array.isArray(activeOrderStrategy) ? activeOrderStrategy : [activeOrderStrategy]),

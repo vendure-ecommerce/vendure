@@ -78,6 +78,7 @@ export * from './shipping-method/shipping-calculator';
 export * from './shipping-method/shipping-eligibility-checker';
 export * from './shipping-method/shipping-line-assignment-strategy';
 export * from './system/health-check-strategy';
+export * from './system/error-handler-strategy';
 export * from './tax/default-tax-line-calculation-strategy';
 export * from './tax/default-tax-zone-strategy';
 export * from './tax/tax-line-calculation-strategy';
