@@ -30,6 +30,7 @@ import {
     OrderType,
     RefundOrderInput,
     RefundOrderResult,
+    SetOrderCustomerInput,
     SettlePaymentResult,
     SettleRefundInput,
     ShippingMethodQuote,
@@ -80,10 +81,10 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Order } from '../../entity/order/order.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
+import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
@@ -480,6 +481,53 @@ export class OrderService {
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, order);
         const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
         this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        return updatedOrder;
+    }
+
+    /**
+     * @description
+     * Updates the Customer which is assigned to a given Order. The target Customer must be assigned to the same
+     * Channels as the Order, otherwise an error will be thrown.
+     *
+     * @since 2.2.0
+     */
+    async updateOrderCustomer(ctx: RequestContext, { customerId, orderId, note }: SetOrderCustomerInput) {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const currentCustomer = order.customer;
+        if (currentCustomer?.id === customerId) {
+            // No change in customer, so just return the order as-is
+            return order;
+        }
+        const targetCustomer = await this.customerService.findOne(ctx, customerId, ['channels']);
+        if (!targetCustomer) {
+            throw new EntityNotFoundError('Customer', customerId);
+        }
+
+        // ensure the customer is assigned to the same channels as the order
+        const channelIds = order.channels.map(c => c.id);
+        const customerChannelIds = targetCustomer.channels.map(c => c.id);
+        const missingChannelIds = channelIds.filter(id => !customerChannelIds.includes(id));
+        if (missingChannelIds.length) {
+            throw new UserInputError(`error.target-customer-not-assigned-to-order-channels`, {
+                channelIds: missingChannelIds.join(', '),
+            });
+        }
+
+        const updatedOrder = await this.addCustomerToOrder(ctx, order.id, targetCustomer);
+        this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId,
+            type: HistoryEntryType.ORDER_CUSTOMER_UPDATED,
+            data: {
+                previousCustomerId: currentCustomer?.id,
+                previousCustomerName:
+                    currentCustomer && `${currentCustomer.firstName} ${currentCustomer.lastName}`,
+                newCustomerId: targetCustomer.id,
+                newCustomerName: `${targetCustomer.firstName} ${targetCustomer.lastName}`,
+                note,
+            },
+        });
         return updatedOrder;
     }
 
@@ -1443,14 +1491,21 @@ export class OrderService {
      * @description
      * Associates a Customer with the Order.
      */
-    async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
+    async addCustomerToOrder(
+        ctx: RequestContext,
+        orderIdOrOrder: ID | Order,
+        customer: Customer,
+    ): Promise<Order> {
+        const order =
+            orderIdOrOrder instanceof Order
+                ? orderIdOrOrder
+                : await this.getOrderOrThrow(ctx, orderIdOrOrder);
         order.customer = customer;
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        let updatedOrder = order;
         // Check that any applied couponCodes are still valid now that
         // we know the Customer.
-        let updatedOrder = order;
-        if (order.couponCodes) {
+        if (order.active && order.couponCodes) {
             for (const couponCode of order.couponCodes.slice()) {
                 const validationResult = await this.promotionService.validateCouponCode(
                     ctx,
@@ -1458,7 +1513,7 @@ export class OrderService {
                     customer.id,
                 );
                 if (isGraphQlErrorResult(validationResult)) {
-                    updatedOrder = await this.removeCouponCode(ctx, orderId, couponCode);
+                    updatedOrder = await this.removeCouponCode(ctx, order.id, couponCode);
                 }
             }
         }

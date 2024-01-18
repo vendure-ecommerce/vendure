@@ -1937,6 +1937,7 @@ export enum HistoryEntryType {
   ORDER_CANCELLATION = 'ORDER_CANCELLATION',
   ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
   ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
+  ORDER_CUSTOMER_UPDATED = 'ORDER_CUSTOMER_UPDATED',
   ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
   ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
   ORDER_MODIFIED = 'ORDER_MODIFIED',
@@ -2849,6 +2850,8 @@ export type Mutation = {
   setDraftOrderShippingMethod: SetOrderShippingMethodResult;
   setMainNavExpanded: Scalars['Boolean']['output'];
   setOrderCustomFields?: Maybe<Order>;
+  /** Allows a different Customer to be assigned to an Order. Added in v2.2.0. */
+  setOrderCustomer?: Maybe<Order>;
   setUiLanguage: LanguageCode;
   setUiLocale?: Maybe<Scalars['String']['output']>;
   setUiTheme: Scalars['String']['output'];
@@ -3573,6 +3576,11 @@ export type MutationSetMainNavExpandedArgs = {
 
 export type MutationSetOrderCustomFieldsArgs = {
   input: UpdateOrderInput;
+};
+
+
+export type MutationSetOrderCustomerArgs = {
+  input: SetOrderCustomerInput;
 };
 
 
@@ -5708,6 +5716,12 @@ export type ServerConfig = {
 };
 
 export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
+
+export type SetOrderCustomerInput = {
+  customerId: Scalars['ID']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  orderId: Scalars['ID']['input'];
+};
 
 export type SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrderError | Order | OrderModificationError;
 

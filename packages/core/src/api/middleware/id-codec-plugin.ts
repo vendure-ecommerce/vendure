@@ -50,6 +50,8 @@ export class IdCodecPlugin implements ApolloServerPlugin {
                     'refundId',
                     'groupId',
                     'modificationId',
+                    'previousCustomerId',
+                    'newCustomerId',
                 ]);
             }
             return isIdType ? this.idCodecService.encode(value) : value;

@@ -11,6 +11,7 @@ import {
     MutationDeleteOrderNoteArgs,
     MutationModifyOrderArgs,
     MutationRefundOrderArgs,
+    MutationSetOrderCustomerArgs,
     MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
     MutationSettleRefundArgs,
@@ -150,6 +151,13 @@ export class OrderResolver {
     @Allow(Permission.UpdateOrder)
     async setOrderCustomFields(@Ctx() ctx: RequestContext, @Args() args: MutationSetOrderCustomFieldsArgs) {
         return this.orderService.updateCustomFields(ctx, args.input.id, args.input.customFields);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async setOrderCustomer(@Ctx() ctx: RequestContext, @Args() { input }: MutationSetOrderCustomerArgs) {
+        return this.orderService.updateOrderCustomer(ctx, input);
     }
 
     @Transaction()

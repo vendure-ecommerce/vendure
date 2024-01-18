@@ -2379,6 +2379,100 @@ describe('Orders resolver', () => {
         });
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/2505
+    describe('updating order customer', () => {
+        let orderId: string;
+        let customerId: string;
+
+        it('set up order', async () => {
+            const result = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[1].emailAddress,
+                password,
+            );
+            orderId = result.orderId;
+            customerId = customers[1].id;
+
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            orderGuard.assertSuccess(order);
+            expect(order.customer?.id).toBe(customerId);
+        });
+
+        it(
+            'throws in invalid orderId',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<
+                    Codegen.SetOrderCustomerMutation,
+                    Codegen.SetOrderCustomerMutationVariables
+                >(SET_ORDER_CUSTOMER, {
+                    input: {
+                        orderId: 'T_9999',
+                        customerId: customers[2].id,
+                        note: 'Testing',
+                    },
+                });
+            }, 'No Order with the id "9999" could be found'),
+        );
+
+        it(
+            'throws in invalid orderId',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<
+                    Codegen.SetOrderCustomerMutation,
+                    Codegen.SetOrderCustomerMutationVariables
+                >(SET_ORDER_CUSTOMER, {
+                    input: {
+                        orderId,
+                        customerId: 'T_999',
+                        note: 'Testing',
+                    },
+                });
+            }, 'No Customer with the id "999" could be found'),
+        );
+
+        it('update order customer', async () => {
+            const newCustomerId = customers[2].id;
+            const { setOrderCustomer } = await adminClient.query<
+                Codegen.SetOrderCustomerMutation,
+                Codegen.SetOrderCustomerMutationVariables
+            >(SET_ORDER_CUSTOMER, {
+                input: {
+                    orderId,
+                    customerId: customers[2].id,
+                    note: 'Testing',
+                },
+            });
+
+            expect(setOrderCustomer?.customer?.id).toBe(newCustomerId);
+        });
+
+        it('adds a history entry for the customer update', async () => {
+            const { order } = await adminClient.query<
+                Codegen.GetOrderHistoryQuery,
+                Codegen.GetOrderHistoryQueryVariables
+            >(GET_ORDER_HISTORY, {
+                id: orderId,
+                options: {
+                    skip: 4,
+                },
+            });
+            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    data: {
+                        previousCustomerId: customerId,
+                        previousCustomerName: 'Trevor Donnelly',
+                        newCustomerId: customers[2].id,
+                        newCustomerName: `${customers[2].firstName} ${customers[2].lastName}`,
+                        note: 'Testing',
+                    },
+                    type: HistoryEntryType.ORDER_CUSTOMER_UPDATED,
+                },
+            ]);
+        });
+    });
+
     describe('issues', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/639
         it('returns fulfillments for Order with no lines', async () => {
@@ -2926,4 +3020,15 @@ const CANCEL_PAYMENT = gql`
         }
     }
     ${PAYMENT_FRAGMENT}
+`;
+
+const SET_ORDER_CUSTOMER = gql`
+    mutation SetOrderCustomer($input: SetOrderCustomerInput!) {
+        setOrderCustomer(input: $input) {
+            id
+            customer {
+                id
+            }
+        }
+    }
 `;

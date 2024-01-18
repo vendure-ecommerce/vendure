@@ -109,6 +109,13 @@ export interface OrderHistoryEntryData {
     [HistoryEntryType.ORDER_MODIFIED]: {
         modificationId: ID;
     };
+    [HistoryEntryType.ORDER_CUSTOMER_UPDATED]: {
+        previousCustomerId?: ID;
+        previousCustomerName?: ID;
+        newCustomerId: ID;
+        newCustomerName: ID;
+        note?: string;
+    };
 }
 
 export interface CreateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryEntryData> {
