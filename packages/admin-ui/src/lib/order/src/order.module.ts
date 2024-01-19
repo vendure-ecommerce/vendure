@@ -180,7 +180,7 @@ export class OrderModule {
                         link: ['/orders/', entity?.id],
                     },
                     {
-                        label: _('order.modify-order'),
+                        label: _('breadcrumb.modifying-order'),
                         link: [entity?.id],
                     },
                 ],

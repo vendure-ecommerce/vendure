@@ -1,5 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    UntypedFormArray,
+    UntypedFormControl,
+    UntypedFormGroup,
+    Validators,
+} from '@angular/forms';
 import {
     AddItemInput,
     CustomFieldConfig,
@@ -35,12 +42,15 @@ import {
 type ProductSelectorItem = ProductSelectorSearchQuery['search']['items'][number];
 
 interface AddedLine {
-    productVariantId: string;
-    productAsset?: ProductSelectorItem['productAsset'] | null;
-    productVariantName: string;
-    sku: string;
-    priceWithTax: number;
-    price: number;
+    id: string;
+    featuredAsset?: ProductSelectorItem['productAsset'] | null;
+    productVariant: {
+        id: string;
+        name: string;
+        sku: string;
+    };
+    unitPrice: number;
+    unitPriceWithTax: number;
     quantity: number;
 }
 
@@ -62,7 +72,7 @@ export class OrderEditorComponent
     availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
     addressCustomFields: CustomFieldConfig[];
     detailForm = new UntypedFormGroup({});
-    couponCodesControl = new UntypedFormControl();
+    couponCodesControl = new FormControl<string[]>([]);
     orderLineCustomFieldsFormArray: UntypedFormArray;
     addItemCustomFieldsFormArray: UntypedFormArray;
     addItemCustomFieldsForm: UntypedFormGroup;
@@ -78,12 +88,41 @@ export class OrderEditorComponent
         updateShippingAddress: {},
         updateBillingAddress: {},
     };
-    surchargeForm: UntypedFormGroup;
-    shippingAddressForm: UntypedFormGroup;
-    billingAddressForm: UntypedFormGroup;
+    surchargeForm = new FormGroup({
+        description: new FormControl('', Validators.minLength(1)),
+        sku: new FormControl(''),
+        price: new FormControl(0),
+        priceIncludesTax: new FormControl(true),
+        taxRate: new FormControl(0),
+        taxDescription: new FormControl(''),
+    });
+    shippingAddressForm = new FormGroup({
+        fullName: new FormControl(''),
+        company: new FormControl(''),
+        streetLine1: new FormControl(''),
+        streetLine2: new FormControl(''),
+        city: new FormControl(''),
+        province: new FormControl(''),
+        postalCode: new FormControl(''),
+        countryCode: new FormControl(''),
+        phoneNumber: new FormControl(''),
+    });
+    billingAddressForm = new FormGroup({
+        fullName: new FormControl(''),
+        company: new FormControl(''),
+        streetLine1: new FormControl(''),
+        streetLine2: new FormControl(''),
+        city: new FormControl(''),
+        province: new FormControl(''),
+        postalCode: new FormControl(''),
+        countryCode: new FormControl(''),
+        phoneNumber: new FormControl(''),
+    });
     note = '';
     recalculateShipping = true;
     previousState: string;
+    editingShippingAddress = false;
+    editingBillingAddress = false;
     private addedVariants = new Map<string, ProductSelectorItem>();
 
     constructor(
@@ -95,24 +134,6 @@ export class OrderEditorComponent
         super();
     }
 
-    get addedLines(): AddedLine[] {
-        const getSinglePriceValue = (price: ProductSelectorItem['price']) =>
-            price.__typename === 'SinglePrice' ? price.value : 0;
-        return (this.modifyOrderInput.addItems || [])
-            .map(row => {
-                const variantInfo = this.addedVariants.get(row.productVariantId);
-                if (variantInfo) {
-                    return {
-                        ...variantInfo,
-                        price: getSinglePriceValue(variantInfo.price),
-                        priceWithTax: getSinglePriceValue(variantInfo.priceWithTax),
-                        quantity: row.quantity,
-                    };
-                }
-            })
-            .filter(notNullOrUndefined);
-    }
-
     ngOnInit(): void {
         this.init();
         this.addressCustomFields = this.getCustomFieldConfig('Address');
@@ -122,42 +143,15 @@ export class OrderEditorComponent
             if (order.couponCodes.length) {
                 this.couponCodesControl.setValue(order.couponCodes);
             }
-            this.surchargeForm = new UntypedFormGroup({
-                description: new UntypedFormControl('', Validators.required),
-                sku: new UntypedFormControl(''),
-                price: new UntypedFormControl(0, Validators.required),
-                priceIncludesTax: new UntypedFormControl(true),
-                taxRate: new UntypedFormControl(0),
-                taxDescription: new UntypedFormControl(''),
-            });
-            if (!this.shippingAddressForm) {
-                this.shippingAddressForm = new UntypedFormGroup({
-                    fullName: new UntypedFormControl(order.shippingAddress?.fullName),
-                    company: new UntypedFormControl(order.shippingAddress?.company),
-                    streetLine1: new UntypedFormControl(order.shippingAddress?.streetLine1),
-                    streetLine2: new UntypedFormControl(order.shippingAddress?.streetLine2),
-                    city: new UntypedFormControl(order.shippingAddress?.city),
-                    province: new UntypedFormControl(order.shippingAddress?.province),
-                    postalCode: new UntypedFormControl(order.shippingAddress?.postalCode),
-                    countryCode: new UntypedFormControl(order.shippingAddress?.countryCode),
-                    phoneNumber: new UntypedFormControl(order.shippingAddress?.phoneNumber),
-                });
-                this.addAddressCustomFieldsFormGroup(this.shippingAddressForm, order.shippingAddress);
+            this.surchargeForm.reset();
+            for (const [name, control] of Object.entries(this.shippingAddressForm.controls)) {
+                control.setValue(order.shippingAddress?.[name]);
             }
-            if (!this.billingAddressForm) {
-                this.billingAddressForm = new UntypedFormGroup({
-                    fullName: new UntypedFormControl(order.billingAddress?.fullName),
-                    company: new UntypedFormControl(order.billingAddress?.company),
-                    streetLine1: new UntypedFormControl(order.billingAddress?.streetLine1),
-                    streetLine2: new UntypedFormControl(order.billingAddress?.streetLine2),
-                    city: new UntypedFormControl(order.billingAddress?.city),
-                    province: new UntypedFormControl(order.billingAddress?.province),
-                    postalCode: new UntypedFormControl(order.billingAddress?.postalCode),
-                    countryCode: new UntypedFormControl(order.billingAddress?.countryCode),
-                    phoneNumber: new UntypedFormControl(order.billingAddress?.phoneNumber),
-                });
-                this.addAddressCustomFieldsFormGroup(this.billingAddressForm, order.billingAddress);
+            this.addAddressCustomFieldsFormGroup(this.shippingAddressForm, order.shippingAddress);
+            for (const [name, control] of Object.entries(this.billingAddressForm.controls)) {
+                control.setValue(order.billingAddress?.[name]);
             }
+            this.addAddressCustomFieldsFormGroup(this.billingAddressForm, order.billingAddress);
             this.orderLineCustomFieldsFormArray = new UntypedFormArray([]);
             for (const line of order.lines) {
                 const formGroup = new UntypedFormGroup({});
@@ -209,6 +203,71 @@ export class OrderEditorComponent
         this.destroy();
     }
 
+    get addedLines(): AddedLine[] {
+        const getSinglePriceValue = (price: ProductSelectorItem['price']) =>
+            price.__typename === 'SinglePrice' ? price.value : 0;
+        return (this.modifyOrderInput.addItems || [])
+            .map(row => {
+                const variantInfo = this.addedVariants.get(row.productVariantId);
+                if (variantInfo) {
+                    return {
+                        id: this.getIdForAddedItem(row),
+                        featuredAsset: variantInfo.productAsset,
+                        productVariant: {
+                            id: variantInfo.productVariantId,
+                            name: variantInfo.productVariantName,
+                            sku: variantInfo.sku,
+                        },
+                        unitPrice: getSinglePriceValue(variantInfo.price),
+                        unitPriceWithTax: getSinglePriceValue(variantInfo.priceWithTax),
+                        quantity: row.quantity,
+                    };
+                }
+            })
+            .filter(notNullOrUndefined);
+    }
+
+    get adjustedLines(): string[] {
+        return (this.modifyOrderInput.adjustOrderLines || [])
+            .map(l => {
+                const line = this.entity?.lines.find(line => line.id === l.orderLineId);
+                if (line) {
+                    const delta = l.quantity - line.quantity;
+                    const sign = delta === 0 ? '' : delta > 0 ? '+' : '-';
+                    return delta
+                        ? `${sign}${Math.abs(delta)} ${line.productVariant.name}`
+                        : line.productVariant.name;
+                }
+            })
+            .filter(notNullOrUndefined);
+    }
+
+    get couponCodeChanges(): string[] {
+        const originalCodes = this.entity?.couponCodes || [];
+        const newCodes = this.couponCodesControl.value || [];
+        const addedCodes = newCodes.filter(c => !originalCodes.includes(c)).map(c => `+ ${c}`);
+        const removedCodes = originalCodes.filter(c => !newCodes.includes(c)).map(c => `- ${c}`);
+        return [...addedCodes, ...removedCodes];
+    }
+
+    getModifiedFields(formGroup: FormGroup): string {
+        if (!formGroup.dirty) {
+            return '';
+        }
+        return Object.entries(formGroup.controls)
+            .map(([key, control]) => {
+                if (control.dirty) {
+                    return key;
+                }
+            })
+            .filter(notNullOrUndefined)
+            .join(', ');
+    }
+
+    private getIdForAddedItem(row: ModifyOrderData['addItems'][number]) {
+        return `added-${row.productVariantId}-${JSON.stringify(row.customFields || {})}`;
+    }
+
     transitionToPriorState(order: OrderDetailFragment) {
         this.orderTransitionService
             .transitionToPreModifyingState(order.id, order.nextStates)
@@ -217,7 +276,7 @@ export class OrderEditorComponent
             });
     }
 
-    canPreviewChanges(): boolean {
+    hasModifications(): boolean {
         const { addItems, adjustOrderLines, surcharges } = this.modifyOrderInput;
         return (
             !!addItems?.length ||
@@ -235,30 +294,43 @@ export class OrderEditorComponent
         );
     }
 
-    updateLineQuantity(line: OrderDetailFragment['lines'][number], quantity: string) {
+    updateLineQuantity(line: OrderDetailFragment['lines'][number] | AddedLine, quantity: string) {
         const { adjustOrderLines } = this.modifyOrderInput;
-        let row = adjustOrderLines?.find(l => l.orderLineId === line.id);
-        if (row && +quantity === line.quantity) {
-            // Remove the modification if the quantity is the same as
-            // the original order
-            adjustOrderLines?.splice(adjustOrderLines?.indexOf(row), 1);
+        if (this.isAddedLine(line)) {
+            const row = this.modifyOrderInput.addItems?.find(
+                l => l.productVariantId === line.productVariant.id,
+            );
+            if (row) {
+                row.quantity = +quantity;
+            }
+        } else {
+            let row = adjustOrderLines?.find(l => l.orderLineId === line.id);
+            if (row && +quantity === line.quantity) {
+                // Remove the modification if the quantity is the same as
+                // the original order
+                adjustOrderLines?.splice(adjustOrderLines?.indexOf(row), 1);
+            }
+            if (!row) {
+                row = { orderLineId: line.id, quantity: +quantity };
+                adjustOrderLines?.push(row);
+            }
+            row.quantity = +quantity;
         }
-        if (!row) {
-            row = { orderLineId: line.id, quantity: +quantity };
-            adjustOrderLines?.push(row);
-        }
-        row.quantity = +quantity;
+    }
+
+    isAddedLine(line: OrderDetailFragment['lines'][number] | AddedLine): line is AddedLine {
+        return (line as AddedLine).id.startsWith('added-');
     }
 
     updateAddedItemQuantity(item: AddedLine, quantity: string) {
-        const row = this.modifyOrderInput.addItems?.find(l => l.productVariantId === item.productVariantId);
+        const row = this.modifyOrderInput.addItems?.find(l => l.productVariantId === item.productVariant.id);
         if (row) {
             row.quantity = +quantity;
         }
     }
 
     trackByProductVariantId(index: number, item: AddedLine) {
-        return item.productVariantId;
+        return item.productVariant.id;
     }
 
     getSelectedItemPrice(result: ProductSelectorItem | undefined): number {
@@ -317,11 +389,11 @@ export class OrderEditorComponent
         );
     }
 
-    removeAddedItem(index: number) {
-        this.modifyOrderInput.addItems.splice(index, 1);
-        if (-1 < index) {
-            this.addItemCustomFieldsFormArray.removeAt(index);
-        }
+    removeAddedItem(id: string) {
+        this.modifyOrderInput.addItems = this.modifyOrderInput.addItems?.filter(l => {
+            const itemId = this.getIdForAddedItem(l);
+            return itemId !== id;
+        });
     }
 
     getSurchargePrices(surcharge: SurchargeInput) {
