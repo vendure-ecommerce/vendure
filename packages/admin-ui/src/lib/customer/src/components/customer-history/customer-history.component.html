@@ -1,5 +1,5 @@
 <div class="entry-list">
-    <vdr-timeline-entry iconShape="note" displayType="muted" *vdrIfPermissions="'UpdateCustomer'">
+    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true" *vdrIfPermissions="'UpdateCustomer'">
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToCustomer()">
@@ -133,8 +133,8 @@
                             </div>
                             <div class="flex-spacer"></div>
                             <vdr-dropdown>
-                                <button class="icon-button" vdrDropdownTrigger>
-                                    <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                <button class="button-small ml-1" vdrDropdownTrigger>
+                                    <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
                                 </button>
                                 <vdr-dropdown-menu vdrPosition="bottom-right">
                                     <button

@@ -96,13 +96,27 @@
     <vdr-page-detail-sidebar>
         <vdr-card [title]="'order.state' | translate">
             <ng-template vdrCardControls>
-                <button class="button-small" (click)="openStateDiagram()" [title]="'order.order-state-diagram' | translate">
+                <button
+                    class="button-small"
+                    (click)="openStateDiagram()"
+                    [title]="'order.order-state-diagram' | translate"
+                >
                     <clr-icon shape="list"></clr-icon>
                 </button>
             </ng-template>
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
         </vdr-card>
         <vdr-card [title]="'order.customer' | translate">
+            <ng-template vdrCardControls>
+                <button
+                    *vdrIfPermissions="['UpdateOrder', 'ReadCustomer']"
+                    class="button-small"
+                    (click)="setOrderCustomer()"
+                    [title]="'order.assign-order-to-another-customer' | translate"
+                >
+                    <clr-icon shape="switch"></clr-icon>
+                </button>
+            </ng-template>
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
             <vdr-labeled-data
                 class="mt-2"

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import {
-    GetOrderHistoryQuery,
     HistoryEntryComponentService,
     HistoryEntryType,
     OrderDetailFragment,
@@ -84,6 +83,9 @@ export class OrderHistoryComponent {
         if (entry.type === HistoryEntryType.ORDER_MODIFIED) {
             return 'pencil';
         }
+        if (entry.type === HistoryEntryType.ORDER_CUSTOMER_UPDATED) {
+            return 'switch';
+        }
         if (entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) {
             if (entry.data.to === 'Shipped') {
                 return 'truck';
@@ -111,6 +113,7 @@ export class OrderHistoryComponent {
                 return entry.data.to === 'Delivered' || entry.data.to === 'Shipped';
             case HistoryEntryType.ORDER_NOTE:
             case HistoryEntryType.ORDER_MODIFIED:
+            case HistoryEntryType.ORDER_CUSTOMER_UPDATED:
                 return true;
             default:
                 return false;

@@ -14,6 +14,7 @@ import {
     OrderDetailFragment,
     OrderDetailQueryDocument,
     Refund,
+    SetOrderCustomerDocument,
     SortOrder,
     TimelineHistoryEntry,
     TypedBaseDetailComponent,
@@ -29,6 +30,7 @@ import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
 import { OrderProcessGraphDialogComponent } from '../order-process-graph-dialog/order-process-graph-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
+import { SelectCustomerDialogComponent } from '../select-customer-dialog/select-customer-dialog.component';
 import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
 
 type Payment = NonNullable<OrderDetailFragment['payments']>[number];
@@ -40,6 +42,20 @@ export const ORDER_DETAIL_QUERY = gql`
         }
     }
     ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const SET_ORDER_CUSTOMER_MUTATION = gql`
+    mutation SetOrderCustomer($input: SetOrderCustomerInput!) {
+        setOrderCustomer(input: $input) {
+            id
+            customer {
+                id
+                firstName
+                lastName
+                emailAddress
+            }
+        }
+    }
 `;
 
 @Component({
@@ -132,6 +148,41 @@ export class OrderDetailComponent
                 ),
             )
             .subscribe();
+    }
+
+    setOrderCustomer() {
+        this.modalService
+            .fromComponent(SelectCustomerDialogComponent, {
+                locals: {
+                    canCreateNew: false,
+                    includeNoteInput: true,
+                    title: _('order.assign-order-to-another-customer'),
+                },
+            })
+            .pipe(
+                switchMap(result => {
+                    function isExisting(input: any): input is { id: string } {
+                        return typeof input === 'object' && !!input.id;
+                    }
+                    if (isExisting(result)) {
+                        return this.dataService.mutate(SetOrderCustomerDocument, {
+                            input: {
+                                customerId: result.id,
+                                orderId: this.id,
+                                note: result.note,
+                            },
+                        });
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+                switchMap(result => this.refetchOrder(result)),
+            )
+            .subscribe(result => {
+                if (result) {
+                    this.notificationService.success(_('order.set-customer-success'));
+                }
+            });
     }
 
     transitionToState(state: string) {

@@ -117,7 +117,9 @@
                                             {{ entry.data.reason }}
                                         </vdr-labeled-data>
                                         <vdr-labeled-data [label]="'order.contents' | translate">
-                                            <vdr-simple-item-list [items]="getCancelledItems(refund.lines)"></vdr-simple-item-list>
+                                            <vdr-simple-item-list
+                                                [items]="getCancelledItems(refund.lines)"
+                                            ></vdr-simple-item-list>
                                         </vdr-labeled-data>
                                     </vdr-history-entry-detail>
                                 </div>
@@ -238,6 +240,48 @@
                         <vdr-chip
                             ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
                         >
+                    </ng-container>
+                    <ng-container *ngSwitchCase="type.ORDER_CUSTOMER_UPDATED">
+                        <div class="title">
+                            {{
+                                'order.history-customer-updated'
+                                    | translate : { newCustomerName: entry.data.newCustomerName }
+                            }}
+                        </div>
+                        <div class="flex">
+                            <div class="note-text">
+                                {{ entry.data.note }}
+                            </div>
+                            <div class="flex-spacer"></div>
+                            <vdr-history-entry-detail>
+                                <vdr-labeled-data [label]="'order.previous-customer' | translate">
+                                    <a
+                                        *ngIf="entry.data.previousCustomerId"
+                                        class="button-ghost"
+                                        [routerLink]="[
+                                            '/customer',
+                                            'customers',
+                                            entry.data.previousCustomerId
+                                        ]"
+                                    >
+                                        <clr-icon shape="user" class="is-solid"></clr-icon>
+                                        <span>{{ entry.data.previousCustomerName }}</span>
+                                        <clr-icon shape="arrow right"></clr-icon>
+                                    </a>
+                                </vdr-labeled-data>
+                                <vdr-labeled-data [label]="'order.new-customer' | translate">
+                                    <a
+                                        *ngIf="entry.data.newCustomerId"
+                                        class="button-ghost"
+                                        [routerLink]="['/customer', 'customers', entry.data.newCustomerId]"
+                                    >
+                                        <clr-icon shape="user" class="is-solid"></clr-icon>
+                                        <span>{{ entry.data.newCustomerName }}</span>
+                                        <clr-icon shape="arrow right"></clr-icon>
+                                    </a>
+                                </vdr-labeled-data>
+                            </vdr-history-entry-detail>
+                        </div>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                         <div class="title">
