@@ -48,6 +48,7 @@ import { SettleRefundDialogComponent } from './components/settle-refund-dialog/s
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
 import { createRoutes } from './order.routes';
 import { OrderDataTableComponent } from './components/order-data-table/order-data-table.component';
+import { PaymentForRefundSelectorComponent } from './components/payment-for-refund-selector/payment-for-refund-selector.component';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
@@ -98,6 +99,7 @@ import { OrderDataTableComponent } from './components/order-data-table/order-dat
         SellerOrdersCardComponent,
         OrderDataTableComponent,
         OrderTotalColumnComponent,
+        PaymentForRefundSelectorComponent,
     ],
     exports: [OrderCustomFieldsCardComponent],
 })

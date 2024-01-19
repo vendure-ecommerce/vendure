@@ -12,14 +12,9 @@ import {
     RefundOrderInput,
 } from '@vendure/admin-ui/core';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { getRefundablePayments, RefundablePayment } from '../../common/get-refundable-payments';
 
 type SelectionLine = { quantity: number; cancel: boolean };
-type Payment = NonNullable<OrderDetailFragment['payments']>[number];
-type RefundablePayment = Payment & {
-    refundableAmount: number;
-    amountToRefundControl: FormControl<number>;
-    selected: boolean;
-};
 
 @Component({
     selector: 'vdr-refund-order-dialog',
@@ -88,24 +83,7 @@ export class RefundOrderDialogComponent
             }),
             {},
         );
-        const settledPayments = (this.order.payments || []).filter(p => p.state === 'Settled');
-        this.refundablePayments = settledPayments.map((payment, index) => {
-            const refundableAmount =
-                payment.amount -
-                summate(
-                    payment.refunds.filter(r => r.state !== 'Failed'),
-                    'total',
-                );
-            return {
-                ...payment,
-                refundableAmount,
-                amountToRefundControl: new FormControl(0, {
-                    nonNullable: true,
-                    validators: [Validators.min(0), Validators.max(refundableAmount)],
-                }),
-                selected: index === 0,
-            };
-        });
+        this.refundablePayments = getRefundablePayments(this.order.payments);
     }
 
     updateRefundTotal() {
