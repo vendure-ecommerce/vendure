@@ -165,6 +165,27 @@ export class OrderModule {
                 ],
             }),
         });
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'modify-order',
+            tab: _('order.order'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: OrderEditorComponent,
+                query: OrderDetailQueryDocument,
+                entityKey: 'order',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity?.code || 'order',
+                        link: ['/orders/', entity?.id],
+                    },
+                    {
+                        label: _('order.modify-order'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
         OrderModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

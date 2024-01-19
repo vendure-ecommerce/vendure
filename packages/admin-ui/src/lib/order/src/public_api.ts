@@ -44,5 +44,4 @@ export * from './components/simple-item-list/simple-item-list.component';
 export * from './order.module';
 export * from './order.routes';
 export * from './providers/order-transition.service';
-export * from './providers/routing/order-resolver';
 export * from './providers/routing/order.guard';

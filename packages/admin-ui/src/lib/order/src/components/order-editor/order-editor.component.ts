@@ -1,9 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import {
     AddItemInput,
-    BaseDetailComponent,
     CustomFieldConfig,
     DataService,
     ErrorResult,
@@ -15,12 +13,13 @@ import {
     NotificationService,
     OrderAddressFragment,
     OrderDetailFragment,
+    OrderDetailQueryDocument,
     OrderLineInput,
     ProductSelectorSearchQuery,
-    ServerConfigService,
     SortOrder,
     SurchargeInput,
     transformRelationCustomFieldInputs,
+    TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
 import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
@@ -57,7 +56,7 @@ type ModifyOrderData = Omit<ModifyOrderInput, 'addItems' | 'adjustOrderLines'> &
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderEditorComponent
-    extends BaseDetailComponent<OrderDetailFragment>
+    extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>
     implements OnInit, OnDestroy
 {
     availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
@@ -88,16 +87,12 @@ export class OrderEditorComponent
     private addedVariants = new Map<string, ProductSelectorItem>();
 
     constructor(
-        router: Router,
-        route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
-        private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
         private orderTransitionService: OrderTransitionService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super();
     }
 
     get addedLines(): AddedLine[] {

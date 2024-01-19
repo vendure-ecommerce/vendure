@@ -1,12 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { titleSetter } from '../../../common/title-setter';
@@ -24,7 +16,7 @@ export class PageTitleComponent implements OnInit, OnChanges {
     protected title$: Observable<string>;
     readonly setTitle = titleSetter();
 
-    constructor(private changeDetector: ChangeDetectorRef, private breadcrumbService: BreadcrumbService) {}
+    constructor(private breadcrumbService: BreadcrumbService) {}
 
     ngOnInit() {
         this.title$ = combineLatest(this.titleChange$, this.breadcrumbService.breadcrumbs$).pipe(

@@ -1,14 +1,6 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BreadcrumbLabelLinkPair,
-    OrderDetailFragment,
-    PageComponent,
-    PageService,
-} from '@vendure/admin-ui/core';
-import { map } from 'rxjs/operators';
-import { OrderEditorComponent } from './components/order-editor/order-editor.component';
-import { OrderResolver } from './providers/routing/order-resolver';
+import { PageComponent, PageService } from '@vendure/admin-ui/core';
 import { OrderGuard } from './providers/routing/order.guard';
 
 export const createRoutes = (pageService: PageService): Route[] => [
@@ -54,60 +46,12 @@ export const createRoutes = (pageService: PageService): Route[] => [
     },
     {
         path: ':id/modify',
-        component: OrderEditorComponent,
-        resolve: {
-            entity: OrderResolver,
-        },
+        component: PageComponent,
+        canActivate: [OrderGuard],
         data: {
-            breadcrumb: modifyingOrderBreadcrumb,
+            locationId: 'modify-order',
+            breadcrumb: { label: _('breadcrumb.orders'), link: ['../'] },
         },
+        children: pageService.getPageTabRoutes('modify-order'),
     },
 ];
-
-export function orderBreadcrumb(data: any, params: any) {
-    return data.entity.pipe(
-        map((entity: OrderDetailFragment) => {
-            if (entity.aggregateOrder) {
-                return [
-                    {
-                        label: 'breadcrumb.orders',
-                        link: ['../'],
-                    },
-                    {
-                        label: entity.aggregateOrder.code,
-                        link: ['../', entity.aggregateOrder.id],
-                    },
-                    {
-                        label: _('breadcrumb.seller-orders'),
-                        link: ['../', entity.aggregateOrder.id],
-                    },
-                    {
-                        label: entity.code,
-                        link: [entity.id],
-                    },
-                ];
-            } else {
-                return [
-                    {
-                        label: 'breadcrumb.orders',
-                        link: ['../'],
-                    },
-                    {
-                        label: entity.code,
-                        link: [entity.id],
-                    },
-                ];
-            }
-        }),
-    );
-}
-
-export function modifyingOrderBreadcrumb(data: any, params: any) {
-    return orderBreadcrumb(data, params).pipe(
-        map((breadcrumbs: BreadcrumbLabelLinkPair[]) => {
-            const modifiedBreadcrumbs = breadcrumbs.slice();
-            modifiedBreadcrumbs[1].link = ['../', breadcrumbs[1].link[0]];
-            return modifiedBreadcrumbs.concat({ label: _('breadcrumb.modifying'), link: [''] });
-        }) as any,
-    );
-}

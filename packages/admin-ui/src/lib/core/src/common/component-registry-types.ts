@@ -72,6 +72,7 @@ export type PageLocationId =
     | 'job-list'
     | 'order-detail'
     | 'order-list'
+    | 'modify-order'
     | 'payment-method-detail'
     | 'payment-method-list'
     | 'product-detail'
