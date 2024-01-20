@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { DefaultJobQueuePlugin, DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../../e2e-common/test-config';
+import { SEARCH_PRODUCTS_ADMIN } from '../graphql/admin-definitions';
 import {
-    SearchInput,
     SearchResultSortParameter,
     SortOrder,
     SearchProductsAdminQuery,
@@ -18,61 +16,10 @@ import {
     SearchProductsShopQuery,
     SearchProductsShopQueryVariables,
 } from '../graphql/generated-e2e-shop-types';
+import { SEARCH_PRODUCTS_SHOP } from '../graphql/shop-definitions';
 import { awaitRunningJobs } from '../utils/await-running-jobs';
 
-interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
-    input: SearchProductsShopQueryVariables['input'] & {
-        // This input field is dynamically added only when the `indexStockStatus` init option
-        // is set to `true`, and therefore not included in the generated type. Therefore
-        // we need to manually patch it here.
-        inStock?: boolean;
-    };
-}
-
-const SEARCH_PRODUCTS_SHOP = gql`
-    query SearchProductsShop($input: SearchInput!) {
-        search(input: $input) {
-            totalItems
-            items {
-                productId
-                productName
-                productVariantId
-                productVariantName
-                sku
-                collectionIds
-                price {
-                    ... on SinglePrice {
-                        value
-                    }
-                    ... on PriceRange {
-                        min
-                        max
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const SEARCH_PRODUCTS_ADMIN = gql`
-    query SearchProductsAdmin($input: SearchInput!) {
-        search(input: $input) {
-            totalItems
-            items {
-                enabled
-                productId
-                productName
-                slug
-                description
-                productVariantId
-                productVariantName
-                sku
-            }
-        }
-    }
-`;
-
-describe('Default search plugin - sort by', () => {
+describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             plugins: [
@@ -99,21 +46,23 @@ describe('Default search plugin - sort by', () => {
         await server.destroy();
     });
 
-    function searchProductsShop(input: SearchProductsShopQueryVariablesExt['input']) {
-        return shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariablesExt>(
+    function searchProductsShop(queryVariables: SearchProductsShopQueryVariables) {
+        return shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
-            { input },
+            queryVariables,
         );
     }
 
-    function searchProductsAdmin(input: SearchInput) {
+    function searchProductsAdmin(queryVariables: SearchProductsAdminQueryVariables) {
         return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
             SEARCH_PRODUCTS_ADMIN,
-            { input },
+            queryVariables,
         );
     }
 
-    type SearchProducts = (input: SearchInput) => Promise<SearchProductsShopQuery | SearchProductsAdminQuery>;
+    type SearchProducts = (
+        queryVariables: SearchProductsShopQueryVariables | SearchProductsAdminQueryVariables,
+    ) => Promise<SearchProductsShopQuery | SearchProductsAdminQuery>;
 
     async function testSearchProducts(
         searchProducts: SearchProducts,
@@ -124,12 +73,14 @@ describe('Default search plugin - sort by', () => {
         take: number,
     ) {
         return searchProducts({
-            groupByProduct,
-            sort: {
-                [sortBy]: sortOrder,
+            input: {
+                groupByProduct,
+                sort: {
+                    [sortBy]: sortOrder,
+                },
+                skip,
+                take,
             },
-            skip,
-            take,
         });
     }
 
@@ -142,21 +93,8 @@ describe('Default search plugin - sort by', () => {
         const pvIds3 = pvIds1.concat(pvIds2);
 
         expect(new Set(pvIds3).size).equals(6);
-        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['SA40', 'SA41', 'SA42']);
-        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['SA43', 'SB40', 'SB41']);
-    }
-
-    async function testSortByPriceAscGroupByProduct(searchProducts: SearchProducts) {
-        const resultPage1 = await testSearchProducts(searchProducts, true, 'price', SortOrder.ASC, 0, 3);
-        const resultPage2 = await testSearchProducts(searchProducts, true, 'price', SortOrder.ASC, 3, 3);
-
-        const pvIds1 = resultPage1.search.items.map(i => i.productVariantId);
-        const pvIds2 = resultPage2.search.items.map(i => i.productVariantId);
-        const pvIds3 = pvIds1.concat(pvIds2);
-
-        expect(new Set(pvIds3).size).equals(6);
-        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['SA40', 'SB40', 'SC40']);
-        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['BA40', 'BB40', 'BC40']);
+        expect(resultPage1.search.items.map(i => i.productVariantId)).toEqual(['T_4', 'T_5', 'T_6']);
+        expect(resultPage2.search.items.map(i => i.productVariantId)).toEqual(['T_7', 'T_8', 'T_9']);
     }
 
     async function testSortByPriceDesc(searchProducts: SearchProducts) {
@@ -168,8 +106,21 @@ describe('Default search plugin - sort by', () => {
         const pvIds3 = pvIds1.concat(pvIds2);
 
         expect(new Set(pvIds3).size).equals(6);
-        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['BA40', 'BB40', 'BC40']);
-        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['SA40', 'SA41', 'SA42']);
+        expect(resultPage1.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_3']);
+        expect(resultPage2.search.items.map(i => i.productVariantId)).toEqual(['T_4', 'T_5', 'T_6']);
+    }
+
+    async function testSortByPriceAscGroupByProduct(searchProducts: SearchProducts) {
+        const resultPage1 = await testSearchProducts(searchProducts, true, 'price', SortOrder.ASC, 0, 3);
+        const resultPage2 = await testSearchProducts(searchProducts, true, 'price', SortOrder.ASC, 3, 3);
+
+        const pvIds1 = resultPage1.search.items.map(i => i.productVariantId);
+        const pvIds2 = resultPage2.search.items.map(i => i.productVariantId);
+        const pvIds3 = pvIds1.concat(pvIds2);
+
+        expect(new Set(pvIds3).size).equals(6);
+        expect(resultPage1.search.items.map(i => i.productId)).toEqual(['T_4', 'T_5', 'T_6']);
+        expect(resultPage2.search.items.map(i => i.productId)).toEqual(['T_1', 'T_2', 'T_3']);
     }
 
     async function testSortByPriceDescGroupByProduct(searchProducts: SearchProducts) {
@@ -181,11 +132,11 @@ describe('Default search plugin - sort by', () => {
         const pvIds3 = pvIds1.concat(pvIds2);
 
         expect(new Set(pvIds3).size).equals(6);
-        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['BA40', 'BB40', 'BC40']);
-        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['SA40', 'SB40', 'SC40']);
+        expect(resultPage1.search.items.map(i => i.productId)).toEqual(['T_1', 'T_2', 'T_3']);
+        expect(resultPage2.search.items.map(i => i.productId)).toEqual(['T_4', 'T_5', 'T_6']);
     }
 
-    describe('shop API', () => {
+    describe('Search products shop', () => {
         const searchProducts = searchProductsShop;
 
         it('sort by price ASC', () => testSortByPriceAsc(searchProducts));
@@ -195,7 +146,7 @@ describe('Default search plugin - sort by', () => {
         it('sort by price DESC group by product', () => testSortByPriceDescGroupByProduct(searchProducts));
     });
 
-    describe('admin API', () => {
+    describe('Search products admin', () => {
         const searchProducts = searchProductsAdmin;
 
         it('sort by price ACS', () => testSortByPriceAsc(searchProducts));

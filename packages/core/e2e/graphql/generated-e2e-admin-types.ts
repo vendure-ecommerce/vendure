@@ -6743,26 +6743,6 @@ export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
 
 export type ReindexMutation = { reindex: { id: string } };
 
-export type SearchProductsAdminQueryVariables = Exact<{
-    input: SearchInput;
-}>;
-
-export type SearchProductsAdminQuery = {
-    search: {
-        totalItems: number;
-        items: Array<{
-            enabled: boolean;
-            productId: string;
-            productName: string;
-            slug: string;
-            description: string;
-            productVariantId: string;
-            productVariantName: string;
-            sku: string;
-        }>;
-    };
-};
-
 export type SearchFacetValuesQueryVariables = Exact<{
     input: SearchInput;
 }>;
@@ -6819,25 +6799,6 @@ export type SearchGetPricesQuery = {
         items: Array<{
             price: { min: number; max: number } | { value: number };
             priceWithTax: { min: number; max: number } | { value: number };
-        }>;
-    };
-};
-
-export type SearchProductsShopQueryVariables = Exact<{
-    input: SearchInput;
-}>;
-
-export type SearchProductsShopQuery = {
-    search: {
-        totalItems: number;
-        items: Array<{
-            productId: string;
-            productName: string;
-            productVariantId: string;
-            productVariantName: string;
-            sku: string;
-            collectionIds: Array<string>;
-            price: { min: number; max: number } | { value: number };
         }>;
     };
 };
@@ -7882,6 +7843,26 @@ export type GetGlobalSettingsQuery = {
                 >;
             };
         };
+    };
+};
+
+export type SearchProductsAdminQueryVariables = Exact<{
+    input: SearchInput;
+}>;
+
+export type SearchProductsAdminQuery = {
+    search: {
+        totalItems: number;
+        items: Array<{
+            enabled: boolean;
+            productId: string;
+            productName: string;
+            slug: string;
+            description: string;
+            productVariantId: string;
+            productVariantName: string;
+            sku: string;
+        }>;
     };
 };
 
@@ -17795,71 +17776,6 @@ export const ReindexDocument = {
         },
     ],
 } as unknown as DocumentNode<ReindexMutation, ReindexMutationVariables>;
-export const SearchProductsAdminDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'SearchProductsAdmin' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'SearchInput' } },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'search' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'input' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'productName' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'productVariantId' },
-                                            },
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'productVariantName' },
-                                            },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>;
 export const SearchFacetValuesDocument = {
     kind: 'Document',
     definitions: [
@@ -18269,117 +18185,6 @@ export const SearchGetPricesDocument = {
         },
     ],
 } as unknown as DocumentNode<SearchGetPricesQuery, SearchGetPricesQueryVariables>;
-export const SearchProductsShopDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'SearchProductsShop' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'SearchInput' } },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'search' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'input' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'productName' } },
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'productVariantId' },
-                                            },
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'productVariantName' },
-                                            },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'collectionIds' } },
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'price' },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'InlineFragment',
-                                                            typeCondition: {
-                                                                kind: 'NamedType',
-                                                                name: { kind: 'Name', value: 'SinglePrice' },
-                                                            },
-                                                            selectionSet: {
-                                                                kind: 'SelectionSet',
-                                                                selections: [
-                                                                    {
-                                                                        kind: 'Field',
-                                                                        name: {
-                                                                            kind: 'Name',
-                                                                            value: 'value',
-                                                                        },
-                                                                    },
-                                                                ],
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: 'InlineFragment',
-                                                            typeCondition: {
-                                                                kind: 'NamedType',
-                                                                name: { kind: 'Name', value: 'PriceRange' },
-                                                            },
-                                                            selectionSet: {
-                                                                kind: 'SelectionSet',
-                                                                selections: [
-                                                                    {
-                                                                        kind: 'Field',
-                                                                        name: { kind: 'Name', value: 'min' },
-                                                                    },
-                                                                    {
-                                                                        kind: 'Field',
-                                                                        name: { kind: 'Name', value: 'max' },
-                                                                    },
-                                                                ],
-                                                            },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<SearchProductsShopQuery, SearchProductsShopQueryVariables>;
 export const CreateDraftOrderDocument = {
     kind: 'Document',
     definitions: [
@@ -22852,6 +22657,71 @@ export const GetGlobalSettingsDocument = {
         },
     ],
 } as unknown as DocumentNode<GetGlobalSettingsQuery, GetGlobalSettingsQueryVariables>;
+export const SearchProductsAdminDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'SearchProductsAdmin' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'SearchInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'search' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'items' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'productName' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'productVariantId' },
+                                            },
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'productVariantName' },
+                                            },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>;
 export const CreateAdministratorDocument = {
     kind: 'Document',
     definitions: [

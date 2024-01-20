@@ -20,6 +20,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import { SEARCH_PRODUCTS_ADMIN } from './graphql/admin-definitions';
 import {
     ChannelFragment,
     CurrencyCode,
@@ -1916,24 +1917,6 @@ export const REINDEX = gql`
     mutation Reindex {
         reindex {
             id
-        }
-    }
-`;
-
-export const SEARCH_PRODUCTS_ADMIN = gql`
-    query SearchProductsAdmin($input: SearchInput!) {
-        search(input: $input) {
-            totalItems
-            items {
-                enabled
-                productId
-                productName
-                slug
-                description
-                productVariantId
-                productVariantName
-                sku
-            }
         }
     }
 `;
