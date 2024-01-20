@@ -87,7 +87,7 @@ describe('Default search plugin - sort by', () => {
     beforeAll(async () => {
         await server.init({
             initialData,
-            productsCsvPath: path.join(__dirname, 'fixtures', 'sort-by.csv'),
+            productsCsvPath: path.join(__dirname, 'fixtures', 'default-search-plugin-sort-by.csv'),
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
