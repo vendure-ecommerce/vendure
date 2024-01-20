@@ -92,6 +92,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
             qb.addSelect('MIN(si.priceWithTax)', 'minPriceWithTax');
             qb.addSelect('MAX(si.priceWithTax)', 'maxPriceWithTax');
         }
+
         this.applyTermAndFilters(ctx, qb, input);
 
         if (sort) {
@@ -103,12 +104,12 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 qb.addOrderBy('si.price', sort.price);
             }
         } else if (input.term && input.term.length > this.minTermLength) {
-            qb.orderBy('score', 'DESC');
+            qb.addOrderBy('score', 'DESC');
         }
 
         // Required to ensure deterministic sorting.
         // E.g. in case of sorting products with duplicate name, price or score results.
-        // qb.addOrderBy('si.productVariantId', 'ASC');
+        qb.addOrderBy('si.productVariantId', 'ASC');
 
         if (enabledOnly) {
             qb.andWhere('si.enabled = :enabled', { enabled: true });

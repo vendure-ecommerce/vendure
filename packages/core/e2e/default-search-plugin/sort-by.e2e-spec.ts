@@ -115,7 +115,7 @@ describe('Default search plugin - sort by', () => {
 
     type SearchProducts = (input: SearchInput) => Promise<SearchProductsShopQuery | SearchProductsAdminQuery>;
 
-    async function testSortBy(
+    async function testSearchProducts(
         searchProducts: SearchProducts,
         groupByProduct: boolean,
         sortBy: keyof SearchResultSortParameter,
@@ -133,25 +133,75 @@ describe('Default search plugin - sort by', () => {
         });
     }
 
+    async function testSortByPriceAsc(searchProducts: SearchProducts) {
+        const resultPage1 = await testSearchProducts(searchProducts, false, 'price', SortOrder.ASC, 0, 3);
+        const resultPage2 = await testSearchProducts(searchProducts, false, 'price', SortOrder.ASC, 3, 3);
+
+        const pvIds1 = resultPage1.search.items.map(i => i.productVariantId);
+        const pvIds2 = resultPage2.search.items.map(i => i.productVariantId);
+        const pvIds3 = pvIds1.concat(pvIds2);
+
+        expect(new Set(pvIds3).size).equals(6);
+        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['SA40', 'SA41', 'SA42']);
+        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['SA43', 'SB40', 'SB41']);
+    }
+
+    async function testSortByPriceAscGroupByProduct(searchProducts: SearchProducts) {
+        const resultPage1 = await testSearchProducts(searchProducts, true, 'price', SortOrder.ASC, 0, 3);
+        const resultPage2 = await testSearchProducts(searchProducts, true, 'price', SortOrder.ASC, 3, 3);
+
+        const pvIds1 = resultPage1.search.items.map(i => i.productVariantId);
+        const pvIds2 = resultPage2.search.items.map(i => i.productVariantId);
+        const pvIds3 = pvIds1.concat(pvIds2);
+
+        expect(new Set(pvIds3).size).equals(6);
+        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['SA40', 'SB40', 'SC40']);
+        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['BA40', 'BB40', 'BC40']);
+    }
+
+    async function testSortByPriceDesc(searchProducts: SearchProducts) {
+        const resultPage1 = await testSearchProducts(searchProducts, false, 'price', SortOrder.DESC, 0, 3);
+        const resultPage2 = await testSearchProducts(searchProducts, false, 'price', SortOrder.DESC, 3, 3);
+
+        const pvIds1 = resultPage1.search.items.map(i => i.productVariantId);
+        const pvIds2 = resultPage2.search.items.map(i => i.productVariantId);
+        const pvIds3 = pvIds1.concat(pvIds2);
+
+        expect(new Set(pvIds3).size).equals(6);
+        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['BA40', 'BB40', 'BC40']);
+        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['SA40', 'SA41', 'SA42']);
+    }
+
+    async function testSortByPriceDescGroupByProduct(searchProducts: SearchProducts) {
+        const resultPage1 = await testSearchProducts(searchProducts, true, 'price', SortOrder.DESC, 0, 3);
+        const resultPage2 = await testSearchProducts(searchProducts, true, 'price', SortOrder.DESC, 3, 3);
+
+        const pvIds1 = resultPage1.search.items.map(i => i.productVariantId);
+        const pvIds2 = resultPage2.search.items.map(i => i.productVariantId);
+        const pvIds3 = pvIds1.concat(pvIds2);
+
+        expect(new Set(pvIds3).size).equals(6);
+        expect(resultPage1.search.items.map(i => i.sku)).toEqual(['BA40', 'BB40', 'BC40']);
+        expect(resultPage2.search.items.map(i => i.sku)).toEqual(['SA40', 'SB40', 'SC40']);
+    }
+
     describe('shop API', () => {
-        it('sort by price ASC', async () => {
-            const resultPage1 = await testSortBy(searchProductsShop, false, 'price', SortOrder.ASC, 0, 3);
-            const resultPage2 = await testSortBy(searchProductsShop, false, 'price', SortOrder.ASC, 3, 3);
+        const searchProducts = searchProductsShop;
 
-            // console.log(
-            //     resultPage1.search.items.map(i => i.sku),
-            //     resultPage2.search.items.map(i => i.sku),
-            // );
+        it('sort by price ASC', () => testSortByPriceAsc(searchProducts));
+        it('sort by price DESC', () => testSortByPriceDesc(searchProducts));
 
-            const pvIds1 = resultPage1.search.items.map(i => i.productVariantId);
-            const pvIds2 = resultPage2.search.items.map(i => i.productVariantId);
-            const pvIds3 = pvIds1.concat(pvIds2);
+        it('sort by price ASC group by product', () => testSortByPriceAscGroupByProduct(searchProducts));
+        it('sort by price DESC group by product', () => testSortByPriceDescGroupByProduct(searchProducts));
+    });
 
-            expect(new Set(pvIds3).size).equals(6);
+    describe('admin API', () => {
+        const searchProducts = searchProductsAdmin;
 
-            expect(resultPage1.search.items.map(i => i.sku)).toEqual(['SA40', 'SA41', 'SA42']);
+        it('sort by price ACS', () => testSortByPriceAsc(searchProducts));
+        it('sort by price DESC', () => testSortByPriceDesc(searchProducts));
 
-            expect(resultPage2.search.items.map(i => i.sku)).toEqual(['SA43', 'SB40', 'SB41']);
-        });
+        it('sort by price ASC group by product', () => testSortByPriceAscGroupByProduct(searchProducts));
+        it('sort by price DESC group by product', () => testSortByPriceDescGroupByProduct(searchProducts));
     });
 });

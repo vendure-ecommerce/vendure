@@ -106,12 +106,12 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 qb.addOrderBy('si_price', sort.price);
             }
         } else if (input.term && input.term.length > this.minTermLength) {
-            qb.orderBy('score', 'DESC');
+            qb.addOrderBy('score', 'DESC');
         }
 
         // Required to ensure deterministic sorting.
         // E.g. in case of sorting products with duplicate name, price or score results.
-        // qb.addOrderBy('si_productVariantId', 'ASC');
+        qb.addOrderBy('si_productVariantId', 'ASC');
 
         if (enabledOnly) {
             qb.andWhere('si.enabled = :enabled', { enabled: true });

@@ -111,7 +111,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
 
         // Required to ensure deterministic sorting.
         // E.g. in case of sorting products with duplicate name, price or score results.
-        // qb.addOrderBy('"si_productVariantId"', 'ASC');
+        qb.addOrderBy('"si_productVariantId"', 'ASC');
 
         if (enabledOnly) {
             qb.andWhere('"si"."enabled" = :enabled', { enabled: true });
