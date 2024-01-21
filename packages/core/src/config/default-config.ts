@@ -174,7 +174,9 @@ export const defaultConfig: RuntimeVendureConfig = {
         assetImportStrategy: new DefaultAssetImportStrategy(),
     },
     jobQueueOptions: {
-        jobQueueStrategy: new InMemoryJobQueueStrategy(),
+        jobQueueStrategy: new InMemoryJobQueueStrategy({
+            stopActiveQueueTimeout: 2000,
+        }),
         jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
         prefix: '',

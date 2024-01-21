@@ -24,7 +24,8 @@ const backoffStrategySpy = vi.fn();
 const testJobQueueStrategy = new TestingJobQueueStrategy({
     concurrency: 1,
     pollInterval: queuePollInterval,
-    backoffStrategy: backoffStrategySpy.mockReturnValue(0),
+    backOffStrategy: backoffStrategySpy.mockReturnValue(0),
+    stopActiveQueueTimeout: 2000, // Todo: add stopActiveQueueTimeout test cases
 });
 const testJobBufferStorageStrategy = new TestingJobBufferStorageStrategy();
 
