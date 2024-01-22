@@ -1,7 +1,5 @@
 import { Type } from '@nestjs/common';
 import { ContextId, ModuleRef } from '@nestjs/core';
-import { getConnectionToken } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
 
 /**
  * @description
@@ -26,7 +24,7 @@ export class Injector {
 
     /**
      * @description
-     * Retrieve an instance of the given scoped provider (transient or request-scoped) from the
+     * Resolve an instance of the given scoped provider (transient or request-scoped) from the
      * app's dependency injection container.
      * Wraps the Nestjs `ModuleRef.resolve()` method.
      */

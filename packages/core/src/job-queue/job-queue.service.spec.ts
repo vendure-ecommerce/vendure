@@ -25,8 +25,9 @@ const testJobQueueStrategy = new TestingJobQueueStrategy({
     concurrency: 1,
     pollInterval: queuePollInterval,
     backOffStrategy: backoffStrategySpy.mockReturnValue(0),
-    stopActiveQueueTimeout: 2000, // Todo: add stopActiveQueueTimeout test cases
+    stopActiveQueueTimeout: 2000,
 });
+
 const testJobBufferStorageStrategy = new TestingJobBufferStorageStrategy();
 
 describe('JobQueueService', () => {
@@ -352,7 +353,7 @@ describe('JobQueueService', () => {
         expect((await getJob(testJob)).result).toBe('yay');
     });
 
-    it('should not start a queue if its name is in the active list', async () => {
+    it('should not start a queue if its name is not in the active list', async () => {
         module.get(ConfigService).jobQueueOptions.activeQueues = ['another'];
 
         const subject = new Subject();
@@ -440,6 +441,59 @@ describe('JobQueueService', () => {
 
             expect(result.length).toBe(1);
             expect(result[0].data).toBe('hello world');
+        });
+    });
+
+    describe('stop active queue timeout', () => {
+        it('completes job after stopping queue when it finishes within timeout', async () => {
+            const subject = new Subject<string>();
+            const testQueue = await jobQueueService.createQueue<string>({
+                name: 'test',
+                process: job => {
+                    return subject.toPromise();
+                },
+            });
+
+            const testJob = await testQueue.add('hello');
+            expect(testJob.state).toBe(JobState.PENDING);
+
+            await tick(queuePollInterval);
+            expect((await getJob(testJob)).state).toBe(JobState.RUNNING);
+
+            setTimeout(() => {
+                subject.next('yay');
+                subject.complete();
+            }, 1900);
+
+            await module.close();
+
+            expect((await getJob(testJob)).state).toBe(JobState.COMPLETED);
+            expect((await getJob(testJob)).result).toBe('yay');
+        });
+
+        it('does not complete job after stopping queue when it does not finish within timeout', async () => {
+            const subject = new Subject<string>();
+            const testQueue = await jobQueueService.createQueue<string>({
+                name: 'test',
+                process: job => {
+                    return subject.toPromise();
+                },
+            });
+
+            const testJob = await testQueue.add('hello');
+            expect(testJob.state).toBe(JobState.PENDING);
+
+            await tick(queuePollInterval);
+            expect((await getJob(testJob)).state).toBe(JobState.RUNNING);
+
+            setTimeout(() => {
+                subject.next('yay');
+                subject.complete();
+            }, 2100);
+
+            await module.close();
+
+            expect((await getJob(testJob)).state).toBe(JobState.PENDING);
         });
     });
 });

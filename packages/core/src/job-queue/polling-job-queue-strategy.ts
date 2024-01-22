@@ -150,12 +150,16 @@ class ActiveQueue<Data extends JobData<Data> = object> {
                                     nextJob.fail(err);
                                 },
                             )
-                            .finally(() => {
-                                if (!this.running && nextJob.state !== JobState.PENDING) {
+                            .finally(async () => {
+                                if (
+                                    !this.running &&
+                                    ![JobState.PENDING, JobState.COMPLETED].includes(nextJob.state)
+                                ) {
                                     return;
                                 }
                                 nextJob.off('progress', onProgress);
-                                return this.onFailOrComplete(nextJob);
+                                await this.jobQueueStrategy.update(nextJob);
+                                this.removeJobFromActive(nextJob);
                             })
                             .catch((err: any) => {
                                 Logger.warn(`Error updating job info: ${JSON.stringify(err)}`);
@@ -180,7 +184,6 @@ class ActiveQueue<Data extends JobData<Data> = object> {
 
     stop(): Promise<void> {
         this.running = false;
-        this.queueStopped$.next(STOP_SIGNAL);
         clearTimeout(this.timer);
         return this.syncOnActiveQueueStopped();
     }
@@ -194,20 +197,19 @@ class ActiveQueue<Data extends JobData<Data> = object> {
                     this.stopActiveQueueTimeout === undefined
                         ? false
                         : +new Date() - start > this.stopActiveQueueTimeout;
-                if (this.activeJobs.length === 0 || timedOut) {
-                    clearTimeout(timeout);
+                if (this.activeJobs.length === 0) {
                     resolve();
-                } else {
-                    timeout = setTimeout(sync, 50);
                 }
+
+                if (timedOut) {
+                    this.queueStopped$.next(STOP_SIGNAL);
+                    resolve();
+                }
+
+                timeout = setTimeout(sync, 50);
             };
             void sync();
         });
-    }
-
-    private async onFailOrComplete(job: Job<Data>) {
-        await this.jobQueueStrategy.update(job);
-        this.removeJobFromActive(job);
     }
 
     private removeJobFromActive(job: Job<Data>) {
@@ -325,26 +327,4 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
      * Returns a list of jobs according to the specified options.
      */
     abstract findMany(options?: JobListOptions): Promise<PaginatedList<Job>>;
-
-    async syncOnAllJobsSettled(): Promise<void> {
-        let timeout: ReturnType<typeof setTimeout>;
-        return new Promise(resolve => {
-            const sync = async () => {
-                const jobs = await this.findMany({
-                    filter: {
-                        isSettled: {
-                            eq: false,
-                        },
-                    },
-                });
-                if (jobs.totalItems === 0) {
-                    clearTimeout(timeout);
-                    resolve();
-                } else {
-                    timeout = setTimeout(sync, 50);
-                }
-            };
-            void sync();
-        });
-    }
 }
