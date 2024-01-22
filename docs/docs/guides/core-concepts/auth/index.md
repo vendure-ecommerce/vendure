@@ -546,7 +546,8 @@ export class KeycloakAuthenticationStrategy implements AuthenticationStrategy<Ke
         return this.externalAuthenticationService.createAdministratorAndUser(ctx, {
             strategy: this.name,
             externalIdentifier: userInfo.sub,
-            identifier: userInfo.preferred_username,
+            // identifier and emailAddress should be equal
+            identifier: userInfo.email,
             emailAddress: userInfo.email,
             firstName: userInfo.given_name,
             lastName: userInfo.family_name,
