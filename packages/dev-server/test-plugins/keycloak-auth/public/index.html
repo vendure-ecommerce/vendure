@@ -89,15 +89,28 @@
                              token: $token
                            }
                          }) {
-                             user { id }
+
+                            ...on CurrentUser {
+                                id,
+                                channels {
+                                  code
+                                  id
+                                }
+                            }
                          }
                      }
                      `,
                     { token: keycloak.token },
                 )
                     .then((result) => {
-                        console.log(result);
                         if (result.data?.authenticate.user) {
+
+                            // Set vnd_activeChannelToken to the users default.
+                            // This will be used by the admin UI to set Vendure-Token on subswquent requests.
+                            // Failing to do this will result in issue #2363
+                            // Issue #2363 (https://github.com/vendure-ecommerce/vendure/issues/2363)
+                            localStorage.setItem('vnd__activeChannelToken', '"' + result.data.authenticate.channels[0].code + '-token"')
+
                             // successfully authenticated
                             window.location.replace('http://localhost:3000/admin');
                         }
@@ -122,3 +135,4 @@
         </script>
     </body>
 </html>
+
