@@ -155,6 +155,12 @@ input AdministratorPaymentInput {
 input AdministratorRefundInput {
     paymentId: ID!
     reason: String
+    """
+    The amount to be refunded to this particular Payment. This was introduced in
+    v2.2.0 as the preferred way to specify the refund amount. The `lines`, `shipping` and `adjustment`
+    fields will be removed in a future version.
+    """
+    amount: Money
 }
 
 input ModifyOrderOptions {
@@ -183,7 +189,12 @@ input ModifyOrderInput {
     updateShippingAddress: UpdateOrderAddressInput
     updateBillingAddress: UpdateOrderAddressInput
     note: String
+    """
+    Deprecated in v2.2.0. Use `refunds` instead to allow multiple refunds to be
+    applied in the case that multiple payment methods have been used on the order.
+    """
     refund: AdministratorRefundInput
+    refunds: [AdministratorRefundInput!]
     options: ModifyOrderOptions
     couponCodes: [String!]
 }

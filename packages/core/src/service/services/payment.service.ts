@@ -433,8 +433,17 @@ export class PaymentService {
         input: RefundOrderInput,
     ): Promise<{ orderLinesTotal: number; total: number }> {
         if (input.amount) {
+            // This is the new way of getting the refund amount
+            // after v2.2.0. It allows full control over the refund.
             return { orderLinesTotal: 0, total: input.amount };
         }
+
+        // This is the pre-v2.2.0 way of getting the refund amount.
+        // It calculates the refund amount based on the order lines to be refunded
+        // plus shipping and adjustment amounts. It is complex and prevents full
+        // control over refund amounts, especially when multiple payment methods
+        // are involved.
+        // It is deprecated and will be removed in a future version.
         let refundOrderLinesTotal = 0;
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)

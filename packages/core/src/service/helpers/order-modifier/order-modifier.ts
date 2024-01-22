@@ -387,13 +387,19 @@ export class OrderModifier {
         const { orderItemsLimit } = this.configService.orderOptions;
         let currentItemsCount = summate(order.lines, 'quantity');
         const updatedOrderLineIds: ID[] = [];
-        const refundInput: RefundOrderInput = {
+        const refundInputArray = Array.isArray(input.refunds)
+            ? input.refunds
+            : input.refund
+            ? [input.refund]
+            : [];
+        const refundInputs: RefundOrderInput[] = refundInputArray.map(refund => ({
             lines: [],
             adjustment: 0,
             shipping: 0,
-            paymentId: input.refund?.paymentId || '',
-            reason: input.refund?.reason || input.note,
-        };
+            paymentId: refund.paymentId,
+            amount: refund.amount,
+            reason: refund.reason || input.note,
+        }));
 
         for (const row of input.addItems ?? []) {
             const { productVariantId, quantity } = row;
@@ -477,9 +483,12 @@ export class OrderModifier {
 
                 if (correctedQuantity < initialLineQuantity) {
                     const qtyDelta = initialLineQuantity - correctedQuantity;
-                    refundInput.lines?.push({
-                        orderLineId: orderLine.id,
-                        quantity: qtyDelta,
+
+                    refundInputs.forEach(ri => {
+                        ri.lines.push({
+                            orderLineId: orderLine.id,
+                            quantity: qtyDelta,
+                        });
                     });
                 }
             }
@@ -509,7 +518,7 @@ export class OrderModifier {
             order.surcharges.push(surcharge);
             modification.surcharges.push(surcharge);
             if (surcharge.priceWithTax < 0) {
-                refundInput.adjustment += Math.abs(surcharge.priceWithTax);
+                refundInputs.forEach(ri => (ri.adjustment += Math.abs(surcharge.priceWithTax)));
             }
         }
         if (input.surcharges?.length) {
@@ -607,22 +616,34 @@ export class OrderModifier {
         const newTotalWithTax = order.totalWithTax;
         const delta = newTotalWithTax - initialTotalWithTax;
         if (delta < 0) {
-            if (!input.refund) {
+            if (refundInputs.length === 0) {
                 return new RefundPaymentIdMissingError();
             }
+            // If there are multiple refunds, we select the largest one as the
+            // "primary" refund to associate with the OrderModification.
+            const primaryRefund = refundInputs.slice().sort((a, b) => (b.amount || 0) - (a.amount || 0))[0];
+
+            // TODO: the following code can be removed once we remove the deprecated
+            // support for "shipping" and "adjustment" input fields for refunds
             const shippingDelta = order.shippingWithTax - initialShippingWithTax;
             if (shippingDelta < 0) {
-                refundInput.shipping = shippingDelta * -1;
+                primaryRefund.shipping = shippingDelta * -1;
             }
-            refundInput.adjustment += await this.calculateRefundAdjustment(ctx, delta, refundInput);
-            const existingPayments = await this.getOrderPayments(ctx, order.id);
-            const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
-            if (payment) {
-                const refund = await this.paymentService.createRefund(ctx, refundInput, order, payment);
-                if (!isGraphQlErrorResult(refund)) {
-                    modification.refund = refund;
-                } else {
-                    throw new InternalServerError(refund.message);
+            primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            // end
+
+            for (const refundInput of refundInputs) {
+                const existingPayments = await this.getOrderPayments(ctx, order.id);
+                const payment = existingPayments.find(p => idsAreEqual(p.id, refundInput.paymentId));
+                if (payment) {
+                    const refund = await this.paymentService.createRefund(ctx, refundInput, order, payment);
+                    if (!isGraphQlErrorResult(refund)) {
+                        if (idsAreEqual(payment.id, primaryRefund.paymentId)) {
+                            modification.refund = refund;
+                        }
+                    } else {
+                        throw new InternalServerError(refund.message);
+                    }
                 }
             }
         }
@@ -653,6 +674,9 @@ export class OrderModifier {
      * Because a Refund's amount is calculated based on the orderItems changed, plus shipping change,
      * we need to make sure the amount gets adjusted to match any changes caused by other factors,
      * i.e. promotions that were previously active but are no longer.
+     *
+     * TODO: Deprecated - can be removed once we remove support for the "shipping" & "adjustment" input
+     * fields for refunds.
      */
     private async calculateRefundAdjustment(
         ctx: RequestContext,
