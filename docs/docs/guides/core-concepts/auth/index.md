@@ -546,7 +546,7 @@ export class KeycloakAuthenticationStrategy implements AuthenticationStrategy<Ke
         return this.externalAuthenticationService.createAdministratorAndUser(ctx, {
             strategy: this.name,
             externalIdentifier: userInfo.sub,
-            // identifier and emailAddress should be equal [#1489](https://github.com/vendure-ecommerce/vendure/issues/1489)
+            // identifier and emailAddress should be equal
             identifier: userInfo.email,
             emailAddress: userInfo.email,
             firstName: userInfo.given_name,
