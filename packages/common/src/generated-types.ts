@@ -132,6 +132,7 @@ export type AdministratorPaymentInput = {
 };
 
 export type AdministratorRefundInput = {
+  amount: Scalars['Money']['input'];
   paymentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
 };
@@ -2558,7 +2559,12 @@ export type ModifyOrderInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   options?: InputMaybe<ModifyOrderOptions>;
   orderId: Scalars['ID']['input'];
+  /**
+   * Deprecated in v2.2.0. Use `refunds` instead to allow multiple refunds to be
+   * applied in the case that multiple payment methods have been used on the order.
+   */
   refund?: InputMaybe<AdministratorRefundInput>;
+  refunds?: InputMaybe<Array<AdministratorRefundInput>>;
   surcharges?: InputMaybe<Array<SurchargeInput>>;
   updateBillingAddress?: InputMaybe<UpdateOrderAddressInput>;
   updateShippingAddress?: InputMaybe<UpdateOrderAddressInput>;
