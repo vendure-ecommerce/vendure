@@ -56,15 +56,18 @@
                         <div class="title">
                             {{ 'order.history-order-modified' | translate }}
                         </div>
-                        <ng-container *ngIf="getModification(entry.data.modificationId) as modification">
+                        <div
+                            class="flex items-center"
+                            *ngIf="getModification(entry.data.modificationId) as modification"
+                        >
                             {{ 'order.modify-order-price-difference' | translate }}:
                             <strong>{{
                                 modification.priceChange | localeCurrency : order.currencyCode
                             }}</strong>
-                            <vdr-chip colorType="success" *ngIf="modification.isSettled">{{
+                            <vdr-chip colorType="success" class="mx-1" *ngIf="modification.isSettled">{{
                                 'order.modification-settled' | translate
                             }}</vdr-chip>
-                            <vdr-chip colorType="error" *ngIf="!modification.isSettled">{{
+                            <vdr-chip colorType="error" class="mx-1" *ngIf="!modification.isSettled">{{
                                 'order.modification-not-settled' | translate
                             }}</vdr-chip>
                             <vdr-history-entry-detail>
@@ -73,7 +76,7 @@
                                     [modification]="modification"
                                 ></vdr-modification-detail>
                             </vdr-history-entry-detail>
-                        </ng-container>
+                        </div>
                     </ng-container>
                     <ng-container *ngSwitchCase="type.ORDER_PAYMENT_TRANSITION">
                         <ng-container *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition">
