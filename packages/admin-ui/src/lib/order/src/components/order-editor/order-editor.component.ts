@@ -8,7 +8,6 @@ import {
     Validators,
 } from '@angular/forms';
 import {
-    AddItemInput,
     CustomFieldConfig,
     DataService,
     ErrorResult,
@@ -21,7 +20,6 @@ import {
     OrderAddressFragment,
     OrderDetailFragment,
     OrderDetailQueryDocument,
-    OrderLineInput,
     ProductSelectorSearchQuery,
     SortOrder,
     SurchargeInput,
@@ -31,7 +29,8 @@ import {
 import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { EMPTY, Observable, of } from 'rxjs';
-import { mapTo, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { mapTo, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
+import { AddedLine, ModifyOrderData, OrderSnapshot } from '../../common/modify-order-types';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
 import {
@@ -39,25 +38,7 @@ import {
     OrderEditsPreviewDialogComponent,
 } from '../order-edits-preview-dialog/order-edits-preview-dialog.component';
 
-type ProductSelectorItem = ProductSelectorSearchQuery['search']['items'][number];
-
-interface AddedLine {
-    id: string;
-    featuredAsset?: ProductSelectorItem['productAsset'] | null;
-    productVariant: {
-        id: string;
-        name: string;
-        sku: string;
-    };
-    unitPrice: number;
-    unitPriceWithTax: number;
-    quantity: number;
-}
-
-type ModifyOrderData = Omit<ModifyOrderInput, 'addItems' | 'adjustOrderLines'> & {
-    addItems: Array<AddItemInput & { customFields?: any }>;
-    adjustOrderLines: Array<OrderLineInput & { customFields?: any }>;
-};
+export type ProductSelectorItem = ProductSelectorSearchQuery['search']['items'][number];
 
 @Component({
     selector: 'vdr-order-editor',
@@ -78,6 +59,7 @@ export class OrderEditorComponent
     addItemCustomFieldsForm: UntypedFormGroup;
     addItemSelectedVariant: ProductSelectorItem | undefined;
     orderLineCustomFields: CustomFieldConfig[];
+    orderSnapshot: OrderSnapshot;
     modifyOrderInput: ModifyOrderData = {
         dryRun: true,
         orderId: '',
@@ -85,6 +67,7 @@ export class OrderEditorComponent
         adjustOrderLines: [],
         surcharges: [],
         note: '',
+        refunds: [],
         updateShippingAddress: {},
         updateBillingAddress: {},
     };
@@ -139,7 +122,8 @@ export class OrderEditorComponent
         this.addressCustomFields = this.getCustomFieldConfig('Address');
         this.modifyOrderInput.orderId = this.route.snapshot.paramMap.get('id') as string;
         this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
-        this.entity$.pipe(takeUntil(this.destroy$)).subscribe(order => {
+        this.entity$.pipe(take(1)).subscribe(order => {
+            this.orderSnapshot = this.createOrderSnapshot(order);
             if (order.couponCodes.length) {
                 this.couponCodesControl.setValue(order.couponCodes);
             }
@@ -227,43 +211,6 @@ export class OrderEditorComponent
             .filter(notNullOrUndefined);
     }
 
-    get adjustedLines(): string[] {
-        return (this.modifyOrderInput.adjustOrderLines || [])
-            .map(l => {
-                const line = this.entity?.lines.find(line => line.id === l.orderLineId);
-                if (line) {
-                    const delta = l.quantity - line.quantity;
-                    const sign = delta === 0 ? '' : delta > 0 ? '+' : '-';
-                    return delta
-                        ? `${sign}${Math.abs(delta)} ${line.productVariant.name}`
-                        : line.productVariant.name;
-                }
-            })
-            .filter(notNullOrUndefined);
-    }
-
-    get couponCodeChanges(): string[] {
-        const originalCodes = this.entity?.couponCodes || [];
-        const newCodes = this.couponCodesControl.value || [];
-        const addedCodes = newCodes.filter(c => !originalCodes.includes(c)).map(c => `+ ${c}`);
-        const removedCodes = originalCodes.filter(c => !newCodes.includes(c)).map(c => `- ${c}`);
-        return [...addedCodes, ...removedCodes];
-    }
-
-    getModifiedFields(formGroup: FormGroup): string {
-        if (!formGroup.dirty) {
-            return '';
-        }
-        return Object.entries(formGroup.controls)
-            .map(([key, control]) => {
-                if (control.dirty) {
-                    return key;
-                }
-            })
-            .filter(notNullOrUndefined)
-            .join(', ');
-    }
-
     private getIdForAddedItem(row: ModifyOrderData['addItems'][number]) {
         return `added-${row.productVariantId}-${JSON.stringify(row.customFields || {})}`;
     }
@@ -292,6 +239,16 @@ export class OrderEditorComponent
         return !!this.modifyOrderInput.adjustOrderLines?.find(
             l => l.orderLineId === line.id && l.quantity !== line.quantity,
         );
+    }
+
+    getInitialLineQuantity(lineId: string): number {
+        const adjustedLine = this.modifyOrderInput.adjustOrderLines?.find(l => l.orderLineId === lineId);
+        if (adjustedLine) {
+            return adjustedLine.quantity;
+        } else {
+            const line = this.orderSnapshot.lines.find(l => l.id === lineId);
+            return line ? line.quantity : 0;
+        }
     }
 
     updateLineQuantity(line: OrderDetailFragment['lines'][number] | AddedLine, quantity: string) {
@@ -442,7 +399,6 @@ export class OrderEditorComponent
                 recalculateShipping: this.recalculateShipping,
             },
         };
-        const originalTotalWithTax = order.totalWithTax;
         this.dataService.order
             .modifyOrder(input)
             .pipe(
@@ -453,10 +409,14 @@ export class OrderEditorComponent
                                 size: 'xl',
                                 closable: false,
                                 locals: {
-                                    originalTotalWithTax,
                                     order: modifyOrder,
+                                    orderSnapshot: this.orderSnapshot,
                                     orderLineCustomFields: this.orderLineCustomFields,
                                     modifyOrderInput: input,
+                                    addedLines: this.addedLines,
+                                    shippingAddressForm: this.shippingAddressForm,
+                                    billingAddressForm: this.billingAddressForm,
+                                    couponCodesControl: this.couponCodesControl,
                                 },
                             });
                         case 'InsufficientStockError':
@@ -490,15 +450,13 @@ export class OrderEditorComponent
                             dryRun: false,
                         };
                         if (result.result === OrderEditResultType.Refund) {
-                            wetRunInput.refund = {
-                                paymentId: result.refundPaymentId,
-                                reason: result.refundNote,
-                            };
+                            wetRunInput.refunds = result.refunds;
                         }
                         return this.dataService.order.modifyOrder(wetRunInput).pipe(
                             switchMap(({ modifyOrder }) => {
                                 if (modifyOrder.__typename === 'Order') {
-                                    const priceDelta = modifyOrder.totalWithTax - originalTotalWithTax;
+                                    const priceDelta =
+                                        modifyOrder.totalWithTax - this.orderSnapshot.totalWithTax;
                                     const nextState =
                                         0 < priceDelta ? 'ArrangingAdditionalPayment' : this.previousState;
 
@@ -534,6 +492,15 @@ export class OrderEditorComponent
             }
             parentFormGroup.addControl('customFields', addressCustomFieldsFormGroup);
         }
+    }
+
+    private createOrderSnapshot(order: OrderDetailFragment): OrderSnapshot {
+        return {
+            totalWithTax: order.totalWithTax,
+            currencyCode: order.currencyCode,
+            couponCodes: order.couponCodes,
+            lines: [...order.lines].map(line => ({ ...line })),
+        };
     }
 
     protected setFormValues(entity: OrderDetailFragment, languageCode: LanguageCode): void {

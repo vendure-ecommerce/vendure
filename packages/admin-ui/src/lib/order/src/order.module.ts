@@ -49,6 +49,7 @@ import { SimpleItemListComponent } from './components/simple-item-list/simple-it
 import { createRoutes } from './order.routes';
 import { OrderDataTableComponent } from './components/order-data-table/order-data-table.component';
 import { PaymentForRefundSelectorComponent } from './components/payment-for-refund-selector/payment-for-refund-selector.component';
+import { OrderModificationSummaryComponent } from './components/order-modification-summary/order-modification-summary.component';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
@@ -100,6 +101,7 @@ import { PaymentForRefundSelectorComponent } from './components/payment-for-refu
         OrderDataTableComponent,
         OrderTotalColumnComponent,
         PaymentForRefundSelectorComponent,
+        OrderModificationSummaryComponent,
     ],
     exports: [OrderCustomFieldsCardComponent],
 })

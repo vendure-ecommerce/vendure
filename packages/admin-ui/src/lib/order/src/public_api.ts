@@ -45,3 +45,5 @@ export * from './order.module';
 export * from './order.routes';
 export * from './providers/order-transition.service';
 export * from './providers/routing/order.guard';
+export { AddedLine } from './common/modify-order-types';
+export { ModifyOrderData } from './common/modify-order-types';

@@ -12,72 +12,42 @@
     </vdr-action-bar>
 </vdr-page-block>
 
-<vdr-page-detail-layout *ngIf="entity$ | async as order">
+<vdr-page-detail-layout *ngIf="entity as order">
     <vdr-page-detail-sidebar>
         <vdr-card [title]="'order.modification-summary' | translate">
-            <vdr-labeled-data
-                *ngIf="modifyOrderInput.adjustOrderLines?.length"
-                [label]="
-                    'order.modification-adjusting-lines'
-                        | translate : { count: modifyOrderInput.adjustOrderLines?.length }
-                "
-            >
-                <div *ngFor="let line of adjustedLines" class="mb-1">
-                    {{ line }}
-                </div>
-            </vdr-labeled-data>
-            <vdr-labeled-data
-                *ngIf="modifyOrderInput.addItems?.length"
-                [label]="
-                    'order.modification-adding-items'
-                        | translate : { count: modifyOrderInput.addItems?.length }
-                "
-            >
-                <div *ngFor="let item of addedLines">
-                    {{ item.productVariant.name }} x {{ item.quantity }}
-                </div>
-            </vdr-labeled-data>
-            <vdr-labeled-data
-                *ngIf="modifyOrderInput.surcharges?.length"
-                [label]="
-                    'order.modification-adding-surcharges'
-                        | translate : { count: modifyOrderInput.surcharges?.length }
-                "
-            >
-                <div *ngFor="let surcharge of modifyOrderInput.surcharges" class="mb-1">
-                    {{ surcharge.description }}: {{ surcharge.price | localeCurrency : order.currencyCode }}
-                </div>
-            </vdr-labeled-data>
-            <vdr-labeled-data
-                *ngIf="shippingAddressForm.dirty"
-                [label]="'order.modification-updating-shipping-address' | translate"
-            >
-                {{ getModifiedFields(shippingAddressForm) }}
-            </vdr-labeled-data>
-            <vdr-labeled-data
-                *ngIf="billingAddressForm.dirty"
-                [label]="'order.modification-updating-billing-address' | translate"
-            >
-                {{ getModifiedFields(billingAddressForm) }}
-            </vdr-labeled-data>
-            <vdr-labeled-data *ngIf="couponCodesControl.dirty" [label]="'order.set-coupon-codes' | translate">
-                <div *ngFor="let change of couponCodeChanges" class="mb-1">{{ change }}</div>
-            </vdr-labeled-data>
+            <vdr-order-modification-summary
+                [orderSnapshot]="orderSnapshot"
+                [modifyOrderInput]="modifyOrderInput"
+                [addedLines]="addedLines"
+                [shippingAddressForm]="shippingAddressForm"
+                [billingAddressForm]="billingAddressForm"
+                [couponCodesControl]="couponCodesControl"
+            ></vdr-order-modification-summary>
 
             <div *ngIf="!hasModifications()" class="no-modifications">
                 {{ 'order.no-modifications-made' | translate }}
             </div>
 
-            <div *ngIf="hasModifications()" class="summary-controls">
+            <div class="summary-controls">
                 <vdr-form-field [label]="'order.note' | translate">
-                    <textarea [(ngModel)]="note" name="note" required></textarea>
+                    <textarea
+                        [(ngModel)]="note"
+                        name="note"
+                        required
+                        [disabled]="!hasModifications()"
+                    ></textarea>
                 </vdr-form-field>
                 <label class="flex items-center">
-                    <input type="checkbox" [(ngModel)]="recalculateShipping" />
+                    <input
+                        type="checkbox"
+                        [(ngModel)]="recalculateShipping"
+                        [disabled]="!hasModifications()"
+                    />
                     <div class="ml-1">{{ 'order.modification-recalculate-shipping' | translate }}</div>
                 </label>
                 <button
                     class="btn btn-primary mt-2"
+                    [disabled]="!hasModifications()"
                     (click)="previewAndModify(order)"
                 >
                     {{ 'order.preview-changes' | translate }}
@@ -203,7 +173,7 @@
                             type="number"
                             class="draft-qty mr-1"
                             min="0"
-                            [value]="line.quantity"
+                            [value]="getInitialLineQuantity(line.id)"
                             (input)="updateLineQuantity(line, $event.target.value)"
                         />
                         <button
@@ -287,7 +257,7 @@
                     <vdr-form-field
                         [label]="
                             'catalog.price-includes-tax-at'
-                                | translate : { rate: surchargeForm.get('taxRate')?.value }
+                                | translate : { rate: surchargeForm.get('taxRate')?.value ?? 0 }
                         "
                         for="priceIncludesTax"
                         ><input
