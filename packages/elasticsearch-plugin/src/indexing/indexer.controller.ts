@@ -502,8 +502,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         let product: Product | undefined;
         try {
             product = await this.connection
-                .rawConnection
-                .getRepository(Product)
+                .getRepository(ctx, Product)
                 .find({
                     relationLoadStrategy: 'query',
                     where: {id: productId, deletedAt: IsNull()},
@@ -516,8 +515,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         }
         if (!product)
             return;
-
-        const updatedProductVariants = await this.connection.rawConnection.getRepository(ProductVariant).find({
+        
+        const updatedProductVariants = await this.connection.getRepository(ctx, ProductVariant).find({
             relations: this.variantRelations,
             where: {
                 productId,
