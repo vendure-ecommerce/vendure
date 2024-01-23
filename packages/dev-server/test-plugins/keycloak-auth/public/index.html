@@ -9,7 +9,7 @@
             integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
             crossorigin="anonymous"
         />
-        <script src="http://localhost:9000/auth/js/keycloak.js"></script>
+        <script src="http://localhost:9000/js/keycloak.js"></script>
         <style>
             #logout.hidden {
                 display: none;
@@ -25,9 +25,7 @@
                 <button class="btn btn-sm btn-secondary hidden" id="logout">Log out of intranet</button>
             </p>
             <div class="text-center mt-4">
-                <button id="login" class="btn btn-primary">
-                    Log In To Vendure
-                </button>
+                <button id="login" class="btn btn-primary">Log In To Vendure</button>
             </div>
         </div>
         <script>
@@ -82,27 +80,29 @@
 
             function loginToAdminUi() {
                 return graphQlQuery(
-                    `
-                     mutation Authenticate($token: String!) {
-                         authenticate(input: {
-                           keycloak: {
-                             token: $token
-                           }
-                         }) {
-                             user { id }
-                         }
-                     }
-                     `,
+                    /* GraphQL */ `
+                        mutation Authenticate($token: String!) {
+                            authenticate(input: { keycloak: { token: $token } }) {
+                                ... on CurrentUser {
+                                    id
+                                }
+                                ... on ErrorResult {
+                                    errorCode
+                                    message
+                                }
+                            }
+                        }
+                    `,
                     { token: keycloak.token },
                 )
-                    .then((result) => {
+                    .then(result => {
                         console.log(result);
-                        if (result.data?.authenticate.user) {
+                        if (result.data?.authenticate.id) {
                             // successfully authenticated
-                            window.location.replace('http://localhost:3000/admin');
+                            window.location.replace('http://localhost:4200/admin');
                         }
                     })
-                    .catch((err) => {
+                    .catch(err => {
                         console.log('error', err);
                     });
             }
@@ -115,7 +115,7 @@
                         Accept: 'application/json',
                     },
                     body: JSON.stringify({ query, variables }),
-                }).then((r) => {
+                }).then(r => {
                     return r.json();
                 });
             }
