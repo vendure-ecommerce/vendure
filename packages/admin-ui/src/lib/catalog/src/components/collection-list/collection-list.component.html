@@ -138,7 +138,8 @@
                     <a
                         class="button-small bg-weight-150"
                         [routerLink]="['./', { contents: collection.id }]"
-                        queryParamsHandling="preserve"
+                        [queryParams]="{ contentsPage: 1 }"
+                        queryParamsHandling="merge"
                     >
                         <span>{{ 'common.view-contents' | translate }}</span>
                         <clr-icon shape="file-group"></clr-icon>

@@ -95,19 +95,24 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 .addSelect('MIN(si.priceWithTax)', 'minPriceWithTax')
                 .addSelect('MAX(si.priceWithTax)', 'maxPriceWithTax');
         }
+
         this.applyTermAndFilters(ctx, qb, input);
+
         if (sort) {
             if (sort.name) {
-                qb.addOrderBy(input.groupByProduct ? 'MIN(si.productName)' : 'si.productName', sort.name);
+                qb.addOrderBy('si_productName', sort.name);
             }
             if (sort.price) {
-                qb.addOrderBy(input.groupByProduct ? 'MIN(si.price)' : 'si.price', sort.price);
+                qb.addOrderBy('si_price', sort.price);
             }
-        } else {
-            if (input.term && input.term.length > this.minTermLength) {
-                qb.orderBy('score', 'DESC');
-            }
+        } else if (input.term && input.term.length > this.minTermLength) {
+            qb.addOrderBy('score', 'DESC');
         }
+
+        // Required to ensure deterministic sorting.
+        // E.g. in case of sorting products with duplicate name, price or score results.
+        qb.addOrderBy('si_productVariantId', 'ASC');
+
         if (enabledOnly) {
             qb.andWhere('si.enabled = :enabled', { enabled: true });
         }
