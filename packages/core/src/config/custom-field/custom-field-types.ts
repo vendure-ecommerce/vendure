@@ -144,7 +144,7 @@ export type CustomFieldConfig =
  *
  * @docsCategory custom-fields
  */
-export interface CustomFields {
+export type CustomFields = {
     Address?: CustomFieldConfig[];
     Administrator?: CustomFieldConfig[];
     Asset?: CustomFieldConfig[];
@@ -172,7 +172,7 @@ export interface CustomFields {
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];
     Zone?: CustomFieldConfig[];
-}
+} & { [entity: string]: CustomFieldConfig[] | undefined };
 
 /**
  * This interface should be implemented by any entity which can be extended
