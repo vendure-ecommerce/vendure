@@ -1,11 +1,13 @@
 import { Args, Info, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
     CustomFields as GraphQLCustomFields,
+    EntityCustomFields,
     MutationUpdateGlobalSettingsArgs,
     Permission,
     ServerConfig,
     UpdateGlobalSettingsResult,
 } from '@vendure/common/lib/generated-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     GraphQLOutputType,
     GraphQLResolveInfo,
@@ -56,6 +58,7 @@ export class GlobalSettingsResolver {
         ).filter(p => !p.internal);
         return {
             customFieldConfig: this.generateCustomFieldConfig(info),
+            entityCustomFields: this.generateEntityCustomFieldConfig(info),
             orderProcess: this.orderService.getOrderProcessStates(),
             permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
             permissions,
@@ -88,12 +91,13 @@ export class GlobalSettingsResolver {
         return this.globalSettingsService.updateSettings(ctx, args.input);
     }
 
+    // TODO: Remove in v3
     private generateCustomFieldConfig(info: GraphQLResolveInfo): GraphQLCustomFields {
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
             exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields
                 // Do not expose custom fields marked as "internal".
-                .filter(c => !c.internal)
+                ?.filter(c => !c.internal)
                 .map(c => ({ ...c, list: !!c.list as any }))
                 .map((c: any) => {
                     // In the VendureConfig, the relation entity is specified
@@ -107,6 +111,30 @@ export class GlobalSettingsResolver {
         }
 
         return exposedCustomFieldConfig as GraphQLCustomFields;
+    }
+
+    private generateEntityCustomFieldConfig(info: GraphQLResolveInfo): EntityCustomFields[] {
+        return Object.entries(this.configService.customFields)
+            .map(([entityType, customFields]) => {
+                if (!customFields || !customFields.length) {
+                    return;
+                }
+                const customFieldsConfig = customFields
+                    // Do not expose custom fields marked as "internal".
+                    .filter(c => !c.internal)
+                    .map(c => ({ ...c, list: !!c.list as any }))
+                    .map((c: any) => {
+                        // In the VendureConfig, the relation entity is specified
+                        // as the class, but the GraphQL API exposes it as a string.
+                        if (c.type === 'relation') {
+                            c.entity = c.entity.name;
+                            c.scalarFields = this.getScalarFieldsOfType(info, c.graphQLType || c.entity);
+                        }
+                        return c;
+                    });
+                return { entityName: entityType, customFields: customFieldsConfig };
+            })
+            .filter(notNullOrUndefined);
     }
 
     private getScalarFieldsOfType(info: GraphQLResolveInfo, typeName: string): string[] {

@@ -260,6 +260,68 @@ describe('Custom fields', () => {
         });
     });
 
+    it('globalSettings.serverConfig.entityCustomFields', async () => {
+        const { globalSettings } = await adminClient.query(gql`
+            query {
+                globalSettings {
+                    serverConfig {
+                        entityCustomFields {
+                            entityName
+                            customFields {
+                                ... on CustomField {
+                                    name
+                                    type
+                                    list
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        `);
+
+        const productCustomFields = globalSettings.serverConfig.entityCustomFields.find(
+            e => e.entityName === 'Product',
+        );
+        expect(productCustomFields).toEqual({
+            entityName: 'Product',
+            customFields: [
+                { name: 'nullable', type: 'string', list: false },
+                { name: 'notNullable', type: 'string', list: false },
+                { name: 'stringWithDefault', type: 'string', list: false },
+                { name: 'localeStringWithDefault', type: 'localeString', list: false },
+                { name: 'intWithDefault', type: 'int', list: false },
+                { name: 'floatWithDefault', type: 'float', list: false },
+                { name: 'booleanWithDefault', type: 'boolean', list: false },
+                { name: 'dateTimeWithDefault', type: 'datetime', list: false },
+                { name: 'validateString', type: 'string', list: false },
+                { name: 'validateLocaleString', type: 'localeString', list: false },
+                { name: 'validateInt', type: 'int', list: false },
+                { name: 'validateFloat', type: 'float', list: false },
+                { name: 'validateDateTime', type: 'datetime', list: false },
+                { name: 'validateFn1', type: 'string', list: false },
+                { name: 'validateFn2', type: 'string', list: false },
+                { name: 'validateFn3', type: 'string', list: false },
+                { name: 'validateFn4', type: 'string', list: false },
+                { name: 'validateRelation', type: 'relation', list: false },
+                { name: 'stringWithOptions', type: 'string', list: false },
+                { name: 'nullableStringWithOptions', type: 'string', list: false },
+                { name: 'nonPublic', type: 'string', list: false },
+                { name: 'public', type: 'string', list: false },
+                { name: 'longString', type: 'string', list: false },
+                { name: 'longLocaleString', type: 'localeString', list: false },
+                { name: 'readonlyString', type: 'string', list: false },
+                { name: 'stringList', type: 'string', list: true },
+                { name: 'localeStringList', type: 'localeString', list: true },
+                { name: 'stringListWithDefault', type: 'string', list: true },
+                { name: 'intListWithValidation', type: 'int', list: true },
+                { name: 'uniqueString', type: 'string', list: false },
+                // The internal type should not be exposed at all
+                // { name: 'internalString', type: 'string' },
+            ],
+        });
+    });
+
     it('get nullable with no default', async () => {
         const { product } = await adminClient.query(gql`
             query {
@@ -470,7 +532,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, 'The custom field "stringWithOptions" value ["tiny"] is invalid. Valid options are [\'small\', \'medium\', \'large\']'),
+            }, "The custom field \"stringWithOptions\" value [\"tiny\"] is invalid. Valid options are ['small', 'medium', 'large']"),
         );
 
         it('valid string option', async () => {

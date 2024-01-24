@@ -235,15 +235,29 @@ export function addServerConfigCustomFields(
 ) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
     const customFieldTypeDefs = `
+            """
+            This type is deprecated in v2.2 in favor of the EntityCustomFields type,
+            which allows custom fields to be defined on user-supplies entities.
+            """
             type CustomFields {
                 ${Object.keys(customFieldConfig).reduce(
                     (output, name) => output + name + ': [CustomFieldConfig!]!\n',
                     '',
                 )}
             }
+            
+            type EntityCustomFields {
+                entityName: String!
+                customFields: [CustomFieldConfig!]!
+            }
 
             extend type ServerConfig {
+                """
+                This field is deprecated in v2.2 in favor of the entityCustomFields field,
+                which allows custom fields to be defined on user-supplies entities.
+                """
                 customFieldConfig: CustomFields!
+                entityCustomFields: [EntityCustomFields!]!
             }
         `;
 

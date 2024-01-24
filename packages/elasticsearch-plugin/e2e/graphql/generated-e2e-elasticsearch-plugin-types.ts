@@ -129,7 +129,12 @@ export type AdministratorPaymentInput = {
 };
 
 export type AdministratorRefundInput = {
-  amount: Scalars['Money']['input'];
+  /**
+   * The amount to be refunded to this particular Payment. This was introduced in
+   * v2.2.0 as the preferred way to specify the refund amount. The `lines`, `shipping` and `adjustment`
+   * fields will be removed in a future version.
+   */
+  amount?: InputMaybe<Scalars['Money']['input']>;
   paymentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1273,6 +1278,10 @@ export type CustomField = {
 
 export type CustomFieldConfig = BooleanCustomFieldConfig | DateTimeCustomFieldConfig | FloatCustomFieldConfig | IntCustomFieldConfig | LocaleStringCustomFieldConfig | LocaleTextCustomFieldConfig | RelationCustomFieldConfig | StringCustomFieldConfig | TextCustomFieldConfig;
 
+/**
+ * This type is deprecated in v2.2 in favor of the EntityCustomFields type,
+ * which allows custom fields to be defined on user-supplies entities.
+ */
 export type CustomFields = {
   Address: Array<CustomFieldConfig>;
   Administrator: Array<CustomFieldConfig>;
@@ -1506,6 +1515,11 @@ export type EmailAddressConflictError = ErrorResult & {
 export type EmptyOrderLineSelectionError = ErrorResult & {
   errorCode: ErrorCode;
   message: Scalars['String']['output'];
+};
+
+export type EntityCustomFields = {
+  customFields: Array<CustomFieldConfig>;
+  entityName: Scalars['String']['output'];
 };
 
 export enum ErrorCode {
@@ -5488,7 +5502,12 @@ export type SellerSortParameter = {
 };
 
 export type ServerConfig = {
+  /**
+   * This field is deprecated in v2.2 in favor of the entityCustomFields field,
+   * which allows custom fields to be defined on user-supplies entities.
+   */
   customFieldConfig: CustomFields;
+  entityCustomFields: Array<EntityCustomFields>;
   moneyStrategyPrecision: Scalars['Int']['output'];
   orderProcess: Array<OrderProcessState>;
   permissions: Array<PermissionDefinition>;
