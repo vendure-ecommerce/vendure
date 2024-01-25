@@ -244,3 +244,88 @@ export default [
     // highlight-end
 ]
 ```
+
+## Supporting custom fields
+
+From Vendure v2.2, it is possible for your [custom entities to support custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields).
+
+If you have set up your entity to support custom fields, and you want custom fields to be available in the Admin UI list view,
+you need to add the following to your list component:
+
+```ts title="src/plugins/reviews/ui/components/review-list/review-list.component.ts"
+@Component({
+    selector: 'review-list',
+    templateUrl: './review-list.component.html',
+    styleUrls: ['./review-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [SharedModule],
+})
+export class ReviewListComponent extends TypedBaseListComponent<typeof getReviewListDocument, 'reviews'> {
+
+    // highlight-next-line
+    customFields = this.getCustomFieldConfig('ProductReview');
+
+    readonly filters = this.createFilterCollection()
+        .addIdFilter()
+        .addDateFilters()
+        .addFilter({
+            name: 'title',
+            type: {kind: 'text'},
+            label: 'Title',
+            filterField: 'title',
+        })
+        .addFilter({
+            name: 'rating',
+            type: {kind: 'number'},
+            label: 'Rating',
+            filterField: 'rating',
+        })
+        .addFilter({
+            name: 'authorName',
+            type: {kind: 'text'},
+            label: 'Author',
+            filterField: 'authorName',
+        })
+        // highlight-next-line
+        .addCustomFieldFilters(this.customFields)
+        .connectToRoute(this.route);
+
+    readonly sorts = this.createSortCollection()
+        .defaultSort('createdAt', 'DESC')
+        .addSort({name: 'createdAt'})
+        .addSort({name: 'updatedAt'})
+        .addSort({name: 'title'})
+        .addSort({name: 'rating'})
+        .addSort({name: 'authorName'})
+        // highlight-next-line
+        .addCustomFieldSorts(this.customFields)
+        .connectToRoute(this.route);
+    
+    // rest of class omitted for brevity
+}
+```
+
+and then add the `vdr-dt2-custom-field-column` component to your data table:
+
+```html title="src/plugins/reviews/ui/components/review-list/review-list.component.html"
+<vdr-data-table-2
+    id="review-list"
+    [items]="items$ | async"
+    [itemsPerPage]="itemsPerPage$ | async"
+    [totalItems]="totalItems$ | async"
+    [currentPage]="currentPage$ | async"
+    [filters]="filters"
+    (pageChange)="setPageNumber($event)"
+    (itemsPerPageChange)="setItemsPerPage($event)"
+>
+    <!-- rest of data table omitted for brevity -->
+    // highlight-start
+    <vdr-dt2-custom-field-column
+            *ngFor="let customField of customFields"
+            [customField]="customField"
+            [sorts]="sorts"
+    />
+    // highlight-end
+</vdr-data-table-2>
+```

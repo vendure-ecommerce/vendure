@@ -235,3 +235,98 @@ export default [
     // highlight-end
 ]
 ```
+
+## Supporting custom fields
+
+From Vendure v2.2, it is possible for your [custom entities to support custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields).
+
+If you have set up your entity to support custom fields, and you want custom fields to be available in the Admin UI detail view,
+you need to add the following to your detail component:
+
+```ts title="src/plugins/reviews/ui/components/review-detail/review-detail.component.ts"
+// highlight-next-line
+import { getCustomFieldsDefaults } from '@vendure/admin-ui/core';
+
+@Component({
+    selector: 'review-detail',
+    templateUrl: './review-detail.component.html',
+    styleUrls: ['./review-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [SharedModule],
+})
+export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof getReviewDetailDocument, 'review'> implements OnInit, OnDestroy {
+
+    // highlight-next-line
+    customFields = this.getCustomFieldConfig('ProductReview');
+
+    detailForm = this.formBuilder.group({
+        title: [''],
+        rating: [1],
+        authorName: [''],
+        // highlight-next-line
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
+    });
+
+    protected setFormValues(entity: NonNullable<ResultOf<typeof getReviewDetailDocument>['review']>, languageCode: LanguageCode): void {
+        this.detailForm.patchValue({
+            title: entity.name,
+            rating: entity.rating,
+            authorName: entity.authorName,
+            productId: entity.productId,
+        });
+        // highlight-start
+        if (this.customFields.length) {
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
+        }
+        // highlight-end
+    }
+}
+```
+
+Then add a card for your custom fields to the template:
+
+```html title="src/plugins/reviews/ui/components/review-detail/review-detail.component.html"
+<form class="form" [formGroup]="detailForm">
+    <vdr-page-detail-layout>
+        <!-- The sidebar is used for displaying "metadata" type information about the entity -->
+        <vdr-page-detail-sidebar>
+            <vdr-card *ngIf="entity$ | async as entity">
+                <vdr-page-entity-info [entity]="entity" />
+            </vdr-card>
+        </vdr-page-detail-sidebar>
+
+        <!-- The main content area is used for displaying the entity's fields -->
+        <vdr-page-block>
+            <!-- The vdr-card is the container for grouping items together on a page -->
+            <!-- it can also take an optional [title] property to display a title -->
+            <vdr-card>
+                <!-- the form-grid class is used to lay out the form fields -->
+                <div class="form-grid">
+                    <vdr-form-field label="Title" for="title">
+                        <input id="title" type="text" formControlName="title" />
+                    </vdr-form-field>
+                    <vdr-form-field label="Rating" for="rating">
+                        <input id="rating" type="number" min="1" max="5" formControlName="rating" />
+                    </vdr-form-field>
+
+                    <!-- etc -->
+                </div>
+            </vdr-card>
+            // highlight-start
+            <vdr-card
+                    formGroupName="customFields"
+                    *ngIf="customFields.length"
+                    [title]="'common.custom-fields' | translate"
+            >
+                <vdr-tabbed-custom-fields
+                        entityName="ProductReview"
+                        [customFields]="customFields"
+                        [customFieldsFormGroup]="detailForm.get('customFields')"
+                ></vdr-tabbed-custom-fields>
+            </vdr-card>
+            // highlight-end
+        </vdr-page-block>
+    </vdr-page-detail-layout>
+</form>
+```
