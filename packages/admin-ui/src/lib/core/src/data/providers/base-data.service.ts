@@ -7,7 +7,7 @@ import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { CustomFields } from '../../common/generated-types';
+import { CustomFieldConfig } from '../../common/generated-types';
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
 import { addCustomFields } from '../utils/add-custom-fields';
@@ -21,8 +21,8 @@ import { transformRelationCustomFieldInputs } from '../utils/transform-relation-
 export class BaseDataService {
     constructor(private apollo: Apollo, private serverConfigService: ServerConfigService) {}
 
-    private get customFields(): CustomFields {
-        return this.serverConfigService.serverConfig.customFieldConfig || {};
+    private get customFields(): Map<string, CustomFieldConfig[]> {
+        return this.serverConfigService.customFieldsMap;
     }
 
     /**

@@ -85,7 +85,7 @@ export class CoreModule {
 
         const lastLanguage = this.localStorageService.get('uiLanguageCode');
         const availableLanguages = getAppConfig().availableLanguages;
-        const availableLocales = getAppConfig().availableLocales;
+        const availableLocales = getAppConfig().availableLocales ?? [defaultLocale];
 
         if (!!defaultLanguage && !availableLanguages.includes(defaultLanguage)) {
             throw new Error(

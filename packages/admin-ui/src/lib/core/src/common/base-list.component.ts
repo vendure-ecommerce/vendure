@@ -262,7 +262,7 @@ export class TypedBaseListComponent<
         this.dataService.client.setContentLanguage(code).subscribe();
     }
 
-    getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
+    getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'> | string): CustomFieldConfig[] {
         return this.serverConfigService.getCustomFieldsFor(key);
     }
 }
