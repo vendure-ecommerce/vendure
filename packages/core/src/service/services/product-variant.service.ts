@@ -364,10 +364,6 @@ export class ProductVariantService {
         return stockOnHand;
     }
 
-    translateProduct(ctx: RequestContext, product: Product) {
-        return this.translator.translate(product, ctx);
-    }
-
     async create(
         ctx: RequestContext,
         input: CreateProductVariantInput[],

@@ -80,11 +80,7 @@ export class ProductVariantEntityResolver {
         @Parent() productVariant: ProductVariant,
     ): Promise<Product | undefined> {
         if (productVariant.product) {
-            return this.requestContextCache.get(
-                ctx,
-                `ProductVariantEntityResolver.product(${productVariant.productId})`,
-                () => this.productVariantService.translateProduct(ctx, productVariant.product),
-            );
+            return productVariant.product;
         }
 
         return this.requestContextCache.get(
