@@ -20,7 +20,6 @@ import {
     OrderAddressFragment,
     OrderDetailFragment,
     OrderDetailQueryDocument,
-    ProductSelectorSearchQuery,
     SortOrder,
     SurchargeInput,
     transformRelationCustomFieldInputs,
@@ -30,15 +29,18 @@ import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-util
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { EMPTY, Observable, of } from 'rxjs';
 import { mapTo, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
-import { AddedLine, ModifyOrderData, OrderSnapshot } from '../../common/modify-order-types';
+import {
+    AddedLine,
+    ModifyOrderData,
+    OrderSnapshot,
+    ProductSelectorItem,
+} from '../../common/modify-order-types';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
 import {
     OrderEditResultType,
     OrderEditsPreviewDialogComponent,
 } from '../order-edits-preview-dialog/order-edits-preview-dialog.component';
-
-export type ProductSelectorItem = ProductSelectorSearchQuery['search']['items'][number];
 
 @Component({
     selector: 'vdr-order-editor',

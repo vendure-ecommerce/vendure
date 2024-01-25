@@ -4,8 +4,8 @@ import {
     ModifyOrderInput,
     OrderDetailFragment,
     OrderLineInput,
+    ProductSelectorSearchQuery,
 } from '@vendure/admin-ui/core';
-import { ProductSelectorItem } from '../components/order-editor/order-editor.component';
 
 export interface OrderSnapshot {
     totalWithTax: number;
@@ -13,6 +13,8 @@ export interface OrderSnapshot {
     couponCodes: string[];
     lines: OrderDetailFragment['lines'];
 }
+
+export type ProductSelectorItem = ProductSelectorSearchQuery['search']['items'][number];
 
 export interface AddedLine {
     id: string;

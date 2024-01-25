@@ -38,6 +38,7 @@ import { OrderStateSelectDialogComponent } from './components/order-state-select
 import { OrderTableComponent } from './components/order-table/order-table.component';
 import { PaymentDetailComponent } from './components/payment-detail/payment-detail.component';
 import { PaymentStateLabelComponent } from './components/payment-state-label/payment-state-label.component';
+import { RefundDetailComponent } from './components/refund-detail/refund-detail.component';
 import { RefundOrderDialogComponent } from './components/refund-order-dialog/refund-order-dialog.component';
 import { RefundStateLabelComponent } from './components/refund-state-label/refund-state-label.component';
 import { SelectAddressDialogComponent } from './components/select-address-dialog/select-address-dialog.component';
@@ -102,6 +103,7 @@ import { OrderModificationSummaryComponent } from './components/order-modificati
         OrderTotalColumnComponent,
         PaymentForRefundSelectorComponent,
         OrderModificationSummaryComponent,
+        RefundDetailComponent,
     ],
     exports: [OrderCustomFieldsCardComponent],
 })
