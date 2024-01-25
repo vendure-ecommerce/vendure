@@ -12,6 +12,7 @@ import {
     StringCustomFieldConfig,
     TypedCustomFieldConfig,
 } from '../../config/custom-field/custom-field-types';
+import { RequestContext } from './request-context';
 
 /**
  * Validates the value of a custom field input against any configured constraints.
@@ -21,7 +22,7 @@ export async function validateCustomFieldValue(
     config: CustomFieldConfig,
     value: any | any[],
     injector: Injector,
-    languageCode?: LanguageCode,
+    ctx: RequestContext,
 ): Promise<void> {
     if (config.readonly) {
         throw new UserInputError('error.field-invalid-readonly', { name: config.name });
@@ -40,7 +41,7 @@ export async function validateCustomFieldValue(
     } else {
         validateSingleValue(config, value);
     }
-    await validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, injector, languageCode);
+    await validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, injector, ctx);
 }
 
 function validateSingleValue(config: CustomFieldConfig, value: any) {
@@ -70,15 +71,15 @@ async function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>
     config: T,
     value: any,
     injector: Injector,
-    languageCode?: LanguageCode,
+    ctx: RequestContext,
 ) {
     if (typeof config.validate === 'function') {
-        const error = await config.validate(value, injector);
+        const error = await config.validate(value, injector, ctx);
         if (typeof error === 'string') {
             throw new UserInputError(error);
         }
         if (Array.isArray(error)) {
-            const localizedError = error.find(e => e.languageCode === languageCode) || error[0];
+            const localizedError = error.find(e => e.languageCode === ctx.languageCode) || error[0];
             throw new UserInputError(localizedError.value);
         }
     }

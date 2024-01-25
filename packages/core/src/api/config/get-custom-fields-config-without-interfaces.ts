@@ -1,6 +1,6 @@
 import { GraphQLSchema, isInterfaceType } from 'graphql';
 
-import { CustomFields, CustomFieldConfig } from '../../config/custom-field/custom-field-types';
+import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 
 /**
  * @description
@@ -23,7 +23,7 @@ export function getCustomFieldsConfigWithoutInterfaces(
             entries.splice(regionIndex, 1);
 
             for (const implementation of implementations.objects) {
-                entries.push([implementation.name, customFieldConfig.Region]);
+                entries.push([implementation.name, customFieldConfig.Region ?? []]);
             }
         }
     }

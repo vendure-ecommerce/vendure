@@ -515,7 +515,7 @@ const config = {
 
 #### validate
 
-<CustomFieldProperty required={false} type="(value: any) => string | LocalizedString[] | void" />
+<CustomFieldProperty required={false} type="(value: any, injector: Injector, ctx: RequestContext) => string | LocalizedString[] | void" />
 
 A custom validation function. If the value is valid, then the function should not return a value. If a string or LocalizedString array is returned, this is interpreted as an error message.
 
@@ -563,7 +563,7 @@ const config = {
                 name: 'partCode',
                 type: 'string',
                 // highlight-start
-                validate: async (value, injector) => {
+                validate: async (value, injector, ctx) => {
                     const partCodeService = injector.get(PartCodeService);
                     const isValid = await partCodeService.validateCode(value);
                     if (!isValid) {

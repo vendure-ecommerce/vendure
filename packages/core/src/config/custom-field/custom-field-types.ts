@@ -19,6 +19,7 @@ import {
     UiComponentConfig,
 } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../../api/index';
 import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
 
@@ -61,6 +62,7 @@ export type TypedCustomSingleFieldConfig<
     validate?: (
         value: DefaultValueType<T>,
         injector: Injector,
+        ctx: RequestContext,
     ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
 };
 
@@ -172,7 +174,7 @@ export type CustomFields = {
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];
     Zone?: CustomFieldConfig[];
-} & { [entity: string]: CustomFieldConfig[] | undefined };
+} & { [entity: string]: CustomFieldConfig[] };
 
 /**
  * This interface should be implemented by any entity which can be extended

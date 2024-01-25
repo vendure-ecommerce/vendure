@@ -3,13 +3,14 @@ import { fail } from 'assert';
 import { describe, expect, it } from 'vitest';
 
 import { Injector } from '../../common/injector';
+import { RequestContext } from './request-context';
 
 import { validateCustomFieldValue } from './validate-custom-field-value';
 
 describe('validateCustomFieldValue()', () => {
     const injector = new Injector({} as any);
 
-    async function assertThrowsError(validateFn: () => Promise<void>, message: string) {
+    async function assertThrowsError(validateFn: (() => Promise<void>) | (() => void), message: string) {
         try {
             await validateFn();
             fail('Should have thrown');
@@ -17,6 +18,8 @@ describe('validateCustomFieldValue()', () => {
             expect(e.message).toBe(message);
         }
     }
+
+    const ctx = RequestContext.empty();
 
     describe('string & localeString', () => {
         const validate = (value: string) => () =>
@@ -28,6 +31,7 @@ describe('validateCustomFieldValue()', () => {
                 },
                 value,
                 injector,
+                ctx,
             );
 
         it('passes valid pattern', async () => {
@@ -53,6 +57,7 @@ describe('validateCustomFieldValue()', () => {
                 },
                 value,
                 injector,
+                ctx,
             );
 
         it('passes valid option', async () => {
@@ -78,6 +83,7 @@ describe('validateCustomFieldValue()', () => {
                 },
                 value,
                 injector,
+                ctx,
             );
 
         it('passes valid range', async () => {
@@ -104,6 +110,7 @@ describe('validateCustomFieldValue()', () => {
                 },
                 value,
                 injector,
+                ctx,
             );
 
         it('passes valid range', async () => {
@@ -138,9 +145,14 @@ describe('validateCustomFieldValue()', () => {
                 },
                 value,
                 injector,
+                ctx,
             );
-        const validate2 = (value: string, languageCode: LanguageCode) => () =>
-            validateCustomFieldValue(
+        const validate2 = (value: string, languageCode: LanguageCode) => () => {
+            const ctxWithLanguage = new RequestContext({
+                languageCode,
+                apiType: 'admin',
+            } as any);
+            return validateCustomFieldValue(
                 {
                     name: 'test',
                     type: 'string',
@@ -155,8 +167,9 @@ describe('validateCustomFieldValue()', () => {
                 },
                 value,
                 injector,
-                languageCode,
+                ctxWithLanguage,
             );
+        };
 
         it('passes validate fn string', async () => {
             expect(validate1('valid')).not.toThrow();
@@ -192,6 +205,7 @@ describe('validateCustomFieldValue()', () => {
                     },
                     value,
                     injector,
+                    ctx,
                 );
 
             expect(validate([1, 2, 6])).not.toThrow();
@@ -209,6 +223,7 @@ describe('validateCustomFieldValue()', () => {
                     },
                     value,
                     injector,
+                    ctx,
                 );
 
             expect(validate(['small', 'large'])).not.toThrow();
@@ -230,6 +245,7 @@ describe('validateCustomFieldValue()', () => {
                     },
                     value,
                     injector,
+                    ctx,
                 );
 
             expect(validate(['valid', 'valid'])).not.toThrow();
