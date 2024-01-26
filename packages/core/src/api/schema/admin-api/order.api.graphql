@@ -197,6 +197,10 @@ input ModifyOrderInput {
     refunds: [AdministratorRefundInput!]
     options: ModifyOrderOptions
     couponCodes: [String!]
+    """
+    Added in v2.2
+    """
+    shippingMethodIds: [ID!]
 }
 
 input AddItemInput {
@@ -452,5 +456,6 @@ union ModifyOrderResult =
     | CouponCodeExpiredError
     | CouponCodeInvalidError
     | CouponCodeLimitError
+    | IneligibleShippingMethodError
 union AddManualPaymentToOrderResult = Order | ManualPaymentStateError
 union SetCustomerForDraftOrderResult = Order | EmailAddressConflictError

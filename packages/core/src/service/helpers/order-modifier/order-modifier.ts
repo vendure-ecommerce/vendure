@@ -27,20 +27,21 @@ import {
     RefundPaymentIdMissingError,
 } from '../../../common/error/generated-graphql-admin-errors';
 import {
+    IneligibleShippingMethodError,
     InsufficientStockError,
     NegativeQuantityError,
     OrderLimitError,
 } from '../../../common/error/generated-graphql-shop-errors';
-import { assertFound, idsAreEqual } from '../../../common/utils';
+import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { Order } from '../../../entity/order/order.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
 import { OrderModificationLine } from '../../../entity/order-line-reference/order-modification-line.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
+import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
@@ -58,8 +59,8 @@ import { ProductVariantService } from '../../services/product-variant.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { CustomFieldRelationService } from '../custom-field-relation/custom-field-relation.service';
-import { EntityHydrator } from '../entity-hydrator/entity-hydrator.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
+import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../translator/translator.service';
 import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
@@ -90,7 +91,7 @@ export class OrderModifier {
         private customFieldRelationService: CustomFieldRelationService,
         private promotionService: PromotionService,
         private eventBus: EventBus,
-        private entityHydrator: EntityHydrator,
+        private shippingCalculator: ShippingCalculator,
         private historyService: HistoryService,
         private translator: TranslatorService,
     ) {}
@@ -597,6 +598,12 @@ export class OrderModifier {
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
+        if (input.shippingMethodIds) {
+            const result = await this.setShippingMethods(ctx, order, input.shippingMethodIds);
+            if (isGraphQlErrorResult(result)) {
+                return result;
+            }
+        }
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
@@ -657,6 +664,69 @@ export class OrderModifier {
         return { order, modification: createdModification };
     }
 
+    async setShippingMethods(ctx: RequestContext, order: Order, shippingMethodIds: ID[]) {
+        for (const [i, shippingMethodId] of shippingMethodIds.entries()) {
+            const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
+                ctx,
+                order,
+                shippingMethodId,
+            );
+            if (!shippingMethod) {
+                return new IneligibleShippingMethodError();
+            }
+            let shippingLine: ShippingLine | undefined = order.shippingLines[i];
+            if (shippingLine) {
+                shippingLine.shippingMethod = shippingMethod;
+                shippingLine.shippingMethodId = shippingMethod.id;
+            } else {
+                shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
+                    new ShippingLine({
+                        shippingMethod,
+                        order,
+                        adjustments: [],
+                        listPrice: 0,
+                        listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                        taxLines: [],
+                    }),
+                );
+                if (order.shippingLines) {
+                    order.shippingLines.push(shippingLine);
+                } else {
+                    order.shippingLines = [shippingLine];
+                }
+            }
+
+            await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
+        }
+        // remove any now-unused ShippingLines
+        if (shippingMethodIds.length < order.shippingLines.length) {
+            const shippingLinesToDelete = order.shippingLines.splice(shippingMethodIds.length - 1);
+            await this.connection.getRepository(ctx, ShippingLine).remove(shippingLinesToDelete);
+        }
+        // assign the ShippingLines to the OrderLines
+        await this.connection
+            .getRepository(ctx, OrderLine)
+            .createQueryBuilder('line')
+            .update({ shippingLine: undefined })
+            .whereInIds(order.lines.map(l => l.id))
+            .execute();
+        const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
+        for (const shippingLine of order.shippingLines) {
+            const orderLinesForShippingLine =
+                await shippingLineAssignmentStrategy.assignShippingLineToOrderLines(ctx, shippingLine, order);
+            await this.connection
+                .getRepository(ctx, OrderLine)
+                .createQueryBuilder('line')
+                .update({ shippingLineId: shippingLine.id })
+                .whereInIds(orderLinesForShippingLine.map(l => l.id))
+                .execute();
+            orderLinesForShippingLine.forEach(line => {
+                line.shippingLine = shippingLine;
+            });
+        }
+        return order;
+    }
+
     private noChangesSpecified(input: ModifyOrderInput): boolean {
         const noChanges =
             !input.adjustOrderLines?.length &&
@@ -665,7 +735,8 @@ export class OrderModifier {
             !input.updateShippingAddress &&
             !input.updateBillingAddress &&
             !input.couponCodes &&
-            !(input as any).customFields;
+            !(input as any).customFields &&
+            (!input.shippingMethodIds || input.shippingMethodIds.length === 0);
         return noChanges;
     }
 

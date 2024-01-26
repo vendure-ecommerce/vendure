@@ -62,7 +62,6 @@ import {
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import {
-    IneligibleShippingMethodError,
     InsufficientStockError,
     NegativeQuantityError,
     OrderLimitError,
@@ -110,7 +109,6 @@ import { OrderModifier } from '../helpers/order-modifier/order-modifier';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
-import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -127,7 +125,6 @@ import { PaymentService } from './payment.service';
 import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockLevelService } from './stock-level.service';
-import { StockMovementService } from './stock-movement.service';
 
 /**
  * @description
@@ -148,11 +145,9 @@ export class OrderService {
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
         private paymentService: PaymentService,
-        private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
         private fulfillmentService: FulfillmentService,
         private listQueryBuilder: ListQueryBuilder,
-        private stockMovementService: StockMovementService,
         private refundStateMachine: RefundStateMachine,
         private historyService: HistoryService,
         private promotionService: PromotionService,
@@ -919,64 +914,9 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
-        for (const [i, shippingMethodId] of shippingMethodIds.entries()) {
-            const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
-                ctx,
-                order,
-                shippingMethodId,
-            );
-            if (!shippingMethod) {
-                return new IneligibleShippingMethodError();
-            }
-            let shippingLine: ShippingLine | undefined = order.shippingLines[i];
-            if (shippingLine) {
-                shippingLine.shippingMethod = shippingMethod;
-                shippingLine.shippingMethodId = shippingMethod.id;
-            } else {
-                shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
-                    new ShippingLine({
-                        shippingMethod,
-                        order,
-                        adjustments: [],
-                        listPrice: 0,
-                        listPriceIncludesTax: ctx.channel.pricesIncludeTax,
-                        taxLines: [],
-                    }),
-                );
-                if (order.shippingLines) {
-                    order.shippingLines.push(shippingLine);
-                } else {
-                    order.shippingLines = [shippingLine];
-                }
-            }
-
-            await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
-        }
-        // remove any now-unused ShippingLines
-        if (shippingMethodIds.length < order.shippingLines.length) {
-            const shippingLinesToDelete = order.shippingLines.splice(shippingMethodIds.length - 1);
-            await this.connection.getRepository(ctx, ShippingLine).remove(shippingLinesToDelete);
-        }
-        // assign the ShippingLines to the OrderLines
-        await this.connection
-            .getRepository(ctx, OrderLine)
-            .createQueryBuilder('line')
-            .update({ shippingLine: undefined })
-            .whereInIds(order.lines.map(l => l.id))
-            .execute();
-        const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
-        for (const shippingLine of order.shippingLines) {
-            const orderLinesForShippingLine =
-                await shippingLineAssignmentStrategy.assignShippingLineToOrderLines(ctx, shippingLine, order);
-            await this.connection
-                .getRepository(ctx, OrderLine)
-                .createQueryBuilder('line')
-                .update({ shippingLineId: shippingLine.id })
-                .whereInIds(orderLinesForShippingLine.map(l => l.id))
-                .execute();
-            orderLinesForShippingLine.forEach(line => {
-                line.shippingLine = shippingLine;
-            });
+        const result = await this.orderModifier.setShippingMethods(ctx, order, shippingMethodIds);
+        if (isGraphQlErrorResult(result)) {
+            return result;
         }
         const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
         await this.applyPriceAdjustments(ctx, updatedOrder);

@@ -2580,6 +2580,8 @@ export type ModifyOrderInput = {
    */
   refund?: InputMaybe<AdministratorRefundInput>;
   refunds?: InputMaybe<Array<AdministratorRefundInput>>;
+  /** Added in v2.2 */
+  shippingMethodIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   surcharges?: InputMaybe<Array<SurchargeInput>>;
   updateBillingAddress?: InputMaybe<UpdateOrderAddressInput>;
   updateShippingAddress?: InputMaybe<UpdateOrderAddressInput>;
@@ -2590,7 +2592,7 @@ export type ModifyOrderOptions = {
   recalculateShipping?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type ModifyOrderResult = CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError | InsufficientStockError | NegativeQuantityError | NoChangesSpecifiedError | Order | OrderLimitError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError;
+export type ModifyOrderResult = CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError | IneligibleShippingMethodError | InsufficientStockError | NegativeQuantityError | NoChangesSpecifiedError | Order | OrderLimitError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError;
 
 export type MoveCollectionInput = {
   collectionId: Scalars['ID']['input'];
