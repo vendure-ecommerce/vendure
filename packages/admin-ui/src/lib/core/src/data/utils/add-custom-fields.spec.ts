@@ -1,6 +1,6 @@
 import { DocumentNode, FieldNode, FragmentDefinitionNode, Kind, OperationTypeNode } from 'graphql';
 
-import { CustomFields } from '../../common/generated-types';
+import { CustomFieldConfig, CustomFields } from '../../common/generated-types';
 
 import { addCustomFields } from './add-custom-fields';
 
@@ -143,14 +143,13 @@ describe('addCustomFields()', () => {
     });
 
     it('Adds customFields to Product fragment', () => {
-        const customFieldsConfig: Partial<CustomFields> = {
-            Product: [
-                { name: 'custom1', type: 'string', list: false },
-                { name: 'custom2', type: 'boolean', list: false },
-            ],
-        };
+        const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+        customFieldsConfig.set('Product', [
+            { name: 'custom1', type: 'string', list: false },
+            { name: 'custom2', type: 'boolean', list: false },
+        ]);
 
-        const result = addCustomFields(documentNode, customFieldsConfig as CustomFields);
+        const result = addCustomFields(documentNode, customFieldsConfig);
         const productFragmentDef = result.definitions[1] as FragmentDefinitionNode;
         const customFieldsDef = productFragmentDef.selectionSet.selections[2] as FieldNode;
         expect(productFragmentDef.selectionSet.selections.length).toBe(3);
@@ -160,11 +159,12 @@ describe('addCustomFields()', () => {
     });
 
     it('Adds customFields to Product translations', () => {
-        const customFieldsConfig: Partial<CustomFields> = {
-            Product: [{ name: 'customLocaleString', type: 'localeString', list: false }],
-        };
+        const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+        customFieldsConfig.set('Product', [
+            { name: 'customLocaleString', type: 'localeString', list: false },
+        ]);
 
-        const result = addCustomFields(documentNode, customFieldsConfig as CustomFields);
+        const result = addCustomFields(documentNode, customFieldsConfig);
         const productFragmentDef = result.definitions[1] as FragmentDefinitionNode;
         const translationsField = productFragmentDef.selectionSet.selections[1] as FieldNode;
         const customTranslationFieldsDef = translationsField.selectionSet!.selections[2] as FieldNode;
@@ -175,11 +175,10 @@ describe('addCustomFields()', () => {
     });
 
     function addsCustomFieldsToType(type: keyof CustomFields, indexOfDefinition: number) {
-        const customFieldsConfig: Partial<CustomFields> = {
-            [type]: [{ name: 'custom', type: 'boolean' }],
-        };
+        const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+        customFieldsConfig.set(type, [{ name: 'custom', type: 'boolean', list: false }]);
 
-        const result = addCustomFields(documentNode, customFieldsConfig as CustomFields);
+        const result = addCustomFields(documentNode, customFieldsConfig);
         const fragmentDef = result.definitions[indexOfDefinition] as FragmentDefinitionNode;
         const customFieldsDef = fragmentDef.selectionSet.selections[0] as FieldNode;
         expect(fragmentDef.selectionSet.selections.length).toBe(1);
