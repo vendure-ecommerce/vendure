@@ -165,6 +165,7 @@ export type CustomFields = {
     ProductOption?: CustomFieldConfig[];
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
+    ProductVariantPrice?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
     Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];

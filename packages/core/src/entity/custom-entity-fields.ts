@@ -24,6 +24,7 @@ export class CustomProductOptionGroupFields {}
 export class CustomProductOptionGroupFieldsTranslation {}
 export class CustomProductVariantFields {}
 export class CustomProductVariantFieldsTranslation {}
+export class CustomProductVariantPriceFields {}
 export class CustomPromotionFields {}
 export class CustomPromotionFieldsTranslation {}
 export class CustomRegionFields {}
