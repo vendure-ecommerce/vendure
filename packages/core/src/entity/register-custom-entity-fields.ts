@@ -44,6 +44,7 @@ import {
     CustomProductOptionGroupFieldsTranslation,
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
+    CustomProductVariantPriceFields,
     CustomPromotionFields,
     CustomPromotionFieldsTranslation,
     CustomRegionFields,
@@ -329,6 +330,9 @@ export function registerCustomEntityFields(config: VendureConfig) {
 
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFields);
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFieldsTranslation, true);
+
+    registerCustomFieldsForEntity(config, 'ProductVariantPrice', CustomProductVariantPriceFields);
+    assertLocaleFieldsNotSpecified(config, 'ProductVariantPrice');
 
     registerCustomFieldsForEntity(config, 'Promotion', CustomPromotionFields);
     registerCustomFieldsForEntity(config, 'Promotion', CustomPromotionFieldsTranslation, true);
