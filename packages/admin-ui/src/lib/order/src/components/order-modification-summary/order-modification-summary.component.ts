@@ -16,6 +16,7 @@ export class OrderModificationSummaryComponent {
     @Input() addedLines: AddedLine[];
     @Input() shippingAddressForm: OrderEditorComponent['shippingAddressForm'];
     @Input() billingAddressForm: OrderEditorComponent['billingAddressForm'];
+    @Input() updatedShippingMethods: OrderEditorComponent['updatedShippingMethods'];
     @Input() couponCodesControl: FormControl<string[] | null>;
 
     get adjustedLines(): string[] {
@@ -45,6 +46,20 @@ export class OrderModificationSummaryComponent {
             })
             .filter(notNullOrUndefined)
             .join(', ');
+    }
+
+    getUpdatedShippingMethodLines() {
+        return Object.entries(this.updatedShippingMethods || {})
+            .map(([lineId, shippingMethod]) => {
+                const previousMethod = this.orderSnapshot.shippingLines.find(l => l.id === lineId);
+                if (!previousMethod) {
+                    return;
+                }
+                const previousName = previousMethod.shippingMethod.name || previousMethod.shippingMethod.code;
+                const newName = shippingMethod.name || shippingMethod.code;
+                return `${previousName} -> ${newName}`;
+            })
+            .filter(notNullOrUndefined);
     }
 
     get couponCodeChanges(): string[] {

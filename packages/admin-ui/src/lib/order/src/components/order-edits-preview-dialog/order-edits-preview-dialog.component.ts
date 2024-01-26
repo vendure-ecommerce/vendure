@@ -52,6 +52,7 @@ export class OrderEditsPreviewDialogComponent implements OnInit, Dialog<OrderEdi
     addedLines: AddedLine[];
     shippingAddressForm: OrderEditorComponent['shippingAddressForm'];
     billingAddressForm: OrderEditorComponent['billingAddressForm'];
+    updatedShippingMethods: OrderEditorComponent['updatedShippingMethods'];
     couponCodesControl: FormControl<string[] | null>;
 
     refundablePayments: RefundablePayment[];

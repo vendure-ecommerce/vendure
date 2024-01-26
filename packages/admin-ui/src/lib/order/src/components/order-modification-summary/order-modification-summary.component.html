@@ -46,3 +46,8 @@
 <vdr-labeled-data *ngIf="couponCodeChanges.length" [label]="'order.set-coupon-codes' | translate">
     <div *ngFor="let change of couponCodeChanges" class="mb-1">{{ change }}</div>
 </vdr-labeled-data>
+<ng-container *ngIf="getUpdatedShippingMethodLines() as updatedShippingMethods">
+    <vdr-labeled-data *ngIf="updatedShippingMethods.length" [label]="'order.shipping-method' | translate">
+        <div *ngFor="let change of updatedShippingMethods" class="mb-1">{{ change }}</div>
+    </vdr-labeled-data>
+</ng-container>

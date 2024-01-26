@@ -130,6 +130,7 @@
       "CouponCodeExpiredError",
       "CouponCodeInvalidError",
       "CouponCodeLimitError",
+      "IneligibleShippingMethodError",
       "InsufficientStockError",
       "NegativeQuantityError",
       "NoChangesSpecifiedError",

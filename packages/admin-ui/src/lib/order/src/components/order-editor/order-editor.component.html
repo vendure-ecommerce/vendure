@@ -22,6 +22,7 @@
                 [shippingAddressForm]="shippingAddressForm"
                 [billingAddressForm]="billingAddressForm"
                 [couponCodesControl]="couponCodesControl"
+                [updatedShippingMethods]="updatedShippingMethods"
             ></vdr-order-modification-summary>
 
             <div *ngIf="!hasModifications()" class="no-modifications">
@@ -194,12 +195,12 @@
                 <vdr-dt2-column
                     *ngFor="let customField of orderLineCustomFields"
                     [id]="customField.name"
-                    [heading]="customField | customFieldLabel:(uiLanguage$ | async)"
+                    [heading]="customField | customFieldLabel : (uiLanguage$ | async)"
                     [hiddenByDefault]="true"
                 >
                     <ng-template let-line="item" let-index="index">
                         <vdr-custom-field-control
-                                [compact]="true"
+                            [compact]="true"
                             [entityName]="'OrderLine'"
                             [customField]="customField"
                             [customFieldsFormGroup]="orderLineCustomFieldsFormArray.at(index)"
@@ -253,6 +254,19 @@
                         {{ 'order.add-item-to-order' | translate }}
                     </button>
                 </div>
+            </div>
+        </vdr-card>
+        <vdr-card [title]="'order.shipping' | translate">
+            <div *ngFor="let shippingLine of order.shippingLines" class="flex items-center">
+                <ng-container *ngIf="getShippingLineDetails(shippingLine) as details">
+                    <div>{{ details.name }}:</div>
+                    <div class="mx-1">
+                        {{ details.price | localeCurrency : order.currencyCode }}
+                    </div>
+                    <button class="button-small" (click)="setShippingMethod(shippingLine.id)">
+                        {{ 'order.set-shipping-method' | translate }}
+                    </button>
+                </ng-container>
             </div>
         </vdr-card>
         <vdr-card [title]="'order.add-surcharge' | translate">

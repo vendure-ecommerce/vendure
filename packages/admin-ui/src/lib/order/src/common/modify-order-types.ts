@@ -12,6 +12,7 @@ export interface OrderSnapshot {
     currencyCode: CurrencyCode;
     couponCodes: string[];
     lines: OrderDetailFragment['lines'];
+    shippingLines: OrderDetailFragment['shippingLines'];
 }
 
 export type ProductSelectorItem = ProductSelectorSearchQuery['search']['items'][number];

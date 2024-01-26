@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -10,6 +10,7 @@ import {
 import {
     CustomFieldConfig,
     DataService,
+    DraftOrderEligibleShippingMethodsQuery,
     ErrorResult,
     GetAvailableCountriesQuery,
     HistoryEntryType,
@@ -41,6 +42,7 @@ import {
     OrderEditResultType,
     OrderEditsPreviewDialogComponent,
 } from '../order-edits-preview-dialog/order-edits-preview-dialog.component';
+import { SelectShippingMethodDialogComponent } from '../select-shipping-method-dialog/select-shipping-method-dialog.component';
 
 @Component({
     selector: 'vdr-order-editor',
@@ -109,6 +111,11 @@ export class OrderEditorComponent
     previousState: string;
     editingShippingAddress = false;
     editingBillingAddress = false;
+    updatedShippingMethods: {
+        [
+            shippingLineId: string
+        ]: DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder'][number];
+    } = {};
     private addedVariants = new Map<string, ProductSelectorItem>();
 
     constructor(
@@ -116,6 +123,7 @@ export class OrderEditorComponent
         private notificationService: NotificationService,
         private modalService: ModalService,
         private orderTransitionService: OrderTransitionService,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {
         super();
     }
@@ -237,7 +245,8 @@ export class OrderEditorComponent
             !!adjustOrderLines?.length ||
             (this.shippingAddressForm.dirty && this.shippingAddressForm.valid) ||
             (this.billingAddressForm.dirty && this.billingAddressForm.valid) ||
-            this.couponCodesControl.dirty
+            this.couponCodesControl.dirty ||
+            Object.entries(this.updatedShippingMethods).length > 0
         );
     }
 
@@ -341,6 +350,61 @@ export class OrderEditorComponent
         this.addedVariants.set(result.productVariantId, result);
     }
 
+    getShippingLineDetails(shippingLine: OrderDetailFragment['shippingLines'][number]): {
+        name: string;
+        price: number;
+    } {
+        const updatedMethod = this.updatedShippingMethods[shippingLine.id];
+        if (updatedMethod) {
+            return {
+                name: updatedMethod.name || updatedMethod.code,
+                price: updatedMethod.priceWithTax,
+            };
+        } else {
+            return {
+                name: shippingLine.shippingMethod.name || shippingLine.shippingMethod.code,
+                price: shippingLine.discountedPriceWithTax,
+            };
+        }
+    }
+
+    setShippingMethod(shippingLineId: string) {
+        const currentShippingMethod =
+            this.updatedShippingMethods[shippingLineId] ??
+            this.entity?.shippingLines.find(l => l.id === shippingLineId)?.shippingMethod;
+        if (!currentShippingMethod) {
+            return;
+        }
+        this.dataService.order
+            .getDraftOrderEligibleShippingMethods(this.id)
+            .mapSingle(({ eligibleShippingMethodsForDraftOrder }) => eligibleShippingMethodsForDraftOrder)
+            .pipe(
+                switchMap(methods =>
+                    this.modalService
+                        .fromComponent(SelectShippingMethodDialogComponent, {
+                            locals: {
+                                eligibleShippingMethods: methods,
+                                currencyCode: this.entity?.currencyCode,
+                                currentSelectionId: currentShippingMethod.id,
+                            },
+                        })
+                        .pipe(
+                            map(result => {
+                                if (result) {
+                                    return methods.find(method => method.id === result);
+                                }
+                            }),
+                        ),
+                ),
+            )
+            .subscribe(result => {
+                if (result) {
+                    this.updatedShippingMethods[shippingLineId] = result;
+                    this.changeDetectorRef.markForCheck();
+                }
+            });
+    }
+
     private isMatchingAddItemRow(
         row: ModifyOrderData['addItems'][number],
         result: ProductSelectorItem,
@@ -405,6 +469,13 @@ export class OrderEditorComponent
                 recalculateShipping: this.recalculateShipping,
             },
         };
+        if (Object.entries(this.updatedShippingMethods).length) {
+            input.shippingMethodIds = order.shippingLines.map(l =>
+                this.updatedShippingMethods[l.id]
+                    ? this.updatedShippingMethods[l.id].id
+                    : l.shippingMethod.id,
+            );
+        }
         this.dataService.order
             .modifyOrder(input)
             .pipe(
@@ -423,6 +494,7 @@ export class OrderEditorComponent
                                     shippingAddressForm: this.shippingAddressForm,
                                     billingAddressForm: this.billingAddressForm,
                                     couponCodesControl: this.couponCodesControl,
+                                    updatedShippingMethods: this.updatedShippingMethods,
                                 },
                             });
                         case 'InsufficientStockError':
@@ -434,6 +506,7 @@ export class OrderEditorComponent
                         case 'RefundPaymentIdMissingError':
                         case 'CouponCodeLimitError':
                         case 'CouponCodeExpiredError':
+                        case 'IneligibleShippingMethodError':
                         case 'CouponCodeInvalidError': {
                             this.notificationService.error(modifyOrder.message);
                             return of(false as const);
@@ -506,6 +579,7 @@ export class OrderEditorComponent
             currencyCode: order.currencyCode,
             couponCodes: order.couponCodes,
             lines: [...order.lines].map(line => ({ ...line })),
+            shippingLines: [...order.shippingLines].map(line => ({ ...line })),
         };
     }
 
