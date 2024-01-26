@@ -291,9 +291,16 @@ export class ProductVariantService {
      * page, this method returns only the Product itself.
      */
     async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
-        const product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
-            includeSoftDeleted: true,
-        });
+        let product;
+
+        if (!variant.product) {
+            product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
+                includeSoftDeleted: true,
+            });
+        } else {
+            product = variant.product;
+        }
+
         return this.translator.translate(product, ctx);
     }
 
