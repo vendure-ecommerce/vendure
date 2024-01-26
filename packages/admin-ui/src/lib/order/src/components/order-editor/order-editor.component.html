@@ -191,6 +191,21 @@
                         ></vdr-line-fulfillment>
                     </ng-template>
                 </vdr-dt2-column>
+                <vdr-dt2-column
+                    *ngFor="let customField of orderLineCustomFields"
+                    [id]="customField.name"
+                    [heading]="customField | customFieldLabel:(uiLanguage$ | async)"
+                    [hiddenByDefault]="true"
+                >
+                    <ng-template let-line="item" let-index="index">
+                        <vdr-custom-field-control
+                                [compact]="true"
+                            [entityName]="'OrderLine'"
+                            [customField]="customField"
+                            [customFieldsFormGroup]="orderLineCustomFieldsFormArray.at(index)"
+                        />
+                    </ng-template>
+                </vdr-dt2-column>
             </vdr-data-table-2>
         </vdr-card>
         <vdr-card [title]="'order.add-item-to-order' | translate">
@@ -215,15 +230,17 @@
                             </div>
                         </div>
                     </div>
-                    <ng-container *ngFor="let customField of orderLineCustomFields">
-                        <vdr-custom-field-control
-                            [readonly]="!addItemSelectedVariant"
-                            [customField]="customField"
-                            [customFieldsFormGroup]="addItemCustomFieldsForm"
-                            entityName="OrderLine"
-                            [compact]="true"
-                        ></vdr-custom-field-control>
-                    </ng-container>
+                    <div class="form-grid" *ngIf="addItemSelectedVariant">
+                        <ng-container *ngFor="let customField of orderLineCustomFields">
+                            <vdr-custom-field-control
+                                [readonly]="!addItemSelectedVariant"
+                                [customField]="customField"
+                                [customFieldsFormGroup]="addItemCustomFieldsForm"
+                                entityName="OrderLine"
+                                [compact]="true"
+                            ></vdr-custom-field-control>
+                        </ng-container>
+                    </div>
                 </div>
                 <div class="flex-spacer"></div>
                 <div>

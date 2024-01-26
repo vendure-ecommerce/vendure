@@ -7,5 +7,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SimpleItemListComponent {
-    @Input() items: Array<{ name: string; quantity: number }>;
+    @Input() items: Array<{ name: string; quantity?: number }>;
 }

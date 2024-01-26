@@ -28,7 +28,7 @@ import {
 import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { EMPTY, Observable, of } from 'rxjs';
-import { mapTo, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
+import { map, mapTo, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
 import {
     AddedLine,
     ModifyOrderData,
@@ -54,6 +54,7 @@ export class OrderEditorComponent
 {
     availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
     addressCustomFields: CustomFieldConfig[];
+    uiLanguage$: Observable<LanguageCode>;
     detailForm = new UntypedFormGroup({});
     couponCodesControl = new FormControl<string[]>([]);
     orderLineCustomFieldsFormArray: UntypedFormArray;
@@ -183,6 +184,9 @@ export class OrderEditorComponent
             .single$.subscribe(({ order }) => {
                 this.previousState = order?.history.items[0].data.from;
             });
+        this.uiLanguage$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => uiState.language));
     }
 
     ngOnDestroy(): void {

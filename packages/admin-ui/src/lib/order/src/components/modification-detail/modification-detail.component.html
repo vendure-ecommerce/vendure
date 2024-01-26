@@ -12,3 +12,6 @@
 <vdr-labeled-data *ngIf="getRemovedItems().length" [label]="'order.removed-items' | translate">
     <vdr-simple-item-list [items]="getRemovedItems()"></vdr-simple-item-list>
 </vdr-labeled-data>
+<vdr-labeled-data *ngIf="getModifiedItems().length" [label]="'order.modified-items' | translate">
+    <vdr-simple-item-list [items]="getModifiedItems()"></vdr-simple-item-list>
+</vdr-labeled-data>
