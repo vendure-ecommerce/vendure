@@ -50,6 +50,7 @@ async function getProductCount() {
             `There are ${totalItems} products`,
             '------------------------------',
         ].join('\n'),
+    )
 }
 ``` 
 
