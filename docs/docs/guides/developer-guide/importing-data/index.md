@@ -311,7 +311,8 @@ import {
     LanguageCode,
     ParsedProductWithVariants,
     RequestContext, RequestContextService,
-    TransactionalConnection, User
+    TransactionalConnection, User,
+    SearchService,
 } from '@vendure/core';
 import { createClient, OldCommerceProduct } from '@old-commerce/client';
 
@@ -343,6 +344,9 @@ async function importData() {
 
     // Most service methods require a RequestContext, so we'll create one here.
     const ctx = await getSuperadminContext(app);
+
+    // To reindex after importing products
+    const searchService = app.get(SearchService);
 
     // Fetch all the products to import from the OldCommerce API
     const productsToImport: OldCommerceProduct[] = await client.getAllProducts();
@@ -386,6 +390,9 @@ async function importData() {
     await importer.importProducts(ctx, importRows, progress => {
         console.log(`Imported ${progress.imported} of ${importRows.length} products`);
     });
+
+    // Rebuild search index 
+    await searchService.reindex(ctx);
 
     // Close the app
     await app.close();
