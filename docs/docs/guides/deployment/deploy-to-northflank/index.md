@@ -455,6 +455,7 @@ This setup is suitable for testing purposes, but is not recommended for producti
         },
         {
           "kind": "DeploymentService",
+          "ref": "server",
           "spec": {
             "name": "server",
             "billing": {
