@@ -226,9 +226,9 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
-        if (order.state === 'PaymentSettled') {
+        if (order.state === 'PaymentSettled' || order.state === 'Shipped' || order.state === 'Delivered') {
             Logger.info(
-                `Order ${order.code} is already 'PaymentSettled', no need for handling Mollie status '${mollieOrder.status}'`,
+                `Order ${order.code} is already '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`,
                 loggerCtx,
             );
             return;
