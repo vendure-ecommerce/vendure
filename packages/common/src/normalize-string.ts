@@ -7,6 +7,7 @@ export function normalizeString(input: string, spaceReplacer = ' '): string {
     return (input || '')
         .normalize('NFD')
         .replace(/[\u00df]/g, 'ss')
+        .replace(/[\u1e9e]/g, 'SS')
         .replace(/[\u0308]/g, 'e')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
