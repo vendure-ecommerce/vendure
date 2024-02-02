@@ -166,7 +166,6 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
             .update()
             .set(this.toRecord(job))
             .where('id = :id', { id: job.id })
-            .andWhere('settledAt IS NULL')
             .execute();
     }
 
