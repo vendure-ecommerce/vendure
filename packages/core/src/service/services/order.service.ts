@@ -1726,7 +1726,7 @@ export class OrderService {
             // a race condition where changing one or the other in parallel can
             // overwrite the other's changes.
             .save(omit(updatedOrder, ['shippingAddress', 'billingAddress']), { reload: false });
-        await this.connection.getRepository(ctx, OrderLine).save(updatedOrder.lines, { reload: false });
+        await this.connection.getRepository(ctx, OrderLine).save(updatedOrderLines, { reload: false });
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
 
