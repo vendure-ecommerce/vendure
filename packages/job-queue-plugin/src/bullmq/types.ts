@@ -26,14 +26,14 @@ export interface BullMQPluginOptions {
      * Queue instance.
      * See the [BullMQ QueueOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.queueoptions.md)
      */
-    queueOptions?: Exclude<QueueOptions, 'connection'>;
+    queueOptions?: Omit<QueueOptions, 'connection'>;
     /**
      * @description
      * Additional options used when instantiating the BullMQ
      * Worker instance.
      * See the [BullMQ WorkerOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.workeroptions.md)
      */
-    workerOptions?: Exclude<WorkerOptions, 'connection'>;
+    workerOptions?: Omit<WorkerOptions, 'connection'>;
     /**
      * @description
      * When a job is added to the JobQueue using `JobQueue.add()`, the calling
