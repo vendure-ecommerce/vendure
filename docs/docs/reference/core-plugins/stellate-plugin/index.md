@@ -52,7 +52,7 @@ export const config: VendureConfig = {
            serviceName: 'my-service',
            // The API token for the Stellate Purging API. See the "pre-requisites" section above.
            apiToken: process.env.STELLATE_PURGE_API_TOKEN,
-           debugMode: !isProd || process.env.STELLATE_DEBUG_MODE ? true : false,
+           devMode: !isProd || process.env.STELLATE_DEBUG_MODE ? true : false,
            debugLogging: process.env.STELLATE_DEBUG_MODE ? true : false,
            purgeRules: [
                ...defaultPurgeRules,

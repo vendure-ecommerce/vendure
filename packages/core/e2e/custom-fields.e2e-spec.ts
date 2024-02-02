@@ -1013,6 +1013,36 @@ describe('Custom fields', () => {
         );
     });
 
+    describe('product on productVariant entity', () => {
+        it('is translated', async () => {
+            const { productVariants } = await adminClient.query(gql`
+                query {
+                    productVariants(productId: "T_1") {
+                        items {
+                            product {
+                                name
+                                id
+                                customFields {
+                                    localeStringWithDefault
+                                    stringWithDefault
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+
+            expect(productVariants.items[0].product).toEqual({
+                id: 'T_1',
+                name: 'Laptop',
+                customFields: {
+                    localeStringWithDefault: 'hola',
+                    stringWithDefault: 'hello',
+                },
+            });
+        });
+    });
+
     describe('unique constraint', () => {
         it('setting unique value works', async () => {
             const result = await adminClient.query(
