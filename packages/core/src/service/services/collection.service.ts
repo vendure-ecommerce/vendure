@@ -6,6 +6,7 @@ import {
     CreateCollectionInput,
     DeletionResponse,
     DeletionResult,
+    JobState,
     MoveCollectionInput,
     Permission,
     PreviewCollectionVariantsInput,
@@ -114,6 +115,9 @@ export class CollectionService implements OnModuleInit {
                 Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
                 let completed = 0;
                 for (const collectionId of job.data.collectionIds) {
+                    if (job.state === JobState.CANCELLED) {
+                        throw new Error(`Job was cancelled`);
+                    }
                     let collection: Collection | undefined;
                     try {
                         collection = await this.connection.getEntityOrThrow(ctx, Collection, collectionId, {

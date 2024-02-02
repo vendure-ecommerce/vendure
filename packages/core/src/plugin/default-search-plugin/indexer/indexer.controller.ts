@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { JobState, LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { Observable } from 'rxjs';
 import { In, IsNull } from 'typeorm';
-import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -15,8 +14,9 @@ import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
-import { Product } from '../../../entity/product/product.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Product } from '../../../entity/product/product.entity';
+import { Job } from '../../../job-queue/index';
 import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { PLUGIN_INIT_OPTIONS } from '../constants';
@@ -24,12 +24,12 @@ import { SearchIndexItem } from '../entities/search-index-item.entity';
 import {
     DefaultSearchPluginInitOptions,
     ProductChannelMessageData,
-    ReindexMessageData,
     ReindexMessageResponse,
     UpdateAssetMessageData,
+    UpdateIndexQueueJobData,
     UpdateProductMessageData,
     UpdateVariantMessageData,
-    UpdateVariantsByIdMessageData,
+    UpdateVariantsByIdJobData,
     VariantChannelMessageData,
 } from '../types';
 
@@ -62,7 +62,8 @@ export class IndexerController {
         @Inject(PLUGIN_INIT_OPTIONS) private options: DefaultSearchPluginInitOptions,
     ) {}
 
-    reindex({ ctx: rawContext }: ReindexMessageData): Observable<ReindexMessageResponse> {
+    reindex(job: Job<UpdateIndexQueueJobData>): Observable<ReindexMessageResponse> {
+        const { ctx: rawContext } = job.data;
         const ctx = MutableRequestContext.deserialize(rawContext);
         return asyncObservable(async observer => {
             const timeStart = Date.now();
@@ -77,8 +78,10 @@ export class IndexerController {
             Logger.verbose('Deleted existing index items', workerLoggerCtx);
 
             for (let i = 0; i < batches; i++) {
+                if (job.state === JobState.CANCELLED) {
+                    throw new Error('reindex job was cancelled');
+                }
                 Logger.verbose(`Processing batch ${i + 1} of ${batches}`, workerLoggerCtx);
-
                 const variants = await qb
                     .take(BATCH_SIZE)
                     .skip(i * BATCH_SIZE)
@@ -100,10 +103,8 @@ export class IndexerController {
         });
     }
 
-    updateVariantsById({
-        ctx: rawContext,
-        ids,
-    }: UpdateVariantsByIdMessageData): Observable<ReindexMessageResponse> {
+    updateVariantsById(job: Job<UpdateVariantsByIdJobData>): Observable<ReindexMessageResponse> {
+        const { ctx: rawContext, ids } = job.data;
         const ctx = MutableRequestContext.deserialize(rawContext);
 
         return asyncObservable(async observer => {
@@ -113,6 +114,9 @@ export class IndexerController {
                 Logger.verbose(`Updating ${ids.length} variants...`);
 
                 for (let i = 0; i < batches; i++) {
+                    if (job.state === JobState.CANCELLED) {
+                        throw new Error('updateVariantsById job was cancelled');
+                    }
                     const begin = i * BATCH_SIZE;
                     const end = begin + BATCH_SIZE;
                     Logger.verbose(`Updating ids from index ${begin} to ${end}`);

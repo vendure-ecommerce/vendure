@@ -11,7 +11,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Job } from '../../../job-queue/job';
 import { JobQueue } from '../../../job-queue/job-queue';
 import { JobQueueService } from '../../../job-queue/job-queue.service';
-import { ReindexMessageResponse, UpdateIndexQueueJobData } from '../types';
+import { ReindexMessageResponse, UpdateIndexQueueJobData, UpdateVariantsByIdJobData } from '../types';
 
 import { IndexerController } from './indexer.controller';
 
@@ -32,7 +32,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
                 switch (data.type) {
                     case 'reindex':
                         Logger.verbose('sending ReindexMessage');
-                        return this.jobWithProgress(job, this.indexerController.reindex(data));
+                        return this.jobWithProgress(job, this.indexerController.reindex(job));
                     case 'update-product':
                         return this.indexerController.updateProduct(data);
                     case 'update-variants':
@@ -42,7 +42,10 @@ export class SearchIndexService implements OnApplicationBootstrap {
                     case 'delete-variant':
                         return this.indexerController.deleteVariant(data);
                     case 'update-variants-by-id':
-                        return this.jobWithProgress(job, this.indexerController.updateVariantsById(data));
+                        return this.jobWithProgress(
+                            job,
+                            this.indexerController.updateVariantsById(job as Job<UpdateVariantsByIdJobData>),
+                        );
                     case 'update-asset':
                         return this.indexerController.updateAsset(data);
                     case 'delete-asset':
