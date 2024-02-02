@@ -126,7 +126,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                             takeUntil(completed$),
                         )
                         .subscribe(() => {
-                            Logger.info(`Cancelling job ${job.id ?? ''}`, loggerCtx);
+                            Logger.info(`Setting job ${job.id ?? ''} as cancelled`, loggerCtx);
                             job.cancel();
                         });
                     const result = await processFn(job);
