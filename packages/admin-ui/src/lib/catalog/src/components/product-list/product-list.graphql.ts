@@ -1,7 +1,7 @@
 import { gql } from 'apollo-angular';
 
 const PRODUCT_LIST_QUERY_PRODUCT_FRAGMENT = gql`
-    fragment ProductListQueryProductFragment on Product {
+    fragment ProductListQueryProduct on Product {
         id
         createdAt
         updatedAt
@@ -29,7 +29,7 @@ export const PRODUCT_LIST_QUERY = gql`
     query ProductListQuery($options: ProductListOptions) {
         products(options: $options) {
             items {
-                ...ProductListQueryProductFragment
+                ...ProductListQueryProduct
             }
             totalItems
         }
