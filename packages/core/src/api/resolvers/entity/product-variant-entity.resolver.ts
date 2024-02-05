@@ -79,7 +79,7 @@ export class ProductVariantEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
     ): Promise<Product | undefined> {
-        if (productVariant.product.name) {
+        if (productVariant.product?.name) {
             return productVariant.product;
         }
 
