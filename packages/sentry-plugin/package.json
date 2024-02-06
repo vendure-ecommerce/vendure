@@ -1,6 +1,6 @@
 {
     "name": "@vendure/sentry-plugin",
-    "version": "2.1.6",
+    "version": "2.1.7",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -22,7 +22,7 @@
     },
     "devDependencies": {
         "@sentry/node": "^7.85.0",
-        "@vendure/common": "^2.1.6",
-        "@vendure/core": "^2.1.6"
+        "@vendure/common": "^2.1.7",
+        "@vendure/core": "^2.1.7"
     }
 }
