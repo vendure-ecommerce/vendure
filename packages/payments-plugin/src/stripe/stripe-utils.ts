@@ -12,10 +12,9 @@ import { CurrencyCode, Order } from '@vendure/core';
  * stores money amounts multiplied by 100). See https://github.com/vendure-ecommerce/vendure/issues/1630
  */
 export function getAmountInStripeMinorUnits(order: Order): number {
-    const amountInStripeMinorUnits = currencyHasFractionPart(order.currencyCode)
+    return currencyHasFractionPart(order.currencyCode)
         ? order.totalWithTax
         : Math.round(order.totalWithTax / 100);
-    return amountInStripeMinorUnits;
 }
 
 /**
@@ -24,10 +23,7 @@ export function getAmountInStripeMinorUnits(order: Order): number {
  * used by Vendure.
  */
 export function getAmountFromStripeMinorUnits(order: Order, stripeAmount: number): number {
-    const amountInVendureMinorUnits = currencyHasFractionPart(order.currencyCode)
-        ? stripeAmount
-        : stripeAmount * 100;
-    return amountInVendureMinorUnits;
+    return currencyHasFractionPart(order.currencyCode) ? stripeAmount : stripeAmount * 100;
 }
 
 function currencyHasFractionPart(currencyCode: CurrencyCode): boolean {
@@ -36,6 +32,6 @@ function currencyHasFractionPart(currencyCode: CurrencyCode): boolean {
         currency: currencyCode,
         currencyDisplay: 'symbol',
     }).formatToParts(123.45);
-    const hasFractionPart = !!parts.find(p => p.type === 'fraction');
-    return hasFractionPart;
+
+    return !!parts.find(p => p.type === 'fraction');
 }

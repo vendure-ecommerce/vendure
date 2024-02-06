@@ -9,7 +9,6 @@ import {
     GetFacetDetailDocument,
     GetProductDetailDocument,
     GetProductVariantDetailDocument,
-    GetStockLocationDetailDocument,
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
@@ -57,22 +56,15 @@ import {
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
-import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import {
     assignProductVariantsToChannelBulkAction,
-    removeProductVariantsFromChannelBulkAction,
     deleteProductVariantsBulkAction,
+    removeProductVariantsFromChannelBulkAction,
 } from './components/product-variant-list/product-variant-list-bulk-actions';
+import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
-import { StockLocationDetailComponent } from './components/stock-location-detail/stock-location-detail.component';
-import {
-    assignStockLocationsToChannelBulkAction,
-    deleteStockLocationsBulkAction,
-    removeStockLocationsFromChannelBulkAction,
-} from './components/stock-location-list/stock-location-list-bulk-actions';
-import { StockLocationListComponent } from './components/stock-location-list/stock-location-list.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
 
@@ -109,13 +101,12 @@ const CATALOG_COMPONENTS = [
     CreateProductVariantDialogComponent,
     CreateProductOptionGroupDialogComponent,
     ProductVariantQuickJumpComponent,
-    StockLocationListComponent,
 ];
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
     exports: [...CATALOG_COMPONENTS],
-    declarations: [...CATALOG_COMPONENTS, StockLocationDetailComponent],
+    declarations: [...CATALOG_COMPONENTS],
     providers: [
         {
             provide: ROUTES,
@@ -126,10 +117,12 @@ const CATALOG_COMPONENTS = [
     ],
 })
 export class CatalogModule {
-    constructor(
-        private bulkActionRegistryService: BulkActionRegistryService,
-        private pageService: PageService,
-    ) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        if (CatalogModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
@@ -146,10 +139,6 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(assignCollectionsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
-
-        bulkActionRegistryService.registerBulkAction(assignStockLocationsToChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(removeStockLocationsFromChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(deleteStockLocationsBulkAction);
 
         pageService.registerPageTab({
             priority: 0,
@@ -184,30 +173,6 @@ export class CatalogModule {
         });
         pageService.registerPageTab({
             priority: 0,
-            location: 'stock-location-detail',
-            tab: _('catalog.stock-location'),
-            route: '',
-            component: detailComponentWithResolver({
-                component: StockLocationDetailComponent,
-                query: GetStockLocationDetailDocument,
-                entityKey: 'stockLocation',
-                getBreadcrumbs: entity => [
-                    {
-                        label: entity ? entity.name : _('catalog.create-new-stock-location'),
-                        link: [entity?.id],
-                    },
-                ],
-            }),
-        });
-        pageService.registerPageTab({
-            priority: 0,
-            location: 'product-list',
-            tab: _('catalog.stock-locations'),
-            route: 'stock-locations',
-            component: StockLocationListComponent,
-        });
-        pageService.registerPageTab({
-            priority: 0,
             location: 'product-variant-detail',
             tab: _('catalog.product-variants'),
             route: '',
@@ -218,7 +183,7 @@ export class CatalogModule {
                 getBreadcrumbs: entity => [
                     {
                         label: `${entity?.product.name}`,
-                        link: ['/catalog', 'inventory', entity?.product.id],
+                        link: ['/catalog', 'products', entity?.product.id],
                     },
                     {
                         label: `${entity?.name} (${entity?.sku})`,
@@ -299,5 +264,6 @@ export class CatalogModule {
                 ],
             }),
         });
+        CatalogModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

@@ -1,5 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { mergeConfig, Order, Product, ProductVariant } from '@vendure/core';
+import {
+    ChannelService,
+    EntityHydrator,
+    mergeConfig,
+    Order,
+    Product,
+    ProductVariant,
+    RequestContext,
+    ActiveOrderService,
+    OrderService,
+    TransactionalConnection,
+    OrderLine,
+    RequestContextService,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -11,6 +24,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { HydrationTestPlugin } from './fixtures/test-plugins/hydration-test-plugin';
 import { UpdateChannelMutation, UpdateChannelMutationVariables } from './graphql/generated-e2e-admin-types';
 import {
+    AddItemToOrderDocument,
     AddItemToOrderMutation,
     AddItemToOrderMutationVariables,
     UpdatedOrderFragment,
@@ -33,7 +47,7 @@ describe('Entity hydration', () => {
         await server.init({
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-            customerCount: 1,
+            customerCount: 2,
         });
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
@@ -224,6 +238,101 @@ describe('Entity hydration', () => {
 
         expect(hydrateChannel.customFields.thumb).toBeDefined();
         expect(hydrateChannel.customFields.thumb.id).toBe('T_2');
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2013
+    describe('hydration of OrderLine ProductVariantPrices', () => {
+        let order: Order | undefined;
+
+        it('Create order with 3 items', async () => {
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            await shopClient.query(AddItemToOrderDocument, {
+                productVariantId: '1',
+                quantity: 1,
+            });
+            await shopClient.query(AddItemToOrderDocument, {
+                productVariantId: '2',
+                quantity: 1,
+            });
+            const { addItemToOrder } = await shopClient.query(AddItemToOrderDocument, {
+                productVariantId: '3',
+                quantity: 1,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+            const channel = await server.app.get(ChannelService).getDefaultChannel();
+            // This is ugly, but in our real life example we use a CTX constructed by Vendure
+            const internalOrderId = +addItemToOrder.id.replace(/^\D+/g, '');
+            const ctx = new RequestContext({
+                channel,
+                authorizedAsOwnerOnly: true,
+                apiType: 'shop',
+                isAuthorized: true,
+                session: {
+                    activeOrderId: internalOrderId,
+                    activeChannelId: 1,
+                    user: {
+                        id: 2,
+                    },
+                } as any,
+            });
+            order = await server.app.get(ActiveOrderService).getActiveOrder(ctx, undefined);
+            await server.app.get(EntityHydrator).hydrate(ctx, order!, {
+                relations: ['lines.productVariant'],
+                applyProductVariantPrices: true,
+            });
+        });
+
+        it('Variant of orderLine 1 has a price', async () => {
+            expect(order!.lines[0].productVariant.priceWithTax).toBeGreaterThan(0);
+        });
+
+        it('Variant of orderLine 2 has a price', async () => {
+            expect(order!.lines[1].productVariant.priceWithTax).toBeGreaterThan(0);
+        });
+
+        it('Variant of orderLine 3 has a price', async () => {
+            expect(order!.lines[1].productVariant.priceWithTax).toBeGreaterThan(0);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2546
+    it('Preserves ordering when merging arrays of relations', async () => {
+        await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+        await shopClient.query(AddItemToOrderDocument, {
+            productVariantId: '1',
+            quantity: 1,
+        });
+        const { addItemToOrder } = await shopClient.query(AddItemToOrderDocument, {
+            productVariantId: '2',
+            quantity: 2,
+        });
+        orderResultGuard.assertSuccess(addItemToOrder);
+        const internalOrderId = +addItemToOrder.id.replace(/^\D+/g, '');
+        const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+        const order = await server.app
+            .get(OrderService)
+            .findOne(ctx, internalOrderId, ['lines.productVariant']);
+
+        for (const line of order?.lines ?? []) {
+            // Assert that things are as we expect before hydrating
+            expect(line.productVariantId).toBe(line.productVariant.id);
+        }
+
+        // modify the first order line to make postgres tend to return the lines in the wrong order
+        await server.app
+            .get(TransactionalConnection)
+            .getRepository(ctx, OrderLine)
+            .update(order!.lines[0].id, {
+                sellerChannelId: 1,
+            });
+
+        await server.app.get(EntityHydrator).hydrate(ctx, order!, {
+            relations: ['lines.sellerChannel'],
+        });
+
+        for (const line of order?.lines ?? []) {
+            expect(line.productVariantId).toBe(line.productVariant.id);
+        }
     });
 });
 

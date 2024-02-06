@@ -12,6 +12,13 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  *
  * A custom strategy could be created which could e.g. get the asset file from an S3 bucket.
  *
+ * :::info
+ *
+ * This is configured via the `importExportOptions.assetImportStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @since 1.7.0
  * @docsCategory import-export
  */

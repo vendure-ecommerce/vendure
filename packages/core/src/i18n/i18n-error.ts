@@ -1,4 +1,4 @@
-import { ApolloError } from 'apollo-server-core';
+import { GraphQLError } from 'graphql';
 
 import { LogLevel } from '../config/logger/vendure-logger';
 
@@ -15,13 +15,15 @@ import { LogLevel } from '../config/logger/vendure-logger';
  *
  * @docsCategory errors
  */
-export abstract class I18nError extends ApolloError {
+export abstract class I18nError extends GraphQLError {
     protected constructor(
         public message: string,
         public variables: { [key: string]: string | number } = {},
         public code?: string,
         public logLevel: LogLevel = LogLevel.Warn,
     ) {
-        super(message, code);
+        super(message, {
+            extensions: { code },
+        });
     }
 }

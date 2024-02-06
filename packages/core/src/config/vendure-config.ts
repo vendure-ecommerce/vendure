@@ -1,7 +1,8 @@
+import { ApolloServerPlugin } from '@apollo/server';
+import { RenderPageOptions } from '@apollographql/graphql-playground-html';
 import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { PluginDefinition } from 'apollo-server-core';
 import { ValidationContext } from 'graphql';
 import { DataSourceOptions } from 'typeorm';
 
@@ -96,7 +97,7 @@ export interface ApiOptions {
      *
      * @default false
      */
-    adminApiPlayground?: boolean | any;
+    adminApiPlayground?: boolean | RenderPageOptions;
     /**
      * @description
      * The playground config to the shop GraphQL API
@@ -104,7 +105,7 @@ export interface ApiOptions {
      *
      * @default false
      */
-    shopApiPlayground?: boolean | any;
+    shopApiPlayground?: boolean | RenderPageOptions;
     /**
      * @description
      * The debug config to the admin GraphQL API
@@ -171,7 +172,7 @@ export interface ApiOptions {
     cors?: boolean | CorsOptions;
     /**
      * @description
-     * Custom Express or NestJS middleware for the server.
+     * Custom Express or NestJS middleware for the server. More information can be found in the {@link Middleware} docs.
      *
      * @default []
      */
@@ -186,7 +187,7 @@ export interface ApiOptions {
      *
      * @default []
      */
-    apolloServerPlugins?: PluginDefinition[];
+    apolloServerPlugins?: ApolloServerPlugin[];
     /**
      * @description
      * Controls whether introspection of the GraphQL APIs is enabled. For production, it is recommended to disable
@@ -197,7 +198,7 @@ export interface ApiOptions {
      * will not work.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * {
      *   introspection: process.env.NODE_ENV !== 'production'
      * }
@@ -918,12 +919,12 @@ export interface EntityOptions {
      * entities via the API. The default uses a simple auto-increment integer
      * strategy.
      *
-     * {{% alert "warning" %}}
+     * :::caution
      * Note: changing from an integer-based strategy to a uuid-based strategy
      * on an existing Vendure database will lead to problems with broken foreign-key
      * references. To change primary key types like this, you'll need to start with
      * a fresh database.
-     * {{% /alert %}}
+     * :::
      *
      * @since 1.3.0
      * @default AutoIncrementIdStrategy

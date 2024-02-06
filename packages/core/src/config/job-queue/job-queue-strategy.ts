@@ -11,6 +11,13 @@ import { Job } from '../../job-queue';
  * accessed. Custom strategies can be defined to make use of external
  * services such as Redis.
  *
+ * :::info
+ *
+ * This is configured via the `jobQueueOptions.jobQueueStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory JobQueue
  */
 export interface JobQueueStrategy extends InjectableStrategy {

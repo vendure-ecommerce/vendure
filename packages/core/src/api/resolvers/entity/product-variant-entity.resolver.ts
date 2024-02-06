@@ -79,9 +79,10 @@ export class ProductVariantEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
     ): Promise<Product | undefined> {
-        if (productVariant.product) {
+        if (productVariant.product?.name) {
             return productVariant.product;
         }
+
         return this.requestContextCache.get(
             ctx,
             `ProductVariantEntityResolver.product(${productVariant.productId})`,

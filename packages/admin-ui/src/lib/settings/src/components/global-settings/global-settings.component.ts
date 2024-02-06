@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
+    getCustomFieldsDefaults,
     GetGlobalSettingsDetailDocument,
     GlobalSettings,
     LanguageCode,
@@ -44,9 +45,7 @@ export class GlobalSettingsComponent
         availableLanguages: [[] as LanguageCode[]],
         trackInventory: false,
         outOfStockThreshold: [0, Validators.required],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     languageCodes = Object.values(LanguageCode);
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateGlobalSettings];

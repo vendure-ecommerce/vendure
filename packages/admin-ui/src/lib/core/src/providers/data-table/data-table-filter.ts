@@ -1,13 +1,19 @@
 import { Type as ComponentType } from '@angular/core';
 import { LocalizedString } from '@vendure/common/lib/generated-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
+import dayjs from 'dayjs';
 import { FormInputComponent } from '../../common/component-registry-types';
 import {
     BooleanOperators,
     DateOperators,
+    IdOperators,
     NumberOperators,
     StringOperators,
 } from '../../common/generated-types';
+
+export interface DataTableFilterIDType {
+    kind: 'id';
+}
 
 export interface DataTableFilterTextType {
     kind: 'text';
@@ -41,6 +47,13 @@ export interface DataTableFilterCustomType {
 }
 
 export type KindValueMap = {
+    id: {
+        raw: {
+            operator: keyof IdOperators;
+            term: string;
+        };
+        input: IdOperators;
+    };
     text: {
         raw: {
             operator: keyof StringOperators;
@@ -50,11 +63,21 @@ export type KindValueMap = {
     };
     select: { raw: string[]; input: StringOperators };
     boolean: { raw: boolean; input: BooleanOperators };
-    dateRange: { raw: { start?: string; end?: string }; input: DateOperators };
+    dateRange: {
+        raw: {
+            mode: 'relative' | 'range';
+            relativeValue: number;
+            relativeUnit: 'day' | 'month' | 'year';
+            start?: string;
+            end?: string;
+        };
+        input: DateOperators;
+    };
     number: { raw: { operator: keyof NumberOperators; amount: number }; input: NumberOperators };
     custom: { raw: any; input: any };
 };
 export type DataTableFilterType =
+    | DataTableFilterIDType
     | DataTableFilterTextType
     | DataTableFilterSelectType
     | DataTableFilterBooleanType
@@ -109,20 +132,29 @@ export class DataTableFilter<
                 };
             case 'dateRange': {
                 let dateOperators: DateOperators;
-                const start = value.start ?? undefined;
-                const end = value.end ?? undefined;
-                if (start && end) {
+                const mode = value.mode ?? 'relative';
+                if (mode === 'relative') {
+                    const relativeValue = value.relativeValue ?? 30;
+                    const relativeUnit = value.relativeUnit ?? 'day';
                     dateOperators = {
-                        between: { start, end },
-                    };
-                } else if (start) {
-                    dateOperators = {
-                        after: start,
+                        after: dayjs().subtract(relativeValue, relativeUnit).startOf('day').toISOString(),
                     };
                 } else {
-                    dateOperators = {
-                        before: end,
-                    };
+                    const start = value.start ?? undefined;
+                    const end = value.end ?? undefined;
+                    if (start && end) {
+                        dateOperators = {
+                            between: { start, end },
+                        };
+                    } else if (start) {
+                        dateOperators = {
+                            after: start,
+                        };
+                    } else {
+                        dateOperators = {
+                            before: end,
+                        };
+                    }
                 }
                 return dateOperators;
             }
@@ -134,6 +166,10 @@ export class DataTableFilter<
             case 'select':
                 return { in: value };
             case 'text':
+                return {
+                    [value.operator]: value.term,
+                };
+            case 'id':
                 return {
                     [value.operator]: value.term,
                 };
@@ -162,6 +198,10 @@ export class DataTableFilter<
         if (this.onActivate) {
             this.onActivate(this, value);
         }
+    }
+
+    isId(): this is DataTableFilter<FilterInput, DataTableFilterIDType> {
+        return this.type.kind === 'id';
     }
 
     isText(): this is DataTableFilter<FilterInput, DataTableFilterTextType> {

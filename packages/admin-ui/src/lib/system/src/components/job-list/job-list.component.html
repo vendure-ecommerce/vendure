@@ -9,19 +9,39 @@
                     <input type="checkbox" clrCheckbox [formControl]="liveUpdate" name="live-update" />
                     <label>{{ 'common.live-update' | translate }}</label>
                 </clr-checkbox-wrapper>
-                <clr-checkbox-wrapper>
-                    <input
-                        type="checkbox"
-                        clrCheckbox
-                        [formControl]="hideSettled"
-                        name="hide-settled"
-                        (change)="refresh()"
-                    />
-                    <label>{{ 'system.hide-settled-jobs' | translate }}</label>
-                </clr-checkbox-wrapper></vdr-ab-left
-            >
+            </vdr-ab-left>
             <vdr-ab-right>
                 <vdr-action-bar-items locationId="job-list"></vdr-action-bar-items>
+                <ng-select
+                    class="mr-2"
+                    [addTag]="false"
+                    [hideSelected]="true"
+                    [multiple]="false"
+                    [markFirst]="false"
+                    [clearable]="false"
+                    [searchable]="false"
+                    [formControl]="stateFilter"
+                    (change)="refresh()"
+                >
+                    <ng-option [value]="''">
+                        <vdr-chip>{{ 'system.job-state-all' | translate }}</vdr-chip>
+                    </ng-option>
+                    <ng-option [value]="'PENDING'">
+                        <vdr-chip>{{ 'system.job-state-pending' | translate }}</vdr-chip>
+                    </ng-option>
+                    <ng-option [value]="'RUNNING'">
+                        <vdr-chip colorType="warning">{{ 'system.job-state-running' | translate }}</vdr-chip>
+                    </ng-option>
+                    <ng-option [value]="'COMPLETED'">
+                        <vdr-chip colorType="success">{{ 'system.job-state-completed' | translate }}</vdr-chip>
+                    </ng-option>
+                    <ng-option [value]="'FAILED'">
+                        <vdr-chip colorType="error">{{ 'system.job-state-failed' | translate }}</vdr-chip>
+                    </ng-option>
+                    <ng-option [value]="'CANCELLED'">
+                        <vdr-chip colorType="error">{{ 'system.job-state-cancelled' | translate }}</vdr-chip>
+                    </ng-option>
+                </ng-select>
                 <ng-select
                     [addTag]="false"
                     [items]="queues$ | async"
@@ -36,7 +56,7 @@
                 >
                     <ng-template ng-label-tmp ng-option-tmp let-item="item">
                         <ng-container *ngIf="item.name === 'all'; else others">
-                            {{ 'system.all-job-queues' | translate }}
+                            <vdr-chip>{{ 'system.all-job-queues' | translate }}</vdr-chip>
                         </ng-container>
                         <ng-template #others>
                             <vdr-chip [colorFrom]="item.name">{{ item.name }}</vdr-chip>
@@ -56,26 +76,26 @@
         (pageChange)="setPageNumber($event)"
         (itemsPerPageChange)="setItemsPerPage($event)"
     >
-        <vdr-dt2-column [heading]="'common.id' | translate">
+        <vdr-dt2-column [heading]="'common.id' | translate" id="id">
             <ng-template let-job="item">
                 {{ job.id }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'common.created-at' | translate">
+        <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at">
             <ng-template let-job="item">
                 {{ job.createdAt | timeAgo }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-queue-name' | translate" [optional]="false">
+        <vdr-dt2-column [heading]="'system.job-queue-name' | translate" id="job-queue-name" [optional]="false">
             <ng-template let-job="item">
                 <vdr-chip [colorFrom]="job.queueName">{{ job.queueName }}</vdr-chip>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-data' | translate" [optional]="false">
+        <vdr-dt2-column [heading]="'system.job-data' | translate" id="job-data" [optional]="false">
             <ng-template let-job="item">
                 <vdr-dropdown *ngIf="job.data">
                     <button
-                        class="btn btn-link btn-icon"
+                        class="button-small"
                         vdrDropdownTrigger
                         [title]="'system.job-data' | translate"
                     >
@@ -89,24 +109,24 @@
                 </vdr-dropdown>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-state' | translate">
+        <vdr-dt2-column [heading]="'system.job-state' | translate" id="job-state">
             <ng-template let-job="item">
                 <vdr-job-state-label [job]="job"></vdr-job-state-label>
                 <div *ngIf="job.state === 'FAILED'" class="retry-info">after {{ job.attempts }} attempts</div>
                 <div *ngIf="job.state === 'RUNNING' || job.state === 'RETRYING'" class="retry-info">
-                    attempting {{ job.attempts + 1 }} of {{ job.retries }}
+                    attempting {{ job.attempts }} of {{ job.retries + 1 }}
                 </div>
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-duration' | translate">
+        <vdr-dt2-column [heading]="'system.job-duration' | translate" id="job-duration">
             <ng-template let-job="item">
                 {{ job.duration | duration }}
             </ng-template>
         </vdr-dt2-column>
-        <vdr-dt2-column [heading]="'system.job-result' | translate">
+        <vdr-dt2-column [heading]="'system.job-result' | translate" id="job-result">
             <ng-template let-job="item">
                 <vdr-dropdown *ngIf="hasResult(job)">
-                    <button class="btn btn-link btn-sm details-button" vdrDropdownTrigger>
+                    <button class="button-small mr-1" vdrDropdownTrigger>
                         <clr-icon shape="details"></clr-icon>
                         {{ 'system.job-result' | translate }}
                     </button>
@@ -117,7 +137,7 @@
                     </vdr-dropdown-menu>
                 </vdr-dropdown>
                 <vdr-dropdown *ngIf="job.error">
-                    <button class="btn btn-link btn-sm details-button" vdrDropdownTrigger>
+                    <button class="button-small" vdrDropdownTrigger>
                         <clr-icon shape="exclamation-circle"></clr-icon>
                         {{ 'system.job-error' | translate }}
                     </button>
@@ -129,7 +149,7 @@
                 </vdr-dropdown>
                 <vdr-dropdown *ngIf="!job.isSettled && job.state !== 'FAILED'">
                     <button class="icon-button" vdrDropdownTrigger>
-                        <clr-icon shape="ellipsis-vertical"></clr-icon>
+                        <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
                     </button>
                     <vdr-dropdown-menu vdrPosition="bottom-right">
                         <button

@@ -31,7 +31,7 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  * Bootstraps the Vendure server. This is the entry point to the application.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { bootstrap } from '\@vendure/core';
  * import { config } from './vendure-config';
  *
@@ -83,10 +83,10 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
  * NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
  * methods for starting the job queue and health check server.
  *
- * Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}).
+ * Read more about the [Vendure Worker](/guides/developer-guide/worker-job-queue/).
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { bootstrapWorker } from '\@vendure/core';
  * import { config } from './vendure-config';
  *
@@ -147,6 +147,10 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
+    // The logger is set here so that we are able to log any messages prior to the final
+    // logger (which may depend on config coming from a plugin) being set.
+    Logger.useLogger(config.logger);
+    config = await runPluginConfigurations(config);
     const entityIdStrategy = config.entityOptions.entityIdStrategy ?? config.entityIdStrategy;
     setEntityIdStrategy(entityIdStrategy, entities);
     const moneyStrategy = config.entityOptions.moneyStrategy;
@@ -156,7 +160,6 @@ export async function preBootstrapConfig(
         process.exitCode = 1;
         throw new Error('CustomFields config error:\n- ' + customFieldValidationResult.errors.join('\n- '));
     }
-    config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     await runEntityMetadataModifiers(config);
     setExposedHeaders(config);

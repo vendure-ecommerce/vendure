@@ -40,7 +40,9 @@ const LOGIN = gql`
 export class SimpleGraphQLClient {
     private authToken: string;
     private channelToken: string | null = null;
-    private headers: { [key: string]: any } = {};
+    private headers: { [key: string]: any } = {
+        'Apollo-Require-Preflight': 'true',
+    };
 
     constructor(private vendureConfig: Required<VendureConfig>, private apiUrl: string = '') {}
 
@@ -129,7 +131,7 @@ export class SimpleGraphQLClient {
 
     /**
      * @description
-     * Attemps to log in with the specified credentials.
+     * Attempts to log in with the specified credentials.
      */
     async asUserWithCredentials(username: string, password: string) {
         // first log out as the current user
@@ -244,7 +246,6 @@ export class SimpleGraphQLClient {
                 ...this.headers,
             },
         });
-
         const response = await result.json();
         if (response.errors && response.errors.length) {
             const error = response.errors[0];

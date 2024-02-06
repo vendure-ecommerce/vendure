@@ -10,6 +10,7 @@ import {
     DataService,
     findTranslation,
     getConfigArgValue,
+    getCustomFieldsDefaults,
     GetPaymentMethodDetailDocument,
     GetPaymentMethodDetailQuery,
     LanguageCode,
@@ -53,9 +54,7 @@ export class PaymentMethodDetailComponent
         enabled: [true, Validators.required],
         checker: {} as NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>['checker'],
         handler: {} as NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>['handler'],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     checkers: ConfigurableOperationDefinition[] = [];
     handlers: ConfigurableOperationDefinition[] = [];
@@ -274,6 +273,7 @@ export class PaymentMethodDetailComponent
                 this.customFields,
                 this.detailForm.get('customFields'),
                 paymentMethod,
+                currentTranslation,
             );
         }
     }

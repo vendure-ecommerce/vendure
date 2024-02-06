@@ -1,7 +1,8 @@
+import { Injector } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { ActionBarLocationId, UIExtensionLocationId } from '../../common/component-registry-types';
+import { ActionBarLocationId } from '../../common/component-registry-types';
 import { DataService } from '../../data/providers/data.service';
 import { NotificationService } from '../notification/notification.service';
 
@@ -61,7 +62,18 @@ export interface NavMenuSection {
     displayMode?: 'regular' | 'settings';
     /**
      * @description
-     * Control the display of this item based on the user permissions.
+     * Control the display of this item based on the user permissions. Note: if you attempt to pass a
+     * {@link PermissionDefinition} object, you will get a compilation error. Instead, pass the plain
+     * string version. For example, if the permission is defined as:
+     * ```ts
+     * export const MyPermission = new PermissionDefinition('ProductReview');
+     * ```
+     * then the generated permission strings will be:
+     *
+     * - `CreateProductReview`
+     * - `ReadProductReview`
+     * - `UpdateProductReview`
+     * - `DeleteProductReview`
      */
     requiresPermission?: string | ((userPermissions: string[]) => boolean);
     collapsible?: boolean;
@@ -70,14 +82,20 @@ export interface NavMenuSection {
 
 /**
  * @description
- * Utilities available to the onClick handler of an ActionBarItem.
+ * Providers available to the onClick handler of an {@link ActionBarItem} or {@link NavMenuItem}.
  *
  * @docsCategory action-bar
  */
-export interface OnClickContext {
+export interface ActionBarContext {
     route: ActivatedRoute;
+    injector: Injector;
     dataService: DataService;
     notificationService: NotificationService;
+}
+
+export interface ActionBarButtonState {
+    disabled: boolean;
+    visible: boolean;
 }
 
 /**
@@ -90,13 +108,47 @@ export interface ActionBarItem {
     id: string;
     label: string;
     locationId: ActionBarLocationId;
+    /**
+     * @description
+     * Deprecated since v2.1.0 - use `buttonState` instead.
+     * @deprecated - use `buttonState` instead.
+     */
     disabled?: Observable<boolean>;
-    onClick?: (event: MouseEvent, context: OnClickContext) => void;
+    /**
+     * @description
+     * A function which returns an observable of the button state, allowing you to
+     * dynamically enable/disable or show/hide the button.
+     *
+     * @since 2.1.0
+     */
+    buttonState?: (context: ActionBarContext) => Observable<ActionBarButtonState>;
+    onClick?: (event: MouseEvent, context: ActionBarContext) => void;
     routerLink?: RouterLinkDefinition;
     buttonColor?: 'primary' | 'success' | 'warning';
     buttonStyle?: 'solid' | 'outline' | 'link';
     icon?: string;
+    /**
+     * @description
+     * Control the display of this item based on the user permissions. Note: if you attempt to pass a
+     * {@link PermissionDefinition} object, you will get a compilation error. Instead, pass the plain
+     * string version. For example, if the permission is defined as:
+     * ```ts
+     * export const MyPermission = new PermissionDefinition('ProductReview');
+     * ```
+     * then the generated permission strings will be:
+     *
+     * - `CreateProductReview`
+     * - `ReadProductReview`
+     * - `UpdateProductReview`
+     * - `DeleteProductReview`
+     */
     requiresPermission?: string | string[];
 }
 
-export type RouterLinkDefinition = ((route: ActivatedRoute) => any[]) | any[];
+/**
+ * @description
+ * A function which returns the router link for an {@link ActionBarItem} or {@link NavMenuItem}.
+ *
+ * @docsCategory action-bar
+ */
+export type RouterLinkDefinition = ((route: ActivatedRoute, context: ActionBarContext) => any[]) | any[];

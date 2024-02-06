@@ -10,7 +10,7 @@ import { In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
-import { idsAreEqual, normalizeEmailAddress } from '../../common/index';
+import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -317,10 +317,10 @@ export class AdministratorService {
                 superadminCredentials.identifier,
                 superadminCredentials.password,
             );
-            const createdAdministrator = await this.connection
-                .getRepository(ctx, Administrator)
-                .save(administrator);
-            await this.assignRole(ctx, createdAdministrator.id, superAdminRole.id);
+            const { id } = await this.connection.getRepository(ctx, Administrator).save(administrator);
+            const createdAdministrator = await assertFound(this.findOne(ctx, id));
+            createdAdministrator.user.roles.push(superAdminRole);
+            await this.connection.getRepository(ctx, User).save(createdAdministrator.user, { reload: false });
         } else {
             const superAdministrator = await this.connection.rawConnection
                 .getRepository(Administrator)

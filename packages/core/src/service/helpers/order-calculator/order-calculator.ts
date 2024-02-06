@@ -306,6 +306,13 @@ export class OrderCalculator {
     }
 
     private async applyShipping(ctx: RequestContext, order: Order) {
+        // First we need to remove any ShippingLines which are no longer applicable
+        // to the Order, i.e. there is no OrderLine which is assigned to the ShippingLine's
+        // ShippingMethod.
+        const orderLineShippingLineIds = order.lines.map(line => line.shippingLineId);
+        order.shippingLines = order.shippingLines.filter(shippingLine =>
+            orderLineShippingLineIds.includes(shippingLine.id),
+        );
         for (const shippingLine of order.shippingLines) {
             const currentShippingMethod =
                 shippingLine?.shippingMethodId &&

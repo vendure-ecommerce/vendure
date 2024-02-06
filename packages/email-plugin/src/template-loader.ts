@@ -1,14 +1,19 @@
 import { Injector, RequestContext } from '@vendure/core';
 import fs from 'fs/promises';
 import path from 'path';
+
 import { LoadTemplateInput, Partial, TemplateLoader } from './types';
 
 /**
- * Loads email templates according to the configured TemplateConfig values.
+ * @description
+ * Loads email templates from the local file system. This is the default
+ * loader used by the EmailPlugin.
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage TemplateLoader
  */
 export class FileBasedTemplateLoader implements TemplateLoader {
-
-    constructor(private templatePath: string) { }
+    constructor(private templatePath: string) {}
 
     async loadTemplate(
         _injector: Injector,
@@ -22,11 +27,13 @@ export class FileBasedTemplateLoader implements TemplateLoader {
     async loadPartials(): Promise<Partial[]> {
         const partialsPath = path.join(this.templatePath, 'partials');
         const partialsFiles = await fs.readdir(partialsPath);
-        return Promise.all(partialsFiles.map(async (file) => {
-            return {
-                name: path.basename(file, '.hbs'),
-                content: await fs.readFile(path.join(partialsPath, file), 'utf-8')
-            }
-        }));
+        return Promise.all(
+            partialsFiles.map(async file => {
+                return {
+                    name: path.basename(file, '.hbs'),
+                    content: await fs.readFile(path.join(partialsPath, file), 'utf-8'),
+                };
+            }),
+        );
     }
 }

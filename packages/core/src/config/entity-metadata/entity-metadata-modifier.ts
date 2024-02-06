@@ -5,14 +5,14 @@ import { MetadataArgsStorage } from 'typeorm/metadata-args/MetadataArgsStorage';
  * A function which allows TypeORM entity metadata to be manipulated prior to the DB schema being generated
  * during bootstrap.
  *
- * {{% alert "warning" %}}
+ * :::caution
  * Certain DB schema modifications will result in auto-generated migrations which will lead to data loss. For instance,
  * changing the data type of a column will drop the column & data and then re-create it. To avoid loss of important data,
  * always check and modify your migration scripts as needed.
- * {{% /alert %}}
+ * :::
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { Index } from 'typeorm';
  * import { EntityMetadataModifier, ProductVariant } from '\@vendure/core';
  *
@@ -24,7 +24,7 @@ import { MetadataArgsStorage } from 'typeorm/metadata-args/MetadataArgsStorage';
  * ```
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { Column } from 'typeorm';
  * import { EntityMetadataModifier, ProductTranslation } from '\@vendure/core';
  *

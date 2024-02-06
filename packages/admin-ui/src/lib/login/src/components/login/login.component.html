@@ -1,4 +1,4 @@
-<div class="login-wrapper">
+<div class="login-wrapper" [dir]="direction$ | async">
     <div class="login-wrapper-inner">
         <div class="login-wrapper-image">
             <div class="login-wrapper-image-content">
@@ -69,13 +69,6 @@
                             {{ 'common.login' | translate }}
                         </button>
                     </div>
-                </div>
-                <div class="version">
-                    <span *ngIf="brand"
-                        >{{ brand }} <span *ngIf="!hideVendureBranding || !hideVersion">-</span></span
-                    >
-                    <span *ngIf="!hideVendureBranding">vendure</span>
-                    <span *ngIf="!hideVersion">v{{ version }}</span>
                 </div>
             </form>
         </div>

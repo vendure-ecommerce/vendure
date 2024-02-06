@@ -349,7 +349,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
 
         it('Should get available paymentMethods', async () => {
             nock('https://api.mollie.com/')
-                .get('/v2/methods')
+                .get('/v2/methods?resource=orders')
                 .reply(200, mockData.molliePaymentMethodsResponse);
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { molliePaymentMethods } = await shopClient.query(GET_MOLLIE_PAYMENT_METHODS, {
@@ -381,8 +381,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                 body: JSON.stringify({ id: mockData.mollieOrderResponse.id }),
                 headers: { 'Content-Type': 'application/json' },
             });
-            // tslint:disable-next-line:no-non-null-assertion
-            const { order: adminOrder } = await adminClient.query(GET_ORDER_PAYMENTS, { id: order!.id });
+            const { order: adminOrder } = await adminClient.query(GET_ORDER_PAYMENTS, { id: order?.id });
             expect(adminOrder.state).toBe('ArrangingPayment');
         });
 
@@ -457,7 +456,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                 adminClient,
                 order.lines[0].id,
                 10,
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 order.payments!.find(p => p.amount === 108990)!.id,
                 SURCHARGE_AMOUNT,
             );
@@ -468,6 +467,8 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
     });
 
     describe('Handle pay-later methods', () => {
+        // TODO: Add testcases that mock incoming webhook to: 1. Authorize payment and 2. AutoCapture payments
+
         it('Should prepare a new order', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { addItemToOrder } = await shopClient.query<

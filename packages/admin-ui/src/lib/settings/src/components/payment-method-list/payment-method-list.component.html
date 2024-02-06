@@ -38,13 +38,13 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
     ></vdr-dt2-search>
-    <vdr-dt2-column [heading]="'common.id' | translate" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true" [sort]="sorts.get('id')">
         <ng-template let-paymentMethod="item">
             {{ paymentMethod.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate"
+        [heading]="'common.created-at' | translate" id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -53,7 +53,7 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate"
+        [heading]="'common.updated-at' | translate" id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -61,7 +61,7 @@
             {{ paymentMethod.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
         <ng-template let-paymentMethod="item">
             <a class="button-ghost" [routerLink]="['./', paymentMethod.id]"
                 ><span>{{ paymentMethod.name }}</span>
@@ -69,12 +69,12 @@
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.code' | translate" [sort]="sorts.get('code')">
+    <vdr-dt2-column [heading]="'common.code' | translate" id="code" [sort]="sorts.get('code')">
         <ng-template let-paymentMethod="item">
             {{ paymentMethod.code }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.enabled' | translate">
+    <vdr-dt2-column [heading]="'common.enabled' | translate" id="enabled">
         <ng-template let-paymentMethod="item">
             <vdr-chip *ngIf="paymentMethod.enabled" colorType="success">{{
                 'common.enabled' | translate

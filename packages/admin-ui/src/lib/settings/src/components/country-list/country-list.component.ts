@@ -32,6 +32,7 @@ export const GET_COUNTRY_LIST = gql`
 export class CountryListComponent extends TypedBaseListComponent<typeof GetCountryListDocument, 'countries'> {
     readonly customFields = this.getCustomFieldConfig('Region');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'name',
@@ -40,7 +41,7 @@ export class CountryListComponent extends TypedBaseListComponent<typeof GetCount
             filterField: 'name',
         })
         .addFilter({
-            name: 'cpde',
+            name: 'code',
             type: { kind: 'text' },
             label: _('common.code'),
             filterField: 'code',

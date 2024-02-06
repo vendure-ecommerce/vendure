@@ -35,6 +35,7 @@ export class PaymentMethodListComponent extends TypedBaseListComponent<
 > {
     readonly customFields = this.getCustomFieldConfig('PaymentMethod');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'name',

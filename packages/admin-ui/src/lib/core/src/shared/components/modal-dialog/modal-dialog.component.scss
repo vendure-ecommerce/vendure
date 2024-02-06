@@ -5,6 +5,29 @@
     &.modal-valign-bottom .modal {
         justify-content: flex-end;
     }
+    .modal-dialog {
+        display: flex;
+    }
+    .modal-content-wrapper {
+        flex: 1;
+        display: flex;
+    }
+    .modal-dialog .modal-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    @media screen and (max-height: 700px) {
+        .modal-dialog .modal-content {
+            padding: 0.8rem;
+        }
+        .modal-header, .modal-header--accessible {
+            padding-bottom: 0.8rem;
+        }
+        .modal-footer {
+            padding-top: 0.8rem;
+        }
+    }
 }
 
 .modal-body {

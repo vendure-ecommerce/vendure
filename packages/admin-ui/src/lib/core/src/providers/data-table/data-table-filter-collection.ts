@@ -2,11 +2,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Subject } from 'rxjs';
 import extend from 'just-extend';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith, takeUntil } from 'rxjs/operators';
 import {
     CustomFieldConfig,
     DateOperators,
+    IdOperators,
     NumberOperators,
     StringOperators,
 } from '../../common/generated-types';
@@ -15,6 +17,7 @@ import {
     DataTableFilterBooleanType,
     DataTableFilterCustomType,
     DataTableFilterDateRangeType,
+    DataTableFilterIDType,
     DataTableFilterNumberType,
     DataTableFilterOptions,
     DataTableFilterSelectType,
@@ -25,6 +28,7 @@ import {
 
 export class FilterWithValue<Type extends DataTableFilterType = DataTableFilterType> {
     private onUpdateFns = new Set<(value: DataTableFilterValue<Type>) => void>();
+
     constructor(
         public readonly filter: DataTableFilter<any, Type>,
         public value: DataTableFilterValue<Type>,
@@ -44,6 +48,10 @@ export class FilterWithValue<Type extends DataTableFilterType = DataTableFilterT
         for (const fn of this.onUpdateFns) {
             fn(value);
         }
+    }
+
+    isId(): this is FilterWithValue<DataTableFilterIDType> {
+        return this.filter.type.kind === 'id';
     }
 
     isText(): this is FilterWithValue<DataTableFilterTextType> {
@@ -76,8 +84,9 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     #activeFilters: FilterWithValue[] = [];
     #valueChanges$ = new Subject<FilterWithValue[]>();
     #connectedToRouter = false;
-    valueChanges = this.#valueChanges$.asObservable();
+    valueChanges = this.#valueChanges$.asObservable().pipe(debounceTime(10));
     readonly #filtersQueryParamName = 'filters';
+    private readonly destroy$ = new Subject<void>();
 
     constructor(private router: Router) {}
 
@@ -87,6 +96,11 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
 
     get activeFilters(): FilterWithValue[] {
         return this.#activeFilters;
+    }
+
+    destroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     addFilter<FilterType extends DataTableFilterType>(
@@ -110,6 +124,20 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             this.addFilter(config);
         }
         return this;
+    }
+
+    addIdFilter(): FilterInput extends {
+        id?: IdOperators | null;
+    }
+        ? DataTableFilterCollection<FilterInput>
+        : never {
+        this.addFilter({
+            name: 'id',
+            type: { kind: 'id' },
+            label: _('common.id'),
+            filterField: 'id',
+        });
+        return this as any;
     }
 
     addDateFilters(): FilterInput extends {
@@ -197,36 +225,64 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
     }
 
     connectToRoute(route: ActivatedRoute) {
-        this.valueChanges.subscribe(value => {
+        this.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(val => {
+            const currentFilters = route.snapshot.queryParamMap.get(this.#filtersQueryParamName);
+            if (val.length === 0 && !currentFilters) {
+                return;
+            }
             this.router.navigate(['./'], {
                 queryParams: { [this.#filtersQueryParamName]: this.serialize(), page: 1 },
                 relativeTo: route,
                 queryParamsHandling: 'merge',
             });
         });
-        const filterQueryParams = (route.snapshot.queryParamMap.get(this.#filtersQueryParamName) ?? '')
-            .split(';')
-            .map(value => value.split(':'))
-            .map(([name, value]) => ({ name, value }));
-        for (const { name, value } of filterQueryParams) {
-            const filter = this.getFilter(name);
-            if (filter) {
-                const val = this.deserializeValue(filter, value);
-                this.#activeFilters.push(this.createFacetWithValue(filter, val));
-            }
-        }
+        route.queryParamMap
+            .pipe(
+                map(params => params.get(this.#filtersQueryParamName)),
+                distinctUntilChanged(),
+                startWith(route.snapshot.queryParamMap.get(this.#filtersQueryParamName) ?? ''),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(value => {
+                this.#activeFilters = [];
+                if (value === '' || value === null) {
+                    this.#valueChanges$.next(this.#activeFilters);
+                    return;
+                }
+                const filterQueryParams = (value ?? '')
+                    .split(';')
+                    .map(value => value.split(':'))
+                    .map(([name, value]) => ({ name, value }));
+                for (const { name, value } of filterQueryParams) {
+                    const filter = this.getFilter(name);
+                    if (filter) {
+                        const val = this.deserializeValue(filter, value);
+                        filter.activate(val);
+                    }
+                }
+            });
+
         this.#connectedToRouter = true;
+
         return this;
     }
 
-    serializeValue<Type extends DataTableFilterType>(
+    serialize(): string {
+        return this.#activeFilters
+            .map(
+                (filterWithValue, i) =>
+                    `${filterWithValue.filter.name}:${this.serializeValue(filterWithValue)}`,
+            )
+            .join(';');
+    }
+
+    private serializeValue<Type extends DataTableFilterType>(
         filterWithValue: FilterWithValue<Type>,
     ): string | undefined {
-        const valueAsType = <T extends DataTableFilter<any, any>>(
-            _filter: T,
-            _value: DataTableFilterValue<any>,
-        ): T extends DataTableFilter<any, infer R> ? DataTableFilterValue<R> : any => _value;
-
+        if (filterWithValue.isId()) {
+            const val = filterWithValue.value;
+            return `${val?.operator},${val?.term}`;
+        }
         if (filterWithValue.isText()) {
             const val = filterWithValue.value;
             return `${val?.operator},${val?.term}`;
@@ -241,16 +297,27 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             return val ? '1' : '0';
         } else if (filterWithValue.isDateRange()) {
             const val = filterWithValue.value;
-            const start = val.start ? new Date(val.start).getTime() : '';
-            const end = val.end ? new Date(val.end).getTime() : '';
-            return `${start},${end}`;
+            if (val.mode === 'relative') {
+                return `${val.mode},${val.relativeValue},${val.relativeUnit}`;
+            } else {
+                const start = val.start ? new Date(val.start).getTime() : '';
+                const end = val.end ? new Date(val.end).getTime() : '';
+                return `${start},${end}`;
+            }
         } else if (filterWithValue.isCustom()) {
             return filterWithValue.filter.type.serializeValue(filterWithValue.value);
         }
     }
 
-    deserializeValue(filter: DataTableFilter, value: string): DataTableFilterValue<DataTableFilterType> {
+    private deserializeValue(
+        filter: DataTableFilter,
+        value: string,
+    ): DataTableFilterValue<DataTableFilterType> {
         switch (filter.type.kind) {
+            case 'id': {
+                const [operator, term] = value.split(',') as [keyof StringOperators, string];
+                return { operator, term };
+            }
             case 'text': {
                 const [operator, term] = value.split(',') as [keyof StringOperators, string];
                 return { operator, term };
@@ -264,10 +331,23 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
             case 'boolean':
                 return value === '1';
             case 'dateRange':
-                const [startTimestamp, endTimestamp] = value.split(',');
-                const start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
-                const end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
-                return { start, end };
+                let mode = 'relative';
+                let relativeValue: number | undefined;
+                let relativeUnit: 'day' | 'month' | 'year' | undefined;
+                let start: string | undefined;
+                let end: string | undefined;
+                if (value.startsWith('relative')) {
+                    mode = 'relative';
+                    const [_, relativeValueStr, relativeUnitStr] = value.split(',');
+                    relativeValue = Number(relativeValueStr);
+                    relativeUnit = relativeUnitStr as 'day' | 'month' | 'year';
+                } else {
+                    mode = 'range';
+                    const [startTimestamp, endTimestamp] = value.split(',');
+                    start = startTimestamp ? new Date(Number(startTimestamp)).toISOString() : '';
+                    end = endTimestamp ? new Date(Number(endTimestamp)).toISOString() : '';
+                }
+                return { mode, relativeValue, relativeUnit, start, end };
             case 'custom':
                 return filter.type.deserializeValue(value);
             default:
@@ -275,21 +355,12 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
         }
     }
 
-    private serialize(): string {
-        return this.#activeFilters
-            .map(
-                (filterWithValue, i) =>
-                    `${filterWithValue.filter.name}:${this.serializeValue(filterWithValue)}`,
-            )
-            .join(';');
-    }
-
     private onActivateFilter(filter: DataTableFilter<any, any>, value: DataTableFilterValue<any>) {
-        this.#activeFilters.push(this.createFacetWithValue(filter, value));
+        this.#activeFilters.push(this.createFilterWithValue(filter, value));
         this.#valueChanges$.next(this.#activeFilters);
     }
 
-    private createFacetWithValue(
+    private createFilterWithValue(
         filter: DataTableFilter<any, any>,
         value: DataTableFilterValue<DataTableFilterType>,
     ) {

@@ -1,12 +1,12 @@
 :host {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
 button.theme-toggle {
     position: relative;
-    padding-left: 20px;
+    padding-inline-start: 20px;
     border: none;
     background: transparent;
     color: var(--clr-dropdown-item-color);
@@ -27,10 +27,24 @@ button.theme-toggle {
         left: 0px;
         opacity: 1;
     }
+
     &.default.active {
         color: #d6ae3f;
     }
+
     &.dark.active {
         color: #ffdf3a;
+    }
+}
+
+:host-context([dir='rtl']) {
+    .theme-icon {
+        left: auto;
+        right: 6px;
+
+        &.active {
+            left: auto;
+            right: 0px;
+        }
     }
 }

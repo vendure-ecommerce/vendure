@@ -35,6 +35,7 @@ export class ShippingMethodListComponent
 {
     readonly customFields = this.getCustomFieldConfig('ShippingMethod');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilter({
             name: 'name',

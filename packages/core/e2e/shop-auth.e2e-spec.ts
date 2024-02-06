@@ -1263,6 +1263,29 @@ describe('Updating email address without email verification', () => {
         );
         expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
     });
+
+    it('normalizes updated email address', async () => {
+        await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, 'test');
+        const { requestUpdateCustomerEmailAddress } = await shopClient.query<
+            CodegenShop.RequestUpdateEmailAddressMutation,
+            CodegenShop.RequestUpdateEmailAddressMutationVariables
+        >(REQUEST_UPDATE_EMAIL_ADDRESS, {
+            password: 'test',
+            newEmailAddress: ' Not.Normal@test.com ',
+        });
+        successErrorGuard.assertSuccess(requestUpdateCustomerEmailAddress);
+        // Attempting to fix flakiness possibly caused by race condition on the event
+        // subscriber
+        await new Promise(resolve => setTimeout(resolve, 100));
+        expect(requestUpdateCustomerEmailAddress.success).toBe(true);
+        expect(sendEmailFn).toHaveBeenCalledTimes(1);
+        expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
+
+        const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
+            GET_ACTIVE_CUSTOMER,
+        );
+        expect(activeCustomer!.emailAddress).toBe('not.normal@test.com');
+    });
 });
 
 function getVerificationTokenPromise(): Promise<string> {

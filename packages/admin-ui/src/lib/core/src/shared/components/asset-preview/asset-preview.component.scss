@@ -5,7 +5,7 @@
 
 .preview-image {
     width: 100%;
-    max-width: 800px;
+    max-width: 750px;
     height: 100%;
     min-height: 60vh;
     overflow: auto;
@@ -50,7 +50,7 @@
 .controls {
     display: flex;
     flex-direction: column;
-    margin-left: 12px;
+    margin-inline-start: 12px;
     min-width: 15vw;
     max-width: 25vw;
     transition: opacity 0.3s;
@@ -85,7 +85,32 @@
         display: flex;
         align-items: center;
         clr-select-container {
-            margin-right: 12px;
+            margin-inline-end: 12px;
         }
+    }
+}
+
+.carousel-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    button.carousel-button {
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 50%;
+        text-align: center;
+        background-color: var(--color-grey-300);
+        &:hover {
+            background-color: var(--color-grey-400);;
+        }
+    }
+
+    .disabled {
+        pointer-events: none;
+        opacity: 0.4;
     }
 }

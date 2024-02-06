@@ -43,6 +43,30 @@ export const FACET_WITH_VALUES_FRAGMENT = gql`
     ${FACET_VALUE_FRAGMENT}
 `;
 
+export const FACET_WITH_VALUE_LIST_FRAGMENT = gql`
+    fragment FacetWithValueList on Facet {
+        id
+        createdAt
+        updatedAt
+        languageCode
+        isPrivate
+        code
+        name
+        translations {
+            id
+            languageCode
+            name
+        }
+        valueList(options: { take: 100 }) {
+            totalItems
+            items {
+                ...FacetValue
+            }
+        }
+    }
+    ${FACET_VALUE_FRAGMENT}
+`;
+
 export const CREATE_FACET = gql`
     mutation CreateFacet($input: CreateFacetInput!) {
         createFacet(input: $input) {

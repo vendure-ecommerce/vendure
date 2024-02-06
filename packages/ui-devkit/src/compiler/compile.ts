@@ -10,7 +10,6 @@ import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
 import { copyGlobalStyleFile, setBaseHref, setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
-    Extension,
     StaticAssetDefinition,
     UiExtensionCompilerOptions,
     UiExtensionCompilerProcessArgument,
@@ -36,53 +35,58 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { outputPath, baseHref, devMode, watchPort, extensions, command, additionalProcessArguments } =
-        options;
-    const usingYarn = options.command && options.command === 'npm' ? false : shouldUseYarn();
+    const { devMode, watchPort, command } = options;
+    const usingYarn = command && command === 'npm' ? false : shouldUseYarn();
     if (devMode) {
-        return runWatchMode(
-            outputPath,
-            baseHref || DEFAULT_BASE_HREF,
-            watchPort || 4200,
-            extensions,
+        return runWatchMode({
+            watchPort: watchPort || 4200,
             usingYarn,
-            additionalProcessArguments,
-        );
+            ...options,
+        });
     } else {
-        return runCompileMode(
-            outputPath,
-            baseHref || DEFAULT_BASE_HREF,
-            extensions,
+        return runCompileMode({
             usingYarn,
-            additionalProcessArguments,
-        );
+            ...options,
+        });
     }
 }
 
-function runCompileMode(
-    outputPath: string,
-    baseHref: string,
-    extensions: Extension[],
-    usingYarn: boolean,
-    args?: UiExtensionCompilerProcessArgument[],
-): AdminUiAppConfig {
-    const cmd = usingYarn ? 'yarn' : 'npm';
+function runCompileMode({
+    outputPath,
+    baseHref,
+    extensions,
+    usingYarn,
+    additionalProcessArguments,
+    ngCompilerPath,
+}: UiExtensionCompilerOptions & { usingYarn: boolean }): AdminUiAppConfig {
     const distPath = path.join(outputPath, 'dist');
 
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            await setBaseHref(outputPath, baseHref);
-            const commandArgs = ['run', 'build', ...buildProcessArguments(args)];
-            if (!usingYarn) {
-                // npm requires `--` before any command line args being passed to a script
-                commandArgs.splice(2, 0, '--');
+            await setBaseHref(outputPath, baseHref || DEFAULT_BASE_HREF);
+
+            let cmd = usingYarn ? 'yarn' : 'npm';
+            let commandArgs = ['run', 'build'];
+            if (ngCompilerPath) {
+                cmd = 'node';
+                commandArgs = [ngCompilerPath, 'build', '--configuration production'];
+            } else {
+                if (!usingYarn) {
+                    // npm requires `--` before any command line args being passed to a script
+                    commandArgs.splice(2, 0, '--');
+                }
             }
-            const buildProcess = spawn(cmd, commandArgs, {
-                cwd: outputPath,
-                shell: true,
-                stdio: 'inherit',
-            });
+            console.log(`Running ${cmd} ${commandArgs.join(' ')}`);
+            const buildProcess = spawn(
+                cmd,
+                [...commandArgs, ...buildProcessArguments(additionalProcessArguments)],
+                {
+                    cwd: outputPath,
+                    shell: true,
+                    stdio: 'inherit',
+                },
+            );
 
             buildProcess.on('close', code => {
                 if (code !== 0) {
@@ -96,19 +100,19 @@ function runCompileMode(
     return {
         path: distPath,
         compile,
-        route: baseHrefToRoute(baseHref),
+        route: baseHrefToRoute(baseHref || DEFAULT_BASE_HREF),
     };
 }
 
-function runWatchMode(
-    outputPath: string,
-    baseHref: string,
-    port: number,
-    extensions: Extension[],
-    usingYarn: boolean,
-    args?: UiExtensionCompilerProcessArgument[],
-): AdminUiAppDevModeConfig {
-    const cmd = usingYarn ? 'yarn' : 'npm';
+function runWatchMode({
+    outputPath,
+    baseHref,
+    watchPort,
+    extensions,
+    usingYarn,
+    additionalProcessArguments,
+    ngCompilerPath,
+}: UiExtensionCompilerOptions & { usingYarn: boolean }): AdminUiAppDevModeConfig {
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
     let watcher: FSWatcher | undefined;
@@ -118,17 +122,31 @@ function runWatchMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            await setBaseHref(outputPath, baseHref);
+            await setBaseHref(outputPath, baseHref || DEFAULT_BASE_HREF);
             const adminUiExtensions = extensions.filter(isAdminUiExtension);
             const normalizedExtensions = normalizeExtensions(adminUiExtensions);
             const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
             const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
             const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
-            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, ...buildProcessArguments(args)], {
-                cwd: outputPath,
-                shell: true,
-                stdio: 'inherit',
-            });
+            let cmd = usingYarn ? 'yarn' : 'npm';
+            let commandArgs = ['run', 'start'];
+            if (ngCompilerPath) {
+                cmd = 'node';
+                commandArgs = [ngCompilerPath, 'serve'];
+            }
+            buildProcess = spawn(
+                cmd,
+                [
+                    ...commandArgs,
+                    `--port=${watchPort || 4200}`,
+                    ...buildProcessArguments(additionalProcessArguments),
+                ],
+                {
+                    cwd: outputPath,
+                    shell: true,
+                    stdio: 'inherit',
+                },
+            );
 
             buildProcess.on('close', code => {
                 if (code !== 0) {
@@ -252,7 +270,12 @@ function runWatchMode(
     };
 
     process.on('SIGINT', close);
-    return { sourcePath: outputPath, port, compile, route: baseHrefToRoute(baseHref) };
+    return {
+        sourcePath: outputPath,
+        port: watchPort || 4200,
+        compile,
+        route: baseHrefToRoute(baseHref || DEFAULT_BASE_HREF),
+    };
 }
 
 function buildProcessArguments(args?: UiExtensionCompilerProcessArgument[]): string[] {

@@ -330,7 +330,17 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     addAdjustment(adjustment: Adjustment) {
-        this.adjustments = this.adjustments.concat(adjustment);
+        // We should not allow adding adjustments which would
+        // result in a negative unit price
+        const maxDiscount =
+            (this.listPriceIncludesTax ? this.proratedLinePriceWithTax : this.proratedLinePrice) * -1;
+        const limitedAdjustment: Adjustment = {
+            ...adjustment,
+            amount: Math.max(maxDiscount, adjustment.amount),
+        };
+        if (limitedAdjustment.amount !== 0) {
+            this.adjustments = this.adjustments.concat(limitedAdjustment);
+        }
     }
 
     /**

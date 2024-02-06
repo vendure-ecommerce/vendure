@@ -1,0 +1,31 @@
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: -12px;
+    margin-bottom: 22px;
+}
+
+:root {
+    --color-generation-label-bg: var(--ifm-color-secondary);
+}
+[data-theme='dark'] {
+    --color-generation-label-bg: #232323;
+}
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: var(--ifm-badge-border-radius);
+    background-color: var(--color-generation-label-bg);
+    font-size: 75%;
+    font-weight: var(--ifm-font-weight-bold);
+    line-height: 1;
+    padding: var(--ifm-badge-padding-vertical) var(--ifm-badge-padding-horizontal);
+}
+
+a.label:hover {
+    text-decoration: none;
+    background-color: var(--color-generation-label-bg);
+}

@@ -37,6 +37,12 @@
                 <span [title]="mode === 'product' ? item.productName : item.productVariantName">{{
                     mode === 'product' ? item.productName : item.productVariantName
                 }}</span>
+                <div *ngIf="mode === 'product'">
+                    <small>
+                        <span class="mr-1">{{ 'common.slug' | translate }}:</span>
+                        <code>{{ item.slug }}</code>
+                    </small>
+                </div>
                 <div *ngIf="mode === 'variant'"><small>{{ item.sku }}</small></div>
             </div>
         </div>

@@ -6,6 +6,13 @@ import { ProductVariantPrice } from '../../entity/product-variant/product-varian
  * @description
  * The strategy for selecting the price for a ProductVariant in a given Channel.
  *
+ * :::info
+ *
+ * This is configured via the `catalogOptions.productVariantPriceSelectionStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory configuration
  * @docsPage ProductVariantPriceSelectionStrategy
  * @docsWeight 0

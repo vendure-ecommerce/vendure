@@ -2,8 +2,6 @@ import { inject } from '@angular/core';
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    CanDeactivateDetailGuard,
-    createResolveData,
     DataService,
     GetGlobalSettingsDetailDocument,
     GetProfileDetailDocument,
@@ -11,8 +9,6 @@ import {
     PageService,
 } from '@vendure/admin-ui/core';
 import { of } from 'rxjs';
-import { ProfileComponent } from './components/profile/profile.component';
-import { ProfileResolver } from './providers/routing/profile-resolver';
 
 export const createRoutes = (pageService: PageService): Route[] => [
     {
@@ -60,10 +56,28 @@ export const createRoutes = (pageService: PageService): Route[] => [
         path: 'channels/:id',
         component: PageComponent,
         data: {
-            locationId: 'channel-list',
+            locationId: 'channel-detail',
             breadcrumb: { label: _('breadcrumb.channels'), link: ['../', 'channels'] },
         },
         children: pageService.getPageTabRoutes('channel-detail'),
+    },
+    {
+        path: 'stock-locations',
+        component: PageComponent,
+        data: {
+            locationId: 'stock-location-list',
+            breadcrumb: _('breadcrumb.stock-locations'),
+        },
+        children: pageService.getPageTabRoutes('stock-location-list'),
+    },
+    {
+        path: 'stock-locations/:id',
+        component: PageComponent,
+        data: {
+            locationId: 'stock-location-detail',
+            breadcrumb: { label: _('breadcrumb.stock-locations'), link: ['../', 'stock-locations'] },
+        },
+        children: pageService.getPageTabRoutes('stock-location-detail'),
     },
     {
         path: 'sellers',
@@ -78,7 +92,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
         path: 'sellers/:id',
         component: PageComponent,
         data: {
-            locationId: 'seller-list',
+            locationId: 'seller-detail',
             breadcrumb: { label: _('breadcrumb.sellers'), link: ['../', 'sellers'] },
         },
         children: pageService.getPageTabRoutes('seller-detail'),

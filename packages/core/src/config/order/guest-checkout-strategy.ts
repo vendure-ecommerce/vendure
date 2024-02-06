@@ -19,6 +19,13 @@ import { Customer, Order } from '../../entity/index';
  * - Allow guest checkouts, but update the existing Customer entity if the email address
  *   is already in use
  *
+ * :::info
+ *
+ * This is configured via the `orderOptions.guestCheckoutStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @docsCategory orders
  * @since 2.0.0
  */

@@ -5,8 +5,8 @@
 }
 
 .page-block {
-    margin-left: var(--surface-margin-left);
-    margin-right: var(--space-unit);
+    margin-inline-start: var(--surface-margin-left);
+    margin-inline-end: var(--space-unit);
     margin-top: var(--space-unit);
     max-width: var(--layout-content-max-width);
 }

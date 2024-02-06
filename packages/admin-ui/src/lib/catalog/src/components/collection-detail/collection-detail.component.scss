@@ -16,12 +16,15 @@ clr-checkbox-wrapper {
     li {
         font-size: 0.65rem;
         display: inline-block;
-        margin-right: 10px;
+        margin-inline-end: 10px;
+        &:last-child {
+            font-weight: 600;
+        }
     }
     li:not(:last-child)::after {
         content: '›';
         top: 0;
         color: var(--color-grey-400);
-        margin-left: 10px;
+        margin-inline-start: 10px;
     }
 }

@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, Injectable, Provider, Type } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { Route } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { detailComponentWithResolver } from '../../common/base-detail.component';
@@ -52,41 +52,6 @@ export interface PageTabConfig {
      * by the `route` and `component` properties.
      */
     routeConfig?: Route;
-}
-
-/**
- * @description
- * Add a tab to an existing list or detail page.
- *
- * @example
- * ```TypeScript
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
- *     registerPageTab({
- *       location: 'product-list',
- *       tab: 'Deleted Products',
- *       route: 'deleted',
- *       component: DeletedProductListComponent,
- *     }),
- *   ],
- * })
- * export class MyUiExtensionModule {}
- * ```
- * @docsCategory tabs
- */
-export function registerPageTab(config: PageTabConfig): Provider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (pageService: PageService) => () => {
-            pageService.registerPageTab({
-                ...config,
-                priority: config.priority || 1,
-            });
-        },
-        deps: [PageService],
-    };
 }
 
 @Injectable({

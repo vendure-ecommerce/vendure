@@ -1,6 +1,6 @@
 @import 'variables';
 
-:host {
+:host, .vdr-action-bar {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -19,7 +19,7 @@
     }
 
     ::ng-deep vdr-ab-right > *:last-child {
-        margin-right: 0px;
+        margin-inline-end: 0px;
     }
 
     @media screen and (min-width: $breakpoint-small) {

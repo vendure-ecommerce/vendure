@@ -31,7 +31,7 @@ export interface UpdateTranslatableOptions<T extends Translatable> extends Creat
  * A helper which contains methods for creating and updating entities which implement the {@link Translatable} interface.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * export class MyService {
  *   constructor(private translatableSaver: TranslatableSaver) {}
  *
@@ -105,6 +105,8 @@ export class TranslatableSaver {
             new entityType({ ...input, translations: existingTranslations }),
             diff,
         );
+        entity.updatedAt = new Date();
+
         const updatedEntity = patchEntity(entity as any, omit(input, ['translations']));
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);

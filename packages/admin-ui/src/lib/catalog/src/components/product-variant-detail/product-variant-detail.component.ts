@@ -8,6 +8,7 @@ import {
     CurrencyCode,
     DataService,
     findTranslation,
+    getCustomFieldsDefaults,
     GetProductVariantDetailDocument,
     GetProductVariantDetailQuery,
     GlobalFlag,
@@ -83,9 +84,7 @@ export class ProductVariantDetailComponent
         outOfStockThreshold: 0,
         trackInventory: GlobalFlag.TRUE,
         facetValueIds: [],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     stockLevelsForm = this.formBuilder.array<
         FormGroup<{
@@ -207,7 +206,6 @@ export class ProductVariantDetailComponent
             .pipe(
                 take(1),
                 mergeMap(([variant, languageCode]) => {
-                    const formValue = this.detailForm.value;
                     const input = pick(
                         this.getUpdatedVariant(
                             variant,
@@ -400,6 +398,7 @@ export class ProductVariantDetailComponent
             assetIds: this.assetChanges.assets?.map(a => a.id),
             featuredAssetId: this.assetChanges.featuredAsset?.id,
             facetValueIds: variantFormGroup.value.facetValueIds,
+            taxCategoryId: variantFormGroup.value.taxCategoryId,
         } as UpdateProductVariantInput | CreateProductVariantInput;
     }
 }

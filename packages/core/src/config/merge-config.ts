@@ -13,7 +13,7 @@ import { PartialVendureConfig, VendureConfig } from './vendure-config';
  * `plugins` array, you must explicitly concatenate the array.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const result = mergeConfig(defaultConfig, {
  *   assetOptions: {
  *     uploadMaxFileSize: 5000,

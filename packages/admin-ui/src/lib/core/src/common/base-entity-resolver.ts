@@ -1,4 +1,10 @@
-import { ActivatedRouteSnapshot, ActivationStart, ResolveData, Router, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    ActivationStart,
+    ResolveData,
+    Router,
+    RouterStateSnapshot,
+} from '@angular/router';
 import { Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Observable, of } from 'rxjs';
@@ -23,7 +29,7 @@ export function createResolveData<T extends BaseEntityResolver<R>, R>(
  * {@link BaseDetailComponent}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Injectable({
  *   providedIn: 'root',
  * })
@@ -46,7 +52,7 @@ export function createResolveData<T extends BaseEntityResolver<R>, R>(
  *
  * @docsCategory list-detail-views
  */
-export class BaseEntityResolver<T>  {
+export class BaseEntityResolver<T> {
     constructor(
         protected router: Router,
         private readonly emptyEntity: T,

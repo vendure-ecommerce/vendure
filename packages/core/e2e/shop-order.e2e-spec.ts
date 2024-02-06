@@ -21,14 +21,18 @@ import {
     testFailingPaymentMethod,
     testSuccessfulPaymentMethod,
 } from './fixtures/test-payment-methods';
-import { countryCodeShippingEligibilityChecker } from './fixtures/test-shipping-eligibility-checkers';
+import {
+    countryCodeShippingEligibilityChecker,
+    hydratingShippingEligibilityChecker,
+} from './fixtures/test-shipping-eligibility-checkers';
 import {
     CreateAddressInput,
+    CreateShippingMethodDocument,
     CreateShippingMethodInput,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { ErrorCode } from './graphql/generated-e2e-shop-types';
+import { ErrorCode, RemoveItemFromOrderDocument } from './graphql/generated-e2e-shop-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
@@ -83,6 +87,7 @@ describe('Shop orders', () => {
                 shippingEligibilityCheckers: [
                     defaultShippingEligibilityChecker,
                     countryCodeShippingEligibilityChecker,
+                    hydratingShippingEligibilityChecker,
                 ],
             },
             customFields: {
@@ -2226,12 +2231,12 @@ describe('Shop orders', () => {
                     id: minPriceShippingMethodId,
                 },
             );
-            const result1 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result1 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result1.activeOrder?.shippingLines[0].shippingMethod.id).toBe(minPriceShippingMethodId);
 
             const { removeAllOrderLines } = await shopClient.query<
-                RemoveAllOrderLines.Mutation,
-                RemoveAllOrderLines.Variables
+                CodegenShop.RemoveAllOrderLinesMutation,
+                CodegenShop.RemoveAllOrderLinesMutationVariables
             >(REMOVE_ALL_ORDER_LINES);
             orderResultGuard.assertSuccess(removeAllOrderLines);
             expect(removeAllOrderLines.shippingLines.length).toBe(0);
@@ -2305,6 +2310,77 @@ describe('Shop orders', () => {
 
             expect(activeOrder.shippingAddress).toEqual(shippingAddress);
             expect(activeOrder.billingAddress).toEqual(billingAddress);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2548
+        it('hydrating Order in the ShippingEligibilityChecker does not break order modification', async () => {
+            // First we'll create a ShippingMethod that uses the hydrating checker
+            await adminClient.query(CreateShippingMethodDocument, {
+                input: {
+                    code: 'hydrating-checker',
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'hydrating checker', description: '' },
+                    ],
+                    fulfillmentHandler: manualFulfillmentHandler.code,
+                    checker: {
+                        code: hydratingShippingEligibilityChecker.code,
+                        arguments: [],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '1000' },
+                            { name: 'taxRate', value: '0' },
+                            { name: 'includesTax', value: 'auto' },
+                        ],
+                    },
+                },
+            });
+
+            await shopClient.asAnonymousUser();
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_2',
+                quantity: 3,
+            });
+
+            const result1 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+
+            expect(result1.activeOrder?.lines.map(l => l.linePriceWithTax).sort()).toEqual([155880, 503640]);
+            expect(result1.activeOrder?.subTotalWithTax).toBe(659520);
+
+            // set the shipping method that uses the hydrating checker
+            const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
+                GET_ELIGIBLE_SHIPPING_METHODS,
+            );
+            const { setOrderShippingMethod } = await shopClient.query<
+                CodegenShop.SetShippingMethodMutation,
+                CodegenShop.SetShippingMethodMutationVariables
+            >(SET_SHIPPING_METHOD, {
+                id: eligibleShippingMethods.find(m => m.code === 'hydrating-checker')!.id,
+            });
+            orderResultGuard.assertSuccess(setOrderShippingMethod);
+
+            // Remove an item from the order
+            const { removeOrderLine } = await shopClient.query(RemoveItemFromOrderDocument, {
+                orderLineId: result1.activeOrder!.lines[0].id,
+            });
+            orderResultGuard.assertSuccess(removeOrderLine);
+            expect(removeOrderLine.lines.length).toBe(1);
+
+            const result2 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+
+            expect(result2.activeOrder?.lines.map(l => l.linePriceWithTax).sort()).toEqual([503640]);
+            expect(result2.activeOrder?.subTotalWithTax).toBe(503640);
         });
     });
 });

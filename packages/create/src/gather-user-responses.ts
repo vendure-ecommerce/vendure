@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
 
-import { DbType, FileSources, UserResponses } from './types';
+import { DbType, FileSources, PackageManager, UserResponses } from './types';
 
 interface PromptAnswers {
     dbType: DbType;
@@ -27,7 +27,7 @@ interface PromptAnswers {
 export async function gatherUserResponses(
     root: string,
     alreadyRanScaffold: boolean,
-    useYarn: boolean,
+    packageManager: PackageManager,
 ): Promise<UserResponses> {
     const dbType = (await select({
         message: 'Which database are you using?',
@@ -119,7 +119,7 @@ export async function gatherUserResponses(
     };
 
     return {
-        ...(await generateSources(root, answers, useYarn)),
+        ...(await generateSources(root, answers, packageManager)),
         dbType,
         populateProducts: answers.populateProducts as boolean,
         superadminIdentifier: answers.superadminIdentifier as string,
@@ -130,7 +130,10 @@ export async function gatherUserResponses(
 /**
  * Returns mock "user response" without prompting, for use in CI
  */
-export async function gatherCiUserResponses(root: string, useYarn: boolean): Promise<UserResponses> {
+export async function gatherCiUserResponses(
+    root: string,
+    packageManager: PackageManager,
+): Promise<UserResponses> {
     const ciAnswers = {
         dbType: 'sqlite' as const,
         dbHost: '',
@@ -144,7 +147,7 @@ export async function gatherCiUserResponses(root: string, useYarn: boolean): Pro
     };
 
     return {
-        ...(await generateSources(root, ciAnswers, useYarn)),
+        ...(await generateSources(root, ciAnswers, packageManager)),
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
         superadminIdentifier: ciAnswers.superadminIdentifier,
@@ -152,7 +155,7 @@ export async function gatherCiUserResponses(root: string, useYarn: boolean): Pro
     };
 }
 
-function checkCancel<T>(value: T | symbol): value is T {
+export function checkCancel<T>(value: T | symbol): value is T {
     if (isCancel(value)) {
         cancel('Setup cancelled.');
         process.exit(0);
@@ -163,7 +166,11 @@ function checkCancel<T>(value: T | symbol): value is T {
 /**
  * Create the server index, worker and config source code based on the options specified by the CLI prompts.
  */
-async function generateSources(root: string, answers: PromptAnswers, useYarn: boolean): Promise<FileSources> {
+async function generateSources(
+    root: string,
+    answers: PromptAnswers,
+    packageManager: PackageManager,
+): Promise<FileSources> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     /**
@@ -177,7 +184,7 @@ async function generateSources(root: string, answers: PromptAnswers, useYarn: bo
 
     const templateContext = {
         ...answers,
-        useYarn,
+        useYarn: packageManager === 'yarn',
         dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
         isSQLite: answers.dbType === 'sqlite',

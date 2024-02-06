@@ -57,7 +57,7 @@ export class TypescriptDocsParser {
                 } else {
                     const normalizedTitle = normalizeForUrlPart(pageTitle);
                     const categoryLastPart = declaration.category.split('/').pop();
-                    const fileName = normalizedTitle === categoryLastPart ? '_index' : normalizedTitle;
+                    const fileName = normalizedTitle === categoryLastPart ? 'index' : normalizedTitle;
                     pages.set(pageTitle, {
                         title: pageTitle,
                         category: declaration.category.split('/'),

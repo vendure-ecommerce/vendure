@@ -5,6 +5,11 @@
 
 .tab-bar {
     display: flex;
+
+    & a:hover {
+        color: var(--color-text-active);
+        border-bottom-color: var(--color-text-active);
+    }
 }
 
 .tab {
@@ -15,7 +20,6 @@
     cursor: pointer;
 
     &.active {
-        font-weight: 600;
         color: var(--color-text-active);
         border-bottom-color: var(--color-text-active);
     }

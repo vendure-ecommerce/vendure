@@ -3,7 +3,7 @@
  * Any component intended to be used with the ModalService.fromComponent() method must implement
  * this interface.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage ModalService
  */
 export interface Dialog<R = any> {
@@ -27,7 +27,7 @@ export interface DialogButtonConfig<T> {
  * @description
  * Configures a generic modal dialog.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage ModalService
  */
 export interface DialogConfig<T> {
@@ -42,7 +42,7 @@ export interface DialogConfig<T> {
  * @description
  * Options to configure the behaviour of the modal.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage ModalService
  */
 export interface ModalOptions<T> {

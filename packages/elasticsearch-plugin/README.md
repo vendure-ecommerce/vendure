@@ -6,4 +6,4 @@ The `ElasticsearchPlugin` uses Elasticsearch to power the Vendure product search
 
 `npm install @vendure/elasticsearch-plugin`
 
-For documentation, see [docs.vendure.io/typescript-api/core-plugins/elasticsearch-plugin/](https://docs.vendure.io/typescript-api/core-plugins/elasticsearch-plugin/)
+For documentation, see [docs.vendure.io/reference/core-plugins/elasticsearch-plugin/](https://docs.vendure.io/reference/core-plugins/elasticsearch-plugin/)

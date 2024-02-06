@@ -162,7 +162,7 @@ export interface SMTPTransportOptions extends SMTPTransport.Options {
  * See [Nodemailers's SES docs](https://nodemailer.com/transports/ses/) for more details
  *
  * @example
- * ```TypeScript
+ * ```ts
  *  import { SES, SendRawEmailCommand } from '\@aws-sdk/client-ses'
  *
  *  const ses = new SES({
@@ -354,6 +354,7 @@ export interface EmailTemplateConfig {
 export interface LoadTemplateInput {
     type: string;
     templateName: string;
+    templateVars: any;
 }
 
 export interface Partial {
@@ -363,12 +364,12 @@ export interface Partial {
 
 /**
  * @description
- * Load an email template based on the given request context, type and template name
+ * Loads email templates based on the given request context, type and template name
  * and return the template as a string.
  *
  * @example
- * ```TypeScript
- * import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+ * ```ts
+ * import { EmailPlugin, TemplateLoader } from '\@vendure/email-plugin';
  *
  * class MyTemplateLoader implements TemplateLoader {
  *      loadTemplate(injector, ctx, { type, templateName }){
@@ -385,16 +386,19 @@ export interface Partial {
  * ```
  *
  * @docsCategory core plugins/EmailPlugin
- * @docsPage Custom Template Loader
+ * @docsPage TemplateLoader
+ * @docsWeight 0
  */
 export interface TemplateLoader {
     /**
+     * @description
      * Load template and return it's content as a string
      */
     loadTemplate(injector: Injector, ctx: RequestContext, input: LoadTemplateInput): Promise<string>;
     /**
+     * @description
      * Load partials and return their contents.
-     * This method is only called during initalization, i.e. during server startup.
+     * This method is only called during initialization, i.e. during server startup.
      */
     loadPartials?(): Promise<Partial[]>;
 }

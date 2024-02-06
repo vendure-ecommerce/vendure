@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormRecord, Validators } from '@angular/forms';
-import { CreateProductVariantInput, Dialog, GetProductVariantOptionsQuery } from '@vendure/admin-ui/core';
+import { FormBuilder, FormControl, FormGroup, FormRecord, Validators } from '@angular/forms';
+import {
+    CreateProductVariantInput,
+    CurrencyCode,
+    Dialog,
+    GetProductVariantOptionsQuery,
+} from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { combineLatest } from 'rxjs';
 
 @Component({
     selector: 'vdr-create-product-variant-dialog',
@@ -15,13 +21,16 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
     form = this.formBuilder.group({
         name: ['', Validators.required],
         sku: ['', Validators.required],
+        price: ['', Validators.required],
         options: this.formBuilder.record<string>({}),
     });
     existingVariant: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number] | undefined;
+    currencyCode: CurrencyCode;
 
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit() {
+        this.currencyCode = this.product.variants[0]?.currencyCode;
         for (const optionGroup of this.product.optionGroups) {
             (this.form.get('options') as FormRecord).addControl(
                 optionGroup.code,
@@ -57,14 +66,16 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
     }
 
     confirm() {
-        const { name, sku, options } = this.form.value;
-        if (!name || !sku || !options) {
+        const { name, sku, options, price } = this.form.value;
+        if (!name || !sku || !options || !price) {
             return;
         }
+
         const optionIds = Object.values(options).filter(notNullOrUndefined);
         this.resolveWith({
             productId: this.product.id,
             sku,
+            price: Number(price),
             optionIds,
             translations: [
                 {

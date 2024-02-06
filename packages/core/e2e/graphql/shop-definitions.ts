@@ -12,6 +12,7 @@ export const TEST_ORDER_FRAGMENT = gql`
         shippingWithTax
         total
         totalWithTax
+        currencyCode
         couponCodes
         discounts {
             adjustmentSource
@@ -43,6 +44,7 @@ export const TEST_ORDER_FRAGMENT = gql`
             }
         }
         shippingLines {
+            priceWithTax
             shippingMethod {
                 id
                 code
@@ -74,12 +76,15 @@ export const UPDATED_ORDER_FRAGMENT = gql`
         active
         total
         totalWithTax
+        currencyCode
         lines {
             id
             quantity
             productVariant {
                 id
             }
+            unitPrice
+            unitPriceWithTax
             linePrice
             linePriceWithTax
             discounts {

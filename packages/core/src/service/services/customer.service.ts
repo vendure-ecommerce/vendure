@@ -308,13 +308,16 @@ export class CustomerService {
         });
 
         if (hasEmailAddress(input)) {
+            input.emailAddress = normalizeEmailAddress(input.emailAddress);
             if (input.emailAddress !== customer.emailAddress) {
                 const existingCustomerInChannel = await this.connection
                     .getRepository(ctx, Customer)
                     .createQueryBuilder('customer')
                     .leftJoin('customer.channels', 'channel')
                     .where('channel.id = :channelId', { channelId: ctx.channelId })
-                    .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                    .andWhere('customer.emailAddress = :emailAddress', {
+                        emailAddress: input.emailAddress,
+                    })
                     .andWhere('customer.id != :customerId', { customerId: input.id })
                     .andWhere('customer.deletedAt is null')
                     .getOne();
@@ -566,6 +569,7 @@ export class CustomerService {
         userId: ID,
         newEmailAddress: string,
     ): Promise<boolean | EmailAddressConflictError> {
+        const normalizedEmailAddress = normalizeEmailAddress(newEmailAddress);
         const userWithConflictingIdentifier = await this.userService.getUserByEmailAddress(
             ctx,
             newEmailAddress,
@@ -588,18 +592,18 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED,
             data: {
                 oldEmailAddress,
-                newEmailAddress,
+                newEmailAddress: normalizedEmailAddress,
             },
         });
         if (this.configService.authOptions.requireVerification) {
-            user.getNativeAuthenticationMethod().pendingIdentifier = newEmailAddress;
+            user.getNativeAuthenticationMethod().pendingIdentifier = normalizedEmailAddress;
             await this.userService.setIdentifierChangeToken(ctx, user);
             this.eventBus.publish(new IdentifierChangeRequestEvent(ctx, user));
             return true;
         } else {
             const oldIdentifier = user.identifier;
-            user.identifier = newEmailAddress;
-            customer.emailAddress = newEmailAddress;
+            user.identifier = normalizedEmailAddress;
+            customer.emailAddress = normalizedEmailAddress;
             await this.connection.getRepository(ctx, User).save(user, { reload: false });
             await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
             this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
@@ -609,7 +613,7 @@ export class CustomerService {
                 type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
                 data: {
                     oldEmailAddress,
-                    newEmailAddress,
+                    newEmailAddress: normalizedEmailAddress,
                 },
             });
             return true;

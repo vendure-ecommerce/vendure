@@ -6,7 +6,7 @@ import { VendureEntity } from '../../entity/base/base.entity';
  * It works to 2 levels deep.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * type T1 = EntityRelationPaths<Product>;
  * ```
  * In the above example, the type `T1` will be a string union of all relations of the

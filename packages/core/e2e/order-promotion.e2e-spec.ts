@@ -837,6 +837,7 @@ describe('Promotions applied to Orders', () => {
         describe('discountOnItemWithFacets', () => {
             const couponCode = '50%_off_sale_items';
             let promotion: Codegen.PromotionFragment;
+
             function getItemSale1Line<
                 T extends Array<
                     | CodegenShop.UpdatedOrderFragment['lines'][number]
@@ -1550,8 +1551,8 @@ describe('Promotions applied to Orders', () => {
                 >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
-                expect(applyCouponCode!.totalWithTax).toBe(0);
-                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
 
                 await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
                     SET_CUSTOMER,
@@ -1565,8 +1566,8 @@ describe('Promotions applied to Orders', () => {
                 );
 
                 const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
-                expect(activeOrder!.couponCodes).toEqual([TEST_COUPON_CODE]);
-                expect(applyCouponCode!.totalWithTax).toBe(0);
+                expect(activeOrder.couponCodes).toEqual([TEST_COUPON_CODE]);
+                expect(applyCouponCode.totalWithTax).toBe(0);
             });
         });
 
@@ -1631,6 +1632,193 @@ describe('Promotions applied to Orders', () => {
                 );
                 expect(activeOrder!.totalWithTax).toBe(6000);
                 expect(activeOrder!.couponCodes).toEqual([]);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1466
+            it('cancelled orders do not count against usage limit', async () => {
+                const { cancelOrder } = await adminClient.query<
+                    Codegen.CancelOrderMutation,
+                    Codegen.CancelOrderMutationVariables
+                >(CANCEL_ORDER, {
+                    input: {
+                        orderId,
+                        cancelShipping: true,
+                        reason: 'request',
+                    },
+                });
+                orderResultGuard.assertSuccess(cancelOrder);
+                expect(cancelOrder.state).toBe('Cancelled');
+
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
+            });
+        });
+    });
+
+    describe('usage limit', () => {
+        const TEST_COUPON_CODE = 'TESTCOUPON';
+        const orderGuard: ErrorResultGuard<CodegenShop.TestOrderWithPaymentsFragment> =
+            createErrorResultGuard(input => !!input.lines);
+        let promoWithUsageLimit: Codegen.PromotionFragment;
+
+        async function createNewActiveOrder() {
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-5000').id,
+                quantity: 1,
+            });
+            return addItemToOrder;
+        }
+
+        describe('guest customer', () => {
+            const GUEST_EMAIL_ADDRESS = 'guest@test.com';
+            let orderCode: string;
+
+            beforeAll(async () => {
+                promoWithUsageLimit = await createPromotion({
+                    enabled: true,
+                    name: 'Free with test coupon',
+                    couponCode: TEST_COUPON_CODE,
+                    usageLimit: 1,
+                    conditions: [],
+                    actions: [freeOrderAction],
+                });
+            });
+
+            afterAll(async () => {
+                await deletePromotion(promoWithUsageLimit.id);
+            });
+
+            function addGuestCustomerToOrder() {
+                return shopClient.query<
+                    CodegenShop.SetCustomerForOrderMutation,
+                    CodegenShop.SetCustomerForOrderMutationVariables
+                >(SET_CUSTOMER, {
+                    input: {
+                        emailAddress: GUEST_EMAIL_ADDRESS,
+                        firstName: 'Guest',
+                        lastName: 'Customer',
+                    },
+                });
+            }
+
+            it('allows initial usage', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+                await addGuestCustomerToOrder();
+
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await proceedToArrangingPayment(shopClient);
+                const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+
+                expect(order.state).toBe('PaymentSettled');
+                expect(order.active).toBe(false);
+                orderCode = order.code;
+            });
+
+            it('adds Promotions to Order once payment arranged', async () => {
+                const { orderByCode } = await shopClient.query<
+                    CodegenShop.GetOrderPromotionsByCodeQuery,
+                    CodegenShop.GetOrderPromotionsByCodeQueryVariables
+                >(GET_ORDER_PROMOTIONS_BY_CODE, {
+                    code: orderCode,
+                });
+                expect(orderByCode!.promotions.map(pick(['name']))).toEqual([
+                    { name: 'Free with test coupon' },
+                ]);
+            });
+
+            it('returns error result when usage exceeds limit', async () => {
+                await shopClient.asAnonymousUser();
+                await createNewActiveOrder();
+                await addGuestCustomerToOrder();
+
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertErrorResult(applyCouponCode);
+
+                expect(applyCouponCode.message).toEqual(
+                    'Coupon code cannot be used more than once per customer',
+                );
+            });
+        });
+
+        describe('signed-in customer', () => {
+            beforeAll(async () => {
+                promoWithUsageLimit = await createPromotion({
+                    enabled: true,
+                    name: 'Free with test coupon',
+                    couponCode: TEST_COUPON_CODE,
+                    usageLimit: 1,
+                    conditions: [],
+                    actions: [freeOrderAction],
+                });
+            });
+
+            afterAll(async () => {
+                await deletePromotion(promoWithUsageLimit.id);
+            });
+
+            function logInAsRegisteredCustomer() {
+                return shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            }
+
+            let orderId: string;
+
+            it('allows initial usage', async () => {
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.totalWithTax).toBe(0);
+                expect(applyCouponCode.couponCodes).toEqual([TEST_COUPON_CODE]);
+
+                await proceedToArrangingPayment(shopClient);
+                const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+                orderId = order.id;
+
+                expect(order.state).toBe('PaymentSettled');
+                expect(order.active).toBe(false);
+            });
+
+            it('returns error result when usage exceeds limit', async () => {
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertErrorResult(applyCouponCode);
+                expect(applyCouponCode.message).toEqual(
+                    'Coupon code cannot be used more than once per customer',
+                );
+                expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_LIMIT_ERROR);
             });
 
             // https://github.com/vendure-ecommerce/vendure/issues/1466
@@ -1753,6 +1941,163 @@ describe('Promotions applied to Orders', () => {
         >(APPLY_COUPON_CODE, { couponCode });
         orderResultGuard.assertSuccess(applyCouponCode);
         expect(applyCouponCode.totalWithTax).toBe(96);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2385
+    describe('prevents negative line price', () => {
+        const TAX_INCLUDED_CHANNEL_TOKEN_2 = 'tax_included_channel_2';
+        const couponCode1 = '100%_off';
+        const couponCode2 = '100%_off';
+        let taxIncludedChannel: Codegen.ChannelFragment;
+
+        beforeAll(async () => {
+            // Create a channel where the prices include tax, so we can ensure
+            // that PromotionActions are working as expected when taxes are included
+            const { createChannel } = await adminClient.query<
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code: 'tax-included-channel-2',
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultTaxZoneId: 'T_1',
+                    defaultShippingZoneId: 'T_1',
+                    defaultLanguageCode: LanguageCode.en,
+                    token: TAX_INCLUDED_CHANNEL_TOKEN_2,
+                },
+            });
+            taxIncludedChannel = createChannel as Codegen.ChannelFragment;
+            await adminClient.query<
+                Codegen.AssignProductsToChannelMutation,
+                Codegen.AssignProductsToChannelMutationVariables
+            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                input: {
+                    channelId: taxIncludedChannel.id,
+                    priceFactor: 1,
+                    productIds: products.map(p => p.id),
+                },
+            });
+            const item1000 = getVariantBySlug('item-1000')!;
+            const promo100 = await createPromotion({
+                enabled: true,
+                name: '100% discount ',
+                couponCode: couponCode1,
+                conditions: [],
+                actions: [
+                    {
+                        code: productsPercentageDiscount.code,
+                        arguments: [
+                            { name: 'discount', value: '100' },
+                            {
+                                name: 'productVariantIds',
+                                value: `["${item1000.id}"]`,
+                            },
+                        ],
+                    },
+                ],
+            });
+            const promo20 = await createPromotion({
+                enabled: true,
+                name: '20% discount ',
+                couponCode: couponCode2,
+                conditions: [],
+                actions: [
+                    {
+                        code: productsPercentageDiscount.code,
+                        arguments: [
+                            { name: 'discount', value: '20' },
+                            {
+                                name: 'productVariantIds',
+                                value: `["${item1000.id}"]`,
+                            },
+                        ],
+                    },
+                ],
+            });
+            await adminClient.query<
+                Codegen.AssignPromotionToChannelMutation,
+                Codegen.AssignPromotionToChannelMutationVariables
+            >(ASSIGN_PROMOTIONS_TO_CHANNEL, {
+                input: {
+                    promotionIds: [promo100.id, promo20.id],
+                    channelId: taxIncludedChannel.id,
+                },
+            });
+        });
+
+        it('prices exclude tax', async () => {
+            await shopClient.asAnonymousUser();
+            const item1000 = getVariantBySlug('item-1000')!;
+
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item1000.id,
+                quantity: 1,
+            });
+
+            const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+
+            expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check1!.totalWithTax).toBe(0);
+
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+
+            const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+            expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check2!.totalWithTax).toBe(0);
+        });
+
+        it('prices include tax', async () => {
+            shopClient.setChannelToken(TAX_INCLUDED_CHANNEL_TOKEN_2);
+            await shopClient.asAnonymousUser();
+            const item1000 = getVariantBySlug('item-1000')!;
+
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode1 });
+
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item1000.id,
+                quantity: 1,
+            });
+
+            const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+
+            expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check1!.totalWithTax).toBe(0);
+
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
+
+            const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                GET_ACTIVE_ORDER,
+            );
+            expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
+            expect(check2!.totalWithTax).toBe(0);
+        });
     });
 
     async function getProducts() {

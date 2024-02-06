@@ -32,6 +32,7 @@ import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Seller } from '../../entity/seller/seller.entity';
 import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
@@ -177,6 +178,7 @@ export class ChannelService {
         this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
         return entity;
     }
+
     /**
      * @description
      * Given a channel token, returns the corresponding Channel if it exists, else will throw
@@ -322,21 +324,57 @@ export class ChannelService {
         }
         if (input.currencyCode || input.defaultCurrencyCode) {
             const newCurrencyCode = input.defaultCurrencyCode || input.currencyCode;
+            updatedChannel.availableCurrencyCodes = unique([
+                ...updatedChannel.availableCurrencyCodes,
+                updatedChannel.defaultCurrencyCode,
+            ]);
             if (originalDefaultCurrencyCode !== newCurrencyCode) {
                 // When updating the default currency code for a Channel, we also need to update
                 // and ProductVariantPrices in that channel which use the old currency code.
+                const [selectQbQuery, selectQbParams] = this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .createQueryBuilder('variant')
+                    .select('variant.id', 'id')
+                    .innerJoin(ProductVariantPrice, 'pvp', 'pvp.variantId = variant.id')
+                    .andWhere('pvp.channelId = :channelId')
+                    .andWhere('pvp.currencyCode = :newCurrencyCode')
+                    .groupBy('variant.id')
+                    .getQueryAndParameters();
+
                 const qb = this.connection
                     .getRepository(ctx, ProductVariantPrice)
                     .createQueryBuilder('pvp')
                     .update()
-                    .where('channelId = :channelId', { channelId: channel.id })
-                    .andWhere('currencyCode = :currencyCode', {
-                        currencyCode: originalDefaultCurrencyCode,
-                    })
-                    .set({ currencyCode: newCurrencyCode });
+                    .where('channelId = :channelId')
+                    .andWhere('currencyCode = :oldCurrencyCode')
+                    .set({ currencyCode: newCurrencyCode })
+                    .setParameters({
+                        channelId: channel.id,
+                        oldCurrencyCode: originalDefaultCurrencyCode,
+                        newCurrencyCode,
+                    });
 
+                if (this.connection.rawConnection.options.type === 'mysql') {
+                    // MySQL does not support sub-queries joining the table that is being updated,
+                    // it will cause a "You can't specify target table 'product_variant_price' for update in FROM clause" error.
+                    // This is a work-around from https://stackoverflow.com/a/9843719/772859
+                    qb.andWhere(
+                        `variantId NOT IN (SELECT id FROM (${selectQbQuery}) as temp)`,
+                        selectQbParams,
+                    );
+                } else {
+                    qb.andWhere(`variantId NOT IN (${selectQbQuery})`, selectQbParams);
+                }
                 await qb.execute();
             }
+        }
+        if (
+            input.availableCurrencyCodes &&
+            !updatedChannel.availableCurrencyCodes.includes(updatedChannel.defaultCurrencyCode)
+        ) {
+            throw new UserInputError(`error.available-currency-codes-must-include-default`, {
+                defaultCurrencyCode: updatedChannel.defaultCurrencyCode,
+            });
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);

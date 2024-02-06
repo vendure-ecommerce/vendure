@@ -65,7 +65,18 @@ export function getAssetType(mimeType: string): AssetType {
  * upper/lower case. See more discussion here: https://ux.stackexchange.com/a/16849
  */
 export function normalizeEmailAddress(input: string): string {
-    return input.trim().toLowerCase();
+    return isEmailAddressLike(input) ? input.trim().toLowerCase() : input.trim();
+}
+
+/**
+ * This is a "good enough" check for whether the input is an email address.
+ * From https://stackoverflow.com/a/32686261
+ * It is used to determine whether to apply normalization (lower-casing)
+ * when comparing identifiers in user lookups. This allows case-sensitive
+ * identifiers for other authentication methods.
+ */
+export function isEmailAddressLike(input: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim());
 }
 
 /**
@@ -87,7 +98,7 @@ export async function awaitPromiseOrObservable<T>(value: T | Promise<T> | Observ
  * an Observable but also want to work with async (Promise-returning) code.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Controller()
  * export class MyWorkerController {
  *

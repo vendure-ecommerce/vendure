@@ -16,16 +16,38 @@ import { HydrateOptions } from './entity-hydrator-types';
 /**
  * @description
  * This is a helper class which is used to "hydrate" entity instances, which means to populate them
- * with the specified relations. This is useful when writing plugin code which receives an entity
+ * with the specified relations. This is useful when writing plugin code which receives an entity,
  * and you need to ensure that one or more relations are present.
  *
  * @example
- * ```TypeScript
- * const product = await this.productVariantService
- *   .getProductForVariant(ctx, variantId);
+ * ```ts
+ * import { Injectable } from '\@nestjs/common';
+ * import { ID, RequestContext, EntityHydrator, ProductVariantService } from '\@vendure/core';
  *
- * await this.entityHydrator
- *   .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ * \@Injectable()
+ * export class MyService {
+ *
+ *   constructor(
+ *      // highlight-next-line
+ *      private entityHydrator: EntityHydrator,
+ *      private productVariantService: ProductVariantService,
+ *   ) {}
+ *
+ *   myMethod(ctx: RequestContext, variantId: ID) {
+ *     const product = await this.productVariantService
+ *       .getProductForVariant(ctx, variantId);
+ *
+ *     // at this stage, we don't know which of the Product relations
+ *     // will be joined at runtime.
+ *
+ *     // highlight-start
+ *     await this.entityHydrator
+ *       .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ *
+ *     // You can be sure now that the `facetValues` & `facetValues.facet` relations are populated
+ *     // highlight-end
+ *   }
+ * }
  *```
  *
  * In this above example, the `product` instance will now have the `facetValues` relation
@@ -39,7 +61,7 @@ import { HydrateOptions } from './entity-hydrator-types';
  * Custom field relations may also be hydrated:
  *
  * @example
- * ```TypeScript
+ * ```ts
  * const customer = await this.customerService
  *   .findOne(ctx, id);
  *
@@ -64,7 +86,7 @@ export class EntityHydrator {
      * mutates the `target` entity.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * await this.entityHydrator.hydrate(ctx, product, {
      *   relations: [
      *     'variants.stockMovements'
@@ -212,20 +234,34 @@ export class EntityHydrator {
         entity: VendureEntity,
         path: string[],
     ): VendureEntity | VendureEntity[] | undefined {
-        let relation: any = entity;
-        for (let i = 0; i < path.length; i++) {
-            const part = path[i];
-            const isLast = i === path.length - 1;
-            if (relation[part]) {
-                relation =
-                    Array.isArray(relation[part]) && relation[part].length && !isLast
-                        ? relation[part][0]
-                        : relation[part];
-            } else {
+        let isArrayResult = false;
+        const result: VendureEntity[] = [];
+
+        function visit(parent: any, parts: string[]): any {
+            if (parts.length === 0) {
                 return;
             }
+            const part = parts.shift() as string;
+            const target = parent[part];
+            if (Array.isArray(target)) {
+                isArrayResult = true;
+                if (parts.length === 0) {
+                    result.push(...target);
+                } else {
+                    for (const item of target) {
+                        visit(item, parts.slice());
+                    }
+                }
+            } else {
+                if (parts.length === 0) {
+                    result.push(target);
+                } else {
+                    visit(target, parts.slice());
+                }
+            }
         }
-        return relation;
+        visit(entity, path.slice());
+        return isArrayResult ? result : result[0];
     }
 
     private getRelationEntityTypeAtPath(entity: VendureEntity, path: string): Type<VendureEntity> {
@@ -265,6 +301,27 @@ export class EntityHydrator {
     private mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b: T): T {
         if (!a) {
             return b;
+        }
+        if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length > 1) {
+            if (a[0].hasOwnProperty('id')) {
+                // If the array contains entities, we can use the id to match them up
+                // so that we ensure that we don't merge properties from different entities
+                // with the same index.
+                const aIds = a.map(e => e.id);
+                const bIds = b.map(e => e.id);
+                if (JSON.stringify(aIds) !== JSON.stringify(bIds)) {
+                    // The entities in the arrays are not in the same order, so we can't
+                    // safely merge them. We need to sort the `b` array so that the entities
+                    // are in the same order as the `a` array.
+                    const idToIndexMap = new Map();
+                    a.forEach((item, index) => {
+                        idToIndexMap.set(item.id, index);
+                    });
+                    b.sort((_a, _b) => {
+                        return idToIndexMap.get(_a.id) - idToIndexMap.get(_b.id);
+                    });
+                }
+            }
         }
         for (const [key, value] of Object.entries(b)) {
             if (Object.getOwnPropertyDescriptor(b, key)?.writable) {

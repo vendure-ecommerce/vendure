@@ -4,6 +4,7 @@ type FacetValue implements Node {
     updatedAt: DateTime!
     languageCode: LanguageCode!
     facet: Facet!
+    facetId: ID!
     name: String!
     code: String!
     translations: [FacetValueTranslation!]!

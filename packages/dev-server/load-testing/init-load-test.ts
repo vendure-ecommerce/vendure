@@ -2,7 +2,7 @@
 /// <reference path="../../core/typings.d.ts" />
 import { bootstrap, JobQueueService, Logger } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
-import { clearAllTables, populateCustomers } from '@vendure/testing';
+import { clearAllTables, populateCustomers, SimpleGraphQLClient } from '@vendure/testing';
 import stringify from 'csv-stringify';
 import fs from 'fs';
 import path from 'path';
@@ -16,6 +16,8 @@ import {
     getProductCount,
     getProductCsvFilePath,
 } from './load-test-config';
+
+import { awaitRunningJobs } from '../../core/e2e/utils/await-running-jobs';
 
 /* eslint-disable no-console */
 
@@ -49,6 +51,18 @@ if (require.main === module) {
                             csvFile,
                         ),
                     )
+                    .then(async app => {
+                        console.log('synchronize on search index updated...');
+                        const { port, adminApiPath, shopApiPath } = config.apiOptions;
+                        const adminClient = new SimpleGraphQLClient(
+                            config,
+                            `http://localhost:${port}/${adminApiPath!}`,
+                        );
+                        await adminClient.asSuperAdmin();
+                        await new Promise(resolve => setTimeout(resolve, 5000));
+                        await awaitRunningJobs(adminClient, 5000000);
+                        return app;
+                    })
                     .then(async app => {
                         console.log('populating customers...');
                         await populateCustomers(app, 10, message => Logger.error(message));

@@ -5,7 +5,7 @@
  * this when your code needs to know the version of Vendure which is running.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { VENDURE_VERSION } from '\@vendure/core';
  *
  * console.log('Vendure version:', VENDURE_VERSION);

@@ -5,7 +5,7 @@ import { BrandingOptions, StaticAssetDefinition, StaticAssetExtension } from './
  * A helper function to simplify the process of setting custom branding images.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * compileUiExtensions({
  *   outputPath: path.join(__dirname, '../admin-ui'),
  *   extensions: [

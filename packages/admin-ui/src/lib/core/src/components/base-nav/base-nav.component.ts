@@ -1,4 +1,4 @@
-import { Component, Directive, OnDestroy, OnInit } from '@angular/core';
+import { Directive, Injector, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Subscription } from 'rxjs';
@@ -8,8 +8,9 @@ import { Permission } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { HealthCheckService } from '../../providers/health-check/health-check.service';
 import { JobQueueService } from '../../providers/job-queue/job-queue.service';
-import { NavMenuBadge, NavMenuItem } from '../../providers/nav-builder/nav-builder-types';
+import { ActionBarContext, NavMenuBadge, NavMenuItem } from '../../providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../providers/nav-builder/nav-builder.service';
+// import { NotificationService } from '../../providers/notification/notification.service';
 
 @Directive({
     selector: '[vdrBaseNav]',
@@ -23,6 +24,8 @@ export class BaseNavComponent implements OnInit, OnDestroy {
         protected healthCheckService: HealthCheckService,
         protected jobQueueService: JobQueueService,
         protected dataService: DataService,
+        // protected notificationService: any,
+        protected injector: Injector,
     ) {}
 
     private userPermissions: string[];
@@ -60,7 +63,10 @@ export class BaseNavComponent implements OnInit, OnDestroy {
     }
 
     getRouterLink(item: NavMenuItem) {
-        return this.navBuilderService.getRouterLink(item, this.route);
+        return this.navBuilderService.getRouterLink(
+            { routerLink: item.routerLink, context: this.createContext() },
+            this.route,
+        );
     }
 
     private defineNavMenu() {
@@ -89,10 +95,10 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                 items: [
                     {
                         requiresPermission: allow(Permission.ReadCatalog, Permission.ReadProduct),
-                        id: 'inventory',
-                        label: _('nav.inventory'),
+                        id: 'products',
+                        label: _('nav.products'),
                         icon: 'library',
-                        routerLink: ['/catalog', 'inventory'],
+                        routerLink: ['/catalog', 'products'],
                     },
                     {
                         requiresPermission: allow(Permission.ReadCatalog, Permission.ReadFacet),
@@ -201,6 +207,13 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                         icon: 'layers',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadStockLocation),
+                        id: 'stock-locations',
+                        label: _('nav.stock-locations'),
+                        icon: 'map-marker',
+                        routerLink: ['/settings', 'stock-locations'],
+                    },
+                    {
                         requiresPermission: allow(Permission.ReadAdministrator),
                         id: 'administrators',
                         label: _('nav.administrators'),
@@ -305,5 +318,14 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                 ],
             },
         ]);
+    }
+
+    private createContext(): ActionBarContext {
+        return {
+            route: this.route,
+            injector: this.injector,
+            dataService: this.dataService,
+            notificationService: {} as any,
+        };
     }
 }

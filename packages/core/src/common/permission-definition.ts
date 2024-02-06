@@ -53,14 +53,14 @@ export type PermissionMetadata = Required<PermissionDefinitionConfig>;
  * **Note:** To define CRUD permissions, use the {@link CrudPermissionDefinition}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * export const sync = new PermissionDefinition({
  *   name: 'SyncInventory',
  *   description: 'Allows syncing stock levels via Admin API'
  * });
  * ```
  *
- * ```TypeScript
+ * ```ts
  * const config: VendureConfig = {
  *   authOptions: {
  *     customPermissions: [sync],
@@ -68,7 +68,7 @@ export type PermissionMetadata = Required<PermissionDefinitionConfig>;
  * }
  * ```
  *
- * ```TypeScript
+ * ```ts
  * \@Resolver()
  * export class ExternalSyncResolver {
  *
@@ -115,11 +115,11 @@ export class PermissionDefinition {
  * 4 Permissions: 'CreateWishlist', 'ReadWishlist', 'UpdateWishlist' & 'DeleteWishlist'.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * export const wishlist = new CrudPermissionDefinition('Wishlist');
  * ```
  *
- * ```TypeScript
+ * ```ts
  * const config: VendureConfig = {
  *   authOptions: {
  *     customPermissions: [wishlist],
@@ -127,7 +127,7 @@ export class PermissionDefinition {
  * }
  * ```
  *
- * ```TypeScript
+ * ```ts
  * \@Resolver()
  * export class WishlistResolver {
  *

@@ -26,7 +26,7 @@ if (require.main === module) {
         stdio: 'inherit',
     });
 
-    init.on('exit', code => {
+    init.on('exit', async code => {
         if (code === 0) {
             const databaseName = `vendure-load-testing-${count}`;
             return bootstrap(getLoadTestConfig('cookie', databaseName))
@@ -49,7 +49,7 @@ if (require.main === module) {
     });
 }
 
-function runLoadTestScript(script: string): Promise<LoadTestSummary> {
+async function runLoadTestScript(script: string): Promise<LoadTestSummary> {
     const rawResultsFile = `${script}.${count}.json`;
 
     return new Promise((resolve, reject) => {

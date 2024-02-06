@@ -6,6 +6,8 @@ import {
     ContentChild,
     ContentChildren,
     EventEmitter,
+    inject,
+    Injector,
     Input,
     OnChanges,
     OnDestroy,
@@ -14,16 +16,23 @@ import {
     SimpleChanges,
     TemplateRef,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { PaginationService } from 'ngx-pagination';
-import { Observable, Subscription } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { LanguageCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
 import { DataTableConfig, LocalStorageService } from '../../../providers/local-storage/local-storage.service';
 import { BulkActionMenuComponent } from '../bulk-action-menu/bulk-action-menu.component';
 
+import { FilterPresetService } from '../data-table-filter-presets/filter-preset.service';
 import { DataTable2ColumnComponent } from './data-table-column.component';
+import {
+    DataTableComponentConfig,
+    DataTableCustomComponentService,
+    DataTableLocationId,
+} from './data-table-custom-component.service';
 import { DataTableCustomFieldColumnComponent } from './data-table-custom-field-column.component';
 import { DataTable2SearchComponent } from './data-table-search.component';
 
@@ -33,7 +42,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
  * extend the {@link BaseListComponent} or {@link TypedBaseListComponent} class.
  *
  * @example
- * ```HTML
+ * ```html
  * <vdr-data-table-2
  *     id="product-review-list"
  *     [items]="items$ | async"
@@ -94,10 +103,10 @@ import { DataTable2SearchComponent } from './data-table-search.component';
     templateUrl: 'data-table2.component.html',
     styleUrls: ['data-table2.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [PaginationService],
+    providers: [PaginationService, FilterPresetService],
 })
 export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
-    @Input() id: string;
+    @Input() id: DataTableLocationId;
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
@@ -115,6 +124,13 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     @ContentChild(BulkActionMenuComponent) bulkActionMenuComponent: BulkActionMenuComponent;
     @ContentChild('vdrDt2CustomSearch') customSearchTemplate: TemplateRef<any>;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
+
+    injector = inject(Injector);
+    route = inject(ActivatedRoute);
+    filterPresetService = inject(FilterPresetService);
+    dataTableCustomComponentService = inject(DataTableCustomComponentService);
+    protected customComponents = new Map<string, { config: DataTableComponentConfig; injector: Injector }>();
+
     rowTemplate: TemplateRef<any>;
     currentStart: number;
     currentEnd: number;
@@ -122,8 +138,9 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     // which allows shift-click multi-row selection
     disableSelect = false;
     showSearchFilterRow = false;
+
     protected uiLanguage$: Observable<LanguageCode>;
-    private subscription: Subscription | undefined;
+    protected destroy$ = new Subject<void>();
 
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
@@ -184,24 +201,22 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     }
 
     ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
         if (this.selectionManager) {
             document.removeEventListener('keydown', this.shiftDownHandler);
             document.removeEventListener('keyup', this.shiftUpHandler);
         }
-        this.subscription?.unsubscribe();
     }
 
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
-        const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
+        const dataTableConfig = this.getDataTableConfig();
 
         if (!this.id) {
             console.warn(`No id was assigned to the data table component`);
         }
         const updateColumnVisibility = () => {
-            if (!dataTableConfig[this.id]) {
-                dataTableConfig[this.id] = { visibility: [], order: {}, showSearchFilterRow: false };
-            }
             dataTableConfig[this.id].visibility = this.allColumns
                 .filter(c => (c.visible && c.hiddenByDefault) || (!c.visible && !c.hiddenByDefault))
                 .map(c => c.id);
@@ -213,6 +228,14 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
                 column.setVisibility(column.hiddenByDefault);
             }
             column.onColumnChange(updateColumnVisibility);
+            const config = this.dataTableCustomComponentService.getCustomComponentsFor(this.id, column.id);
+            if (config) {
+                const injector = Injector.create({
+                    parent: this.injector,
+                    providers: config.providers ?? [],
+                });
+                this.customComponents.set(column.id, { config, injector });
+            }
         });
 
         if (this.selectionManager) {
@@ -223,24 +246,25 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
             });
             this.selectionManager.setCurrentItems(this.items);
         }
-        this.showSearchFilterRow = dataTableConfig?.[this.id]?.showSearchFilterRow ?? false;
+        this.showSearchFilterRow =
+            !!this.filters?.activeFilters.length ||
+            (dataTableConfig?.[this.id]?.showSearchFilterRow ?? false);
         this.columns.changes.subscribe(() => {
             this.changeDetectorRef.markForCheck();
         });
 
-        this.subscription = this.selectionManager?.selectionChanges$.subscribe(() =>
-            this.changeDetectorRef.markForCheck(),
-        );
+        this.selectionManager?.selectionChanges$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.changeDetectorRef.markForCheck());
 
-        if (this.selectionManager && this.subscription) {
-            const channelSub = this.dataService.client
+        if (this.selectionManager) {
+            this.dataService.client
                 .userStatus()
                 .mapStream(({ userStatus }) => userStatus.activeChannelId)
-                .pipe(distinctUntilChanged())
-                .subscribe(activeChannelId => {
+                .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+                .subscribe(() => {
                     this.selectionManager?.clearSelection();
                 });
-            this.subscription?.add(channelSub);
         }
     }
 
@@ -288,7 +312,12 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     protected getDataTableConfig(): DataTableConfig {
         const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
         if (!dataTableConfig[this.id]) {
-            dataTableConfig[this.id] = { visibility: [], order: {}, showSearchFilterRow: false };
+            dataTableConfig[this.id] = {
+                visibility: [],
+                order: {},
+                showSearchFilterRow: false,
+                filterPresets: [],
+            };
         }
         return dataTableConfig;
     }

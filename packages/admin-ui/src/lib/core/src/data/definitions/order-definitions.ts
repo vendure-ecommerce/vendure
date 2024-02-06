@@ -148,6 +148,7 @@ export const ORDER_LINE_FRAGMENT = gql`
         proratedUnitPrice
         proratedUnitPriceWithTax
         quantity
+        orderPlacedQuantity
         linePrice
         lineTax
         linePriceWithTax

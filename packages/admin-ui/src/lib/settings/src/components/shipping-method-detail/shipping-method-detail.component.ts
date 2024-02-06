@@ -11,13 +11,13 @@ import {
     findTranslation,
     GetActiveChannelQuery,
     getConfigArgValue,
+    getCustomFieldsDefaults,
     GetShippingMethodDetailDocument,
     GetShippingMethodDetailQuery,
     LanguageCode,
     NotificationService,
     Permission,
     SHIPPING_METHOD_FRAGMENT,
-    ShippingMethod,
     ShippingMethodFragment,
     TestShippingMethodInput,
     TestShippingMethodResult,
@@ -60,9 +60,7 @@ export class ShippingMethodDetailComponent
         fulfillmentHandler: ['', Validators.required],
         checker: {} as NonNullable<GetShippingMethodDetailQuery['shippingMethod']>['checker'],
         calculator: {} as NonNullable<GetShippingMethodDetailQuery['shippingMethod']>['calculator'],
-        customFields: this.formBuilder.group(
-            this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
-        ),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     checkers: ConfigurableOperationDefinition[] = [];
     calculators: ConfigurableOperationDefinition[] = [];

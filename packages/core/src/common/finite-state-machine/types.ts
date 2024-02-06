@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
  * on {@link FSM}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * type LightColor = 'Green' | 'Amber' | 'Red';
  *
  * const trafficLightTransitions: Transitions<LightColor> = {

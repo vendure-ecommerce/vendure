@@ -88,7 +88,13 @@ export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExt
             id = hash.digest('hex');
         }
 
-        return { staticAssets: [], translations: {}, globalStyles: [], ...e, id };
+        return {
+            staticAssets: [],
+            translations: {},
+            globalStyles: [],
+            ...e,
+            id,
+        };
     });
 }
 

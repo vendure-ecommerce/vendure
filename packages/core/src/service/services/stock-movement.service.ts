@@ -137,9 +137,6 @@ export class StockMovementService {
      * increased, indicating that this quantity of stock is allocated and cannot be sold.
      */
     async createAllocationsForOrder(ctx: RequestContext, order: Order): Promise<Allocation[]> {
-        if (order.active !== false) {
-            throw new InternalServerError('error.cannot-create-allocations-for-active-order');
-        }
         const lines = order.lines.map(orderLine => ({
             orderLineId: orderLine.id,
             quantity: orderLine.quantity,

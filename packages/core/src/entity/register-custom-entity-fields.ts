@@ -35,6 +35,7 @@ import {
     CustomOrderFields,
     CustomOrderLineFields,
     CustomPaymentMethodFields,
+    CustomPaymentMethodFieldsTranslation,
     CustomProductFields,
     CustomProductFieldsTranslation,
     CustomProductOptionFields,
@@ -44,6 +45,7 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomPromotionFields,
+    CustomPromotionFieldsTranslation,
     CustomRegionFields,
     CustomRegionFieldsTranslation,
     CustomSellerFields,
@@ -80,10 +82,14 @@ function registerCustomFieldsForEntity(
             const registerColumn = () => {
                 if (customField.type === 'relation') {
                     if (customField.list) {
-                        ManyToMany(type => customField.entity, { eager: customField.eager })(instance, name);
+                        ManyToMany(type => customField.entity, customField.inverseSide, {
+                            eager: customField.eager,
+                        })(instance, name);
                         JoinTable()(instance, name);
                     } else {
-                        ManyToOne(type => customField.entity, { eager: customField.eager })(instance, name);
+                        ManyToOne(type => customField.entity, customField.inverseSide, {
+                            eager: customField.eager,
+                        })(instance, name);
                         JoinColumn()(instance, name);
                     }
                 } else {
@@ -249,31 +255,70 @@ function getDefault(customField: CustomFieldConfig, dbEngine: DataSourceOptions[
     return type === 'datetime' ? formatDefaultDatetime(dbEngine, defaultValue) : defaultValue;
 }
 
+function assertLocaleFieldsNotSpecified(config: VendureConfig, entityName: keyof CustomFields) {
+    const customFields = config.customFields && config.customFields[entityName];
+    if (customFields) {
+        for (const customField of customFields) {
+            if (customField.type === 'localeString' || customField.type === 'localeText') {
+                Logger.error(
+                    `Custom field "${customField.name}" on entity "${entityName}" cannot be of type "localeString" or "localeText". ` +
+                        `This entity does not support localization.`,
+                );
+            }
+        }
+    }
+}
+
 /**
  * Dynamically registers any custom fields with TypeORM. This function should be run at the bootstrap
  * stage of the app lifecycle, before the AppModule is initialized.
  */
 export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Address', CustomAddressFields);
+    assertLocaleFieldsNotSpecified(config, 'Address');
+
     registerCustomFieldsForEntity(config, 'Administrator', CustomAdministratorFields);
+    assertLocaleFieldsNotSpecified(config, 'Administrator');
+
     registerCustomFieldsForEntity(config, 'Asset', CustomAssetFields);
+    assertLocaleFieldsNotSpecified(config, 'Asset');
+
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFields);
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'Channel', CustomChannelFields);
+    assertLocaleFieldsNotSpecified(config, 'Channel');
+
     registerCustomFieldsForEntity(config, 'Customer', CustomCustomerFields);
+    assertLocaleFieldsNotSpecified(config, 'Customer');
+
     registerCustomFieldsForEntity(config, 'CustomerGroup', CustomCustomerGroupFields);
+    assertLocaleFieldsNotSpecified(config, 'CustomerGroup');
+
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFields);
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFields);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'Fulfillment', CustomFulfillmentFields);
+    assertLocaleFieldsNotSpecified(config, 'Fulfillment');
+
     registerCustomFieldsForEntity(config, 'Order', CustomOrderFields);
+    assertLocaleFieldsNotSpecified(config, 'Order');
+
     registerCustomFieldsForEntity(config, 'OrderLine', CustomOrderLineFields);
+    assertLocaleFieldsNotSpecified(config, 'OrderLine');
+
     registerCustomFieldsForEntity(config, 'PaymentMethod', CustomPaymentMethodFields);
+    registerCustomFieldsForEntity(config, 'PaymentMethod', CustomPaymentMethodFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFields);
     registerCustomFieldsForEntity(config, 'ProductOption', CustomProductOptionFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'ProductOptionGroup', CustomProductOptionGroupFields);
     registerCustomFieldsForEntity(
         config,
@@ -281,18 +326,36 @@ export function registerCustomEntityFields(config: VendureConfig) {
         CustomProductOptionGroupFieldsTranslation,
         true,
     );
+
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFields);
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'Promotion', CustomPromotionFields);
+    registerCustomFieldsForEntity(config, 'Promotion', CustomPromotionFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'TaxCategory', CustomTaxCategoryFields);
+    assertLocaleFieldsNotSpecified(config, 'TaxCategory');
+
     registerCustomFieldsForEntity(config, 'TaxRate', CustomTaxRateFields);
+    assertLocaleFieldsNotSpecified(config, 'TaxRate');
+
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
+    assertLocaleFieldsNotSpecified(config, 'User');
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
+    assertLocaleFieldsNotSpecified(config, 'GlobalSettings');
+
     registerCustomFieldsForEntity(config, 'Region', CustomRegionFields);
     registerCustomFieldsForEntity(config, 'Region', CustomRegionFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'Seller', CustomSellerFields);
+    assertLocaleFieldsNotSpecified(config, 'Seller');
+
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
+
     registerCustomFieldsForEntity(config, 'StockLocation', CustomStockLocationFields);
+    assertLocaleFieldsNotSpecified(config, 'StockLocation');
+
     registerCustomFieldsForEntity(config, 'Zone', CustomZoneFields);
+    assertLocaleFieldsNotSpecified(config, 'Zone');
 }

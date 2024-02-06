@@ -20,7 +20,7 @@ import { TranslationOf } from './utilities/find-translation';
  * {@link BaseEntityResolver}.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@Component({
  *   selector: 'app-my-entity',
  *   templateUrl: './my-entity.component.html',
@@ -219,7 +219,7 @@ export abstract class TypedBaseDetailComponent<
  * correct resolved detail data.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * \@NgModule({
  *   imports: [ReviewsSharedModule],
  *   declarations: [/* ... *\/],
@@ -251,10 +251,26 @@ export function detailComponentWithResolver<
     getBreadcrumbs?: (entity: ResultOf<T>[R]) => BreadcrumbValue;
     variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
 }) {
-    const resolveFn: ResolveFn<{
-        entity: Observable<ResultOf<T>[Field] | null>;
-        result?: ResultOf<T>;
-    }> = route => {
+    return {
+        resolveFn: createBaseDetailResolveFn(config),
+        breadcrumbFn: (result: any) => config.getBreadcrumbs?.(result) ?? ([] as BreadcrumbValue[]),
+        component: config.component,
+    };
+}
+
+export function createBaseDetailResolveFn<
+    T extends TypedDocumentNode<any, { id: string }>,
+    Field extends keyof ResultOf<T>,
+    R extends Field,
+>(config: {
+    query: T;
+    entityKey: R;
+    variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
+}): ResolveFn<{
+    entity: Observable<ResultOf<T>[Field] | null>;
+    result?: ResultOf<T>;
+}> {
+    return route => {
         const router = inject(Router);
         const dataService = inject(DataService);
         const id = route.paramMap.get('id');
@@ -281,10 +297,5 @@ export function detailComponentWithResolver<
                 })),
             );
         }
-    };
-    return {
-        resolveFn,
-        breadcrumbFn: (result: any) => config.getBreadcrumbs?.(result) ?? ([] as BreadcrumbValue[]),
-        component: config.component,
     };
 }

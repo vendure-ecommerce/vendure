@@ -9,7 +9,7 @@ import { I18nService } from '../../providers/i18n/i18n.service';
  * e.g. "12ms", "33s", "2:03m"
  *
  * @example
- * ```TypeScript
+ * ```ts
  * {{ timeInMs | duration }}
  * ```
  *

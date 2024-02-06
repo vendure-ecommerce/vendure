@@ -159,7 +159,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  *
  * Your resolver function will then look like this:
  *
- * ```TypeScript
+ * ```ts
  * \@Resolver()
  * export class BlogPostResolver
  *   constructor(private blogPostService: BlogPostService) {}
@@ -176,7 +176,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  *
  * and the corresponding service will use the ListQueryBuilder:
  *
- * ```TypeScript
+ * ```ts
  * \@Injectable()
  * export class BlogPostService {
  *   constructor(private listQueryBuilder: ListQueryBuilder) {}
@@ -493,14 +493,21 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                         loadEagerRelations: true,
                     } as FindManyOptions<T>)
                     .then(results =>
-                        results.map(r => ({ relation: relationPaths[0] as keyof T, entity: r })),
+                        results.map(r => ({
+                            relations: relationPaths[0].startsWith('customFields.')
+                                ? relationPaths
+                                : [relationPaths[0]],
+                            entity: r,
+                        })),
                     );
             }),
         ).then(all => all.flat());
         for (const entry of entitiesIdsWithRelations) {
             const finalEntity = entityMap.get(entry.entity.id);
-            if (finalEntity) {
-                this.assignDeep(entry.relation, entry.entity, finalEntity);
+            for (const relation of entry.relations) {
+                if (finalEntity) {
+                    this.assignDeep(relation, entry.entity, finalEntity);
+                }
             }
         }
         return Array.from(entityMap.values());

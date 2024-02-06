@@ -11,7 +11,7 @@
 .price-row {
     display: flex;
     & > *:not(:first-child) {
-        margin-left: 24px;
+        margin-inline-start: 24px;
     }
 }
 

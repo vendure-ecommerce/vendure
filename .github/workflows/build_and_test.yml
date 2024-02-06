@@ -14,7 +14,7 @@ on:
       - minor
 env:
   CI: true
-  node: 18.x
+  node: 20.x
 jobs:
   build:
     name: build
@@ -25,20 +25,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.node }}
-#    - uses: actions/cache@v3
-#      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-#      with:
-#        path: '**/node_modules'
-#        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#        restore-keys: |
-#          ${{ runner.os }}-yarn-
     - name: Yarn install
-#      if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install
     - name: Build
-      run: |
-        yarn bootstrap
-        yarn build
+      run: yarn build
   unit-tests:
     name: unit tests
     runs-on: ubuntu-latest
@@ -48,20 +38,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node }}
-#      - uses: actions/cache@v3
-#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-#        with:
-#          path: '**/node_modules'
-#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-yarn-
       - name: Yarn install
-#        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --prefer-offline
       - name: Build
-        run: |
-          yarn bootstrap
-          yarn lerna run ci
+        run: yarn lerna run ci
       - name: Unit tests
         run: yarn test
   e2e-tests:
@@ -117,20 +97,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node }}
-#      - uses: actions/cache@v3
-#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-#        with:
-#          path: '**/node_modules'
-#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-yarn-
       - name: Yarn install
-#        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --prefer-offline
       - name: Build
-        run: |
-          yarn bootstrap
-          yarn lerna run ci
+        run: yarn lerna run ci
       - name: df
         run: |
           df -h

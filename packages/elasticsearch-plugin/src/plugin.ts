@@ -66,7 +66,8 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *
  * **Requires Elasticsearch v7.0 < required Elasticsearch version < 7.10 **
  * Elasticsearch version 7.10.2 will throw error due to incompatibility with elasticsearch-js client.
- * [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519)
+ * [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519).
+ *
  * `yarn add \@elastic/elasticsearch \@vendure/elasticsearch-plugin`
  *
  * or
@@ -95,9 +96,9 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * ## Search API Extensions
  * This plugin extends the default search query of the Shop API, allowing richer querying of your product data.
  *
- * The [SearchResponse](/docs/graphql-api/admin/object-types/#searchresponse) type is extended with information
+ * The [SearchResponse](/reference/graphql-api/admin/object-types/#searchresponse) type is extended with information
  * about price ranges in the result set:
- * ```SDL
+ * ```graphql
  * extend type SearchResponse {
  *     prices: SearchResponsePriceData!
  * }
@@ -129,7 +130,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *
  * ## Example Request & Response
  *
- * ```SDL
+ * ```graphql
  * {
  *   search (input: {
  *     term: "table easel"
@@ -164,7 +165,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * }
  * ```
  *
- * ```JSON
+ * ```json
  *{
  *  "data": {
  *    "search": {

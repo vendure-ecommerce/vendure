@@ -1,5 +1,5 @@
 import { LanguageCode, PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
-import { gql } from 'apollo-server-core';
+import { gql } from 'graphql-tag';
 
 import { braintreePaymentMethodHandler } from './braintree.handler';
 import { BraintreeResolver } from './braintree.resolver';
@@ -27,7 +27,7 @@ import { BraintreePluginOptions } from './types';
  * ## Setup
  *
  * 1. Add the plugin to your VendureConfig `plugins` array:
- *     ```TypeScript
+ *     ```ts
  *     import { BraintreePlugin } from '\@vendure/payments-plugin/package/braintree';
  *     import { Environment } from 'braintree';
  *
@@ -68,7 +68,7 @@ import { BraintreePluginOptions } from './types';
  * Here is an example of how your storefront code will look. Note that this example is attempting to
  * be framework-agnostic, so you'll need to adapt it to fit to your framework of choice.
  *
- * ```TypeScript
+ * ```ts
  * // The Braintree Dropin instance
  * let dropin: import('braintree-web-drop-in').Dropin;
  *
@@ -197,7 +197,7 @@ import { BraintreePluginOptions } from './types';
  *
  * To enable this feature, set the `storeCustomersInBraintree` option to `true`.
  *
- * ```TypeScript
+ * ```ts
  * BraintreePlugin.init({
  *   environment: Environment.Sandbox,
  *   storeCustomersInBraintree: true,
@@ -217,7 +217,7 @@ import { BraintreePluginOptions } from './types';
  *
  * as well as in the metadata of the `addPaymentToOrder` mutation:
  *
- * ```TypeScript
+ * ```ts
  * const { addPaymentToOrder } = await graphQlClient.query(gql`
  *   mutation AddPayment($input: PaymentInput!) {
  *     addPaymentToOrder(input: $input) {

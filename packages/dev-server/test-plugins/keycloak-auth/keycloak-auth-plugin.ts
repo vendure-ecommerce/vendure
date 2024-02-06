@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import express from 'express';
@@ -17,7 +18,7 @@ import { KeycloakAuthenticationStrategy } from './keycloak-authentication-strate
  * Video demo of this: https://youtu.be/Tj4kwjNd2nM
  */
 @VendurePlugin({
-    imports: [PluginCommonModule],
+    imports: [PluginCommonModule, HttpModule],
     configuration: config => {
         config.authOptions.adminAuthenticationStrategy = [
             ...config.authOptions.adminAuthenticationStrategy,

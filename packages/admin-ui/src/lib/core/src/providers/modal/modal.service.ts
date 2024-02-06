@@ -1,4 +1,4 @@
-import { ComponentFactoryResolver, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Type } from '@vendure/common/lib/shared-types';
 import { from, Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { Dialog, DialogConfig, ModalOptions } from './modal.types';
  * This service is responsible for instantiating a ModalDialog component and
  * embedding the specified component within.
  *
- * @docsCategory providers
+ * @docsCategory services
  * @docsPage ModalService
  * @docsWeight 0
  */
@@ -22,10 +22,7 @@ import { Dialog, DialogConfig, ModalOptions } from './modal.types';
     providedIn: 'root',
 })
 export class ModalService {
-    constructor(
-        private componentFactoryResolver: ComponentFactoryResolver,
-        private overlayHostService: OverlayHostService,
-    ) {}
+    constructor(private overlayHostService: OverlayHostService) {}
 
     /**
      * @description
@@ -72,11 +69,9 @@ export class ModalService {
         component: Type<T> & Type<Dialog<R>>,
         options?: ModalOptions<T>,
     ): Observable<R | undefined> {
-        const modalFactory = this.componentFactoryResolver.resolveComponentFactory(ModalDialogComponent);
-
         return from(this.overlayHostService.getHostView()).pipe(
             mergeMap(hostView => {
-                const modalComponentRef = hostView.createComponent(modalFactory);
+                const modalComponentRef = hostView.createComponent(ModalDialogComponent);
                 const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
                 modalInstance.childComponentType = component;
                 modalInstance.options = options;

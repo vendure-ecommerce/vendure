@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    LogicalOperator,
+    DataTableLocationId,
     ProductVariantListQueryDocument,
     TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
@@ -17,8 +17,10 @@ export class ProductVariantListComponent
 {
     @Input() productId?: string;
     @Input() hideLanguageSelect = false;
+    @Input() dataTableId: DataTableLocationId | undefined;
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilters([
             {
@@ -26,12 +28,6 @@ export class ProductVariantListComponent
                 type: { kind: 'text' },
                 label: _('common.name'),
                 filterField: 'name',
-            },
-            {
-                name: 'id',
-                type: { kind: 'text' },
-                label: _('common.id'),
-                filterField: 'id',
             },
             {
                 name: 'enabled',

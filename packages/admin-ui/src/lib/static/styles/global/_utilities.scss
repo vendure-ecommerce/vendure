@@ -37,14 +37,14 @@
 }
 
 .ml-auto {
-    margin-left: auto;
+    margin-inline-start: auto;
 }
 .mr-auto {
-    margin-right: auto;
+    margin-inline-end: auto;
 }
 .mx-auto {
-    margin-left: auto;
-    margin-right: auto;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
 }
 
 $spacings: (1, 2, 3, 4, 5, auto);
@@ -52,17 +52,17 @@ $spacings: (1, 2, 3, 4, 5, auto);
 $sides: (
     't': 'top',
     'b': 'bottom',
-    'l': 'left',
-    'r': 'right',
+    'l': 'inline-start',
+    'r': 'inline-end',
     '': (
         'top',
-        'left',
+        'inline-start',
         'bottom',
-        'right',
+        'inline-end',
     ),
     'x': (
-        'left',
-        'right',
+        'inline-start',
+        'inline-end',
     ),
     'y': (
         'top',

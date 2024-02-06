@@ -34,6 +34,7 @@ export class PromotionListComponent
 {
     readonly customFields = this.getCustomFieldConfig('Promotion');
     readonly filters = this.createFilterCollection()
+        .addIdFilter()
         .addDateFilters()
         .addFilters([
             {
@@ -73,10 +74,16 @@ export class PromotionListComponent
                 filterField: 'description',
             },
             {
-                name: 'usageLimit',
+                name: 'perCustomerUsageLimit',
                 type: { kind: 'number' },
                 label: _('marketing.per-customer-limit'),
                 filterField: 'perCustomerUsageLimit',
+            },
+            {
+                name: 'usageLimit',
+                type: { kind: 'number' },
+                label: _('marketing.usage-limit'),
+                filterField: 'usageLimit',
             },
         ])
         .addCustomFieldFilters(this.customFields)
@@ -92,6 +99,7 @@ export class PromotionListComponent
             { name: 'name' },
             { name: 'couponCode' },
             { name: 'perCustomerUsageLimit' },
+            { name: 'usageLimit' },
         ])
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);

@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, Injectable, Provider } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
@@ -7,126 +7,13 @@ import { map, shareReplay } from 'rxjs/operators';
 import { Permission } from '../../common/generated-types';
 
 import {
+    ActionBarContext,
     ActionBarItem,
     NavMenuBadgeType,
     NavMenuItem,
     NavMenuSection,
     RouterLinkDefinition,
 } from './nav-builder-types';
-
-/**
- * @description
- * Add a section to the main nav menu. Providing the `before` argument will
- * move the section before any existing section with the specified id. If
- * omitted (or if the id is not found) the section will be appended to the
- * existing set of sections.
- * This should be used in the NgModule `providers` array of your ui extension module.
- *
- * @example
- * ```TypeScript
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
- *     addNavMenuSection({
- *       id: 'reports',
- *       label: 'Reports',
- *       items: [{
- *           // ...
- *       }],
- *     },
- *     'settings'),
- *   ],
- * })
- * export class MyUiExtensionModule {}
- * ```
- * @docsCategory nav-menu
- */
-export function addNavMenuSection(config: NavMenuSection, before?: string): Provider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (navBuilderService: NavBuilderService) => () => {
-            navBuilderService.addNavMenuSection(config, before);
-        },
-        deps: [NavBuilderService],
-    };
-}
-
-/**
- * @description
- * Add a menu item to an existing section specified by `sectionId`. The id of the section
- * can be found by inspecting the DOM and finding the `data-section-id` attribute.
- * Providing the `before` argument will move the item before any existing item with the specified id.
- * If omitted (or if the name is not found) the item will be appended to the
- * end of the section.
- *
- * This should be used in the NgModule `providers` array of your ui extension module.
- *
- * @example
- * ```TypeScript
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
- *     addNavMenuItem({
- *       id: 'reviews',
- *       label: 'Product Reviews',
- *       routerLink: ['/extensions/reviews'],
- *       icon: 'star',
- *     },
- *     'marketing'),
- *   ],
- * })
- * export class MyUiExtensionModule {}
- * ``
- *
- * @docsCategory nav-menu
- */
-export function addNavMenuItem(config: NavMenuItem, sectionId: string, before?: string): Provider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (navBuilderService: NavBuilderService) => () => {
-            navBuilderService.addNavMenuItem(config, sectionId, before);
-        },
-        deps: [NavBuilderService],
-    };
-}
-
-/**
- * @description
- * Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
- * be determined by inspecting the DOM and finding the <vdr-action-bar> element and its
- * `data-location-id` attribute.
- *
- * This should be used in the NgModule `providers` array of your ui extension module.
- *
- * @example
- * ```TypeScript
- * \@NgModule({
- *   imports: [SharedModule],
- *   providers: [
- *     addActionBarItem({
- *      id: 'print-invoice'
- *      label: 'Print Invoice',
- *      locationId: 'order-detail',
- *      routerLink: ['/extensions/invoicing'],
- *     }),
- *   ],
- * })
- * export class MyUiExtensionModule {}
- * ```
- * @docsCategory action-bar
- */
-export function addActionBarItem(config: ActionBarItem): Provider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (navBuilderService: NavBuilderService) => () => {
-            navBuilderService.addActionBarItem(config);
-        },
-        deps: [NavBuilderService],
-    };
-}
 
 /**
  * This service is used to define the contents of configurable menus in the application.
@@ -187,7 +74,7 @@ export class NavBuilderService {
 
     /**
      * Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
-     * be determined by inspecting the DOM and finding the <vdr-action-bar> element and its
+     * be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
      * `data-location-id` attribute.
      */
     addActionBarItem(config: ActionBarItem) {
@@ -199,9 +86,12 @@ export class NavBuilderService {
         }
     }
 
-    getRouterLink(config: { routerLink?: RouterLinkDefinition }, route: ActivatedRoute): string[] | null {
+    getRouterLink(
+        config: { routerLink?: RouterLinkDefinition; context: ActionBarContext },
+        route: ActivatedRoute,
+    ): string[] | null {
         if (typeof config.routerLink === 'function') {
-            return config.routerLink(route);
+            return config.routerLink(route, config.context);
         }
         if (Array.isArray(config.routerLink)) {
             return config.routerLink;

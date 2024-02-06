@@ -1,7 +1,7 @@
 @import 'variables';
 
 .login-wrapper {
-    background: var(--color-login-page-bg);
+    background: var(--color-weight-100);
     background-image: none;
     height: 100vh;
     display: flex;
@@ -10,7 +10,9 @@
     padding: 20px;
 
     .login-wrapper-inner {
-        background: #fff;
+
+
+        background: var(--login-wrapper-inner-bg);
         width: 1120px;
         height: 590px;
         display: flex;
@@ -53,8 +55,8 @@
                 left: 0;
                 bottom: 0;
                 z-index: 10;
-                background: rgb(2,0,36);
-                background: linear-gradient(180deg, rgba(2,0,36,0) 0%, rgba(0,0,0,0.75) 100%);
+                background: rgb(2, 0, 36);
+                background: linear-gradient(180deg, rgba(2, 0, 36, 0) 0%, rgba(0, 0, 0, 0.75) 100%);
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
@@ -74,13 +76,14 @@
 
                 .login-wrapper-image-copyright {
                     opacity: 0.8;
+
                     p {
                         font-size: 0.6rem;
                         color: white;
                         margin: 0 !important;
                     }
 
-                    a{
+                    a {
                         color: white;
                         text-decoration: underline;
                     }
@@ -96,9 +99,8 @@
             flex-direction: column;
             align-items: stretch;
             justify-content: center;
-            box-shadow: 0px 20px 25px rgba(0,0,0,0.1);
+            box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            border-radius: 5px;
             flex-shrink: 0;
 
             @media (max-width: $breakpoint-medium) {
@@ -162,7 +164,7 @@
     color: var(--color-grey-300);
 
     span+span {
-        margin-left: 5px;
+        margin-inline-start: 5px;
     }
 }
 
@@ -182,6 +184,7 @@
 }
 
 @keyframes shake {
+
     10%,
     90% {
         transform: translate3d(-1px, 0, 0);
@@ -201,5 +204,21 @@
     40%,
     60% {
         transform: translate3d(4px, 0, 0);
+    }
+}
+
+.login-wrapper[dir="rtl"] {
+    .login-wrapper-inner {
+        .login-wrapper-logo {
+            right: auto;
+            left: 20px;
+        }
+
+        .login-wrapper-image {
+            .login-wrapper-image-content {
+                left: auto;
+                right: 0;
+            }
+        }
     }
 }

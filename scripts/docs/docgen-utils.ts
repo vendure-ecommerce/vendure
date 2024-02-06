@@ -6,15 +6,16 @@ import { basename } from 'path';
 /**
  * Generates the Hugo front matter with the title of the document
  */
-export function generateFrontMatter(title: string, weight: number, showToc: boolean = true): string {
+export function generateFrontMatter(title: string, isDefaultIndex = false): string {
     return `---
 title: "${titleCase(title.replace(/-/g, ' '))}"
-weight: ${weight}
-date: ${new Date().toISOString()}
-showtoc: ${showToc}
+isDefaultIndex: ${isDefaultIndex ? 'true' : 'false'}
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
+import MemberInfo from '@site/src/components/MemberInfo';
+import GenerationInfo from '@site/src/components/GenerationInfo';
+import MemberDescription from '@site/src/components/MemberDescription';
 `;
 }
 

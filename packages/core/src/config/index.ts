@@ -29,7 +29,6 @@ export * from './entity/bigint-money-strategy';
 export * from './entity/entity-id-strategy';
 export * from './entity/money-strategy';
 export * from './entity/uuid-id-strategy';
-export * from './entity-metadata/add-foreign-key-indices';
 export * from './entity-metadata/entity-metadata-modifier';
 export * from './fulfillment/default-fulfillment-process';
 export * from './fulfillment/fulfillment-handler';

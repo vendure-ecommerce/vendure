@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { intro, note, outro, spinner } from '@clack/prompts';
+import { intro, note, outro, select, spinner } from '@clack/prompts';
 import { program } from 'commander';
 import detectPort from 'detect-port';
 import fs from 'fs-extra';
@@ -8,7 +8,7 @@ import path from 'path';
 import pc from 'picocolors';
 
 import { REQUIRED_NODE_VERSION, SERVER_PORT } from './constants';
-import { gatherCiUserResponses, gatherUserResponses } from './gather-user-responses';
+import { checkCancel, gatherCiUserResponses, gatherUserResponses } from './gather-user-responses';
 import {
     checkDbConnection,
     checkNodeVersion,
@@ -18,9 +18,9 @@ import {
     isSafeToCreateProjectIn,
     isServerPortInUse,
     scaffoldAlreadyExists,
-    shouldUseYarn,
+    yarnIsAvailable,
 } from './helpers';
-import { CliLogLevel } from './types';
+import { CliLogLevel, DbType, PackageManager } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -75,7 +75,21 @@ export async function createVendureApp(
     const root = path.resolve(name);
     const appName = path.basename(root);
     const scaffoldExists = scaffoldAlreadyExists(root, name);
-    const useYarn = useNpm ? false : shouldUseYarn();
+
+    const yarnAvailable = yarnIsAvailable();
+    let packageManager: PackageManager = 'npm';
+    if (yarnAvailable && !useNpm) {
+        packageManager = (await select({
+            message: 'Which package manager should be used?',
+            options: [
+                { label: 'npm', value: 'npm' },
+                { label: 'yarn', value: 'yarn' },
+            ],
+            initialValue: 'yarn' as PackageManager,
+        })) as PackageManager;
+        checkCancel(packageManager);
+    }
+
     if (scaffoldExists) {
         console.log(
             pc.yellow(
@@ -97,11 +111,11 @@ export async function createVendureApp(
         dockerComposeSource,
         populateProducts,
     } = isCi
-        ? await gatherCiUserResponses(root, useYarn)
-        : await gatherUserResponses(root, scaffoldExists, useYarn);
+        ? await gatherCiUserResponses(root, packageManager)
+        : await gatherUserResponses(root, scaffoldExists, packageManager);
     const originalDirectory = process.cwd();
     process.chdir(root);
-    if (!useYarn && !checkThatNpmCanReadCwd()) {
+    if (packageManager !== 'npm' && !checkThatNpmCanReadCwd()) {
         process.exit(1);
     }
 
@@ -112,11 +126,11 @@ export async function createVendureApp(
         scripts: {
             'dev:server': 'ts-node ./src/index.ts',
             'dev:worker': 'ts-node ./src/index-worker.ts',
-            dev: useYarn ? 'concurrently yarn:dev:*' : 'concurrently npm:dev:*',
+            dev: packageManager === 'yarn' ? 'concurrently yarn:dev:*' : 'concurrently npm:dev:*',
             build: 'tsc',
             'start:server': 'node ./dist/index.js',
             'start:worker': 'node ./dist/index-worker.js',
-            start: useYarn ? 'concurrently yarn:start:*' : 'concurrently npm:start:*',
+            start: packageManager === 'yarn' ? 'concurrently yarn:start:*' : 'concurrently npm:start:*',
             'migration:generate': 'ts-node migration generate',
             'migration:run': 'ts-node migration run',
             'migration:revert': 'ts-node migration revert',
@@ -138,7 +152,7 @@ export async function createVendureApp(
     const installSpinner = spinner();
     installSpinner.start(`Installing ${dependencies[0]} + ${dependencies.length - 1} more dependencies`);
     try {
-        await installPackages(root, useYarn, dependencies, false, logLevel, isCi);
+        await installPackages(root, packageManager === 'yarn', dependencies, false, logLevel, isCi);
     } catch (e) {
         outro(pc.red(`Failed to install dependencies. Please try again.`));
         process.exit(1);
@@ -151,7 +165,7 @@ export async function createVendureApp(
             `Installing ${devDependencies[0]} + ${devDependencies.length - 1} more dev dependencies`,
         );
         try {
-            await installPackages(root, useYarn, devDependencies, true, logLevel, isCi);
+            await installPackages(root, packageManager === 'yarn', devDependencies, true, logLevel, isCi);
         } catch (e) {
             outro(pc.red(`Failed to install dev dependencies. Please try again.`));
             process.exit(1);
@@ -255,7 +269,7 @@ export async function createVendureApp(
     }
     populateSpinner.stop(`Server successfully initialized${populateProducts ? ' and populated' : ''}`);
 
-    const startCommand = useYarn ? 'yarn dev' : 'npm run dev';
+    const startCommand = packageManager === 'yarn' ? 'yarn dev' : 'npm run dev';
     const nextSteps = [
         `${pc.green('Success!')} Created a new Vendure server at:`,
         `\n`,

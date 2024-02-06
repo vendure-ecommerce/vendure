@@ -10,7 +10,9 @@ import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graph
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
 import nock from 'nock';
+import fetch from 'node-fetch';
 import path from 'path';
+import { Stripe } from 'stripe';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -210,6 +212,184 @@ describe('Stripe payments', () => {
         StripePlugin.options.metadata = undefined;
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/2412
+    it('should attach additional params to payment intent using paymentIntentCreateParams', async () => {
+        StripePlugin.options.paymentIntentCreateParams = async (injector, ctx, currentOrder) => {
+            const hydrator = injector.get(EntityHydrator);
+            await hydrator.hydrate(ctx, currentOrder, { relations: ['customer'] });
+            return {
+                description: `Order #${currentOrder.code} for ${currentOrder.customer!.emailAddress}`,
+            };
+        };
+        let createPaymentIntentPayload: any;
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        nock('https://api.stripe.com/')
+            .post('/v1/payment_intents', body => {
+                createPaymentIntentPayload = body;
+                return true;
+            })
+            .reply(200, {
+                client_secret: 'test-client-secret',
+            });
+        const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
+        expect(createPaymentIntentPayload).toEqual({
+            amount: activeOrder?.totalWithTax.toString(),
+            currency: activeOrder?.currencyCode?.toLowerCase(),
+            customer: 'new-customer-id',
+            description: `Order #${activeOrder!.code} for ${activeOrder!.customer!.emailAddress}`,
+            'automatic_payment_methods[enabled]': 'true',
+            'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
+            'metadata[orderId]': '1',
+            'metadata[orderCode]': activeOrder?.code,
+        });
+        expect(createStripePaymentIntent).toEqual('test-client-secret');
+        StripePlugin.options.paymentIntentCreateParams = undefined;
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2412
+    it('should attach additional params to customer using customerCreateParams', async () => {
+        StripePlugin.options.customerCreateParams = async (injector, ctx, currentOrder) => {
+            const hydrator = injector.get(EntityHydrator);
+            await hydrator.hydrate(ctx, currentOrder, { relations: ['customer'] });
+            return {
+                description: `Description for ${currentOrder.customer!.emailAddress}`,
+                phone: '12345',
+            };
+        };
+
+        await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_1',
+            quantity: 2,
+        });
+        order = addItemToOrder as TestOrderFragmentFragment;
+
+        let createCustomerPayload: { name: string; email: string } | undefined;
+        const emptyList = { data: [] };
+        nock('https://api.stripe.com/')
+            .get(/\/v1\/customers.*/)
+            .reply(200, emptyList);
+        nock('https://api.stripe.com/')
+            .post('/v1/customers', body => {
+                createCustomerPayload = body;
+                return true;
+            })
+            .reply(201, {
+                id: 'new-customer-id',
+            });
+        nock('https://api.stripe.com/').post('/v1/payment_intents').reply(200, {
+            client_secret: 'test-client-secret',
+        });
+
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+
+        await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
+        expect(createCustomerPayload).toEqual({
+            email: 'trevor_donnelly96@hotmail.com',
+            name: 'Trevor Donnelly',
+            description: `Description for ${activeOrder!.customer!.emailAddress}`,
+            phone: '12345',
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2450
+    it('Should not crash on signature validation failure', async () => {
+        const MOCKED_WEBHOOK_PAYLOAD = {
+            id: 'evt_0',
+            object: 'event',
+            api_version: '2022-11-15',
+            data: {
+                object: {
+                    id: 'pi_0',
+                    currency: 'usd',
+                    status: 'succeeded',
+                },
+            },
+            livemode: false,
+            pending_webhooks: 1,
+            request: {
+                id: 'req_0',
+                idempotency_key: '00000000-0000-0000-0000-000000000000',
+            },
+            type: 'payment_intent.succeeded',
+        };
+
+        const payloadString = JSON.stringify(MOCKED_WEBHOOK_PAYLOAD, null, 2);
+
+        const result = await fetch(`http://localhost:${serverPort}/payments/stripe`, {
+            method: 'post',
+            body: payloadString,
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        // We didn't provided any signatures, it should result in a 400 - Bad request
+        expect(result.status).toEqual(400);
+    });
+
+    // TODO: Contribution welcome: test webhook handling and order settlement
+    // https://github.com/vendure-ecommerce/vendure/issues/2450
+    it("Should validate the webhook's signature properly", async () => {
+        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        order = activeOrder!;
+
+        const MOCKED_WEBHOOK_PAYLOAD = {
+            id: 'evt_0',
+            object: 'event',
+            api_version: '2022-11-15',
+            data: {
+                object: {
+                    id: 'pi_0',
+                    currency: 'usd',
+                    metadata: {
+                        orderCode: order.code,
+                        orderId: parseInt(order.id.replace('T_', ''), 10),
+                        channelToken: E2E_DEFAULT_CHANNEL_TOKEN,
+                    },
+                    amount_received: order.totalWithTax,
+                    status: 'succeeded',
+                },
+            },
+            livemode: false,
+            pending_webhooks: 1,
+            request: {
+                id: 'req_0',
+                idempotency_key: '00000000-0000-0000-0000-000000000000',
+            },
+            type: 'payment_intent.succeeded',
+        };
+
+        const payloadString = JSON.stringify(MOCKED_WEBHOOK_PAYLOAD, null, 2);
+        const stripeWebhooks = new Stripe('test-api-secret', { apiVersion: '2023-08-16' }).webhooks;
+        const header = stripeWebhooks.generateTestHeaderString({
+            payload: payloadString,
+            secret: 'test-signing-secret',
+        });
+
+        const event = stripeWebhooks.constructEvent(payloadString, header, 'test-signing-secret');
+        expect(event.id).to.equal(MOCKED_WEBHOOK_PAYLOAD.id);
+        await setShipping(shopClient);
+        // Due to the `this.orderService.transitionToState(...)` fails with the internal lookup by id,
+        // we need to put the order into `ArrangingPayment` state manually before calling the webhook handler.
+        // const transitionResult = await adminClient.query(TRANSITION_TO_ARRANGING_PAYMENT, { id: order.id });
+        // expect(transitionResult.transitionOrderToState.__typename).toBe('Order')
+
+        const result = await fetch(`http://localhost:${serverPort}/payments/stripe`, {
+            method: 'post',
+            body: payloadString,
+            headers: { 'Content-Type': 'application/json', 'Stripe-Signature': header },
+        });
+
+        // I would expect to the status to be 200, but at the moment either the
+        // `orderService.transitionToState()` or the `orderService.addPaymentToOrder()`
+        // throws an error of 'error.entity-with-id-not-found'
+        expect(result.status).toEqual(200);
+    });
+
     // https://github.com/vendure-ecommerce/vendure/issues/1630
     describe('currencies with no fractional units', () => {
         let japanProductId: string;
@@ -318,6 +498,4 @@ describe('Stripe payments', () => {
             expect(createPaymentIntentPayload.currency).toBe('jpy');
         });
     });
-
-    // TODO: Contribution welcome: test webhook handling and order settlement
 });

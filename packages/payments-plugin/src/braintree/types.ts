@@ -52,7 +52,7 @@ export interface BraintreePluginOptions {
      * By default, the built-in extraction function will return a metadata object that looks like this:
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const metadata = {
      *   "status": "settling",
      *   "currencyIsoCode": "GBP",

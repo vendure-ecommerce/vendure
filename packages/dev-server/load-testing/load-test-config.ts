@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import {
-    addForeignKeyIndices,
     defaultConfig,
     DefaultJobQueuePlugin,
     DefaultLogger,
@@ -59,9 +58,6 @@ export function getLoadTestConfig(
             ...connectionOptions,
             synchronize: true,
         },
-        entityOptions: {
-            metadataModifiers: [addForeignKeyIndices],
-        },
         authOptions: {
             tokenMethod,
             requireVerification: false,
@@ -76,7 +72,7 @@ export function getLoadTestConfig(
                 assetUploadDir: path.join(__dirname, 'static/assets'),
                 route: 'assets',
             }),
-            DefaultSearchPlugin,
+            DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
             DefaultJobQueuePlugin.init({
                 pollInterval: 1000,
             }),

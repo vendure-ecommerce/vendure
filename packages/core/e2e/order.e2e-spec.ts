@@ -35,6 +35,7 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     AddManualPaymentDocument,
     CanceledOrderFragment,
+    CreateFulfillmentDocument,
     ErrorCode,
     FulfillmentFragment,
     GetOrderDocument,
@@ -47,6 +48,7 @@ import {
     RefundFragment,
     SortOrder,
     StockMovementType,
+    TransitFulfillmentDocument,
 } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
@@ -2608,6 +2610,51 @@ describe('Orders resolver', () => {
             });
 
             expect(order!.state).toBe('PaymentSettled');
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2191
+        it('correctly transitions order & fulfillment on partial fulfillment being shipped', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_6',
+                quantity: 3,
+            });
+            await proceedToArrangingPayment(shopClient);
+            orderGuard.assertSuccess(addItemToOrder);
+
+            const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            const { addFulfillmentToOrder } = await adminClient.query(CreateFulfillmentDocument, {
+                input: {
+                    lines: [{ orderLineId: order.lines[0].id, quantity: 2 }],
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'Test2' },
+                            { name: 'trackingCode', value: '222' },
+                        ],
+                    },
+                },
+            });
+            fulfillmentGuard.assertSuccess(addFulfillmentToOrder);
+
+            const { transitionFulfillmentToState } = await adminClient.query(TransitFulfillmentDocument, {
+                id: addFulfillmentToOrder.id,
+                state: 'Shipped',
+            });
+            fulfillmentGuard.assertSuccess(transitionFulfillmentToState);
+
+            expect(transitionFulfillmentToState.id).toBe(addFulfillmentToOrder.id);
+            expect(transitionFulfillmentToState.state).toBe('Shipped');
+
+            const { order: order2 } = await adminClient.query(GetOrderDocument, {
+                id: order.id,
+            });
+            expect(order2?.state).toBe('PartiallyShipped');
         });
     });
 });

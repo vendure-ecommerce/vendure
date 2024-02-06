@@ -20,7 +20,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import * as Codegen from './graphql/generated-e2e-admin-types';
+import { SEARCH_PRODUCTS_ADMIN } from './graphql/admin-definitions';
 import {
     ChannelFragment,
     CurrencyCode,
@@ -28,6 +28,51 @@ import {
     SearchInput,
     SearchResultSortParameter,
     SortOrder,
+    SearchProductsAdminQuery,
+    SearchProductsAdminQueryVariables,
+    SearchFacetValuesQuery,
+    SearchFacetValuesQueryVariables,
+    UpdateProductMutation,
+    UpdateProductMutationVariables,
+    SearchCollectionsQuery,
+    SearchCollectionsQueryVariables,
+    SearchGetPricesQuery,
+    SearchGetPricesQueryVariables,
+    CreateFacetMutation,
+    CreateFacetMutationVariables,
+    UpdateProductVariantsMutation,
+    UpdateProductVariantsMutationVariables,
+    DeleteProductVariantMutation,
+    DeleteProductVariantMutationVariables,
+    DeleteProductMutation,
+    DeleteProductMutationVariables,
+    UpdateCollectionMutation,
+    UpdateCollectionMutationVariables,
+    CreateCollectionMutation,
+    CreateCollectionMutationVariables,
+    UpdateTaxRateMutation,
+    UpdateTaxRateMutationVariables,
+    SearchGetAssetsQuery,
+    SearchGetAssetsQueryVariables,
+    UpdateAssetMutation,
+    UpdateAssetMutationVariables,
+    DeleteAssetMutation,
+    DeleteAssetMutationVariables,
+    ReindexMutation,
+    CreateProductMutation,
+    CreateProductMutationVariables,
+    CreateProductVariantsMutation,
+    CreateProductVariantsMutationVariables,
+    CreateChannelMutation,
+    CreateChannelMutationVariables,
+    AssignProductsToChannelMutation,
+    AssignProductsToChannelMutationVariables,
+    RemoveProductsFromChannelMutation,
+    RemoveProductsFromChannelMutationVariables,
+    AssignProductVariantsToChannelMutation,
+    AssignProductVariantsToChannelMutationVariables,
+    RemoveProductVariantsFromChannelMutation,
+    RemoveProductVariantsFromChannelMutationVariables,
 } from './graphql/generated-e2e-admin-types';
 import {
     LogicalOperator,
@@ -58,7 +103,7 @@ import { awaitRunningJobs } from './utils/await-running-jobs';
 
 registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
-interface SearchProductShopQueryVariables extends SearchProductsShopQueryVariables {
+interface SearchProductsShopQueryVariablesExt extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {
         // This input field is dynamically added only when the `indexStockStatus` init option
         // is set to `true`, and therefore not included in the generated type. Therefore
@@ -81,10 +126,7 @@ describe('Default search plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-
-        // A precaution against a race condition in which the index
-        // rebuild is not completed in time for the first test.
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -92,95 +134,87 @@ describe('Default search plugin', () => {
         await server.destroy();
     });
 
-    function doAdminSearchQuery(input: SearchInput) {
-        return adminClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(SEARCH_PRODUCTS, {
-            input,
-        });
+    function testProductsShop(input: SearchProductsShopQueryVariablesExt['input']) {
+        return shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariablesExt>(
+            SEARCH_PRODUCTS_SHOP,
+            { input },
+        );
     }
 
-    async function testGroupByProduct(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                },
-            },
+    function testProductsAdmin(input: SearchInput) {
+        return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
+            SEARCH_PRODUCTS_ADMIN,
+            { input },
         );
+    }
+
+    type TestProducts = (input: SearchInput) => Promise<SearchProductsShopQuery | SearchProductsAdminQuery>;
+
+    async function testGroupByProduct(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+        });
+
         expect(result.search.totalItems).toBe(20);
     }
 
-    async function testNoGrouping(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: false,
-                },
-            },
-        );
+    async function testNoGrouping(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: false,
+        });
+
         expect(result.search.totalItems).toBe(34);
     }
 
     async function testSortingWithGrouping(
-        client: SimpleGraphQLClient,
+        testProducts: TestProducts,
         sortBy: keyof SearchResultSortParameter,
     ) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    sort: {
-                        [sortBy]: SortOrder.ASC,
-                    },
-                    take: 3,
-                },
+        const result = await testProducts({
+            groupByProduct: true,
+            sort: {
+                [sortBy]: SortOrder.ASC,
             },
-        );
+            take: 3,
+        });
+
         const expected =
             sortBy === 'name'
                 ? ['Bonsai Tree', 'Boxing Gloves', 'Camera Lens']
                 : ['Skipping Rope', 'Tripod', 'Spiky Cactus'];
+
         expect(result.search.items.map(i => i.productName)).toEqual(expected);
     }
 
     async function testSortingNoGrouping(
-        client: SimpleGraphQLClient,
+        testProducts: TestProducts,
         sortBy: keyof SearchResultSortParameter,
     ) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: false,
-                    sort: {
-                        [sortBy]: SortOrder.DESC,
-                    },
-                    take: 3,
-                },
+        const result = await testProducts({
+            groupByProduct: false,
+            sort: {
+                [sortBy]: SortOrder.DESC,
             },
-        );
+            take: 3,
+        });
+
         const expected =
             sortBy === 'name'
                 ? ['USB Cable', 'Tripod', 'Tent']
                 : ['Road Bike', 'Laptop 15 inch 16GB', 'Laptop 13 inch 16GB'];
+
         expect(result.search.items.map(i => i.productVariantName)).toEqual(expected);
     }
 
-    async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    term: 'camera',
-                    groupByProduct: true,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
-                },
+    async function testMatchSearchTerm(testProducts: TestProducts) {
+        const result = await testProducts({
+            term: 'camera',
+            groupByProduct: true,
+            sort: {
+                name: SortOrder.ASC,
             },
-        );
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Camera Lens',
             'Instant Camera',
@@ -188,33 +222,25 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchPartialSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    term: 'lap',
-                    groupByProduct: true,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
-                },
+    async function testMatchPartialSearchTerm(testProducts: TestProducts) {
+        const result = await testProducts({
+            term: 'lap',
+            groupByProduct: true,
+            sort: {
+                name: SortOrder.ASC,
             },
-        );
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual(['Laptop']);
     }
 
-    async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_1', 'T_2'],
-                    facetValueOperator: LogicalOperator.AND,
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetIdsAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_1', 'T_2'],
+            facetValueOperator: LogicalOperator.AND,
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -225,17 +251,13 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_1', 'T_5'],
-                    facetValueOperator: LogicalOperator.OR,
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetIdsOr(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_1', 'T_5'],
+            facetValueOperator: LogicalOperator.OR,
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -253,16 +275,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+            facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -273,16 +291,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    facetValueFilters: [{ or: ['T_1', 'T_5'] }],
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersOr(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+            facetValueFilters: [{ or: ['T_1', 'T_5'] }],
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -300,16 +314,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    groupByProduct: true,
-                    facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersOrWithAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            groupByProduct: true,
+            facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -324,18 +334,14 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_2', 'T_3'],
-                    facetValueOperator: LogicalOperator.OR,
-                    facetValueFilters: [{ and: 'T_1' }],
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersWithFacetIdsOr(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_2', 'T_3'],
+            facetValueOperator: LogicalOperator.OR,
+            facetValueFilters: [{ and: 'T_1' }],
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Laptop',
             'Curvy Monitor',
@@ -350,18 +356,14 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    facetValueIds: ['T_1'],
-                    facetValueFilters: [{ and: 'T_3' }],
-                    facetValueOperator: LogicalOperator.AND,
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchFacetValueFiltersWithFacetIdsAnd(testProducts: TestProducts) {
+        const result = await testProducts({
+            facetValueIds: ['T_1'],
+            facetValueFilters: [{ and: 'T_3' }],
+            facetValueOperator: LogicalOperator.AND,
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Instant Camera',
             'Camera Lens',
@@ -370,16 +372,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchCollectionId(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    collectionId: 'T_2',
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchCollectionId(testProducts: TestProducts) {
+        const result = await testProducts({
+            collectionId: 'T_2',
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Spiky Cactus',
             'Orchid',
@@ -387,16 +385,12 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-            SEARCH_PRODUCTS_SHOP,
-            {
-                input: {
-                    collectionSlug: 'plants',
-                    groupByProduct: true,
-                },
-            },
-        );
+    async function testMatchCollectionSlug(testProducts: TestProducts) {
+        const result = await testProducts({
+            collectionSlug: 'plants',
+            groupByProduct: true,
+        });
+
         expect(result.search.items.map(i => i.productName)).toEqual([
             'Spiky Cactus',
             'Orchid',
@@ -405,15 +399,16 @@ describe('Default search plugin', () => {
     }
 
     async function testSinglePrices(client: SimpleGraphQLClient) {
-        const result = await client.query<
-            Codegen.SearchGetPricesQuery,
-            Codegen.SearchGetPricesQueryVariables
-        >(SEARCH_GET_PRICES, {
-            input: {
-                groupByProduct: false,
-                take: 3,
-            } as SearchInput,
-        });
+        const result = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+            SEARCH_GET_PRICES,
+            {
+                input: {
+                    groupByProduct: false,
+                    take: 3,
+                },
+            },
+        );
+
         expect(result.search.items).toEqual([
             {
                 price: { value: 129900 },
@@ -431,15 +426,16 @@ describe('Default search plugin', () => {
     }
 
     async function testPriceRanges(client: SimpleGraphQLClient) {
-        const result = await client.query<
-            Codegen.SearchGetPricesQuery,
-            Codegen.SearchGetPricesQueryVariables
-        >(SEARCH_GET_PRICES, {
-            input: {
-                groupByProduct: true,
-                take: 3,
-            } as SearchInput,
-        });
+        const result = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+            SEARCH_GET_PRICES,
+            {
+                input: {
+                    groupByProduct: true,
+                    take: 3,
+                },
+            },
+        );
+
         expect(result.search.items).toEqual([
             {
                 price: { min: 129900, max: 229900 },
@@ -457,47 +453,48 @@ describe('Default search plugin', () => {
     }
 
     describe('shop api', () => {
-        it('group by product', () => testGroupByProduct(shopClient));
+        it('group by product', () => testGroupByProduct(testProductsShop));
 
-        it('no grouping', () => testNoGrouping(shopClient));
+        it('no grouping', () => testNoGrouping(testProductsShop));
 
-        it('matches search term', () => testMatchSearchTerm(shopClient));
+        it('matches search term', () => testMatchSearchTerm(testProductsShop));
 
-        it('matches partial search term', () => testMatchPartialSearchTerm(shopClient));
+        it('matches partial search term', () => testMatchPartialSearchTerm(testProductsShop));
 
-        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(shopClient));
+        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(testProductsShop));
 
-        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(shopClient));
+        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(testProductsShop));
 
-        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(testProductsShop));
 
-        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(testProductsShop));
 
-        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+        it('matches by FacetValueFilters OR and AND', () =>
+            testMatchFacetValueFiltersOrWithAnd(testProductsShop));
 
         it('matches by FacetValueFilters with facetId OR operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsOr(testProductsShop));
 
         it('matches by FacetValueFilters with facetId AND operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsAnd(testProductsShop));
 
-        it('matches by collectionId', () => testMatchCollectionId(shopClient));
+        it('matches by collectionId', () => testMatchCollectionId(testProductsShop));
 
-        it('matches by collectionSlug', () => testMatchCollectionSlug(shopClient));
+        it('matches by collectionSlug', () => testMatchCollectionSlug(testProductsShop));
 
         it('single prices', () => testSinglePrices(shopClient));
 
         it('price ranges', () => testPriceRanges(shopClient));
 
         it('returns correct facetValues when not grouped by product', async () => {
-            const result = await shopClient.query<
-                Codegen.SearchFacetValuesQuery,
-                Codegen.SearchFacetValuesQueryVariables
-            >(SEARCH_GET_FACET_VALUES, {
-                input: {
-                    groupByProduct: false,
+            const result = await shopClient.query<SearchFacetValuesQuery, SearchFacetValuesQueryVariables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: false,
+                    },
                 },
-            });
+            );
             expect(result.search.facetValues).toEqual([
                 { count: 21, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 17, facetValue: { id: 'T_2', name: 'computers' } },
@@ -509,14 +506,14 @@ describe('Default search plugin', () => {
         });
 
         it('returns correct facetValues when grouped by product', async () => {
-            const result = await shopClient.query<
-                Codegen.SearchFacetValuesQuery,
-                Codegen.SearchFacetValuesQueryVariables
-            >(SEARCH_GET_FACET_VALUES, {
-                input: {
-                    groupByProduct: true,
+            const result = await shopClient.query<SearchFacetValuesQuery, SearchFacetValuesQueryVariables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
                 },
-            });
+            );
             expect(result.search.facetValues).toEqual([
                 { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
@@ -529,15 +526,15 @@ describe('Default search plugin', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1236
         it('returns correct facetValues when not grouped by product, with search term', async () => {
-            const result = await shopClient.query<
-                Codegen.SearchFacetValuesQuery,
-                Codegen.SearchFacetValuesQueryVariables
-            >(SEARCH_GET_FACET_VALUES, {
-                input: {
-                    groupByProduct: false,
-                    term: 'laptop',
+            const result = await shopClient.query<SearchFacetValuesQuery, SearchFacetValuesQueryVariables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: false,
+                        term: 'laptop',
+                    },
                 },
-            });
+            );
             expect(result.search.facetValues).toEqual([
                 { count: 4, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 4, facetValue: { id: 'T_2', name: 'computers' } },
@@ -546,8 +543,8 @@ describe('Default search plugin', () => {
 
         it('omits facetValues of private facets', async () => {
             const { createFacet } = await adminClient.query<
-                Codegen.CreateFacetMutation,
-                Codegen.CreateFacetMutationVariables
+                CreateFacetMutation,
+                CreateFacetMutationVariables
             >(CREATE_FACET, {
                 input: {
                     code: 'profit-margin',
@@ -561,27 +558,24 @@ describe('Default search plugin', () => {
                     ],
                 },
             });
-            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
-                UPDATE_PRODUCT,
-                {
-                    input: {
-                        id: 'T_2',
-                        // T_1 & T_2 are the existing facetValues (electronics & photo)
-                        facetValueIds: ['T_1', 'T_2', createFacet.values[0].id],
-                    },
+            await adminClient.query<UpdateProductMutation, UpdateProductMutationVariables>(UPDATE_PRODUCT, {
+                input: {
+                    id: 'T_2',
+                    // T_1 & T_2 are the existing facetValues (electronics & photo)
+                    facetValueIds: ['T_1', 'T_2', createFacet.values[0].id],
                 },
-            );
+            });
 
             await awaitRunningJobs(adminClient);
 
-            const result = await shopClient.query<
-                Codegen.SearchFacetValuesQuery,
-                Codegen.SearchFacetValuesQueryVariables
-            >(SEARCH_GET_FACET_VALUES, {
-                input: {
-                    groupByProduct: true,
+            const result = await shopClient.query<SearchFacetValuesQuery, SearchFacetValuesQueryVariables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
                 },
-            });
+            );
             expect(result.search.facetValues).toEqual([
                 { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
@@ -593,216 +587,217 @@ describe('Default search plugin', () => {
         });
 
         it('returns correct collections when not grouped by product', async () => {
-            const result = await shopClient.query<
-                Codegen.SearchCollectionsQuery,
-                Codegen.SearchCollectionsQueryVariables
-            >(SEARCH_GET_COLLECTIONS, {
-                input: {
-                    groupByProduct: false,
+            const result = await shopClient.query<SearchCollectionsQuery, SearchCollectionsQueryVariables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: false,
+                    },
                 },
-            });
+            );
             expect(result.search.collections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
         it('returns correct collections when grouped by product', async () => {
-            const result = await shopClient.query<
-                Codegen.SearchCollectionsQuery,
-                Codegen.SearchCollectionsQueryVariables
-            >(SEARCH_GET_COLLECTIONS, {
-                input: {
-                    groupByProduct: true,
+            const result = await shopClient.query<SearchCollectionsQuery, SearchCollectionsQueryVariables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
                 },
-            });
+            );
             expect(result.search.collections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        take: 1,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    take: 1,
                 },
-            );
+            });
             expect(pick(result.search.items[0], ['productId', 'productVariantId'])).toEqual({
                 productId: 'T_1',
                 productVariantId: 'T_1',
             });
         });
 
-        it('sort name with grouping', () => testSortingWithGrouping(shopClient, 'name'));
+        it('sort name with grouping', () => testSortingWithGrouping(testProductsShop, 'name'));
 
-        it('sort price with grouping', () => testSortingWithGrouping(shopClient, 'price'));
+        it('sort price with grouping', () => testSortingWithGrouping(testProductsShop, 'price'));
 
-        it('sort name without grouping', () => testSortingNoGrouping(shopClient, 'name'));
+        it('sort name without grouping', () => testSortingNoGrouping(testProductsShop, 'name'));
 
-        it('sort price without grouping', () => testSortingNoGrouping(shopClient, 'price'));
+        it('sort price without grouping', () => testSortingNoGrouping(testProductsShop, 'price'));
 
         it('omits results for disabled ProductVariants', async () => {
-            await adminClient.query<
-                Codegen.UpdateProductVariantsMutation,
-                Codegen.UpdateProductVariantsMutationVariables
-            >(UPDATE_PRODUCT_VARIANTS, {
-                input: [{ id: 'T_3', enabled: false }],
-            });
-            await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
+            await adminClient.query<UpdateProductVariantsMutation, UpdateProductVariantsMutationVariables>(
+                UPDATE_PRODUCT_VARIANTS,
                 {
-                    input: {
-                        groupByProduct: false,
-                        take: 3,
-                    },
+                    input: [{ id: 'T_3', enabled: false }],
                 },
             );
+            await awaitRunningJobs(adminClient);
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    take: 3,
+                },
+            });
             expect(result.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        term: 'cactus',
-                        take: 1,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    term: 'cactus',
+                    take: 1,
                 },
-            );
+            });
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
         });
 
         it('inStock is false and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        inStock: false,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    inStock: false,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(2);
         });
 
         it('inStock is false and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: true,
-                        inStock: false,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: true,
+                    inStock: false,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(1);
         });
 
         it('inStock is true and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        inStock: true,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    inStock: true,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(31);
         });
 
         it('inStock is true and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: true,
-                        inStock: true,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: true,
+                    inStock: true,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(19);
         });
 
         it('inStock is undefined and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: false,
-                        inStock: undefined,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: false,
+                    inStock: undefined,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(33);
         });
 
         it('inStock is undefined and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                SEARCH_PRODUCTS_SHOP,
-                {
-                    input: {
-                        groupByProduct: true,
-                        inStock: undefined,
-                    },
+            const result = await shopClient.query<
+                SearchProductsShopQuery,
+                SearchProductsShopQueryVariablesExt
+            >(SEARCH_PRODUCTS_SHOP, {
+                input: {
+                    groupByProduct: true,
+                    inStock: undefined,
                 },
-            );
+            });
             expect(result.search.totalItems).toBe(20);
         });
     });
 
     describe('admin api', () => {
-        it('group by product', () => testGroupByProduct(adminClient));
+        it('group by product', () => testGroupByProduct(testProductsAdmin));
 
-        it('no grouping', () => testNoGrouping(adminClient));
+        it('no grouping', () => testNoGrouping(testProductsAdmin));
 
-        it('matches search term', () => testMatchSearchTerm(adminClient));
+        it('matches search term', () => testMatchSearchTerm(testProductsAdmin));
 
-        it('matches partial search term', () => testMatchPartialSearchTerm(adminClient));
+        it('matches partial search term', () => testMatchPartialSearchTerm(testProductsAdmin));
 
-        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(adminClient));
+        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(testProductsAdmin));
 
-        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(adminClient));
+        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(testProductsAdmin));
 
-        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(testProductsAdmin));
 
-        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(testProductsAdmin));
 
-        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+        it('matches by FacetValueFilters OR and AND', () =>
+            testMatchFacetValueFiltersOrWithAnd(testProductsAdmin));
 
         it('matches by FacetValueFilters with facetId OR operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsOr(testProductsAdmin));
 
         it('matches by FacetValueFilters with facetId AND operator', () =>
-            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
+            testMatchFacetValueFiltersWithFacetIdsAnd(testProductsAdmin));
 
-        it('matches by collectionId', () => testMatchCollectionId(adminClient));
+        it('matches by collectionId', () => testMatchCollectionId(testProductsAdmin));
 
-        it('matches by collectionSlug', () => testMatchCollectionSlug(adminClient));
+        it('matches by collectionSlug', () => testMatchCollectionSlug(testProductsAdmin));
 
         it('single prices', () => testSinglePrices(adminClient));
 
         it('price ranges', () => testPriceRanges(adminClient));
 
-        it('sort name with grouping', () => testSortingWithGrouping(adminClient, 'name'));
+        it('sort name with grouping', () => testSortingWithGrouping(testProductsAdmin, 'name'));
 
-        it('sort price with grouping', () => testSortingWithGrouping(adminClient, 'price'));
+        it('sort price with grouping', () => testSortingWithGrouping(testProductsAdmin, 'price'));
 
-        it('sort name without grouping', () => testSortingNoGrouping(adminClient, 'name'));
+        it('sort name without grouping', () => testSortingNoGrouping(testProductsAdmin, 'name'));
 
-        it('sort price without grouping', () => testSortingNoGrouping(adminClient, 'price'));
+        it('sort price without grouping', () => testSortingNoGrouping(testProductsAdmin, 'price'));
 
         describe('updating the index', () => {
             it('updates index when ProductVariants are changed', async () => {
                 await awaitRunningJobs(adminClient);
-                const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
+                const { search } = await testProductsAdmin({ term: 'drive', groupByProduct: false });
                 expect(search.items.map(i => i.sku)).toEqual([
                     'IHD455T1',
                     'IHD455T2',
@@ -812,8 +807,8 @@ describe('Default search plugin', () => {
                 ]);
 
                 await adminClient.query<
-                    Codegen.UpdateProductVariantsMutation,
-                    Codegen.UpdateProductVariantsMutationVariables
+                    UpdateProductVariantsMutation,
+                    UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: search.items.map(i => ({
                         id: i.productVariantId,
@@ -822,7 +817,7 @@ describe('Default search plugin', () => {
                 });
 
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const { search: search2 } = await testProductsAdmin({
                     term: 'drive',
                     groupByProduct: false,
                 });
@@ -838,20 +833,20 @@ describe('Default search plugin', () => {
 
             it('updates index when ProductVariants are deleted', async () => {
                 await awaitRunningJobs(adminClient);
-                const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
+                const { search } = await testProductsAdmin({ term: 'drive', groupByProduct: false });
 
                 const variantToDelete = search.items[0];
                 expect(variantToDelete.sku).toBe('IHD455T1_updated');
 
-                await adminClient.query<
-                    Codegen.DeleteProductVariantMutation,
-                    Codegen.DeleteProductVariantMutationVariables
-                >(DELETE_PRODUCT_VARIANT, {
-                    id: variantToDelete.productVariantId,
-                });
+                await adminClient.query<DeleteProductVariantMutation, DeleteProductVariantMutationVariables>(
+                    DELETE_PRODUCT_VARIANT,
+                    {
+                        id: variantToDelete.productVariantId,
+                    },
+                );
 
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const { search: search2 } = await testProductsAdmin({
                     term: 'drive',
                     groupByProduct: false,
                 });
@@ -865,17 +860,17 @@ describe('Default search plugin', () => {
             });
 
             it('updates index when a Product is changed', async () => {
-                await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
-                >(UPDATE_PRODUCT, {
-                    input: {
-                        id: 'T_1',
-                        facetValueIds: [],
+                await adminClient.query<UpdateProductMutation, UpdateProductMutationVariables>(
+                    UPDATE_PRODUCT,
+                    {
+                        input: {
+                            id: 'T_1',
+                            facetValueIds: [],
+                        },
                     },
-                });
+                );
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
+                const result = await testProductsAdmin({ facetValueIds: ['T_2'], groupByProduct: true });
                 expect(result.search.items.map(i => i.productName)).toEqual([
                     'Curvy Monitor',
                     'Gaming PC',
@@ -886,16 +881,16 @@ describe('Default search plugin', () => {
             });
 
             it('updates index when a Product is deleted', async () => {
-                const { search } = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
+                const { search } = await testProductsAdmin({ facetValueIds: ['T_2'], groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_2', 'T_3', 'T_4', 'T_5', 'T_6']);
-                await adminClient.query<
-                    Codegen.DeleteProductMutation,
-                    Codegen.DeleteProductMutationVariables
-                >(DELETE_PRODUCT, {
-                    id: 'T_5',
-                });
+                await adminClient.query<DeleteProductMutation, DeleteProductMutationVariables>(
+                    DELETE_PRODUCT,
+                    {
+                        id: 'T_5',
+                    },
+                );
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const { search: search2 } = await testProductsAdmin({
                     facetValueIds: ['T_2'],
                     groupByProduct: true,
                 });
@@ -903,33 +898,33 @@ describe('Default search plugin', () => {
             });
 
             it('updates index when a Collection is changed', async () => {
-                await adminClient.query<
-                    Codegen.UpdateCollectionMutation,
-                    Codegen.UpdateCollectionMutationVariables
-                >(UPDATE_COLLECTION, {
-                    input: {
-                        id: 'T_2',
-                        filters: [
-                            {
-                                code: facetValueCollectionFilter.code,
-                                arguments: [
-                                    {
-                                        name: 'facetValueIds',
-                                        value: '["T_4"]',
-                                    },
-                                    {
-                                        name: 'containsAny',
-                                        value: 'false',
-                                    },
-                                ],
-                            },
-                        ],
+                await adminClient.query<UpdateCollectionMutation, UpdateCollectionMutationVariables>(
+                    UPDATE_COLLECTION,
+                    {
+                        input: {
+                            id: 'T_2',
+                            filters: [
+                                {
+                                    code: facetValueCollectionFilter.code,
+                                    arguments: [
+                                        {
+                                            name: 'facetValueIds',
+                                            value: '["T_4"]',
+                                        },
+                                        {
+                                            name: 'containsAny',
+                                            value: 'false',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                });
+                );
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
-                const result1 = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
+                const result1 = await testProductsAdmin({ collectionId: 'T_2', groupByProduct: true });
 
                 expect(result1.search.items.map(i => i.productName)).toEqual([
                     'Road Bike',
@@ -941,7 +936,7 @@ describe('Default search plugin', () => {
                     'Running Shoe',
                 ]);
 
-                const result2 = await doAdminSearchQuery({ collectionSlug: 'plants', groupByProduct: true });
+                const result2 = await testProductsAdmin({ collectionSlug: 'plants', groupByProduct: true });
 
                 expect(result2.search.items.map(i => i.productName)).toEqual([
                     'Road Bike',
@@ -956,8 +951,8 @@ describe('Default search plugin', () => {
 
             it('updates index when a Collection created', async () => {
                 const { createCollection } = await adminClient.query<
-                    Codegen.CreateCollectionMutation,
-                    Codegen.CreateCollectionMutationVariables
+                    CreateCollectionMutation,
+                    CreateCollectionMutationVariables
                 >(CREATE_COLLECTION, {
                     input: {
                         translations: [
@@ -988,7 +983,7 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({
+                const result = await testProductsAdmin({
                     collectionId: createCollection.id,
                     groupByProduct: true,
                 });
@@ -1001,27 +996,27 @@ describe('Default search plugin', () => {
             });
 
             it('updates index when a taxRate is changed', async () => {
-                await adminClient.query<
-                    Codegen.UpdateTaxRateMutation,
-                    Codegen.UpdateTaxRateMutationVariables
-                >(UPDATE_TAX_RATE, {
-                    input: {
-                        // Default Channel's defaultTaxZone is Europe (id 2) and the id of the standard TaxRate
-                        // to Europe is 2.
-                        id: 'T_2',
-                        value: 50,
+                await adminClient.query<UpdateTaxRateMutation, UpdateTaxRateMutationVariables>(
+                    UPDATE_TAX_RATE,
+                    {
+                        input: {
+                            // Default Channel's defaultTaxZone is Europe (id 2) and the id of the standard TaxRate
+                            // to Europe is 2.
+                            id: 'T_2',
+                            value: 50,
+                        },
                     },
-                });
+                );
                 await awaitRunningJobs(adminClient);
-                const result = await adminClient.query<
-                    Codegen.SearchGetPricesQuery,
-                    Codegen.SearchGetPricesQueryVariables
-                >(SEARCH_GET_PRICES, {
-                    input: {
-                        groupByProduct: true,
-                        term: 'laptop',
-                    } as SearchInput,
-                });
+                const result = await adminClient.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+                    SEARCH_GET_PRICES,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            term: 'laptop',
+                        } as SearchInput,
+                    },
+                );
                 expect(result.search.items).toEqual([
                     {
                         price: { min: 129900, max: 229900 },
@@ -1032,15 +1027,15 @@ describe('Default search plugin', () => {
 
             describe('asset changes', () => {
                 function searchForLaptop() {
-                    return adminClient.query<
-                        Codegen.SearchGetAssetsQuery,
-                        Codegen.SearchGetAssetsQueryVariables
-                    >(SEARCH_GET_ASSETS, {
-                        input: {
-                            term: 'laptop',
-                            take: 1,
+                    return adminClient.query<SearchGetAssetsQuery, SearchGetAssetsQueryVariables>(
+                        SEARCH_GET_ASSETS,
+                        {
+                            input: {
+                                term: 'laptop',
+                                take: 1,
+                            },
                         },
-                    });
+                    );
                 }
 
                 it('updates index when asset focalPoint is changed', async () => {
@@ -1049,10 +1044,7 @@ describe('Default search plugin', () => {
                     expect(search1.items[0].productAsset!.id).toBe('T_1');
                     expect(search1.items[0].productAsset!.focalPoint).toBeNull();
 
-                    await adminClient.query<
-                        Codegen.UpdateAssetMutation,
-                        Codegen.UpdateAssetMutationVariables
-                    >(UPDATE_ASSET, {
+                    await adminClient.query<UpdateAssetMutation, UpdateAssetMutationVariables>(UPDATE_ASSET, {
                         input: {
                             id: 'T_1',
                             focalPoint: {
@@ -1076,10 +1068,7 @@ describe('Default search plugin', () => {
                     const assetId = search1.items[0].productAsset?.id;
                     expect(assetId).toBeTruthy();
 
-                    await adminClient.query<
-                        Codegen.DeleteAssetMutation,
-                        Codegen.DeleteAssetMutationVariables
-                    >(DELETE_ASSET, {
+                    await adminClient.query<DeleteAssetMutation, DeleteAssetMutationVariables>(DELETE_ASSET, {
                         input: {
                             assetId: assetId!,
                             force: true,
@@ -1095,21 +1084,21 @@ describe('Default search plugin', () => {
             });
 
             it('does not include deleted ProductVariants in index', async () => {
-                const { search: s1 } = await doAdminSearchQuery({
+                const { search: s1 } = await testProductsAdmin({
                     term: 'hard drive',
                     groupByProduct: false,
                 });
 
                 const { deleteProductVariant } = await adminClient.query<
-                    Codegen.DeleteProductVariantMutation,
-                    Codegen.DeleteProductVariantMutationVariables
+                    DeleteProductVariantMutation,
+                    DeleteProductVariantMutationVariables
                 >(DELETE_PRODUCT_VARIANT, { id: s1.items[0].productVariantId });
 
                 await awaitRunningJobs(adminClient);
 
                 const { search } = await adminClient.query<
-                    Codegen.SearchGetPricesQuery,
-                    Codegen.SearchGetPricesQueryVariables
+                    SearchGetPricesQuery,
+                    SearchGetPricesQueryVariables
                 >(SEARCH_GET_PRICES, { input: { term: 'hard drive', groupByProduct: true } });
                 expect(search.items[0].price).toEqual({
                     min: 7896,
@@ -1118,7 +1107,7 @@ describe('Default search plugin', () => {
             });
 
             it('returns enabled field when not grouped', async () => {
-                const result = await doAdminSearchQuery({ groupByProduct: false, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: false, take: 3 });
                 expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([
                     { productVariantId: 'T_1', enabled: true },
                     { productVariantId: 'T_2', enabled: true },
@@ -1128,8 +1117,8 @@ describe('Default search plugin', () => {
 
             it('when grouped, enabled is true if at least one variant is enabled', async () => {
                 await adminClient.query<
-                    Codegen.UpdateProductVariantsMutation,
-                    Codegen.UpdateProductVariantsMutationVariables
+                    UpdateProductVariantsMutation,
+                    UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         { id: 'T_1', enabled: false },
@@ -1137,7 +1126,7 @@ describe('Default search plugin', () => {
                     ],
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: true },
                     { productId: 'T_2', enabled: true },
@@ -1147,13 +1136,13 @@ describe('Default search plugin', () => {
 
             it('when grouped, enabled is false if all variants are disabled', async () => {
                 await adminClient.query<
-                    Codegen.UpdateProductVariantsMutation,
-                    Codegen.UpdateProductVariantsMutationVariables
+                    UpdateProductVariantsMutation,
+                    UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [{ id: 'T_4', enabled: false }],
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: false },
                     { productId: 'T_2', enabled: true },
@@ -1162,17 +1151,17 @@ describe('Default search plugin', () => {
             });
 
             it('when grouped, enabled is false if product is disabled', async () => {
-                await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
-                >(UPDATE_PRODUCT, {
-                    input: {
-                        id: 'T_3',
-                        enabled: false,
+                await adminClient.query<UpdateProductMutation, UpdateProductMutationVariables>(
+                    UPDATE_PRODUCT,
+                    {
+                        input: {
+                            id: 'T_3',
+                            enabled: false,
+                        },
                     },
-                });
+                );
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: false },
                     { productId: 'T_2', enabled: true },
@@ -1182,10 +1171,10 @@ describe('Default search plugin', () => {
 
             // https://github.com/vendure-ecommerce/vendure/issues/295
             it('enabled status survives reindex', async () => {
-                await adminClient.query<Codegen.ReindexMutation>(REINDEX);
+                await adminClient.query<ReindexMutation>(REINDEX);
 
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await testProductsAdmin({ groupByProduct: true, take: 3 });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: false },
                     { productId: 'T_2', enabled: true },
@@ -1195,16 +1184,16 @@ describe('Default search plugin', () => {
 
             // https://github.com/vendure-ecommerce/vendure/issues/1482
             it('price range omits disabled variant', async () => {
-                const result1 = await shopClient.query<
-                    Codegen.SearchGetPricesQuery,
-                    Codegen.SearchGetPricesQueryVariables
-                >(SEARCH_GET_PRICES, {
-                    input: {
-                        groupByProduct: true,
-                        term: 'monitor',
-                        take: 3,
-                    } as SearchInput,
-                });
+                const result1 = await shopClient.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+                    SEARCH_GET_PRICES,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            term: 'monitor',
+                            take: 3,
+                        } as SearchInput,
+                    },
+                );
                 expect(result1.search.items).toEqual([
                     {
                         price: { min: 14374, max: 16994 },
@@ -1212,23 +1201,23 @@ describe('Default search plugin', () => {
                     },
                 ]);
                 await adminClient.query<
-                    Codegen.UpdateProductVariantsMutation,
-                    Codegen.UpdateProductVariantsMutationVariables
+                    UpdateProductVariantsMutation,
+                    UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [{ id: 'T_5', enabled: false }],
                 });
                 await awaitRunningJobs(adminClient);
 
-                const result2 = await shopClient.query<
-                    Codegen.SearchGetPricesQuery,
-                    Codegen.SearchGetPricesQueryVariables
-                >(SEARCH_GET_PRICES, {
-                    input: {
-                        groupByProduct: true,
-                        term: 'monitor',
-                        take: 3,
-                    } as SearchInput,
-                });
+                const result2 = await shopClient.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+                    SEARCH_GET_PRICES,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            term: 'monitor',
+                            take: 3,
+                        } as SearchInput,
+                    },
+                );
                 expect(result2.search.items).toEqual([
                     {
                         price: { min: 16994, max: 16994 },
@@ -1247,8 +1236,8 @@ describe('Default search plugin', () => {
                     .join(' ');
 
                 const { createProduct } = await adminClient.query<
-                    Codegen.CreateProductMutation,
-                    Codegen.CreateProductMutationVariables
+                    CreateProductMutation,
+                    CreateProductMutationVariables
                 >(CREATE_PRODUCT, {
                     input: {
                         translations: [
@@ -1262,8 +1251,8 @@ describe('Default search plugin', () => {
                     },
                 });
                 await adminClient.query<
-                    Codegen.CreateProductVariantsMutation,
-                    Codegen.CreateProductVariantsMutationVariables
+                    CreateProductVariantsMutation,
+                    CreateProductVariantsMutationVariables
                 >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
@@ -1277,16 +1266,16 @@ describe('Default search plugin', () => {
                     ],
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ term: 'aabbccdd' });
+                const result = await testProductsAdmin({ term: 'aabbccdd' });
                 expect(result.search.items.map(i => i.productName)).toEqual([
                     'Very long description aabbccdd',
                 ]);
-                await adminClient.query<
-                    Codegen.DeleteProductMutation,
-                    Codegen.DeleteProductMutationVariables
-                >(DELETE_PRODUCT, {
-                    id: createProduct.id,
-                });
+                await adminClient.query<DeleteProductMutation, DeleteProductMutationVariables>(
+                    DELETE_PRODUCT,
+                    {
+                        id: createProduct.id,
+                    },
+                );
             });
         });
 
@@ -1296,8 +1285,8 @@ describe('Default search plugin', () => {
 
             it('creates synthetic index item for Product with no variants', async () => {
                 const { createProduct } = await adminClient.query<
-                    Codegen.CreateProductMutation,
-                    Codegen.CreateProductMutationVariables
+                    CreateProductMutation,
+                    CreateProductMutationVariables
                 >(CREATE_PRODUCT, {
                     input: {
                         facetValueIds: ['T_1'],
@@ -1313,7 +1302,7 @@ describe('Default search plugin', () => {
                 });
 
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, term: 'strawberry' });
+                const result = await testProductsAdmin({ groupByProduct: true, term: 'strawberry' });
                 expect(
                     result.search.items.map(
                         pick([
@@ -1340,8 +1329,8 @@ describe('Default search plugin', () => {
 
             it('removes synthetic index item once a variant is created', async () => {
                 const { createProductVariants } = await adminClient.query<
-                    Codegen.CreateProductVariantsMutation,
-                    Codegen.CreateProductVariantsMutationVariables
+                    CreateProductVariantsMutation,
+                    CreateProductVariantsMutationVariables
                 >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
@@ -1356,7 +1345,7 @@ describe('Default search plugin', () => {
                 });
                 await awaitRunningJobs(adminClient);
 
-                const result = await doAdminSearchQuery({ groupByProduct: false, term: 'strawberry' });
+                const result = await testProductsAdmin({ groupByProduct: false, term: 'strawberry' });
                 expect(result.search.items.map(pick(['productVariantName']))).toEqual([
                     { productVariantName: 'Strawberry Cheesecake Pie' },
                 ]);
@@ -1369,8 +1358,8 @@ describe('Default search plugin', () => {
 
             beforeAll(async () => {
                 const { createChannel } = await adminClient.query<
-                    Codegen.CreateChannelMutation,
-                    Codegen.CreateChannelMutationVariables
+                    CreateChannelMutation,
+                    CreateChannelMutationVariables
                 >(CREATE_CHANNEL, {
                     input: {
                         code: 'second-channel',
@@ -1385,26 +1374,26 @@ describe('Default search plugin', () => {
                 secondChannel = createChannel as ChannelFragment;
             });
 
-            it('adding product to channel', async () => {
+            it('assign product to channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 await adminClient.query<
-                    Codegen.AssignProductsToChannelMutation,
-                    Codegen.AssignProductsToChannelMutationVariables
+                    AssignProductsToChannelMutation,
+                    AssignProductsToChannelMutationVariables
                 >(ASSIGN_PRODUCT_TO_CHANNEL, {
                     input: { channelId: secondChannel.id, productIds: ['T_1', 'T_2'] },
                 });
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search } = await testProductsAdmin({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1', 'T_2']);
             }, 10000);
 
             it('removing product from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 const { removeProductsFromChannel } = await adminClient.query<
-                    Codegen.RemoveProductsFromChannelMutation,
-                    Codegen.RemoveProductsFromChannelMutationVariables
+                    RemoveProductsFromChannelMutation,
+                    RemoveProductsFromChannelMutationVariables
                 >(REMOVE_PRODUCT_FROM_CHANNEL, {
                     input: {
                         productIds: ['T_2'],
@@ -1414,15 +1403,15 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search } = await testProductsAdmin({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
             }, 10000);
 
-            it('adding product variant to channel', async () => {
+            it('assign product variant to channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 await adminClient.query<
-                    Codegen.AssignProductVariantsToChannelMutation,
-                    Codegen.AssignProductVariantsToChannelMutationVariables
+                    AssignProductVariantsToChannelMutation,
+                    AssignProductVariantsToChannelMutationVariables
                 >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
                 });
@@ -1430,10 +1419,10 @@ describe('Default search plugin', () => {
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search: searchGrouped } = await testProductsAdmin({ groupByProduct: true });
                 expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3', 'T_4']);
 
-                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                const { search: searchUngrouped } = await testProductsAdmin({ groupByProduct: false });
                 expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
                     'T_1',
                     'T_2',
@@ -1447,8 +1436,8 @@ describe('Default search plugin', () => {
             it('removing product variant from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 await adminClient.query<
-                    Codegen.RemoveProductVariantsFromChannelMutation,
-                    Codegen.RemoveProductVariantsFromChannelMutationVariables
+                    RemoveProductVariantsFromChannelMutation,
+                    RemoveProductVariantsFromChannelMutationVariables
                 >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
                 });
@@ -1456,10 +1445,10 @@ describe('Default search plugin', () => {
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                const { search: searchGrouped } = await testProductsAdmin({ groupByProduct: true });
                 expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3']);
 
-                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                const { search: searchUngrouped } = await testProductsAdmin({ groupByProduct: false });
                 expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
                     'T_2',
                     'T_3',
@@ -1471,8 +1460,8 @@ describe('Default search plugin', () => {
             it('updating product affects current channel', async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { updateProduct } = await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
+                    UpdateProductMutation,
+                    UpdateProductMutationVariables
                 >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_3',
@@ -1483,7 +1472,7 @@ describe('Default search plugin', () => {
 
                 await awaitRunningJobs(adminClient);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({
+                const { search: searchGrouped } = await testProductsAdmin({
                     groupByProduct: true,
                     term: 'xyz',
                 });
@@ -1492,7 +1481,7 @@ describe('Default search plugin', () => {
 
             it('updating product affects other channels', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                const { search: searchGrouped } = await doAdminSearchQuery({
+                const { search: searchGrouped } = await testProductsAdmin({
                     groupByProduct: true,
                     term: 'xyz',
                 });
@@ -1503,32 +1492,32 @@ describe('Default search plugin', () => {
             it('removing from channel with multiple languages', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
-                await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
-                >(UPDATE_PRODUCT, {
-                    input: {
-                        id: 'T_4',
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'product en',
-                                slug: 'product-en',
-                                description: 'en',
-                            },
-                            {
-                                languageCode: LanguageCode.de,
-                                name: 'product de',
-                                slug: 'product-de',
-                                description: 'de',
-                            },
-                        ],
+                await adminClient.query<UpdateProductMutation, UpdateProductMutationVariables>(
+                    UPDATE_PRODUCT,
+                    {
+                        input: {
+                            id: 'T_4',
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'product en',
+                                    slug: 'product-en',
+                                    description: 'en',
+                                },
+                                {
+                                    languageCode: LanguageCode.de,
+                                    name: 'product de',
+                                    slug: 'product-de',
+                                    description: 'de',
+                                },
+                            ],
+                        },
                     },
-                });
+                );
 
                 await adminClient.query<
-                    Codegen.AssignProductsToChannelMutation,
-                    Codegen.AssignProductsToChannelMutationVariables
+                    AssignProductsToChannelMutation,
+                    AssignProductsToChannelMutationVariables
                 >(ASSIGN_PRODUCT_TO_CHANNEL, {
                     input: { channelId: secondChannel.id, productIds: ['T_4'] },
                 });
@@ -1537,10 +1526,10 @@ describe('Default search plugin', () => {
                 async function searchSecondChannelForDEProduct() {
                     adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                     const { search } = await adminClient.query<
-                        SearchProductsShopQuery,
-                        SearchProductShopQueryVariables
+                        SearchProductsAdminQuery,
+                        SearchProductsAdminQueryVariables
                     >(
-                        SEARCH_PRODUCTS,
+                        SEARCH_PRODUCTS_ADMIN,
                         {
                             input: { term: 'product', groupByProduct: true },
                         },
@@ -1554,8 +1543,8 @@ describe('Default search plugin', () => {
 
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 const { removeProductsFromChannel } = await adminClient.query<
-                    Codegen.RemoveProductsFromChannelMutation,
-                    Codegen.RemoveProductsFromChannelMutationVariables
+                    RemoveProductsFromChannelMutation,
+                    RemoveProductsFromChannelMutationVariables
                 >(REMOVE_PRODUCT_FROM_CHANNEL, {
                     input: {
                         productIds: ['T_4'],
@@ -1570,55 +1559,94 @@ describe('Default search plugin', () => {
         });
 
         describe('multiple language handling', () => {
-            function searchInLanguage(languageCode: LanguageCode) {
-                return adminClient.query<SearchProductsShopQuery, SearchProductShopQueryVariables>(
-                    SEARCH_PRODUCTS,
-                    {
-                        input: {
-                            take: 100,
-                        },
-                    },
-                    {
-                        languageCode,
-                    },
-                );
-            }
-
             beforeAll(async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
                 const { updateProduct } = await adminClient.query<
-                    Codegen.UpdateProductMutation,
-                    Codegen.UpdateProductMutationVariables
+                    UpdateProductMutation,
+                    UpdateProductMutationVariables
                 >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_1',
                         translations: [
                             {
+                                languageCode: LanguageCode.en,
+                                name: 'Laptop en',
+                                slug: 'laptop-slug-en',
+                                description: 'Laptop description en',
+                            },
+                            {
                                 languageCode: LanguageCode.de,
-                                name: 'laptop name de',
+                                name: 'Laptop de',
                                 slug: 'laptop-slug-de',
-                                description: 'laptop description de',
+                                description: 'Laptop description de',
                             },
                             {
                                 languageCode: LanguageCode.zh,
-                                name: 'laptop name zh',
+                                name: 'Laptop zh',
                                 slug: 'laptop-slug-zh',
-                                description: 'laptop description zh',
+                                description: 'Laptop description zh',
                             },
                         ],
                     },
                 });
 
+                expect(updateProduct.variants.length).toEqual(4);
+
                 await adminClient.query<
-                    Codegen.UpdateProductVariantsMutation,
-                    Codegen.UpdateProductVariantsMutationVariables
+                    UpdateProductVariantsMutation,
+                    UpdateProductVariantsMutationVariables
                 >(UPDATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             id: updateProduct.variants[0].id,
                             translations: [
                                 {
-                                    languageCode: LanguageCode.fr,
-                                    name: 'laptop variant fr',
+                                    languageCode: LanguageCode.en,
+                                    name: 'Laptop variant T_1 en',
+                                },
+                                {
+                                    languageCode: LanguageCode.de,
+                                    name: 'Laptop variant T_1 de',
+                                },
+                                {
+                                    languageCode: LanguageCode.zh,
+                                    name: 'Laptop variant T_1 zh',
+                                },
+                            ],
+                        },
+                        {
+                            id: updateProduct.variants[1].id,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'Laptop variant T_2 en',
+                                },
+                                {
+                                    languageCode: LanguageCode.de,
+                                    name: 'Laptop variant T_2 de',
+                                },
+                            ],
+                        },
+                        {
+                            id: updateProduct.variants[2].id,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'Laptop variant T_3 en',
+                                },
+                                {
+                                    languageCode: LanguageCode.zh,
+                                    name: 'Laptop variant T_3 zh',
+                                },
+                            ],
+                        },
+                        {
+                            id: updateProduct.variants[3].id,
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'Laptop variant T_4 en',
                                 },
                             ],
                         },
@@ -1628,65 +1656,230 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
             });
 
-            it('fallbacks to default language', async () => {
-                const { search } = await searchInLanguage(LanguageCode.af);
-                // No records for AF language, but we expect > 0
-                // because of fallback to default language (EN)
-                expect(search.totalItems).toBeGreaterThan(0);
-            });
-
-            it('indexes product-level languages', async () => {
-                const { search: search1 } = await searchInLanguage(LanguageCode.de);
-
-                expect(search1.items.map(i => i.productName)).toContain('laptop name de');
-                expect(search1.items.map(i => i.productName)).not.toContain('laptop name zh');
-                expect(search1.items.map(i => i.slug)).toContain('laptop-slug-de');
-                expect(search1.items.map(i => i.description)).toContain('laptop description de');
-
-                const { search: search2 } = await searchInLanguage(LanguageCode.zh);
-
-                expect(search2.items.map(i => i.productName)).toContain('laptop name zh');
-                expect(search2.items.map(i => i.productName)).not.toContain('laptop name de');
-                expect(search2.items.map(i => i.slug)).toContain('laptop-slug-zh');
-                expect(search2.items.map(i => i.description)).toContain('laptop description zh');
-            });
-
-            it('indexes product variant-level languages', async () => {
-                const { search: search1 } = await searchInLanguage(LanguageCode.fr);
-
-                expect(search1.items.map(i => i.productName)).toContain('Laptop');
-                expect(search1.items.map(i => i.productVariantName)).toContain('laptop variant fr');
-            });
-
-            // https://github.com/vendure-ecommerce/vendure/issues/1752
-            // https://github.com/vendure-ecommerce/vendure/issues/1746
-            it('sort by name with non-default languageCode', async () => {
-                const result = await adminClient.query<
-                    SearchProductsShopQuery,
-                    SearchProductShopQueryVariables
-                >(
-                    SEARCH_PRODUCTS,
-                    {
-                        input: {
-                            take: 2,
-                            sort: {
-                                name: SortOrder.ASC,
+            describe('search products', () => {
+                function searchInLanguage(languageCode: LanguageCode) {
+                    return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
+                        SEARCH_PRODUCTS_ADMIN,
+                        {
+                            input: {
+                                take: 100,
                             },
                         },
-                    },
-                    {
-                        languageCode: LanguageCode.de,
-                    },
-                );
-                expect(result.search.items.length).toEqual(2);
+                        {
+                            languageCode,
+                        },
+                    );
+                }
+
+                it('fallbacks to default language en', async () => {
+                    const { search } = await searchInLanguage(LanguageCode.af);
+
+                    const laptopVariants = search.items.filter(i => i.productId === 'T_1');
+                    expect(laptopVariants.length).toEqual(4);
+
+                    const laptopVariantT1 = laptopVariants.find(i => i.productVariantId === 'T_1');
+                    expect(laptopVariantT1?.productVariantName).toEqual('Laptop variant T_1 en');
+                    expect(laptopVariantT1?.productName).toEqual('Laptop en');
+                    expect(laptopVariantT1?.slug).toEqual('laptop-slug-en');
+                    expect(laptopVariantT1?.description).toEqual('Laptop description en');
+
+                    const laptopVariantT2 = laptopVariants.find(i => i.productVariantId === 'T_2');
+                    expect(laptopVariantT2?.productVariantName).toEqual('Laptop variant T_2 en');
+                    expect(laptopVariantT2?.productName).toEqual('Laptop en');
+                    expect(laptopVariantT2?.slug).toEqual('laptop-slug-en');
+                    expect(laptopVariantT2?.description).toEqual('Laptop description en');
+
+                    const laptopVariantT3 = laptopVariants.find(i => i.productVariantId === 'T_3');
+                    expect(laptopVariantT3?.productVariantName).toEqual('Laptop variant T_3 en');
+                    expect(laptopVariantT3?.productName).toEqual('Laptop en');
+                    expect(laptopVariantT3?.slug).toEqual('laptop-slug-en');
+                    expect(laptopVariantT3?.description).toEqual('Laptop description en');
+
+                    const laptopVariantT4 = laptopVariants.find(i => i.productVariantId === 'T_4');
+                    expect(laptopVariantT4?.productVariantName).toEqual('Laptop variant T_4 en');
+                    expect(laptopVariantT4?.productName).toEqual('Laptop en');
+                    expect(laptopVariantT4?.slug).toEqual('laptop-slug-en');
+                    expect(laptopVariantT4?.description).toEqual('Laptop description en');
+                });
+
+                it('indexes non-default language de', async () => {
+                    const { search } = await searchInLanguage(LanguageCode.de);
+
+                    const laptopVariants = search.items.filter(i => i.productId === 'T_1');
+                    expect(laptopVariants.length).toEqual(4);
+
+                    const laptopVariantT1 = laptopVariants.find(i => i.productVariantId === 'T_1');
+                    expect(laptopVariantT1?.productVariantName).toEqual('Laptop variant T_1 de');
+                    expect(laptopVariantT1?.productName).toEqual('Laptop de');
+                    expect(laptopVariantT1?.slug).toEqual('laptop-slug-de');
+                    expect(laptopVariantT1?.description).toEqual('Laptop description de');
+
+                    const laptopVariantT2 = laptopVariants.find(i => i.productVariantId === 'T_2');
+                    expect(laptopVariantT2?.productVariantName).toEqual('Laptop variant T_2 de');
+                    expect(laptopVariantT2?.productName).toEqual('Laptop de');
+                    expect(laptopVariantT2?.slug).toEqual('laptop-slug-de');
+                    expect(laptopVariantT2?.description).toEqual('Laptop description de');
+
+                    const laptopVariantT3 = laptopVariants.find(i => i.productVariantId === 'T_3');
+                    expect(laptopVariantT3?.productVariantName).toEqual('Laptop variant T_3 en');
+                    expect(laptopVariantT3?.productName).toEqual('Laptop de');
+                    expect(laptopVariantT3?.slug).toEqual('laptop-slug-de');
+                    expect(laptopVariantT3?.description).toEqual('Laptop description de');
+
+                    const laptopVariantT4 = laptopVariants.find(i => i.productVariantId === 'T_4');
+                    expect(laptopVariantT4?.productVariantName).toEqual('Laptop variant T_4 en');
+                    expect(laptopVariantT4?.productName).toEqual('Laptop de');
+                    expect(laptopVariantT4?.slug).toEqual('laptop-slug-de');
+                    expect(laptopVariantT4?.description).toEqual('Laptop description de');
+                });
+
+                it('indexes non-default language zh', async () => {
+                    const { search } = await searchInLanguage(LanguageCode.zh);
+
+                    const laptopVariants = search.items.filter(i => i.productId === 'T_1');
+                    expect(laptopVariants.length).toEqual(4);
+
+                    const laptopVariantT1 = laptopVariants.find(i => i.productVariantId === 'T_1');
+                    expect(laptopVariantT1?.productVariantName).toEqual('Laptop variant T_1 zh');
+                    expect(laptopVariantT1?.productName).toEqual('Laptop zh');
+                    expect(laptopVariantT1?.slug).toEqual('laptop-slug-zh');
+                    expect(laptopVariantT1?.description).toEqual('Laptop description zh');
+
+                    const laptopVariantT2 = laptopVariants.find(i => i.productVariantId === 'T_2');
+                    expect(laptopVariantT2?.productVariantName).toEqual('Laptop variant T_2 en');
+                    expect(laptopVariantT2?.productName).toEqual('Laptop zh');
+                    expect(laptopVariantT2?.slug).toEqual('laptop-slug-zh');
+                    expect(laptopVariantT2?.description).toEqual('Laptop description zh');
+
+                    const laptopVariantT3 = laptopVariants.find(i => i.productVariantId === 'T_3');
+                    expect(laptopVariantT3?.productVariantName).toEqual('Laptop variant T_3 zh');
+                    expect(laptopVariantT3?.productName).toEqual('Laptop zh');
+                    expect(laptopVariantT3?.slug).toEqual('laptop-slug-zh');
+                    expect(laptopVariantT3?.description).toEqual('Laptop description zh');
+
+                    const laptopVariantT4 = laptopVariants.find(i => i.productVariantId === 'T_4');
+                    expect(laptopVariantT4?.productVariantName).toEqual('Laptop variant T_4 en');
+                    expect(laptopVariantT4?.productName).toEqual('Laptop zh');
+                    expect(laptopVariantT4?.slug).toEqual('laptop-slug-zh');
+                    expect(laptopVariantT4?.description).toEqual('Laptop description zh');
+                });
+            });
+
+            describe('search products grouped by product and sorted by name ASC', () => {
+                function searchInLanguage(languageCode: LanguageCode) {
+                    return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
+                        SEARCH_PRODUCTS_ADMIN,
+                        {
+                            input: {
+                                groupByProduct: true,
+                                take: 100,
+                                sort: {
+                                    name: SortOrder.ASC,
+                                },
+                            },
+                        },
+                        {
+                            languageCode,
+                        },
+                    );
+                }
+
+                // https://github.com/vendure-ecommerce/vendure/issues/1752
+                // https://github.com/vendure-ecommerce/vendure/issues/1746
+                it('fallbacks to default language en', async () => {
+                    const { search } = await searchInLanguage(LanguageCode.af);
+
+                    const productNames = [
+                        'Bonsai Tree',
+                        'Boxing Gloves',
+                        'Camera Lens',
+                        'Cruiser Skateboard',
+                        'Curvy Monitor',
+                        'Football',
+                        'Gaming PC',
+                        'Instant Camera',
+                        'Laptop en', // fallback language en
+                        'Orchid',
+                        'product en', // fallback language en
+                        'Road Bike',
+                        'Running Shoe',
+                        'Skipping Rope',
+                        'Slr Camera',
+                        'Spiky Cactus',
+                        'Strawberry cheesecake',
+                        'Tent',
+                        'Tripod',
+                        'USB Cable',
+                    ];
+
+                    expect(search.items.map(i => i.productName)).toEqual(productNames);
+                });
+
+                it('indexes non-default language de', async () => {
+                    const { search } = await searchInLanguage(LanguageCode.de);
+
+                    const productNames = [
+                        'Bonsai Tree',
+                        'Boxing Gloves',
+                        'Camera Lens',
+                        'Cruiser Skateboard',
+                        'Curvy Monitor',
+                        'Football',
+                        'Gaming PC',
+                        'Instant Camera',
+                        'Laptop de', // language de
+                        'Orchid',
+                        'product de', // language de
+                        'Road Bike',
+                        'Running Shoe',
+                        'Skipping Rope',
+                        'Slr Camera',
+                        'Spiky Cactus',
+                        'Strawberry cheesecake',
+                        'Tent',
+                        'Tripod',
+                        'USB Cable',
+                    ];
+
+                    expect(search.items.map(i => i.productName)).toEqual(productNames);
+                });
+
+                it('indexes non-default language zh', async () => {
+                    const { search } = await searchInLanguage(LanguageCode.zh);
+
+                    const productNames = [
+                        'Bonsai Tree',
+                        'Boxing Gloves',
+                        'Camera Lens',
+                        'Cruiser Skateboard',
+                        'Curvy Monitor',
+                        'Football',
+                        'Gaming PC',
+                        'Instant Camera',
+                        'Laptop zh', // language zh
+                        'Orchid',
+                        'product en', // fallback language en
+                        'Road Bike',
+                        'Running Shoe',
+                        'Skipping Rope',
+                        'Slr Camera',
+                        'Spiky Cactus',
+                        'Strawberry cheesecake',
+                        'Tent',
+                        'Tripod',
+                        'USB Cable',
+                    ];
+
+                    expect(search.items.map(i => i.productName)).toEqual(productNames);
+                });
             });
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/1789
         describe('input escaping', () => {
             function search(term: string) {
-                return adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
-                    SEARCH_PRODUCTS,
+                return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(
+                    SEARCH_PRODUCTS_ADMIN,
                     {
                         input: { take: 10, term },
                     },
@@ -1724,24 +1917,6 @@ export const REINDEX = gql`
     mutation Reindex {
         reindex {
             id
-        }
-    }
-`;
-
-export const SEARCH_PRODUCTS = gql`
-    query SearchProductsAdmin($input: SearchInput!) {
-        search(input: $input) {
-            totalItems
-            items {
-                enabled
-                productId
-                productName
-                slug
-                description
-                productVariantId
-                productVariantName
-                sku
-            }
         }
     }
 `;

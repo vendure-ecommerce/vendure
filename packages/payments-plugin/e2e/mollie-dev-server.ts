@@ -20,8 +20,12 @@ import { MolliePlugin } from '../package/mollie';
 import { molliePaymentHandler } from '../package/mollie/mollie.handler';
 
 import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
-import { CreatePaymentMethod } from './graphql/generated-admin-types';
-import { AddItemToOrder } from './graphql/generated-shop-types';
+import {
+    CreatePaymentMethodMutation,
+    CreatePaymentMethodMutationVariables,
+    LanguageCode,
+} from './graphql/generated-admin-types';
+import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
 import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
 
@@ -30,6 +34,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
+    // eslint-disable-next-line no-console
     console.log('Starting Mollie dev server with dynamic redirectUrl: ', useDynamicRedirectUrl);
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('dotenv').config();
@@ -68,18 +73,26 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
         }
     `);
     // Create method
-    await adminClient.query<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
+    await adminClient.query<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>(
         CREATE_PAYMENT_METHOD,
         {
             input: {
                 code: 'mollie',
-                name: 'Mollie payment test',
-                description: 'This is a Mollie test payment method',
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Mollie payment test',
+                        description: 'This is a Mollie test payment method',
+                    },
+                ],
                 enabled: true,
                 handler: {
                     code: molliePaymentHandler.code,
                     arguments: [
-                        { name: 'redirectUrl', value: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=false` },
+                        {
+                            name: 'redirectUrl',
+                            value: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=false`,
+                        },
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
                         { name: 'autoCapture', value: 'false' },
@@ -90,9 +103,9 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
     );
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-    await shopClient.query<AddItemToOrder.Order, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+    await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
         productVariantId: 'T_5',
-        quantity: 10,
+        quantity: 1,
     });
     const ctx = new RequestContext({
         apiType: 'admin',
@@ -100,22 +113,9 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
         authorizedAsOwnerOnly: false,
         channel: await server.app.get(ChannelService).getDefaultChannel(),
     });
-    await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
-        description: 'Negative test surcharge',
-        listPrice: -20000,
-    });
     await setShipping(shopClient);
     // Add pre payment to order
     const order = await server.app.get(OrderService).findOne(ctx, 1);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await server.app.get(PaymentService).createManualPayment(ctx, order!, 10000, {
-        method: 'Manual',
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        orderId: order!.id,
-        metadata: {
-            bogus: 'test',
-        },
-    });
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
             redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
@@ -126,10 +126,11 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
     if (createMolliePaymentIntent.errorCode) {
         throw createMolliePaymentIntent;
     }
-    Logger.info(`Mollie payment link: ${createMolliePaymentIntent.url as string}`, 'Mollie DevServer');
+    // eslint-disable-next-line no-console
+    console.log('\x1b[41m', `Mollie payment link: ${createMolliePaymentIntent.url as string}`, '\x1b[0m');
 }
 
 (async () => {
     // Change the value of the parameter to true to test with the dynamic redirectUrl functionality
     await runMollieDevServer(false);
-})()
+})();

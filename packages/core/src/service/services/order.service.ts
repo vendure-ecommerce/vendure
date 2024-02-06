@@ -588,8 +588,9 @@ export class OrderService {
         let updatedOrderLines = [orderLine];
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
+            const deletedOrderLine = new OrderLine(orderLine);
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-            this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
+            this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
@@ -619,9 +620,15 @@ export class OrderService {
         }
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
+        // Persist the orderLine removal before applying price adjustments
+        // so that any hydration of the Order entity during the course of the
+        // `applyPriceAdjustments()` (e.g. in a ShippingEligibilityChecker etc)
+        // will not re-add the OrderLine.
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+        const deletedOrderLine = new OrderLine(orderLine);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
+        this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
         return updatedOrder;
     }
 
@@ -751,8 +758,7 @@ export class OrderService {
 
     /**
      * @description
-     * Returns all {@link Promotion}s associated with an Order. A Promotion only gets associated with
-     * and Order once the order has been placed (see {@link OrderPlacedStrategy}).
+     * Returns all {@link Promotion}s associated with an Order.
      */
     async getOrderPromotions(ctx: RequestContext, orderId: ID): Promise<Promotion[]> {
         const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
@@ -877,6 +883,7 @@ export class OrderService {
             let shippingLine: ShippingLine | undefined = order.shippingLines[i];
             if (shippingLine) {
                 shippingLine.shippingMethod = shippingMethod;
+                shippingLine.shippingMethodId = shippingMethod.id;
             } else {
                 shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
                     new ShippingLine({
@@ -924,8 +931,8 @@ export class OrderService {
             });
         }
         const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
-        await this.applyPriceAdjustments(ctx, order);
-        return this.connection.getRepository(ctx, Order).save(order);
+        await this.applyPriceAdjustments(ctx, updatedOrder);
+        return this.connection.getRepository(ctx, Order).save(updatedOrder);
     }
 
     /**
@@ -1233,7 +1240,7 @@ export class OrderService {
         ctx: RequestContext,
         input: FulfillOrderInput,
     ) {
-        const linesToBeFulfilled = await this.connection
+        const existingFulfillmentLines = await this.connection
             .getRepository(ctx, FulfillmentLine)
             .createQueryBuilder('fulfillmentLine')
             .leftJoinAndSelect('fulfillmentLine.orderLine', 'orderLine')
@@ -1244,13 +1251,25 @@ export class OrderService {
             .andWhere('fulfillment.state != :state', { state: 'Cancelled' })
             .getMany();
 
-        for (const lineToBeFulfilled of linesToBeFulfilled) {
-            const unfulfilledQuantity = lineToBeFulfilled.orderLine.quantity - lineToBeFulfilled.quantity;
-            const lineInput = input.lines.find(l =>
-                idsAreEqual(l.orderLineId, lineToBeFulfilled.orderLine.id),
+        for (const inputLine of input.lines) {
+            const existingFulfillmentLine = existingFulfillmentLines.find(l =>
+                idsAreEqual(l.orderLineId, inputLine.orderLineId),
             );
-            if (unfulfilledQuantity < (lineInput?.quantity ?? 0)) {
-                return true;
+            if (existingFulfillmentLine) {
+                const unfulfilledQuantity =
+                    existingFulfillmentLine.orderLine.quantity - existingFulfillmentLine.quantity;
+                if (unfulfilledQuantity < inputLine.quantity) {
+                    return true;
+                }
+            } else {
+                const orderLine = await this.connection.getEntityOrThrow(
+                    ctx,
+                    OrderLine,
+                    inputLine.orderLineId,
+                );
+                if (orderLine.quantity < inputLine.quantity) {
+                    return true;
+                }
             }
         }
         return false;
@@ -1656,6 +1675,14 @@ export class OrderService {
     ): Promise<Order> {
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
+
+        // When changing the Order's currencyCode (on account of passing
+        // a different currencyCode into the RequestContext), we need to make sure
+        // to update all existing OrderLines to use prices in this new currency.
+        if (ctx.currencyCode !== order.currencyCode) {
+            updatedOrderLines = order.lines;
+            order.currencyCode = ctx.currencyCode;
+        }
 
         if (updatedOrderLines?.length) {
             const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =

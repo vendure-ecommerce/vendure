@@ -6,6 +6,13 @@ import { Job } from '../job';
  * This strategy defines where to store jobs that have been collected by a
  * {@link JobBuffer}.
  *
+ * :::info
+ *
+ * This is configured via the `jobQueueOptions.jobBufferStorageStrategy` property of
+ * your VendureConfig.
+ *
+ * :::
+ *
  * @since 1.3.0
  * @docsCategory job-queue
  */
@@ -26,7 +33,7 @@ export interface JobBufferStorageStrategy extends InjectableStrategy {
      * If the array is empty, sizes will be returned for _all_ bufferIds.
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const sizes = await myJobBufferStrategy.bufferSize(['buffer-1', 'buffer-2']);
      *
      * // sizes = { 'buffer-1': 12, 'buffer-2': 3 }
@@ -41,7 +48,7 @@ export interface JobBufferStorageStrategy extends InjectableStrategy {
      * arranged by bufferId
      *
      * @example
-     * ```TypeScript
+     * ```ts
      * const result = await myJobBufferStrategy.flush(['buffer-1', 'buffer-2']);
      *
      * // result = {

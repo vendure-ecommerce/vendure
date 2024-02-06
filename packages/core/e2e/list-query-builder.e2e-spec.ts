@@ -1268,6 +1268,27 @@ describe('ListQueryBuilder', () => {
                 },
             ]);
         });
+
+        it('should resolve multiple relations in customFields successfully', async () => {
+            const { testEntities } = await shopClient.query(GET_LIST_WITH_MULTIPLE_CUSTOM_FIELD_RELATION, {
+                options: {
+                    filter: {
+                        label: { eq: 'A' },
+                    },
+                },
+            });
+
+            expect(testEntities.items).toEqual([
+                {
+                    id: 'T_1',
+                    label: 'A',
+                    customFields: {
+                        relation: [{ id: 'T_1', data: 'A' }],
+                        otherRelation: [{ id: 'T_1', data: 'A' }],
+                    },
+                },
+            ]);
+        });
     });
 });
 
@@ -1343,6 +1364,27 @@ const GET_LIST_WITH_CUSTOM_FIELD_RELATION = gql`
                 label
                 customFields {
                     relation {
+                        id
+                        data
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const GET_LIST_WITH_MULTIPLE_CUSTOM_FIELD_RELATION = gql`
+    query GetTestWithMultipleCustomFieldRelation($options: TestEntityListOptions) {
+        testEntities(options: $options) {
+            items {
+                id
+                label
+                customFields {
+                    relation {
+                        id
+                        data
+                    }
+                    otherRelation {
                         id
                         data
                     }
