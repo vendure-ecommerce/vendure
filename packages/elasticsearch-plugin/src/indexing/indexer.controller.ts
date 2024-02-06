@@ -31,8 +31,8 @@ import { Observable } from 'rxjs';
 import { In, IsNull } from 'typeorm';
 
 import { ELASTIC_SEARCH_OPTIONS, VARIANT_INDEX_NAME, loggerCtx } from '../constants';
-import type { ElasticsearchOptions } from '../options';
-import type {
+import { ElasticsearchOptions } from '../options';
+import {
     BulkOperation,
     BulkOperationDoc,
     BulkResponseBody,
@@ -500,7 +500,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             product = await this.connection
                 .getRepository(ctx, Product)
                 .find({
-                    relationLoadStrategy: 'query',
                     where: { id: productId, deletedAt: IsNull() },
                     relations: this.productRelations,
                 })
@@ -524,10 +523,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 order: {
                     id: 'ASC',
                 },
-                relationLoadStrategy: 'query',
             });
         } catch (e: any) {
-            console.log(e);
+            Logger.error(e.message, loggerCtx, e.stack);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

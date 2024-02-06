@@ -15,7 +15,6 @@ import {
     CustomScriptMapping,
     ElasticSearchInput,
     ElasticSearchSortInput,
-    ElasticSearchSortParameter,
     GraphQlPrimitive,
     PrimitiveTypeVariations,
 } from './types';
@@ -160,8 +159,8 @@ export interface ElasticsearchOptions {
      * @description
      * Products limit chunk size for each loop iteration when indexing products.
      *
-     * @default
-     * 500
+     * @default 2500
+     * @since 2.1.7
      */
     reindexProductsChunkSize?: number;
     /**
@@ -170,8 +169,8 @@ export interface ElasticsearchOptions {
      * index operations. This option sets the maximum number of operations in the memory buffer before a
      * bulk operation is executed.
      *
-     * @default
-     * 3000
+     * @default 3000
+     * @since 2.1.7
      */
     reindexBulkOperationSizeLimit?: number;
     /**
