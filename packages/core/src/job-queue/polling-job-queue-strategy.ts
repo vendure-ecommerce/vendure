@@ -145,10 +145,10 @@ class ActiveQueue<Data extends JobData<Data> = object> {
         void runNextJobs();
     }
 
-    async stop(): Promise<void> {
+    async stop(stopActiveQueueTimeout = 20_000): Promise<void> {
         this.running = false;
         clearTimeout(this.timer);
-        await this.awaitRunningJobsOrTimeout();
+        await this.awaitRunningJobsOrTimeout(stopActiveQueueTimeout);
         Logger.info(`Stopped queue: ${this.queueName}`);
         // Allow any job status changes to be persisted
         // before we permit the application shutdown to continue.
@@ -157,9 +157,8 @@ class ActiveQueue<Data extends JobData<Data> = object> {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    private awaitRunningJobsOrTimeout(): Promise<void> {
+    private awaitRunningJobsOrTimeout(stopActiveQueueTimeout = 20_000): Promise<void> {
         const start = +new Date();
-        const stopActiveQueueTimeout = 20_000;
         let timeout: ReturnType<typeof setTimeout>;
         return new Promise(resolve => {
             let lastStatusUpdate = +new Date();
@@ -228,7 +227,7 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
     public setRetries: (queueName: string, job: Job) => number;
     public backOffStrategy?: BackoffStrategy;
 
-    private activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
+    protected activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
 
     constructor(config?: PollingJobQueueStrategyConfig);
     constructor(concurrency?: number, pollInterval?: number);
