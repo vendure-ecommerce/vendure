@@ -1,3 +1,20 @@
+## <small>2.1.7 (2024-02-06)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add missing Ukrainian translation (#2638) ([67c8c90](https://github.com/vendure-ecommerce/vendure/commit/67c8c90)), closes [#2638](https://github.com/vendure-ecommerce/vendure/issues/2638)
+* **admin-ui** Improve German translation (#2639) ([30f5e91](https://github.com/vendure-ecommerce/vendure/commit/30f5e91)), closes [#2639](https://github.com/vendure-ecommerce/vendure/issues/2639)
+* **admin-ui** Reset page to 1 on viewing collection contents from list ([daa4731](https://github.com/vendure-ecommerce/vendure/commit/daa4731))
+* **core** Add product translation to product variant entity resolver (#2644) ([9289a1c](https://github.com/vendure-ecommerce/vendure/commit/9289a1c)), closes [#2644](https://github.com/vendure-ecommerce/vendure/issues/2644)
+* **core** Ensure deterministic sorting in case of duplicates in DefaultSearchPlugin search query (#2632) ([81b4607](https://github.com/vendure-ecommerce/vendure/commit/81b4607)), closes [#2632](https://github.com/vendure-ecommerce/vendure/issues/2632)
+* **core** Fix undefined reference error in product variant resolver ([4cceb70](https://github.com/vendure-ecommerce/vendure/commit/4cceb70))
+* **core** Improve handling of active jobs on worker shutdown ([e1e0987](https://github.com/vendure-ecommerce/vendure/commit/e1e0987))
+* **core** Improved resolution of Administrator.user ([c2a4685](https://github.com/vendure-ecommerce/vendure/commit/c2a4685)), closes [#1489](https://github.com/vendure-ecommerce/vendure/issues/1489)
+* **core** Update translations parent `updatedAt` column when updating translation (#2630) ([44fc828](https://github.com/vendure-ecommerce/vendure/commit/44fc828)), closes [#2630](https://github.com/vendure-ecommerce/vendure/issues/2630)
+* **elasticsearch-plugin** Optimize memory usage when indexing ([#2327](https://github.com/vendure-ecommerce/vendure/pull/2327))
+* **payments-plugin** Don't handle mollie webhook for any state after PaymentSettled (#2657) ([754da02](https://github.com/vendure-ecommerce/vendure/commit/754da02)), closes [#2657](https://github.com/vendure-ecommerce/vendure/issues/2657)
+
 ## <small>2.1.6 (2024-01-16)</small>
 
 
