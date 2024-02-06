@@ -60,7 +60,6 @@ type ConfigurableOperationDefinition {
     description: String!
 }
 
-
 type DeletionResponse {
     result: DeletionResult!
     message: String
@@ -159,6 +158,11 @@ input DateListOperators {
     inList: DateTime!
 }
 
+input FacetValueNotFilterInput {
+    and: ID
+    or: [ID!]
+}
+
 """
 Used to construct boolean expressions for filtering search results
 by FacetValue ID. Examples:
@@ -166,10 +170,12 @@ by FacetValue ID. Examples:
 * ID=1 OR ID=2: `{ facetValueFilters: [{ or: [1,2] }] }`
 * ID=1 AND ID=2: `{ facetValueFilters: [{ and: 1 }, { and: 2 }] }`
 * ID=1 AND (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1 }, { or: [2,3] }] }`
+* ID=1 AND NOT (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1, not: { or: [2,3] } }] }`
 """
 input FacetValueFilterInput {
     and: ID
     or: [ID!]
+    not: FacetValueNotFilterInput
 }
 
 input SearchInput {
@@ -267,4 +273,3 @@ union SetOrderShippingMethodResult =
     | IneligibleShippingMethodError
     | NoActiveOrderError
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
-

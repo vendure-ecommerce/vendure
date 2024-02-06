@@ -1,6 +1,6 @@
-import { LogicalOperator, SearchResult } from '@vendure/common/lib/generated-types';
+import { FacetValueFilterInput, LogicalOperator, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Brackets, SelectQueryBuilder } from 'typeorm';
+import { Brackets, NotBrackets, SelectQueryBuilder, WhereExpressionBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Injector } from '../../../common';
@@ -28,7 +28,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
     private connection: TransactionalConnection;
     private options: DefaultSearchPluginInitOptions;
 
-    async init(injector: Injector) {
+    init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         this.options = injector.get(PLUGIN_INIT_OPTIONS);
     }
@@ -222,26 +222,18 @@ export class MysqlSearchStrategy implements SearchStrategy {
             qb.andWhere(
                 new Brackets(qb1 => {
                     for (const facetValueFilter of facetValueFilters) {
+                        if (this.andOrNotCombined(facetValueFilter)) {
+                            throw new UserInputError('error.facetfilterinput-invalid-input');
+                        }
+
                         qb1.andWhere(
-                            new Brackets(qb2 => {
-                                if (facetValueFilter.and && facetValueFilter.or?.length) {
-                                    throw new UserInputError('error.facetfilterinput-invalid-input');
-                                }
-                                if (facetValueFilter.and) {
-                                    const placeholder = createPlaceholderFromId(facetValueFilter.and);
-                                    const clause = `FIND_IN_SET(:${placeholder}, si.facetValueIds)`;
-                                    const params = { [placeholder]: facetValueFilter.and };
-                                    qb2.where(clause, params);
-                                }
-                                if (facetValueFilter.or?.length) {
-                                    for (const id of facetValueFilter.or) {
-                                        const placeholder = createPlaceholderFromId(id);
-                                        const clause = `FIND_IN_SET(:${placeholder}, si.facetValueIds)`;
-                                        const params = { [placeholder]: id };
-                                        qb2.orWhere(clause, params);
-                                    }
-                                }
-                            }),
+                            facetValueFilter?.not
+                                ? new NotBrackets(qb2 => {
+                                      this.evalOperators(facetValueFilter.not as FacetValueFilterInput, qb2);
+                                  })
+                                : new Brackets(qb2 => {
+                                      this.evalOperators(facetValueFilter, qb2);
+                                  }),
                         );
                     }
                 }),
@@ -292,5 +284,33 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 }
             })
             .join(', ');
+    }
+
+    evalOperators(facetValueFilter: FacetValueFilterInput, qb2: WhereExpressionBuilder) {
+        if (this.andOrCombined(facetValueFilter) || this.andOrNotCombined(facetValueFilter)) {
+            throw new UserInputError('error.facetfilterinput-invalid-input');
+        }
+        if (facetValueFilter.and) {
+            const placeholder = createPlaceholderFromId(facetValueFilter.and);
+            const clause = `FIND_IN_SET(:${placeholder}, si.facetValueIds)`;
+            const params = { [placeholder]: facetValueFilter.and };
+            qb2.where(clause, params);
+        }
+        if (facetValueFilter.or?.length) {
+            for (const id of facetValueFilter.or) {
+                const placeholder = createPlaceholderFromId(id);
+                const clause = `FIND_IN_SET(:${placeholder}, si.facetValueIds)`;
+                const params = { [placeholder]: id };
+                qb2.orWhere(clause, params);
+            }
+        }
+    }
+
+    private andOrNotCombined(facetValueFilter: FacetValueFilterInput): any {
+        return facetValueFilter.not && (facetValueFilter.or?.length || facetValueFilter.and);
+    }
+
+    private andOrCombined(facetValueFilter: FacetValueFilterInput) {
+        return facetValueFilter.and && facetValueFilter.or?.length;
     }
 }
