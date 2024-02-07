@@ -22,6 +22,7 @@ import {
     ProductVariantService,
     RequestContext,
 } from '@vendure/core';
+import { OrderStateMachine } from '@vendure/core/dist/service/helpers/order-state-machine/order-state-machine';
 import { totalCoveredByPayments } from '@vendure/core/dist/service/helpers/utils/order-utils';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
@@ -55,6 +56,8 @@ class InvalidInputError implements MolliePaymentIntentError {
 
 @Injectable()
 export class MollieService {
+    private readonly injector: Injector;
+
     constructor(
         private paymentMethodService: PaymentMethodService,
         @Inject(PLUGIN_INIT_OPTIONS) private options: MolliePluginOptions,
@@ -63,7 +66,9 @@ export class MollieService {
         private entityHydrator: EntityHydrator,
         private variantService: ProductVariantService,
         private moduleRef: ModuleRef,
-    ) {}
+    ) {
+        this.injector = new Injector(this.moduleRef);
+    }
 
     /**
      * Creates a redirectUrl to Mollie for the given paymentMethod and current activeOrder
@@ -138,6 +143,10 @@ export class MollieService {
                 );
             }
             redirectUrl = paymentMethodRedirectUrl;
+        }
+        if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
+            // TODO get order state machine and check if transitionable to ArrangingPayment
+            // const orderStateMachine = this.injector.get(OrderStateMachine);
         }
         const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
         if (variantsWithInsufficientSaleableStock.length) {
@@ -231,7 +240,14 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
-        if (order.state === 'PaymentSettled' || order.state === 'Shipped' || order.state === 'Delivered') {
+        if (
+            order.state === 'PaymentSettled' ||
+            order.state === 'Cancelled' ||
+            order.state === 'Shipped' ||
+            order.state === 'PartiallyShipped' ||
+            order.state === 'Delivered' ||
+            order.state === 'PartiallyDelivered'
+        ) {
             Logger.info(
                 `Order ${order.code} is already '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`,
                 loggerCtx,
@@ -280,7 +296,7 @@ export class MollieService {
         paymentMethodCode: string,
         status: 'Authorized' | 'Settled',
     ): Promise<Order> {
-        if (order.state !== 'ArrangingPayment') {
+        if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
             const transitionToStateResult = await this.orderService.transitionToState(
                 ctx,
                 order.id,
@@ -347,7 +363,7 @@ export class MollieService {
         const client = createMollieClient({ apiKey });
         const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
         const additionalParams = await this.options.enabledPaymentMethodsParams?.(
-            new Injector(this.moduleRef),
+            this.injector,
             ctx,
             activeOrder ?? null,
         );

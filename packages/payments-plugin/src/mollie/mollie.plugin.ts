@@ -115,8 +115,9 @@ export interface MolliePluginOptions {
  *       MolliePlugin.init({ vendureHost: 'https://yourhost.io/', useDynamicRedirectUrl: true }),
  *     ]
  *     ```
- * 2. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
- * 3. Set your Mollie apiKey in the `API Key` field.
+ * 2. Run a database migration to add the `mollieOrderId` custom field to the order entity.
+ * 3. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
+ * 4. Set your Mollie apiKey in the `API Key` field.
  *
  * ## Specifying the redirectUrl
  *
@@ -128,7 +129,6 @@ export interface MolliePluginOptions {
  * By default, this option is set to `false` for backwards compatibility. In a future version, this option will be deprecated.
  * Upon deprecation, the `redirectUrl` will always be passed as an argument to the `createPaymentIntent` mutation.
  *
- * TODO toevoegen van /code weggehaald..!
  * ## Storefront usage
  *
  * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
@@ -195,6 +195,14 @@ export interface MolliePluginOptions {
  *
  * If you don't want this behaviour (Authorized first), you can set 'autoCapture=true' on the payment method. This option will immediately
  * capture the payment after a customer authorizes the payment.
+ *
+ * ## ArrangingAdditionalPayment state
+ *
+ * In some rare cases, a customer can add items to the active order, while a Mollie payment is still open,
+ * for example by opening your storefront in another browser tab.
+ * This could result in an order being in `ArrangingAdditionalPayment` status after the customer finished payment.
+ * You should check if there is still an active order with status `ArrangingAdditionalPayment` on your order confirmation page,
+ * and if so, allow your customer to pay for the additional items.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin
