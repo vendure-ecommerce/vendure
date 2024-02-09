@@ -66,6 +66,38 @@ GBP and one for USD. This means that you are able to define multiple prices in d
 **Note:** in the diagram above that the ProductVariant is **always assigned to the default Channel**, and thus will have a price in the default channel too. Likewise, the default Channel also has a defaultCurrencyCode. Depending on your requirements, you may or may not make use of the default Channel.
 :::
 
+### Keeping prices synchronized
+
+When you have products assigned to multiple channels, updates to the price of a product in one channel will not automatically
+be reflected in other channels. For instance, in the diagram above, both the Default channel and the UK channel have a price
+in USD for the same product variant. 
+
+If an administrator of the UK channel changes the USD price to $20, the price in the Default channel will remain at $30. This
+is the default behavior, and is controlled by the [ProductVariantPriceUpdateStrategy](/reference/typescript-api/configuration/product-variant-price-update-strategy).
+
+If you want to keep prices synchronized across all channels, you can set the `syncPricesAcrossChannels` property of the
+[DefaultProductVariantPriceUpdateStrategy](/reference/typescript-api/configuration/product-variant-price-update-strategy#defaultproductvariantpriceupdatestrategy)
+to `true`. This will ensure that when the price of a product variant is updated in one channel, the price in all other channels
+(of that particular currency) will be updated to match.
+
+```ts
+import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '@vendure/core';
+
+export const config: VendureConfig = {
+    // ...
+    // highlight-start
+    productVariantPriceUpdateStrategy: new DefaultProductVariantPriceUpdateStrategy({
+        syncPricesAcrossChannels: true,
+    }),
+    // highlight-end
+    // ...
+};
+```
+
+You may however require even more sophisticated logic. For instance, you may want a one-way synchronization, where the price
+in the Default channel is always the master price, and the prices in other channels are updated to match. In this case, you
+can create a custom `ProductVariantPriceUpdateStrategy` which implements the desired logic.
+
 ## Use cases
 
 ### Single shop

@@ -58,6 +58,19 @@ Executing the `registerNewSeller` mutation does the following:
 
 Bob can now log in to the Admin UI using the provided credentials and begin creating products to sell!
 
+### Keeping prices synchronized
+
+In some marketplaces, the same product may be sold by multiple sellers. When this is the case, the product and its variants
+will be assigned not only to the default channel, but to multiple other channels as well - see the 
+[Channels, Currencies & Prices section](/guides/core-concepts/channels/#channels-currencies--prices) for a visual explanation of how this works.
+
+This means that there will be multiple ProductVariantPrice entities per variant, one for each channel. 
+ 
+In order
+to keep prices synchronized across all channels, the example multi-vendor plugin sets the `syncPricesAcrossChannels` property
+of the [DefaultProductVariantPriceUpdateStrategy](/reference/typescript-api/configuration/product-variant-price-update-strategy#defaultproductvariantpriceupdatestrategy)
+to `true`. Your own multi-vendor implementation may require more sophisticated price synchronization logic, in which case
+you can implement your own custom [ProductVariantPriceUpdateStrategy](/reference/typescript-api/configuration/product-variant-price-update-strategy).
 
 ## Assigning OrderLines to the correct Seller
 

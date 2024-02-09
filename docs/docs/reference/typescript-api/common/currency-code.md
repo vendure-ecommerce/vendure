@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CurrencyCode
 
-<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="962" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/generated-types.ts" sourceLine="968" packageName="@vendure/common" />
 
 ISO 4217 currency code
 

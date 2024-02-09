@@ -33,6 +33,16 @@ export interface UpdatedProductVariantPrice {
  * For instance, in a multichannel setup, if a price is updated for a ProductVariant in one
  * Channel, this strategy can be used to update the prices in other Channels.
  *
+ * Using custom logic, this can be made more sophisticated - for example, you could have a
+ * one-way sync that only updates prices in child channels when the price in the default
+ * channel is updated. You could also have a conditional sync which is dependent on the
+ * permissions of the current administrator, or based on custom field flags on the ProductVariant
+ * or Channel.
+ *
+ * Another use-case might be to update the prices of a ProductVariant in other currencies
+ * when a price is updated in one currency, based on the current exchange rate.
+ *
+ *
  * :::info
  *
  * This is configured via the `catalogOptions.productVariantPriceUpdateStrategy` property of

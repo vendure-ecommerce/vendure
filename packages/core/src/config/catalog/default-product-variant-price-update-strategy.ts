@@ -33,15 +33,17 @@ export interface DefaultProductVariantPriceUpdateStrategyOptions {
  * case, a custom strategy should be implemented.
  *
  * @example
- * ```TypeScript
+ * ```ts
  * import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '\@vendure/core';
  *
  * export const config: VendureConfig = {
  *   // ...
  *   catalogOptions: {
+ *     // highlight-start
  *     productVariantPriceUpdateStrategy: new DefaultProductVariantPriceUpdateStrategy({
  *       syncPricesAcrossChannels: true,
  *     }),
+ *     // highlight-end
  *   },
  *   // ...
  * };
