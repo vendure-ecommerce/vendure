@@ -70,6 +70,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const {
             productVariantPriceCalculationStrategy,
             productVariantPriceSelectionStrategy,
+            productVariantPriceUpdateStrategy,
             stockDisplayStrategy,
             stockLocationStrategy,
         } = this.configService.catalogOptions;
@@ -125,6 +126,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             entityIdStrategyDeprecated,
             ...[entityIdStrategy].filter(notNullOrUndefined),
             productVariantPriceCalculationStrategy,
+            productVariantPriceUpdateStrategy,
             orderItemPriceCalculationStrategy,
             ...orderProcess,
             ...customFulfillmentProcess,
