@@ -133,7 +133,6 @@ export const assignFacetValuesToProductsBulkAction: BulkAction<
         userPermissions.includes(Permission.UpdateProduct),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
-        const dataService = injector.get(DataService);
         const notificationService = injector.get(NotificationService);
         const mode = 'product';
         const ids = unique(selection.map(p => p.id));
