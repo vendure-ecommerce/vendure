@@ -49,15 +49,17 @@ export const assignPaymentMethodsToChannelBulkAction = createBulkAssignToChannel
         userPermissions.includes(Permission.UpdatePaymentMethod) ||
         userPermissions.includes(Permission.UpdateSettings),
     getItemName: item => item.name,
-    bulkAssignToChannel: (dataService, paymentMethodIds, channelId) =>
-        dataService
-            .mutate(AssignPaymentMethodsToChannelDocument, {
-                input: {
-                    channelId,
-                    paymentMethodIds,
-                },
-            })
-            .pipe(map(res => res.assignPaymentMethodsToChannel)),
+    bulkAssignToChannel: (dataService, paymentMethodIds, channelIds) =>
+        channelIds.map(channelId =>
+            dataService
+                .mutate(AssignPaymentMethodsToChannelDocument, {
+                    input: {
+                        channelId,
+                        paymentMethodIds,
+                    },
+                })
+                .pipe(map(res => res.assignPaymentMethodsToChannel)),
+        ),
 });
 
 export const removePaymentMethodsFromChannelBulkAction = createBulkRemoveFromChannelAction<

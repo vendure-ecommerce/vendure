@@ -65,15 +65,17 @@ export const assignStockLocationsToChannelBulkAction = createBulkAssignToChannel
         userPermissions.includes(Permission.UpdateCatalog) ||
         userPermissions.includes(Permission.UpdateStockLocation),
     getItemName: item => item.name,
-    bulkAssignToChannel: (dataService, stockLocationIds, channelId) =>
-        dataService
-            .mutate(AssignStockLocationsToChannelDocument, {
-                input: {
-                    channelId,
-                    stockLocationIds,
-                },
-            })
-            .pipe(map(res => res.assignStockLocationsToChannel)),
+    bulkAssignToChannel: (dataService, stockLocationIds, channelIds) =>
+        channelIds.map(channelId =>
+            dataService
+                .mutate(AssignStockLocationsToChannelDocument, {
+                    input: {
+                        channelId,
+                        stockLocationIds,
+                    },
+                })
+                .pipe(map(res => res.assignStockLocationsToChannel)),
+        ),
 });
 
 export const removeStockLocationsFromChannelBulkAction = createBulkRemoveFromChannelAction<

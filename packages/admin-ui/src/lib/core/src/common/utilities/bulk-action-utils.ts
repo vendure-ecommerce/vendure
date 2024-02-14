@@ -217,7 +217,7 @@ export function createBulkAssignToChannelAction<ItemType>(
                                     selection.map(c => c.id),
                                     result.map(c => c.id),
                                 )
-                                .pipe(mapTo(result));
+                                .map(result => result.pipe(mapTo(result)));
                         } else {
                             return EMPTY;
                         }

@@ -12,7 +12,6 @@ import {
     ModalService,
     NotificationService,
     Permission,
-    RemoveFacetFromChannelResult,
     RemoveFacetsFromChannelMutation,
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
@@ -40,13 +39,15 @@ export const assignFacetsToChannelBulkAction = createBulkAssignToChannelAction<
         userPermissions.includes(Permission.UpdateCatalog) ||
         userPermissions.includes(Permission.UpdateFacet),
     getItemName: item => item.name,
-    bulkAssignToChannel: (dataService, facetIds, channelId) =>
-        dataService.facet
-            .assignFacetsToChannel({
-                facetIds,
-                channelId,
-            })
-            .pipe(map(res => res.assignFacetsToChannel)),
+    bulkAssignToChannel: (dataService, facetIds, channelIds) =>
+        channelIds.map(channelId =>
+            dataService.facet
+                .assignFacetsToChannel({
+                    facetIds,
+                    channelId,
+                })
+                .pipe(map(res => res.assignFacetsToChannel)),
+        ),
 });
 
 export const removeFacetsFromChannelBulkAction = createBulkRemoveFromChannelAction<
