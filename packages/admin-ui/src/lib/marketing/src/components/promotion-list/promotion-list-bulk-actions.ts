@@ -46,16 +46,6 @@ export const assignPromotionsToChannelBulkAction = createBulkAssignToChannelActi
     requiresPermission: Permission.UpdatePromotion,
     getItemName: item => item.name,
     bulkAssignToChannel: (dataService, promotionIds, channelIds) => {
-        console.log({ channelIds });
-        dataService
-            .mutate(AssignPromotionsToChannelDocument, {
-                input: {
-                    channelId: channelIds[0],
-                    promotionIds,
-                },
-            })
-            .pipe(map(res => res.assignPromotionsToChannel));
-
         return channelIds.map(channelId =>
             dataService
                 .mutate(AssignPromotionsToChannelDocument, {

@@ -67,6 +67,7 @@
     "assign-product-to-channel-success": "Successfully assigned {count, plural, one {1 product} other {{count} products}} to { channel }",
     "assign-products-to-channel": "Assign products to channel",
     "assign-to-channel": "Assign to channel",
+    "assign-to-channels": "Assign to {count, plural, one {channel} other {channels}}",
     "assign-to-named-channel": "Assign to { channelCode }",
     "assign-variant-to-channel-success": "Successfully assigned {count, plural, one {1 product variant} other {{count} product variants}} to { channel }",
     "assign-variants-to-channel": "Assign product variants to channel",
