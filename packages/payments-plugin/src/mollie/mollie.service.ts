@@ -15,6 +15,7 @@ import {
     Logger,
     Order,
     OrderService,
+    OrderState,
     OrderStateTransitionError,
     PaymentMethod,
     PaymentMethodService,
@@ -240,14 +241,15 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
-        if (
-            order.state === 'PaymentSettled' ||
-            order.state === 'Cancelled' ||
-            order.state === 'Shipped' ||
-            order.state === 'PartiallyShipped' ||
-            order.state === 'Delivered' ||
-            order.state === 'PartiallyDelivered'
-        ) {
+        const statesThatRequireAction: OrderState[] = [
+            'AddingItems',
+            'ArrangingPayment',
+            'ArrangingAdditionalPayment',
+            'PaymentAuthorized',
+            'Draft',
+        ];
+        if (!statesThatRequireAction.includes(order.state)) {
+            // If order is not in one of these states, we don't need to handle the Mollie webhook
             Logger.info(
                 `Order ${order.code} is already '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`,
                 loggerCtx,
