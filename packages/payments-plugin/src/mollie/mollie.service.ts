@@ -12,6 +12,7 @@ import {
     EntityHydrator,
     ErrorResult,
     Injector,
+    LanguageCode,
     Logger,
     Order,
     OrderService,
@@ -33,7 +34,6 @@ import {
     MolliePaymentIntentInput,
     MolliePaymentIntentResult,
     MolliePaymentMethod,
-    MolliePaymentMethodsInput,
 } from './graphql/generated-shop-types';
 import { amountToCents, getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
@@ -193,6 +193,9 @@ export class MollieService {
             billingAddress,
             locale: getLocale(billingAddress.country, ctx.languageCode),
             lines: toMollieOrderLines(order, alreadyPaid),
+            metadata: {
+                languageCode: ctx.languageCode,
+            },
         };
         if (molliePaymentMethodCode) {
             orderInput.method = molliePaymentMethodCode as MollieClientMethod;
@@ -231,6 +234,16 @@ export class MollieService {
         }
         const client = createMollieClient({ apiKey });
         const mollieOrder = await client.orders.get(orderId);
+        if (mollieOrder.metadata?.languageCode) {
+            // Recreate ctx with the original languageCode
+            ctx = new RequestContext({
+                apiType: 'admin',
+                isAuthorized: true,
+                authorizedAsOwnerOnly: false,
+                channel: ctx.channel,
+                languageCode: mollieOrder.metadata.languageCode as LanguageCode,
+            });
+        }
         Logger.info(
             `Processing status '${mollieOrder.status}' for order ${mollieOrder.orderNumber} for channel ${ctx.channel.token} for Mollie order ${orderId}`,
             loggerCtx,
