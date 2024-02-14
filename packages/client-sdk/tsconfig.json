@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "removeComments": false,
+    "lib": ["es2019", "esnext.asynciterable", "dom"],
+    "noLib": false,
+    "skipLibCheck": true,
+    "sourceMap": true
+  }
+}

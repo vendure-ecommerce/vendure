@@ -13,6 +13,10 @@ const CLIENT_QUERY_FILES = [
     path.join(__dirname, '../../packages/admin-ui/src/lib/**/*.ts'),
 ];
 
+const CLIENT_SDK_SHOP_QUERY_FILES = [
+    path.join(__dirname, '../../packages/client-sdk/src/documents/shop/*.graphql'),
+];
+
 const specFileToIgnore = [
     'import.e2e-spec',
     'plugin.e2e-spec',
@@ -204,6 +208,22 @@ Promise.all([
                     ],
                     plugins: clientPlugins,
                     config,
+                },
+                ['./packages/client-sdk/src/gql/types.ts']: {
+                    schema: [SHOP_SCHEMA_OUTPUT_FILE],
+                    config,
+                    plugins: commonPlugins,
+                },
+                ['./packages/client-sdk/src/']: {
+                    schema: [SHOP_SCHEMA_OUTPUT_FILE],
+                    config,
+                    documents: CLIENT_SDK_SHOP_QUERY_FILES,
+                    presetConfig: {
+                        extension: '.generated.ts',
+                        baseTypesPath: '/gql/types.ts',
+                    },
+                    preset: 'near-operation-file',
+                    plugins: [disableEsLintPlugin, 'typescript-operations', 'typed-document-node'],
                 },
             },
         };

@@ -1,0 +1,17 @@
+mutation LogIn($username: String!, $password: String!, $rememberMe: Boolean) {
+    login(username: $username, password: $password, rememberMe: $rememberMe) {
+        ... on CurrentUser {
+            id
+            identifier
+            channels {
+                id
+                token
+                code
+            }
+        }
+        ... on ErrorResult {
+            errorCode
+            message
+        }
+    }
+}

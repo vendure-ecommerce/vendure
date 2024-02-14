@@ -1,0 +1,14 @@
+/* eslint-disable */
+import * as Types from '../../gql/types';
+
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type VerifyCustomerAccountMutationVariables = Types.Exact<{
+  token: Types.Scalars['String']['input'];
+  password?: Types.InputMaybe<Types.Scalars['String']['input']>;
+}>;
+
+
+export type VerifyCustomerAccountMutation = { __typename?: 'Mutation', verifyCustomerAccount: { __typename: 'CurrentUser', id: string, identifier: string } | { __typename: 'MissingPasswordError', errorCode: Types.ErrorCode, message: string } | { __typename: 'NativeAuthStrategyError', errorCode: Types.ErrorCode, message: string } | { __typename: 'PasswordAlreadySetError', errorCode: Types.ErrorCode, message: string } | { __typename: 'PasswordValidationError', errorCode: Types.ErrorCode, message: string } | { __typename: 'VerificationTokenExpiredError', errorCode: Types.ErrorCode, message: string } | { __typename: 'VerificationTokenInvalidError', errorCode: Types.ErrorCode, message: string } };
+
+
+export const VerifyCustomerAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"VerifyCustomerAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"token"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifyCustomerAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"token"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"CurrentUser"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ErrorResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errorCode"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<VerifyCustomerAccountMutation, VerifyCustomerAccountMutationVariables>;
