@@ -1,3 +1,12 @@
+## 2.2.0-next.3 (2024-02-14)
+
+
+#### Features
+
+* **admin-ui** Add bulk facet value editing to product variant list ([5ad41bf](https://github.com/vendure-ecommerce/vendure/commit/5ad41bf))
+* **core** Introduce new `ProductVariantPriceEvent` ([aa4eeb8](https://github.com/vendure-ecommerce/vendure/commit/aa4eeb8))
+* **core** Introduce new `ProductVariantPriceUpdateStrategy` ([9099f35](https://github.com/vendure-ecommerce/vendure/commit/9099f35)), closes [#2651](https://github.com/vendure-ecommerce/vendure/issues/2651)
+
 ## 2.2.0-next.2 (2024-02-07)
 
 
