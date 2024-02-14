@@ -211,23 +211,26 @@ export function createBulkAssignToChannelAction<ItemType>(
                 .pipe(
                     switchMap(result => {
                         if (result) {
-                            return config
-                                .bulkAssignToChannel(
-                                    dataService,
-                                    selection.map(c => c.id),
-                                    result.map(c => c.id),
-                                )
-                                .map(result => result.pipe(mapTo(result)));
+                            const observables = config.bulkAssignToChannel(
+                                dataService,
+                                selection.map(c => c.id),
+                                result.map(c => c.id),
+                            );
+
+                            return from(observables).pipe(
+                                switchMap(res => res),
+                                mapTo(result),
+                            );
                         } else {
                             return EMPTY;
                         }
                     }),
                 )
                 .subscribe(result => {
-                    // notificationService.success(_('common.notify-assign-to-channel-success-with-count'), {
-                    //     count: selection.length,
-                    //     channelCode: result.code,
-                    // });
+                    notificationService.success(_('common.notify-assign-to-channel-success-with-count'), {
+                        count: selection.length,
+                        channelCode: result.map(c => c.code).join(', '),
+                    });
                     clearSelection();
                 });
         },

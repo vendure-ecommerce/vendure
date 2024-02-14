@@ -77,8 +77,8 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
-        BullMQJobQueuePlugin.init({}),
-        // DefaultJobQueuePlugin.init({}),
+        // BullMQJobQueuePlugin.init({}),
+        DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -133,9 +133,9 @@ function getDbConfig(): DataSourceOptions {
                 type: 'postgres',
                 host: process.env.DB_HOST || 'localhost',
                 port: Number(process.env.DB_PORT) || 5432,
-                username: process.env.DB_USERNAME || 'postgres',
-                password: process.env.DB_PASSWORD || 'postgres',
-                database: process.env.DB_NAME || 'vendure',
+                username: process.env.DB_USERNAME || 'admin',
+                password: process.env.DB_PASSWORD || 'secret',
+                database: process.env.DB_NAME || 'postgres',
                 schema: process.env.DB_SCHEMA || 'public',
             };
         case 'sqlite':
