@@ -1335,6 +1335,7 @@ export type CustomFields = {
   ProductOption: Array<CustomFieldConfig>;
   ProductOptionGroup: Array<CustomFieldConfig>;
   ProductVariant: Array<CustomFieldConfig>;
+  ProductVariantPrice: Array<CustomFieldConfig>;
   Promotion: Array<CustomFieldConfig>;
   Region: Array<CustomFieldConfig>;
   Seller: Array<CustomFieldConfig>;
@@ -4720,6 +4721,7 @@ export type ProductVariantListOptions = {
 export type ProductVariantPrice = {
   __typename?: 'ProductVariantPrice';
   currencyCode: CurrencyCode;
+  customFields?: Maybe<Scalars['JSON']['output']>;
   price: Scalars['Money']['output'];
 };
 
