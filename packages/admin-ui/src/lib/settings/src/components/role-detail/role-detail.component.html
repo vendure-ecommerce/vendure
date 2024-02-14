@@ -64,6 +64,7 @@
         <vdr-card [title]="'settings.permissions' | translate">
             <vdr-form-field [label]="'settings.channel' | translate">
                 <vdr-channel-assignment-control
+                    [multiple]="true"
                     formControlName="channelIds"
                     [vdrDisabled]="!('UpdateAdministrator' | hasPermission)"
                 ></vdr-channel-assignment-control>

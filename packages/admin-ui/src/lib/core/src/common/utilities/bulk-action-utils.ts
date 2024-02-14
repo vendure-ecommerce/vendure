@@ -179,8 +179,8 @@ export type CreateBulkAssignToChannelActionConfig<ItemType> = Pick<
     bulkAssignToChannel: (
         dataService: DataService,
         ids: string[],
-        channelId: string,
-    ) => Observable<Array<Partial<ItemType>>>;
+        channelIds: string[],
+    ) => Array<Observable<Array<Partial<ItemType>>>>;
 };
 
 export function createBulkAssignToChannelAction<ItemType>(
@@ -215,7 +215,7 @@ export function createBulkAssignToChannelAction<ItemType>(
                                 .bulkAssignToChannel(
                                     dataService,
                                     selection.map(c => c.id),
-                                    result.id,
+                                    result.map(c => c.id),
                                 )
                                 .pipe(mapTo(result));
                         } else {
@@ -224,10 +224,10 @@ export function createBulkAssignToChannelAction<ItemType>(
                     }),
                 )
                 .subscribe(result => {
-                    notificationService.success(_('common.notify-assign-to-channel-success-with-count'), {
-                        count: selection.length,
-                        channelCode: result.code,
-                    });
+                    // notificationService.success(_('common.notify-assign-to-channel-success-with-count'), {
+                    //     count: selection.length,
+                    //     channelCode: result.code,
+                    // });
                     clearSelection();
                 });
         },
