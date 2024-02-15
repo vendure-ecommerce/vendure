@@ -1,7 +1,7 @@
 import { IFieldResolver, IResolvers } from '@graphql-tools/utils';
 import { StockMovementType } from '@vendure/common/lib/generated-types';
-import { GraphQLFloat, GraphQLSchema } from 'graphql';
-import { GraphQLDateTime, GraphQLJSON, GraphQLSafeInt } from 'graphql-scalars';
+import { GraphQLSchema } from 'graphql';
+import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import {
@@ -18,6 +18,7 @@ import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { ApiType } from '../common/get-api-type';
 import { RequestContext } from '../common/request-context';
+import { userHasPermissionsOnCustomField } from '../common/user-has-permissions-on-custom-field';
 
 import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
 import { GraphQLMoney } from './money-scalar';
@@ -165,8 +166,7 @@ function generateCustomFieldRelationResolvers(
 
     const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(configService.customFields, schema);
     for (const [entityName, customFields] of customFieldsConfig) {
-        const relationCustomFields = customFields.filter(isRelationalType);
-        if (relationCustomFields.length === 0 || !schema.getType(entityName)) {
+        if (!schema.getType(entityName)) {
             continue;
         }
         const customFieldTypeName = `${entityName}CustomFields`;
@@ -176,7 +176,7 @@ function generateCustomFieldRelationResolvers(
         const excludeFromShopApi = ['GlobalSettings'].includes(entityName);
 
         // In order to resolve the relations in the CustomFields type, we need
-        // access to the entity id. Therefore we attach it to the resolved value
+        // access to the entity id. Therefore, we attach it to the resolved value
         // so that it is available to the `relationResolver` below.
         const customFieldResolver: IFieldResolver<any, any> = (source: any) => {
             return {
@@ -197,40 +197,50 @@ function generateCustomFieldRelationResolvers(
                 shopResolvers.PaymentMethodQuote = resolverObject;
             }
         }
-        for (const fieldDef of relationCustomFields) {
+        for (const fieldDef of customFields) {
             if (fieldDef.internal === true) {
                 // Do not create any resolvers for internal relations
                 continue;
             }
-            const relationResolver: IFieldResolver<any, any> = async (
-                source: any,
-                args: any,
-                context: any,
-            ) => {
-                const ctx: RequestContext = context.req[REQUEST_CONTEXT_KEY];
-                const eagerEntity = source[fieldDef.name];
-                // If the relation is eager-loaded, we can simply try to translate this relation entity if they have translations
-                if (eagerEntity != null) {
-                    return customFieldRelationResolverService.translateEntity(ctx, eagerEntity, fieldDef);
-                }
-                const entityId = source[ENTITY_ID_KEY];
-                return customFieldRelationResolverService.resolveRelation({
-                    ctx,
-                    fieldDef,
-                    entityName,
-                    entityId,
-                });
-            };
+            let resolver: IFieldResolver<any, any>;
+            if (isRelationalType(fieldDef)) {
+                resolver = async (source: any, args: any, context: any) => {
+                    const ctx: RequestContext = context.req[REQUEST_CONTEXT_KEY];
+                    if (!userHasPermissionsOnCustomField(ctx, fieldDef)) {
+                        return null;
+                    }
+                    const eagerEntity = source[fieldDef.name];
+                    // If the relation is eager-loaded, we can simply try to translate this relation entity if they have translations
+                    if (eagerEntity != null) {
+                        return customFieldRelationResolverService.translateEntity(ctx, eagerEntity, fieldDef);
+                    }
+                    const entityId = source[ENTITY_ID_KEY];
+                    return customFieldRelationResolverService.resolveRelation({
+                        ctx,
+                        fieldDef,
+                        entityName,
+                        entityId,
+                    });
+                };
+            } else {
+                resolver = async (source: any, args: any, context: any) => {
+                    const ctx: RequestContext = context.req[REQUEST_CONTEXT_KEY];
+                    if (!userHasPermissionsOnCustomField(ctx, fieldDef)) {
+                        return null;
+                    }
+                    return source[fieldDef.name];
+                };
+            }
 
             adminResolvers[customFieldTypeName] = {
                 ...adminResolvers[customFieldTypeName],
-                [fieldDef.name]: relationResolver,
+                [fieldDef.name]: resolver,
             } as any;
 
             if (fieldDef.public !== false && !excludeFromShopApi) {
                 shopResolvers[customFieldTypeName] = {
                     ...shopResolvers[customFieldTypeName],
-                    [fieldDef.name]: relationResolver,
+                    [fieldDef.name]: resolver,
                 } as any;
             }
         }

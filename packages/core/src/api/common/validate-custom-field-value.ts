@@ -1,4 +1,3 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { UserInputError } from '../../common/error/errors';
@@ -12,7 +11,9 @@ import {
     StringCustomFieldConfig,
     TypedCustomFieldConfig,
 } from '../../config/custom-field/custom-field-types';
+
 import { RequestContext } from './request-context';
+import { userHasPermissionsOnCustomField } from './user-has-permissions-on-custom-field';
 
 /**
  * Validates the value of a custom field input against any configured constraints.
@@ -32,6 +33,11 @@ export async function validateCustomFieldValue(
             throw new UserInputError('error.field-invalid-non-nullable', {
                 name: config.name,
             });
+        }
+    }
+    if (config.requiresPermission) {
+        if (!userHasPermissionsOnCustomField(ctx, config)) {
+            throw new UserInputError('error.field-invalid-no-permission', { name: config.name });
         }
     }
     if (config.list === true && Array.isArray(value)) {

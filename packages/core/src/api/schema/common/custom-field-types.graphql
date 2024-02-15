@@ -7,6 +7,7 @@ interface CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     ui: JSON
 }
 
@@ -20,6 +21,7 @@ type StringCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     pattern: String
     options: [StringFieldOption!]
     ui: JSON
@@ -40,6 +42,7 @@ type LocaleStringCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     pattern: String
     ui: JSON
 }
@@ -52,6 +55,7 @@ type IntCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     min: Int
     max: Int
     step: Int
@@ -66,6 +70,7 @@ type FloatCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     min: Float
     max: Float
     step: Float
@@ -80,6 +85,7 @@ type BooleanCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     ui: JSON
 }
 """
@@ -95,6 +101,7 @@ type DateTimeCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     min: String
     max: String
     step: Int
@@ -110,6 +117,7 @@ type RelationCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     entity: String!
     scalarFields: [String!]!
     ui: JSON
@@ -124,6 +132,7 @@ type TextCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     ui: JSON
 }
 
@@ -136,6 +145,7 @@ type LocaleTextCustomFieldConfig implements CustomField {
     readonly: Boolean
     internal: Boolean
     nullable: Boolean
+    requiresPermission: [Permission!]
     ui: JSON
 }
 
