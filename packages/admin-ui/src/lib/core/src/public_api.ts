@@ -122,6 +122,7 @@ export * from './providers/nav-builder/nav-builder.service';
 export * from './providers/notification/notification.service';
 export * from './providers/overlay-host/overlay-host.service';
 export * from './providers/page/page.service';
+export * from './providers/permissions/permissions.service';
 export * from './shared/components/action-bar/action-bar.component';
 export * from './shared/components/action-bar-items/action-bar-items.component';
 export * from './shared/components/address-form/address-form.component';

@@ -8,7 +8,6 @@ import {
     GetServerConfigQuery,
     OrderProcessState,
     PermissionDefinition,
-    ServerConfig,
 } from '../common/generated-types';
 
 import { GET_GLOBAL_SETTINGS, GET_SERVER_CONFIG } from './definitions/settings-definitions';

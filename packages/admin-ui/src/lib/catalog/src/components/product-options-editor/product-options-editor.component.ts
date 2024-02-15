@@ -12,6 +12,7 @@ import {
     LanguageCode,
     NotificationService,
     Permission,
+    PermissionsService,
     ProductOptionFragment,
     ProductOptionGroupFragment,
     ServerConfigService,
@@ -48,12 +49,13 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
         protected router: Router,
         protected serverConfigService: ServerConfigService,
         protected dataService: DataService,
+        protected permissionsService: PermissionsService,
         private productDetailService: ProductDetailService,
         private formBuilder: UntypedFormBuilder,
         private changeDetector: ChangeDetectorRef,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super(route, router, serverConfigService, dataService, permissionsService);
         this.optionGroupCustomFields = this.getCustomFieldConfig('ProductOptionGroup');
         this.optionCustomFields = this.getCustomFieldConfig('ProductOption');
     }

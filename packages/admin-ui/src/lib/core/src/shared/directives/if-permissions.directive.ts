@@ -1,16 +1,9 @@
-import {
-    ChangeDetectorRef,
-    Directive,
-    EmbeddedViewRef,
-    Input,
-    TemplateRef,
-    ViewContainerRef,
-} from '@angular/core';
+import { ChangeDetectorRef, Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 import { of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 import { Permission } from '../../common/generated-types';
-import { DataService } from '../../data/providers/data.service';
+import { PermissionsService } from '../../providers/permissions/permissions.service';
 
 import { IfDirectiveBase } from './if-directive-base';
 
@@ -39,8 +32,8 @@ export class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] |
     constructor(
         _viewContainer: ViewContainerRef,
         templateRef: TemplateRef<any>,
-        private dataService: DataService,
         private changeDetectorRef: ChangeDetectorRef,
+        private permissionsService: PermissionsService,
     ) {
         super(_viewContainer, templateRef, permissions => {
             if (permissions == null) {
@@ -48,17 +41,10 @@ export class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] |
             } else if (!permissions) {
                 return of(false);
             }
-            return this.dataService.client
-                .userStatus()
-                .mapStream(({ userStatus }) => {
-                    for (const permission of permissions) {
-                        if (userStatus.permissions.includes(permission)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                })
-                .pipe(tap(() => this.changeDetectorRef.markForCheck()));
+            return this.permissionsService.currentUserPermissions$.pipe(
+                map(() => this.permissionsService.userHasPermissions(permissions)),
+                tap(() => this.changeDetectorRef.markForCheck()),
+            );
         });
     }
 
