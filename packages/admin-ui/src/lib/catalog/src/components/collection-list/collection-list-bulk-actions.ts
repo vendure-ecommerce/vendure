@@ -79,13 +79,15 @@ export const assignCollectionsToChannelBulkAction = createBulkAssignToChannelAct
         userPermissions.includes(Permission.UpdateCatalog) ||
         userPermissions.includes(Permission.UpdateCollection),
     getItemName: item => item.name,
-    bulkAssignToChannel: (dataService, collectionIds, channelId) =>
-        dataService.collection
-            .assignCollectionsToChannel({
-                collectionIds,
-                channelId,
-            })
-            .pipe(map(res => res.assignCollectionsToChannel)),
+    bulkAssignToChannel: (dataService, collectionIds, channelIds) =>
+        channelIds.map(channelId =>
+            dataService.collection
+                .assignCollectionsToChannel({
+                    collectionIds,
+                    channelId,
+                })
+                .pipe(map(res => res.assignCollectionsToChannel)),
+        ),
 });
 
 export const removeCollectionsFromChannelBulkAction = createBulkRemoveFromChannelAction<

@@ -15,11 +15,12 @@ type Channel = ItemOf<GetChannelsQuery, 'channels'>;
     styleUrls: ['./assign-to-channel-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel> {
-    selectedChannel: Channel | null | undefined;
+export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel[]> {
+    selectedChannels: Channel[] = [];
+
     currentChannel: Channel;
     availableChannels: Channel[];
-    resolveWith: (result?: Channel) => void;
+    resolveWith: (result?: Channel[]) => void;
     selectedChannelIdControl = new UntypedFormControl();
 
     itemNames: string;
@@ -45,13 +46,13 @@ export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel> {
     }
 
     selectChannel(channelIds: string[]) {
-        this.selectedChannel = this.availableChannels.find(c => c.id === channelIds[0]);
+        this.selectedChannels = this.availableChannels.filter(c => channelIds.includes(c.id));
     }
 
     assign() {
-        const selectedChannel = this.selectedChannel;
-        if (selectedChannel) {
-            this.resolveWith(selectedChannel);
+        const selectedChannels = this.selectedChannels;
+        if (selectedChannels.length > 0) {
+            this.resolveWith(selectedChannels);
         }
     }
 
