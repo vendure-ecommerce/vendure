@@ -82,15 +82,66 @@ export interface NavMenuSection {
 
 /**
  * @description
- * Providers available to the onClick handler of an {@link ActionBarItem} or {@link NavMenuItem}.
+ * Providers & data available to the `onClick` & `buttonState` functions of an {@link ActionBarItem},
+ * {@link ActionBarDropdownMenuItem} or {@link NavMenuItem}.
  *
  * @docsCategory action-bar
  */
 export interface ActionBarContext {
+    /**
+     * @description
+     * The router's [ActivatedRoute](https://angular.dev/guide/routing/router-reference#activated-route) object for
+     * the current route. This object contains information about the route, its parameters, and additional data
+     * associated with the route.
+     */
     route: ActivatedRoute;
+    /**
+     * @description
+     * The Angular [Injector](https://angular.dev/api/core/Injector) which can be used to get instances
+     * of services and other providers available in the application.
+     */
     injector: Injector;
+    /**
+     * @description
+     * The [DataService](/reference/admin-ui-api/services/data-service), which provides methods for querying the
+     * server-side data.
+     */
     dataService: DataService;
+    /**
+     * @description
+     * The [NotificationService](/reference/admin-ui-api/services/notification-service), which provides methods for
+     * displaying notifications to the user.
+     */
     notificationService: NotificationService;
+    /**
+     * @description
+     * An observable of the current entity in a detail view. In a list view the observable will not emit any values.
+     *
+     * @example
+     * ```ts
+     * addActionBarDropdownMenuItem({
+     *     id: 'print-invoice',
+     *     locationId: 'order-detail',
+     *     label: 'Print Invoice',
+     *     icon: 'printer',
+     *     buttonState: context => {
+     *         // highlight-start
+     *         return context.entity$.pipe(
+     *             map((order) => {
+     *                 return order?.state === 'PaymentSettled'
+     *                     ? { disabled: false, visible: true }
+     *                     : { disabled: true, visible: true };
+     *             }),
+     *         );
+     *         // highlight-end
+     *     },
+     *     requiresPermission: ['UpdateOrder'],
+     * }),
+     * ```
+     *
+     * @since 2.2.0
+     */
+    entity$: Observable<Record<string, any> | undefined>;
 }
 
 export interface ActionBarButtonState {
@@ -174,7 +225,7 @@ export interface ActionBarDropdownMenuItem {
      * A function which returns an observable of the button state, allowing you to
      * dynamically enable/disable or show/hide the button.
      */
-    buttonState?: (context: ActionBarContext) => Observable<ActionBarButtonState>;
+    buttonState?: (context: ActionBarContext) => Observable<ActionBarButtonState | undefined>;
     onClick?: (event: MouseEvent, context: ActionBarContext) => void;
     routerLink?: RouterLinkDefinition;
     icon?: string;

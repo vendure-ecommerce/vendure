@@ -126,6 +126,7 @@ export * from './providers/page/page.service';
 export * from './providers/permissions/permissions.service';
 export * from './shared/components/action-bar/action-bar.component';
 export * from './shared/components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
+export * from './shared/components/action-bar-items/action-bar-base.component';
 export * from './shared/components/action-bar-items/action-bar-items.component';
 export * from './shared/components/address-form/address-form.component';
 export * from './shared/components/affixed-input/affixed-input.component';
