@@ -17,7 +17,7 @@ import { UIExtensionLocationId } from '../../../common/component-registry-types'
 import { DataService } from '../../../data/providers/data.service';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 
-type UiExtensionType = 'actionBar' | 'navMenu' | 'detailComponent' | 'dataTable';
+type UiExtensionType = 'actionBar' | 'actionBarDropdown' | 'navMenu' | 'detailComponent' | 'dataTable';
 
 @Component({
     selector: 'vdr-ui-extension-point',
@@ -25,7 +25,7 @@ type UiExtensionType = 'actionBar' | 'navMenu' | 'detailComponent' | 'dataTable'
     styleUrls: ['./ui-extension-point.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UiExtensionPointComponent implements OnInit, AfterViewInit {
+export class UiExtensionPointComponent implements OnInit {
     @Input() locationId: UIExtensionLocationId;
     @Input() metadata?: any;
     @Input() topPx: number;
@@ -66,13 +66,6 @@ export class UiExtensionPointComponent implements OnInit, AfterViewInit {
                 }),
             );
     }
-
-    ngAfterViewInit() {
-        // this.dropdownComponent.onOpenChange(isOpen => {
-        //     if (isOpen) {
-        //     }
-        // });
-    }
 }
 
 function highlightTsCode(tsCode: string) {
@@ -105,6 +98,16 @@ import { addActionBarItem } from '@vendure/admin-ui/core';
 export default [
   addActionBarItem({
     id: 'my-button',
+    label: 'My Action',
+    locationId: '${locationId}',
+  }),
+];`,
+    actionBarDropdown: locationId => `
+import { addActionBarDropdownMenuItem } from '@vendure/admin-ui/core';
+
+export default [
+  addActionBarDropdownMenuItem({
+    id: 'my-dropdown-item',
     label: 'My Action',
     locationId: '${locationId}',
   }),

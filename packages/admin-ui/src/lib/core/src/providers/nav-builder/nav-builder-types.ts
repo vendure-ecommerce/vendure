@@ -105,6 +105,10 @@ export interface ActionBarButtonState {
  * @docsCategory action-bar
  */
 export interface ActionBarItem {
+    /**
+     * @description
+     * A unique identifier for the item.
+     */
     id: string;
     label: string;
     locationId: ActionBarLocationId;
@@ -126,6 +130,53 @@ export interface ActionBarItem {
     routerLink?: RouterLinkDefinition;
     buttonColor?: 'primary' | 'success' | 'warning';
     buttonStyle?: 'solid' | 'outline' | 'link';
+    icon?: string;
+    /**
+     * @description
+     * Control the display of this item based on the user permissions. Note: if you attempt to pass a
+     * {@link PermissionDefinition} object, you will get a compilation error. Instead, pass the plain
+     * string version. For example, if the permission is defined as:
+     * ```ts
+     * export const MyPermission = new PermissionDefinition('ProductReview');
+     * ```
+     * then the generated permission strings will be:
+     *
+     * - `CreateProductReview`
+     * - `ReadProductReview`
+     * - `UpdateProductReview`
+     * - `DeleteProductReview`
+     */
+    requiresPermission?: string | string[];
+}
+
+/**
+ * @description
+ * A dropdown menu item in the ActionBar area at the top of one of the list or detail views.
+ *
+ * @docsCategory action-bar
+ * @since 2.2.0
+ */
+export interface ActionBarDropdownMenuItem {
+    /**
+     * @description
+     * A unique identifier for the item.
+     */
+    id: string;
+    label: string;
+    locationId: ActionBarLocationId;
+    /**
+     * @description
+     * Whether to render a divider above this item.
+     */
+    hasDivider?: boolean;
+    /**
+     * @description
+     * A function which returns an observable of the button state, allowing you to
+     * dynamically enable/disable or show/hide the button.
+     */
+    buttonState?: (context: ActionBarContext) => Observable<ActionBarButtonState>;
+    onClick?: (event: MouseEvent, context: ActionBarContext) => void;
+    routerLink?: RouterLinkDefinition;
     icon?: string;
     /**
      * @description

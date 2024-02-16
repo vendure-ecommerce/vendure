@@ -2,7 +2,7 @@
     <vdr-action-bar>
         <vdr-ab-left> </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="tax-category-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="tax-category-list" />
             <a
                 class="btn btn-primary"
                 *vdrIfPermissions="['CreateSettings', 'CreateTaxCategory']"
@@ -11,6 +11,7 @@
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'settings.create-new-tax-category' | translate }}
             </a>
+            <vdr-action-bar-dropdown-menu locationId="tax-category-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

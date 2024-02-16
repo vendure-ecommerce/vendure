@@ -2,7 +2,7 @@
     <vdr-action-bar>
         <vdr-ab-left> </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="role-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="role-list" />
             <a
                 class="btn btn-primary"
                 *vdrIfPermissions="['CreateAdministrator']"
@@ -11,6 +11,7 @@
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'settings.create-new-role' | translate }}
             </a>
+            <vdr-action-bar-dropdown-menu locationId="role-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

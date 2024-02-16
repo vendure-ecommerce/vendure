@@ -1,4 +1,4 @@
-import { Directive, HostListener } from '@angular/core';
+import { Directive, HostListener, Inject } from '@angular/core';
 
 import { DropdownComponent } from './dropdown.component';
 
@@ -8,10 +8,12 @@ import { DropdownComponent } from './dropdown.component';
     host: { '[class.dropdown-item]': 'true' },
 })
 export class DropdownItemDirective {
-    constructor(private dropdown: DropdownComponent) {}
+    constructor(
+        @Inject(DropdownComponent) private dropdown: DropdownComponent | Promise<DropdownComponent>,
+    ) {}
 
     @HostListener('click', ['$event'])
-    onDropdownItemClick(event: any): void {
-        this.dropdown.onClick();
+    async onDropdownItemClick() {
+        (await this.dropdown).onClick();
     }
 }

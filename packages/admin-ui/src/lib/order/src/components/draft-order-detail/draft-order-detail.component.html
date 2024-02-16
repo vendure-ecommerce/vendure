@@ -7,7 +7,7 @@
         </vdr-ab-left>
 
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="draft-order-detail"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="draft-order-detail" />
             <button
                 class="btn btn-primary"
                 (click)="completeOrder()"
@@ -16,17 +16,12 @@
                 <clr-icon shape="check"></clr-icon>
                 {{ 'order.complete-draft-order' | translate }}
             </button>
-            <vdr-dropdown>
-                <button class="icon-button" vdrDropdownTrigger>
-                    <clr-icon shape="ellipsis-vertical"></clr-icon>
+            <vdr-action-bar-dropdown-menu [alwaysShow]="true" locationId="draft-order-detail">
+                <button type="button" vdrDropdownItem (click)="deleteOrder()">
+                    <clr-icon shape="trash" class="is-danger"></clr-icon>
+                    {{ 'order.delete-draft-order' | translate }}
                 </button>
-                <vdr-dropdown-menu vdrPosition="bottom-right">
-                    <button type="button" vdrDropdownItem (click)="deleteOrder()">
-                        <clr-icon shape="trash" class="is-danger"></clr-icon>
-                        {{ 'order.delete-draft-order' | translate }}
-                    </button>
-                </vdr-dropdown-menu>
-            </vdr-dropdown>
+            </vdr-action-bar-dropdown-menu>
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

@@ -6,11 +6,11 @@
                 [availableLanguageCodes]="availableLanguages$ | async"
                 [currentLanguageCode]="languageCode$ | async"
                 (languageCodeChange)="setLanguage($event)"
-            ></vdr-language-selector>
+            />
         </vdr-ab-left>
 
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="payment-method-detail"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="payment-method-detail" />
             <button
                 class="btn btn-primary"
                 *ngIf="isNew$ | async; else updateButton"
@@ -29,6 +29,7 @@
                     {{ 'common.update' | translate }}
                 </button>
             </ng-template>
+            <vdr-action-bar-dropdown-menu locationId="payment-method-detail" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>
