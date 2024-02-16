@@ -20,6 +20,8 @@ import { NavBuilderService } from '../providers/nav-builder/nav-builder.service'
  *     }),
  * ];
  * ```
+ *
+ * @since 2.2.0
  * @docsCategory action-bar
  */
 export function addActionBarDropdownMenuItem(config: ActionBarDropdownMenuItem): Provider {

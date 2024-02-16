@@ -161,7 +161,16 @@ export interface ActionBarItem {
      * A unique identifier for the item.
      */
     id: string;
+    /**
+     * @description
+     * The label to display for the item. This can also be a translation token,
+     * e.g. `invoice-plugin.print-invoice`.
+     */
     label: string;
+    /**
+     * @description
+     * The location in the UI where this button should be displayed.
+     */
     locationId: ActionBarLocationId;
     /**
      * @description
@@ -181,15 +190,23 @@ export interface ActionBarItem {
     routerLink?: RouterLinkDefinition;
     buttonColor?: 'primary' | 'success' | 'warning';
     buttonStyle?: 'solid' | 'outline' | 'link';
+    /**
+     * @description
+     * An optional icon to display in the button. The icon
+     * should be a valid shape name from the [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/)
+     * set.
+     */
     icon?: string;
     /**
      * @description
      * Control the display of this item based on the user permissions. Note: if you attempt to pass a
      * {@link PermissionDefinition} object, you will get a compilation error. Instead, pass the plain
      * string version. For example, if the permission is defined as:
+     *
      * ```ts
      * export const MyPermission = new PermissionDefinition('ProductReview');
      * ```
+     *
      * then the generated permission strings will be:
      *
      * - `CreateProductReview`
@@ -213,7 +230,16 @@ export interface ActionBarDropdownMenuItem {
      * A unique identifier for the item.
      */
     id: string;
+    /**
+     * @description
+     * The label to display for the item. This can also be a translation token,
+     * e.g. `invoice-plugin.print-invoice`.
+     */
     label: string;
+    /**
+     * @description
+     * The location in the UI where this menu item should be displayed.
+     */
     locationId: ActionBarLocationId;
     /**
      * @description
@@ -228,12 +254,19 @@ export interface ActionBarDropdownMenuItem {
     buttonState?: (context: ActionBarContext) => Observable<ActionBarButtonState | undefined>;
     onClick?: (event: MouseEvent, context: ActionBarContext) => void;
     routerLink?: RouterLinkDefinition;
+    /**
+     * @description
+     * An optional icon to display with the item. The icon
+     * should be a valid shape name from the [Clarity Icons](https://core.clarity.design/foundation/icons/shapes/)
+     * set.
+     */
     icon?: string;
     /**
      * @description
      * Control the display of this item based on the user permissions. Note: if you attempt to pass a
      * {@link PermissionDefinition} object, you will get a compilation error. Instead, pass the plain
      * string version. For example, if the permission is defined as:
+     *
      * ```ts
      * export const MyPermission = new PermissionDefinition('ProductReview');
      * ```
