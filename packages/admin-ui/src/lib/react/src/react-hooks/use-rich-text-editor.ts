@@ -4,17 +4,28 @@ import { Injector } from '@angular/core';
 import { CreateEditorViewOptions, ProsemirrorService, ContextMenuService } from '@vendure/admin-ui/core';
 import { useInjector } from './use-injector';
 
+export interface useRichTextEditorOptions extends Omit<CreateEditorViewOptions, 'element'> {
+    /**
+     * @description
+     * Control the DOM attributes of the editable element. May be either an object or a function going from an editor state to an object.
+     * By default, the element will get a class "ProseMirror", and will have its contentEditable attribute determined by the editable prop.
+     * Additional classes provided here will be added to the class. For other attributes, the value provided first (as in someProp) will be used.
+     * Copied from real property description.
+     */
+    attributes?: Record<string, string>;
+}
+
 /**
  * @description
- * Provides access to the ProseMirror editor instance.
+ * Provides access to the ProseMirror (rich text editor) instance.
  *
  * @example
  * ```ts
- * import { useProseMirror } from '\@vendure/admin-ui/react';
+ * import { useRichTextEditor } from '\@vendure/admin-ui/react';
  * import React from 'react';
  *
  * export function Component() {
- *     const { ref, editor } = useProseMirror({
+ *     const { ref, editor } = useRichTextEditor({
  *        attributes: { class: '' },
  *        onTextInput: (text) => console.log(text),
  *        isReadOnly: () => false,
@@ -26,18 +37,7 @@ import { useInjector } from './use-injector';
  *
  * @docsCategory react-hooks
  */
-export interface UseProseMirrorOptions extends Omit<CreateEditorViewOptions, 'element'> {
-    /**
-     * @description
-     * Control the DOM attributes of the editable element. May be either an object or a function going from an editor state to an object.
-     * By default, the element will get a class "ProseMirror", and will have its contentEditable attribute determined by the editable prop.
-     * Additional classes provided here will be added to the class. For other attributes, the value provided first (as in someProp) will be used.
-     * Copied from real property description.
-     */
-    attributes?: Record<string, string>;
-}
-
-export const useProseMirror = ({ attributes, onTextInput, isReadOnly }: UseProseMirrorOptions) => {
+export const useRichTextEditor = ({ attributes, onTextInput, isReadOnly }: useRichTextEditorOptions) => {
     const injector = useInjector(Injector);
     const ref = useRef<HTMLDivElement>(null);
     const prosemirror = new ProsemirrorService(injector, useInjector(ContextMenuService));
