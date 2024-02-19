@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { pick } from '@vendure/common/lib/pick';
 import {
     Collection,
     CollectionService,
     defaultEntityDuplicators,
     EntityDuplicator,
+    variantIdCollectionFilter,
     LanguageCode,
     mergeConfig,
     PermissionDefinition,
@@ -29,7 +31,9 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import {
     CREATE_ADMINISTRATOR,
+    CREATE_COLLECTION,
     CREATE_ROLE,
+    GET_COLLECTION,
     GET_COLLECTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
@@ -274,13 +278,13 @@ describe('Duplicating entities', () => {
 
     it('duplicate gets created', async () => {
         const { collection } = await adminClient.query<
-            Codegen.GetDuplicatedCollectionQuery,
-            Codegen.GetDuplicatedCollectionQueryVariables
-        >(GET_DUPLICATED_COLLECTION, {
+            Codegen.GetCollectionQuery,
+            Codegen.GetCollectionQueryVariables
+        >(GET_COLLECTION, {
             id: 'T_3',
         });
 
-        expect(collection).toEqual({
+        expect(pick(collection, ['id', 'name', 'slug'])).toEqual({
             id: 'T_3',
             name: 'Plants (copy)',
             slug: 'plants-copy',
@@ -441,6 +445,17 @@ describe('Duplicating entities', () => {
                 );
             });
 
+            it('product name is suffixed', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct2Id,
+                });
+
+                expect(product?.name).toBe('Laptop (copy)');
+            });
+
             it('variant SKUs are suffixed', async () => {
                 const { product } = await adminClient.query<
                     Codegen.GetProductWithVariantsQuery,
@@ -504,6 +519,132 @@ describe('Duplicating entities', () => {
                 );
             });
         });
+
+        describe('Collection duplicator', () => {
+            let testCollection: Codegen.CreateCollectionMutation['createCollection'];
+            let duplicatedCollectionId: string;
+
+            beforeAll(async () => {
+                await adminClient.asSuperAdmin();
+
+                const { createCollection } = await adminClient.query<
+                    Codegen.CreateCollectionMutation,
+                    Codegen.CreateCollectionMutationVariables
+                >(CREATE_COLLECTION, {
+                    input: {
+                        parentId: 'T_2',
+                        assetIds: ['T_1'],
+                        featuredAssetId: 'T_1',
+                        isPrivate: false,
+                        inheritFilters: false,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Test Collection',
+                                description: 'Test Collection description',
+                                slug: 'test-collection',
+                            },
+                        ],
+                        filters: [
+                            {
+                                code: variantIdCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'variantIds',
+                                        value: '["T_1"]',
+                                    },
+                                    {
+                                        name: 'combineWithAnd',
+                                        value: 'true',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                testCollection = createCollection;
+            });
+
+            it('duplicate collection', async () => {
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Collection',
+                        entityId: testCollection.id,
+                        duplicatorInput: {
+                            code: 'collection-duplicator',
+                            arguments: [],
+                        },
+                    },
+                });
+
+                duplicateEntityGuard.assertSuccess(duplicateEntity);
+
+                expect(testCollection.id).toBe('T_4');
+                expect(duplicateEntity.newEntityId).toBe('T_5');
+
+                duplicatedCollectionId = duplicateEntity.newEntityId;
+            });
+
+            it('collection name is suffixed', async () => {
+                const { collection } = await adminClient.query<
+                    Codegen.GetCollectionQuery,
+                    Codegen.GetCollectionQueryVariables
+                >(GET_COLLECTION, {
+                    id: duplicatedCollectionId,
+                });
+
+                expect(collection?.name).toBe('Test Collection (copy)');
+            });
+
+            it('is initially private', async () => {
+                const { collection } = await adminClient.query<
+                    Codegen.GetCollectionQuery,
+                    Codegen.GetCollectionQueryVariables
+                >(GET_COLLECTION, {
+                    id: duplicatedCollectionId,
+                });
+
+                expect(collection?.isPrivate).toBe(true);
+            });
+
+            it('assets are duplicated', async () => {
+                const { collection } = await adminClient.query<
+                    Codegen.GetCollectionQuery,
+                    Codegen.GetCollectionQueryVariables
+                >(GET_COLLECTION, {
+                    id: duplicatedCollectionId,
+                });
+
+                expect(collection?.featuredAsset).toEqual(testCollection.featuredAsset);
+                expect(collection?.assets.length).toBe(1);
+                expect(collection?.assets).toEqual(testCollection.assets);
+            });
+
+            it('parentId matches', async () => {
+                const { collection } = await adminClient.query<
+                    Codegen.GetCollectionQuery,
+                    Codegen.GetCollectionQueryVariables
+                >(GET_COLLECTION, {
+                    id: duplicatedCollectionId,
+                });
+
+                expect(collection?.parent?.id).toBe(testCollection.parent?.id);
+            });
+
+            it('filters are duplicated', async () => {
+                const { collection } = await adminClient.query<
+                    Codegen.GetCollectionQuery,
+                    Codegen.GetCollectionQueryVariables
+                >(GET_COLLECTION, {
+                    id: duplicatedCollectionId,
+                });
+
+                expect(collection?.filters).toEqual(testCollection.filters);
+            });
+        });
     });
 });
 
@@ -533,16 +674,6 @@ const DUPLICATE_ENTITY = gql`
                 message
                 duplicationError
             }
-        }
-    }
-`;
-
-export const GET_DUPLICATED_COLLECTION = gql`
-    query GetDuplicatedCollection($id: ID) {
-        collection(id: $id) {
-            id
-            name
-            slug
         }
     }
 `;

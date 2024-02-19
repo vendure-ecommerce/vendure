@@ -1038,3 +1038,19 @@ export const ASSIGN_COLLECTIONS_TO_CHANNEL = gql`
     }
     ${COLLECTION_FRAGMENT}
 `;
+
+export const GET_COLLECTION = gql`
+    query GetCollection($id: ID, $slug: String, $variantListOptions: ProductVariantListOptions) {
+        collection(id: $id, slug: $slug) {
+            ...Collection
+            productVariants(options: $variantListOptions) {
+                items {
+                    id
+                    name
+                    price
+                }
+            }
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;

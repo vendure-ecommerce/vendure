@@ -69,7 +69,7 @@ export const productDuplicator = new EntityDuplicator({
         });
         const translations: ProductTranslationInput[] = product.translations.map(translation => {
             return {
-                name: translation.name + ' Copy',
+                name: translation.name + ' (copy)',
                 slug: translation.slug + '-copy',
                 description: translation.description,
                 languageCode: translation.languageCode,
