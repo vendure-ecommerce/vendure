@@ -9,11 +9,16 @@ import {
 import { RequestContext } from '../../../api/index';
 import { DuplicateEntityError } from '../../../common/index';
 import { ConfigService } from '../../../config/index';
+import { TransactionalConnection } from '../../../connection/index';
 import { ConfigArgService } from '../config-arg/config-arg.service';
 
 @Injectable()
 export class EntityDuplicatorService {
-    constructor(private configService: ConfigService, private configArgService: ConfigArgService) {}
+    constructor(
+        private configService: ConfigService,
+        private configArgService: ConfigArgService,
+        private connection: TransactionalConnection,
+    ) {}
 
     getEntityDuplicators(ctx: RequestContext): EntityDuplicatorDefinition[] {
         return this.configArgService.getDefinitions('EntityDuplicator').map(x => ({
@@ -38,10 +43,10 @@ export class EntityDuplicatorService {
         }
 
         // Check permissions
-        const permissionsArray = Array.isArray(duplicator.requiresPermission)
-            ? duplicator.requiresPermission
-            : [duplicator.requiresPermission];
-        if (permissionsArray.length === 0 || !ctx.userHasPermissions(permissionsArray as Permission[])) {
+        if (
+            duplicator.requiresPermission.length === 0 ||
+            !ctx.userHasPermissions(duplicator.requiresPermission)
+        ) {
             return new DuplicateEntityError({
                 duplicationError: ctx.translate(`message.entity-duplication-no-permission`),
             });
@@ -49,18 +54,21 @@ export class EntityDuplicatorService {
 
         const parsedInput = this.configArgService.parseInput('EntityDuplicator', input.duplicatorInput);
 
-        try {
-            const newEntity = await duplicator.duplicate({
-                ctx,
-                entityName: input.entityName,
-                id: input.entityId,
-                args: parsedInput.args,
-            });
-            return { newEntityId: newEntity.id };
-        } catch (e: any) {
-            return new DuplicateEntityError({
-                duplicationError: e.message ?? e.toString(),
-            });
-        }
+        return await this.connection.withTransaction(ctx, async innerCtx => {
+            try {
+                const newEntity = await duplicator.duplicate({
+                    ctx: innerCtx,
+                    entityName: input.entityName,
+                    id: input.entityId,
+                    args: parsedInput.args,
+                });
+                return { newEntityId: newEntity.id };
+            } catch (e: any) {
+                await this.connection.rollBackTransaction(innerCtx);
+                return new DuplicateEntityError({
+                    duplicationError: e.message ?? e.toString(),
+                });
+            }
+        });
     }
 }

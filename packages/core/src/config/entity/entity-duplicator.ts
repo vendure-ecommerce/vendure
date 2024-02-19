@@ -41,8 +41,10 @@ export class EntityDuplicator<T extends ConfigArgs = ConfigArgs> extends Configu
         return this._forEntities;
     }
 
-    get requiresPermission() {
-        return this._requiresPermission;
+    get requiresPermission(): Permission[] {
+        return (Array.isArray(this._requiresPermission)
+            ? this._requiresPermission
+            : [this._requiresPermission]) as any as Permission[];
     }
 
     constructor(config: EntityDuplicatorConfig<T>) {

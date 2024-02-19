@@ -1,4 +1,4 @@
-import { ConfigArg, FulfillOrderInput, OrderLineInput } from '@vendure/common/lib/generated-types';
+import { ConfigArg, OrderLineInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -14,7 +14,6 @@ import {
     FulfillmentState,
     FulfillmentTransitionData,
 } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
-import { CalculateShippingFnResult } from '../shipping-method/shipping-calculator';
 
 /**
  * @docsCategory fulfillment
