@@ -27,6 +27,8 @@ export * from './custom-field/custom-field-types';
 export * from './default-config';
 export * from './entity/auto-increment-id-strategy';
 export * from './entity/default-money-strategy';
+export * from './entity/entity-duplicator';
+export * from './entity/entity-duplicators/index';
 export * from './entity/bigint-money-strategy';
 export * from './entity/entity-id-strategy';
 export * from './entity/money-strategy';

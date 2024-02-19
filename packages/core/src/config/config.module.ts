@@ -151,6 +151,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
     private getConfigurableOperations(): Array<ConfigurableOperationDef<any>> {
         const { paymentMethodHandlers, paymentMethodEligibilityCheckers } = this.configService.paymentOptions;
         const { collectionFilters } = this.configService.catalogOptions;
+        const { entityDuplicators } = this.configService.entityOptions;
         const { promotionActions, promotionConditions } = this.configService.promotionOptions;
         const { shippingCalculators, shippingEligibilityCheckers, fulfillmentHandlers } =
             this.configService.shippingOptions;
@@ -163,6 +164,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...(shippingCalculators || []),
             ...(shippingEligibilityCheckers || []),
             ...(fulfillmentHandlers || []),
+            ...(entityDuplicators || []),
         ];
     }
 }

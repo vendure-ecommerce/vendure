@@ -1,6 +1,7 @@
 export * from './helpers/active-order/active-order.service';
 export * from './helpers/config-arg/config-arg.service';
 export * from './helpers/custom-field-relation/custom-field-relation.service';
+export * from './helpers/entity-duplicator/entity-duplicator.service';
 export * from './helpers/entity-hydrator/entity-hydrator.service';
 export * from './helpers/external-authentication/external-authentication.service';
 export * from './helpers/fulfillment-state-machine/fulfillment-state';

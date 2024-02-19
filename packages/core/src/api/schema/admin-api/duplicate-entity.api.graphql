@@ -1,0 +1,33 @@
+extend type Query {
+    entityDuplicators: [EntityDuplicatorDefinition!]!
+}
+
+extend type Mutation {
+    duplicateEntity(input: DuplicateEntityInput!): DuplicateEntityResult!
+}
+
+type EntityDuplicatorDefinition {
+    code: String!
+    args: [ConfigArgDefinition!]!
+    description: String!
+    forEntities: [String!]!
+    requiresPermission: [Permission!]!
+}
+
+type DuplicateEntitySuccess {
+    newEntityId: ID!
+}
+
+type DuplicateEntityError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    duplicationError: String!
+}
+
+union DuplicateEntityResult = DuplicateEntitySuccess | DuplicateEntityError
+
+input DuplicateEntityInput {
+    entityName: String!
+    entityId: ID!
+    duplicatorInput: ConfigurableOperationInput!
+}
