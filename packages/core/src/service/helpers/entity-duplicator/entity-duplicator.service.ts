@@ -8,7 +8,7 @@ import {
 
 import { RequestContext } from '../../../api/index';
 import { DuplicateEntityError } from '../../../common/index';
-import { ConfigService } from '../../../config/index';
+import { ConfigService, Logger } from '../../../config/index';
 import { TransactionalConnection } from '../../../connection/index';
 import { ConfigArgService } from '../config-arg/config-arg.service';
 
@@ -65,6 +65,7 @@ export class EntityDuplicatorService {
                 return { newEntityId: newEntity.id };
             } catch (e: any) {
                 await this.connection.rollBackTransaction(innerCtx);
+                Logger.error(e.message, undefined, e.stack);
                 return new DuplicateEntityError({
                     duplicationError: e.message ?? e.toString(),
                 });

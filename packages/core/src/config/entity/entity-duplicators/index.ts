@@ -1,1 +1,3 @@
-export const defaultEntityDuplicators = [];
+import { productDuplicator } from './product-duplicator';
+
+export const defaultEntityDuplicators = [productDuplicator];

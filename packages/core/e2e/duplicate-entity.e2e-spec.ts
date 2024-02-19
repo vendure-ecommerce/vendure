@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     Collection,
     CollectionService,
@@ -26,7 +27,13 @@ import {
     Permission,
     RoleFragment,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR, CREATE_ROLE, GET_COLLECTIONS } from './graphql/shared-definitions';
+import {
+    CREATE_ADMINISTRATOR,
+    CREATE_ROLE,
+    GET_COLLECTIONS,
+    GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_PRODUCT_VARIANTS,
+} from './graphql/shared-definitions';
 
 const customPermission = new PermissionDefinition({
     name: 'custom',
@@ -94,7 +101,7 @@ describe('Duplicating entities', () => {
                 customPermissions: [customPermission],
             },
             entityOptions: {
-                entityDuplicators: [/* ...defaultEntityDuplicators */ customCollectionDuplicator],
+                entityDuplicators: [...defaultEntityDuplicators, customCollectionDuplicator],
             },
         }),
     );
@@ -156,21 +163,19 @@ describe('Duplicating entities', () => {
             GET_ENTITY_DUPLICATORS,
         );
 
-        expect(entityDuplicators).toEqual([
-            {
-                args: [
-                    {
-                        defaultValue: false,
-                        name: 'throwError',
-                        type: 'boolean',
-                    },
-                ],
-                code: 'custom-collection-duplicator',
-                description: 'Custom Collection Duplicator',
-                forEntities: ['Collection'],
-                requiresPermission: ['custom'],
-            },
-        ]);
+        expect(entityDuplicators.find(d => d.code === 'custom-collection-duplicator')).toEqual({
+            args: [
+                {
+                    defaultValue: false,
+                    name: 'throwError',
+                    type: 'boolean',
+                },
+            ],
+            code: 'custom-collection-duplicator',
+            description: 'Custom Collection Duplicator',
+            forEntities: ['Collection'],
+            requiresPermission: ['custom'],
+        });
     });
 
     it('cannot duplicate if lacking permissions', async () => {
@@ -279,6 +284,225 @@ describe('Duplicating entities', () => {
             id: 'T_3',
             name: 'Plants (copy)',
             slug: 'plants-copy',
+        });
+    });
+
+    describe('default entity duplicators', () => {
+        describe('Product duplicator', () => {
+            let originalProduct: NonNullable<Codegen.GetProductWithVariantsQuery['product']>;
+            let originalFirstVariant: NonNullable<
+                Codegen.GetProductWithVariantsQuery['product']
+            >['variants'][0];
+            let newProduct1Id: string;
+            let newProduct2Id: string;
+
+            beforeAll(async () => {
+                await adminClient.asSuperAdmin();
+
+                // Add asset and facet values to the first product variant
+                const { updateProductVariants } = await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: 'T_1',
+                            assetIds: ['T_1'],
+                            featuredAssetId: 'T_1',
+                            facetValueIds: ['T_1', 'T_2'],
+                        },
+                    ],
+                });
+
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: 'T_1',
+                });
+                originalProduct = product!;
+                originalFirstVariant = product!.variants.find(v => v.id === 'T_1')!;
+            });
+
+            it('duplicate product without variants', async () => {
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'product-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeVariants',
+                                    value: 'false',
+                                },
+                            ],
+                        },
+                    },
+                });
+
+                duplicateEntityGuard.assertSuccess(duplicateEntity);
+
+                newProduct1Id = duplicateEntity.newEntityId;
+
+                expect(newProduct1Id).toBe('T_2');
+            });
+
+            it('new product has no variants', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct1Id,
+                });
+
+                expect(product?.variants.length).toBe(0);
+            });
+
+            it('is initially disabled', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct1Id,
+                });
+
+                expect(product?.enabled).toBe(false);
+            });
+
+            it('assets are duplicated', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct1Id,
+                });
+
+                expect(product?.featuredAsset).toEqual(originalProduct.featuredAsset);
+                expect(product?.assets.length).toBe(1);
+                expect(product?.assets).toEqual(originalProduct.assets);
+            });
+
+            it('facet values are duplicated', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct1Id,
+                });
+
+                expect(product?.facetValues).toEqual(originalProduct.facetValues);
+                expect(product?.facetValues.map(fv => fv.name).sort()).toEqual(['computers', 'electronics']);
+            });
+
+            it('duplicate product with variants', async () => {
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'product-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeVariants',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    },
+                });
+
+                duplicateEntityGuard.assertSuccess(duplicateEntity);
+
+                newProduct2Id = duplicateEntity.newEntityId;
+
+                expect(newProduct2Id).toBe('T_3');
+            });
+
+            it('new product has variants', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct2Id,
+                });
+
+                expect(product?.variants.length).toBe(4);
+                expect(product?.variants.length).toBe(originalProduct.variants.length);
+
+                expect(product?.variants.map(v => v.name).sort()).toEqual(
+                    originalProduct.variants.map(v => v.name).sort(),
+                );
+            });
+
+            it('variant SKUs are suffixed', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct2Id,
+                });
+
+                expect(product?.variants.map(v => v.sku).sort()).toEqual([
+                    'L2201308-copy',
+                    'L2201316-copy',
+                    'L2201508-copy',
+                    'L2201516-copy',
+                ]);
+            });
+
+            it('variant assets are preserved', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct2Id,
+                });
+
+                expect(product?.variants.find(v => v.name === originalFirstVariant.name)?.assets).toEqual(
+                    originalFirstVariant.assets,
+                );
+
+                expect(
+                    product?.variants.find(v => v.name === originalFirstVariant.name)?.featuredAsset,
+                ).toEqual(originalFirstVariant.featuredAsset);
+            });
+
+            it('variant facet values are preserved', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct2Id,
+                });
+
+                expect(
+                    product?.variants.find(v => v.name === originalFirstVariant.name)?.facetValues.length,
+                ).toBe(2);
+
+                expect(
+                    product?.variants.find(v => v.name === originalFirstVariant.name)?.facetValues,
+                ).toEqual(originalFirstVariant.facetValues);
+            });
+
+            it('variant stock levels are preserved', async () => {
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: newProduct2Id,
+                });
+
+                expect(product?.variants.find(v => v.name === originalFirstVariant.name)?.stockOnHand).toBe(
+                    100,
+                );
+            });
         });
     });
 });
