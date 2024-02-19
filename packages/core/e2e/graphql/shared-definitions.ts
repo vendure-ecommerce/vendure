@@ -1054,3 +1054,12 @@ export const GET_COLLECTION = gql`
     }
     ${COLLECTION_FRAGMENT}
 `;
+
+export const GET_FACET_WITH_VALUES = gql`
+    query GetFacetWithValues($id: ID!) {
+        facet(id: $id) {
+            ...FacetWithValues
+        }
+    }
+    ${FACET_WITH_VALUES_FRAGMENT}
+`;

@@ -33,7 +33,7 @@ export const collectionDuplicator = new EntityDuplicator({
         connection = injector.get(TransactionalConnection);
         collectionService = injector.get(CollectionService);
     },
-    async duplicate({ ctx, id, args }) {
+    async duplicate({ ctx, id }) {
         const collection = await connection.getEntityOrThrow(ctx, Collection, id, {
             relations: {
                 featuredAsset: true,

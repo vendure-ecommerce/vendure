@@ -35,6 +35,7 @@ import {
     CREATE_ROLE,
     GET_COLLECTION,
     GET_COLLECTIONS,
+    GET_FACET_WITH_VALUES,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -643,6 +644,72 @@ describe('Duplicating entities', () => {
                 });
 
                 expect(collection?.filters).toEqual(testCollection.filters);
+            });
+        });
+
+        describe('Facet duplicator', () => {
+            let newFacetId: string;
+
+            it('duplicate facet', async () => {
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Facet',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'facet-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeFacetValues',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    },
+                });
+
+                duplicateEntityGuard.assertSuccess(duplicateEntity);
+
+                expect(duplicateEntity.newEntityId).toBe('T_2');
+                newFacetId = duplicateEntity.newEntityId;
+            });
+
+            it('facet name is suffixed', async () => {
+                const { facet } = await adminClient.query<
+                    Codegen.GetFacetWithValuesQuery,
+                    Codegen.GetFacetWithValuesQueryVariables
+                >(GET_FACET_WITH_VALUES, {
+                    id: newFacetId,
+                });
+
+                expect(facet?.name).toBe('category (copy)');
+            });
+
+            it('is initially private', async () => {
+                const { facet } = await adminClient.query<
+                    Codegen.GetFacetWithValuesQuery,
+                    Codegen.GetFacetWithValuesQueryVariables
+                >(GET_FACET_WITH_VALUES, {
+                    id: newFacetId,
+                });
+
+                expect(facet?.isPrivate).toBe(true);
+            });
+
+            it('facet values are duplicated', async () => {
+                const { facet } = await adminClient.query<
+                    Codegen.GetFacetWithValuesQuery,
+                    Codegen.GetFacetWithValuesQueryVariables
+                >(GET_FACET_WITH_VALUES, {
+                    id: newFacetId,
+                });
+
+                expect(facet?.values.map(v => v.name).sort()).toEqual([
+                    'computers (copy)',
+                    'electronics (copy)',
+                ]);
             });
         });
     });
