@@ -5,11 +5,13 @@ import {
     CollectionService,
     defaultEntityDuplicators,
     EntityDuplicator,
-    variantIdCollectionFilter,
+    freeShipping,
     LanguageCode,
     mergeConfig,
+    minimumOrderAmount,
     PermissionDefinition,
     TransactionalConnection,
+    variantIdCollectionFilter,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -32,11 +34,13 @@ import {
 import {
     CREATE_ADMINISTRATOR,
     CREATE_COLLECTION,
+    CREATE_PROMOTION,
     CREATE_ROLE,
     GET_COLLECTION,
     GET_COLLECTIONS,
     GET_FACET_WITH_VALUES,
     GET_PRODUCT_WITH_VARIANTS,
+    GET_PROMOTION,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 
@@ -711,6 +715,145 @@ describe('Duplicating entities', () => {
                     'electronics (copy)',
                 ]);
             });
+        });
+    });
+
+    describe('Promotion duplicator', () => {
+        let testPromotion: Codegen.PromotionFragment;
+        let duplicatedPromotionId: string;
+        const promotionGuard: ErrorResultGuard<{ id: string }> = createErrorResultGuard(
+            result => !!result.id,
+        );
+
+        beforeAll(async () => {
+            await adminClient.asSuperAdmin();
+
+            const { createPromotion } = await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
+                input: {
+                    enabled: true,
+                    couponCode: 'TEST',
+                    perCustomerUsageLimit: 1,
+                    usageLimit: 100,
+                    startsAt: new Date().toISOString(),
+                    endsAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
+                    translations: [
+                        {
+                            name: 'Test Promotion',
+                            description: 'Test Promotion description',
+                            languageCode: LanguageCode.en,
+                        },
+                    ],
+                    conditions: [
+                        {
+                            code: minimumOrderAmount.code,
+                            arguments: [
+                                {
+                                    name: 'amount',
+                                    value: '1000',
+                                },
+                                {
+                                    name: 'taxInclusive',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    ],
+                    actions: [
+                        {
+                            code: freeShipping.code,
+                            arguments: [],
+                        },
+                    ],
+                },
+            });
+
+            promotionGuard.assertSuccess(createPromotion);
+            testPromotion = createPromotion;
+        });
+
+        it('duplicate promotion', async () => {
+            const { duplicateEntity } = await adminClient.query<
+                Codegen.DuplicateEntityMutation,
+                Codegen.DuplicateEntityMutationVariables
+            >(DUPLICATE_ENTITY, {
+                input: {
+                    entityName: 'Promotion',
+                    entityId: testPromotion.id,
+                    duplicatorInput: {
+                        code: 'promotion-duplicator',
+                        arguments: [],
+                    },
+                },
+            });
+
+            duplicateEntityGuard.assertSuccess(duplicateEntity);
+
+            expect(testPromotion.id).toBe('T_1');
+            expect(duplicateEntity.newEntityId).toBe('T_2');
+
+            duplicatedPromotionId = duplicateEntity.newEntityId;
+        });
+
+        it('promotion name is suffixed', async () => {
+            const { promotion } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: duplicatedPromotionId,
+            });
+
+            expect(promotion?.name).toBe('Test Promotion (copy)');
+        });
+
+        it('is initially disabled', async () => {
+            const { promotion } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: duplicatedPromotionId,
+            });
+
+            expect(promotion?.enabled).toBe(false);
+        });
+
+        it('properties are duplicated', async () => {
+            const { promotion } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: duplicatedPromotionId,
+            });
+
+            expect(promotion?.startsAt).toBe(testPromotion.startsAt);
+            expect(promotion?.endsAt).toBe(testPromotion.endsAt);
+            expect(promotion?.couponCode).toBe(testPromotion.couponCode);
+            expect(promotion?.perCustomerUsageLimit).toBe(testPromotion.perCustomerUsageLimit);
+            expect(promotion?.usageLimit).toBe(testPromotion.usageLimit);
+        });
+
+        it('conditions are duplicated', async () => {
+            const { promotion } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: duplicatedPromotionId,
+            });
+
+            expect(promotion?.conditions).toEqual(testPromotion.conditions);
+        });
+
+        it('actions are duplicated', async () => {
+            const { promotion } = await adminClient.query<
+                Codegen.GetPromotionQuery,
+                Codegen.GetPromotionQueryVariables
+            >(GET_PROMOTION, {
+                id: duplicatedPromotionId,
+            });
+
+            expect(promotion?.actions).toEqual(testPromotion.actions);
         });
     });
 });

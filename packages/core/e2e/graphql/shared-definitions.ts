@@ -1063,3 +1063,12 @@ export const GET_FACET_WITH_VALUES = gql`
     }
     ${FACET_WITH_VALUES_FRAGMENT}
 `;
+
+export const GET_PROMOTION = gql`
+    query GetPromotion($id: ID!) {
+        promotion(id: $id) {
+            ...Promotion
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;

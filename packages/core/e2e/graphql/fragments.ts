@@ -448,6 +448,8 @@ export const PROMOTION_FRAGMENT = gql`
         name
         description
         enabled
+        perCustomerUsageLimit
+        usageLimit
         conditions {
             ...ConfigurableOperation
         }
