@@ -265,16 +265,20 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             : this.connection.rawConnection.getRepository(entity);
         const alias = extendedOptions.entityAlias || entity.name.toLowerCase();
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
-        const qb = repo.createQueryBuilder(alias).setFindOptions({
-            relations: unique([...minimumRequiredRelations, ...(extendedOptions?.relations ?? [])]),
+        const qb = repo.createQueryBuilder(alias);
+
+        qb.setFindOptions({
+            relations: unique([
+                ...minimumRequiredRelations,
+                ...(extendedOptions?.relations ?? []),
+                // ...qb.expressionMap.mainAlias!.metadata.relations.map(r => r.propertyName),
+            ]),
             take,
             skip,
             where: extendedOptions.where || {},
             relationLoadStrategy: 'query',
             loadEagerRelations: true,
         });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
@@ -555,7 +559,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (translationColumns.length && sortingOnTranslatableKey) {
-            const translationsAlias = qb.connection.namingStrategy.joinTableColumnName(alias, 'translations');
+            const translationsAlias = `${alias}__translations`;
 
             qb.andWhere(
                 new Brackets(qb1 => {
