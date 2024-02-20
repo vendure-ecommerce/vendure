@@ -1728,9 +1728,11 @@ export type FacetValue = Node & {
  * * ID=1 OR ID=2: `{ facetValueFilters: [{ or: [1,2] }] }`
  * * ID=1 AND ID=2: `{ facetValueFilters: [{ and: 1 }, { and: 2 }] }`
  * * ID=1 AND (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1 }, { or: [2,3] }] }`
+ * * ID=1 AND NOT (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1, not: { or: [2,3] } }] }`
  */
 export type FacetValueFilterInput = {
   and?: InputMaybe<Scalars['ID']['input']>;
+  not?: InputMaybe<FacetValueNotFilterInput>;
   or?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
@@ -1763,6 +1765,11 @@ export type FacetValueListOptions = {
   sort?: InputMaybe<FacetValueSortParameter>;
   /** Takes n results, for use in pagination */
   take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type FacetValueNotFilterInput = {
+  and?: InputMaybe<Scalars['ID']['input']>;
+  or?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
 /**
