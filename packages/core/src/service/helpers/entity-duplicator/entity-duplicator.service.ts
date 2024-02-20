@@ -37,7 +37,7 @@ export class EntityDuplicatorService {
             ...x.toGraphQlType(ctx),
             __typename: 'EntityDuplicatorDefinition',
             forEntities: x.forEntities,
-            requiresPermission: x.requiresPermission as Permission[],
+            requiresPermission: x.requiresPermission,
         }));
     }
 

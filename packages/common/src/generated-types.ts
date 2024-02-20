@@ -1758,9 +1758,11 @@ export type FacetValue = Node & {
  * * ID=1 OR ID=2: `{ facetValueFilters: [{ or: [1,2] }] }`
  * * ID=1 AND ID=2: `{ facetValueFilters: [{ and: 1 }, { and: 2 }] }`
  * * ID=1 AND (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1 }, { or: [2,3] }] }`
+ * * ID=1 AND NOT (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1, not: { or: [2,3] } }] }`
  */
 export type FacetValueFilterInput = {
   and?: InputMaybe<Scalars['ID']['input']>;
+  not?: InputMaybe<FacetValueNotFilterInput>;
   or?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
@@ -1793,6 +1795,11 @@ export type FacetValueListOptions = {
   sort?: InputMaybe<FacetValueSortParameter>;
   /** Takes n results, for use in pagination */
   take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type FacetValueNotFilterInput = {
+  and?: InputMaybe<Scalars['ID']['input']>;
+  or?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
 /**
@@ -2833,6 +2840,10 @@ export type Mutation = {
   deleteZone: DeletionResponse;
   /** Delete a Zone */
   deleteZones: Array<DeletionResponse>;
+  /**
+   * Duplicate an existing entity using a specific EntityDuplicator.
+   * Since v2.2.0.
+   */
   duplicateEntity: DuplicateEntityResult;
   flushBufferedJobs: Success;
   importProducts?: Maybe<ImportInfo>;
@@ -4991,6 +5002,7 @@ export type Query = {
   customers: CustomerList;
   /** Returns a list of eligible shipping methods for the draft Order */
   eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
+  /** Returns all configured EntityDuplicators. */
   entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
   facetValues: FacetValueList;
