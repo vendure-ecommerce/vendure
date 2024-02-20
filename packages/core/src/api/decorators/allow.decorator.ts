@@ -10,7 +10,7 @@ export const PERMISSIONS_METADATA_KEY = '__permissions__';
  *
  * In a GraphQL context, it can be applied to top-level queries and mutations as well as field resolvers.
  *
- * For REST controllers, it can be applied to route handlers.
+ * For REST controllers, it can be applied to route handler.
  *
  * ## Allow and Sessions
  * The `@Allow()` decorator is closely linked to the way Vendure manages sessions. For any operation or route that is decorated

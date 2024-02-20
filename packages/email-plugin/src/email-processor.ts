@@ -1,23 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { Ctx, Injector, InternalServerError, Logger, RequestContext } from '@vendure/core';
+import { Injector, Logger, RequestContext } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
-import { EmailGenerator } from './email-generator';
-import { EmailSender } from './email-sender';
-import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
-import { NodemailerEmailSender } from './nodemailer-email-sender';
-import { FileBasedTemplateLoader } from './template-loader';
+import { EmailGenerator } from './generator/email-generator';
+import { HandlebarsMjmlGenerator } from './generator/handlebars-mjml-generator';
+import { EmailSender } from './sender/email-sender';
+import { NodemailerEmailSender } from './sender/nodemailer-email-sender';
 import {
     EmailDetails,
-    EmailPluginOptions,
     EmailTransportOptions,
     InitializedEmailPluginOptions,
     IntermediateEmailDetails,
-    TemplateLoader,
 } from './types';
 
 /**

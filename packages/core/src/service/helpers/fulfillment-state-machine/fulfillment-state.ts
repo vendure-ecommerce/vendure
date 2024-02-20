@@ -35,7 +35,7 @@ export type FulfillmentState =
 
 /**
  * @description
- * The data which is passed to the state transition handlers of the FulfillmentStateMachine.
+ * The data which is passed to the state transition handler of the FulfillmentStateMachine.
  *
  * @docsCategory fulfillment
  */

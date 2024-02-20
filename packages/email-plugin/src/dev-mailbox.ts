@@ -4,7 +4,7 @@ import { Request, Router } from 'express';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { EmailEventHandler } from './event-handler';
+import { EmailEventHandler } from './handler/event-handler';
 import { EmailPluginDevModeOptions, EventWithContext } from './types';
 
 /**

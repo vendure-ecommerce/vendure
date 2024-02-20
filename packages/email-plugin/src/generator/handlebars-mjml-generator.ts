@@ -1,16 +1,10 @@
 import dateFormat from 'dateformat';
-import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import mjml2html from 'mjml';
-import path from 'path';
+
+import { InitializedEmailPluginOptions } from '../types';
 
 import { EmailGenerator } from './email-generator';
-import {
-    EmailPluginDevModeOptions,
-    EmailPluginOptions,
-    InitializedEmailPluginOptions,
-    Partial,
-} from './types';
 
 /**
  * @description

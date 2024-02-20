@@ -232,7 +232,7 @@ describe('Transaction infrastructure', () => {
             expect(e.message).toContain('Failed!');
         }
 
-        // Wait a bit to see an events in handlers
+        // Wait a bit to see an events in handler
         await new Promise(resolve => setTimeout(resolve, 100));
 
         expect(TransactionTestPlugin.callHandler).not.toHaveBeenCalled();

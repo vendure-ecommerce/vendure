@@ -26,7 +26,7 @@ export type SerializedRequestContext = {
  * required at various points of the stack.
  *
  * It is a good practice to inject the RequestContext (using the {@link Ctx} decorator) into
- * _all_ resolvers & REST handlers, and then pass it through to the service layer.
+ * _all_ resolvers & REST handler, and then pass it through to the service layer.
  *
  * This allows the service layer to access information about the current user, the active language,
  * the active Channel, and so on. In addition, the {@link TransactionalConnection} relies on the

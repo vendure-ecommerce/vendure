@@ -22,10 +22,10 @@ import path from 'path';
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { orderConfirmationHandler } from './default-email-handlers';
+import { orderConfirmationHandler } from './handler/default-email-handlers';
 import { EmailProcessor } from './email-processor';
-import { EmailSender } from './email-sender';
-import { EmailEventHandler } from './event-handler';
+import { EmailSender } from './sender/email-sender';
+import { EmailEventHandler } from './handler/event-handler';
 import { EmailEventListener } from './event-listener';
 import { EmailPlugin } from './plugin';
 import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types';
