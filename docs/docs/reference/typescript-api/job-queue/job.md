@@ -166,7 +166,7 @@ destroyed before the job has been completed.
 
 <MemberInfo kind="method" type={`(eventType: <a href='/reference/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/reference/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => `}   />
 
-Used to register event handlers for job events
+Used to register event handler for job events
 ### off
 
 <MemberInfo kind="method" type={`(eventType: <a href='/reference/typescript-api/job-queue/job#jobeventtype'>JobEventType</a>, listener: <a href='/reference/typescript-api/job-queue/job#jobeventlistener'>JobEventListener</a>&#60;T&#62;) => `}   />

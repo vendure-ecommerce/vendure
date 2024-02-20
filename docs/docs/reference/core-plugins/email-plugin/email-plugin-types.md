@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EventWithContext
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="21" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="22" packageName="@vendure/email-plugin" />
 
 A VendureEvent which also includes a `ctx` property containing the current
 <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, which is used to determine the channel and language
@@ -24,7 +24,7 @@ type EventWithContext = VendureEvent & { ctx: RequestContext }
 
 ## EventWithAsyncData
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="31" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="32" packageName="@vendure/email-plugin" />
 
 A VendureEvent with a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> and a `data` property which contains the
 value resolved from the <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>`.loadData()` callback.
@@ -36,7 +36,7 @@ type EventWithAsyncData<Event extends EventWithContext, R> = Event & { data: R }
 
 ## EmailDetails
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="248" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="249" packageName="@vendure/email-plugin" />
 
 The final, generated email details to be sent.
 
@@ -102,7 +102,7 @@ interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialize
 
 ## LoadDataFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="282" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="283" packageName="@vendure/email-plugin" />
 
 A function used to load async data for use by an <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.
 
@@ -116,7 +116,7 @@ type LoadDataFn<Event extends EventWithContext, R> = (context: {
 
 ## EmailAttachment
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="301" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="302" packageName="@vendure/email-plugin" />
 
 An object defining a file attachment for an email. Based on the object described
 [here in the Nodemailer docs](https://nodemailer.com/message/attachments/), but
@@ -130,7 +130,7 @@ type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string }
 
 ## SetTemplateVarsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="414" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="374" packageName="@vendure/email-plugin" />
 
 A function used to define template variables available to email templates.
 See <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.setTemplateVars().
@@ -145,7 +145,7 @@ type SetTemplateVarsFn<Event> = (
 
 ## SetAttachmentsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="428" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="388" packageName="@vendure/email-plugin" />
 
 A function used to define attachments to be sent with the email.
 See https://nodemailer.com/message/attachments/ for more information about
@@ -158,7 +158,7 @@ type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<Ema
 
 ## OptionalAddressFields
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="438" packageName="@vendure/email-plugin" since="1.1.0" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="398" packageName="@vendure/email-plugin" since="1.1.0" />
 
 Optional address-related fields for sending the email.
 
@@ -194,7 +194,7 @@ An email address that will appear on the _Reply-To:_ field
 
 ## SetOptionalAddressFieldsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="464" packageName="@vendure/email-plugin" since="1.1.0" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="424" packageName="@vendure/email-plugin" since="1.1.0" />
 
 A function used to set the <a href='/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a>.
 

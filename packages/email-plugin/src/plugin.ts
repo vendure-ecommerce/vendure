@@ -15,23 +15,19 @@ import {
     PluginCommonModule,
     ProcessContext,
     registerPluginStartupMessage,
-    RequestContext,
     Type,
-    UserInputError,
     VendurePlugin,
 } from '@vendure/core';
-import Module from 'module';
 
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
-import { FileBasedTemplateLoader } from './template-loader';
+import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
-    EmailTransportOptions,
     EventWithContext,
     InitializedEmailPluginOptions,
     IntermediateEmailDetails,
@@ -320,7 +316,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         if (!isDevModeOptions(this.options) && transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef);
+            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef, this.eventBus);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();
