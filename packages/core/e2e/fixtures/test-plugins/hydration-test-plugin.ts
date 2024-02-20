@@ -4,6 +4,7 @@ import {
     Asset,
     ChannelService,
     Ctx,
+    DeepPartial,
     EntityHydrator,
     ID,
     LanguageCode,
@@ -14,9 +15,11 @@ import {
     ProductVariantService,
     RequestContext,
     TransactionalConnection,
+    VendureEntity,
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
+import { Entity, ManyToOne } from 'typeorm';
 
 @Resolver()
 export class TestAdminPluginResolver {
@@ -125,10 +128,34 @@ export class TestAdminPluginResolver {
         });
         return channel;
     }
+
+    @Query()
+    async hydrateChannelWithNestedRelation(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const channel = await this.channelService.findOne(ctx, args.id);
+        await this.entityHydrator.hydrate(ctx, channel!, {
+            relations: [
+                'customFields.thumb',
+                'customFields.additionalConfig',
+                'customFields.additionalConfig.backgroundImage',
+            ],
+        });
+        return channel;
+    }
+}
+
+@Entity()
+export class AdditionalConfig extends VendureEntity {
+    constructor(input?: DeepPartial<AdditionalConfig>) {
+        super(input);
+    }
+
+    @ManyToOne(() => Asset, { onDelete: 'SET NULL', nullable: true })
+    backgroundImage: Asset;
 }
 
 @VendurePlugin({
     imports: [PluginCommonModule],
+    entities: [AdditionalConfig],
     adminApiExtensions: {
         resolvers: [TestAdminPluginResolver],
         schema: gql`
@@ -140,11 +167,19 @@ export class TestAdminPluginResolver {
                 hydrateOrder(id: ID!): JSON
                 hydrateOrderReturnQuantities(id: ID!): JSON
                 hydrateChannel(id: ID!): JSON
+                hydrateChannelWithNestedRelation(id: ID!): JSON
             }
         `,
     },
     configuration: config => {
         config.customFields.Channel.push({ name: 'thumb', type: 'relation', entity: Asset, nullable: true });
+        config.customFields.Channel.push({
+            name: 'additionalConfig',
+            type: 'relation',
+            entity: AdditionalConfig,
+            graphQLType: 'JSON',
+            nullable: true,
+        });
         return config;
     },
 })
