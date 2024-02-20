@@ -12,6 +12,14 @@ import { ConfigService, Logger } from '../../../config/index';
 import { TransactionalConnection } from '../../../connection/index';
 import { ConfigArgService } from '../config-arg/config-arg.service';
 
+/**
+ * @description
+ * This service is used to duplicate entities using one of the configured
+ * {@link EntityDuplicator} functions.
+ *
+ * @docsCategory service-helpers
+ * @since 2.2.0
+ */
 @Injectable()
 export class EntityDuplicatorService {
     constructor(
@@ -20,6 +28,10 @@ export class EntityDuplicatorService {
         private connection: TransactionalConnection,
     ) {}
 
+    /**
+     * @description
+     * Returns all configured {@link EntityDuplicator} definitions.
+     */
     getEntityDuplicators(ctx: RequestContext): EntityDuplicatorDefinition[] {
         return this.configArgService.getDefinitions('EntityDuplicator').map(x => ({
             ...x.toGraphQlType(ctx),
@@ -29,6 +41,11 @@ export class EntityDuplicatorService {
         }));
     }
 
+    /**
+     * @description
+     * Duplicates an entity using the specified {@link EntityDuplicator}. The duplication is performed
+     * within a transaction, so if an error occurs, the transaction will be rolled back.
+     */
     async duplicateEntity(ctx: RequestContext, input: DuplicateEntityInput): Promise<DuplicateEntityResult> {
         const duplicator = this.configService.entityOptions.entityDuplicators.find(
             s => s.forEntities.includes(input.entityName) && s.code === input.duplicatorInput.code,
