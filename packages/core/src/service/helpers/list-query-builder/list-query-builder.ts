@@ -271,11 +271,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             take,
             skip,
             where: extendedOptions.where || {},
-            // We would like to be able to use this feature
-            // rather than our custom `optimizeGetManyAndCountMethod()` implementation,
-            // but at this time (TypeORM 0.3.12) it throws an error in the case of
-            // a Collection that joins its parent entity.
-            // relationLoadStrategy: 'query',
+            relationLoadStrategy: 'query',
         });
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
@@ -687,10 +683,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (translationColumns.length && sortingOnTranslatableKey) {
-            const translationsAlias = qb.connection.namingStrategy.eagerJoinRelationAlias(
-                alias,
-                'translations',
-            );
+            const translationsAlias = qb.connection.namingStrategy.joinTableColumnName(alias, 'translations');
 
             qb.andWhere(
                 new Brackets(qb1 => {
