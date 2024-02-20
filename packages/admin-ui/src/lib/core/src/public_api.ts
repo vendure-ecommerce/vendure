@@ -176,6 +176,8 @@ export * from './shared/components/dropdown/dropdown-item.directive';
 export * from './shared/components/dropdown/dropdown-menu.component';
 export * from './shared/components/dropdown/dropdown-trigger.directive';
 export * from './shared/components/dropdown/dropdown.component';
+export * from './shared/components/duplicate-entity-dialog/duplicate-entity-dialog.component';
+export * from './shared/components/duplicate-entity-dialog/duplicate-entity-dialog.graphql';
 export * from './shared/components/edit-note-dialog/edit-note-dialog.component';
 export * from './shared/components/empty-placeholder/empty-placeholder.component';
 export * from './shared/components/entity-info/entity-info.component';

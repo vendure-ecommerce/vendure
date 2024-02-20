@@ -14,6 +14,7 @@ import { PromotionDetailComponent } from './components/promotion-detail/promotio
 import {
     assignPromotionsToChannelBulkAction,
     deletePromotionsBulkAction,
+    duplicatePromotionsBulkAction,
     removePromotionsFromChannelBulkAction,
 } from './components/promotion-list/promotion-list-bulk-actions';
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
@@ -40,6 +41,7 @@ export class MarketingModule {
         }
         bulkActionRegistryService.registerBulkAction(assignPromotionsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removePromotionsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(duplicatePromotionsBulkAction);
         bulkActionRegistryService.registerBulkAction(deletePromotionsBulkAction);
 
         pageService.registerPageTab({

@@ -36,7 +36,7 @@ export function encodeConfigArgValue(value: any): string {
  * Creates an empty ConfigurableOperation object based on the definition.
  */
 export function configurableDefinitionToInstance(
-    def: ConfigurableOperationDefinition,
+    def: Omit<ConfigurableOperationDefinition, '__typename'>,
 ): ConfigurableOperation {
     return {
         ...def,
@@ -68,7 +68,7 @@ export function configurableDefinitionToInstance(
  * ```
  */
 export function toConfigurableOperationInput(
-    operation: ConfigurableOperation,
+    operation: Omit<ConfigurableOperation, '__typename'>,
     formValueOperations: { args: Record<string, string> | Array<{ name: string; value: string }> },
 ): ConfigurableOperationInput {
     const argsArray = Array.isArray(formValueOperations.args) ? formValueOperations.args : undefined;

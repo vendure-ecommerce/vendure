@@ -6,6 +6,7 @@ import {
     createBulkRemoveFromChannelAction,
     currentChannelIsNotDefault,
     DataService,
+    DuplicateEntityDialogComponent,
     getChannelCodeFromUserStatus,
     GetFacetListQuery,
     ItemOf,
@@ -175,6 +176,33 @@ export const removeFacetsFromChannelBulkAction2: BulkAction<
                         count: removedCount,
                         channelCode,
                     });
+                }
+            });
+    },
+};
+
+export const duplicateFacetsBulkAction: BulkAction<
+    ItemOf<GetFacetListQuery, 'facets'>,
+    FacetListComponent
+> = {
+    location: 'facet-list',
+    label: _('common.duplicate'),
+    icon: 'copy',
+    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        modalService
+            .fromComponent(DuplicateEntityDialogComponent<ItemOf<GetFacetListQuery, 'facets'>>, {
+                locals: {
+                    entities: selection,
+                    entityName: 'Facet',
+                    title: _('catalog.duplicate-facets'),
+                    getEntityName: entity => entity.name,
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    clearSelection();
+                    hostComponent.refresh();
                 }
             });
     },

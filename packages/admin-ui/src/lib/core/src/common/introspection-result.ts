@@ -81,6 +81,10 @@
       "StringCustomFieldConfig",
       "TextCustomFieldConfig"
     ],
+    "DuplicateEntityResult": [
+      "DuplicateEntityError",
+      "DuplicateEntitySuccess"
+    ],
     "ErrorResult": [
       "AlreadyRefundedError",
       "CancelActiveOrderError",
@@ -90,6 +94,7 @@
       "CouponCodeInvalidError",
       "CouponCodeLimitError",
       "CreateFulfillmentError",
+      "DuplicateEntityError",
       "EmailAddressConflictError",
       "EmptyOrderLineSelectionError",
       "FacetInUseError",
